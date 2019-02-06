@@ -46,8 +46,10 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -175,6 +177,10 @@
                   (pyqt (assoc-ref inputs "python2-pyqt")))
               (substitute* "setup/build_environment.py"
                 (("sys.prefix") (string-append "'" pyqt "'")))
+              (substitute* "src/calibre/ebooks/pdf/pdftohtml.py"
+                (("PDFTOHTML = 'pdftohtml'")
+                 (string-append "PDFTOHTML = \"" (assoc-ref inputs "poppler")
+                  "/bin/pdftohtml\"")))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
               #t)))

@@ -105,9 +105,7 @@
   bootloader-configuration make-bootloader-configuration
   bootloader-configuration?
   (bootloader                      bootloader-configuration-bootloader)    ; <bootloader>
-  (device                          bootloader-configuration-device         ; string
-                                   (default #f))
-  (target                          %bootloader-configuration-target         ; string
+  (target                          bootloader-configuration-target         ; string
                                    (default #f))
   (menu-entries                    bootloader-configuration-menu-entries   ; list of <boot-parameters>
                                    (default '()))
@@ -127,15 +125,6 @@
                                    (default #f))
   (additional-configuration        bootloader-configuration-additional-configuration ; record
                                    (default #f)))
-
-(define (bootloader-configuration-target config)
-  (or (%bootloader-configuration-target config)
-      (let ((device (bootloader-configuration-device config)))
-        (when device
-          (warning
-           (G_ "The 'device' field of bootloader configurations is deprecated.~%"))
-          (warning (G_ "Use 'target' instead.~%")))
-        device)))
 
 
 ;;;

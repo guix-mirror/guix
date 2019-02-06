@@ -41,7 +41,6 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -57,7 +56,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
@@ -264,6 +265,7 @@ maintained upstream.")
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
                                   "releases/download/release-" version "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "aria2-CVE-2019-3500.patch"))
               (sha256
                (base32
                 "18vpgr430vxlwbcc3598rr1srfmwypls6wp1m4wf21hncc1ahi1s"))))

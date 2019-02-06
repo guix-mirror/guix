@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -75,6 +75,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages swig)
@@ -389,9 +390,9 @@ optimizer; and it can produce photorealistic and design review images.")
          (replace 'configure
            ;; The configure script doesn't tolerate most of our configure flags.
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "sh" "configure"
-                             (string-append "--prefix="
-                                            (assoc-ref outputs "out")))))))))
+             (invoke "sh" "configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))))))))
     (home-page "http://repo.hu/projects/pcb-rnd/")
     (description "PCB RND is a fork of the GNU PCB circuit board editing tool
 featuring various improvements and bug fixes.")))
@@ -419,7 +420,7 @@ featuring various improvements and bug fixes.")))
      ;; FIXME: with texlive-tiny citation references are rendered as question
      ;; marks.  During the build warnings like these are printed:
      ;; LaTeX Warning: Citation `nabors91' on page 2 undefined on input line 3.
-     `(("texlive" ,texlive-tiny)
+     `(("texlive" ,(texlive-union (list texlive-fonts-amsfonts)))
        ("ghostscript" ,ghostscript)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
@@ -431,8 +432,7 @@ featuring various improvements and bug fixes.")))
        (modify-phases %standard-phases
          (add-after 'build 'make-doc
            (lambda _
-             (zero? (system* "make" "CC=gcc" "RM=rm" "SHELL=sh"
-                             "manual"))))
+             (invoke "make" "CC=gcc" "RM=rm" "SHELL=sh" "manual")))
          (add-before 'make-doc 'fix-doc
            (lambda _
              (substitute* "doc/Makefile" (("/bin/rm") (which "rm")))
@@ -473,13 +473,13 @@ featuring various improvements and bug fixes.")))
              (setenv "HOME" "/tmp")     ; FIXME: for texlive font cache
              (with-directory-excursion "doc"
                (and
-                (every (lambda (file)
-                         (zero? (system* "dvips" file "-o")))
-                       (find-files "." "\\.dvi"))
-                (every (lambda (file)
-                         (zero? (system* "ps2pdf" file)))
-                       '("mtt.ps" "ug.ps" "tcad.ps"))
-                (zero? (system* "make" "clean"))))))
+                (for-each (lambda (file)
+                            (invoke "dvips" file "-o"))
+                          (find-files "." "\\.dvi"))
+                (for-each (lambda (file)
+                            (invoke "ps2pdf" file))
+                          '("mtt.ps" "ug.ps" "tcad.ps"))
+                (invoke "make" "clean")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

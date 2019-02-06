@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,7 +154,7 @@ TIMEOUT, an ETIMEDOUT error is raised."
          (catch 'system-error
            (lambda ()
              (connect* s (addrinfo:addr ai) timeout)
-             (setvbuf s _IOLBF)
+             (setvbuf s 'line)
              (let-values (((code message) (%ftp-listen s)))
                (if (eqv? code 220)
                    (begin
@@ -237,7 +237,7 @@ TIMEOUT, an ETIMEDOUT error is raised."
          (s    (socket (addrinfo:fam ai) (addrinfo:socktype ai)
                        (addrinfo:protocol ai))))
     (connect* s (address-with-port (addrinfo:addr ai) port) timeout)
-    (setvbuf s _IOLBF)
+    (setvbuf s 'line)
 
     (dynamic-wind
       (lambda () #t)
@@ -293,7 +293,7 @@ must be closed before CONN can be used for other purposes."
             (throw 'ftp-error conn "LIST" code message))))
 
     (connect* s (address-with-port (addrinfo:addr ai) port) timeout)
-    (setvbuf s _IOLBF)
+    (setvbuf s 'line)
 
     (%ftp-command (string-append "RETR " file)
                   150 (ftp-connection-socket conn))

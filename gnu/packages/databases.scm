@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -64,6 +64,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -85,11 +86,12 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
-  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages textutils)
@@ -107,7 +109,6 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system r)
   #:use-module (guix build-system scons)
   #:use-module ((guix build utils) #:hide (which))
   #:use-module (guix utils)
@@ -161,28 +162,6 @@
 either single machines or networked clusters.")
     (license license:gpl3+)))
 
-(define-public gdbm
-  (package
-    (name "gdbm")
-    (version "1.18")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gdbm/gdbm-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1kimnv12bzjjhaqk4c8w2j6chdj9c6bg21lchaf7abcyfss2r0mq"))))
-    (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
-    (build-system gnu-build-system)
-    (home-page "http://www.gnu.org.ua/software/gdbm")
-    (synopsis
-     "Hash library of database functions compatible with traditional dbm")
-    (description
-     "GDBM is a library for manipulating hashed databases.  It is used to
-store key/value pairs in a file in a manner similar to the Unix dbm library
-and provides interfaces to the traditional file format.")
-    (license license:gpl3+)))
-
 (define-public go-gopkg.in-mgo.v2
   (package
     (name "go-gopkg.in-mgo.v2")
@@ -228,109 +207,6 @@ It implements a rich selection of features under a simple API following
 standard Go idioms.")
     (home-page "http://labix.org/mgo")
     (license license:bsd-2)))
-
-(define-public bdb
-  (package
-    (name "bdb")
-    (version "6.2.32")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1yx8wzhch5wwh016nh0kfxvknjkafv6ybkqh6nh7lxx50jqf5id9"))))
-    (build-system gnu-build-system)
-    (outputs '("out"                             ; programs, libraries, headers
-               "doc"))                           ; 94 MiB of HTML docs
-    (arguments
-     '(#:tests? #f                            ; no check target available
-       #:disallowed-references ("doc")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               ;; '--docdir' is not honored, so we need to patch.
-               (substitute* "dist/Makefile.in"
-                 (("docdir[[:blank:]]*=.*")
-                  (string-append "docdir = " doc "/share/doc/bdb")))
-
-               (invoke "./dist/configure"
-                       (string-append "--prefix=" out)
-                       (string-append "CONFIG_SHELL=" (which "bash"))
-                       (string-append "SHELL=" (which "bash"))
-
-                       ;; Remove 7 MiB of .a files.
-                       "--disable-static"
-
-                       ;; The compatibility mode is needed by some packages,
-                       ;; notably iproute2.
-                       "--enable-compat185"
-
-                       ;; The following flag is needed so that the inclusion
-                       ;; of db_cxx.h into C++ files works; it leads to
-                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                       "--enable-cxx")))))))
-    (synopsis "Berkeley database")
-    (description
-     "Berkeley DB is an embeddable database allowing developers the choice of
-SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
-    ;; Starting with version 6, BDB is distributed under AGPL3. Many individual
-    ;; files are covered by the 3-clause BSD license.
-    (license (list license:agpl3+ license:bsd-3))
-    (home-page
-     "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
-
-(define-public bdb-5.3
-  (package (inherit bdb)
-    (name "bdb")
-    (version "5.3.28")
-    (license (license:non-copyleft "file://LICENSE"
-                                   "See LICENSE in the distribution."))
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))
-    (arguments
-     `(#:tests? #f                            ; no check target available
-       #:disallowed-references ("doc")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               ;; '--docdir' is not honored, so we need to patch.
-               (substitute* "dist/Makefile.in"
-                 (("docdir[[:blank:]]*=.*")
-                  (string-append "docdir = " doc "/share/doc/bdb")))
-
-               (invoke "./dist/configure"
-                       (string-append "--prefix=" out)
-                       (string-append "CONFIG_SHELL=" (which "bash"))
-                       (string-append "SHELL=" (which "bash"))
-
-                       ;; Bdb doesn't recognize aarch64 as an architecture.
-                       ,@(if (string=? "aarch64-linux" (%current-system))
-                             '("--build=aarch64-unknown-linux-gnu")
-                             '())
-
-                       ;; Remove 7 MiB of .a files.
-                       "--disable-static"
-
-                       ;; The compatibility mode is needed by some packages,
-                       ;; notably iproute2.
-                       "--enable-compat185"
-
-                       ;; The following flag is needed so that the inclusion
-                       ;; of db_cxx.h into C++ files works; it leads to
-                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                       "--enable-cxx")))))))))
 
 (define-public es-dump-restore
   (package
@@ -919,66 +795,31 @@ organized in a hash table or B+ tree.")
 (define-public recutils
   (package
     (name "recutils")
-    (version "1.7")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/recutils/recutils-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Adjust the bundled gnulib to work with glibc 2.28.  See e.g.
-                  ;; "m4-gnulib-libio.patch".  This is a phase rather than patch
-                  ;; or snippet to work around <https://bugs.gnu.org/32347>.
-                  (substitute* (find-files "lib" "\\.c$")
-                    (("#if defined _IO_ftrylockfile")
-                     "#if defined _IO_EOF_SEEN"))
-                  (substitute* "lib/stdio-impl.h"
-                    (("^/\\* BSD stdio derived implementations")
-                     (string-append "#if !defined _IO_IN_BACKUP && defined _IO_EOF_SEEN\n"
-                                    "# define _IO_IN_BACKUP 0x100\n"
-                                    "#endif\n\n"
-                                    "/* BSD stdio derived implementations")))
-                  #t))))
+                "14xiln4immfsw8isnvwvq0h23f6z0wilpgsc4qzabnrzb5lsx3nz"))))
     (build-system gnu-build-system)
 
-    ;; Running tests in parallel leads to test failures and crashes in
-    ;; torture/utils.
-    (arguments '(#:parallel-tests? #f
-                 #:configure-flags
+    (arguments '(#:configure-flags
                  (list (string-append "--with-bash-headers="
                                       (assoc-ref %build-inputs "bash:include")
-                                      "/include/bash"))
-
-                 #:phases (modify-phases %standard-phases
-                            (add-before 'build 'set-bash4.4-header-location
-                              (lambda _
-                                (substitute* "bash/Makefile.in"
-                                  ;; Adjust the header search path for Bash
-                                  ;; 4.4 in accordance with 'bash.pc'.
-                                  (("AM_CPPFLAGS = (.*)$" _ rest)
-                                   (string-append "AM_CPPFLAGS = "
-                                                  "-I$(BASH_HEADERS)/include "
-                                                  rest))
-
-                                  ;; Install to PREFIX/lib/bash to match Bash
-                                  ;; 4.4's search path.
-                                  (("^libdir = .*$")
-                                   "libdir = @libdir@/bash\n"))
-                                #t)))))
+                                      "/include/bash"))))
 
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("bc" ,bc)
                      ("bash:include" ,bash "include")
-                     ("libuuid" ,util-linux)))
+                     ("check" ,check)
+                     ("libuuid" ,util-linux)
+                     ("pkg-config" ,pkg-config)))
 
     ;; TODO: Add more optional inputs.
     (inputs `(("curl" ,curl)
-              ("libgcrypt" ,libgcrypt)
-              ("check" ,check)))
+              ("libgcrypt" ,libgcrypt)))
     (synopsis "Manipulate plain text files as databases")
     (description
      "GNU Recutils is a set of tools and libraries for creating and
@@ -1182,87 +1023,6 @@ console through an ncurses interface.  You can explore each table's structure,
 browse and edit the contents, add and delete entries, all while tracking your
 changes.")
       (license license:gpl3+)))) ; no headers, see README.md
-
-(define-public sqlite
-  (package
-   (name "sqlite")
-   (replacement sqlite-3.26.0)
-   (version "3.24.0")
-   (source (origin
-            (method url-fetch)
-            (uri (let ((numeric-version
-                        (match (string-split version #\.)
-                          ((first-digit other-digits ...)
-                           (string-append first-digit
-                                          (string-pad-right
-                                           (string-concatenate
-                                            (map (cut string-pad <> 2 #\0)
-                                                 other-digits))
-                                           6 #\0))))))
-                   (string-append "https://sqlite.org/2018/sqlite-autoconf-"
-                                  numeric-version ".tar.gz")))
-            (sha256
-             (base32
-              "0jmprv2vpggzhy7ma4ynmv1jzn3pfiwzkld0kkg6hvgvqs44xlfr"))))
-   (build-system gnu-build-system)
-   (inputs `(("readline" ,readline)))
-   (arguments
-    `(#:configure-flags
-      ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
-      ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
-      ;; to use the system SQLite unless these options are enabled.
-      (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                           "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                           "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
-   (home-page "https://www.sqlite.org/")
-   (synopsis "The SQLite database management system")
-   (description
-    "SQLite is a software library that implements a self-contained, serverless,
-zero-configuration, transactional SQL database engine.  SQLite is the most
-widely deployed SQL database engine in the world.  The source code for SQLite
-is in the public domain.")
-   (license license:public-domain)))
-
-(define-public sqlite-3.26.0
-  (package (inherit sqlite)
-    (version "3.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (let ((numeric-version
-                          (match (string-split version #\.)
-                            ((first-digit other-digits ...)
-                             (string-append first-digit
-                                            (string-pad-right
-                                             (string-concatenate
-                                              (map (cut string-pad <> 2 #\0)
-                                                   other-digits))
-                                             6 #\0))))))
-                     (string-append "https://sqlite.org/2018/sqlite-autoconf-"
-                                    numeric-version ".tar.gz")))
-              (sha256
-               (base32
-                "0pdzszb4sp73hl36siiv3p300jvfvbcdxi2rrmkwgs6inwznmajx"))))))
-
-;; This is used by Tracker.
-(define-public sqlite-with-fts5
-  (package/inherit sqlite
-    (name "sqlite-with-fts5")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(cons "--enable-fts5" ,flags))))))
-
-;; This is used by Qt.
-(define-public sqlite-with-column-metadata
-  (package/inherit sqlite
-    (name "sqlite-with-column-metadata")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                              "-DSQLITE_ENABLE_COLUMN_METADATA")))))))
 
 (define-public tdb
   (package
@@ -2273,35 +2033,6 @@ and web services platform functionality.")
     (supported-systems '("x86_64-linux" "mips64el-linux" "aarch64-linux"))
     (license license:gpl2)))
 
-(define-public r-rmysql
-  (package
-    (name "r-rmysql")
-    (version "0.10.15")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "RMySQL" version))
-       (sha256
-        (base32
-         "0bmc7w5fnkjaf333sgc0hskiy332m9gmfaxg0yzkjxscpizdw43n"))))
-    (properties `((upstream-name . "RMySQL")))
-    (build-system r-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("mariadb" ,mariadb)
-       ("zlib" ,zlib)))
-    (propagated-inputs
-     `(("r-dbi" ,r-dbi)))
-    (home-page "https://github.com/r-dbi/RMySQL")
-    (synopsis "Database interface and MySQL driver for R")
-    (description
-     "This package provides a DBI interface to MySQL / MariaDB.  The RMySQL
-package contains an old implementation based on legacy code from S-PLUS which
-is being phased out.  A modern MySQL client based on Rcpp is available from
-the RMariaDB package.")
-    (license license:gpl2)))
-
 (define-public python-ccm
   (package
     (name "python-ccm")
@@ -2362,8 +2093,7 @@ Database API 2.0T.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/S/"
-                          "SQLAlchemy/SQLAlchemy-" version ".tar.gz"))
+      (uri (pypi-uri "SQLAlchemy" version))
       (sha256
        (base32
         "094mmbs4igrxplfyqd59j90jb83ixpbbzqc0w49yw81m82nnjrgg"))))

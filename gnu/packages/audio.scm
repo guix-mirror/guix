@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -17,6 +17,8 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,7 +58,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -74,12 +76,14 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages mp3) ;taglib
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
@@ -229,57 +233,79 @@ namespace ARDOUR { const char* revision = \"" version "\" ; }"))
     (arguments
      `(#:configure-flags '("--cxx11"          ; required by gtkmm
                            "--no-phone-home"  ; don't contact ardour.org
-                           "--freedesktop"    ; install .desktop file
+                           "--freedesktop"    ; build .desktop file
                            "--test")          ; build unit tests
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'set-rpath-in-LDFLAGS
-          ,(ardour-rpath-phase (version-major version))))
+         (add-after 'unpack 'set-rpath-in-LDFLAGS
+          ,(ardour-rpath-phase (version-major version)))
+         (add-after 'install 'install-freedesktop-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (ver   ,(version-major version)))
+               (for-each
+                 (lambda (size)
+                   (let ((dir (string-append share "/icons/hicolor/"
+                                             size "x" size "/apps")))
+                     (mkdir-p dir)
+                     (copy-file
+                       (string-append "gtk2_ardour/resources/Ardour-icon_"
+                                      size "px.png")
+                       (string-append dir "/ardour" ver ".png"))))
+                 '("16" "22" "32" "48" "256"))
+               (install-file (string-append "build/gtk2_ardour/ardour"
+                                            ver ".desktop")
+                             (string-append share "/applications/"))
+               (install-file (string-append "build/gtk2_ardour/ardour"
+                                            ver ".appdata.xml")
+                             (string-append share "/appdata/")))
+             #t)))
        #:test-target "test"
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("aubio" ,aubio)
-       ("lrdf" ,lrdf)
-       ("boost" ,boost)
        ("atkmm" ,atkmm)
+       ("aubio" ,aubio)
+       ("boost" ,boost)
        ("cairomm" ,cairomm)
-       ("eudev" ,eudev)
-       ("gtkmm" ,gtkmm-2)
-       ("glibmm" ,glibmm)
-       ("libart-lgpl" ,libart-lgpl)
-       ("libgnomecanvasmm" ,libgnomecanvasmm)
-       ("pangomm" ,pangomm)
-       ("liblo" ,liblo)
-       ("libsndfile" ,libsndfile)
-       ("libsamplerate" ,libsamplerate)
-       ("libxml2" ,libxml2)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("flac" ,flac)
-       ("lv2" ,lv2)
-       ("vamp" ,vamp)
        ("curl" ,curl)
+       ("eudev" ,eudev)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
+       ("flac" ,flac)
+       ("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm-2)
        ("jack" ,jack-1)
+       ("libarchive" ,libarchive)
+       ("libart-lgpl" ,libart-lgpl)
+       ("libgnomecanvasmm" ,libgnomecanvasmm)
+       ("liblo" ,liblo)
+       ("libogg" ,libogg)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("libusb" ,libusb)
+       ("libvorbis" ,libvorbis)
+       ("libxml2" ,libxml2)
+       ("lilv" ,lilv)
+       ("lrdf" ,lrdf)
+       ("lv2" ,lv2)
+       ("pangomm" ,pangomm)
+       ("python-rdflib" ,python-rdflib)
+       ("readline" ,readline)
+       ("redland" ,redland)
+       ("rubberband" ,rubberband)
        ("serd" ,serd)
        ("sord" ,sord)
        ("sratom" ,sratom)
        ("suil" ,suil)
-       ("lilv" ,lilv)
-       ("readline" ,readline)
-       ("redland" ,redland)
-       ("rubberband" ,rubberband)
-       ("libarchive" ,libarchive)
        ("taglib" ,taglib)
-       ("python-rdflib" ,python-rdflib)))
+       ("vamp" ,vamp)))
     (native-inputs
-     `(("perl" ,perl)
-       ("cppunit" ,cppunit)
-       ("itstool" ,itstool)
+     `(("cppunit" ,cppunit)
        ("gettext" ,gettext-minimal)
+       ("itstool" ,itstool)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (home-page "http://ardour.org")
     (synopsis "Digital audio workstation")
@@ -737,7 +763,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.11.0")
+    (version "6.12.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -746,7 +772,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hlkrnv3gghx4v382nl6v6k2k1dzm5ddk35m5g3q6pzc959726s7"))))
+                "0pv4s54cayvavdp6y30n3r1l5x83x9whyyd2v24y0dh224v3hbxi"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1128,7 +1154,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1137,7 +1163,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "02vs5sfsyh1dl7wlcvgs4w3x0qcmsl7vi000qgp99ynwh3wjb274"))))
+                "00f6bhw4ddrinb5flvg5y53rcvnf4km23a6nbvnswmpq13568v78"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1779,11 +1805,7 @@ implementation of the Open Sound Control (@dfn{OSC}) protocol.")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append
-         "https://pypi.python.org/packages/ab/42/"
-         "b4f04721c5c5bfc196ce156b3c768998ef8c0ae3654ed29ea5020c749a6b"
-         "/PyAudio-" version ".tar.gz"))
+       (uri (pypi-uri "PyAudio" version))
        (sha256
         (base32
          "0x7vdsigm7xgvyg3shd3lj113m8zqj2pxmrgdyj66kmnw0qdxgwk"))))
@@ -2130,7 +2152,11 @@ and ALSA.")
                 "1rzzqa39a6llr52vjkjr0a86nc776kmr5xs52qqga8ms9697psz5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f))                    ; no check target
+     '(#:tests? #f ;; no check target
+       ;; Disable xunique to prevent X hanging when starting qjackctl in
+       ;; tiling window managers such as StumpWM or i3
+       ;; (see https://github.com/rncbc/qjackctl/issues/13).
+       #:configure-flags '("--disable-xunique")))
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)
@@ -2183,7 +2209,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.0")
+    (version "3.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2192,7 +2218,7 @@ background file post-processing.")
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
               (sha256
                (base32
-                "16j9psa32czx1p1y2vvq0qf2ib0ngrfc604vx35n2b4llyika84v"))))
+                "1yszs9j3sjk8hb8xxz30z3nd4j899ymb9mw9y1v26ikd603d1iig"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"

@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -126,7 +126,7 @@ Xfce Desktop Environment.")
                      (string-append %output "/share"))
              ;; For the missing '/etc/machine-id'.
              (setenv "DBUS_FATAL_WARNINGS" "0");
-             (zero? (system* "dbus-launch" "make" "check"))))
+             (invoke "dbus-launch" "make" "check")))
          (delete 'check))))
     (native-inputs
      `(("pkg-config" ,pkg-config)

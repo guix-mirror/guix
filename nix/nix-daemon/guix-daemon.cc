@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
    Copyright (C) 2006, 2010, 2012, 2014 Eelco Dolstra <e.dolstra@tudelft.nl>
 
    This file is part of GNU Guix.
@@ -480,7 +480,7 @@ main (int argc, char *argv[])
 	{
 	  std::string build_hook;
 
-	  build_hook = settings.nixLibexecDir + "/guix/offload";
+	  build_hook = settings.nixLibexecDir + "/offload";
 	  setenv ("NIX_BUILD_HOOK", build_hook.c_str (), 1);
 	}
 #else
@@ -498,23 +498,12 @@ main (int argc, char *argv[])
 	       format ("build log compression: %1%") % settings.logCompression);
 
       if (settings.useSubstitutes)
-	{
-	  string subs = getEnv ("NIX_SUBSTITUTERS", "default");
-
-	  if (subs == "default")
-	    {
-	      string subst =
-		settings.nixLibexecDir + "/guix/substitute";
-	      setenv ("NIX_SUBSTITUTERS", subst.c_str (), 1);
-	    }
-	}
+	settings.substituters.push_back (settings.nixLibexecDir
+					 + "/substitute");
       else
 	/* Clear the substituter list to make sure nothing ever gets
 	   substituted, regardless of the client's settings.  */
-	setenv ("NIX_SUBSTITUTERS", "", 1);
-
-      /* Effect the $NIX_SUBSTITUTERS change.  */
-      settings.update ();
+	settings.substituters.clear ();
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
 	fprintf (stderr, _("warning: daemon is running as root, so \

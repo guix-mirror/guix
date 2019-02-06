@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   ;; To provide gcc@5 and gcc@6, to work around <http://bugs.gnu.org/24703>.
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -58,12 +60,14 @@
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages qt)
@@ -73,6 +77,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
   #:use-module (guix build-system scons)
@@ -956,7 +961,7 @@ language bindings to VIGRA.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        ;; No tarballs are provided for >0.6.1.
@@ -967,7 +972,7 @@ language bindings to VIGRA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "09l4pq4k2acglkmwr96arn79rssl54sv7vrdrgsxqlg7v8c882zh"))))
+         "1ay0sai7f74dyk2gi975qfllmq534vnsx456npf16583mqb6ib2q"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
@@ -1570,3 +1575,54 @@ identical visual appearance.")
     (description
      "Jp2a is a small utility that converts JPEG images to ASCII.")
     (license license:gpl2)))
+
+(define-public grim
+  (package
+   (name "grim")
+   (version "1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/emersion/grim/archive/v" version
+                         ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32 "0xkk5nqyp1px0sxz4asmchznc0q39wdx1b67ql741k8aj815km0f"))))
+   (build-system meson-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("cairo" ,cairo)
+             ("libjpeg-turbo" ,libjpeg-turbo)
+             ("scdoc" ,scdoc)
+             ("wayland" ,wayland)
+             ("wayland-protocols" ,wayland-protocols)))
+   (home-page "https://github.com/emersion/grim")
+   (synopsis "Create screenshots from a Wayland compositor")
+   (description "grim can create screenshots from a Wayland compositor.")
+   ;; MIT license.
+   (license license:expat)))
+
+(define-public slurp
+  (package
+   (name "slurp")
+   (version "1.0")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/emersion/slurp.git")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "03igv8r8n772xb0y7whhs1pa298l3d94jbnknaxpwp2n4fi04syb"))))
+   (build-system meson-build-system)
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("cairo" ,cairo)
+             ("scdoc" ,scdoc)
+             ("wayland" ,wayland)
+             ("wayland-protocols" ,wayland-protocols)))
+   (home-page "https://github.com/emersion/slurp")
+   (synopsis "Select a region in a Wayland compositor")
+   (description "Slurp can select a region in a Wayland compositor and print it
+to the standard output.  It works well together with grim.")
+   ;; MIT license.
+   (license license:expat)))

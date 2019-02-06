@@ -11,7 +11,8 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -225,13 +226,32 @@ reconstruction capability.")
               (sha256
                (base32
                 "03w6ypsmwwy4d7vh6zgwpc60v541vc5ywp8bdb758hbc4yv2wa7d"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; By default 'cdda2wav --help' would print a string like
+                  ;; "Version 3.01_linux_4.19.10-gnu_x86_64_x86_64".  Change
+                  ;; it to not capture the kernel version of the build
+                  ;; machine, to allow for reproducible builds.
+                  (substitute* "cdda2wav/local.cnf.in"
+                    (("^VERSION_OS=.*")
+                     (string-append
+                      "actual_os := $(shell uname -o)\n"
+                      "actual_arch := $(shell uname -m)\n"
+                      "VERSION_OS = _$(actual_os)_$(actual_arch)\n")))
+                  #t))
               (patches (search-patches "cdrtools-3.01-mkisofs-isoinfo.patch"))))
     (build-system gnu-build-system)
     ;; XXX cdrtools bundles a modified, relicensed early version of cdparanoia.
     (inputs
      `(("linux-headers" ,linux-libre-headers)))
     (arguments
-     `(#:phases
+     `(#:make-flags
+       (list "RM=rm" "LN=ln" "SYMLINK=ln -s"
+             "CONFIG_SHELL=sh" "CCOM=gcc"
+             (string-append "INS_BASE=" (assoc-ref %outputs "out"))
+             (string-append "INS_RBASE=" (assoc-ref %outputs "out")))
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before 'build 'set-linux-headers
@@ -246,19 +266,7 @@ reconstruction capability.")
                                   (find-files "DEFAULTS_ENG" "^Defaults\\.")
                                   (find-files "TEMPLATES" "^Defaults\\."))
                (("/opt/schily") (assoc-ref %outputs "out")))
-             #t))
-         (replace 'build
-           (lambda _
-             (zero?
-              (system* "make" "CONFIG_SHELL=sh" "CCOM=gcc" "RM=rm"))))
-         (replace 'install
-           (lambda _
-             (zero?
-              (system* "make"
-                       "RM=rm" "LN=ln" "SYMLINK=ln -s"
-                       (string-append "INS_BASE=" (assoc-ref %outputs "out"))
-                       (string-append "INS_RBASE=" (assoc-ref %outputs "out"))
-                       "install" )))))
+             #t)))
        #:tests? #f))  ; no tests
    (synopsis "Command line utilities to manipulate and burn CD/DVD/BD images")
    (description "cdrtools is a collection of command line utilities to create
@@ -343,7 +351,36 @@ or @command{xorrisofs} to create ISO 9660 images.")
      `(;; Parallel builds appear to be unsafe, see
        ;; <http://hydra.gnu.org/build/49331/nixlog/1/raw>.
        #:parallel-build? #f
-       #:tests? #f)) ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "regtest"
+               (substitute* "common.bash"
+                 (("ISODIR=/var/tmp/regtest") "ISODIR=/tmp"))
+               (for-each invoke (find-files "." "rs.*\\.bash")))
+             #t))
+         (add-after 'install 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((datadir (string-append (assoc-ref outputs "out") "/share")))
+               (substitute* "contrib/dvdisaster.desktop"
+                 (("dvdisaster48.png") "dvdisaster.png"))
+               (install-file "contrib/dvdisaster.desktop"
+                             (string-append datadir "/applications"))
+               (for-each
+                (lambda (png)
+                  (let* ((size (substring png
+                                          (string-index png char-set:digit)
+                                          (string-rindex png #\.)))
+                         (icondir (string-append datadir "/icons/"
+                                                 size "x" size "/apps")))
+                    (mkdir-p icondir)
+                    (copy-file png (string-append icondir "/dvdisaster.png"))))
+                (find-files "contrib" "dvdisaster[0-9]*\\.png"))
+               (mkdir-p (string-append datadir "/pixmaps"))
+               (copy-file "contrib/dvdisaster48.xpm"
+                          (string-append datadir "/pixmaps/dvdisaster.xpm"))
+               #t))))))
     (home-page "http://dvdisaster.net/en/index.html")
     (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
@@ -558,7 +595,8 @@ from an audio CD.")
 
                (for-each wrap
                          (find-files (string-append out "/bin")
-                                     ".*"))))))
+                                     ".*")))
+             #t)))
        #:tests? #f)) ; no test target
 
     (inputs `(("wget" ,wget)

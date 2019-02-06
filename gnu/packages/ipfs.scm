@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,58 +102,55 @@ that are shared between @command{go-ipfs/commands} and its rewrite
       (license license:expat))))
 
 (define-public gx
-  (let ((commit
-          "89338e509426d2895f20086685cf4c77d64cc5df")
-        (revision "0"))
-    (package
-      (name "gx")
-      (version (git-version "0.14.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/whyrusleeping/gx.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "08gh04jln8rxpq0j4fm4chjap162wp8cjwj9szbvj9c7123s42rd"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/whyrusleeping/gx"))
-      (native-inputs
-       `(("go-github-com-blang-semver" ,go-github-com-blang-semver)
-         ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
-         ("go-github-com-ipfs-go-ipfs-api" ,go-github-com-ipfs-go-ipfs-api)
-         ("go-github-com-ipfs-go-ipfs-cmdkit-files" ,go-github-com-ipfs-go-ipfs-cmdkit-files)
-         ("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
-         ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
-         ("go-github-com-libp2p-go-libp2p-metrics" ,go-github-com-libp2p-go-libp2p-metrics)
-         ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
-         ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
-         ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
-         ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
-         ("go-github-com-mitchellh-go-homedir" ,go-github-com-mitchellh-go-homedir)
-         ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
-         ("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
-         ("go-github-com-multiformats-go-multiaddr-net" ,go-github-com-multiformats-go-multiaddr-net)
-         ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
-         ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-github-com-whyrusleeping-tar-utils" ,go-github-com-whyrusleeping-tar-utils)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))
-         ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
-         ("go-github-com-sabhiram-go-gitignore" ,go-github-com-sabhiram-go-gitignore)
-         ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
-         ("go-github-com-whyrusleeping-json-filter" ,go-github-com-whyrusleeping-json-filter)
-         ("go-github-com-whyrusleeping-progmeter" ,go-github-com-whyrusleeping-progmeter)
-         ("go-github-com-whyrusleeping-stump" ,go-github-com-whyrusleeping-stump)))
-      (home-page "https://github.com/whyrusleeping/gx")
-      (synopsis "Package management tool using IPFS")
-      (description "@command{gx} is a packaging tool built around the
+  (package
+    (name "gx")
+    (version "0.14.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/whyrusleeping/gx.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pfx2p59xdbmqzfbgaf8xvlnzh8m05hkg596glq5kvl8ib65i4ha"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/whyrusleeping/gx"))
+    (native-inputs
+     `(("go-github-com-blang-semver" ,go-github-com-blang-semver)
+       ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
+       ("go-github-com-ipfs-go-ipfs-api" ,go-github-com-ipfs-go-ipfs-api)
+       ("go-github-com-ipfs-go-ipfs-cmdkit-files" ,go-github-com-ipfs-go-ipfs-cmdkit-files)
+       ("go-github-com-libp2p-go-flow-metrics" ,go-github-com-libp2p-go-flow-metrics)
+       ("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
+       ("go-github-com-libp2p-go-libp2p-metrics" ,go-github-com-libp2p-go-libp2p-metrics)
+       ("go-github-com-libp2p-go-libp2p-peer" ,go-github-com-libp2p-go-libp2p-peer)
+       ("go-github-com-libp2p-go-libp2p-protocol" ,go-github-com-libp2p-go-libp2p-protocol)
+       ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
+       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+       ("go-github-com-mitchellh-go-homedir" ,go-github-com-mitchellh-go-homedir)
+       ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
+       ("go-github-com-multiformats-go-multiaddr" ,go-github-com-multiformats-go-multiaddr)
+       ("go-github-com-multiformats-go-multiaddr-net" ,go-github-com-multiformats-go-multiaddr-net)
+       ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
+       ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+       ("go-github-com-whyrusleeping-tar-utils" ,go-github-com-whyrusleeping-tar-utils)
+       ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))
+       ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
+       ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+       ("go-github-com-sabhiram-go-gitignore" ,go-github-com-sabhiram-go-gitignore)
+       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
+       ("go-github-com-whyrusleeping-json-filter" ,go-github-com-whyrusleeping-json-filter)
+       ("go-github-com-whyrusleeping-progmeter" ,go-github-com-whyrusleeping-progmeter)
+       ("go-github-com-whyrusleeping-stump" ,go-github-com-whyrusleeping-stump)))
+    (home-page "https://github.com/whyrusleeping/gx")
+    (synopsis "Package management tool using IPFS")
+    (description "@command{gx} is a packaging tool built around the
 distributed, content addressed filesystem IPFS.  It aims to be flexible,
 powerful and simple.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-whyrusleeping-gx-util
   (package

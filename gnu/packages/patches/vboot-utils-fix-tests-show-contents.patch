@@ -1,0 +1,142 @@
+This patch was copied from Debian.
+
+Description: Fix tests/futility/test_show_contents.sh
+ Tests compare generated files containing the file path and upstream files
+ ("expected output") containing path like
+ "/mnt/host/source/src/platform/vboot_reference/tests/".  They can't
+ match. Drop these lines mentioning paths in the generated files and in
+ the upstream provided files to avoid failures.
+Author: Sophie Brun <sophie@freexian.com>
+Last-Update: 2017-11-14
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/tests/futility/expect_output/show.tests_devkeys_kernel.keyblock
++++ b/tests/futility/expect_output/show.tests_devkeys_kernel.keyblock
+@@ -1,4 +1,3 @@
+-Key block:               /mnt/host/source/src/platform/vboot_reference/tests/devkeys/kernel.keyblock
+   Signature:             ignored
+   Size:                  0x4b8
+   Flags:                 7  !DEV DEV !REC
+--- a/tests/futility/expect_output/show.tests_devkeys_root_key.vbprivk
++++ b/tests/futility/expect_output/show.tests_devkeys_root_key.vbprivk
+@@ -1,4 +1,3 @@
+-Private Key file:      /mnt/host/source/src/platform/vboot_reference/tests/devkeys/root_key.vbprivk
+   Vboot API:           1.0
+   Algorithm:           11 RSA8192 SHA512
+   Key sha1sum:         b11d74edd286c144e1135b49e7f0bc20cf041f10
+--- a/tests/futility/expect_output/show.tests_devkeys_root_key.vbpubk
++++ b/tests/futility/expect_output/show.tests_devkeys_root_key.vbpubk
+@@ -1,4 +1,3 @@
+-Public Key file:       /mnt/host/source/src/platform/vboot_reference/tests/devkeys/root_key.vbpubk
+   Vboot API:           1.0
+   Algorithm:           11 RSA8192 SHA512
+   Key Version:         1
+--- a/tests/futility/expect_output/show.tests_futility_data_bios_mario_mp.bin
++++ b/tests/futility/expect_output/show.tests_futility_data_bios_mario_mp.bin
+@@ -1,4 +1,3 @@
+-BIOS:                    /mnt/host/source/src/platform/vboot_reference/tests/futility/data/bios_mario_mp.bin
+ GBB header:              GBB Area
+   Version:               1.0
+   Flags:                 0x00000000
+--- a/tests/futility/expect_output/show.tests_futility_data_bios_zgb_mp.bin
++++ b/tests/futility/expect_output/show.tests_futility_data_bios_zgb_mp.bin
+@@ -1,4 +1,3 @@
+-BIOS:                    /mnt/host/source/src/platform/vboot_reference/tests/futility/data/bios_zgb_mp.bin
+ GBB header:              GBB
+   Version:               1.0
+   Flags:                 0x00000000
+--- a/tests/futility/expect_output/show.tests_futility_data_fw_gbb.bin
++++ b/tests/futility/expect_output/show.tests_futility_data_fw_gbb.bin
+@@ -1,4 +1,3 @@
+-GBB header:              /mnt/host/source/src/platform/vboot_reference/tests/futility/data/fw_gbb.bin
+   Version:               1.1
+   Flags:                 0x00000039
+   Regions:                 offset       size
+--- a/tests/futility/expect_output/show.tests_futility_data_fw_vblock.bin
++++ b/tests/futility/expect_output/show.tests_futility_data_fw_vblock.bin
+@@ -1,4 +1,3 @@
+-Key block:               /mnt/host/source/src/platform/vboot_reference/tests/futility/data/fw_vblock.bin
+   Signature:             ignored
+   Size:                  0x8b8
+   Flags:                 7  !DEV DEV !REC
+--- a/tests/futility/expect_output/show.tests_futility_data_kern_preamble.bin
++++ b/tests/futility/expect_output/show.tests_futility_data_kern_preamble.bin
+@@ -1,4 +1,3 @@
+-Kernel partition:        /mnt/host/source/src/platform/vboot_reference/tests/futility/data/kern_preamble.bin
+ Key block:
+   Signature:             ignored
+   Size:                  0x5b8
+--- a/tests/futility/expect_output/show.tests_futility_data_sample.vbprik2
++++ b/tests/futility/expect_output/show.tests_futility_data_sample.vbprik2
+@@ -1,4 +1,3 @@
+-Private key file:      /mnt/host/source/src/platform/vboot_reference/tests/futility/data/sample.vbprik2
+   Vboot API:           2.1
+   Desc:                "sample vb21 keypair"
+   Signature Algorithm: 5 RSA8192
+--- a/tests/futility/expect_output/show.tests_futility_data_sample.vbpubk2
++++ b/tests/futility/expect_output/show.tests_futility_data_sample.vbpubk2
+@@ -1,4 +1,3 @@
+-Public Key file:       /mnt/host/source/src/platform/vboot_reference/tests/futility/data/sample.vbpubk2
+   Vboot API:           2.1
+   Desc:                "sample vb21 keypair"
+   Signature Algorithm: 5 RSA8192
+--- a/tests/futility/expect_output/show.tests_testkeys_key_rsa2048.pem
++++ b/tests/futility/expect_output/show.tests_testkeys_key_rsa2048.pem
+@@ -1,3 +1,2 @@
+-Private Key file:      /mnt/host/source/src/platform/vboot_reference/tests/testkeys/key_rsa2048.pem
+   Key length:          2048
+   Key sha1sum:         bfb2fa9188a87bf766dd7c313ea6802553b646b6
+--- a/tests/futility/expect_output/show.tests_testkeys_key_rsa8192.pub.pem
++++ b/tests/futility/expect_output/show.tests_testkeys_key_rsa8192.pub.pem
+@@ -1,3 +1,2 @@
+-Public Key file:      /mnt/host/source/src/platform/vboot_reference/tests/testkeys/key_rsa8192.pub.pem
+   Key length:          8192
+   Key sha1sum:         f1afa44a1aed0d0e9ff630579df920a725e9de5e
+--- a/tests/futility/test_show_contents.sh
++++ b/tests/futility/test_show_contents.sh
+@@ -29,7 +29,7 @@ for file in $SHOW_FILES; do
+     outfile="show.${file//\//_}"
+     gotfile="${OUTDIR}/${outfile}"
+     wantfile="${SRCDIR}/tests/futility/expect_output/${outfile}"
+-    ${FUTILITY} show "${SRCDIR}/${file}" | tee "${gotfile}"
++    ${FUTILITY} show "${SRCDIR}/${file}" | grep -v "tests/" | tee "${gotfile}"
+ 
+     # Uncomment this to update the expected output
+     #cp ${gotfile} ${wantfile}
+@@ -48,7 +48,7 @@ for file in $VBUTIL_KEY_FILES; do
+     outfile="vbutil_key.${file//\//_}"
+     gotfile="${OUTDIR}/${outfile}"
+     wantfile="${SRCDIR}/tests/futility/expect_output/${outfile}"
+-    ${FUTILITY} vbutil_key --unpack "${SRCDIR}/${file}" | tee "${gotfile}"
++    ${FUTILITY} vbutil_key --unpack "${SRCDIR}/${file}" | grep -v "tests/" | tee "${gotfile}"
+ 
+     # Uncomment this to update the expected output
+     #cp ${gotfile} ${wantfile}
+@@ -64,7 +64,7 @@ gotfile="${OUTDIR}/${outfile}"
+ wantfile="${SRCDIR}/tests/futility/expect_output/${outfile}"
+ ${FUTILITY} vbutil_keyblock --unpack "${SRCDIR}/${file}" \
+     --signpubkey "${SRCDIR}/tests/devkeys/kernel_subkey.vbpubk" \
+-    | tee "${gotfile}"
++    | grep -v "tests/" | tee "${gotfile}"
+ 
+ # Uncomment this to update the expected output
+ #cp ${gotfile} ${wantfile}
+--- a/tests/futility/expect_output/vbutil_key.tests_devkeys_root_key.vbprivk
++++ b/tests/futility/expect_output/vbutil_key.tests_devkeys_root_key.vbprivk
+@@ -1,2 +1 @@
+-Private Key file:  /mnt/host/source/src/platform/vboot_reference/tests/devkeys/root_key.vbprivk
+ Algorithm:         11 RSA8192 SHA512
+--- a/tests/futility/expect_output/vbutil_keyblock.tests_devkeys_kernel.keyblock
++++ b/tests/futility/expect_output/vbutil_keyblock.tests_devkeys_kernel.keyblock
+@@ -1,4 +1,3 @@
+-Key block file:       /mnt/host/source/src/platform/vboot_reference/tests/devkeys/kernel.keyblock
+ Signature             valid
+ Flags:                7  !DEV DEV !REC
+ Data key algorithm:   4 RSA2048 SHA256
+--- a/tests/futility/expect_output/vbutil_key.tests_devkeys_root_key.vbpubk
++++ b/tests/futility/expect_output/vbutil_key.tests_devkeys_root_key.vbpubk
+@@ -1,4 +1,3 @@
+-Public Key file:   /mnt/host/source/src/platform/vboot_reference/tests/devkeys/root_key.vbpubk
+ Algorithm:         11 RSA8192 SHA512
+ Key Version:       1
+ Key sha1sum:       b11d74edd286c144e1135b49e7f0bc20cf041f10

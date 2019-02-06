@@ -8,8 +8,9 @@
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,15 +38,16 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages netpbm)
@@ -63,6 +65,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages libedit)
@@ -85,8 +88,7 @@
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                                ; no "check" target
-       #:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -102,6 +104,20 @@
              (for-each delete-file
                        (find-files "src/compiler" "^make\\."))
              (chdir "src")
+             #t))
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (substitute* '("../tests/ffi/autogen.sh"
+                            "../tests/ffi/autobuild.sh"
+                            "../tests/ffi/test-ffi.sh"
+                            "../tests/runtime/test-process.scm"
+                            "runtime/unxprm.scm")
+               (("/bin/sh") (which "sh"))
+               (("\\./autogen\\.sh")
+                (string-append (which "sh") " autogen.sh"))
+               (("\\./configure")
+                (string-append (which "sh") " configure")))
              #t))
          ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
          ;; them in HOME, so it needs to be writeable.
@@ -150,7 +166,11 @@
                (delete-file-recursively old-doc-dir)
                #t))))))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-tex-texinfo)))
+     `(;; Autoconf, Automake, and Libtool are necessary for the FFI tests.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
        ("texinfo" ,texinfo)
        ("m4" ,m4)))
     (inputs
@@ -206,17 +226,17 @@ features an integrated Emacs-like editor and a large runtime library.")
   ;; long after the initial publication: <https://bugs.gnu.org/33525>.  For
   ;; transparency, we give this "second 4.3b" release a different version
   ;; number.
-  (let ((upstream-version "4.3b"))
+  (let ((upstream-version "4.3e"))
     (package
       (name "bigloo")
-      (version "4.3b2")
+      (version "4.3e1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                     upstream-version ".tar.gz"))
                 (sha256
                  (base32
-                  "02s0wrz5b1p0yqk9x6kax1vwzil7g9cyxfvl3vmy7fzznsza9gs4"))
+                  "12k1kxyn3yilba0508xh8wkrw6279gnghzqi0bs2ayf5d2wkqdj3"))
                 ;; Remove bundled libraries.
                 (modules '((guix build utils)))
                 (snippet
@@ -302,14 +322,14 @@ and between Scheme and Java programs.")
 (define-public hop
   (package
     (name "hop")
-    (version "3.1.0-pre2")
+    (version "3.2.0-pre1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0bvq79vxcpgwydwi923cxb5w9isx2x8r3d0xndbdhacmmsw1m811"))))
+               "0jf418d0s9imv98s6qrpjxr1mdaxr37knh5qyfl5y4a9cc41mlg5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -320,8 +340,12 @@ and between Scheme and Java programs.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
+               (substitute* '("tools/Makefile"
+                              "test/hopjs/TEST.in")
+                 (("/bin/rm") (which "rm")))
                (invoke "./configure"
                        (string-append "--prefix=" out)
+                       "--hostcc=gcc"
                        (string-append "--blflags="
                                       ;; user flags completely override useful
                                       ;; default flags, so repeat them here.
@@ -349,14 +373,14 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.13.0")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://code.call-cc.org/releases/"
                                   version "/chicken-" version ".tar.gz"))
               (sha256
                (base32
-                "0hvckhi5gfny3mlva6d7y9pmx7cbwvq0r7mk11k3sdiik9hlkmdd"))))
+                "15b5yrzfa8aimzba79x7v6y282f898rxqxfxrr446sjx9jwlpfd8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -533,7 +557,7 @@ of libraries.")
 (define-public gambit-c
   (package
     (name "gambit-c")
-    (version "4.9.0")
+    (version "4.9.2")
     (source
      (origin
        (method url-fetch)
@@ -543,14 +567,14 @@ of libraries.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "19862w9ij0g5xrkskl4g89xbs17gp9cc6cfcdca6dlfkb3lk6xhp"))))
+        (base32 "1cpganh3jgjdw6qsapcbwxdbp1xwgx5gvdl4ymwf8p2c5k018dwy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        ;; According to the ./configure script, this makes the build slower and
        ;; use >= 1 GB memory, but makes Gambit much faster.
        '("--enable-single-host")))
-    (home-page "http://gambitscheme.org")
+    (home-page "http://dynamo.iro.umontreal.ca/wiki/index.php/Main_Page")
     (synopsis "Efficient Scheme interpreter and compiler")
     (description
      "Gambit consists of two main programs: gsi, the Gambit Scheme
@@ -1123,6 +1147,7 @@ generation.")
          #:test-target "test"
          #:phases
          (modify-phases %standard-phases
+           (delete 'bootstrap)
            (delete 'configure) ; No configure script
            (replace 'install ; Makefile has no 'install phase
             (lambda* (#:key outputs #:allow-other-keys)
@@ -1136,9 +1161,9 @@ generation.")
              (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (bin (string-append out "/bin")))
-                (and
-                 (zero? (system* "./bootstrap.sh"))
-                 (install-file "flisp.boot" bin))))))))
+                (invoke "./bootstrap.sh")
+                (install-file "flisp.boot" bin)
+                #t))))))
       (synopsis "Scheme-like lisp implementation")
       (description
        "@code{femtolisp} is a scheme-like lisp implementation with a
@@ -1146,3 +1171,77 @@ simple, elegant Scheme dialect.  It is a lisp-1 with lexical scope.
 The core is 12 builtin special forms and 33 builtin functions.")
       (home-page "https://github.com/JeffBezanson/femtolisp")
       (license bsd-3))))
+
+(define-public gauche
+  (package
+    (name "gauche")
+    (version "0.9.7")
+    (home-page "http://practical-scheme.net/gauche/index.html")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/gauche/Gauche/Gauche-"
+             version ".tgz"))
+       (sha256
+        (base32
+         "181nycikma0rwrb1h6mi3kys11f8628pq8g5r3fg5hiz5sabscrd"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Remove libatomic-ops
+                   (delete-file-recursively "gc/libatomic_ops")
+                   #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libatomic-ops" ,libatomic-ops)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("openssl" ,openssl) ; needed for tests
+       ("pkg-config" ,pkg-config))) ; needed to find external libatomic-ops
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           ;; needed only for tests
+           (lambda _
+             (substitute* '("configure"
+                            "test/www.scm"
+                            "ext/tls/test.scm"
+                            "gc/configure"
+                            "lib/gauche/configure.scm"
+                            "lib/gauche/package/util.scm"
+                            "lib/gauche/process.scm")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'build 'build-doc
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "make" "info"))
+             #t))
+         (add-before 'check 'patch-normalize-test
+           ;; neutralize sys-normalize-pathname test as it relies on
+           ;; the home directory; (setenv "HOME" xx) isn't enough)
+           (lambda _
+             (substitute* "test/system.scm"
+               (("~/abc") "//abc"))
+             #t))
+         (add-before 'check 'patch-network-tests
+           ;; remove net checks
+           (lambda _
+             (substitute* "ext/Makefile"
+               (("binary net termios") "binary termios"))
+             #t))
+         (add-after 'install 'install-docs
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "make" "install"))
+             #t)))))
+    (synopsis "Scheme scripting engine")
+    (description "Gauche is a R7RS Scheme scripting engine aiming at being a
+handy tool that helps programmers and system administrators to write small to
+large scripts quickly.  Quick startup, built-in system interface, native
+multilingual support are some of the goals.  Gauche comes with a package
+manager/installer @code{gauche-package} which can download, compile, install
+and list gauche extension packages.")
+    (license bsd-3)))

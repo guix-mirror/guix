@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -133,6 +133,7 @@
             bag-transitive-host-inputs
             bag-transitive-build-inputs
             bag-transitive-target-inputs
+            package-closure
 
             default-guile
             default-guile-derivation
@@ -798,6 +799,28 @@ dependencies are known to build on SYSTEM."
   "Return the \"target inputs\" of BAG, recursively."
   (transitive-inputs (bag-target-inputs bag)))
 
+(define* (package-closure packages #:key (system (%current-system)))
+  "Return the closure of PACKAGES on SYSTEM--i.e., PACKAGES and the list of
+packages they depend on, recursively."
+  (let loop ((packages packages)
+             (visited  vlist-null)
+             (closure  (list->setq packages)))
+    (match packages
+      (()
+       (set->list closure))
+      ((package . rest)
+       (if (vhash-assq package visited)
+           (loop rest visited closure)
+           (let* ((bag          (package->bag package system))
+                  (dependencies (filter-map (match-lambda
+                                              ((label (? package? package) . _)
+                                               package)
+                                              (_ #f))
+                                            (bag-direct-inputs bag))))
+             (loop (append dependencies rest)
+                   (vhash-consq package #t visited)
+                   (fold set-insert closure dependencies))))))))
+
 (define* (package-mapping proc #:optional (cut? (const #f)))
   "Return a procedure that, given a package, applies PROC to all the packages
 depended on and returns the resulting package.  The procedure stops recursion
@@ -832,19 +855,27 @@ when CUT? returns true for a given package."
                                   #:optional (rewrite-name identity))
   "Return a procedure that, when passed a package, replaces its direct and
 indirect dependencies (but not its implicit inputs) according to REPLACEMENTS.
-REPLACEMENTS is a list of package pairs; the first element of each pair is the
-package to replace, and the second one is the replacement.
+REPLACEMENTS is a list of package pairs or a promise thereof; the first
+element of each pair is the package to replace, and the second one is the
+replacement.
 
 Optionally, REWRITE-NAME is a one-argument procedure that takes the name of a
 package and returns its new name after rewrite."
   (define (rewrite p)
-    (match (assq-ref replacements p)
+    (match (assq-ref (if (promise? replacements)
+                         (force replacements)
+                         replacements)
+                     p)
       (#f  (package
              (inherit p)
              (name (rewrite-name (package-name p)))))
       (new new)))
 
-  (package-mapping rewrite (cut assq <> replacements)))
+  (package-mapping rewrite
+                   (lambda (package)
+                     (assq package (if (promise? replacements)
+                                       (force replacements)
+                                       replacements)))))
 
 (define-syntax-rule (package/inherit p overrides ...)
   "Like (package (inherit P) OVERRIDES ...), except that the same

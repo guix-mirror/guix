@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,7 +71,6 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -114,11 +114,13 @@
   #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
@@ -2045,7 +2047,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.9")
+    (version "1.5.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2053,7 +2055,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nqwxwq6814m860zrh33r85vdyi2bgkvjg5372h3ngcdmxnb7wr0"))))
+                "0mazzn5pc4xnjci3yy1yfsx9l05gkxqzkmscaq1h75jpa7qfsial"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -2576,6 +2578,28 @@ MusicBrainz database.")
 (define-public python2-musicbrainzngs
   (package-with-python2 python-musicbrainzngs))
 
+(define-public python-isrcsubmit
+  (package
+    (name "python-isrcsubmit")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "isrcsubmit" version))
+       (sha256
+        (base32
+         "0jh4cni8qhri6dh83cmp0i0m0384vv0vznlygv49wj9xzh1d99qv"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-discid" ,python-discid)
+       ("python-musicbrainzngs" ,python-musicbrainzngs)))
+    (home-page "https://github.com/JonnyJD/musicbrainz-isrcsubmit")
+    (synopsis "Submit ISRCs from CDs to MusicBrainz")
+    (description "@code{isrcsubmit} is a tool to extract @dfn{International
+Standard Recording Code} (ISRCs) from audio CDs and submit them to
+@url{https://musicbrainz.org/, MusicBrainz}.")
+    (license license:gpl3+)))
+
 (define-public python2-pyechonest
   (package
     (name "python2-pyechonest")
@@ -2769,9 +2793,12 @@ of tools for manipulating and accessing your music.")
        #:configure-flags '("-DCMAKE_CXX_FLAGS=-ljack")))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("lhasa" ,lhasa)
        ("jack" ,jack-1)
+       ("rtmidi" ,rtmidi)
        ("sdl" ,sdl2)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zziplib" ,zziplib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (synopsis "Music tracker for working with .MOD/.XM module files")
@@ -2786,7 +2813,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20180810")
+    (version "20181223")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2795,7 +2822,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cwp5fna14hjrlf652l96ja5cjq63is3cwg6pp4wbpx43mb7qb2d"))
+                "18k5j10zq39y2q294avdmar87x93k57wqmq8bpz562hdqki2mz1l"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -3610,7 +3637,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "2.3.2")
+    (version "3.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3619,7 +3646,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ncv0xfmq87plqa43cm0fpidlwzz1nq5s7h7139llrbc36yp3pr1"))
+                "085qwfv3fsgry1pnx531w83lnyvf7kbaklipdf8zqa9shi6d3x9i"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3634,27 +3661,21 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
                               "thirdparty/openssl"
                               "thirdparty/portmidi"))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
-         "USE_SYSTEM_FREETYPE=ON"
-         "DOWNLOAD_SOUNDFONT=OFF"
-         ;; The following is not supported since Qt 5.11.  May be removed in
-         ;; a future release.
-         "BUILD_WEBKIT=OFF")
-       ;; There are tests, but no simple target to run.  The command
-       ;; used to run them is:
+     `(#:configure-flags
+       `("-DUSE_SYSTEM_FREETYPE=ON"
+         "-DBUILD_WEBENGINE=OFF"
+         "-DDOWNLOAD_SOUNDFONT=OFF")
+       ;; There are tests, but no simple target to run.  The command used to
+       ;; run them is:
        ;;
        ;;   make debug && sudo make installdebug && cd \
        ;;   build.debug/mtest && make && ctest
        ;;
        ;; Basically, it requires to start a whole new build process.
        ;; So we simply skip them.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+       #:tests? #f))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("freetype" ,freetype)
@@ -3673,8 +3694,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        ("qtsvg" ,qtsvg)
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (native-inputs
-     `(("cmake" ,cmake)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (synopsis "Music composition and notation software")
     (description "MuseScore is a music score typesetter.  Its main purpose is
@@ -4079,6 +4099,42 @@ an identifier which can be used to lookup the CD at MusicBrainz.  Additionally,
 it provides a submission URL for adding the disc ID to the database and gathers
 ISRCs and the MCN (=UPC/EAN) from disc.")
     (license license:lgpl2.1+)))
+
+(define-public python-discid
+  (package
+    (name "python-discid")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "discid" version))
+       (sha256
+        (base32
+         "1fgp67nhqlbvhhwrcxq5avil7alpzw4s4579hlyvxzbphdnbz8vq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libdiscid" ,libdiscid)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-libdiscid
+           ;; Set path of libdiscid
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((discid (assoc-ref inputs "libdiscid")))
+               (substitute* "discid/libdiscid.py"
+                 (("lib_name = (.*)$" all name)
+                  (string-append "lib_name = \"" discid
+                                 "/lib/libdiscid.so.0\"\n")))
+               #t))))))
+    (home-page "https://python-discid.readthedocs.io/")
+    (synopsis "Python bindings for Libdiscid")
+    (description
+     "This package provides Python bindings for the Libdiscid library.  The
+main purpose is the calculation of @url{https://musicbrainz.org/doc/Disc%20ID,
+Disc IDs} for use with the MusicBrainz database.  Additionally the disc
+@dfn{Media Catalog Number} (MCN) and track @dfn{International Standard
+Recording Code} (ISRC) can be extracted.}")
+    (license license:lgpl3+)))
 
 (define-public libmusicbrainz
   (package

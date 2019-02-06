@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
@@ -399,6 +399,10 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  #t)))))))
     (native-inputs
      `(("go" ,go-1.4)
+       ,@(match (%current-system)
+           ((or "armhf-linux" "aarch64-linux")
+            `(("gold" ,binutils-gold)))
+           (_ `()))
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
@@ -406,7 +410,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.9)
     (name "go")
-    (version "1.11.4")
+    (version "1.11.5")
     (source
      (origin
        (method url-fetch)
@@ -414,11 +418,23 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "05fvp8dq0yffsrvdyii4wgl756dn0xkgm5a80al7j7kb19r45zac"))))
+         "0gllmbjvp12iszwils8id78mvjxwviwf98lh2gdkb236n4mz07mw"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.9)
        ((#:phases phases)
         `(modify-phases ,phases
+           ;; XXX Work around the Go 1.11.5 tarbomb.
+           ;; <https://github.com/golang/go/issues/29906>
+           (add-after 'unpack 'tarbomb-workaround
+             (lambda _
+               (chdir "..")
+               (delete-file-recursively "gocache")
+               (delete-file-recursively "tmp")
+               #t))
+           (replace 'chdir
+             (lambda _
+               (chdir "go/src")
+               #t))
            (replace 'prebuild
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
@@ -2718,7 +2734,7 @@ needing to use secp256k1 elliptic curve cryptography.")
 
 (define-public go-github-com-minio-sha256-simd
   (let ((commit "51976451ce1942acbb55707a983ed232fa027110")
-        (revision "0"))
+        (revision "2"))
     (package
       (name "go-github-com-minio-sha256-simd")
       (version (git-version "0.0.0" revision commit))
@@ -3353,3 +3369,28 @@ have super fancy logs.")
       (synopsis "Filesystem-related functions for Go")
       (description "Package fs provides filesystem-related functions.")
       (license license:bsd-3))))
+
+(define-public go-github-com-direnv-go-dotenv
+  (let ((commit "4cce6d1a66f7bc8dc730eab85cab6af1b801abed")
+        (revision "0"))
+    (package
+      (name "go-github-com-direnv-go-dotenv")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/direnv/go-dotenv")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "00wn4fc2lma0csf6ryvlc6k9jbpbifm4n7i3kkd2xrfw5qlm29b6"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/direnv/go-dotenv"))
+      (home-page "https://github.com/direnv/go-dotenv")
+      (synopsis "Go dotenv parsing library")
+      (description "This package provides a library for parsing the dotenv
+format in Go.")
+      (license license:expat))))

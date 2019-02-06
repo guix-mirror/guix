@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,17 +34,19 @@
   #:use-module (guix channels)
   #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
+  #:autoload   (guix build utils) (which)
   #:use-module (guix git)
   #:use-module (git)
   #:use-module (gnu packages)
   #:use-module ((guix scripts package) #:select (build-and-use-profile))
-  #:use-module (gnu packages base)
+  #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
                 #:select (%bootstrap-guile))
   #:use-module ((gnu packages certs) #:select (le-certs))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
@@ -66,7 +68,8 @@
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (graft? . #t)
-    (verbosity . 0)))
+    (debug . 0)
+    (verbosity . 1)))
 
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
@@ -88,6 +91,10 @@ Download and deploy the latest version of Guix.\n"))
   -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
   (display (G_ "
   -n, --dry-run          show what would be pulled and built"))
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
+  (display (G_ "
+  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
@@ -120,15 +127,23 @@ Download and deploy the latest version of Guix.\n"))
                    (alist-cons 'ref `(commit . ,arg) result)))
          (option '("branch") #t #f
                  (lambda (opt name arg result)
-                   (alist-cons 'ref `(branch . ,(string-append "origin/" arg))
-                               result)))
+                   (alist-cons 'ref `(branch . ,arg) result)))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'profile (canonicalize-profile arg)
                                result)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
@@ -175,9 +190,21 @@ true, display what would be built without actually building it."
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
       (update-profile profile manifest
+                      #:hooks %channel-profile-hooks
                       #:dry-run? dry-run?)
       (munless dry-run?
-        (return (display-profile-news profile))))))
+        (return (display-profile-news profile))
+        (match (which "guix")
+          (#f (return #f))
+          (str
+           (let ((new (map (cut string-append <> "/bin/guix")
+                           (list (user-friendly-profile profile)
+                                 profile))))
+             (unless (member str new)
+               (display-hint (format #f (G_ "After setting @code{PATH}, run
+@command{hash guix} to make sure your shell refers to @file{~a}.")
+                                     (first new))))
+             (return #f))))))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -504,8 +531,9 @@ Use '~/.config/guix/channels.scm' instead."))
               (process-query opts profile))
              (else
               (with-store store
-                (with-status-report print-build-event
-                  (parameterize ((%graft? (assoc-ref opts 'graft?))
+                (with-status-verbosity (assoc-ref opts 'verbosity)
+                  (parameterize ((%current-system (assoc-ref opts 'system))
+                                 (%graft? (assoc-ref opts 'graft?))
                                  (%repository-cache-directory cache))
                     (set-build-options-from-command-line store opts)
                     (honor-x509-certificates store)

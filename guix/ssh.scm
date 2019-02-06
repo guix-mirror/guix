@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,7 @@
 
 (define-module (guix ssh)
   #:use-module (guix store)
+  #:use-module (guix inferior)
   #:use-module (guix i18n)
   #:use-module ((guix utils) #:select (&fix-hint))
   #:use-module (ssh session)
@@ -26,8 +27,6 @@
   #:use-module (ssh channel)
   #:use-module (ssh popen)
   #:use-module (ssh session)
-  #:use-module (ssh dist)
-  #:use-module (ssh dist node)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -36,6 +35,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 binary-ports)
   #:export (open-ssh-session
+            remote-inferior
             remote-daemon-channel
             connect-to-remote-daemon
             send-files
@@ -94,6 +94,26 @@ Throw an error on failure."
                 (message (format #f (G_ "SSH connection to '~a' failed: ~a~%")
                                  host (get-error session))))))))))
 
+(define (remote-inferior session)
+  "Return a remote inferior for the given SESSION."
+  (let ((pipe (open-remote-pipe* session OPEN_BOTH
+                                 "guix" "repl" "-t" "machine")))
+    (port->inferior pipe)))
+
+(define (inferior-remote-eval exp session)
+  "Evaluate EXP in a new inferior running in SESSION, and close the inferior
+right away."
+  (let ((inferior (remote-inferior session)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (inferior-eval exp inferior))
+      (lambda ()
+        ;; Close INFERIOR right away to prevent finalization from happening in
+        ;; another thread at the wrong time (see
+        ;; <https://bugs.gnu.org/26976>.)
+        (close-inferior inferior)))))
+
 (define* (remote-daemon-channel session
                                 #:optional
                                 (socket-name
@@ -120,12 +140,12 @@ Throw an error on failure."
                         (match (select read write except)
                           ((read write except)
                            (select read write except 0))))))
-         (setvbuf stdout _IONBF)
+         (setvbuf stdout 'none)
 
          ;; Use buffered ports so that 'get-bytevector-some' returns up to the
          ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
-         (setvbuf stdin _IOFBF 65536)
-         (setvbuf sock _IOFBF 65536)
+         (setvbuf stdin 'block 65536)
+         (setvbuf sock 'block 65536)
 
          (connect sock AF_UNIX ,socket-name)
 
@@ -160,7 +180,7 @@ Throw an error on failure."
                                    (socket-name
                                     "/var/guix/daemon-socket/socket"))
   "Connect to the remote build daemon listening on SOCKET-NAME over SESSION,
-an SSH session.  Return a <nix-server> object."
+an SSH session.  Return a <store-connection> object."
   (open-connection #:port (remote-daemon-channel session socket-name)))
 
 
@@ -198,7 +218,7 @@ can be written."
                        (consume-input (current-input-port))
                        (list 'protocol-error (nix-protocol-error-message c))))
               (with-store store
-                (setvbuf (current-input-port) _IONBF)
+                (setvbuf (current-input-port) 'none)
                 (import-paths store (current-input-port))
                 '(success))))
           (lambda args
@@ -249,7 +269,7 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
              (write '(exporting))                 ;we're ready
              (force-output)
 
-             (setvbuf (current-output-port) _IONBF)
+             (setvbuf (current-output-port) 'none)
              (export-paths store files (current-output-port)
                            #:recursive? ,recursive?))))))
 
@@ -268,16 +288,16 @@ REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES.
 Return the list of store items actually sent."
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
-         (session (channel-get-session (nix-server-socket remote)))
-         (node    (make-node session))
-         (missing (node-eval node
-                             `(begin
-                                (use-modules (guix)
-                                             (srfi srfi-1) (srfi srfi-26))
+         (session (channel-get-session (store-connection-socket remote)))
+         (missing (inferior-remote-eval
+                   `(begin
+                      (use-modules (guix)
+                                   (srfi srfi-1) (srfi srfi-26))
 
-                                (with-store store
-                                  (remove (cut valid-path? store <>)
-                                          ',files)))))
+                      (with-store store
+                        (remove (cut valid-path? store <>)
+                                ',files)))
+                   session))
          (count   (length missing))
          (sizes   (map (lambda (item)
                          (path-info-nar-size (query-path-info local item)))
@@ -308,24 +328,24 @@ Return the list of store items actually sent."
          missing)
         (('protocol-error message)
          (raise (condition
-                 (&nix-protocol-error (message message) (status 42)))))
+                 (&store-protocol-error (message message) (status 42)))))
         (('error key args ...)
          (raise (condition
-                 (&nix-protocol-error
+                 (&store-protocol-error
                   (message (call-with-output-string
                              (lambda (port)
                                (print-exception port #f key args))))
                   (status 43)))))
         (_
          (raise (condition
-                 (&nix-protocol-error
+                 (&store-protocol-error
                   (message "unknown error while sending files over SSH")
                   (status 44)))))))))
 
 (define (remote-store-session remote)
   "Return the SSH channel beneath REMOTE, a remote store as returned by
 'connect-to-remote-daemon', or #f."
-  (channel-get-session (nix-server-socket remote)))
+  (channel-get-session (store-connection-socket remote)))
 
 (define (remote-store-host remote)
   "Return the name of the host REMOTE is connected to, where REMOTE is a

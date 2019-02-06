@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,7 +21,6 @@
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module (guix utils)
-  #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
@@ -63,14 +62,13 @@ Start $VISUAL or $EDITOR to edit the definitions of PACKAGE...\n"))
              file path))
     absolute-file-name))
 
-(define (package->location-specification package)
-  "Return the location specification for PACKAGE for a typical editor command
+(define (location->location-specification location)
+  "Return the location specification for LOCATION for a typical editor command
 line."
-  (let ((loc (package-location package)))
-    (list (string-append "+"
-                         (number->string
-                          (location-line loc)))
-          (search-path* %load-path (location-file loc)))))
+  (list (string-append "+"
+                       (number->string
+                        (location-line location)))
+        (search-path* %load-path (location-file location))))
 
 
 (define (guix-edit . args)
@@ -83,18 +81,13 @@ line."
                 '()))
 
   (with-error-handling
-    (let* ((specs    (reverse (parse-arguments)))
-           (packages (map specification->package specs)))
-      (for-each (lambda (package)
-                  (unless (package-location package)
-                    (leave (G_ "source location of package '~a' is unknown~%")
-                           (package-full-name package))))
-                packages)
+    (let* ((specs     (reverse (parse-arguments)))
+           (locations (map specification->location specs)))
 
       (catch 'system-error
         (lambda ()
-          (let ((file-names (append-map package->location-specification
-                                        packages)))
+          (let ((file-names (append-map location->location-specification
+                                        locations)))
             ;; Use `system' instead of `exec' in order to sanely handle
             ;; possible command line arguments in %EDITOR.
             (exit (system (string-join (cons (%editor) file-names))))))

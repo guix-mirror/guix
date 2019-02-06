@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -73,6 +73,7 @@
             file-system-mount-flags
             statfs
             free-disk-space
+            device-in-use?
 
             processes
             mkdtemp!
@@ -684,6 +685,32 @@ mounted at FILE."
 (define AT_NO_AUTOMOUNT     #x800)
 (define AT_EMPTY_PATH       #x1000)
 
+(define-syntax BLKRRPART                         ;<sys/mount.h>
+  (identifier-syntax #x125F))
+
+(define* (device-in-use? device)
+  "Return #t if the block DEVICE is in use, #f otherwise. This is inspired
+from fdisk_device_is_used function of util-linux. This is particulary useful
+for devices that do not appear in /proc/self/mounts like overlayfs lowerdir
+backend device."
+  (let*-values (((fd)      (open-fdes device O_RDONLY))
+                ((ret err) (%ioctl fd BLKRRPART %null-pointer)))
+    (close-fdes fd)
+    (cond
+     ((= ret 0)
+      #f)
+     ((= err EBUSY)
+      #t)
+     ((= err EINVAL)
+      ;; We get EINVAL for devices that have the GENHD_FL_NO_PART_SCAN flag
+      ;; set in the kernel, in particular loopback devices, though we do seem
+      ;; to get it for SCSI storage (/dev/sr0) on QEMU.
+      #f)
+     (else
+      (throw 'system-error "ioctl" "~A"
+             (list (strerror err))
+             (list err))))))
+
 
 ;;;
 ;;; Containers.
@@ -699,39 +726,31 @@ mounted at FILE."
 (define CLONE_NEWPID         #x20000000)
 (define CLONE_NEWNET         #x40000000)
 
-(cond-expand
-  (guile-2.2
-   (define %set-automatic-finalization-enabled?!
-     ;; When using a statically-linked Guile, for instance in the initrd, we
-     ;; cannot resolve this symbol, but most of the time we don't need it
-     ;; anyway.  Thus, delay it.
-     (let ((proc (delay
-                   (pointer->procedure int
-                                       (dynamic-func
-                                        "scm_set_automatic_finalization_enabled"
-                                        (dynamic-link))
-                                       (list int)))))
-       (lambda (enabled?)
-         "Switch on or off automatic finalization in a separate thread.
+(define %set-automatic-finalization-enabled?!
+  ;; When using a statically-linked Guile, for instance in the initrd, we
+  ;; cannot resolve this symbol, but most of the time we don't need it
+  ;; anyway.  Thus, delay it.
+  (let ((proc (delay
+                (pointer->procedure int
+                                    (dynamic-func
+                                     "scm_set_automatic_finalization_enabled"
+                                     (dynamic-link))
+                                    (list int)))))
+    (lambda (enabled?)
+      "Switch on or off automatic finalization in a separate thread.
 Turning finalization off shuts down the finalization thread as a side effect."
-         (->bool ((force proc) (if enabled? 1 0))))))
+      (->bool ((force proc) (if enabled? 1 0))))))
 
-   (define-syntax-rule (without-automatic-finalization exp)
-     "Turn off automatic finalization within the dynamic extent of EXP."
-     (let ((enabled? #t))
-       (dynamic-wind
-         (lambda ()
-           (set! enabled? (%set-automatic-finalization-enabled?! #f)))
-         (lambda ()
-           exp)
-         (lambda ()
-           (%set-automatic-finalization-enabled?! enabled?))))))
-
-  (else
-   (define-syntax-rule (without-automatic-finalization exp)
-     ;; Nothing to do here: Guile 2.0 does not have a separate finalization
-     ;; thread.
-     exp)))
+(define-syntax-rule (without-automatic-finalization exp)
+  "Turn off automatic finalization within the dynamic extent of EXP."
+  (let ((enabled? #t))
+    (dynamic-wind
+      (lambda ()
+        (set! enabled? (%set-automatic-finalization-enabled?! #f)))
+      (lambda ()
+        exp)
+      (lambda ()
+        (%set-automatic-finalization-enabled?! enabled?)))))
 
 ;; The libc interface to sys_clone is not useful for Scheme programs, so the
 ;; low-level system call is wrapped instead.  The 'syscall' function is

@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -497,7 +497,7 @@ cups server to be installed.")
 (define-public noice
   (package
     (name "noice")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method url-fetch)
@@ -505,15 +505,15 @@ cups server to be installed.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0ldkbb71z6k4yzj4kpg3s94ijj1c1kx9dfcjz393py09scfyg5hr"))))
+         "03b0kzngzacfpz4n8lgbvia2s765i5bkw55v482hh4m49dm41gpc"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; No configure script
+         (delete 'configure)            ; no configure script
          (add-before 'build 'curses
            (lambda _
              (substitute* "Makefile"

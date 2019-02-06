@@ -93,14 +93,10 @@ m4_pattern_forbid([^GUIX_])
 
 dnl Search for 'guile' and 'guild'.  This macro defines
 dnl 'GUILE_EFFECTIVE_VERSION'.
-GUILE_PKG([2.2 2.0])
+GUILE_PKG([2.2])
 GUILE_PROGS
 if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
-fi
-
-if test "x$GUILE_EFFECTIVE_VERSION" = "x2.0"; then
-  PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.13])
 fi
 
 dnl Installation directories for .scm and .go files.
@@ -138,6 +134,21 @@ GUILE_MODULE_AVAILABLE([have_guile_gcrypt], [(gcrypt hash)])
 if test "x$have_guile_gcrypt" != "xyes"; then
   AC_MSG_ERROR([Guile-Gcrypt could not be found; please install it.])
 fi
+
+dnl Guile-newt is used by the graphical installer.
+GUILE_MODULE_AVAILABLE([have_guile_newt], [(newt)])
+
+AC_ARG_ENABLE([installer],
+    AS_HELP_STRING([--enable-installer], [Build the graphical installer sources.]))
+
+AS_IF([test "x$enable_installer" = "xyes"], [
+if test "x$have_guile_newt" != "xyes"; then
+  AC_MSG_ERROR([Guile-newt could not be found; please install it.])
+fi
+])
+
+AM_CONDITIONAL([ENABLE_INSTALLER],
+  [test "x$enable_installer" = "xyes"])
 
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])

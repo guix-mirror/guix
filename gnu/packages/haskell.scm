@@ -3,10 +3,10 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -14,8 +14,9 @@
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
-;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -507,6 +508,14 @@ interactive environment for the functional language Haskell.")
              (invoke "tar" "xvf"
                      (assoc-ref inputs "ghc-testsuite")
                      "--strip-components=1")
+             #t))
+         ;; This phase patches the 'ghc-pkg' command so that it sorts the list
+         ;; of packages in the binary cache it generates.
+         (add-before 'build 'fix-ghc-pkg-nondeterminism
+           (lambda _
+             (substitute* "utils/ghc-pkg/Main.hs"
+               (("confs = map \\(path </>\\) \\$ filter \\(\".conf\" `isSuffixOf`\\) fs")
+                "confs = map (path </>) $ filter (\".conf\" `isSuffixOf`) (sort fs)"))
              #t))
          (add-after 'unpack-testsuite 'fix-shell-wrappers
            (lambda _
@@ -3781,8 +3790,6 @@ writing to stdout and other handles.")
         (base32
          "1qrpxfirsxckg7jv28f5ah2qc8lh95hp7rnqkbqs1ahcwlbnvkm7"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ghc-hunit" ,ghc-hunit)))
     ;; these inputs are necessary to use this library
     (inputs
      `(("ghc-text" ,ghc-text)
@@ -11363,6 +11370,127 @@ embedded in your Haskell code.")
     (description
      "This package implements utilities to perform atomic output so as to
 avoid the problem of partial intermediate files.")
+    (license license:expat)))
+
+(define-public ghc-tldr
+  (package
+    (name "ghc-tldr")
+    (version "0.4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/tldr/tldr-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0nc581y9jjzwd8l88g48c72mla7k6q1w102akl7gl5jsk9ljamd3"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cmark" ,ghc-cmark)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-typed-process" ,ghc-typed-process)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)))
+    (home-page "https://github.com/psibi/tldr-hs#readme")
+    (synopsis "Haskell tldr client")
+    (description "This package provides the @command{tldr} command and a
+Haskell client library allowing users to update and view @code{tldr} pages
+from a shell.  The @code{tldr} pages are a community effort to simplify the
+man pages with practical examples.")
+    (license license:bsd-3)))
+
+(define-public ghc-c2hs
+  (package
+    (name "ghc-c2hs")
+    (version "0.28.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/c2hs/c2hs-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1nplgxfin139x12sb656f5870rpdclrhzi8mq8pry035qld15pci"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-language-c" ,ghc-language-c)
+       ("ghc-dlist" ,ghc-dlist)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-shelly" ,ghc-shelly)
+       ("ghc-text" ,ghc-text)
+       ("gcc" ,gcc)))
+    (arguments
+     `(;; XXX: Test failures are induced by a parse error in <bits/floatn.h>
+       ;; of glibc 2.28.
+       #:tests? #f
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-cc
+           ;; add a cc executable in the path, needed for some tests to pass
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc"))
+                   (tmpbin (tmpnam))
+                   (curpath (getenv "PATH")))
+               (mkdir-p tmpbin)
+               (symlink (which "gcc") (string-append tmpbin "/cc"))
+               (setenv "PATH" (string-append tmpbin ":" curpath)))
+             #t))
+         (add-after 'check 'remove-cc
+           ;; clean the tmp dir made in 'set-cc
+           (lambda _
+             (let* ((cc-path (which "cc"))
+                    (cc-dir (dirname cc-path)))
+               (delete-file-recursively cc-dir)
+               #t))))))
+    (home-page "https://github.com/haskell/c2hs")
+    (synopsis "Create Haskell bindings to C libraries")
+    (description "C->Haskell assists in the development of Haskell bindings to
+C libraries.  It extracts interface information from C header files and
+generates Haskell code with foreign imports and marshaling.  Unlike writing
+foreign imports by hand (or using hsc2hs), this ensures that C functions are
+imported with the correct Haskell types.")
+    (license license:gpl2)))
+
+(define-public ghc-libmpd
+  (package
+    (name "ghc-libmpd")
+    (version "0.9.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/libmpd/libmpd-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1931m23iqb4wddpdidm4ph746zpaw41kkjzmb074j7yyfpk7x1jv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-text" ,ghc-text)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-network" ,ghc-network)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/vimus/libmpd-haskell")
+    (synopsis "Haskell client library for the Music Player Daemon")
+    (description "This package provides a pure Haskell client library for the
+Music Player Daemon.")
     (license license:expat)))
 
 ;;; haskell.scm ends here

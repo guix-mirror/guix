@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,7 +42,7 @@
             %test-separate-store-os
             %test-separate-home-os
             %test-raid-root-os
-            %test-encrypted-os
+            %test-encrypted-root-os
             %test-btrfs-root-os))
 
 ;;; Commentary:
@@ -430,7 +430,6 @@ reboot\n")
                            (type "ext4"))
                          (file-system
                            (device "none")
-                           (type "tmpfs")
                            (mount-point "/home")
                            (type "tmpfs"))
                          %base-file-systems))
@@ -735,7 +734,7 @@ to enter the LUKS passphrase."
                                                "/post-initrd-passphrase.ppm")
                                 #$marionette))))))
 
-(define %test-encrypted-os
+(define %test-encrypted-root-os
   (system-test
    (name "encrypted-root-os")
    (description

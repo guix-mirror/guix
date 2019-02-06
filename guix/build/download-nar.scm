@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,8 +93,8 @@ ITEM."
   "Download and extract the normalized archive for ITEM.  Return #t on
 success, #f otherwise."
   ;; Let progress reports go through.
-  (setvbuf (current-error-port) _IONBF)
-  (setvbuf (current-output-port) _IONBF)
+  (setvbuf (current-error-port) 'none)
+  (setvbuf (current-output-port) 'none)
 
   (let loop ((urls (urls-for-item item)))
     (match urls

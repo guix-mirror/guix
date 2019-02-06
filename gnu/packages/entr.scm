@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,37 +27,39 @@
 (define-public entr
   (package
     (name "entr")
-    (version "3.6")
+    (version "4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://entrproject.org/code/entr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sy81np6kgmq04kfn2ckf4fp7jcf5d1963shgmapx3al3kc4c9x4"))))
+                "0y7gvyf0iykpf3gfw09m21hy51m6qn4cpkbrm4nnn7pwrwycj0y5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:phases (modify-phases %standard-phases
-                  (replace 'configure
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (setenv "CONFIG_SHELL" (which "bash"))
-                        (setenv "CC" (which "gcc"))
-                        (setenv "DESTDIR" (string-append out "/"))
-                        (setenv "PREFIX" "")
-                        (setenv "MANPREFIX" "man")
-                        (zero? (system* "./configure")))))
-                  (add-before 'build 'remove-fhs-file-names
-                    (lambda _
-                      ;; Use the tools available in $PATH.
-                      (substitute* "entr.c"
-                        (("/bin/cat") "cat")
-                        (("/usr/bin/clear") "clear")))))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (setenv "CC" (which "gcc"))
+               (setenv "DESTDIR" (string-append out "/"))
+               (setenv "PREFIX" "")
+               (setenv "MANPREFIX" "man")
+               (invoke "./configure"))))
+         (add-before 'build 'remove-fhs-file-names
+           (lambda _
+             ;; Use the tools available in $PATH.
+             (substitute* "entr.c"
+               (("/bin/cat") "cat")
+               (("/usr/bin/clear") "clear"))
+             #t)))))
     (home-page "http://entrproject.org/")
     (synopsis "Run arbitrary commands when files change")
     (description
-     "entr is a zero-configuration tool with no external build- or run-time
+     "entr is a zero-configuration tool with no external build or run-time
 dependencies.  The interface to entr is not only minimal, it aims to be simple
 enough to create a new category of ad hoc automation.  These micro-tests
 reduce keystrokes, but more importantly they emphasize the utility of

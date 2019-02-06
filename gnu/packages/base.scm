@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,9 +35,11 @@
                 #:select (gpl3+ lgpl2.0+ lgpl3+ public-domain))
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages ed)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages compression)
@@ -55,6 +57,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (glibc
             libiconv-if-needed))
 
@@ -479,6 +483,33 @@ the strings in a binary file, and utilities for working with archives.  The
 included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
+
+(define-public binutils-gold
+  (package
+    (inherit binutils)
+    (name "binutils-gold")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             (substitute* "gold/Makefile.in"
+               (("/bin/sh") (which "sh")))
+             #t)))
+       ,@(substitute-keyword-arguments (package-arguments binutils)
+         ; Upstream is aware of unrelocatable test failures on arm*.
+         ((#:tests? _ #f)
+          (if (any (cute string-prefix? <> (or (%current-target-system)
+                                               (%current-system)))
+                   '("i686" "x86_64"))
+              '#t '#f))
+         ((#:configure-flags flags)
+          `(cons* "--enable-gold=default"
+                 (delete "LDFLAGS=-static-libgcc" ,flags))))))
+     (native-inputs
+     `(("bc" ,bc)))
+     (inputs
+     `(("gcc:lib" ,gcc "lib")))))
 
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
@@ -943,7 +974,7 @@ with the Linux kernel.")
                   (("/bin/pwd") "pwd"))
                 #t))))))))
 
-(define-public glibc-locales
+(define-public (make-glibc-locales glibc)
   (package
     (inherit glibc)
     (name "glibc-locales")
@@ -978,7 +1009,7 @@ the 'share/locale' sub-directory of this package.")
                                         ,(version-major+minor
                                           (package-version glibc)))))))))))
 
-(define-public glibc-utf8-locales
+(define-public (make-glibc-utf8-locales glibc)
   (package
     (name "glibc-utf8-locales")
     (version (package-version glibc))
@@ -1027,6 +1058,18 @@ the 'share/locale' sub-directory of this package.")
 test environments.")
     (home-page (package-home-page glibc))
     (license (package-license glibc))))
+
+(define-public glibc-locales
+  (make-glibc-locales glibc))
+(define-public glibc-utf8-locales
+  (make-glibc-utf8-locales glibc))
+
+(define-public glibc-locales-2.27
+  (package (inherit (make-glibc-locales glibc-2.27))
+           (name "glibc-locales-2.27")))
+(define-public glibc-utf8-locales-2.27
+  (package (inherit (make-glibc-utf8-locales glibc-2.27))
+           (name "glibc-utf8-locales-2.27")))
 
 (define-public which
   (package

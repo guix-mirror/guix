@@ -1,0 +1,67 @@
+Install BipartiteMatchings headers for SuperLU_DIST.
+
+--- a/BipartiteMatchings/ApproxWeightPerfectMatching.h
++++ b/BipartiteMatchings/ApproxWeightPerfectMatching.h
+@@ -9,7 +9,7 @@
+ #ifndef ApproxWeightPerfectMatching_h
+ #define ApproxWeightPerfectMatching_h
+ 
+-#include "../CombBLAS.h"
++#include "CombBLAS.h"
+ #include "BPMaximalMatching.h"
+ #include "BPMaximumMatching.h"
+ #include <parallel/algorithm>
+--- a/BipartiteMatchings/BPMaximalMatching.h
++++ b/BipartiteMatchings/BPMaximalMatching.h
+@@ -1,7 +1,7 @@
+ #ifndef BP_MAXIMAL_MATCHING_H
+ #define BP_MAXIMAL_MATCHING_H
+ 
+-#include "../CombBLAS.h"
++#include "CombBLAS.h"
+ #include <iostream>
+ #include <functional>
+ #include <algorithm>
+--- a/BipartiteMatchings/BPMaximumMatching.h
++++ b/BipartiteMatchings/BPMaximumMatching.h
+@@ -1,7 +1,7 @@
+ #ifndef BP_MAXIMUM_MATCHING_H
+ #define BP_MAXIMUM_MATCHING_H
+ 
+-#include "../CombBLAS.h"
++#include "CombBLAS.h"
+ #include <mpi.h>
+ #include <sys/time.h>
+ #include <iostream>
+--- a/BipartiteMatchings/MatchingDefs.h
++++ b/BipartiteMatchings/MatchingDefs.h
+@@ -9,7 +9,7 @@
+ #ifndef MatchingDefs_h
+ #define MatchingDefs_h
+ 
+-#include "../CombBLAS.h"
++#include "CombBLAS.h"
+ #include <iostream>
+ 
+ namespace combblas {
+--- a/BipartiteMatchings/Utility.h
++++ b/BipartiteMatchings/Utility.h
+@@ -1,7 +1,7 @@
+ #ifndef BP_UTILITY_H
+ #define BP_UTILITY_H
+ 
+-#include "../CombBLAS.h"
++#include "CombBLAS.h"
+ 
+ namespace combblas {
+ 
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -68,6 +68,7 @@ set_property(TARGET CombBLAS PROPERTY VERSION ${CombBLAS_VERSION})
+ # installation
+ install(DIRECTORY include/ DESTINATION include)
+ install(DIRECTORY psort-1.0/include/ DESTINATION include)
++install(DIRECTORY BipartiteMatchings DESTINATION include FILES_MATCHING PATTERN "*.h")
+ install(TARGETS CombBLAS EXPORT CombBLASTargets
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib

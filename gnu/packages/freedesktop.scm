@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -49,7 +49,6 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cryptsetup)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -71,6 +70,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
@@ -208,12 +209,12 @@ other applications that need to directly deal with input devices.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-after 'unpack 'patch-autogen
            (lambda _
              ;; Run 'configure' in its own phase, not now.
              (substitute* "autogen.sh"
                (("^.*\\./configure.*") ""))
-             (zero? (system* "sh" "autogen.sh")))))))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -530,7 +531,7 @@ multiplexer to the KMS/DRM Linux kernel devices.")
 (define-public exempi
   (package
     (name "exempi")
-    (version "2.4.5")
+    (version "2.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -538,7 +539,7 @@ multiplexer to the KMS/DRM Linux kernel devices.")
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "07i29xmg8bqriviaf4vi1mwha4lrw85kfla29cfym14fp3z8aqa0"))))
+               "06vi7dc2gappwqm3xpfyy5ihxq14bmvj3bd47yk482jlq0jgr0nw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-boost="
@@ -732,7 +733,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.16.2")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -740,7 +741,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qmjvjbgs9m8qsaiq5arikzglgaas9hh1968bi7sy3905kp4yjgb"))))
+                "10mjjy860aakfd3h1yaj9l1jw816amrpwmyqlx37j21xv0l03x3c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -763,7 +764,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.20.0")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -771,7 +772,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1d3fca477sdwbv4bsq1cl98qc8sixrzp0gqjcmjj8mlwfk9qqhi1"))))
+                "05xamy608mhvmw9zbnv9n8w3xpk96n10v5mixnvpnqgih6s9ih91"))))
     (build-system gnu-build-system)
     (inputs
      `(("libgudev" ,libgudev)))

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -14,8 +14,8 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
@@ -66,7 +66,6 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
@@ -82,14 +81,19 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -543,7 +547,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.4.0")
+    (version "5.4.1")
     (source
      (origin
        (method url-fetch)
@@ -551,7 +555,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0y73b3z1akni620s1hlrijwdrk95ca1c8csjds48vpd6z86awx9p"))))
+         "0l7chmlvsl22r5cfm6fpm999z2n3sjrnx3ha8f8kf42cn4gmkriy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -586,7 +590,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.6.5")
+    (version "2.6.6")
     (source
      (origin
        (method url-fetch)
@@ -594,7 +598,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "12j3fw0j8qcr86c1vsz4bsb55j9inp0ll3wjjdvg1cj4hmwmn5ck"))))
+         "0qz8a1ays63712pq1v7nnw7c57zlqkcifq7himfv5nsv0zm36ya8"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -1712,15 +1716,17 @@ interface and a programmable text output for scripting.")
 (define-public libnet
   (package
     (name "libnet")
-    (version "1.1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sam-github/libnet/"
-                                  "archive/libnet-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0l4gbzzvr199fzczzricjz7b825i7dlk6sgl5p5alnkcagmq0xys"))))
+    (version "1.2-rc3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sam-github/libnet")
+             (commit (string-append "libnet-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cy8w4g5rv963v4p6iq3333kxgdddx2lywp70xf62553a25xhhs4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1860,20 +1866,21 @@ file for more details.")
     (name "amule")
     (version "2.3.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/amule-project/amule/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/amule-project/amule")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wvcj0n9xz03xz5c2xwp6dwfp7sqjhhwbki3m0lwikskpn9lkzk2"))
+                "010wxm6g9f92x6fympj501zbnjka32rzbx0sk3a2y4zpih5d2nsn"))
               ;; Patch for adopting crypto++ >= 6.0.
               (patches (search-patches "amule-crypto-6.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap) ; bootstrap phase runs too early.
          (add-after 'patch-source-shebangs 'autogen
            (lambda _
              (invoke "sh" "autogen.sh")
@@ -2268,3 +2275,95 @@ allow all other machines, without direct access to that network, to be relayed
 through the machine the Dante server is running on.  The external network will
 never see any machines other than the one Dante is running on.")
     (license (license:non-copyleft "file://LICENSE"))))
+
+(define-public restbed
+  (let ((commit "6eb385fa9051203f28bf96cc1844bbb5a9a6481f"))
+    (package
+      (name "restbed")
+      (version (git-version "4.6" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Corvusoft/restbed/")
+               (commit commit)))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32 "0k60i5drklqqrb4khb25fzkgz9y0sncxf1sp6lh2bm1m0gh0661n"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("asio" ,asio)
+         ("catch" ,catch-framework)
+         ("openssl" ,openssl)))
+      (arguments
+       `(#:tests? #f
+         #:configure-flags
+         '("-DBUILD_TESTS=NO"
+           "-DBUILD_EXAMPLES=NO"
+           "-DBUILD_SSL=NO"
+           "-DBUILD_SHARED=NO")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'apply-patches-and-fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((asio (assoc-ref inputs "asio"))
+                     (catch (assoc-ref inputs "catch"))
+                     (openssl (assoc-ref inputs "openssl")))
+                 (substitute* "cmake/Findasio.cmake"
+                   (("(find_path\\( asio_INCLUDE asio\\.hpp HINTS ).*$" all begin)
+                    (string-append begin " \"" asio "/include\" )")))
+                 (substitute* "cmake/Findcatch.cmake"
+                   (("(find_path\\( catch_INCLUDE catch\\.hpp HINTS ).*$" all begin)
+                    (string-append begin " \"" catch "/include\" )")))
+                 (substitute* "cmake/Findopenssl.cmake"
+                   (("(find_library\\( ssl_LIBRARY ssl ssleay32 HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/lib\" )"))
+                   (("(find_library\\( crypto_LIBRARY crypto libeay32 HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/lib\" )"))
+                   (("(find_path\\( ssl_INCLUDE openssl/ssl\\.h HINTS ).*$" all begin)
+                    (string-append begin " \"" openssl "/include\" )")))))))))
+      (synopsis "Asynchronous RESTful functionality to C++11 applications")
+      (description "Restbed is a comprehensive and consistent programming
+model for building applications that require seamless and secure
+communication over HTTP.")
+      (home-page "https://github.com/Corvusoft/restbed")
+      (license license:agpl3+))))
+
+(define-public opendht
+  (package
+    (name "opendht")
+    (version "1.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/savoirfairelinux/opendht.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vninb5mak27wigajslyvr05vq7wbrwqhbr4wzl2nmqcb20wmlq2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("nettle" ,nettle)
+       ("readline" ,readline)
+       ("jsoncpp" ,jsoncpp)
+       ("restbed" ,restbed)))
+    (propagated-inputs
+     `(("argon2" ,argon2)               ; TODO: Needed for the pkg-config .pc file to work?
+       ("msgpack" ,msgpack)))           ;included in several installed headers
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:configure-flags '("--disable-tools"
+                           "--disable-python"
+                           "--with-argon2")))
+    (home-page "https://github.com/savoirfairelinux/opendht/")
+    (synopsis "Distributed Hash Table (DHT) library")
+    (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
+be used to manage peer-to-peer network connections as needed for real time
+communication.")
+    (license license:gpl3+)))

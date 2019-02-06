@@ -10,6 +10,9 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
+;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,8 +37,8 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
@@ -46,6 +49,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -54,6 +58,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
@@ -64,6 +69,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system dune)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix download)
@@ -186,19 +192,18 @@ patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
                     (mandir (string-append out "/share/man")))
                ;; Custom configure script doesn't recognize
                ;; --prefix=<PREFIX> syntax (with equals sign).
-               (zero? (system* "./configure"
-                               "--prefix" out
-                               "--mandir" mandir)))))
+               (invoke "./configure"
+                       "--prefix" out
+                       "--mandir" mandir))))
          (replace 'build
            (lambda _
-             (zero? (system* "make" "-j" (number->string
-                                          (parallel-job-count))
-                             "world.opt"))))
+             (invoke "make" "-j" (number->string (parallel-job-count))
+                     "world.opt")))
          (delete 'check)
          (add-after 'install 'check
            (lambda _
              (with-directory-excursion "testsuite"
-               (zero? (system* "make" "all")))))
+               (invoke "make" "all"))))
          (add-before 'check 'prepare-socket-test
            (lambda _
              (format (current-error-port)
@@ -249,7 +254,7 @@ functional, imperative and object-oriented styles of programming.")
            (replace 'build
              (lambda _
                ;; Specifying '-j' at all causes the build to fail.
-               (zero? (system* "make" "world.opt"))))
+               (invoke "make" "world.opt")))
            ,@(if (string=? "aarch64-linux" (%current-system))
                ;; Custom configure script doesn't recongnize aarch64.
                '((replace 'configure
@@ -264,11 +269,9 @@ functional, imperative and object-oriented styles of programming.")
            (replace 'check
              (lambda _
                (with-directory-excursion "testsuite"
-                 (zero? (system*
-                         "make"
-                         "all"
+                 (invoke "make" "all"
                          (string-append
-                          "TOPDIR=" (getcwd) "/.."))))))))))))
+                          "TOPDIR=" (getcwd) "/..")))))))))))
 
 (define-public ocaml-4.07
   (package
@@ -297,46 +300,46 @@ functional, imperative and object-oriented styles of programming.")
 (define-public ocaml ocaml-4.07)
 
 (define-public ocamlbuild
-	  (package
-	    (name "ocamlbuild")
-	    (version "0.13.1")
-	    (source (origin
-	              (method url-fetch)
-	              (uri (string-append "https://github.com/ocaml/ocamlbuild/archive/"
-	                                  version ".tar.gz"))
-	              (file-name (string-append name "-" version ".tar.gz"))
-	              (sha256
-	               (base32
-	                "1320cfkixs1xlng5av04pa5qjb3ynvi2kl3k1ngqzg5fpi29b0vr"))))
-	    (build-system gnu-build-system)
-	    (arguments
-	     `(#:test-target "test"
-	       #:tests? #f; tests require findlib
-	       #:make-flags
-	       (list (string-append "OCAMLBUILD_PREFIX=" (assoc-ref %outputs "out"))
-	             (string-append "OCAMLBUILD_BINDIR=" (assoc-ref %outputs "out")
-                                "/bin")
-	             (string-append "OCAMLBUILD_LIBDIR=" (assoc-ref %outputs "out")
-                                "/lib/ocaml/site-lib")
-	             (string-append "OCAMLBUILD_MANDIR=" (assoc-ref %outputs "out")
-                                "/share/man"))
-	       #:phases
-	       (modify-phases %standard-phases
-	         (delete 'bootstrap)
-	         (delete 'configure)
-	         (add-before 'build 'findlib-environment
-	           (lambda* (#:key outputs #:allow-other-keys)
-	             (let* ((out (assoc-ref outputs "out")))
-	               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
-	               (setenv "OCAMLFIND_LDCONF" "ignore")
-	               #t))))))
-	    (native-inputs
-	     `(("ocaml" ,ocaml)))
-	    (home-page "https://github.com/ocaml/ocamlbuild")
-	    (synopsis "OCaml build tool")
-	    (description "OCamlbuild is a generic build tool, that has built-in rules
-	for building OCaml library and programs.")
-	    (license license:lgpl2.1+)))
+  (package
+    (name "ocamlbuild")
+    (version "0.13.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/ocamlbuild/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1320cfkixs1xlng5av04pa5qjb3ynvi2kl3k1ngqzg5fpi29b0vr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:tests? #f; tests require findlib
+       #:make-flags
+       (list (string-append "OCAMLBUILD_PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "OCAMLBUILD_BINDIR=" (assoc-ref %outputs "out")
+                        "/bin")
+             (string-append "OCAMLBUILD_LIBDIR=" (assoc-ref %outputs "out")
+                        "/lib/ocaml/site-lib")
+             (string-append "OCAMLBUILD_MANDIR=" (assoc-ref %outputs "out")
+                        "/share/man"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (add-before 'build 'findlib-environment
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (setenv "OCAMLFIND_DESTDIR" (string-append out "/lib/ocaml/site-lib"))
+               (setenv "OCAMLFIND_LDCONF" "ignore")
+               #t))))))
+    (native-inputs
+     `(("ocaml" ,ocaml)))
+    (home-page "https://github.com/ocaml/ocamlbuild")
+    (synopsis "OCaml build tool")
+    (description "OCamlbuild is a generic build tool, that has built-in rules
+for building OCaml library and programs.")
+    (license license:lgpl2.1+)))
 
 (define-public opam
   (package
@@ -444,26 +447,26 @@ Git-friendly development workflow.")
        ;; which  fails on the second attempt.
        #:parallel-build? #f
        #:make-flags '("all")
-       #:phases (modify-phases %standard-phases
-                  (replace
-                   'configure
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; This is a home-made 'configure' script.
-                     (let ((out (assoc-ref outputs "out")))
-                       (zero? (system* "./configure"
-                                       (string-append "--libdir=" out
-                                                      "/lib/ocaml/site-lib")
-                                       (string-append "--bindir=" out "/bin")
-                                       (string-append "--pkgdir=" out
-                                                      "/lib/ocaml/site-lib"))))))
-                  (add-after 'install 'install-meta
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (substitute* "camlp4/META.in"
-                          (("directory = .*")
-                            (string-append "directory = \"" out
-                                           "/lib/ocaml/site-lib/camlp4\"\n")))
-                        (zero? (system* "make" "install-META"))))))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This is a home-made 'configure' script.
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "./configure"
+                       (string-append "--libdir=" out
+                                      "/lib/ocaml/site-lib")
+                       (string-append "--bindir=" out "/bin")
+                       (string-append "--pkgdir=" out
+                                      "/lib/ocaml/site-lib")))))
+         (add-after 'install 'install-meta
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "camlp4/META.in"
+                 (("directory = .*")
+                  (string-append "directory = \"" out
+                                 "/lib/ocaml/site-lib/camlp4\"\n")))
+               (invoke "make" "install-META")))))))
     (home-page "https://github.com/ocaml/camlp4")
     (synopsis "Write parsers in OCaml")
     (description
@@ -631,144 +634,6 @@ written in Objective Caml.")
 arbitrary-precision integer and rational arithmetic that used to be part of
 the OCaml core distribution.")
     (license license:lgpl2.1+))); with linking exception
-
-(define-public coq
-  (package
-    (name "coq")
-    (version "8.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/coq/coq/archive/V"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0i2hs0i6rp27cy8zd0mx7jscqw5cx2y0diw0pxgij66s3yr47y7r"))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "COQPATH")
-            (files (list "lib/coq/user-contrib")))))
-    (build-system ocaml-build-system)
-    (inputs
-     `(("lablgtk" ,lablgtk)
-       ("python" ,python-2)
-       ("camlp5" ,camlp5)
-       ("ocaml-num" ,ocaml-num)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (mandir (string-append out "/share/man"))
-                    (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
-               (invoke "./configure"
-                       "-prefix" out
-                       "-mandir" mandir
-                       "-browser" browser
-                       "-coqide" "opt"))))
-         (replace 'build
-           (lambda _
-             (invoke "make"
-                     "-j" (number->string (parallel-job-count))
-                     "world")))
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda _
-             (with-directory-excursion "test-suite"
-               ;; These two tests fail.
-               ;; This one fails because the output is not formatted as expected.
-               (delete-file-recursively "coq-makefile/timing")
-               ;; This one fails because we didn't build coqtop.byte.
-               (delete-file-recursively "coq-makefile/findlib-package")
-               (invoke "make")))))))
-    (home-page "https://coq.inria.fr")
-    (synopsis "Proof assistant for higher-order logic")
-    (description
-     "Coq is a proof assistant for higher-order logic, which allows the
-development of computer programs consistent with their formal specification.
-It is developed using Objective Caml and Camlp5.")
-    ;; The code is distributed under lgpl2.1.
-    ;; Some of the documentation is distributed under opl1.0+.
-    (license (list license:lgpl2.1 license:opl1.0+))))
-
-(define-public proof-general
-  (package
-    (name "proof-general")
-    (version "4.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://proofgeneral.inf.ed.ac.uk/releases/"
-                    "ProofGeneral-" version ".tgz"))
-              (sha256
-               (base32
-                "09qb0myq66fw17v4ziz401ilsb5xlxz1nl2wsp69d0vrfy0bcrrm"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("which" ,which)
-       ("emacs" ,emacs-minimal)
-       ("texinfo" ,texinfo)))
-    (inputs
-     `(("host-emacs" ,emacs)
-       ("perl" ,perl)
-       ("coq" ,coq)))
-    (arguments
-     `(#:tests? #f  ; no check target
-       #:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "DEST_PREFIX=" %output))
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'disable-byte-compile-error-on-warn
-                    (lambda _
-                      (substitute* "Makefile"
-                        (("\\(setq byte-compile-error-on-warn t\\)")
-                         "(setq byte-compile-error-on-warn nil)"))
-                      #t))
-         (add-after 'unpack 'patch-hardcoded-paths
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out   (assoc-ref outputs "out"))
-                            (coq   (assoc-ref inputs "coq"))
-                            (emacs (assoc-ref inputs "host-emacs")))
-                        (define (coq-prog name)
-                          (string-append coq "/bin/" name))
-                        (emacs-substitute-variables "coq/coq.el"
-                          ("coq-prog-name"           (coq-prog "coqtop"))
-                          ("coq-compiler"            (coq-prog "coqc"))
-                          ("coq-dependency-analyzer" (coq-prog "coqdep")))
-                        (substitute* "Makefile"
-                          (("/sbin/install-info") "install-info"))
-                        (substitute* "bin/proofgeneral"
-                          (("^PGHOMEDEFAULT=.*" all)
-                           (string-append all
-                                          "PGHOME=$PGHOMEDEFAULT\n"
-                                          "EMACS=" emacs "/bin/emacs")))
-                        #t)))
-         (add-after 'unpack 'clean
-                    (lambda _
-                      ;; Delete the pre-compiled elc files for Emacs 23.
-                      (zero? (system* "make" "clean"))))
-         (add-after 'install 'install-doc
-                    (lambda* (#:key make-flags #:allow-other-keys)
-                      ;; XXX FIXME avoid building/installing pdf files,
-                      ;; due to unresolved errors building them.
-                      (substitute* "Makefile"
-                        ((" [^ ]*\\.pdf") ""))
-                      (zero? (apply system* "make" "install-doc"
-                                    make-flags)))))))
-    (home-page "http://proofgeneral.inf.ed.ac.uk/")
-    (synopsis "Generic front-end for proof assistants based on Emacs")
-    (description
-     "Proof General is a major mode to turn Emacs into an interactive proof
-assistant to write formal mathematical proofs using a variety of theorem
-provers.")
-    (license license:gpl2+)))
 
 (define-public emacs-tuareg
   (package
@@ -1284,8 +1149,7 @@ files in these formats.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key #:allow-other-keys)
-             (zero? (system* "./configure")))))))
+           (lambda _ (invoke "./configure"))))))
     (home-page "https://forge.ocamlcore.org/projects/zarith/")
     (synopsis "Implements arbitrary-precision integers")
     (description "Implements arithmetic and logical operations over
@@ -1527,14 +1391,14 @@ coverage information.")
 (define-public dune
   (package
     (name "dune")
-    (version "1.2.1")
+    (version "1.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml/dune/releases/"
                                   "download/" version "/dune-" version ".tbz"))
               (sha256
                (base32
-                "00c5dbm4hkdapc2i7pg07b2lj8sv6ly38qr7zid58cdmbmzq21z9"))))
+                "0dmf0wbfmgdy5plz1bjiisc2hjgblvxsnrqjmw2c8y45v1h23mdz"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
@@ -1555,24 +1419,24 @@ following a very simple s-expression syntax.")
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
-    (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-ppx/"
-                                  "ocaml-migrate-parsetree/releases/download/v"
-                                  version "/ocaml-migrate-parsetree-"
-                                  version ".tbz"))
-              (sha256
-               (base32
-                "01zjp1q4hryqaxv4apkjd868fycz2kf887r6lkb6x2a545h1lh7f"))))
+    (version "1.2.0")
+    (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "16kas19iwm4afijv3yxd250s08absabmdcb4yj57wc8r4fmzv5dm"))))
     (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:jbuild? #t))
+     `(#:tests? #f))
     (propagated-inputs
-     `(("ocamlbuild" ,ocamlbuild)
+     `(("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
+       ("ocamlbuild" ,ocamlbuild)
        ("ocaml-result" ,ocaml-result)))
-    (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (synopsis "OCaml parsetree convertor")
     (description "This library converts between parsetrees of different OCaml
 versions.  For each version, there is a snapshot of the parsetree and conversion
@@ -1901,15 +1765,17 @@ spans without being subject to operating system calendar time adjustments.")
 (define-public ocaml-cmdliner
   (package
     (name "ocaml-cmdliner")
-    (version "0.9.8")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
                                   "cmdliner-" version ".tbz"))
               (sha256
                (base32
-                "0hdxlkgiwjml9dpaa80282a8350if7mc1m6yz2mrd7gci3fszykx"))))
+                "18jqphjiifljlh9jg8zpl6310p3iwyaqphdkmf89acyaix0s4kj1"))))
     (build-system ocaml-build-system)
+    (inputs
+     `(("ocaml-result" ,ocaml-result)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("opam" ,opam)))
@@ -1918,6 +1784,12 @@ spans without being subject to operating system calendar time adjustments.")
        #:build-flags '("native=true" "native-dynlink=true")
        #:phases
        (modify-phases %standard-phases
+         (replace 'install
+           ;; The makefile says 'adjust on cli invocation'
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make" "install" (string-append "PREFIX=" out))
+               #t)))
          (delete 'configure))))
     (home-page "http://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
@@ -1935,14 +1807,14 @@ most of the POSIX and GNU conventions.")
 (define-public ocaml-fmt
   (package
     (name "ocaml-fmt")
-    (version "0.8.0")
+    (version "0.8.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/fmt/releases/fmt-"
                             version ".tbz"))
         (sha256 (base32
-                  "16y7ibndnairb53j8a6qgipyqwjxncn4pl9jiw5bxjfjm59108px"))))
+                  "1zj9azcxcn6skmb69ykgmi9z8c50yskwg03wqgh87lypgjdcz060"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
@@ -1950,6 +1822,7 @@ most of the POSIX and GNU conventions.")
        ("topkg" ,ocaml-topkg)))
     (propagated-inputs
      `(("result" ,ocaml-result)
+       ("ocaml-uchar" ,ocaml-uchar)
        ("cmdliner" ,ocaml-cmdliner)))
     (arguments `(#:tests? #f
                  #:build-flags (list "build" "--with-base-unix" "true"
@@ -2402,14 +2275,14 @@ representation of the data.")
 (define-public ocaml-uchar
   (package
     (name "ocaml-uchar")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/ocaml/uchar/releases/download/v"
                             version "/uchar-" version ".tbz"))
         (sha256 (base32
-                  "0ficw1x7ymbd6m8hqw3w1aycwm1hbwd6bad3c5pspwnzh3qlikhi"))))
+                  "1w2saw7zanf9m9ffvz2lvcxvlm118pws2x1wym526xmydhqpyfa7"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
@@ -4272,6 +4145,7 @@ and 4 (random based) according to RFC 4122.")
              (setenv "CONFIG_SHELL" (string-append (assoc-ref inputs "bash")
                                                    "/bin/sh")))))))
     (inputs `(("lablgtk" ,lablgtk)))
+    (properties `((upstream-name . "ocamlgraph")))
     (home-page "http://ocamlgraph.lri.fr/")
     (synopsis "Graph library for OCaml")
     (description "OCamlgraph is a generic graph library for OCaml.")
@@ -4474,13 +4348,12 @@ is provide a description of your project and Jbuilder will do the rest.")
        (modify-phases %standard-phases
          (delete 'configure)
          (replace 'build
-           (lambda* (#:key #:allow-other-keys)
-             (zero? (system* "jbuilder" "build"))))
+           (lambda _ (invoke "jbuilder" "build")))
          (delete 'check)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "jbuilder" "install" "--prefix" out))))))))
+               (invoke "jbuilder" "install" "--prefix" out)))))))
     (native-inputs
      `(("jbuilder" ,ocaml-jbuilder)))
     (propagated-inputs
@@ -4552,9 +4425,9 @@ instead of bindings to a C library.")
              (let* ((out (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib/ocaml/site-lib")))
                (mkdir-p libdir)
-               (zero? (system* "jbuilder" "install"
-                               "--prefix" out
-                               "--libdir" libdir))))))))
+               (invoke "jbuilder" "install"
+                       "--prefix" out
+                       "--libdir" libdir)))))))
     (native-inputs
      `(("ocaml" ,ocaml)
        ("cppo" ,ocaml-cppo)
@@ -4711,281 +4584,626 @@ OCaml projects that contain C stubs.")
 cross-platform SDL C library.")
     (license license:isc)))
 
-(define-public coq-flocq
+(define-public dedukti
   (package
-    (name "coq-flocq")
-    (version "2.6.1")
-    (source (origin
-              (method url-fetch)
-              ;; Use the ‘Latest version’ link for a stable URI across releases.
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37454/flocq-" version ".tar.gz"))
-              (sha256
-               (base32
-                "06msp1fwpqv6p98a3i1nnkj7ch9rcq3rm916yxq8dxf51lkghrin"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Flocq"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))
-             #t))
-         (replace 'build
-           (lambda _
-             (invoke "./remake")
-             #t))
-         (replace 'check
-           (lambda _
-             (invoke "./remake" "check")
-             #t))
-             ;; TODO: requires coq-gappa and coq-interval.
-             ;(invoke "./remake" "check-more")
-         (replace 'install
-           (lambda _
-             (invoke "./remake" "install")
-             #t)))))
-    (home-page "http://flocq.gforge.inria.fr/")
-    (synopsis "Floating-point formalization for the Coq system")
-    (description "Flocq (Floats for Coq) is a floating-point formalization for
-the Coq system.  It provides a comprehensive library of theorems on a multi-radix
-multi-precision arithmetic.  It also supports efficient numerical computations
-inside Coq.")
-    (license license:lgpl3+)))
-
-(define-public coq-gappa
-  (package
-    (name "coq-gappa")
-    (version "1.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36397/gappa-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "19kg2zldaqs4smy7bv9hp650sqg46xbx1ss7jnyagpxdscwn9apd"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)
-       ("bison" ,bison)
-       ("flex" ,flex)))
+    (name "dedukti")
+    (version "2.6.0")
+    (home-page "https://deducteam.github.io/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deducteam/dedukti.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0frl3diff033i4fmq304b8wbsdnc9mvlhmwd7a3zd699ng2lzbxb"))))
     (inputs
-     `(("gmp" ,gmp)
-       ("mpfr" ,mpfr)
-       ("boost" ,boost)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
-         (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
-         (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
-         (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
-    (home-page "http://gappa.gforge.inria.fr/")
-    (synopsis "Verify and formally prove properties on numerical programs")
-    (description "Gappa is a tool intended to help verifying and formally proving
-properties on numerical programs dealing with floating-point or fixed-point
-arithmetic.  It has been used to write robust floating-point filters for CGAL
-and it is used to certify elementary functions in CRlibm.  While Gappa is
-intended to be used directly, it can also act as a backend prover for the Why3
-software verification plateform or as an automatic tactic for the Coq proof
-assistant.")
-    (license (list license:gpl2+ license:cecill))));either gpl2+ or cecill
-
-(define-public coq-mathcomp
-  (package
-    (name "coq-mathcomp")
-    (version "1.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "05zgyi4wmasi1rcyn5jq42w0bi9713q9m8dl1fdgl66nmacixh39"))))
-    (build-system gnu-build-system)
+     `(("menhir" ,ocaml-menhir)))
     (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
+     `(("ocamlbuild" ,ocamlbuild)))
+    (build-system ocaml-build-system)
     (arguments
-     `(#:tests? #f; No need to test formally-verified programs :)
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'build 'chdir
+         (replace 'build
            (lambda _
-             (chdir "mathcomp")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
-             (zero? (system* "make" "-f" "Makefile.coq"
-                             (string-append "COQLIB=" (assoc-ref outputs "out")
-                                            "/lib/coq/")
-                             "install")))))))
-    (home-page "https://math-comp.github.io/math-comp/")
-    (synopsis "Mathematical Components for Coq")
-    (description "Mathematical Components for Coq has its origins in the formal
-proof of the Four Colour Theorem.  Since then it has grown to cover many areas
-of mathematics and has been used for large scale projects like the formal proof
-of the Odd Order Theorem.
-
-The library is written using the Ssreflect proof language that is an integral
-part of the distribution.")
-    (license license:cecill-b)))
-
-(define-public coq-coquelicot
-  (package
-    (name "coq-coquelicot")
-    (version "3.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37045/coquelicot-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0hsyhsy2lwqxxx2r8xgi5csmirss42lp9bkb9yy35mnya0w78c8r"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
-    (propagated-inputs
-     `(("mathcomp" ,coq-mathcomp)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Coquelicot"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-coq8.8
-           (lambda _
-             ; appcontext has been removed from coq 8.8
-             (substitute* "theories/AutoDerive.v"
-               (("appcontext") "context"))
+             (invoke "make")
              #t))
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
-         (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
          (replace 'check
            (lambda _
-             (zero? (system* "./remake" "check"))))
+             (invoke "make" "tests")
+             #t))
+         (add-before 'install 'set-binpath
+           ;; Change binary path in the makefile
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (substitute* "GNUmakefile"
+                 (("BINDIR = (.*)$")
+                  (string-append "BINDIR = " out "/bin"))))
+             #t))
          (replace 'install
            (lambda _
-             (zero? (system* "./remake" "install")))))))
-    (home-page "http://coquelicot.saclay.inria.fr/index.html")
-    (synopsis "Coq library for Reals")
-    (description "Coquelicot is an easier way of writing formulas and theorem
-statements, achieved by relying on total functions in place of dependent types
-for limits, derivatives, integrals, power series, and so on.  To help with the
-proof process, the library comes with a comprehensive set of theorems that cover
-not only these notions, but also some extensions such as parametric integrals,
-two-dimensional differentiability, asymptotic behaviors.  It also offers some
-automations for performing differentiability proofs.  Moreover, Coquelicot is a
-conservative extension of Coq's standard library and provides correspondence
-theorems between the two libraries.")
-    (license license:lgpl3+)))
-
-(define-public coq-bignums
-  (package
-    (name "coq-bignums")
-    (version "8.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/coq/bignums/archive/V"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08m1cmq4hkaf4sb0vy978c11rgzvds71cphyadmr2iirpr5815r0"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("coq" ,coq)))
-    (inputs
-     `(("camlp5" ,camlp5)))
-    (arguments
-     `(#:tests? #f; No test target
-       #:make-flags
-       (list (string-append "COQLIBINSTALL=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
-    (home-page "https://github.com/coq/bignums")
-    (synopsis "Coq library for arbitrary large numbers")
-    (description "Bignums is a coq library of arbitrary large numbers.  It
-provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
-    (license license:lgpl2.1+)))
-
-(define-public coq-interval
-  (package
-    (name "coq-interval")
-    (version "3.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37077/interval-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08fdcf3hbwqphglvwprvqzgkg0qbimpyhnqsgv3gac4y1ap0f903"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("ocaml" ,ocaml)
-       ("which" ,which)
-       ("coq" ,coq)))
-    (propagated-inputs
-     `(("flocq" ,coq-flocq)
-       ("bignums" ,coq-bignums)
-       ("coquelicot" ,coq-coquelicot)
-       ("mathcomp" ,coq-mathcomp)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-remake
-           (lambda _
-             (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
-         (replace 'build
-           (lambda _
-             (zero? (system* "./remake"))))
-         (replace 'check
-           (lambda _
-             (zero? (system* "./remake" "check"))))
-         (replace 'install
-           (lambda _
-             (zero? (system* "./remake" "install")))))))
-    (home-page "http://coq-interval.gforge.inria.fr/")
-    (synopsis "Coq tactics to simplify inequality proofs")
-    (description "Interval provides vernacular files containing tactics for
-simplifying the proofs of inequalities on expressions of real numbers for the
-Coq proof assistant.")
+             (invoke "make" "install")
+             #t)))))
+    (synopsis "Proof-checker for the λΠ-calculus modulo theory, an extension of
+the λ-calculus")
+    (description "Dedukti is a proof-checker for the λΠ-calculus modulo
+theory.  The λΠ-calculus is an extension of the simply typed λ-calculus with
+dependent types.  The λΠ-calculus modulo theory is itself an extension of the
+λΠ-calculus where the context contains variable declaration as well as rewrite
+rules.  This system is not designed to develop proofs, but to check proofs
+developed in other systems.  In particular, it enjoys a minimalistic syntax.")
     (license license:cecill-c)))
+
+(define-public emacs-dedukti-mode
+  (let ((commit "d7c3505a1046187de3c3aeb144455078d514594e"))
+    (package
+      (name "emacs-dedukti-mode")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/rafoo/dedukti-mode")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1842wikq24c8rg0ac84vb1qby9ng1nssxswyyni4kq85lng5lcrp"))
+                (file-name (git-file-name name version))))
+      (inputs
+       `(("dedukti" ,dedukti)))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'patch-dkpath
+             (lambda _
+               (let ((dkcheck-path (which "dkcheck")))
+                 (substitute* "dedukti-mode.el"
+                   (("dedukti-path \"(.*)\"")
+                    (string-append "dedukti-path \"" dkcheck-path "\"")))))))))
+      (synopsis "Emacs major mode for Dedukti files")
+      (description "This package provides an Emacs major mode for editing
+Dedukti files.")
+      (license license:cecill-b))))
+
+(define-public emacs-flycheck-dedukti
+  (let ((commit "3dbff5646355f39d57a3ec514f560a6b0082a1cd"))
+    (package
+      (name "emacs-flycheck-dedukti")
+      (version (git-version "0" "0" commit))
+      (home-page "https://github.com/rafoo/flycheck-dedukti")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1ffpxnwl3wx244n44mbw81g00nhnykd0lnid29f4aw1av7w6nw8l"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("dedukti-mode" ,emacs-dedukti-mode)
+         ("flycheck-mode" ,emacs-flycheck)))
+      (synopsis "Flycheck integration for the dedukti language")
+      (description "This package provides a frontend for Flycheck to perform
+syntax checking on dedukti files.")
+      (license license:cecill-b))))
+
+(define-public ocaml-ppx-inline-test
+  (package
+    (name "ocaml-ppx-inline-test")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/ppx_inline_test")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11n94fz1asjf5vqdgriv0pvsa5lbfpqcyk525c7816w23vskcvq6"))))
+    (build-system dune-build-system)
+    (arguments
+     ;see home page README for further information
+     `(#:tests? #f))
+    (inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (synopsis "Syntax extension for writing in-line tests in ocaml code")
+    (description "This package contains a syntax extension for writing
+in-line tests in ocaml code.  It is part of Jane Street's PPX rewriters
+collection.")
+    (license license:expat)))
+
+(define-public ocaml-biniou
+ (package
+   (name "ocaml-biniou")
+   (version "1.2.0")
+   (home-page "https://github.com/mjambon/biniou")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mjpgwyfq2b2izjw0flmlpvdjgqpq8shs89hxj1np2r50csr8dcb"))))
+   (build-system dune-build-system)
+   (inputs
+    `(("ocaml-easy-format" ,ocaml-easy-format)))
+   (native-inputs
+    `(("which" ,which)))
+   (synopsis "Data format designed for speed, safety, ease of use and backward
+compatibility")
+   (description "Biniou (pronounced \"be new\" is a binary data format
+designed for speed, safety, ease of use and backward compatibility as
+protocols evolve.  Biniou is vastly equivalent to JSON in terms of
+functionality but allows implementations several times faster (4 times faster
+than yojson), with 25-35% space savings.")
+   (license license:bsd-3)))
+
+(define-public ocaml-yojson
+  (package
+    (name "ocaml-yojson")
+    (version "1.4.1")
+    (home-page "https://github.com/ocaml-community/yojson")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nwsfkmqpyfab4rxq76q8ff7giyanghw08094jyrp275v99zdjr9"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (inputs
+     `(("ocaml-biniou" ,ocaml-biniou)
+       ("ocaml-easy-format" ,ocaml-easy-format)))
+    (native-inputs
+     `(("ocaml-cppo" ,ocaml-cppo)))
+    (synopsis "Low-level JSON library for OCaml")
+    (description "Yojson is an optimized parsing and printing library for the
+JSON format.  It addresses a few shortcomings of json-wheel including 2x
+speedup, polymorphic variants and optional syntax for tuples and variants.
+@code{ydump} is a pretty printing command-line program provided with the
+yojson package.  The program @code{atdgen} can be used to derive OCaml-JSON
+serializers and deserializers from type definitions.")
+    (license license:bsd-3)))
+ 
+(define-public ocaml-craml
+  (package
+    (name "ocaml-craml")
+    (version "1.0.0")
+    (home-page "https://github.com/realworldocaml/craml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "197xjp4vmzdymf2ndinw271ihpf45h04mx8gqj8ypspxdr5fj1a5"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-fmt" ,ocaml-fmt)
+       ("ocaml-astring" ,ocaml-astring)
+       ("ocaml-logs" ,ocaml-logs)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)))
+    (synopsis
+     "CRAM-testing framework for testing command line applications")
+    (description "CRAM is a is functional testing framework for command line
+applications.  @code{craml} is freely inspired by the
+Mercurial's @code{https://www.selenic.com/blog/?p=663, unified test
+format}.  @code{craml} is released as a single binary (called @code{craml}).")
+    (license license:isc)))
+
+(define-public ocaml-merlin
+  (package
+    (name "ocaml-merlin")
+    (version "3.2.2")
+    (home-page "https://ocaml.github.io/merlin/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/merlin.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15ssgmwdxylbwhld9p1cq8x6kadxyhll5bfyf11dddj6cldna3hb"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-biniou" ,ocaml-biniou)
+       ("ocaml-yojson" ,ocaml-yojson)
+       ("ocaml-easy-format" ,ocaml-easy-format)))
+    (native-inputs
+     `(("ocaml-findlib" ,ocaml-findlib)))
+    (arguments
+     '(#:tests? #f)) ;; Errors in tests in version 3.2.2
+    (synopsis "Context sensitive completion for OCaml in Vim and Emacs")
+    (description "Merlin is an editor service that provides modern IDE
+features for OCaml.  Emacs and Vim support is provided out-of-the-box.
+External contributors added support for Visual Studio Code, Sublime Text and
+Atom.")
+    (license license:expat)))
+
+(define-public ocaml-gsl
+  (package
+    (name "ocaml-gsl")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://github.com/mmottl/gsl-ocaml/releases/download/"
+         version "/gsl-" version ".tbz"))
+       (sha256
+        (base32
+         "17vcswipliq1b2idbzx1z95kskn1a4q4s5v04igilg0f7lnkaarb"))))
+    (build-system ocaml-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (home-page "https://mmottl.github.io/gsl-ocaml")
+    (synopsis "Bindings to the GNU Scientific Library")
+    (description
+     "GSL-OCaml is an interface to the @dfn{GNU scientific library} (GSL) for
+the OCaml language.")
+    (license license:gpl3+)))
+
+(define-public ocaml4.01-gsl
+  (package-with-ocaml4.01 ocaml-gsl))
+
+(define-public cubicle
+  (package
+    (name "cubicle")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://cubicle.lri.fr/cubicle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10kk80jdmpdvql88sdjsh7vqzlpaphd8vip2lp47aarxjkwjlz1q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("ocaml" ,ocaml)
+       ("which" ,(@@ (gnu packages base) which))))
+    (propagated-inputs
+     `(("ocaml-num" ,ocaml-num)
+       ("z3" ,z3)))
+    (arguments
+     `(#:configure-flags (list "--with-z3")
+       #:make-flags (list "QUIET=")
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-for-release
+           (lambda _
+             (substitute* "Makefile.in"
+               (("SVNREV=") "#SVNREV="))
+             #t))
+         (add-before 'configure 'fix-/bin/sh
+           (lambda _
+             (substitute* "configure"
+               (("-/bin/sh") (string-append "-" (which "sh"))))
+             #t))
+         (add-before 'configure 'fix-smt-z3wrapper.ml
+           (lambda _
+             (substitute* "Makefile.in"
+               (("\\\\n") ""))
+             #t))
+         (add-before 'configure 'fix-ocaml-num
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("= \\$\\(FUNCTORYLIB\\)")
+                (string-append "= -I "
+                               (assoc-ref inputs "ocaml-num")
+                               "/lib/ocaml/site-lib"
+                               " $(FUNCTORYLIB)")))
+             #t)))))
+    (home-page "http://cubicle.lri.fr/")
+    (synopsis "Model checker for array-based systems")
+    (description "Cubicle is a model checker for verifying safety properties
+of array-based systems.  This is a syntactically restricted class of
+parametrized transition systems with states represented as arrays indexed by
+an arbitrary number of processes.  Cache coherence protocols and mutual
+exclusion algorithms are typical examples of such systems.")
+    (license license:asl2.0)))
+
+(define-public ocaml-sexplib0
+  (package
+    (name "ocaml-sexplib0")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/sexplib0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07v3ggyss7xhfv14bjk1n87sr42iqwj4cgjiv2lcdfkqk49i2bmi"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Library containing the definition of S-expressions and some
+base converters")
+    (description "Part of Jane Street's Core library The Core suite of
+libraries is an industrial strength alternative to OCaml's standard library
+that was developed by Jane Street, the largest industrial user of OCaml.")
+(license license:expat)))
+
+(define-public ocaml-parsexp
+  (package
+    (name "ocaml-parsexp")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/parsexp")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nyq23s5igd8cf3n4qxprjvhbmb6ighb3fy5mw7hxl0mdgsw5fvz"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (synopsis "S-expression parsing library")
+    (description
+     "This library provides generic parsers for parsing S-expressions from
+strings or other medium.
+
+The library is focused on performances but still provide full generic
+parsers that can be used with strings, bigstrings, lexing buffers,
+character streams or any other sources effortlessly.
+
+It provides three different class of parsers:
+@itemize
+@item
+the normal parsers, producing [Sexp.t] or [Sexp.t list] values
+@item
+the parsers with positions, building compact position sequences so
+that one can recover original positions in order to report properly
+located errors at little cost
+@item
+the Concrete Syntax Tree parsers, produce values of type
+@code{Parsexp.Cst.t} which record the concrete layout of the s-expression
+syntax, including comments
+@end itemize
+
+This library is portable and doesn't provide IO functions.  To read
+s-expressions from files or other external sources, you should use
+parsexp_io.")
+    (license license:expat)))
+
+(define-public ocaml-sexplib
+  (package
+    (name "ocaml-sexplib")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/sexplib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qfl0m04rpcjvc4yw1hzh6r16jpwmap0sa9ax6zjji67dz4szpyb"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-num" ,ocaml-num)
+       ("ocaml-parsexp" ,ocaml-parsexp)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (synopsis
+     "Library for serializing OCaml values to and from S-expressions")
+    (description
+     "This package is part of Jane Street's Core library. Sexplib contains
+functionality for parsing and pretty-printing s-expressions.")
+    (license license:expat)))
+
+(define-public ocaml-base
+  (package
+    (name "ocaml-base")
+    (version "0.11.1")
+    (home-page "https://github.com/janestreet/base")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j6xb4265jr41vw4fjzak6yr8s30qrnzapnc6rl1dxy8bjai0nir"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           ;; make warnings non fatal (jbuilder behaviour)
+           (lambda _
+             (invoke "dune" "build" "@install" "--profile=release"))))))
+  (synopsis
+    "Full standard library replacement for OCaml")
+  (description
+    "Base is a complete and portable alternative to the OCaml standard
+library.  It provides all standard functionalities one would expect
+from a language standard library.  It uses consistent conventions
+across all of its module.
+
+Base aims to be usable in any context.  As a result system dependent
+features such as I/O are not offered by Base.  They are instead
+provided by companion libraries such as
+@url{https://github.com/janestreet/stdio, ocaml-stdio}.")
+  (license license:expat)))
+
+(define-public ocaml-compiler-libs
+  (package
+    (name "ocaml-compiler-libs")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/ocaml-compiler-libs")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03jds7bszh8wwpfwxb3dg0gyr1j1872wxwx1xqhry5ir0i84bg0s"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Compiler libraries repackaged")
+    (description "This packaeg simply repackages the OCaml compiler libraries
+so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
+is now @code{Ocaml_common.Ast_helper}.")
+    (license license:expat)))
+
+(define-public ocaml-stdio
+  (package
+    (name "ocaml-stdio")
+    (version "0.11.0")
+    (home-page "https://github.com/janestreet/stdio")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1facajqhvq34g2wrg368y0ajxd6lrj5b3lyzyj0jhdmraxajjcwn"))))
+    (build-system dune-build-system)
+    (inputs `(("ocaml-base" ,ocaml-base)
+              ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Standard IO library for OCaml")
+    (description
+     "Stdio implements simple input/output functionalities for OCaml.  It
+re-exports the input/output functions of the OCaml standard libraries using
+a more consistent API.")
+    (license license:expat)))
+
+(define-public ocaml-ppx-derivers
+  (package
+    (name "ocaml-ppx-derivers")
+    (version "1.2")
+    (home-page
+     "https://github.com/ocaml-ppx/ppx_derivers")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bnhihl1w31as5w2czly1v3d6pbir9inmgsjg2cj6aaj9v1dzd85"))))
+    (build-system dune-build-system)
+    (arguments
+     '(#:tests? #f)) ;no tests
+    (synopsis "Shared @code{@@deriving} plugin registry")
+    (description
+     "Ppx_derivers is a tiny package whose sole purpose is to allow
+ppx_deriving and ppx_type_conv to inter-operate gracefully when linked
+as part of the same ocaml-migrate-parsetree driver.")
+    (license license:bsd-3)))
+
+(define-public ocaml-ppxlib
+  (package
+    (name "ocaml-ppxlib")
+    (version "0.4.0")
+    (home-page "https://github.com/ocaml-ppx/ppxlib")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nr4igf5m4prvigvv470dnhfdhdw0p6hz6zw8gnm5bzcv7s2lg5l"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-compiler-libs" ,ocaml-compiler-libs)
+       ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
+       ("ocaml-stdio" ,ocaml-stdio)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)))
+    (native-inputs
+     `(("ocaml-findlib" ,ocaml-findlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-topfind
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; add the line #directory ".." at the top of each file
+             ;; using #use "topfind";; to be able to find topfind
+             (let* ((findlib-path (assoc-ref inputs "ocaml-findlib"))
+                    (findlib-libdir
+                     (string-append findlib-path "/lib/ocaml/site-lib")))
+               (substitute* '("test/base/test.ml"
+                              "test/deriving/test.ml"
+                              "test/driver/attributes/test.ml"
+                              "test/driver/non-compressible-suffix/test.ml"
+                              "test/driver/transformations/test.ml")
+                 (("#use \"topfind\";;" all)
+                  (string-append "#directory \"" findlib-libdir "\"\n"
+                                 all))))
+             #t)))))
+    (synopsis
+     "Base library and tools for ppx rewriters")
+    (description
+     "A comprehensive toolbox for ppx development.  It features:
+@itemize
+@item an OCaml AST / parser / pretty-printer snapshot, to create a full frontend
+independent of the version of OCaml;
+@item a library for library for ppx rewriters in general, and type-driven code
+generators in particular;
+@item
+a feature-full driver for OCaml AST transformers;
+@item a quotation mechanism allowing to write values representing the
+OCaml AST in the OCaml syntax;
+@item a generator of open recursion classes from type definitions.
+@end itemize")
+    (license license:expat)))

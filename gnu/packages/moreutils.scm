@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,7 +30,7 @@
 (define-public moreutils
   (package
     (name "moreutils")
-    (version "0.62")
+    (version "0.63")
     (source
      (origin
        (method url-fetch)
@@ -43,7 +43,7 @@
               name "-" version ".tar.gz")))
        (sha256
         (base32
-         "1gc3rswr0jl0z42pbrmw2zc4gxsyp60hq8cnvrlsig1vk1s9vpwx"))))
+         "07c3wqf1sx3nhj4cs71a9ajcfl6arjjvvnhwqz7a0xm2m1b6vj2g"))))
     (build-system gnu-build-system)
     ;; For building the manual pages.
     (native-inputs
@@ -63,7 +63,8 @@
                       (let* ((out (assoc-ref outputs "out")))
                         (wrap-program
                             (string-append out "/bin/ts")
-                          `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))))
+                          `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))
+                      #t))
          (delete 'configure))           ; no configure script
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))

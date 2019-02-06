@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,11 +114,11 @@
                      (define %state-directory
                        ;; This must match `NIX_STATE_DIR' as defined in
                        ;; `nix/local.mk'.
-                       (or (getenv "NIX_STATE_DIR")
+                       (or (getenv "GUIX_STATE_DIRECTORY")
                            (string-append %localstatedir "/guix")))
 
                      (define %store-database-directory
-                       (or (getenv "NIX_DB_DIR")
+                       (or (getenv "GUIX_DATABASE_DIRECTORY")
                            (string-append %state-directory "/db")))
 
                      (define %config-directory
@@ -293,9 +293,6 @@ interface (FFI) of Guile.")
                       (use-modules (ice-9 match))
 
                       (eval-when (expand load eval)
-                        ;; Don't augment '%load-path'.
-                        (unsetenv "GUIX_PACKAGE_PATH")
-
                         ;; (gnu packages …) modules are going to be looked up
                         ;; under SOURCE.  (guix config) is looked up in FRONT.
                         (match (command-line)
@@ -312,15 +309,11 @@ interface (FFI) of Guile.")
 
                         ;; Only load Guile-Gcrypt, our own modules, or those
                         ;; of Guile.
-                        (match %load-compiled-path
-                          ((front _ ... sys1 sys2)
-                           (unless (string-prefix? #$guile-gcrypt front)
-                             (set! %load-compiled-path
-                               (list (string-append #$guile-gcrypt
-                                                    "/lib/guile/"
-                                                    (effective-version)
-                                                    "/site-ccache")
-                                     front sys1 sys2))))))
+                        (set! %load-compiled-path
+                          (cons (string-append #$guile-gcrypt "/lib/guile/"
+                                               (effective-version)
+                                               "/site-ccache")
+                                %load-compiled-path)))
 
                       (use-modules (guix store)
                                    (guix self)
@@ -334,12 +327,13 @@ interface (FFI) of Guile.")
                         (format (current-error-port)
                                 "Computing Guix derivation for '~a'...  "
                                 system)
-                        (let loop ((spin spin))
-                          (display (string-append "\b" (car spin))
-                                   (current-error-port))
-                          (force-output (current-error-port))
-                          (sleep 1)
-                          (loop (cdr spin))))
+                        (when (isatty? (current-error-port))
+                          (let loop ((spin spin))
+                            (display (string-append "\b" (car spin))
+                                     (current-error-port))
+                            (force-output (current-error-port))
+                            (sleep 1)
+                            (loop (cdr spin)))))
 
                       (match (command-line)
                         ((_ source system version protocol-version)
@@ -370,6 +364,19 @@ interface (FFI) of Guile.")
                                #:system system)
                              derivation-file-name))))))
                   #:module-path (list source))))
+
+(define (call-with-clean-environment thunk)
+  (let ((env (environ)))
+    (dynamic-wind
+      (lambda ()
+        (environ '()))
+      thunk
+      (lambda ()
+        (environ env)))))
+
+(define-syntax-rule (with-clean-environment exp ...)
+  "Evaluate EXP in a context where zero environment variables are defined."
+  (call-with-clean-environment (lambda () exp ...)))
 
 ;; The procedure below is our return value.
 (define* (build source
@@ -405,14 +412,17 @@ files."
       ;; stdin will actually be /dev/null.
       (let* ((pipe   (with-input-from-port port
                        (lambda ()
-                         (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
-                         (open-pipe* OPEN_READ
-                                     (derivation->output-path build)
-                                     source system version
-                                     (if (file-port? port)
-                                         (number->string
-                                          (logior major minor))
-                                         "none")))))
+                         ;; Make sure BUILD is not influenced by
+                         ;; $GUILE_LOAD_PATH & co.
+                         (with-clean-environment
+                          (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
+                          (open-pipe* OPEN_READ
+                                      (derivation->output-path build)
+                                      source system version
+                                      (if (file-port? port)
+                                          (number->string
+                                           (logior major minor))
+                                          "none"))))))
              (str    (get-string-all pipe))
              (status (close-pipe pipe)))
         (match str
@@ -420,7 +430,7 @@ files."
            (error "build program failed" (list build status)))
           ((? derivation-path? drv)
            (mbegin %store-monad
-             (return (newline (current-output-port)))
+             (return (newline (current-error-port)))
              ((store-lift add-temp-root) drv)
              (return (read-derivation-from-file drv))))
           ("#f"

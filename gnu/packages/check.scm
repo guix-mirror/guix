@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -47,13 +47,20 @@
 (define-module (gnu packages check)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
@@ -210,12 +217,14 @@ multi-paradigm automated test framework for C++ and Objective-C.")
     (version "1.12.2")
     (home-page "https://github.com/catchorg/Catch2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/catchorg/Catch2")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g2ysxc6adqca5wh7nsicnxb9wkxg75cd5izjsl39rcj0v903gr7"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1gdp5wm8khn02g2miz381llw3191k7309qj8s3jd6sasj01rhf23"))))
     (build-system cmake-build-system)
     (synopsis "Automated test framework for C++ and Objective-C")
     (description "Catch2 stands for C++ Automated Test Cases in Headers and is
@@ -294,15 +303,18 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.85")
+    (version "1.86")
     (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/danmar/cppcheck/archive/"
-                          version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/danmar/cppcheck")
+             (commit version)))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "18qlddf1i9bk5nnvy1v2nfxjd46y8wvp3rqz2hrfxjxsyvrfq5yw"))
-      (file-name (string-append name "-" version ".tar.gz"))))
+       (base32 "0jr4aah72c7wy94a8vlj3k050rx6pmc7m9nvmll1jwbscxj5f7ff"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_TESTS=ON")))
     (home-page "http://cppcheck.sourceforge.net")
     (synopsis "Static C/C++ code analyzer")
     (description "Cppcheck is a static code analyzer for C and C++.  Unlike
@@ -699,14 +711,14 @@ and many external plugins.")
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "2.5.1")
+    (version "2.6.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
          (base32
-          "0bbfpwdh9k3636bxc88vz9fa7vf4akchgn513ql1vd0xy4n7bah3"))))
+          "0qnpp9y3ygx4jk4pf5ad71fh2skbvnr6gl54m7rg5qysnx4g0q73"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -795,14 +807,14 @@ same arguments.")
 (define-public python-pytest-xdist
   (package
     (name "python-pytest-xdist")
-    (version "1.14")
+    (version "1.25.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pytest-xdist" version ".zip"))
+       (uri (pypi-uri "pytest-xdist" version))
        (sha256
         (base32
-         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))
+         "1d812apvcmshh2l8f38spqwb3bpp0x43yy7lyfpxxzc99h4r7y4n"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -822,8 +834,7 @@ same arguments.")
        ;;       (add-installed-pythonpath inputs outputs)
        ;;       (zero? (system* "py.test" "-v")))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-execnet" ,python-execnet)
        ("python-pytest" ,python-pytest)
@@ -851,9 +862,7 @@ result back.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/scripttest/scripttest-"
-             version ".tar.gz"))
+       (uri (pypi-uri "scripttest" version))
        (sha256
         (base32
          "0f4w84k8ck82syys7yg9maz93mqzc8p5ymis941x034v44jzq74m"))))
@@ -1021,14 +1030,14 @@ use of resources by test cases.")))
 (define-public python-subunit-bootstrap
   (package
     (name "python-subunit-bootstrap")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-subunit" version))
        (sha256
         (base32
-         "1yii2gx3z6323as3iraj1yphj76dy7i3h6kj63pnc5y0hwjs5sgx"))))
+         "1fsw8rsn1s3nklx06mayrg5rn2zbky6wwjc5z07s7rf1wjzfs1wn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-extras" ,python-extras)
@@ -1037,7 +1046,7 @@ use of resources by test cases.")))
      `(("python-fixtures" ,python-fixtures-bootstrap)
        ("python-hypothesis" ,python-hypothesis)
        ("python-testscenarios" ,python-testscenarios-bootstrap)))
-    (home-page "http://launchpad.net/subunit")
+    (home-page "https://launchpad.net/subunit")
     (synopsis "Python implementation of the subunit protocol")
     (description
      "This package is here for bootstrapping purposes only.  Use the regular
@@ -1124,9 +1133,7 @@ Python tests.")))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testrepository/testrepository-"
-             version ".tar.gz"))
+       (uri (pypi-uri "testrepository" version))
        (sha256
         (base32
          "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
@@ -1249,13 +1256,14 @@ C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jupyter/testpath/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/jupyter/testpath")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "04kh3fgvmqz6cfcw79q70qwjz7ib7lxm27cc548iy2rpr33qqf55"))))
+         "0r4iiizjql6ny1ln7ciw7rrbjadz1s9zrf2hl0xkgnh3ypd8936f"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; this package does not even have a setup.py
@@ -1297,9 +1305,7 @@ tools for mocking system commands and recording calls to those.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/testlib/testlib-"
-             version ".zip"))
+       (uri (pypi-uri "testlib" version ".zip"))
        (sha256
         (base32 "1mz26cxn4x8bbgv0rn0mvj2z05y31rkc8009nvdlb3lam5b4mj3y"))))
     (build-system python-build-system)
@@ -1796,9 +1802,7 @@ especially -cover-package.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/d/discover/discover-"
-             version ".tar.gz"))
+       (uri (pypi-uri "discover" version))
        (sha256
         (base32
          "0y8d0zwiqar51kxj8lzmkvwc3b8kazb04gk5zcb4nzg5k68zmhq5"))))
@@ -2029,13 +2033,13 @@ mocks, stubs and fakes.")
 (define-public python-flaky
   (package
     (name "python-flaky")
-    (version "3.4.0")
+    (version "3.5.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flaky" version))
               (sha256
                (base32
-                "18pkmf79rfkfpy1d2rrx3v55nxj762ilyk9rvd6s6dccxw58imsa"))))
+                "1nm1kjf857z5aw7v642ffsy1vwf255c6wjvmil71kckjyd0mxg8j"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Tests require 'coveralls' and 'genty' which are not in Guix yet.
@@ -2060,17 +2064,15 @@ retried.")
     (name "python-pyhamcrest")
     (version "1.9.0")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://github.com/hamcrest/PyHamcrest/archive/V"
-                version
-                ".tar.gz"))
-              (file-name
-               (string-append name "-" version ".tar.gz"))
+              ;; Tests not distributed from pypi release.
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hamcrest/PyHamcrest")
+                     (commit (string-append "V" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lqjajhwf7x7igvvnj5p1cm31y9njy07qby94w18kl6zwbdjqrwy"))))
+                "01qnzj9qnzz0y78qa3ing24ssvszb0adw59xc4qqmdn5wryy606b"))))
     (native-inputs                      ; All native inputs are for tests
      `(("python-pytest-cov" ,python-pytest-cov)
        ("python-mock" ,python-mock)
@@ -2094,13 +2096,13 @@ retried.")
     (name "unittest-cpp")
     (version "2.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/unittest-cpp/unittest-cpp/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/unittest-cpp/unittest-cpp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "1fgmna2la7z4pwwy2gd10gpgi2q1fk89npjfvkmzvhkxhyc231bl"))))
+               (base32 "0sxb3835nly1jxn071f59fwbdzmqi74j040r81fanxyw3s1azw0i"))))
     (arguments
      `(#:tests? #f))                     ; It's run after build automatically.
     (build-system cmake-build-system)
@@ -2152,3 +2154,45 @@ application \"sees\".  It is meant to be loaded using the dynamic linker's
 @code{LD_PRELOAD} environment variable.  The @command{faketime} command
 provides a simple way to achieve this.")
     (license license:gpl2)))
+
+(define-public umockdev
+  (package
+    (name "umockdev")
+    (version "0.11.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/martinpitt/umockdev/"
+                                  "releases/download/" version  "/"
+                                  "umockdev-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1in2hdan1g62wpvgjlj8mci85551ipr1964j2b9j06gm3blpihcx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-broken-test
+           (lambda _
+             (substitute* "tests/test-umockdev.c"
+               (("/\\* sys/ in other dir")
+                (string-append "return; // ")))
+             #t)))))
+    (native-inputs
+     `(("vala" ,vala)
+       ("python" ,python) ; for tests
+       ("which" ,which) ; for tests
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("eudev" ,eudev)
+       ("libgudev" ,libgudev)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://github.com/martinpitt/umockdev/")
+    (synopsis "Mock hardware devices for creating unit tests")
+    (description "umockdev mocks hardware devices for creating integration
+tests for hardware related libraries and programs.  It also provides tools to
+record the properties and behaviour of particular devices, and to run a
+program or test suite under a test bed with the previously recorded devices
+loaded.")
+    (license license:lgpl2.1+)))

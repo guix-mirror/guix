@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,9 +41,8 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -50,7 +50,9 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
@@ -62,15 +64,18 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
-  #:use-module (guix build-system emacs)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -102,8 +107,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.16.0")
-        (commit "5de5f8184530fd7e0e88514ae35cb2e9305910c1")
-        (revision 5))
+        (commit "4bddd12ad540d45a33a5f9f129b896843dca603f")
+        (revision 9))
     (package
       (name "guix")
 
@@ -119,7 +124,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1hxa1irb8jfjas2yajxilbhnn7rbg38zkbcyr71mwpxgcizg0bdj"))
+                  "1abn4ghb25kn0cmr9dbb3q3fxdcc0g2fnnmbrykxv111s6ahdmlw"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -297,9 +302,6 @@ the Nix package manager.")
       (license license:gpl3+)
       (properties '((ftp-server . "alpha.gnu.org"))))))
 
-;; Alias for backward compatibility.
-(define-public guix-devel guix)
-
 (define-public guix-daemon
   ;; This package is for internal consumption: it allows us to quickly build
   ;; the 'guix-daemon' program and use that in (guix self), used by 'guix
@@ -354,41 +356,28 @@ the Nix package manager.")
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec /var/guix/profiles/per-user/root/current-guix/bin/guix"))
+                    "exec \"${GUIX:-/var/guix/profiles/per-user/root/current-guix/bin/guix}\""))
                  #t)))
            (delete 'wrap-program)))))))
 
 (define-public guile2.0-guix
-  (package
-    (inherit guix)
-    (name "guile2.0-guix")
-    (inputs
-     `(("guile" ,guile-2.0)
-       ,@(alist-delete "guile" (package-inputs guix))))
-    (propagated-inputs
-     `(("gnutls" ,gnutls/guile-2.0)
-       ("guile-gcrypt" ,guile2.0-gcrypt)
-       ("guile-json" ,guile2.0-json)
-       ("guile-sqlite3" ,guile2.0-sqlite3)
-       ("guile-ssh" ,guile2.0-ssh)
-       ("guile-git" ,guile2.0-git)))))
+  (deprecated-package "guile2.0-guix" guix))
 
 (define-public guix-minimal
   ;; A version of Guix which is built with the minimal set of dependencies, as
   ;; outlined in the README "Requirements" section.  Intended as a CI job, so
   ;; marked as hidden.
-  (let ((guix guile2.0-guix))
-    (hidden-package
-     (package
-       (inherit guix)
-       (name "guix-minimal")
-       (inputs
-        `(("guile" ,guile-2.0.13)
-          ,@(alist-delete "guile" (package-inputs guix))))
-       (propagated-inputs
-        (fold alist-delete
-              (package-propagated-inputs guix)
-              '("guile-ssh")))))))
+  (hidden-package
+   (package
+     (inherit guix)
+     (name "guix-minimal")
+     (inputs
+      `(("guile" ,guile-2.2)
+        ,@(alist-delete "guile" (package-inputs guix))))
+     (propagated-inputs
+      (fold alist-delete
+            (package-propagated-inputs guix)
+            '("guile-ssh"))))))
 
 (define (source-file? file stat)
   "Return true if FILE is likely a source file, false if it is a typical
@@ -406,6 +395,12 @@ generated file."
     (_
      #t)))
 
+(define-public current-guix-package
+  ;; This parameter allows callers to override the package that 'current-guix'
+  ;; returns.  This is useful when 'current-guix' cannot compute it by itself,
+  ;; for instance because it's not running from a source code checkout.
+  (make-parameter #f))
+
 (define-public current-guix
   (let* ((repository-root (canonicalize-path
                            (string-append (current-source-directory)
@@ -416,12 +411,13 @@ generated file."
       "Return a package representing Guix built from the current source tree.
 This works by adding the current source tree to the store (after filtering it
 out) and returning a package that uses that as its 'source'."
-      (package
-        (inherit guix)
-        (version (string-append (package-version guix) "+"))
-        (source (local-file repository-root "guix-current"
-                            #:recursive? #t
-                            #:select? (force select?)))))))
+      (or (current-guix-package)
+          (package
+            (inherit guix)
+            (version (string-append (package-version guix) "+"))
+            (source (local-file repository-root "guix-current"
+                                #:recursive? #t
+                                #:select? (force select?))))))))
 
 
 ;;;
@@ -458,30 +454,6 @@ Haskell—they are built by functions that don't have side-effects, and they
 never change after they have been built.  Nix stores packages in the Nix
 store, usually the directory /nix/store, where each package has its own unique
 sub-directory.")
-    (license license:lgpl2.1+)))
-
-(define-public emacs-nix-mode
-  (package
-    (name "emacs-nix-mode")
-    (version "1.2.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/NixOS/nix-mode/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "06aqz0czznsj8835jqnk794sy2p6pa8kxfqwh0nl5d5vxivria6z"))))
-    (build-system emacs-build-system)
-    (inputs
-     `(("emacs-company" ,emacs-company)
-       ("emacs-mmm-mode" ,emacs-mmm-mode)))
-    (home-page "https://github.com/NixOS/nix-mode")
-    (synopsis "Emacs major mode for editing Nix expressions")
-    (description "@code{nixos-mode} provides an Emacs major mode for editing
-Nix expressions.  It supports syntax highlighting, indenting and refilling of
-comments.")
     (license license:lgpl2.1+)))
 
 (define-public stow
@@ -741,9 +713,10 @@ environments.")
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
-             (zero? (system* "py.test")))))))
+             (invoke "py.test"))))))
     (native-inputs
-     `(("python-ruamel.yaml" ,python-ruamel.yaml)
+     `(("python-cytoolz" ,python-cytoolz)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
        ("python-requests" ,python-requests)
        ("python-pycosat" ,python-pycosat)
        ("python-pytest" ,python-pytest)
@@ -794,7 +767,7 @@ This package provides Conda as a library.")
                ;; application form, rather than the default, library form.
                ;; With this, we are able to run commands like `conda --help`
                ;; directly on the command line
-               (zero? (system* "python" "utils/setup-testing.py" "build_py"))))
+               (invoke "python" "utils/setup-testing.py" "build_py")))
            (replace 'install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -810,8 +783,8 @@ This package provides Conda as a library.")
 
                  ;; And it aborts if the directory doesn't exist.
                  (mkdir-p target)
-                 (zero? (system* "python" "utils/setup-testing.py" "install"
-                                 (string-append "--prefix=" out))))))
+                 (invoke "python" "utils/setup-testing.py" "install"
+                         (string-append "--prefix=" out)))))
            ;; The "activate" and "deactivate" scripts don't need wrapping.
            ;; They also break when they are renamed.
            (add-after 'wrap 'undo-wrap
@@ -984,3 +957,51 @@ tools that combines a \"git-like\" model for committing and downloading
 bootable filesystem trees, along with a layer for deploying them and managing
 the bootloader configuration.")
     (license license:lgpl2.0+)))
+
+(define-public flatpak
+  (package
+   (name "flatpak")
+   (version "1.1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/flatpak/flatpak/releases/download/"
+                         version "/flatpak-" version ".tar.xz"))
+     (sha256
+      (base32
+       "0bkjwh49kajyd78vdh0g9arb352a7rccaifas9zxa78phhja2v2p"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
+      #:configure-flags (list
+                         "--enable-documentation=no" ;; FIXME
+                         "--enable-system-helper=no"
+                         "--localstatedir=/var"
+                         (string-append "--with-system-bubblewrap="
+                                        (assoc-ref %build-inputs "bubblewrap")
+                                        "/bin/bwrap"))))
+   (native-inputs `(("bison" ,bison)
+                    ("gettext" ,gnu-gettext)
+                    ("glib:bin" ,glib "bin") ; for glib-mkenums + gdbus-codegen
+                    ("gobject-introspection" ,gobject-introspection)
+                    ("libcap" ,libcap)
+                    ("pkg-config" ,pkg-config)))
+   (inputs `(("appstream-glib" ,appstream-glib)
+             ("bubblewrap" ,bubblewrap)
+             ("gdk-pixbuf" ,gdk-pixbuf)
+             ("gpgme" ,gpgme)
+             ("json-glib" ,json-glib)
+             ("libarchive" ,libarchive)
+             ("libostree" ,libostree)
+             ("libseccomp" ,libseccomp)
+             ("libsoup" ,libsoup)
+             ("libxau" ,libxau)
+             ("libxml2" ,libxml2)
+             ("nettle" ,nettle)
+             ("util-linux" ,util-linux)))
+   (home-page "https://flatpak.org")
+   (synopsis "System for building, distributing, and running sandboxed desktop
+applications")
+   (description "Flatpak is a system for building, distributing, and running
+sandboxed desktop applications on GNU/Linux.")
+   (license license:lgpl2.1+)))

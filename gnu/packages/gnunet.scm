@@ -2,11 +2,12 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
@@ -67,14 +68,16 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.7")
+   (version "1.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
+            (patches (search-patches "libextractor-CVE-2018-20430.patch"
+                                     "libextractor-CVE-2018-20431.patch"))
             (sha256
              (base32
-              "13wf6vj7mkv6gw8h183cnk7m24ir0gyf198pyb2148ng4klgv9p0"))))
+              "1z1cb35griqzvshqdv5ck98dy0sgpsswn7fgiy7lbzi34sma8dg2"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
@@ -145,14 +148,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.59")
+   (version "0.9.62")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0g4jgnv43yddr9yxrqg11632rip0lg5c53gmy5wy3c0i1dywv74v"))))
+              "0jfvi1fb4im3a3m8qishbmzx3zch993c0mhvl2k92l1zf1yhjgmx"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -186,16 +189,16 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.62.0")
+   (version "7.63.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.Z"))
             (sha256
              (base32
-              "1n258my5q4rxv140xvb1qh6vsh42ii0i8p7f2m15szqabm89487q"))))
+              "021b3pdfnqywk5q07y48kxyz7g4jjg35dk3cv0ps0x50qjr4ix33"))))
    (build-system gnu-build-system)
    (outputs '("out"
-              "doc"))                             ; 1.5 MiB of man3 pages
+              "doc"))                             ; 1.7 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls/dane)
              ("libidn" ,libidn)
              ("zlib" ,zlib)))
@@ -235,6 +238,8 @@ with URL syntax.  While cURL supports many crypto backends, libgnurl only
 supports HTTP, HTTPS and GnuTLS.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
+   (properties '((ftp-server . "ftp.gnu.org")
+                 (ftp-directory . "/gnunet")))
    (home-page "https://gnunet.org/gnurl")))
 
 (define-public gnunet
@@ -307,19 +312,20 @@ kinds of basic applications for the foundation of a GNU internet.")
    (home-page "https://gnunet.org/")))
 
 (define-public guile-gnunet                       ;GSoC 2015!
-  (let ((commit "383eac2aab175d8d9ea5315c2f1c8a5055c76a52"))
+  (let ((commit "d12167ab3c8d7d6caffd9c606e389ef043760602")
+        (revision "1"))
     (package
       (name "guile-gnunet")
-      (version (string-append "0.0." (string-take commit 7)))
+      (version (git-version "0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://git.savannah.gnu.org/git/guix/gnunet.git/")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0k6mn28isjlxrnvbnblab3nh2xqx1b7san8k98kc35ap9lq0iz8w"))))
+                  "0nqc18jh9j30y4l6yh6j35byfg6qalq7yr3frv9rk10qa041c2sv"))))
       (build-system gnu-build-system)
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf-wrapper)

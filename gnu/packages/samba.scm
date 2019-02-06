@@ -150,14 +150,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.9.3")
+    (version "4.9.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "1krm47x08c0vcrq12dxs8mbicma1ck2sl1i0hgkvrmwsgrqdi3yg"))))
+               "0kqbzywlnh1skg6g78qilyn12qv7wri66h5v9f77igncpkcai63d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -287,15 +287,9 @@ destructors.  It is the core memory allocator used in Samba.")
         `(modify-phases ,phases
            (replace 'build
              (lambda _
-               (letrec-syntax ((shell (syntax-rules ()
-                                        ((_ (command ...) rest ...)
-                                         (and (zero? (system* command ...))
-                                              (shell rest ...)))
-                                        ((_)
-                                         #t))))
-                 (shell ("gcc" "-c" "-Ibin/default" "-I" "lib/replace"
-                         "-I." "-Wall" "-g" "talloc.c")
-                        ("ar" "rc" "libtalloc.a" "talloc.o")))))
+               (invoke "gcc" "-c" "-Ibin/default" "-I" "lib/replace"
+                       "-I." "-Wall" "-g" "talloc.c")
+               (invoke "ar" "rc" "libtalloc.a" "talloc.o")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out     (assoc-ref outputs "out"))
@@ -326,9 +320,9 @@ destructors.  It is the core memory allocator used in Samba.")
            ;; tevent uses a custom configuration script that runs waf.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)
-                               "--bundled-libraries=NONE"))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       "--bundled-libraries=NONE")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python-2)))
@@ -374,11 +368,11 @@ many event types, including timers, signals, and the classic file descriptor eve
            ;; ldb use a custom configuration script that runs waf.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)
-                               (string-append "--with-modulesdir=" out
-                                              "/lib/ldb/modules")
-                               "--bundled-libraries=NONE"))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-modulesdir=" out
+                                      "/lib/ldb/modules")
+                       "--bundled-libraries=NONE")))))))
     (native-inputs
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)

@@ -376,7 +376,7 @@ shader compilation.")
         ("spirv-tools" ,spirv-tools)
         ("vulkan-headers" ,vulkan-headers)
         ("vulkan-loader" ,vulkan-loader)
-        ("wine" ,wine) ; Needed for 'widl'.
+        ("wine-minimal" ,wine-minimal) ; Needed for 'widl'.
         ("xcb-util" ,xcb-util)
         ("xcb-util-keysyms" ,xcb-util-keysyms)
         ("xcb-util-wm" ,xcb-util-wm)))

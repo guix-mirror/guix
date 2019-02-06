@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
@@ -986,7 +988,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.26")
+    (version "1.8.27")
     (source (origin
               (method url-fetch)
               (uri
@@ -996,7 +998,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1qpyyfga8rs02p3186sns8qvh2bzwa48ka845nrcqh83dyd23nj0"))
+                "1h1f7v9pv0rzp14cxzv8kaa8mdd717fbqv83l7c5dvvi8jwnisvv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1510,7 +1512,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "6.6")
+    (version "7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1518,7 +1520,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "0m1hllbb78rr6cxkbalmz1gqkl0psgq8rrmv4gwcmz34n07kvx2i"))))
+                "077nx2rn9szrg6isdh0938zbp7vr3dsyxl4jdyyzv1xwhqksrqg5"))))
     (build-system gnu-build-system)
     (inputs `(("libcap-ng" ,libcap-ng)))
     (home-page "https://www.smartmontools.org/")
@@ -1567,9 +1569,7 @@ specified directories.")
    (source
     (origin
       (method url-fetch)
-      (uri (string-append
-            "https://pypi.python.org/packages/source/g/graphios/graphios-"
-            version ".tar.gz"))
+      (uri (pypi-uri "graphios" version))
       (sha256
        (base32
         "1h87hvc315wg6lklbf4l7csd3n5pgljwrfli1p3nasdi0izgn66i"))))
@@ -1601,14 +1601,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.5")
+    (version "2.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "1fsif2jmkrrgiawsd8r6sxrqvh01fvrmdhas0p540a6i9fby3yda"))))
+         "0f7b2ghm34ql8yv90wr0ngd6w7wyvnlcxpc3snkj86kcjsnmx1bd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2014,7 +2014,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.27")
+    (version "3.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -2022,7 +2022,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0my32n2x8x0f0wr8ql7qgk9qhb6ibv5b1rqs5b2r4nadv0gpiv96"))
+                "1i11qlnbg95nx7dcf6wqvfz7b230dqr5m981md4hvyaa1qw3xj5m"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2810,17 +2810,17 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
 (define-public pscircle
   (package
     (name "pscircle")
-    (version "1.1.0")
+    (version "1.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/mildlyparallel/pscircle/-/archive/v"
-             version "/pscircle-v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/mildlyparallel/pscircle.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1k757yf2bmgfrjd417l6kpcf83hlvi0z1791vz967mwcklrsb3fj"))))
+         "0qsif00dkqa8ky3vl2ycx5anx2yk62nrv47f5lrlqzclz91f00fx"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2917,7 +2917,7 @@ Logitech Unifying Receiver.")
 (define-public lynis
   (package
     (name "lynis")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method git-fetch)
@@ -2927,7 +2927,7 @@ Logitech Unifying Receiver.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rzc0y8lk22bymf56249jzmllki2lh0rz5in4lkrc5fkmp29c2wv"))
+         "1nv2dqd2k2n8mcdr6xl5g713xxkgvja6487by1wn4k0b416jij9i"))
        (modules '((guix build utils)))
        (snippet
         '(begin

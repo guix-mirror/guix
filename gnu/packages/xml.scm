@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -692,14 +692,14 @@ This module provide functions which simplify writing tests for
 (define-public perl-xml-compile
   (package
     (name "perl-xml-compile")
-    (version "1.60")
+    (version "1.61")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-" version ".tar.gz"))
               (sha256
                (base32
-                "04vv7wy5v1l38xsfdbacvyd90qircvnrs2f3ysljm1nhq8mycmwm"))))
+                "13dvsaj8simivj867rkjlf7hhvvcwlahnhk70zf8cq2xbg8wmf7x"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-carp" ,perl-carp)

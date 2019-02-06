@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module ((guix utils)
+                #:select (%current-system)))
 
 (define-public nasm
   (package
@@ -61,7 +64,7 @@
          (add-after 'install 'install-info
            (lambda _
              (invoke "make" "install_doc"))))))
-    (home-page "http://www.nasm.us/")
+    (home-page "https://www.nasm.us/")
     (synopsis "80x86 and x86-64 assembler")
     (description
      "NASM, the Netwide Assembler, is an 80x86 and x86-64 assembler designed
@@ -71,7 +74,7 @@ Windows32 and Windows64.  It will also output plain binary files.  Its syntax
 is designed to be simple and easy to understand, similar to Intel's but less
 complex.  It supports all currently known x86 architectural extensions, and
 has strong support for macros.")
-    (license license:bsd-3)))
+    (license license:bsd-2)))
 
 (define-public yasm
   (package
@@ -122,3 +125,81 @@ abstracts over the target CPU by exposing a standardized RISC instruction set
 to the clients.")
     (home-page "https://www.gnu.org/software/lightning/")
     (license license:gpl3+)))
+
+(define-public fasm
+  (package
+    (name "fasm")
+    (version "1.73.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://flatassembler.net/fasm-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "02wqkqxpn3p0iwcagsm92qd9cdfcnbx8a09qg03b3pjppp30hmp6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests exist
+       #:strip-binaries? #f ; fasm has no sections
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no "configure" script exists
+         (replace 'build
+           (lambda _
+             (chdir "source/Linux/")
+             (if (string=? ,(%current-system) "x86_64-linux")
+                 ;; Use pre-compiled binaries in top-level directory to build
+                 ;; fasm.
+                 (invoke "../../fasm.x64" "fasm.asm")
+                 (invoke "../../fasm" "fasm.asm"))))
+         (replace 'install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (install-file "fasm" (string-append out "/bin")))
+             #t)))))
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (synopsis "Assembler for x86 processors")
+    (description
+     "FASM is an assembler that supports x86 and IA-64 Intel architectures.
+It does multiple passes to optimize machine code.  It has macro abilities and
+focuses on operating system portability.")
+    (home-page "https://flatassembler.net/")
+    (license license:bsd-2)))
+
+(define-public dev86
+  (package
+    (name "dev86")
+    (version "0.16.21")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://v3.sk/~lkundrak/dev86/Dev86src-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "154dyr2ph4n0kwi8yx0n78j128kw29rk9r9f7s2gddzrdl712jr3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; They use submakes wrong
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:system "i686-linux" ; Standalone ld86 had problems otherwise
+       #:tests? #f ; No tests exist
+       #:phases
+       (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'install 'mkdir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir-p (string-append out "/bin"))
+              (mkdir-p (string-append out "/man/man1"))
+              #t))))))
+    (synopsis "Intel 8086 (primarily 16-bit) assembler, C compiler and
+linker")
+    (description "This package provides a Intel 8086 (primarily 16-bit)
+assembler, a C compiler and a linker.  The assembler uses Intel syntax
+(also Intel order of operands).")
+    (home-page "https://github.com/jbruchon/dev86")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:gpl2+)))

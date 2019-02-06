@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -29,7 +29,6 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
@@ -45,11 +44,14 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gcc)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -91,14 +93,14 @@ older or slower computers and embedded systems.")
 (define-public links
   (package
     (name "links")
-    (version "2.17")
+    (version "2.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   name "-" version ".tar.bz2"))
                 (sha256
                (base32
-                "0dh2gbzcw8kxy81z4ggsynibnqs56b83vy8qgz7illsag1irff6q"))))
+                "0mwhh61klicn2vwk39nc7y4cw4mygzdi2nljn4r0gjbw6jmw3337"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -366,7 +368,7 @@ driven and does not detract you from your daily work.")
 (define-public next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -375,13 +377,16 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "00xi01r6gxlrv7xc2dhf4da30y0vng1snbdmc8d829qyn0chl55q"))
+         "0a066f56hnb9znbwnv1blm31j0ysv05n4wzlkli0zgw087c9047x"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags (list "gtk-webkit"
-                          "CC=gcc"
+                          (string-append
+                           "CC="
+                           (assoc-ref %build-inputs "gcc-7")
+                           "/bin/gcc")
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
@@ -392,9 +397,10 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk)))
+       ("webkitgtk" ,webkitgtk-2.22)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gcc-7" ,gcc-7) ; needed because webkitgtk-2.22 is compiled with gcc-7
+       ("pkg-config" ,pkg-config)))
     (home-page "https://next.atlas.engineer")
     (synopsis "Infinitely extensible web-browser (user interface only)")
     (description "Next is a keyboard-oriented, extensible web-browser
@@ -464,5 +470,6 @@ features for productive professionals.")
        ("cl-css" ,sbcl-cl-css)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("s-xml-rpc" ,sbcl-s-xml-rpc)
-       ("unix-opts" ,sbcl-unix-opts)))
+       ("unix-opts" ,sbcl-unix-opts)
+       ("trivial-clipboard" ,sbcl-trivial-clipboard)))
     (synopsis "Infinitely extensible web-browser (with Lisp development files)")))

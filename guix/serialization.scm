@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +59,7 @@
 
 ;; Similar to serialize.cc in Nix.
 
-(define-condition-type &nar-error &error      ; XXX: inherit from &nix-error ?
+(define-condition-type &nar-error &error      ; XXX: inherit from &store-error ?
   nar-error?
   (file  nar-error-file)                       ; file we were restoring, or #f
   (port  nar-error-port))                      ; port from which we read
@@ -380,10 +380,19 @@ which case you can use 'identity'."
                          (&nar-error (file f) (port port))))))
     (write-string ")" p)))
 
+(define port-conversion-strategy
+  (fluid->parameter %default-port-conversion-strategy))
+
 (define (restore-file port file)
   "Read a file (possibly a directory structure) in Nar format from PORT.
 Restore it as FILE."
-  (parameterize ((currently-restored-file file))
+  (parameterize ((currently-restored-file file)
+
+                 ;; Error out if we can convert file names to the current
+                 ;; locale.  (XXX: We'd prefer UTF-8 encoding for file names
+                 ;; regardless of the locale, but that's what Guile gives us
+                 ;; so far.)
+                 (port-conversion-strategy 'error))
     (let ((signature (read-string port)))
       (unless (equal? signature %archive-version-1)
         (raise

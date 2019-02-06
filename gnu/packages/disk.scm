@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,9 +38,9 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cryptsetup)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -54,7 +54,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages w3m)
@@ -63,6 +65,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system scons)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -748,3 +751,71 @@ technology (like LVM, Btrfs, MD RAID, Swap...) is implemented in a separate
 plugin, possibly with multiple implementations (e.g. using LVM CLI or the new
 LVM D-Bus API).")
     (license license:lgpl2.1+)))
+
+(define-public rmlint
+  (package
+    (name "rmlint")
+    (version "2.8.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sahib/rmlint")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1gc7gbnh0qg1kl151cv1ld87vhpm1v3pnkn7prhscdcc21jrg8nz"))))
+    (build-system scons-build-system)
+    (arguments
+     `(#:scons ,scons-python2
+       #:scons-flags (list (string-append "--prefix=" %output)
+                           (string-append "--actual-prefix=" %output))
+       #:tests? #f                      ; No tests?
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scons-propagate-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; TODO: `rmlint --gui` fails with
+             ;; "Failed to load shredder: No module named 'shredder'".
+             ;; The GUI might also need extra dependencies, such as
+             ;; python-gobject, python-cairo, dconf, librsvg, gtksourceview3.
+             (substitute* "lib/cmdline.c"
+               (("const char \\*commands\\[\\] = \\{\"python3\", \"python\", NULL\\};")
+                (string-append
+                 "const char *commands[] = {\""
+                 (assoc-ref inputs "python") "/bin/python"
+                 "\", \"python\", NULL};")))
+             ;; By design, SCons does not, by default, propagate
+             ;; environment variables to subprocesses.  See:
+             ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
+             ;; Here, we modify the SConstruct file to arrange for
+             ;; environment variables to be propagated.
+             (substitute* "SConstruct"
+               (("^env = Environment\\(.*\\)" all)
+                (string-append
+                 all
+                 "\nenv['ENV']=os.environ"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")
+       ("python-sphinx" ,python-sphinx)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("glib" ,glib)
+       ("libelf" ,libelf)
+       ("elfutils" ,elfutils)
+       ("json-glib" ,json-glib)
+       ("libblkid" ,util-linux)))
+    (home-page "https://rmlint.rtfd.org")
+    (synopsis "Remove duplicates and other lint from the filesystem")
+    (description "@command{rmlint} finds space waste and other broken things
+on your filesystem and offers to remove it.  @command{rmlint} can find:
+
+@itemize
+@item duplicate files and duplicate directories,
+@item non-stripped binaries (i.e. binaries with debug symbols),
+@item broken symbolic links,
+@item empty files and directories,
+@item files with broken user and/or group ID.
+@end itemize\n")
+    (license license:gpl3+)))

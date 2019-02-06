@@ -1,0 +1,21 @@
+This patch was copied from Debian.
+
+Description: skip the workbuf test if VB2_WORKBUF_ALIGN different from 16 
+Author: Sophie Brun <sophie@freexian.com>
+Last-Update: 2015-12-03
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/tests/vb2_common_tests.c
++++ b/tests/vb2_common_tests.c
+@@ -70,6 +70,11 @@ static void test_workbuf(void)
+ 	/* NOTE: There are several magic numbers below which assume that
+ 	 * VB2_WORKBUF_ALIGN == 16 */
+ 
++        /* Skip the tests if VB2_WORKBUF_ALIGN != 16 */
++        if (VB2_WORKBUF_ALIGN != 16) {
++            return;
++        }
++
+ 	/* Init */
+ 	vb2_workbuf_init(&wb, p0, 64);
+ 	TEST_EQ(vb2_offset_of(p0, wb.buf), 0, "Workbuf init aligned");

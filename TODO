@@ -4,6 +4,7 @@
 #+STARTUP: content hidestars
 
 Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -83,3 +84,41 @@ Problems include that current glibc releases do not build on GNU/Hurd.
 In addition, there haven’t been stable releases of GNU Mach, MiG, and
 Hurd, which would be a pre-condition.
 
+* Installer
+** Fix impossibility to restart on error after cow-store has been started
+See https://lists.gnu.org/archive/html/guix-devel/2018-12/msg00161.html.
+- Force reboot upon installer failure
+- Unshare the installer process
+- Run the installer process in a separate namespace
+** Partitioning
+*** Add RAID support
+*** Add more partitioning schemes
+The actual schemes are taken from Debian Installer but some are not
+implemented yet: like "Separate partitions for /home /var and /tmp".
+*** Replace wait page "Partition formating is in progress, please wait"
+Create a new waiting page describing what's being done:
+
+[              20%              ]
+Running mkfs.ext4 on /dev/sda2 ...
+
+[              40%              ]
+Running mkfs.ext4 on /dev/sda3 ...
+*** Add a confirmation page before formating/partitioning
+** Desktop environments
+*** Allow for no desktop environments
+Propose to choose between "headless server" and "lightweight X11" in a new
+page.
+*** Add services selection feature
+Add a services page to the configuration. Ask for services to be installed
+like SSH, bluetooth, TLP in a checkbox list?
+** Locale and keymap
+*** Try to guess user locale and keymap by probing BIOS or HW (dmidecode)
+** Timezone
+*** Regroup everything in one single page
+Under the form:
+(UTC + 1) Europe/Paris
+(UTC + 2) Africa/Cairo
+...
+** Display issue
+*** Investigate display issue described here:
+https://lists.gnu.org/archive/html/guix-devel/2019-01/msg00305.html

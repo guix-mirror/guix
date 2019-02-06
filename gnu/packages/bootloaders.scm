@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 nee <nee@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages swig)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages web)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -110,6 +112,12 @@
                      ;; Make the font visible.
                      (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
                      (system* "gunzip" "unifont.bdf.gz")
+
+                     ;; Give the absolute file name of 'ckbcomp'.
+                     (substitute* "util/grub-kbdcomp.in"
+                       (("^ckbcomp ")
+                        (string-append (assoc-ref inputs "console-setup")
+                                       "/bin/ckbcomp ")))
                      #t))
                   (add-before 'check 'disable-flaky-test
                     (lambda _
@@ -133,6 +141,10 @@
        ;; Depend on mdadm, which is invoked by 'grub-probe' and 'grub-install'
        ;; to determine whether the root file system is RAID.
        ("mdadm" ,mdadm)
+
+       ;; Console-setup's ckbcomp is invoked by grub-kbdcomp.  It is required
+       ;; for generating alternative keyboard layouts.
+       ("console-setup" ,console-setup)
 
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
@@ -364,7 +376,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.11")
+    (version "2019.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -372,7 +384,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0znkwljfwwn4y7j20pzz4ilqw8znphrfxns0x1lwdzh3xbr96z3k"))))
+                "08hwsmh5xsb1gcxsv8gvx00bai938dm5y3889n8jif3a8rd7xgah"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -428,6 +440,11 @@ also initializes the boards (RAM etc).")
               (("def test_ctrl_c")
                "@pytest.mark.skip(reason='Guix has problems with SIGINT')
 def test_ctrl_c"))
+             ;; This test requires a sound system, which is un-used in u-boot-tools.
+             (for-each (lambda (file)
+                              (substitute* file
+                                  (("CONFIG_SOUND=y") "CONFIG_SOUND=n")))
+                              (find-files "configs" "sandbox_.*defconfig$"))
              #t))
          (replace 'configure
            (lambda* (#:key make-flags #:allow-other-keys)
@@ -504,7 +521,7 @@ board-independent tools.")))
              (lambda* (#:key outputs make-flags #:allow-other-keys)
                (let ((config-name (string-append ,board "_defconfig")))
                  (if (file-exists? (string-append "configs/" config-name))
-                     (zero? (apply system* "make" `(,@make-flags ,config-name)))
+                     (apply invoke "make" `(,@make-flags ,config-name))
                      (begin
                        (display "Invalid board name. Valid board names are:"
                                 (current-error-port))
@@ -583,20 +600,7 @@ board-independent tools.")))
   (make-u-boot-sunxi64-package "pine64_plus" "aarch64-linux-gnu"))
 
 (define-public u-boot-pinebook
-  (let ((base (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu")))
-    (package
-      (inherit base)
-      (source (origin
-              (inherit (package-source u-boot))
-              (patches (search-patches
-                        ;; Add patches to enable Pinebook support from sunxi
-                        ;; maintainer tree: git://git.denx.de/u-boot-sunxi.git
-                        "u-boot-pinebook-a64-update-dts.patch"
-                        "u-boot-pinebook-syscon-node.patch"
-                        "u-boot-pinebook-mmc-calibration.patch"
-                        "u-boot-pinebook-video-bridge.patch"
-                        "u-boot-pinebook-r_i2c-controller.patch"
-                        "u-boot-pinebook-dts.patch")))))))
+  (make-u-boot-sunxi64-package "pinebook" "aarch64-linux-gnu"))
 
 (define-public u-boot-bananapi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))
@@ -673,10 +677,25 @@ board-independent tools.")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0h0m3l69vp9dr6xrs1p6y7ilkq3jq8jraw2z20kqfv7lvc9l1lxj"))))
+                "0h0m3l69vp9dr6xrs1p6y7ilkq3jq8jraw2z20kqfv7lvc9l1lxj"))
+              (patches
+               (search-patches "vboot-utils-skip-test-workbuf.patch"
+                               "vboot-utils-fix-tests-show-contents.patch"
+                               "vboot-utils-fix-format-load-address.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
+                          ;; On ARM, we must pass "HOST_ARCH=arm" so that the
+                          ;; ${HOST_ARCH} and ${ARCH} variables in the makefile
+                          ;; match.  Otherwise, ${HOST_ARCH} will be assigned
+                          ;; "armv7l", the value of `uname -m`, and will not
+                          ;; match ${ARCH}, which will make the tests require
+                          ;; QEMU for testing.
+                          ,@(if (string-prefix? "arm"
+                                                (or (%current-target-system)
+                                                    (%current-system)))
+                                '("HOST_ARCH=arm")
+                                '())
                           (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-hard-coded-paths
@@ -702,7 +721,14 @@ board-independent tools.")))
                                         ".drv-0/source")))
                       ;; Tests require write permissions to many of these files.
                       (for-each make-file-writable (find-files "tests/futility"))
-                      #t)))
+                      #t))
+                  (add-after 'install 'install-devkeys
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (share (string-append out "/share/vboot-utils")))
+                        (copy-recursively "tests/devkeys"
+                                          (string-append share "/devkeys"))
+                        #t))))
        #:test-target "runtests"))
     (native-inputs
      `(("pkg-config" ,pkg-config)

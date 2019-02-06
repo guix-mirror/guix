@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages django)
   #:use-module (gnu packages dns)
@@ -75,6 +77,7 @@
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
@@ -93,12 +96,14 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages search)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
@@ -256,14 +261,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.11.0")
+    (version "1.11.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "1qqhkhlzvjj0iih8vm0wfagv4fzqqy1wnsb4sqsfv7w06ccjdjcj"))
+               "08w7lbhj5ba2zkjcd0cxkgfiy9y82yhg731xjg9i9292kz1x8p6s"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -486,15 +491,16 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.1")
+    (version "7.2.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OfflineIMAP/offlineimap")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1022xf2w1xax4vx4kzhlfbhaf0b72wkpvrcscvs4q8qk2ja68h8x"))))
+                "11nj7y9fa7v6vcxk3wr8smfgm3mxxnmq3l8q69rrjxlfzcv7dl8m"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -527,7 +533,7 @@ and corrections.  It is based on a Bayesian filter.")
                (wrap-program bin
                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
                #t))))))
-    (home-page "http://www.offlineimap.org")
+    (home-page "https://www.offlineimap.org")
     (synopsis "Sync emails between two repositories")
     (description
      "OfflineImap synchronizes emails between two repositories, so that you
@@ -942,7 +948,7 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.9.1")
+    (version "1.9.2")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -950,7 +956,7 @@ useful features.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-               (base32 "1628lb1qvxixl64ifvjjr839hmirpx532klhv2mr7m6gmn7nlci5"))))
+               (base32 "13jiy2ddxbp9f2mk1mip9sk8h97bva5m0pnq2mlvh5xhifs6gza4"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -1007,15 +1013,15 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.1")
+    (version "3.17.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.claws-mail.org/releases/" name "-" version
+                    "https://www.claws-mail.org/releases/claws-mail-" version
                     ".tar.xz"))
               (sha256
                (base32
-                "1wknxbwyzm5xjh3cqmddcxmvp1rkp301qga5n5rgfi7vcd0myyvm"))))
+                "1wnj6c9cbmhphs2l6wfvndkk2g08rmxw0sl2c8k1k008dxd1ykjh"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1067,7 +1073,7 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.1")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
@@ -1075,7 +1081,7 @@ which can add many functionalities to the base client.")
                            "/msmtp-" version ".tar.xz"))
        (sha256
         (base32
-         "1nm4vizrnrrnknc4mc8nr7grz9q76m1vraa0hsl5rfm34gnsg8ph"))))
+         "14w7lmw1jxlganfk089b0ib23y5917mxbg3xqpid007dd4cmq66i"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -2647,8 +2653,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "bfd96ce76b4600ae232e6548b26c9365095fd174")
-        (revision "2"))
+  (let ((commit "ea5a738010148284aed211da953ad670003aefea")
+        (revision "3"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -2660,7 +2666,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "05miwfi1bh0v9x2gvn15bwkb3gn4xy53z506ysjzns2y497zkc5h"))))
+                  "0ci5x8dqjmp74w33q2dbs5csxp4ilfmc1xxaa8q2jnh52d7597hl"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases

@@ -30,6 +30,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ruby)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)

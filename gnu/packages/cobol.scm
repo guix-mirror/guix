@@ -22,7 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl))

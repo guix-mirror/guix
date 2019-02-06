@@ -1,12 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -50,6 +50,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config))
 
@@ -1533,7 +1534,7 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "3.0114")
+    (version "4.08")
     (source
      (origin
        (method url-fetch)
@@ -1541,7 +1542,7 @@ CPAN::Meta object are present.")
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "0jhi1v0631x4d14a7cpfnpjqhs34zkygxjn1nwvvr927awx5jx71"))))
+         "0bbw9sk3kgfwkg9lw3vf59g4jjvr69vv09sinndl2nlbd5dlgh9b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -3430,7 +3431,7 @@ provide a quick dropin when such functionality is needed.")
 (define-public perl-file-homedir
   (package
     (name "perl-file-homedir")
-    (version "1.002")
+    (version "1.004")
     (source
      (origin
        (method url-fetch)
@@ -3438,7 +3439,7 @@ provide a quick dropin when such functionality is needed.")
                            "File-HomeDir-" version ".tar.gz"))
        (sha256
         (base32
-         "0x62hn8rc7ninf9nlp69h61yh21g4cbq2g81sh64cf2ify2hqk7b"))))
+         "1bciyzwv7gwsnaykqz0czj6mlbkkg4hg1s40s1q7j2p6nlmpxxj5"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-which" ,perl-file-which)))
@@ -3558,7 +3559,7 @@ the input record separator string on a per file basis.")
 (define-public perl-file-remove
   (package
     (name "perl-file-remove")
-    (version "1.57")
+    (version "1.58")
     (source
      (origin
        (method url-fetch)
@@ -3566,14 +3567,16 @@ the input record separator string on a per file basis.")
                            "File-Remove-" version ".tar.gz"))
        (sha256
         (base32
-         "1b814lw181kkqh6c1n4p2zlzzsq6ic5pfpr831nphf2w2rhcvgmk"))))
+         "1n6h5w3sp2bs4cfrifdx2z15cfpb4r536179mx1a12xbmj1yrxl1"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/File-Remove")
     (synopsis "Remove files and directories in Perl")
-    (description "File::Remove::remove removes files and directories.  It acts
-like /bin/rm, for the most part.  Although \"unlink\" can be given a list of
-files, it will not remove directories; this module remedies that.  It also
-accepts wildcards, * and ?, as arguments for file names.")
+    (description "@code{File::Remove::remove} removes files and directories.
+It acts like @code{/bin/rm}, for the most part.  Although @code{unlink} can be
+given a list of files, it will not remove directories; this module remedies
+that.  It also accepts wildcards, * and ?, as arguments for file names.")
     (license (package-license perl))))
 
 (define-public perl-file-sharedir
@@ -3647,15 +3650,15 @@ allows you to locate these files after installation.")
 (define-public perl-file-slurp
   (package
     (name "perl-file-slurp")
-    (version "9999.19")
+    (version "9999.25")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/U/UR/URI/"
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
                            "File-Slurp-" version ".tar.gz"))
        (sha256
         (base32
-         "0hrn4nipwx40d6ji8ssgr5nw986z9iqq8cn0kdpbszh9jplynaff"))))
+         "1hg3bhf5m78d77p4174cnldd75ppyrvr5rkc8w289ihvwsx9gsn7"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Slurp")
     (synopsis "Reading/Writing/Modifying of complete files")
@@ -3667,7 +3670,7 @@ file names in a directory.")
 (define-public perl-file-slurper
   (package
     (name "perl-file-slurper")
-    (version "0.008")
+    (version "0.012")
     (source
      (origin
        (method url-fetch)
@@ -3677,8 +3680,10 @@ file names in a directory.")
              ".tar.gz"))
        (sha256
         (base32
-         "0cyjspspms6zyjcqz9v18dbs574g085h2jzjh41xvsrc1qa8bxhh"))))
+         "0y5518ji60yfkx9ggjp309j6g8vfri4ka4zqlsys245i2sj2xysf"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)))
     (home-page "https://metacpan.org/release/File-Slurper")
@@ -3729,14 +3734,14 @@ a safe way.")
 (define-public perl-file-which
   (package
     (name "perl-file-which")
-    (version "1.09")
+    (version "1.23")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+              (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
                                   "File-Which-" version ".tar.gz"))
               (sha256
                (base32
-                "1hxjyh9yrv32f3g8vrnr8iylzprajsac14vjm75kf1qnj1jyqbxp"))))
+                "0y70qh5kn2hyrrvbsfhg0iws2qggk5vkpz37f7rbd5rd9cjc57dp"))))
     (build-system perl-build-system)
     (native-inputs `(("test-script" ,perl-test-script)))
     (synopsis "Portable implementation of the `which' utility")
@@ -3744,7 +3749,7 @@ a safe way.")
      "File::Which was created to be able to get the paths to executable
 programs on systems under which the `which' program wasn't implemented in the
 shell.")
-    (home-page "https://metacpan.org/release/ADAMK/File-Which-1.09")
+    (home-page "https://metacpan.org/release/File-Which")
     (license (package-license perl))))
 
 (define-public perl-file-zglob
@@ -4358,15 +4363,15 @@ commands.")
 (define-public perl-json
   (package
     (name "perl-json")
-    (version "2.90")
+    (version "4.01")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MA/MAKAMAKA/"
+       (uri (string-append "mirror://cpan/authors/id/I/IS/ISHIGAKI/"
                            "JSON-" version ".tar.gz"))
        (sha256
         (base32
-         "127yppvr17qik9pkd1vy901hs4l13kg6rhp76jdgcyask35v7nsd"))))
+         "1vdiw095g5rf51q8d0ipf8020jx371pma0k4sxp0wlfl76lr65b3"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-json-xs" ,perl-json-xs))) ;recommended
@@ -4408,7 +4413,7 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.003010")
+    (version "1.004000")
     (source
      (origin
        (method url-fetch)
@@ -4416,7 +4421,7 @@ installed.")
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "0hs504x5zsa2vl6r7b3rvbygsak1ly24m1lg636bqp3x7jirmb30"))))
+         "09m1w03as6n0a00pzvaldkhm494yaf5n0g3j2cwwfx24iwpa1gar"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-without-module" ,perl-test-without-module)))
@@ -4433,7 +4438,7 @@ either uses the first module it finds or throws an error.")
 (define-public perl-json-xs
   (package
     (name "perl-json-xs")
-    (version "3.01")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
@@ -4441,8 +4446,10 @@ either uses the first module it finds or throws an error.")
                            "JSON-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "1aviik480m61ykwvyix83grywzbk828wvfz19hqfvaasd8jz73af"))))
+         "0118yrzagwlcfj5yldn3h23zzqs2rx282jlm068nf7fjlvy4m7s7"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-canary-stability" ,perl-canary-stability)))
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)
        ("perl-types-serialiser" ,perl-types-serialiser)))
@@ -4636,7 +4643,7 @@ implemented for example in GNU gettext.")
 (define-public perl-lingua-translit
   (package
     (name "perl-lingua-translit")
-    (version "0.26")
+    (version "0.28")
     (source
      (origin
        (method url-fetch)
@@ -4644,7 +4651,7 @@ implemented for example in GNU gettext.")
                            "Lingua-Translit-" version ".tar.gz"))
        (sha256
         (base32
-         "161589h08kzliga17i2g0hb0yn4cjmb8rdiyadq5bw97974bac14"))))
+         "1qgap0j0ixmif309dvbqca7sy8xha9xgnj9s2lvh8qrczkc92gqi"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Lingua-Translit")
     (synopsis "Transliterate text between writing systems")
@@ -5296,7 +5303,7 @@ from Moose::Conflicts and moose-outdated.")
 (define-public perl-module-scandeps
   (package
     (name "perl-module-scandeps")
-    (version "1.25")
+    (version "1.27")
     (source
      (origin
        (method url-fetch)
@@ -5304,7 +5311,7 @@ from Moose::Conflicts and moose-outdated.")
                            "Module-ScanDeps-" version ".tar.gz"))
        (sha256
         (base32
-         "13280nq0d6zc58mcz3kvs2m85a741czq0fabk69ks1nr4j1w2nl4"))))
+         "0j6r9r99x5p0i6fv06i44wpsvjxj32amjkiqf6pmqpj80jff2k7f"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
@@ -8386,7 +8393,7 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-template
   (package
     (name "perl-text-template")
-    (version "1.47")
+    (version "1.54")
     (source
      (origin
        (method url-fetch)
@@ -8396,8 +8403,11 @@ algorism to indicate multiplication by 1000.")
              ".tar.gz"))
        (sha256
         (base32
-         "1z781cgz7wbn80lf3kqr2ad0pg6g1wlnim0822h8liw28k3l5msh"))))
+         "0s56jgak9ccbbbybf5v8hvvhyplbfhzl6p6v1751inly80rlj1kv"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-more-utf8" ,perl-test-more-utf8)
+       ("perl-test-warnings" ,perl-test-warnings)))
     (home-page
      "https://metacpan.org/release/Text-Template")
     (synopsis
@@ -9200,7 +9210,7 @@ best YAML support to date.")
 (define-public perl-yaml-tiny
   (package
     (name "perl-yaml-tiny")
-    (version "1.66")
+    (version "1.73")
     (source
      (origin
        (method url-fetch)
@@ -9208,7 +9218,7 @@ best YAML support to date.")
                            "YAML-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0c17l8pvpraznpb31ncmr4wxlyww8sg8dhvp3s3q02yqll3cnygv"))))
+         "0i3p4nz8ysrsrs6vlzc6gkjcfpcaf05xjc7lwbjkw7lg5shmycdw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-json-maybexs" ,perl-json-maybexs)
@@ -9718,3 +9728,28 @@ lookup in %INC or by assuming it is $0 if the caller is @code{main}
     (description "Regexp::Pattern is a convention for organizing reusable
 regexp patterns in modules.")
     (license (package-license perl))))
+
+(define-public perl-data-sexpression
+  (package
+    (name "perl-data-sexpression")
+    (version "0.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/N/NE/NELHAGE/Data-SExpression-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "16qls1yqcmhxrcx9agsmaypxa1nirq4nvbyzbww9984589m44ql1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-deep" ,perl-test-deep)))
+    (propagated-inputs
+     `(("perl-class-accessor" ,perl-class-accessor)))
+    (home-page "https://metacpan.org/release/Data-SExpression")
+    (synopsis "Parse Lisp S-Expressions into Perl data structures")
+    (description "Data::SExpression parses Lisp S-Expressions into Perl data
+structures.")
+    (license perl-license)))

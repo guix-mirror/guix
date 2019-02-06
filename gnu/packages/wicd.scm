@@ -32,7 +32,8 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public wicd
   (package
@@ -167,7 +168,7 @@
                  (format #t
                          "running ~s with command ~s and parameters ~s~%"
                          "python setup.py" "configure" params)
-                 (zero? (apply system* "python" "setup.py" "configure" params))))))
+                 (apply invoke "python" "setup.py" "configure" params)))))
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

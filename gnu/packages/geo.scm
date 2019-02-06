@@ -42,7 +42,6 @@
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages cran)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -53,7 +52,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
@@ -504,122 +504,6 @@ development.")
  construct common SQL queries, or craft your own SQL queries.")
     (home-page "https://www.gaia-gis.it/fossil/spatialite_gui/index")
     (license license:gpl3+)))
-
-(define-public r-maps
-  (package
-   (name "r-maps")
-   (version "3.3.0")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "maps" version))
-       (sha256
-        (base32
-         "05i2ppl5z4p8rawgqmy3z4ia05fcblpq1vvrmrkgkkpdlhczx6hr"))))
-   (build-system r-build-system)
-   (home-page "https://cran.r-project.org/web/packages/maps")
-   (synopsis "Draw geographical maps")
-   (description "This package provies an R module for display of maps.
-Projection code and larger maps are in separate packages ('mapproj' and
-'mapdata').")
-   (license license:gpl2)))
-
-(define-public r-mapproj
-  (package
-   (name "r-mapproj")
-   (version "1.2.6")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "mapproj" version))
-       (sha256
-        (base32
-         "1rggww8cbwv0vzlj5afzhbsbngg4bzj5znbkz7wmxsbshfbsm9b2"))))
-   (build-system r-build-system)
-   (propagated-inputs `(("r-maps" ,r-maps)))
-   (home-page "https://cran.r-project.org/web/packages/mapproj")
-   (synopsis "Map projection in R")
-   (description "This package converts latitude/longitude into projected
-coordinates.")
-   (license (list license:gpl2 ; The R interface
-                  (license:non-copyleft ; The C code
-                    "https://www.gnu.org/licenses/license-list.en.html#lucent102"
-                    "Lucent Public License Version 1.02")))))
-
-(define-public r-rgooglemaps
-  (package
-   (name "r-rgooglemaps")
-   (version "1.4.3")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "RgoogleMaps" version))
-       (sha256
-        (base32
-         "06ab3lg1rwm93hkshf1vxfm8mlxq5qsjan0wx43lhnrysay65js4"))))
-   (properties `((upstream-name . "RgoogleMaps")))
-   (build-system r-build-system)
-   (propagated-inputs `(("r-png" ,r-png)))
-   (home-page "https://cran.r-project.org/web/packages/RgoogleMaps")
-   (synopsis "Use Google Maps in R")
-   (description "This package serves two purposes: (i) Provide a comfortable R
-interface to query the Google server for static maps, and (ii) Use the map as a
-background image to overlay plots within R.  This requires proper coordinate
-scaling.")
-   (license license:gpl2+)))
-
-(define-public r-geosphere
-  (package
-   (name "r-geosphere")
-   (version "1.5-7")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "geosphere" version))
-       (sha256
-        (base32
-         "186qdm5niq7v3d4w4rngx71znsgi44hnam7698bsx9ar5mg5b6wx"))))
-   (build-system r-build-system)
-   (propagated-inputs `(("r-sp" ,r-sp)))
-   (home-page "https://cran.r-project.org/web/packages/geosphere")
-   (synopsis "Spherical trigonometry")
-   (description "This package computes spherical trigonometry for geographic
-applications.  That is, compute distances and related measures for angular
-(longitude/latitude) locations.")
-   (license license:gpl3+)))
-
-(define-public r-ggmap
-  (package
-   (name "r-ggmap")
-   (version "2.6.1")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "ggmap" version))
-       (sha256
-        (base32
-         "0mssb09w818jv58h7mly9y181pzv22sgcd4a079cfpq04bs0wigw"))))
-   (build-system r-build-system)
-   (propagated-inputs
-    `(("r-digest" ,r-digest)
-      ("r-geosphere" ,r-geosphere)
-      ("r-ggplot2" ,r-ggplot2)
-      ("r-jpeg" ,r-jpeg)
-      ("r-mapproj" ,r-mapproj)
-      ("r-plyr" ,r-plyr)
-      ("r-png" ,r-png)
-      ("r-proto" ,r-proto)
-      ("r-reshape2" ,r-reshape2)
-      ("r-rgooglemaps" ,r-rgooglemaps)
-      ("r-rjson" ,r-rjson)
-      ("r-scales" ,r-scales)))
-   (home-page "https://github.com/dkahle/ggmap")
-   (synopsis "Spatial visualization with ggplot2")
-   (description "This package provides a collection of functions to visualize
-spatial data and models on top of static maps from various online sources (e.g
-Google Maps and Stamen Maps).  It includes tools common to those tasks,
-including functions for geolocation and routing.")
-   (license license:gpl2)))
 
 (define-public gdal
   (package

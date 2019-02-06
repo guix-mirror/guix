@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,18 +36,18 @@
 
 (test-equal "compute-status, builds + substitutes"
   (list (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux")))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 500
                                       #:start 'now))))
         (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux")))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 500
                                       #:transferred 42
                                       #:start 'now))))
         (build-status
-         (builds-completed '("foo.drv"))
+         (builds-completed (list (build "foo.drv" "x86_64-linux")))
          (downloads-completed (list (download "bar" "http://example.org/bar"
                                               #:size 500
                                               #:transferred 500
@@ -58,7 +58,7 @@
                                            (compute-status event status
                                                            #:current-time
                                                            (const 'now))))))
-    (display "@ build-started foo.drv\n" port)
+    (display "@ build-started foo.drv - x86_64-linux \n" port)
     (display "@ substituter-started bar\n" port)
     (display "@ download-started bar http://example.org/bar 500\n" port)
     (display "various\nthings\nget\nwritten\n" port)
@@ -76,7 +76,8 @@
 
 (test-equal "compute-status, missing events"
   (list (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux"
+                                #:log-file "foo.log")))
          (downloading (list (download "baz" "http://example.org/baz"
                                       #:size 500
                                       #:transferred 42
@@ -86,7 +87,8 @@
                                       #:transferred 0
                                       #:start 'now))))
         (build-status
-         (builds-completed '("foo.drv"))
+         (builds-completed (list (build "foo.drv" "x86_64-linux"
+                                        #:log-file "foo.log")))
          (downloads-completed (list (download "baz" "http://example.org/baz"
                                               #:size 500
                                               #:transferred 500
@@ -103,7 +105,7 @@
                                            (compute-status event status
                                                            #:current-time
                                                            (const 'now))))))
-    (display "@ build-started foo.drv\n" port)
+    (display "@ build-started foo.drv - x86_64-linux foo.log\n" port)
     (display "@ download-started bar http://example.org/bar 999\n" port)
     (display "various\nthings\nget\nwritten\n" port)
     (display "@ download-progress baz http://example.org/baz 500 42\n"
@@ -125,9 +127,7 @@
 
 (test-equal "current-build-output-port, UTF-8 + garbage"
   ;; What about a mixture of UTF-8 + garbage?
-  (let ((replacement (cond-expand
-                      ((and guile-2 (not guile-2.2)) "?")
-                      (else "�"))))
+  (let ((replacement "�"))
     `((build-log #f ,(string-append "garbage: " replacement "lambda: λ\n"))))
   (let-values (((port get-status) (build-event-output-port cons '())))
     (display "garbage: " port)
@@ -138,19 +138,19 @@
 
 (test-equal "compute-status, multiplexed build output"
   (list (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121)))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 999
                                       #:start 'now))))
         (build-status
-         (building '("foo.drv"))
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121)))
          (downloading (list (download "bar" "http://example.org/bar"
                                       #:size 999
                                       #:transferred 42
                                       #:start 'now))))
         (build-status
-         ;; XXX: Should "bar.drv" be present twice?
-         (builds-completed '("bar.drv" "foo.drv"))
+         ;; "bar" is now only listed as a download.
+         (builds-completed (list (build "foo.drv" "x86_64-linux" #:id 121)))
          (downloads-completed (list (download "bar" "http://example.org/bar"
                                               #:size 999
                                               #:transferred 999
@@ -164,8 +164,8 @@
                                                            #:derivation-path->output-path
                                                            (match-lambda
                                                              ("bar.drv" "bar")))))))
-    (display "@ build-started foo.drv 121\n" port)
-    (display "@ build-started bar.drv 144\n" port)
+    (display "@ build-started foo.drv - x86_64-linux  121\n" port)
+    (display "@ build-started bar.drv - armhf-linux bar.log 144\n" port)
     (display "@ build-log 121 6\nHello!" port)
     (display "@ build-log 144 50
 @ download-started bar http://example.org/bar 999\n" port)
@@ -179,5 +179,69 @@
         (display "@ build-succeeded foo.drv\n" port)
         (display "@ build-succeeded bar.drv\n" port)
         (list first second (get-status))))))
+
+(test-equal "compute-status, build completion"
+  (list (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121))))
+        (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:completion 0.))))
+        (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:completion 50.))))
+        (build-status
+         (builds-completed (list (build "foo.drv" "x86_64-linux" #:id 121
+                                        #:completion 100.)))))
+  (let-values (((port get-status)
+                (build-event-output-port (lambda (event status)
+                                           (compute-status event status
+                                                           #:current-time
+                                                           (const 'now))))))
+    (display "@ build-started foo.drv - x86_64-linux  121\n" port)
+    (display "@ build-log 121 6\nHello!" port)
+    (let ((first (get-status)))
+      (display "@ build-log 121 20\n[ 0/100] building X\n" port)
+      (display "@ build-log 121 6\nHello!" port)
+      (let ((second (get-status)))
+        (display "@ build-log 121 20\n[50/100] building Y\n" port)
+        (display "@ build-log 121 6\nHello!" port)
+        (let ((third (get-status)))
+          (display "@ build-log 121 21\n[100/100] building Z\n" port)
+          (display "@ build-log 121 6\nHello!" port)
+          (display "@ build-succeeded foo.drv\n" port)
+          (list first second third (get-status)))))))
+
+(test-equal "compute-status, build phase"
+  (list (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:phase 'configure))))
+        (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:phase 'configure
+                                #:completion 50.))))
+        (build-status
+         (building (list (build "foo.drv" "x86_64-linux" #:id 121
+                                #:phase 'install))))
+        (build-status
+         (builds-completed (list (build "foo.drv" "x86_64-linux" #:id 121
+                                        #:phase 'install)))))
+  (let-values (((port get-status)
+                (build-event-output-port (lambda (event status)
+                                           (compute-status event status
+                                                           #:current-time
+                                                           (const 'now))))))
+    (display "@ build-started foo.drv - x86_64-linux  121\n" port)
+    (display "@ build-log 121 27\nstarting phase `configure'\n" port)
+    (display "@ build-log 121 6\nabcde!" port)
+    (let ((first (get-status)))
+      (display "@ build-log 121 20\n[50/100] building Y\n" port)
+      (display "@ build-log 121 6\nfghik!" port)
+      (let ((second (get-status)))
+        (display "@ build-log 121 21\n[100/100] building Z\n" port)
+        (display "@ build-log 121 25\nstarting phase `install'\n" port)
+        (display "@ build-log 121 6\nlmnop!" port)
+        (let ((third (get-status)))
+          (display "@ build-succeeded foo.drv\n" port)
+          (list first second third (get-status)))))))
 
 (test-end "status")

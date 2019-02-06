@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
-;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -32,7 +32,6 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
-  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
@@ -149,9 +148,9 @@ language.  It may be embedded or used as a general-purpose, stand-alone
 language.")
     (license license:x11)))
 
-(define-public lua5.1-expat
+(define (make-lua-expat name lua)
   (package
-    (name "lua5.1-expat")
+    (name name)
     (version "1.3.0")
     (source (origin
               (method url-fetch)
@@ -163,10 +162,11 @@ language.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
          (list "CC=gcc"
-               (string-append "LUA_LDIR=" out "/share/lua/$(LUA_V)")
-               (string-append "LUA_CDIR=" out "/lib/lua/$(LUA_V)")))
+               (string-append "LUA_LDIR=" out "/share/lua/" lua-version)
+               (string-append "LUA_CDIR=" out "/lib/lua/" lua-version)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -177,16 +177,22 @@ language.")
              (invoke "lua" "tests/test.lua")
              (invoke "lua" "tests/test-lom.lua"))))))
     (inputs
-     `(("lua" ,lua-5.1)
+     `(("lua" ,lua)
        ("expat" ,expat)))
     (home-page "http://matthewwild.co.uk/projects/luaexpat/")
     (synopsis "SAX XML parser based on the Expat library")
     (description "LuaExpat is a SAX XML parser based on the Expat library.")
     (license (package-license lua-5.1))))
 
-(define-public lua5.1-socket
+(define-public lua5.1-expat
+  (make-lua-expat "lua5.1-expat" lua-5.1))
+
+(define-public lua5.2-expat
+  (make-lua-expat "lua5.2-expat" lua-5.2))
+
+(define (make-lua-socket name lua)
   (package
-    (name "lua5.1-socket")
+    (name name)
     (version "3.0-rc1")
     (source (origin
               (method url-fetch)
@@ -200,8 +206,10 @@ language.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "INSTALL_TOP=" out)))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
+         (list (string-append "INSTALL_TOP=" out)
+               (string-append "LUAV?=" lua-version)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -213,7 +221,7 @@ language.")
                (invoke "lua" "test/testsrvr.lua"))
              (invoke "lua" "test/testclnt.lua"))))))
     (inputs
-     `(("lua" ,lua-5.1)))
+     `(("lua" ,lua)))
     (home-page "http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/")
     (synopsis "Socket library for Lua")
     (description "LuaSocket is a Lua extension library that is composed by two
@@ -228,11 +236,17 @@ to the functionality defined by each protocol.  In addition, you will find
 that the MIME (common encodings), URL (anything you could possible want to do
 with one) and LTN12 (filters, sinks, sources and pumps) modules can be very
 handy.")
-    (license (package-license lua-5.1))))
+    (license license:expat)))
 
-(define-public lua5.1-filesystem
+(define-public lua5.1-socket
+  (make-lua-socket "lua5.1-socket" lua-5.1))
+
+(define-public lua5.2-socket
+  (make-lua-socket "lua5.2-socket" lua-5.2))
+
+(define (make-lua-filesystem name lua)
   (package
-    (name "lua5.1-filesystem")
+    (name name)
     (version "1.6.3")
     (source (origin
               (method url-fetch)
@@ -246,13 +260,16 @@ handy.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
+         (list (string-append "PREFIX=" out)
+               (string-append "LUA_LIBDIR=" out "/lib/lua/" lua-version)))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("lua" ,lua-5.1)))
+     `(("lua" ,lua)))
     (home-page "https://keplerproject.github.io/luafilesystem/index.html")
     (synopsis "File system library for Lua")
     (description "LuaFileSystem is a Lua library developed to complement the
@@ -261,9 +278,18 @@ distribution.  LuaFileSystem offers a portable way to access the underlying
 directory structure and file attributes.")
     (license (package-license lua-5.1))))
 
-(define-public lua5.1-sec
+(define-public lua-filesystem
+  (make-lua-filesystem "lua-filesystem" lua))
+
+(define-public lua5.1-filesystem
+  (make-lua-filesystem "lua5.1-filesystem" lua-5.1))
+
+(define-public lua5.2-filesystem
+  (make-lua-filesystem "lua5.2-filesystem" lua-5.2))
+
+(define (make-lua-sec name lua)
   (package
-    (name "lua5.1-sec")
+    (name name)
     (version "0.6")
     (source (origin
               (method url-fetch)
@@ -275,27 +301,37 @@ directory structure and file attributes.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-version ,(version-major+minor (package-version lua))))
          (list "linux"
                "CC=gcc"
                "LD=gcc"
-               (string-append "LUAPATH=" out "/share/lua/5.1")
-               (string-append "LUACPATH=" out "/lib/lua/5.1")))
+               (string-append "LUAPATH=" out "/share/lua/" lua-version)
+               (string-append "LUACPATH=" out "/lib/lua/" lua-version)))
        #:tests? #f ; no tests included
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
     (inputs
-     `(("lua" ,lua-5.1)
+     `(("lua" ,lua)
        ("openssl" ,openssl)))
     (propagated-inputs
-     `(("lua-socket" ,lua5.1-socket)))
+     `(("lua-socket"
+        ,(make-lua-socket
+          (format #f "lua~a-socket"
+                  (version-major+minor (package-version lua))) lua))))
     (home-page "https://github.com/brunoos/luasec/wiki")
     (synopsis "OpenSSL bindings for Lua")
     (description "LuaSec is a binding for OpenSSL library to provide TLS/SSL
 communication.  It takes an already established TCP connection and creates a
 secure session between the peers.")
-    (license (package-license lua-5.1))))
+    (license license:expat)))
+
+(define-public lua5.1-sec
+  (make-lua-sec "lua5.1-sec" lua-5.1))
+
+(define-public lua5.2-sec
+  (make-lua-sec "lua5.2-sec" lua-5.2))
 
 (define-public lua-lgi
   (package

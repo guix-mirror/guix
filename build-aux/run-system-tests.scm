@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 
 (define (built-derivations* drv)
   (lambda (store)
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                (values #f store)))
       (values (build-derivations store drv) store))))
 
@@ -64,7 +64,7 @@
           (length tests))
 
   (with-store store
-    (with-status-report print-build-event
+    (with-status-verbosity 2
       (run-with-store store
         (mlet* %store-monad ((drv (mapm %store-monad system-test-value tests))
                              (out -> (map derivation->output-path drv)))

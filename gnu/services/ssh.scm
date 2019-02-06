@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -323,6 +324,12 @@ The other options should be self-descriptive."
   (log-level             openssh-configuration-log-level
                          (default 'info))
 
+  ;; String
+  ;; This is an "escape hatch" to provide configuration that isn't yet
+  ;; supported by this configuration record.
+  (extra-content         openssh-configuration-extra-content
+                         (default ""))
+
   ;; list of user-name/file-like tuples
   (authorized-keys       openssh-authorized-keys
                          (default '()))
@@ -471,6 +478,9 @@ of user-name/file-like tuples."
             (match-lambda
               ((name command) (format port "Subsystem\t~a\t~a\n" name command)))
             '#$(openssh-configuration-subsystems config))
+
+           (format port "~a\n"
+                   #$(openssh-configuration-extra-content config))
            #t)))))
 
 (define (openssh-shepherd-service config)

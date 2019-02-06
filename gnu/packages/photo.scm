@@ -37,7 +37,6 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -56,7 +55,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
@@ -131,14 +132,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.21")
+    (version "2.5.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ccb8idjkv19p9zxg6hh8y6vbgs8flpnh550lq6a8cmga8d2nmy5"))))
+                "0n6f6nagys775ib483nka1sbclhkm1dz3n5z3lgaz1m9m5x35mqm"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
@@ -353,7 +354,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.4.4")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -362,7 +363,7 @@ photographic equipment.")
                     version "/darktable-" version ".tar.xz"))
               (sha256
                (base32
-                "0kdhmiw4wxk2w9v2hms9yk8nl4ymdshnqyj0l07nivzzr6w20hwn"))))
+                "0y04cx0a0rwdclmn16f5y0z2vnm7yxly291gzjgdhcn59a77sga8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.

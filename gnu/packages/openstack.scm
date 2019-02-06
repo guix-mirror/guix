@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -27,6 +27,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -581,7 +582,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
          (add-before 'check 'init-git
            (lambda _
              ;; reno expects a git repo
-             (zero? (system* "git" "init")))))))
+             (invoke "git" "init"))))))
     (propagated-inputs
       `(("python-dulwich" ,python-dulwich)
         ("python-pbr" ,python-pbr)
@@ -595,7 +596,7 @@ in transmittable and storable formats, such as JSON and MessagePack.")
         ("python-docutils" ,python-docutils)
         ("python-sphinx" ,python-sphinx)
         ("gnupg" ,gnupg)
-        ("git" ,git)))
+        ("git" ,git-minimal)))
     (home-page "http://docs.openstack.org/developer/reno/")
     (synopsis "Release notes manager")
     (description "Reno is a tool for storing release notes in a git repository
@@ -625,7 +626,7 @@ and building documentation from them.")
              ;; Note: Upstream tests would have also built the release notes.
              ;; That only would work if we were in a git checkout.
              ;; Therefore, we don't do it here.
-             (zero? (system* "python" "setup.py" "build_sphinx")))))))
+             (invoke "python" "setup.py" "build_sphinx"))))))
     (propagated-inputs
       `(("python-requests" ,python-requests)))
     (native-inputs
@@ -851,14 +852,14 @@ permanence.")
 (define-public python-git-review
   (package
     (name "python-git-review")
-    (version "1.26.0")
+    (version "1.27.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "git-review" version))
        (sha256
         (base32
-         "150b1zvm6favd1ad8yl2bilq7xkr4m1mw9510frh47f8ghfkqz28"))))
+         "0xkllc8ql401sfqbjqf7i451mkgwgv0j4gysxdlyzqb27kfsyc3s"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f ; tests require a running Gerrit server
@@ -873,7 +874,8 @@ permanence.")
                  `("PATH" ":" prefix
                    ,(map (lambda (dir)
                            (string-append dir "/bin"))
-                         (list git openssh))))))))))
+                         (list git openssh)))))
+             #t)))))
     (native-inputs
      `(("python-pbr" ,python-pbr)))
     (propagated-inputs

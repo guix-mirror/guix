@@ -1,10 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -1300,12 +1300,22 @@ the entries in MANIFEST."
                          (srfi srfi-19))
 
             (define (compute-entries)
-              (append-map (lambda (directory)
-                            (let ((man (string-append directory "/share/man")))
-                              (if (directory-exists? man)
-                                  (mandb-entries man)
-                                  '())))
-                          '#$(manifest-inputs manifest)))
+              ;; This is the most expensive part (I/O and CPU, due to
+              ;; decompression), so report progress as we traverse INPUTS.
+              (let* ((inputs '#$(manifest-inputs manifest))
+                     (total  (length inputs)))
+                (append-map (lambda (directory count)
+                              (format #t "\r[~3d/~3d] building list of \
+man-db entries..."
+                                      count total)
+                              (force-output)
+                              (let ((man (string-append directory
+                                                        "/share/man")))
+                                (if (directory-exists? man)
+                                    (mandb-entries man)
+                                    '())))
+                            inputs
+                            (iota total 1))))
 
             (define man-directory
               (string-append #$output "/share/man"))
@@ -1320,6 +1330,7 @@ the entries in MANIFEST."
                                                                   "/index.db")
                                                    entries))
                    (duration (time-difference (current-time) start)))
+              (newline)
               (format #t "~a entries processed in ~,1f s~%"
                       (length entries)
                       (+ (time-second duration)
@@ -1338,6 +1349,53 @@ the entries in MANIFEST."
                     `((type . profile-hook)
                       (hook . manual-database))))
 
+(define (texlive-configuration manifest)
+  "Return a derivation that builds a TeXlive configuration for the entries in
+MANIFEST."
+  (define entry->texlive-input
+    (match-lambda
+      (($ <manifest-entry> name version output thing deps)
+       (if (string-prefix? "texlive-" name)
+           (cons (gexp-input thing output)
+                 (append-map entry->texlive-input deps))
+           '()))))
+  (define build
+    (with-imported-modules '((guix build utils)
+                             (guix build union))
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build union))
+
+          ;; Build a modifiable union of all texlive inputs.  We do this so
+          ;; that TeX live can resolve the parent and grandparent directories
+          ;; correctly.  There might be a more elegant way to accomplish this.
+          (union-build #$output
+                       '#$(append-map entry->texlive-input
+                                      (manifest-entries manifest))
+                       #:create-all-directories? #t
+                       #:log-port (%make-void-port "w"))
+          (let ((texmf.cnf (string-append
+                            #$output
+                            "/share/texmf-dist/web2c/texmf.cnf")))
+            (when (file-exists? texmf.cnf)
+              (substitute* texmf.cnf
+                (("^TEXMFROOT = .*")
+                 (string-append "TEXMFROOT = " #$output "/share\n"))
+                (("^TEXMF = .*")
+                 "TEXMF = $TEXMFROOT/share/texmf-dist\n"))))
+          #t)))
+
+    (with-monad %store-monad
+      (if (any (cut string-prefix? "texlive-" <>)
+               (map manifest-entry-name (manifest-entries manifest)))
+          (gexp->derivation "texlive-configuration" build
+                            #:substitutable? #f
+                            #:local-build? #t
+                            #:properties
+                            `((type . profile-hook)
+                              (hook . texlive-configuration)))
+          (return #f))))
+
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
@@ -1349,6 +1407,7 @@ the entries in MANIFEST."
         glib-schemas
         gtk-icon-themes
         gtk-im-modules
+        texlive-configuration
         xdg-desktop-database
         xdg-mime-database))
 

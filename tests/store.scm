@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,9 +63,9 @@
 (test-equal "connection handshake error"
   EPROTO
   (let ((port (%make-void-port "rw")))
-    (guard (c ((nix-connection-error? c)
-               (and (eq? port (nix-connection-error-file c))
-                    (nix-connection-error-code c))))
+    (guard (c ((store-connection-error? c)
+               (and (eq? port (store-connection-error-file c))
+                    (store-connection-error-code c))))
       (open-connection #f #:port port)
       'broken)))
 
@@ -120,7 +120,7 @@
 
 (test-assert "valid-path? error"
   (with-store s
-    (guard (c ((nix-protocol-error? c) #t))
+    (guard (c ((store-protocol-error? c) #t))
       (valid-path? s "foo")
       #f)))
 
@@ -133,7 +133,7 @@
   (with-store s
     (let-syntax ((true-if-error (syntax-rules ()
                                   ((_ exp)
-                                   (guard (c ((nix-protocol-error? c) #t))
+                                   (guard (c ((store-protocol-error? c) #t))
                                      exp #f)))))
       (and (true-if-error (valid-path? s "foo"))
            (true-if-error (valid-path? s "bar"))
@@ -274,7 +274,7 @@
 (test-assert "references/substitutes missing reference info"
   (with-store s
     (set-build-options s #:use-substitutes? #f)
-    (guard (c ((nix-protocol-error? c) #t))
+    (guard (c ((store-protocol-error? c) #t))
       (let* ((b  (add-to-store s "bash" #t "sha256"
                                (search-bootstrap-binary "bash"
                                                         (%current-system))))
@@ -422,7 +422,7 @@
                      %store "foo" `(display ,s)
                      #:guile-for-build
                      (package-derivation s %bootstrap-guile (%current-system)))))
-            (guard (c ((nix-protocol-error? c) #t))
+            (guard (c ((store-protocol-error? c) #t))
               (build-derivations %store (list d))))))))
    "Here’s a Greek letter: λ."))
 
@@ -442,11 +442,9 @@
                        (display "lambda: λ\n"))
                      #:guile-for-build
                      (package-derivation %store %bootstrap-guile))))
-            (guard (c ((nix-protocol-error? c) #t))
+            (guard (c ((store-protocol-error? c) #t))
               (build-derivations %store (list d))))))))
-   (cond-expand
-     (guile-2.2 "garbage: �lambda: λ")
-     (else      "garbage: ?lambda: λ"))))
+   "garbage: �lambda: λ"))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
@@ -622,12 +620,12 @@
                            #:fallback? #f
                            #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
-             (guard (c ((nix-protocol-error? c)
+             (guard (c ((store-protocol-error? c)
                         ;; XXX: the daemon writes "hash mismatch in downloaded
                         ;; path", but the actual error returned to the client
                         ;; doesn't mention that.
                         (pk 'corrupt c)
-                        (not (zero? (nix-protocol-error-status c)))))
+                        (not (zero? (store-protocol-error-status c)))))
                (build-derivations s (list d))
                #f))))))
 
@@ -648,7 +646,7 @@
         (set-build-options s #:use-substitutes? #t
                            #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
-             (guard (c ((nix-protocol-error? c)
+             (guard (c ((store-protocol-error? c)
                         ;; The substituter failed as expected.  Now make
                         ;; sure that #:fallback? #t works correctly.
                         (set-build-options s
@@ -714,9 +712,9 @@
          (dump  (call-with-bytevector-output-port
                  (cute export-paths %store (list file2) <>))))
     (delete-paths %store (list file0 file1 file2))
-    (guard (c ((nix-protocol-error? c)
-               (and (not (zero? (nix-protocol-error-status c)))
-                    (string-contains (nix-protocol-error-message c)
+    (guard (c ((store-protocol-error? c)
+               (and (not (zero? (store-protocol-error-status c)))
+                    (string-contains (store-protocol-error-message c)
                                      "not valid"))))
       ;; Here we get an exception because DUMP does not include FILE0 and
       ;; FILE1, which are dependencies of FILE2.
@@ -818,10 +816,10 @@
       (bytevector-u8-set! dump index (logxor #xff byte)))
 
     (and (not (file-exists? file))
-         (guard (c ((nix-protocol-error? c)
+         (guard (c ((store-protocol-error? c)
                     (pk 'c c)
-                    (and (not (zero? (nix-protocol-error-status c)))
-                         (string-contains (nix-protocol-error-message c)
+                    (and (not (zero? (store-protocol-error-status c)))
+                         (string-contains (store-protocol-error-message c)
                                           "corrupt"))))
            (let* ((source   (open-bytevector-input-port dump))
                   (imported (import-paths %store source)))
@@ -908,10 +906,10 @@
               (begin
                 (write (random-text) entropy-port)
                 (force-output entropy-port)
-                (guard (c ((nix-protocol-error? c)
+                (guard (c ((store-protocol-error? c)
                            (pk 'determinism-exception c)
-                           (and (not (zero? (nix-protocol-error-status c)))
-                                (string-contains (nix-protocol-error-message c)
+                           (and (not (zero? (store-protocol-error-status c)))
+                                (string-contains (store-protocol-error-message c)
                                                  "deterministic"))))
                   ;; This one will produce a different result.  Since we're in
                   ;; 'check' mode, this must fail.
@@ -947,10 +945,10 @@
                      #:guile-for-build
                      (package-derivation store %bootstrap-guile (%current-system))))
               (file (derivation->output-path drv)))
-         (guard (c ((nix-protocol-error? c)
+         (guard (c ((store-protocol-error? c)
                     (pk 'multiple-build c)
-                    (and (not (zero? (nix-protocol-error-status c)))
-                         (string-contains (nix-protocol-error-message c)
+                    (and (not (zero? (store-protocol-error-status c)))
+                         (string-contains (store-protocol-error-message c)
                                           "deterministic"))))
            ;; This one will produce a different result on the second run.
            (current-build-output-port (current-error-port))

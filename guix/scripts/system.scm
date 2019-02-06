@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1015,6 +1015,8 @@ Some ACTIONS support additional ARGS.\n"))
       --full-boot        for 'vm', make a full boot sequence"))
   (display (G_ "
       --skip-checks      skip file system and initrd module safety checks"))
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -1074,6 +1076,11 @@ Some ACTIONS support additional ARGS.\n"))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -1092,7 +1099,8 @@ Some ACTIONS support additional ARGS.\n"))
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (graft? . #t)
-    (verbosity . 0)
+    (debug . 0)
+    (verbosity . #f)                              ;default
     (file-system-type . "ext4")
     (image-size . guess)
     (install-bootloader? . #t)))
@@ -1267,9 +1275,9 @@ argument list and OPTS is the option alist."
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
-        (with-status-report (if (memq command '(init reconfigure))
-                                print-build-event/quiet
-                                print-build-event)
+        (with-status-verbosity (or (assoc-ref opts 'verbosity)
+                                   (if (memq command '(init reconfigure))
+                                       1 2))
           (process-command command args opts))))))
 
 ;;; Local Variables:

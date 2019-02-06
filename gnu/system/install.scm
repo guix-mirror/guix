@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -22,16 +22,22 @@
 
 (define-module (gnu system install)
   #:use-module (gnu)
+  #:use-module (gnu system)
   #:use-module (gnu bootloader u-boot)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
+  #:use-module (gnu installer)
+  #:use-module (gnu services dbus)
+  #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services ssh)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ssh)
@@ -223,9 +229,10 @@ You have been warned.  Thanks for being so brave.\x1b[0m
 
     (list (service virtual-terminal-service-type)
 
-          (mingetty-service (mingetty-configuration
-                             (tty "tty1")
-                             (auto-login "root")))
+          (service kmscon-service-type
+                   (kmscon-configuration
+                    (virtual-terminal "tty1")
+                    (login-program (installer-program))))
 
           (login-service (login-configuration
                           (motd motd)))
@@ -250,10 +257,11 @@ You have been warned.  Thanks for being so brave.\x1b[0m
           ;; The usual services.
           (syslog-service)
 
-          ;; The build daemon.  Register the official server keys as trusted.
+          ;; The build daemon.  Register the hydra.gnu.org key as trusted.
           ;; This allows the installation process to use substitutes by
           ;; default.
-          (guix-service (guix-configuration (authorize-key? #t)))
+          (service guix-service-type
+                   (guix-configuration (authorize-key? #t)))
 
           ;; Start udev so that useful device nodes are available.
           ;; Use device-mapper rules for cryptsetup & co; enable the CRDA for
@@ -273,7 +281,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                         '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
           ;; To facilitate copy/paste.
-          (gpm-service)
+          (service gpm-service-type)
 
           ;; Add an SSH server to facilitate remote installs.
           (service openssh-service-type
@@ -305,6 +313,12 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                                             (ip "127.0.0.1")
                                             (requirement '())
                                             (provision '(loopback)))))
+
+          (service wpa-supplicant-service-type)
+          (dbus-service)
+          (service connman-service-type
+                   (connman-configuration
+                    (disable-vpn? #t)))
 
           ;; Keep a reference to BARE-BONES-OS to make sure it can be
           ;; installed without downloading/building anything.  Also keep the
@@ -380,6 +394,8 @@ You have been warned.  Thanks for being so brave.\x1b[0m
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
                      parted gptfdisk ddrescue
+                     fontconfig
+                     font-dejavu font-gnu-unifont
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
                      mdadm

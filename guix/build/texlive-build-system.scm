@@ -35,7 +35,7 @@
 
 (define (compile-with-latex format file)
   (invoke format
-          "-interaction=batchmode"
+          "-interaction=nonstopmode"
           "-output-directory=build"
           (string-append "&" format)
           file))
@@ -60,7 +60,12 @@
       (("^TEXMF = .*")
        "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
     (setenv "TEXMFCNF" (dirname texmf.cnf))
-    (setenv "TEXMF" (string-append out "/share/texmf-dist")))
+    (setenv "TEXMF" (string-append out "/share/texmf-dist"))
+
+    ;; Don't truncate lines.
+    (setenv "error_line" "254") ; must be less than 255
+    (setenv "half_error_line" "238") ; must be less than error_line - 15
+    (setenv "max_print_line" "1000"))
   (mkdir "build")
   #t)
 

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
@@ -38,6 +38,19 @@
 ;;; symbolic links.
 ;;;
 ;;; Code:
+
+;; This code can be used with the bootstrap Guile, which is Guile 2.0, so
+;; provide a compatibility layer.
+(cond-expand
+  ((and guile-2 (not guile-2.2))
+   (define (setvbuf port mode . rest)
+     (apply (@ (guile) setvbuf) port
+            (match mode
+              ('line _IOLBF)
+              ('block _IOFBF)
+              ('none _IONBF))
+            rest)))
+  (else #f))
 
 (define (files-in-directory dirname)
   (let ((dir (opendir dirname)))
@@ -179,10 +192,10 @@ returns #f, skip the faulty file altogether."
                                    (reverse dirs-with-file))))
                      table)))
 
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
+  (setvbuf (current-output-port) 'line)
+  (setvbuf (current-error-port) 'line)
   (when (file-port? log-port)
-    (setvbuf log-port _IOLBF))
+    (setvbuf log-port 'line))
 
   (union-of-directories output (delete-duplicates inputs)))
 

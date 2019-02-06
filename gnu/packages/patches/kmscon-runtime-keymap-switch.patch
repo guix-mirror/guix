@@ -1,0 +1,229 @@
+From 360d44d67e7be46108bec982ff2e79b89f04a9a3 Mon Sep 17 00:00:00 2001
+From: Mathieu Othacehe <m.othacehe@gmail.com>
+Date: Thu, 15 Nov 2018 14:34:40 +0900
+Subject: [PATCH] add runtime keymap switch support.
+
+---
+ src/pty.c                  | 23 ++++++++++-
+ src/uterm_input.c          |  2 +
+ src/uterm_input_internal.h |  5 +++
+ src/uterm_input_uxkb.c     | 83 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 111 insertions(+), 2 deletions(-)
+
+diff --git a/src/pty.c b/src/pty.c
+index 1443f4a..f64cb5b 100644
+--- a/src/pty.c
++++ b/src/pty.c
+@@ -46,6 +46,8 @@
+ 
+ #define KMSCON_NREAD 16384
+ 
++#define INPUT_KEYMAP_UPDATE_FILE "/tmp/kmscon-%d-keymap-update"
++
+ struct kmscon_pty {
+ 	unsigned long ref;
+ 	struct ev_eloop *eloop;
+@@ -241,9 +243,22 @@ static bool pty_is_open(struct kmscon_pty *pty)
+ 	return pty->fd >= 0;
+ }
+ 
++static int kmscon_keymap_update(pid_t pid)
++{
++	char *file;
++	int ret;
++
++	ret = asprintf(&file, INPUT_KEYMAP_UPDATE_FILE, pid);
++	if (ret < 0)
++		return ret;
++
++	return setenv("KEYMAP_UPDATE", file, 1);
++}
++
+ static void __attribute__((noreturn))
+ exec_child(const char *term, const char *colorterm, char **argv,
+-	   const char *seat, const char *vtnr, bool env_reset)
++	   const char *seat, const char *vtnr, bool env_reset,
++	   pid_t kmscon_pid)
+ {
+ 	char **env;
+ 	char **def_argv;
+@@ -277,6 +292,8 @@ exec_child(const char *term, const char *colorterm, char **argv,
+ 	if (vtnr)
+ 		setenv("XDG_VTNR", vtnr, 1);
+ 
++	kmscon_keymap_update(kmscon_pid);
++
+ 	execve(argv[0], argv, environ);
+ 
+ 	log_err("failed to exec child %s: %m", argv[0]);
+@@ -383,12 +400,14 @@ static int pty_spawn(struct kmscon_pty *pty, int master,
+ 			unsigned short width, unsigned short height)
+ {
+ 	pid_t pid;
++	pid_t kmscon_pid;
+ 	struct winsize ws;
+ 
+ 	memset(&ws, 0, sizeof(ws));
+ 	ws.ws_col = width;
+ 	ws.ws_row = height;
+ 
++	kmscon_pid = getpid();
+ 	pid = fork();
+ 	switch (pid) {
+ 	case -1:
+@@ -397,7 +416,7 @@ static int pty_spawn(struct kmscon_pty *pty, int master,
+ 	case 0:
+ 		setup_child(master, &ws);
+ 		exec_child(pty->term, pty->colorterm, pty->argv, pty->seat,
+-			   pty->vtnr, pty->env_reset);
++			   pty->vtnr, pty->env_reset, kmscon_pid);
+ 		exit(EXIT_FAILURE);
+ 	default:
+ 		log_debug("forking child %d", pid);
+diff --git a/src/uterm_input.c b/src/uterm_input.c
+index 6fcbc4b..990a09d 100644
+--- a/src/uterm_input.c
++++ b/src/uterm_input.c
+@@ -178,6 +178,8 @@ static void input_new_dev(struct uterm_input *input,
+ 	if (ret)
+ 		goto err_rcodepoints;
+ 
++	uxkb_dev_keymap_update(dev);
++
+ 	if (input->awake > 0) {
+ 		ret = input_wake_up_dev(dev);
+ 		if (ret)
+diff --git a/src/uterm_input_internal.h b/src/uterm_input_internal.h
+index 04e6cc9..ec44459 100644
+--- a/src/uterm_input_internal.h
++++ b/src/uterm_input_internal.h
+@@ -39,6 +39,8 @@
+ #include "shl_misc.h"
+ #include "uterm_input.h"
+ 
++#define INPUT_KEYMAP_UPDATE_FILE "/tmp/kmscon-%d-keymap-update"
++
+ enum uterm_input_device_capability {
+ 	UTERM_DEVICE_HAS_KEYS = (1 << 0),
+ 	UTERM_DEVICE_HAS_LEDS = (1 << 1),
+@@ -62,6 +64,8 @@ struct uterm_input_dev {
+ 
+ 	bool repeating;
+ 	struct ev_timer *repeat_timer;
++	struct ev_fd *fd_update;
++	int rupdate_fd;
+ };
+ 
+ struct uterm_input {
+@@ -95,6 +99,7 @@ void uxkb_desc_destroy(struct uterm_input *input);
+ 
+ int uxkb_dev_init(struct uterm_input_dev *dev);
+ void uxkb_dev_destroy(struct uterm_input_dev *dev);
++int uxkb_dev_keymap_update(struct uterm_input_dev *dev);
+ int uxkb_dev_process(struct uterm_input_dev *dev,
+ 		     uint16_t key_state,
+ 		     uint16_t code);
+diff --git a/src/uterm_input_uxkb.c b/src/uterm_input_uxkb.c
+index 925c755..4760972 100644
+--- a/src/uterm_input_uxkb.c
++++ b/src/uterm_input_uxkb.c
+@@ -31,6 +31,9 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <fcntl.h>
+ #include <xkbcommon/xkbcommon.h>
+ #include "shl_hook.h"
+ #include "shl_llog.h"
+@@ -178,6 +181,86 @@ static void timer_event(struct ev_timer *timer, uint64_t num, void *data)
+ 	shl_hook_call(dev->input->hook, dev->input, &dev->repeat_event);
+ }
+ 
++static void uxkb_keymap_update_handler(struct ev_fd *fd, int mask, void *data)
++{
++	struct uterm_input_dev *dev = data;
++	char in;
++	char keymap[3][255];
++	int pos = 0;
++	int curr_keymap = 0;
++	int ret;
++	char *model, *layout, *variant;
++
++	if (!(mask & EV_READABLE))
++		return;
++
++	memset(keymap, 0, sizeof(keymap));
++
++	model = keymap[0];
++	layout = keymap[1];
++	variant = keymap[2];
++
++	do {
++	  ret = read(dev->rupdate_fd, &in, sizeof(in));
++	  if (ret <= 0)
++	    break;
++
++	  keymap[curr_keymap][pos++] = in;
++
++	  if (in == '\0') {
++	    curr_keymap++;
++	    pos = 0;
++	  }
++	} while (1);
++
++	llog_info(dev->input, "HANDLER CALLED %s|%s|%s\n",
++		  model, layout, variant);
++	uxkb_desc_init(dev->input, model, layout, variant, NULL, NULL);
++
++	dev->state = xkb_state_new(dev->input->keymap);
++	if (!dev->state) {
++		llog_error(dev->input, "cannot create XKB state");
++		return;
++	}
++}
++
++int uxkb_dev_keymap_update(struct uterm_input_dev *dev)
++{
++	int ret;
++	char *file;
++	int pid = getpid();
++
++	ret = asprintf(&file, INPUT_KEYMAP_UPDATE_FILE, pid);
++	if (ret < 0)
++		return ret;
++
++	ret = mkfifo(file, S_IRWXU);
++	if (ret < 0) {
++		llog_warn(dev->input, "could not open fifo");
++		return -EFAULT;
++	}
++	dev->rupdate_fd = open(file, O_RDONLY | O_NONBLOCK);
++	if (dev->rupdate_fd < 0) {
++		llog_warn(dev->input, "cannot open file %s (%d): %m",
++			  file, errno);
++		return -EFAULT;
++	}
++
++	setenv("KEYMAP_UPDATE", file, 1);
++
++	ret = ev_eloop_new_fd(dev->input->eloop, &dev->fd_update,
++			      dev->rupdate_fd, EV_READABLE,
++			      uxkb_keymap_update_handler, dev);
++	if (ret) {
++		llog_error(dev->input, "could not init keymap update");
++		close(dev->rupdate_fd);
++		dev->rupdate_fd = -1;
++		return ret;
++	}
++
++	return 0;
++}
++
+ int uxkb_dev_init(struct uterm_input_dev *dev)
+ {
+ 	int ret;
+-- 
+2.17.1
+

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,46 +31,17 @@
   #:use-module ((guix build compile) #:select (%lightweight-optimizations))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (make-config.scm
             whole-package                     ;for internal use in 'guix pull'
             compiled-guix
-            guix-derivation
-            reload-guix))
+            guix-derivation))
 
 
 ;;;
 ;;; Dependency handling.
 ;;;
-
-(define* (false-if-wrong-guile package
-                               #:optional (guile-version (effective-version)))
-  "Return #f if PACKAGE depends on the \"wrong\" major version of Guile (e.g.,
-2.0 instead of 2.2), otherwise return PACKAGE."
-  (let ((guile (any (match-lambda
-                      ((label (? package? dep) _ ...)
-                       (and (string=? (package-name dep) "guile")
-                            dep)))
-                    (package-direct-inputs package))))
-    (and (or (not guile)
-             (string-prefix? guile-version
-                             (package-version guile)))
-         package)))
-
-(define (package-for-guile guile-version . names)
-  "Return the package with one of the given NAMES that depends on
-GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
-  (let loop ((names names))
-    (match names
-      (()
-       #f)
-      ((name rest ...)
-       (match (specification->package name)
-         (#f
-          (loop rest))
-         ((? package? package)
-          (or (false-if-wrong-guile package guile-version)
-              (loop rest))))))))
 
 (define specification->package
   ;; Use our own variant of that procedure because that of (gnu packages)
@@ -89,12 +60,7 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
-      ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
-      ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
-      ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
-      ;; XXX: No "guile2.0-sqlite3".
-      ("guile2.0-gnutls" (ref '(gnu packages tls) 'gnutls/guile-2.0))
-      (_               #f))))                     ;no such package
+      (_            #f))))                        ;no such package
 
 
 ;;;
@@ -132,6 +98,30 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
                        (file-mapping-alist mapping))
                   #:name (file-mapping-name mapping)
                   #:system system))
+
+(define (node-source+compiled node)
+  "Return a \"bundle\" containing both the source code and object files for
+NODE's modules, under their FHS directories: share/guile/site and lib/guile."
+  (define build
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+
+          (define source
+            (string-append #$output "/share/guile/site/"
+                           (effective-version)))
+
+          (define object
+            (string-append #$output "/lib/guile/" (effective-version)
+                           "/site-ccache"))
+
+          (mkdir-p (dirname source))
+          (symlink #$(node-source node) source)
+          (mkdir-p (dirname object))
+          (symlink #$(node-compiled node) object))))
+
+  (computed-file (string-append (node-name node) "-modules")
+                 build))
 
 (define (node-fold proc init nodes)
   (let loop ((nodes nodes)
@@ -360,40 +350,64 @@ DOMAIN, a gettext domain."
                                                   (basename texi ".texi")
                                                   ".info")))
                     (cons "guix.texi"
-                          (find-files "." "^guix\\.[a-z]{2}\\.texi$"))))))
+                          (find-files "." "^guix\\.[a-z]{2}\\.texi$")))
+
+          ;; Compress Info files.
+          (setenv "PATH"
+                  #+(file-append (specification->package "gzip") "/bin"))
+          (for-each (lambda (file)
+                      (invoke "gzip" "-9n" file))
+                    (find-files #$output "\\.info(-[0-9]+)?$")))))
 
   (computed-file "guix-manual" build))
 
-(define* (guix-command modules #:optional compiled-modules
+(define* (guile-module-union things #:key (name "guix-module-union"))
+  "Return the union of the subset of THINGS (packages, computed files, etc.)
+that provide Guile modules."
+  (define build
+    (with-imported-modules '((guix build union))
+      #~(begin
+          (use-modules (guix build union))
+
+          (define (modules directory)
+            (string-append directory "/share/guile/site"))
+
+          (define (objects directory)
+            (string-append directory "/lib/guile"))
+
+          (union-build #$output
+                       (filter (lambda (directory)
+                                 (or (file-exists? (modules directory))
+                                     (file-exists? (objects directory))))
+                               '#$things)
+
+                       #:log-port (%make-void-port "w")))))
+
+  (computed-file name build))
+
+(define* (guix-command modules
                        #:key source (dependencies '())
                        guile (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
-  (define source-directories
-    (map (lambda (package)
-           (file-append package "/share/guile/site/"
-                        guile-version))
-         dependencies))
-
-  (define object-directories
-    (map (lambda (package)
-           (file-append package "/lib/guile/"
-                        guile-version "/site-ccache"))
-         dependencies))
+  (define module-directory
+    ;; To minimize the number of 'stat' calls needed to locate a module,
+    ;; create the union of all the module directories.
+    (guile-module-union (cons modules dependencies)))
 
   (program-file "guix-command"
                 #~(begin
                     (set! %load-path
-                      (append (filter file-exists? '#$source-directories)
-                              %load-path))
+                      (cons (string-append #$module-directory
+                                           "/share/guile/site/"
+                                           (effective-version))
+                            %load-path))
 
                     (set! %load-compiled-path
-                      (append (filter file-exists? '#$object-directories)
-                              %load-compiled-path))
-
-                    (set! %load-path (cons #$modules %load-path))
-                    (set! %load-compiled-path
-                      (cons (or #$compiled-modules #$modules)
+                      (cons (string-append #$module-directory
+                                           "/lib/guile/"
+                                           (effective-version)
+                                           "/site-ccache")
                             %load-compiled-path))
 
                     (let ((guix-main (module-ref (resolve-interface '(guix ui))
@@ -436,7 +450,6 @@ load path."
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
-                        compiled-modules
                         info daemon miscellany
                         guile
                         (command (guix-command modules
@@ -444,51 +457,54 @@ load path."
                                                #:guile guile
                                                #:guile-version guile-version)))
   "Return the whole Guix package NAME that uses MODULES, a derivation of all
-the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
-'guix' program to use; INFO is the Info manual.  When COMPILED-MODULES is
-true, it is linked as 'lib/guile/X.Y/site-ccache'; otherwise, .go files are
-assumed to be part of MODULES."
+the modules (under share/guile/site and lib/guile), and DEPENDENCIES, a list
+of packages depended on.  COMMAND is the 'guix' program to use; INFO is the
+Info manual."
+  (define (wrap daemon)
+    (program-file "guix-daemon"
+                  #~(begin
+                      (setenv "GUIX" #$command)
+                      (apply execl #$(file-append daemon "/bin/guix-daemon")
+                             "guix-daemon" (cdr (command-line))))))
+
   (computed-file name
                  (with-imported-modules '((guix build utils))
                    #~(begin
                        (use-modules (guix build utils))
 
+                       (define daemon
+                         #$(and daemon (wrap daemon)))
+
                        (mkdir-p (string-append #$output "/bin"))
                        (symlink #$command
                                 (string-append #$output "/bin/guix"))
 
-                       (when #$daemon
-                         (symlink (string-append #$daemon "/bin/guix-daemon")
+                       (when daemon
+                         (symlink daemon
                                   (string-append #$output "/bin/guix-daemon")))
 
-                       (let ((modules (string-append #$output
-                                                     "/share/guile/site/"
-                                                     (effective-version)))
-                             (info    #$info))
-                         (mkdir-p (dirname modules))
-                         (symlink #$modules modules)
+                       (let ((share (string-append #$output "/share"))
+                             (lib   (string-append #$output "/lib"))
+                             (info  #$info))
+                         (mkdir-p share)
+                         (symlink #$(file-append modules "/share/guile")
+                                  (string-append share "/guile"))
                          (when info
-                           (symlink #$info
-                                    (string-append #$output
-                                                   "/share/info"))))
+                           (symlink #$info (string-append share "/info")))
+
+                         (mkdir-p lib)
+                         (symlink #$(file-append modules "/lib/guile")
+                                  (string-append lib "/guile")))
 
                        (when #$miscellany
                          (copy-recursively #$miscellany #$output
-                                           #:log (%make-void-port "w")))
-
-                       ;; Object files.
-                       (when #$compiled-modules
-                         (let ((modules (string-append #$output "/lib/guile/"
-                                                       (effective-version)
-                                                       "/site-ccache")))
-                           (mkdir-p (dirname modules))
-                           (symlink #$compiled-modules modules)))))))
+                                           #:log (%make-void-port "w")))))))
 
 (define* (compiled-guix source #:key (version %guix-version)
                         (pull-version 1)
                         (name (string-append "guix-" version))
                         (guile-version (effective-version))
-                        (guile-for-build (guile-for-build guile-version))
+                        (guile-for-build (default-guile))
                         (zlib (specification->package "zlib"))
                         (gzip (specification->package "gzip"))
                         (bzip2 (specification->package "bzip2"))
@@ -496,32 +512,22 @@ assumed to be part of MODULES."
                         (guix (specification->package "guix")))
   "Return a file-like object that contains a compiled Guix."
   (define guile-json
-    (package-for-guile guile-version
-                       "guile-json"
-                       "guile2.0-json"))
+    (specification->package "guile-json"))
 
   (define guile-ssh
-    (package-for-guile guile-version
-                       "guile-ssh"
-                       "guile2.0-ssh"))
+    (specification->package "guile-ssh"))
 
   (define guile-git
-    (package-for-guile guile-version
-                       "guile-git"
-                       "guile2.0-git"))
+    (specification->package "guile-git"))
 
   (define guile-sqlite3
-    (package-for-guile guile-version
-                       "guile-sqlite3"
-                       "guile2.0-sqlite3"))
+    (specification->package "guile-sqlite3"))
 
   (define guile-gcrypt
-    (package-for-guile guile-version
-                       "guile-gcrypt"))
+    (specification->package "guile-gcrypt"))
 
   (define gnutls
-    (package-for-guile guile-version
-                       "gnutls" "guile2.0-gnutls"))
+    (specification->package "gnutls"))
 
   (define dependencies
     (match (append-map (lambda (package)
@@ -616,6 +622,9 @@ assumed to be part of MODULES."
                  (append (file-imports source "gnu/system/examples"
                                        (const #t))
 
+                         ;; All the installer code is on the build-side.
+                         (file-imports source "gnu/installer/"
+                                       (const #t))
                          ;; Build-side code that we don't build.  Some of
                          ;; these depend on guile-rsvg, the Shepherd, etc.
                          (file-imports source "gnu/build" (const #t)))
@@ -624,10 +633,22 @@ assumed to be part of MODULES."
 
   (define *cli-modules*
     (scheme-node "guix-cli"
-                 (scheme-modules* source "/guix/scripts")
+                 (append (scheme-modules* source "/guix/scripts")
+                         `((gnu ci)))
                  (list *core-modules* *extra-modules*
                        *core-package-modules* *package-modules*
                        *system-modules*)
+                 #:extensions dependencies
+                 #:guile-for-build guile-for-build))
+
+  (define *system-test-modules*
+    ;; Ship these modules mostly so (gnu ci) can discover them.
+    (scheme-node "guix-system-tests"
+                 `((gnu tests)
+                   ,@(scheme-modules* source "gnu/tests"))
+                 (list *core-package-modules* *package-modules*
+                       *extra-modules* *system-modules* *core-modules*
+                       *cli-modules*)           ;for (guix scripts pack), etc.
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
@@ -659,6 +680,7 @@ assumed to be part of MODULES."
                                  ;; comes with *CORE-MODULES*.
                                  (list *config*
                                        *cli-modules*
+                                       *system-test-modules*
                                        *system-modules*
                                        *package-modules*
                                        *core-package-modules*
@@ -680,15 +702,13 @@ assumed to be part of MODULES."
   ;; Version 1 is when we return the full package.
   (cond ((= 1 pull-version)
          ;; The whole package, with a standard file hierarchy.
-         (let* ((modules  (built-modules (compose list node-source)))
-                (compiled (built-modules (compose list node-compiled)))
-                (command  (guix-command modules compiled
+         (let* ((modules  (built-modules (compose list node-source+compiled)))
+                (command  (guix-command modules
                                         #:source source
                                         #:dependencies dependencies
                                         #:guile guile-for-build
                                         #:guile-version guile-version)))
            (whole-package name modules dependencies
-                          #:compiled-modules compiled
                           #:command command
                           #:guile guile-for-build
 
@@ -776,11 +796,11 @@ assumed to be part of MODULES."
                    (define %state-directory
                      ;; This must match `NIX_STATE_DIR' as defined in
                      ;; `nix/local.mk'.
-                     (or (getenv "NIX_STATE_DIR")
+                     (or (getenv "GUIX_STATE_DIRECTORY")
                          (string-append %localstatedir "/guix")))
 
                    (define %store-database-directory
-                     (or (getenv "NIX_DB_DIR")
+                     (or (getenv "GUIX_DATABASE_DIRECTORY")
                          (string-append %state-directory "/db")))
 
                    (define %config-directory
@@ -809,7 +829,6 @@ assumed to be part of MODULES."
                ;; top-level or the 'toplevel-ref' in the resulting .go file are
                ;; made relative to a nonexistent anonymous module.
                #:splice? #t))
-
 
 
 ;;;
@@ -847,13 +866,23 @@ containing MODULE-FILES and possibly other files as well."
           (define (report-load file total completed)
             (display #\cr)
             (format #t
-                    "loading...\t~5,1f% of ~d files" ;FIXME: i18n
+                    "[~3@a/~3@a] loading...\t~5,1f% of ~d files"
+
+                    ;; Note: Multiply TOTAL by two to account for the
+                    ;; compilation phase that follows.
+                    completed (* total 2)
+
                     (* 100. (/ completed total)) total)
             (force-output))
 
           (define (report-compilation file total completed)
             (display #\cr)
-            (format #t "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
+            (format #t "[~3@a/~3@a] compiling...\t~5,1f% of ~d files"
+
+                    ;; Add TOTAL to account for the load phase that came
+                    ;; before.
+                    (+ total completed) (* total 2)
+
                     (* 100. (/ completed total)) total)
             (force-output))
 
@@ -865,8 +894,8 @@ containing MODULE-FILES and possibly other files as well."
                              #:report-load report-load
                              #:report-compilation report-compilation)))
 
-          (setvbuf (current-output-port) _IONBF)
-          (setvbuf (current-error-port) _IONBF)
+          (setvbuf (current-output-port) 'line)
+          (setvbuf (current-error-port) 'line)
 
           (set! %load-path (cons #+module-tree %load-path))
           (set! %load-path
@@ -911,21 +940,6 @@ containing MODULE-FILES and possibly other files as well."
 ;;; Building.
 ;;;
 
-(define (guile-for-build version)
-  "Return a derivation for Guile 2.0 or 2.2, whichever matches the currently
-running Guile."
-  (define canonical-package                       ;soft reference
-    (module-ref (resolve-interface '(gnu packages base))
-                'canonical-package))
-
-  (match version
-    ("2.2"
-     (canonical-package (module-ref (resolve-interface '(gnu packages guile))
-                                    'guile-2.2)))
-    ("2.0"
-     (module-ref (resolve-interface '(gnu packages guile))
-                 'guile-2.0))))
-
 (define* (guix-derivation source version
                           #:optional (guile-version (effective-version))
                           #:key (pull-version 0))
@@ -942,9 +956,16 @@ is not supported."
   (define guile
     ;; When PULL-VERSION >= 1, produce a self-contained Guix and use Guile 2.2
     ;; unconditionally.
-    (guile-for-build (if (>= pull-version 1)
-                         "2.2"
-                         guile-version)))
+    (default-guile))
+
+  (when (and (< pull-version 1)
+             (not (string=? (package-version guile) guile-version)))
+    ;; Guix < 0.15.0 has PULL-VERSION = 0, where the host Guile is reused and
+    ;; can be any version.  When that happens and Guile is not current (e.g.,
+    ;; it's Guile 2.0), just bail out.
+    (raise (condition
+            (&message
+             (message "Guix is too old and cannot be upgraded")))))
 
   (mbegin %store-monad
     (set-guile-for-build guile)

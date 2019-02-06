@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public lirc
   (package
@@ -103,33 +105,32 @@ on just one button press.")
     (license license:gpl2+)))
 
 (define-public python-lirc
-  (let ((commit "4091fe918f3eed2513dad008828565cace408d2f")
-        (revision "1"))
+  (let ((commit "c28708bbeb6e02d85f13dd7e0b24e8e86abc215b")
+        (revision "2"))
     (package
       (name "python-lirc")
-      (version (string-append "1.2.1-" revision "." (string-take commit 7)))
+      (version (git-version "1.2.1" revision commit))
       (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/tompreston/python-lirc.git")
-                 (commit commit)))
-          (sha256
-            (base32
-              "0cm47s5pvijfs3v2k7hmpxv3mvp4n5la0ihnsczk5ym3iq166jil"))
-          (file-name (string-append name "-" version))))
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tompreston/python-lirc.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13s9zqyfh871ls1aha47rhmk13b4mcyfckcn2sw70bvc26832gk6"))))
       (build-system python-build-system)
       (inputs
        `(("lirc" ,lirc)))
       (native-inputs
        `(("python-cython" ,python-cython)))
       (arguments
-       `(#:tests? #f ; the only tests that exist are human-interactive
+       `(#:tests? #f         ; the only tests that exist are interactive
          #:phases
          (modify-phases %standard-phases
            (add-before 'build 'build-from-cython-files
-             (lambda _
-               (zero? (system* "make" "py3")))))))
+             (lambda _ (invoke "make" "py3"))))))
       (home-page "https://github.com/tompreston/python-lirc")
       (synopsis "Python bindings for LIRC")
       (description "@code{lirc} is a Python module which provides LIRC bindings.")
@@ -145,7 +146,6 @@ on just one button press.")
            #:phases
            (modify-phases %standard-phases
              (add-before 'build 'build-from-cython-files
-               (lambda _
-                 (zero? (system* "make" "py2")))))))
+               (lambda _ (invoke "make" "py2"))))))
         (native-inputs
          `(("python2-cython" ,python2-cython))))))

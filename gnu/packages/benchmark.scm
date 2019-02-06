@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,12 +24,14 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages storage)
   #:use-module (ice-9 match))
 
@@ -113,16 +116,15 @@ is to write a job file matching the I/O load one wants to simulate.")
 (define (imb mpi)
   (package
     (name (string-append "imb-" (package-name mpi)))
-    (version "2017.2")
+    (version "2019.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (match (string-split version #\.)
-             ((major minor)
-              (string-append
-               "https://software.intel.com/sites/default/files/managed/76/6c/IMB_"
-               major "_Update" minor ".tgz"))))
-      (sha256 (base32 "11nczxm686rsppmw9gjc2p2sxc0jniv5kv18yxm1lzp5qfh5rqyb"))))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/intel/mpi-benchmarks.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256 (base32 "18hfdyvl5i172gadiq9si1qxif5rvic0lifxpbrr7s59ylg8f9c4"))))
     (build-system gnu-build-system)
     (inputs
      `(("mpi" ,mpi)))
@@ -134,23 +136,19 @@ is to write a job file matching the I/O load one wants to simulate.")
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((mpi-home (assoc-ref inputs "mpi")))
-               (zero?
-                ;; Not safe for parallel build
-                (system* "make" "-C" "imb/src" "-f" "make_mpich" "SHELL=sh"
-                         (string-append "MPI_HOME=" mpi-home))))))
+               ;; Override default parallelism
+               (substitute* "Makefile"
+                 (("make -j[[:digit:]]+")
+                  (format #f "make -j~d" (parallel-job-count))))
+               (invoke "make" "SHELL=sh" "CC=mpicc" "CXX=mpic++"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name))
                     (bin (string-append out "/bin")))
-               (with-directory-excursion "imb/src"
-                 (for-each
-                  (lambda (file)
-                    (install-file file bin))
-                  '("IMB-IO" "IMB-EXT" "IMB-MPI1" "IMB-NBC" "IMB-RMA")))
-               (mkdir-p doc)
-               (with-directory-excursion "imb"
-                 (copy-recursively "license" doc)))
+               (for-each
+                (lambda (file)
+                  (install-file file bin))
+                '("IMB-IO" "IMB-EXT" "IMB-MPI1" "IMB-NBC" "IMB-RMA" "IMB-MT")))
              #t)))))
     (home-page "https://software.intel.com/en-us/articles/intel-mpi-benchmarks")
     (synopsis "Intel MPI Benchmarks")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -333,6 +333,40 @@
                 (false-if-exception (rm-rf output)))))))
       (lambda ()
         (rmdir input)))))
+
+(test-eq "restore-file with non-UTF8 locale"     ;<https://bugs.gnu.org/33603>
+  'encoding-error
+  (let* ((file   (search-path %load-path "guix.scm"))
+         (output (string-append %test-dir "/output"))
+         (locale (setlocale LC_ALL "C")))
+    (dynamic-wind
+      (lambda () #t)
+      (lambda ()
+        (define-values (port get-bytevector)
+          (open-bytevector-output-port))
+
+        (write-file-tree "root" port
+                         #:file-type+size
+                         (match-lambda
+                           ("root"   (values 'directory 0))
+                           ("root/λ" (values 'regular 0)))
+                         #:file-port (const (%make-void-port "r"))
+                         #:symlink-target (const #f)
+                         #:directory-entries (const '("λ")))
+        (close-port port)
+
+        (mkdir %test-dir)
+        (catch 'encoding-error
+          (lambda ()
+            ;; This show throw to 'encoding-error.
+            (restore-file (open-bytevector-input-port (get-bytevector))
+                          output)
+            (scandir output))
+          (lambda args
+            'encoding-error)))
+      (lambda ()
+        (false-if-exception (rm-rf %test-dir))
+        (setlocale LC_ALL locale)))))
 
 (test-assert "restore-file-set (signed, valid)"
   (with-store store

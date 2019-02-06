@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,8 +27,10 @@
                 #:select (nar-uri-abbreviation))
   #:use-module (guix store)
   #:use-module (guix derivations)
+  #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 regex)
@@ -49,6 +51,14 @@
             build-status-builds-completed
             build-status-downloads-completed
 
+            build?
+            build
+            build-derivation
+            build-system
+            build-log-file
+            build-phase
+            build-completion
+
             download?
             download
             download-item
@@ -63,7 +73,8 @@
             print-build-event/quiet
             print-build-status
 
-            with-status-report))
+            with-status-report
+            with-status-verbosity))
 
 ;;; Commentary:
 ;;;
@@ -83,14 +94,31 @@
 ;; Builds and substitutions performed by the daemon.
 (define-record-type* <build-status> build-status make-build-status
   build-status?
-  (building     build-status-building             ;list of drv
+  (building     build-status-building             ;list of <build>
                 (default '()))
   (downloading  build-status-downloading          ;list of <download>
                 (default '()))
-  (builds-completed build-status-builds-completed ;list of drv
+  (builds-completed build-status-builds-completed ;list of <build>
                     (default '()))
-  (downloads-completed build-status-downloads-completed ;list of store items
+  (downloads-completed build-status-downloads-completed ;list of <download>
                        (default '())))
+
+;; On-going or completed build.
+(define-immutable-record-type <build>
+  (%build derivation id system log-file phase completion)
+  build?
+  (derivation  build-derivation)                ;string (.drv file name)
+  (id          build-id)                        ;#f | integer
+  (system      build-system)                    ;string
+  (log-file    build-log-file)                  ;#f | string
+  (phase       build-phase                      ;#f | symbol
+               set-build-phase)
+  (completion  build-completion                 ;#f | integer (percentage)
+               set-build-completion))
+
+(define* (build derivation system #:key id log-file phase completion)
+  "Return a new build."
+  (%build derivation id system log-file phase completion))
 
 ;; On-going or completed downloads.  Downloads can be stem from substitutes
 ;; and from "builtin:download" fixed-output derivations.
@@ -111,10 +139,76 @@
   "Return a new download."
   (%download item uri size start end transferred))
 
+(define (matching-build drv)
+  "Return a predicate that matches builds of DRV."
+  (lambda (build)
+    (string=? drv (build-derivation build))))
+
 (define (matching-download item)
   "Return a predicate that matches downloads of ITEM."
   (lambda (download)
     (string=? item (download-item download))))
+
+(define %phase-start-rx
+  ;; Match the "starting phase" message emitted by 'gnu-build-system'.
+  (make-regexp "^starting phase [`']([^']+)'"))
+
+(define %percentage-line-rx
+  ;; Things like CMake write lines like "[ 10%] gcc -c …".  This regexp
+  ;; matches them.
+  (make-regexp "^[[:space:]]*\\[ *([0-9]+)%\\]"))
+
+(define %fraction-line-rx
+  ;; The 'compiled-modules' derivations and Ninja produce reports like
+  ;; "[ 1/32]" at the beginning of each line, while GHC prints "[ 6 of 45]".
+  ;; This regexp matches these.
+  (make-regexp "^[[:space:]]*\\[ *([0-9]+) *(/|of) *([0-9]+)\\]"))
+
+(define (update-build status id line)
+  "Update STATUS based on LINE, a build output line for ID that might contain
+a completion indication."
+  (define (find-build)
+    (find (lambda (build)
+            (and (build-id build)
+                 (= (build-id build) id)))
+          (build-status-building status)))
+
+  (define (update %)
+    (let ((build (find-build)))
+      (build-status
+       (inherit status)
+       (building (cons (set-build-completion build %)
+                       (delq build (build-status-building status)))))))
+
+  (cond ((string-any #\nul line)
+         ;; Don't try to match a regexp here.
+         status)
+        ((regexp-exec %percentage-line-rx line)
+         =>
+         (lambda (match)
+           (let ((% (string->number (match:substring match 1))))
+             (update %))))
+        ((regexp-exec %fraction-line-rx line)
+         =>
+         (lambda (match)
+           (let ((done  (string->number (match:substring match 1)))
+                 (total (string->number (match:substring match 3))))
+             (update (* 100. (/ done total))))))
+        ((regexp-exec %phase-start-rx line)
+         =>
+         (lambda (match)
+           (let ((phase (match:substring match 1))
+                 (build (find-build)))
+             (if build
+                 (build-status
+                  (inherit status)
+                  (building
+                   (cons (set-build-phase (set-build-completion build #f)
+                                          (string->symbol phase))
+                         (delq build (build-status-building status)))))
+                 status))))
+        (else
+         status)))
 
 (define* (compute-status event status
                          #:key
@@ -124,15 +218,29 @@
   "Given EVENT, a tuple like (build-started \"/gnu/store/...-foo.drv\" ...),
 compute a new status based on STATUS."
   (match event
-    (('build-started drv _ ...)
-     (build-status
-      (inherit status)
-      (building (cons drv (build-status-building status)))))
+    (('build-started drv "-" system log-file . rest)
+     (let ((build (build drv system
+                         #:id (match rest
+                                ((pid . _) (string->number pid))
+                                (_ #f))
+                         #:log-file (if (string-null? log-file)
+                                        #f
+                                        log-file))))
+       (build-status
+        (inherit status)
+        (building (cons build (build-status-building status))))))
     (((or 'build-succeeded 'build-failed) drv _ ...)
-     (build-status
-      (inherit status)
-      (building (delete drv (build-status-building status)))
-      (builds-completed (cons drv (build-status-builds-completed status)))))
+     (let ((build (find (matching-build drv)
+                        (build-status-building status))))
+       ;; If BUILD is #f, this may be because DRV corresponds to a
+       ;; fixed-output derivation that is listed as a download.
+       (if build
+           (build-status
+            (inherit status)
+            (building (delq build (build-status-building status)))
+            (builds-completed
+             (cons build (build-status-builds-completed status))))
+           status)))
 
     ;; Note: Ignore 'substituter-started' and 'substituter-succeeded' because
     ;; they're not as informative as 'download-started' and
@@ -144,10 +252,11 @@ compute a new status based on STATUS."
      ;; because ITEM is different from DRV's output.
      (build-status
       (inherit status)
-      (building (remove (lambda (drv)
-                          (equal? (false-if-exception
-                                   (derivation-path->output-path drv))
-                                  item))
+      (building (remove (lambda (build)
+                          (let ((drv (build-derivation build)))
+                            (equal? (false-if-exception
+                                     (derivation-path->output-path drv))
+                                    item)))
                         (build-status-building status)))
       (downloading (cons (download item uri #:size size
                                    #:start (current-time time-monotonic))
@@ -202,6 +311,8 @@ compute a new status based on STATUS."
                                          (current-time time-monotonic))
                                      #:transferred transferred)
                            downloads)))))
+    (('build-log (? integer? pid) line)
+     (update-build status pid line))
     (_
      status)))
 
@@ -228,22 +339,34 @@ build-log\" traces."
   (and (current-store-protocol-version)
        (>= (current-store-protocol-version) #x163)))
 
+(define isatty?*
+  (mlambdaq (port)
+    (isatty? port)))
+
 (define spin!
   (let ((steps (circular-list "\\" "|" "/" "-")))
-    (lambda (port)
-      "Display a spinner on PORT."
-      (match steps
-        ((first . rest)
-         (set! steps rest)
-         (display "\r\x1b[K" port)
-         (display first port)
-         (force-output port))))))
+    (lambda (phase port)
+      "Display a spinner on PORT.  If PHASE is true, display it as a hint of
+the current build phase."
+      (when (isatty?* port)
+        (match steps
+          ((first . rest)
+           (set! steps rest)
+           (display "\r\x1b[K" port)
+           (display first port)
+           (when phase
+             (display " " port)
+             ;; TRANSLATORS: The word "phase" here denotes a "build phase";
+             ;; "~a" is a placeholder for the untranslated name of the current
+             ;; build phase--e.g., 'configure' or 'build'.
+             (format port (G_ "'~a' phase") phase))
+           (force-output port)))))))
 
 (define (color-output? port)
   "Return true if we should write colored output to PORT."
   (and (not (getenv "INSIDE_EMACS"))
        (not (getenv "NO_COLOR"))
-       (isatty? port)))
+       (isatty?* port)))
 
 (define-syntax color-rules
   (syntax-rules ()
@@ -311,8 +434,12 @@ on."
      (G_ "building XDG MIME database..."))
     ('fonts-dir
      (G_ "building fonts directory..."))
+    ('texlive-configuration
+     (G_ "building TeX Live configuration..."))
     ('manual-database
      (G_ "building database for manual pages..."))
+    ('package-cache                    ;package cache generated by 'guix pull'
+     (G_ "building package cache..."))
     (_ #f)))
 
 (define* (print-build-event event old-status status
@@ -338,17 +465,47 @@ addition to build events."
         (cut colorize-string <> 'RED 'BOLD)
         identity))
 
+  (define (report-build-progress phase %)
+    (let ((% (min (max % 0) 100)))                ;sanitize
+      (erase-current-line port)
+      (let* ((prefix (format #f "~3d% ~@['~a' ~]"
+                            (inexact->exact (round %))
+                            (case phase
+                              ((build) #f)        ;not useful to display it
+                              (else phase))))
+             (length (string-length prefix)))
+        (display prefix port)
+        (display (progress-bar % (- (current-terminal-columns) length))
+                 port))
+      (force-output port)))
+
   (define print-log-line
     (if print-log?
         (if colorize?
-            (lambda (line)
+            (lambda (id line)
               (display (colorize-log-line line) port))
-            (cut display <> port))
-        (lambda (line)
-          (spin! port))))
+            (lambda (id line)
+              (display line port)))
+        (lambda (id line)
+          (match (build-status-building status)
+            ((build)                              ;single job
+             (match (build-completion build)
+               ((? number? %)
+                (report-build-progress (build-phase build) %))
+               (_
+                (spin! (build-phase build) port))))
+            (_
+             (spin! #f port))))))
+
+  (define erase-current-line*
+    (if (isatty?* port)
+        (lambda (port)
+          (erase-current-line port)
+          (force-output port))
+        (const #t)))
 
   (unless print-log?
-    (display "\r" port))                          ;erase the spinner
+    (erase-current-line* port))             ;clear the spinner or progress bar
   (match event
     (('build-started drv . _)
      (let ((properties (derivation-properties
@@ -383,7 +540,7 @@ addition to build events."
                 (N_ "The following build is still in progress:~%~{  ~a~%~}~%"
                     "The following builds are still in progress:~%~{  ~a~%~}~%"
                     (length ongoing))
-                ongoing))))
+                (map build-derivation ongoing)))))
     (('build-failed drv . _)
      (format port (failure (G_ "build of ~a failed")) drv)
      (newline port)
@@ -449,7 +606,7 @@ addition to build events."
                ;; through.
                (display line port)
                (force-output port))
-             (print-log-line line))
+             (print-log-line pid line))
          (cond ((string-prefix? "substitute: " line)
                 ;; The daemon prefixes early messages coming with 'guix
                 ;; substitute' with "substitute:".  These are useful ("updating
@@ -462,7 +619,7 @@ addition to build events."
                 (display (info (string-trim-right line)) port)
                 (newline))
                (else
-                (print-log-line line)))))
+                (print-log-line pid line)))))
     (_
      event)))
 
@@ -559,7 +716,11 @@ The second return value is a thunk to retrieve the current state."
 
   (define (process-line line)
     (cond ((string-prefix? "@ " line)
-           (match (string-tokenize (string-drop line 2))
+           ;; Note: Drop the trailing \n, and use 'string-split' to preserve
+           ;; spaces (the log file part of 'build-started' events can be the
+           ;; empty string.)
+           (match (string-split (string-drop (string-drop-right line 1) 2)
+                                #\space)
              (("build-log" (= string->number pid) (= string->number len))
               (set! %build-output-pid pid)
               (set! %build-output '())
@@ -636,9 +797,7 @@ The second return value is a thunk to retrieve the current state."
 
   ;; The build port actually receives Unicode strings.
   (set-port-encoding! port "UTF-8")
-  (cond-expand
-    ((and guile-2 (not guile-2.2)) #t)
-    (else (setvbuf port 'line)))
+  (setvbuf port 'line)
   (values port (lambda () %state)))
 
 (define (call-with-status-report on-event thunk)
@@ -651,3 +810,17 @@ The second return value is a thunk to retrieve the current state."
   "Set up build status reporting to the user using the ON-EVENT procedure;
 evaluate EXP... in that context."
   (call-with-status-report on-event (lambda () exp ...)))
+
+(define (logger-for-level level)
+  "Return the logging procedure that corresponds to LEVEL."
+  (cond ((<= level 0) (const #t))
+        ((= level 1)  print-build-event/quiet)
+        (else         print-build-event)))
+
+(define (call-with-status-verbosity level thunk)
+  (call-with-status-report (logger-for-level level) thunk))
+
+(define-syntax-rule (with-status-verbosity level exp ...)
+  "Set up build status reporting to the user at the given LEVEL: 0 means
+silent, 1 means quiet, 2 means verbose.  Evaluate EXP... in that context."
+  (call-with-status-verbosity level (lambda () exp ...)))

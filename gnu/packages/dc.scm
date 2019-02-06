@@ -23,7 +23,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (guix packages)
   #:use-module (guix download)

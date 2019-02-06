@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,28 +26,22 @@
   #:use-module (system base message)
   #:use-module (guix modules)
   #:use-module (guix build utils)
+  #:use-module (language tree-il optimize)
+  #:use-module (language cps optimize)
   #:export (%default-optimizations
             %lightweight-optimizations
             compile-files))
 
 ;;; Commentary:
 ;;;
-;;; Support code to compile Guile code as efficiently as possible (both with
-;;; Guile 2.0 and 2.2).
+;;; Support code to compile Guile code as efficiently as possible (with 2.2).
 ;;;
 ;;; Code:
 
-(cond-expand
-  (guile-2.2 (use-modules (language tree-il optimize)
-                          (language cps optimize)))
-  (else #f))
-
 (define %default-optimizations
   ;; Default optimization options (equivalent to -O2 on Guile 2.2).
-  (cond-expand
-    (guile-2.2 (append (tree-il-default-optimization-options)
-                       (cps-default-optimization-options)))
-    (else '())))
+  (append (tree-il-default-optimization-options)
+          (cps-default-optimization-options)))
 
 (define %lightweight-optimizations
   ;; Lightweight optimizations (like -O0, but with partial evaluation).
@@ -103,8 +97,7 @@
          (report-load file total completed)
          (format debug-port "~%loading '~a'...~%" file)
 
-         (parameterize ((current-warning-port debug-port))
-           (resolve-interface (file-name->module-name file)))
+         (resolve-interface (file-name->module-name file))
 
          (loop files (+ 1 completed)))))))
 
@@ -164,37 +157,38 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
 
     ;; Exit as soon as something goes wrong.
     (exit-on-exception
-     (with-fluids ((*current-warning-prefix* ""))
-       (with-target host
-         (lambda ()
-           (let ((relative (relative-file source-directory file)))
-             (compile-file file
-                           #:output-file (string-append build-directory "/"
-                                                        (scm->go relative))
-                           #:opts (append warning-options
-                                          (optimization-options relative))))))))
+     (with-target host
+       (lambda ()
+         (let ((relative (relative-file source-directory file)))
+           (compile-file file
+                         #:output-file (string-append build-directory "/"
+                                                      (scm->go relative))
+                         #:opts (append warning-options
+                                        (optimization-options relative)))))))
     (with-mutex progress-lock
       (set! completed (+ 1 completed))))
 
   (with-augmented-search-path %load-path source-directory
     (with-augmented-search-path %load-compiled-path build-directory
-      ;; FIXME: To work around <https://bugs.gnu.org/15602>, we first load all
-      ;; of FILES.
-      (load-files source-directory files
-                  #:report-load report-load
-                  #:debug-port debug-port)
+      (with-fluids ((*current-warning-prefix* ""))
 
-      ;; Make sure compilation related modules are loaded before starting to
-      ;; compile files in parallel.
-      (compile #f)
+        ;; FIXME: To work around <https://bugs.gnu.org/15602>, we first load all
+        ;; of FILES.
+        (load-files source-directory files
+                    #:report-load report-load
+                    #:debug-port debug-port)
 
-      ;; XXX: Don't use too many workers to work around the insane memory
-      ;; requirements of the compiler in Guile 2.2.2:
-      ;; <https://lists.gnu.org/archive/html/guile-devel/2017-05/msg00033.html>.
-      (n-par-for-each (min workers 8) build files)
+        ;; Make sure compilation related modules are loaded before starting to
+        ;; compile files in parallel.
+        (compile #f)
 
-      (unless (zero? total)
-        (report-compilation #f total total)))))
+        ;; XXX: Don't use too many workers to work around the insane memory
+        ;; requirements of the compiler in Guile 2.2.2:
+        ;; <https://lists.gnu.org/archive/html/guile-devel/2017-05/msg00033.html>.
+        (n-par-for-each (min workers 8) build files)
+
+        (unless (zero? total)
+          (report-compilation #f total total))))))
 
 (eval-when (eval load)
   (when (and (string=? "2" (major-version))

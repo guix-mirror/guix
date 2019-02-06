@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Andrew Miloradovsky <andrew@interpretmath.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,3 +123,37 @@ available to help to click.")
 It works for both single pedal devices and three pedal devices.  All supported
 devices have vendorId:productId = 0c45:7403 or 0c45:7404.")
     (license license:expat))))
+
+(define-public xmagnify
+  (package
+    (name "xmagnify")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/amiloradovsky/magnify.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ngnp5f5zl3v35vhbdyjpymy6mwrs0476fm5nd7dzkba7n841jdh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; none included
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("libX11" ,libx11)))
+    (home-page "https://gitlab.com/amiloradovsky/magnify")
+    (synopsis "Tiny screen magnifier for X11")
+    (description
+     "This program magnifies a screen region by an integer positive factor and
+draws the result on a window.  It is useful as an accessibility tool, which
+works with every X Window System based GUI (depends only on libX11); or as an
+assistant for graphic designers, who need to select individual pixels.")
+    ;; Licensed either under Expat or GPLv2+.
+    (license (list license:expat license:gpl2+))))

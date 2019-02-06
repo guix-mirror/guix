@@ -19,15 +19,16 @@
 
   ;; Assume the target root file system is labelled "my-root",
   ;; and the EFI System Partition has UUID 1234-ABCD.
-  (file-systems (cons* (file-system
+  (file-systems (append
+                 (list (file-system
                          (device (file-system-label "my-root"))
                          (mount-point "/")
                          (type "ext4"))
                        (file-system
                          (device (uuid "1234-ABCD" 'fat))
                          (mount-point "/boot/efi")
-                         (type "vfat"))
-                       %base-file-systems))
+                         (type "vfat")))
+                 %base-file-systems))
 
   (users (cons (user-account
                 (name "alice")
@@ -40,9 +41,12 @@
 
   ;; Add a bunch of window managers; we can choose one at
   ;; the log-in screen with F1.
-  (packages (cons* ratpoison i3-wm i3status dmenu ;window managers
-                   nss-certs                      ;for HTTPS access
-                   %base-packages))
+  (packages (append (list
+                     ;; window managers
+                     ratpoison i3-wm i3status dmenu
+                     ;; for HTTPS access
+                     nss-certs)
+                    %base-packages))
 
   ;; Use the "desktop" services, which include the X11
   ;; log-in service, networking with NetworkManager, and more.

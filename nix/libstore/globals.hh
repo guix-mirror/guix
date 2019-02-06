@@ -45,8 +45,6 @@ struct Settings {
     /* The directory where we store sources and derived files. */
     Path nixStore;
 
-    Path nixDataDir; /* !!! fix */
-
     /* The directory where we log various operations. */
     Path nixLogDir;
 

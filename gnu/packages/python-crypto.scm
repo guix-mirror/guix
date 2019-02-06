@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -48,6 +48,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
@@ -76,14 +77,14 @@ with what is used by the Bitcoin network.")
 (define-public python-bcrypt
   (package
     (name "python-bcrypt")
-    (version "3.1.4")
+    (version "3.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bcrypt" version))
        (sha256
         (base32
-         "13cyrnqwkhc70rs6dg65z4yrrr3dc42fhk11804fqmci9hvimvb7"))))
+         "1sh2xh0iragdq8dhssc1cdd02nppjq7b5kmv0qladfi2s9cnfqs4"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pycparser" ,python-pycparser)
@@ -147,10 +148,7 @@ to providing full-strength password hashing for multi-user application.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/py-bcrypt/py-bcrypt-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "py-bcrypt" version))
        (sha256
         (base32
          "0y6smdggwi5s72v6p1nn53dg6w05hna3d264cq6kas0lap73p8az"))))
@@ -239,10 +237,7 @@ Python interface around SSH networking concepts.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/e/ecdsa/ecdsa-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "ecdsa" version))
        (sha256
         (base32
          "1yj31j0asmrx4an9xvsaj2icdmzy6pw0glfpqrrkrphwdpi1xkv4"))))
@@ -321,11 +316,11 @@ etc.).  The package is structured to make adding new modules easy.")
         "0482rmi2x6p78wl2kz8qzyq21xz1sbbfwnv5x7dggar4vkwxhzfx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-pycrypto" ,python-pycrypto)))
-    (arguments
-     `(#:tests? #f))                      ;TODO: tests require pytest
     (home-page "https://github.com/jaraco/keyring")
     (synopsis "Store and access your passwords safely")
     (description
@@ -341,13 +336,13 @@ password storage.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2018.8.13")
+    (version "2018.11.29")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1x7jy10rz3100g9iw7c2czcw2z4lqfaalsd8yg991l4d82hnh7ac"))))
+                "1dvccavd2fzq4j37w0sznylp92ps14zi6gvlxzm23in0yhzciya7"))))
     (build-system python-build-system)
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
@@ -362,14 +357,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.4.2")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "013qx2hz0jv79yzfzpn0r2kk33i5qy3sdnzgwiv5779d18snblwi"))))
+         "15qfl3pnw2f11r0z0zhwl56f6pb60ysav8fxmpnz5p80cfwljdik"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -384,14 +379,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.4.2")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1pc60dksi9w9mshl6cvn7gdjazbp3pmydy3qp9wgy5wzd8n0b9h5"))))
+         "00c4d7gvsymlaw0r13zrm32dcnarmpayjyrh65yymlmr6mrbcij9"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -433,14 +428,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "18.0.0")
+    (version "19.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "1055rb456nvrjcij3sqj6c6l3kmh5cqqay0nsmx3pxq07d1g3234"))))
+         "007j40y7x3k8xj54dy2qnij9lldfp71k9mkflhd9vqbdiwrndjmf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -449,15 +444,15 @@ message digests and key derivation functions.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-v" "-k"
-                             (string-append
-                              ;; This test tries to look up certificates from
-                              ;; the compiled-in default path in OpenSSL, which
-                              ;; does not exist in the build environment.
-                              "not test_fallback_default_verify_paths "
-                              ;; This test attempts to make a connection to
-                              ;; an external web service.
-                              "and not test_set_default_verify_paths"))))))))
+             (invoke "py.test" "-v" "-k"
+                     (string-append
+                      ;; This test tries to look up certificates from
+                      ;; the compiled-in default path in OpenSSL, which
+                      ;; does not exist in the build environment.
+                      "not test_fallback_default_verify_paths "
+                      ;; This test attempts to make a connection to
+                      ;; an external web service.
+                      "and not test_set_default_verify_paths")))))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-six" ,python-six)))
@@ -808,14 +803,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.5.1")
+    (version "3.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "15mc1h5ij1b6hcqvb048kb4k0ip64n2ky0zz0rml2s78ylv7g5dp"))))
+         "1xxf5cyhlc5ak5skf4zgqz9yk5fj5g70hd06hc1jym995lxpxz7m"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
     (synopsis "Cryptographic library for Python")

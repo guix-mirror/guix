@@ -37,6 +37,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages xml))

@@ -76,6 +76,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages suckless)
+  #:use-module (gnu packages mpd)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -180,14 +181,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.16")
+    (version "4.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1d2mnryn7m9c6d69awd7lwzadliapd0ahi5n8d0ppqy533ssaq6c"))))
+                "0xl56y196vxv001gvx35xwfr25zah8m3xwizp9ycdgdc0rfc4rdb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -799,7 +800,7 @@ experience.")
            (lambda _
              ;; There aren't any tests, so just make sure the binary
              ;; gets built and can be run successfully.
-             (zero? (system* "../build/awesome" "-v"))))
+             (invoke "../build/awesome" "-v")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((awesome (assoc-ref outputs "out"))
@@ -1051,3 +1052,45 @@ its size
 @item Display preview images in a tiled icon layout
 @end itemize")
     (license license:gpl2+)))
+
+(define-public polybar
+  (package
+    (name "polybar")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jaagr/polybar/releases/"
+                           "download/" version "/polybar.tar"))
+       (sha256
+        (base32 "0sjh3xmf11g09spi88zj7xsc3a3vv78kixab6n5i7436py7xwzb4"))
+       (file-name (string-append name "-" version ".tar"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; Test is disabled because it requires downloading googletest from the
+     ;; Internet.
+     '(#:tests? #f))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cairo" ,cairo)
+       ("i3-wm" ,i3-wm)
+       ("libmpdclient" ,libmpdclient)
+       ("libnl" ,libnl)
+       ("libxcb" ,libxcb)
+       ("pulseaudio" ,pulseaudio)
+       ("xcb-proto" ,xcb-proto)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-cursor" ,xcb-util-cursor)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("xcb-util-xrm" ,xcb-util-xrm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)           ; lib/xpp depends on python 2
+       ("python" ,python)))             ; xcb-proto depends on python 3
+    (home-page "https://polybar.github.io/")
+    (synopsis "Fast and easy-to-use status bar")
+    (description "Polybar aims to help users build beautiful and highly
+customizable status bars for their desktop environment.  It has built-in
+functionality to display information about the most commonly used services.")
+    (license license:expat)))

@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -58,6 +58,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
   #:use-module (gnu packages web)
@@ -509,27 +510,28 @@ is Python’s.")
 (define-public python-openid
   (package
     (name "python-openid")
-    (version "3.0.10")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python3-openid" version))
        (sha256
         (base32
-         "1x3nh3fycqfn43jp5j5pb4q4y2jxp4mdka4absaa3bc0078qd758"))))
+         "00l5hrjh19740w00b3fnsqldnla41wbr2rics09dl4kyd1fkd3b2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
         (replace 'check
           (lambda _
-            (invoke "./admin/runtests")
-            #t)))))
+            (invoke "coverage" "run" "-m"
+                    "unittest" "openid.test.test_suite"))))))
     (properties `((python2-variant . ,(delay python2-openid))))
     (propagated-inputs
      `(("python-defusedxml" ,python-defusedxml)))
     (native-inputs
-     `(("python-psycopg2" ,python-psycopg2)
+     `(("python-coverage" ,python-coverage)
+       ("python-psycopg2" ,python-psycopg2)
        ("python-django" ,python-django)))
     (home-page "https://github.com/necaris/python3-openid")
     (synopsis "OpenID support for servers and consumers")
@@ -663,13 +665,14 @@ teams extension for python-openid.")
 (define-public python-tornado
   (package
     (name "python-tornado")
-    (version "4.5.1")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado" version))
        (sha256
-        (base32 "1zbkgcdfq81k298awrm8p0xwbwwn2p3nbizdglzfbkskhai082fv"))))
+        (base32
+         "02clqk2116jbnq8lnaqmdw3p52nqrd9ib59r4xz2ll43fpcmhlaf"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: Two tests error out with:
@@ -680,14 +683,12 @@ teams extension for python-openid.")
        ;;     (lambda _
        ;;       ;; 'setup.py test' hits an AssertionError on BSD-specific
        ;;       ;; "tornado/platform/kqueue.py". This is the supported method:
-       ;;       (invoke- "python" "-m" "tornado.test")
+       ;;       (invoke "python" "-m" "tornado.test.runtests")
        ;;       #t)))
        #:tests? #f))
     (native-inputs
      `(("python-certifi" ,python-certifi)))
-    (propagated-inputs
-     `(("python-backports-abc" ,python-backports-abc)))
-    (home-page "http://www.tornadoweb.org/")
+    (home-page "https://www.tornadoweb.org/")
     (synopsis "Python web framework and asynchronous networking library")
     (description
      "Tornado is a Python web framework and asynchronous networking library,
@@ -704,6 +705,7 @@ connection to each user.")
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
+         ("python2-backports-abc" ,python2-backports-abc)
          ("python2-singledispatch" ,python2-singledispatch)
           ,@(package-propagated-inputs tornado))))))
 
@@ -733,14 +735,14 @@ web framework, either via the basic or digest authentication schemes.")
 (define-public python-terminado
   (package
     (name "python-terminado")
-    (version "0.6")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "terminado" version))
        (sha256
         (base32
-         "09h1kwi86g5mrk14s4pgbhshd602zry29lnpxamcqz864kva22rc"))))
+         "0yh69k6579g848rmjyllb5h75pkvgcy27r1l3yzgkf33wnnzkasm"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tornado" ,python-tornado)
@@ -751,9 +753,7 @@ web framework, either via the basic or digest authentication schemes.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-                  (lambda _
-                    (invoke "nosetests")
-                    #t)))))
+           (lambda _ (invoke "nosetests") #t)))))
     (home-page "https://github.com/takluyver/terminado")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
@@ -775,10 +775,7 @@ term.js Javascript terminal emulator library.")
     (version "1.2.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                    "https://pypi.python.org/packages/"
-                    "38/76/ebcbc24d0cb77db34520a3ca6ed1bd43ace17d182bbd8dd7d976f1c176fb/"
-                    "wsgi_intercept-" version ".tar.gz"))
+             (uri (pypi-uri "wsgi_intercept" version))
              (sha256
               (base32
                "0kjj2v2dvmnpdd5h5gk9rzz0f54rhjb0yiz3zg65bmp65slfw65d"))))
@@ -832,8 +829,7 @@ object to help create WSGI responses.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.event/zope.event-" version ".tar.gz"))
+       (uri (pypi-uri "zope.event" version))
        (sha256
         (base32
          "11p75zpfz3ffhz21nzx9wb23xs993ck5s6hkjcvhswwizni5jynw"))))
@@ -856,8 +852,7 @@ dispatching systems can be built.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.interface/zope.interface-" version ".tar.gz"))
+       (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
          "0ks8h73b2g4bkad821qbv0wzjppdrwys33i7ka45ik3wxjg1l8if"))))
@@ -882,9 +877,7 @@ conforming to a given API or contract.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.exceptions/zope.exceptions-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "zope.exceptions" version))
        (sha256
         (base32
          "0zwxaaa66sqxg5k7zcrvs0fbg9ym1njnxnr28dfmchzhwjvwnfzl"))))
@@ -936,9 +929,7 @@ forms, HTTP servers, regular expressions, and more.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.testrunner/zope.testrunner-"
-                           version ".zip"))
+       (uri (pypi-uri "zope.testrunner" version ".zip"))
        (sha256
         (base32
          "1r7iqknhh55y45f64mz5hghgvzx34h1i11k350s0avx6q8gznja1"))))
@@ -975,10 +966,7 @@ tests.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/z"
-             "/zope.i18nmessageid/zope.i18nmessageid-"
-             version ".tar.gz"))
+       (uri (pypi-uri "zope.i18nmessageid" version))
        (sha256
         (base32
          "1rslyph0klk58dmjjy4j0jxy21k03azksixc3x2xhqbkv97cmzml"))))
@@ -999,8 +987,7 @@ internationalized messages within program source text.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.schema/zope.schema-" version ".tar.gz"))
+       (uri (pypi-uri "zope.schema" version))
        (sha256
         (base32
          "1p943jdxb587dh7php4vx04qvn7b2877hr4qs5zyckvp5afhhank"))))
@@ -1030,9 +1017,7 @@ defining data schemas.")
     (version "4.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/z"
-                                  "/zope.configuration/zope.configuration-"
-                                  version ".tar.gz"))
+              (uri (pypi-uri "zope.configuration" version))
               (sha256
                (base32
                 "1x9dfqypgympnlm25p9m43xh4qv3p7d75vksv9pzqibrb4cggw5n"))))
@@ -1058,8 +1043,7 @@ Markup Language.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.proxy/zope.proxy-" version ".tar.gz"))
+       (uri (pypi-uri "zope.proxy" version))
        (sha256
         (base32
          "0pqwwmvm1prhwv1ziv9lp8iirz7xkwb6n2kyj36p2h0ppyyhjnm4"))))
@@ -1087,8 +1071,7 @@ brokering, etc.) for which the proxy is responsible.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.location/zope.location-" version ".tar.gz"))
+       (uri (pypi-uri "zope.location" version))
        (sha256
         (base32
          "1nj9da4ksiyv3h8n2vpzwd0pb03mdsh7zy87hfpx72b6p2zcwg74"))))
@@ -1114,8 +1097,7 @@ Zope3, which are are special objects that have a structural location.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/z"
-                           "/zope.security/zope.security-" version ".tar.gz"))
+       (uri (pypi-uri "zope.security" version))
        (sha256
         (base32
          "14zmf684amc0x32kq05yxnhfqd1cmyhafkw05gn81rn90zjv6ssy"))))
@@ -1218,14 +1200,14 @@ verification of the SSL peer.")
 (define-public python-websocket-client
   (package
     (name "python-websocket-client")
-    (version "0.37.0")
+    (version "0.54.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "websocket_client" version))
        (sha256
         (base32
-         "0h9glp1jll3z76ly3kg08aqgxqk0a68p4zi9yn50353bh5nj92v7"))))
+         "0j88zmikaypf38lvpkf4aaxrjp9j07dmy5ghj7kli0fv3p4n45g5"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
@@ -1233,10 +1215,18 @@ verification of the SSL peer.")
     (synopsis "WebSocket client for Python")
     (description "The Websocket-client module provides the low level APIs for
 WebSocket usage in Python programs.")
+    (properties `((python2-variant . ,(delay python2-websocket-client))))
     (license license:lgpl2.1+)))
 
 (define-public python2-websocket-client
-  (package-with-python2 python-websocket-client))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-websocket-client))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-backport-ssl-match-hostname"
+          ,python2-backport-ssl-match-hostname)
+         ,@(package-native-inputs base))))))
 
 (define-public python-requests
   (package
@@ -1408,29 +1398,30 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.23")
+    (version "1.24.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "1bvbd35q3zdcd7gsv38fwpizy7p06dr0154g5gfybrvnbvhwb2m6"))))
+          "08lwd9f3hqznyf32vnzwvp87pchx062nkbgyrf67rwlkgj0jk5fy"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
      `(;; some packages for tests
-       ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
        ("python-tornado" ,python-tornado)))
     (propagated-inputs
      `(;; These 5 inputs are used to build urrlib3[secure]
        ("python-certifi" ,python-certifi)
-       ("python-cryptography" ,python-cryptography) ;
+       ("python-cryptography" ,python-cryptography)
        ("python-idna" ,python-idna)
        ("python-ipaddress" ,python-ipaddress)
-       ("python-pyopenssl" ,python-pyopenssl)))
-    (home-page "https://urllib3.readthedocs.org/")
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pysocks" ,python-pysocks)))
+    (home-page "https://urllib3.readthedocs.io/")
     (synopsis "HTTP library with thread-safe connection pooling")
     (description
      "Urllib3 supports features left out of urllib and urllib2 libraries.  It
@@ -1575,20 +1566,28 @@ minimum of WSGI.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "0.11.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "Flask" version))
+              (uri (pypi-uri "flask" version))
               (sha256
                (base32
-                "03kbfll4sj3v5z7r31c7bhfpi11r1np076d4p1k2kg4yzcmkywdl"))))
+                "0j6f4a9rpfh25k1gp7azqhnni4mb4fgy50jammgjgddw1l3w0w92"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-itsdangerous" ,python-itsdangerous)
        ("python-jinja2" ,python-jinja2)
        ("python-click" ,python-click)
        ("python-werkzeug" ,python-werkzeug)))
-    (home-page "https://github.com/mitsuhiko/flask/")
+    (home-page "https://www.palletsprojects.com/p/flask/")
     (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
     (description "Flask is a micro web framework based on the Werkzeug toolkit
 and Jinja2 template engine.  It is called a micro framework because it does not
@@ -2017,14 +2016,14 @@ pretty printer and a tree visitor.")
 (define-public python-flask-restful
   (package
     (name "python-flask-restful")
-    (version "0.3.5")
+    (version "0.3.7")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Flask-RESTful" version))
         (sha256
-          (base32
-            "0hjcmdb56b7z4bkw848lxfkyrpnkwzmqn2dgnlv12mwvjpzsxr6c"))))
+         (base32
+          "1a9cbwkr6krryyzq4sd3f415nkkc6dyfls5i3pgyibs94g0hw97q"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-aniso8601" ,python-aniso8601)
@@ -2595,18 +2594,28 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "0.11.15")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "Werkzeug" version))
+       (uri (pypi-uri "werkzeug" version))
        (sha256
         (base32
-         "1h5wycw8yj7q0grqsjnsqflmrlsdagvl2j4dsgdncci6mjc7fpa5"))))
+         "0z2m4snn1vc9518r2vzgdj1nc90kcgi60wijvd29yvcp85ypmzf3"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "-m" "pytest"))))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "http://werkzeug.pocoo.org/")
+    (home-page "https://www.palletsprojects.org/p/werkzeug/")
     (synopsis "Utilities for WSGI applications")
     (description "One of the most advanced WSGI utility modules.  It includes a
 powerful debugger, full-featured request and response objects, HTTP utilities to

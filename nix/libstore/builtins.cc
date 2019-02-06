@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -50,13 +50,7 @@ static void builtinDownload(const Derivation &drv,
     /* Tell it about options such as "print-extended-build-trace".  */
     setenv("_NIX_OPTIONS", settings.pack().c_str(), 1);
 
-    /* XXX: Hack our way to use the 'download' script from 'LIBEXECDIR/guix'
-       or just 'LIBEXECDIR', depending on whether we're running uninstalled or
-       not.  */
-    const string subdir = getenv("GUIX_UNINSTALLED") != NULL
-	? "" : "/guix";
-
-    const string program = settings.nixLibexecDir + subdir + "/download";
+    const string program = settings.nixLibexecDir + "/download";
     execv(program.c_str(), (char *const *) argv);
 
     throw SysError(format("failed to run download program '%1%'") % program);

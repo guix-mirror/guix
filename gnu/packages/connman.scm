@@ -34,6 +34,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages samba)
@@ -159,10 +160,9 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero?
-              (system* "qmake"
-                       (string-append "PREFIX="
-                                      (assoc-ref outputs "out"))))))
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out")))))
          (add-before 'install 'fix-Makefiles
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

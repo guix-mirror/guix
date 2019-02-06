@@ -31,6 +31,7 @@
   #:use-module (gnu packages gtk) ;for "cairo"
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)

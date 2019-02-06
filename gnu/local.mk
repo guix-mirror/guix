@@ -1,15 +1,15 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Andreas Enge <andreas@enge.fr>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
 # Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
-# Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+# Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-# Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
+# Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -46,6 +46,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/grub.scm                       \
   %D%/bootloader/extlinux.scm                   \
   %D%/bootloader/u-boot.scm                     \
+  %D%/ci.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -109,10 +110,10 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/commencement.scm			\
   %D%/packages/compression.scm			\
   %D%/packages/compton.scm 			\
-  %D%/packages/conkeror.scm			\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
   %D%/packages/cook.scm				\
+  %D%/packages/coq.scm				\
   %D%/packages/cpio.scm				\
   %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
@@ -127,6 +128,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/datamash.scm			\
   %D%/packages/datastructures.scm		\
   %D%/packages/dav.scm				\
+  %D%/packages/dbm.scm				\
   %D%/packages/dc.scm				\
   %D%/packages/debian.scm			\
   %D%/packages/debug.scm			\
@@ -150,11 +152,13 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ebook.scm			\
   %D%/packages/ed.scm				\
   %D%/packages/education.scm			\
+  %D%/packages/efi.scm				\
   %D%/packages/electronics.scm			\
   %D%/packages/elf.scm				\
   %D%/packages/elixir.scm			\
   %D%/packages/embedded.scm			\
   %D%/packages/emacs.scm			\
+  %D%/packages/emacs-xyz.scm			\
   %D%/packages/emulators.scm			\
   %D%/packages/enchant.scm			\
   %D%/packages/engineering.scm			\
@@ -217,6 +221,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gtk.scm				\
   %D%/packages/guile.scm			\
   %D%/packages/guile-wm.scm			\
+  %D%/packages/guile-xyz.scm			\
   %D%/packages/gv.scm				\
   %D%/packages/gxmessage.scm			\
   %D%/packages/hardware.scm			\
@@ -242,9 +247,11 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
+  %D%/packages/java-compression.scm		\
   %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
   %D%/packages/jrnl.scm				\
+  %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
   %D%/packages/kde.scm              \
   %D%/packages/kde-frameworks.scm		\
@@ -347,6 +354,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pem.scm				\
   %D%/packages/perl.scm				\
   %D%/packages/perl-check.scm			\
+  %D%/packages/perl-compression.scm		\
   %D%/packages/perl-web.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/phabricator.scm 			\
@@ -365,8 +373,11 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pure.scm				\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
+  %D%/packages/python-check.scm			\
+  %D%/packages/python-compression.scm		\
   %D%/packages/python-crypto.scm		\
   %D%/packages/python-web.scm			\
+  %D%/packages/python-xyz.scm			\
   %D%/packages/toys.scm				\
   %D%/packages/tryton.scm			\
   %D%/packages/qt.scm				\
@@ -385,6 +396,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rush.scm				\
   %D%/packages/rust.scm				\
   %D%/packages/samba.scm			\
+  %D%/packages/sagemath.scm			\
   %D%/packages/sawfish.scm			\
   %D%/packages/scanner.scm			\
   %D%/packages/scheme.scm			\
@@ -409,6 +421,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sml.scm				\
   %D%/packages/speech.scm			\
   %D%/packages/spice.scm			\
+  %D%/packages/sqlite.scm			\
   %D%/packages/ssh.scm				\
   %D%/packages/sssd.scm				\
   %D%/packages/stalonetray.scm			\
@@ -483,6 +496,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/desktop.scm			\
   %D%/services/dict.scm				\
   %D%/services/dns.scm				\
+  %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
   %D%/services/kerberos.scm			\
@@ -541,6 +555,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/databases.scm			\
   %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
+  %D%/tests/docker.scm				\
   %D%/tests/monitoring.scm                      \
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
@@ -553,6 +568,47 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm
+
+if ENABLE_INSTALLER
+
+GNU_SYSTEM_MODULES +=                           \
+  %D%/installer.scm      			\
+  %D%/installer/connman.scm			\
+  %D%/installer/final.scm			\
+  %D%/installer/hostname.scm			\
+  %D%/installer/keymap.scm			\
+  %D%/installer/locale.scm			\
+  %D%/installer/newt.scm			\
+  %D%/installer/parted.scm			\
+  %D%/installer/record.scm		        \
+  %D%/installer/services.scm			\
+  %D%/installer/steps.scm			\
+  %D%/installer/timezone.scm			\
+  %D%/installer/user.scm			\
+  %D%/installer/utils.scm			\
+						\
+  %D%/installer/newt/ethernet.scm		\
+  %D%/installer/newt/final.scm  		\
+  %D%/installer/newt/hostname.scm		\
+  %D%/installer/newt/keymap.scm			\
+  %D%/installer/newt/locale.scm			\
+  %D%/installer/newt/menu.scm			\
+  %D%/installer/newt/network.scm		\
+  %D%/installer/newt/page.scm			\
+  %D%/installer/newt/partition.scm		\
+  %D%/installer/newt/services.scm		\
+  %D%/installer/newt/timezone.scm		\
+  %D%/installer/newt/user.scm			\
+  %D%/installer/newt/utils.scm			\
+  %D%/installer/newt/welcome.scm		\
+  %D%/installer/newt/wifi.scm	
+
+installerdir = $(guilemoduledir)/%D%/installer
+dist_installer_DATA =				\
+  %D%/installer/aux-files/logo.txt	        \
+  %D%/installer/aux-files/SUPPORTED
+
+endif ENABLE_INSTALLER
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
@@ -578,12 +634,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-icu59-include-unistr.patch	\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
+  %D%/packages/patches/allegro-fix-compilation-mesa-18.2.5-and-later.patch \
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
-  %D%/packages/patches/ao-cad-aarch64-support.patch		\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
+  %D%/packages/patches/aria2-CVE-2019-3500.patch		\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
@@ -603,9 +660,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/beets-python-3.7-fix.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
+  %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
-  %D%/packages/patches/blender-newer-ffmpeg.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
@@ -638,6 +695,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/coda-use-system-libs.patch		\
+  %D%/packages/patches/combinatorial-blas-awpm.patch		\
+  %D%/packages/patches/combinatorial-blas-io-fix.patch		\
   %D%/packages/patches/cool-retro-term-dont-check-uninit-member.patch	\
   %D%/packages/patches/cool-retro-term-fix-array-size.patch	\
   %D%/packages/patches/cool-retro-term-memory-leak-1.patch	\
@@ -652,7 +711,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
-  %D%/packages/patches/datamash-arm-tests.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
@@ -660,6 +718,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
+  %D%/packages/patches/docker-engine-test-noinstall.patch	\
+  %D%/packages/patches/docker-fix-tests.patch			\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dropbear-CVE-2018-15599.patch		\
@@ -674,6 +734,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
+  %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
@@ -692,6 +753,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
+  %D%/packages/patches/file-CVE-2018-10360.patch		\
   %D%/packages/patches/findutils-gnulib-libio.patch		\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-makedev.patch			\
@@ -766,7 +828,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-hurd-magic-pid.patch		\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
-  %D%/packages/patches/glibc-memchr-overflow-i686.patch		\
   %D%/packages/patches/glibc-o-largefile.patch			\
   %D%/packages/patches/glibc-reinstate-prlimit64-fallback.patch	\
   %D%/packages/patches/glibc-vectorized-strcspn-guards.patch	\
@@ -780,8 +841,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-todo-libical-compat.patch		\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
-  %D%/packages/patches/gnucash-price-quotes-perl.patch		\
-  %D%/packages/patches/gnucash-disable-failing-tests.patch	\
+  %D%/packages/patches/gnucash-fix-test-transaction-failure.patch \
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gnutls-skip-pkgconfig-test.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
@@ -831,6 +891,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hplip-remove-imageprocessor.patch	\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
+  %D%/packages/patches/icecat-makeicecat.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
@@ -860,13 +921,19 @@ dist_patch_DATA =						\
   %D%/packages/patches/kiki-makefile.patch			\
   %D%/packages/patches/kiki-missing-includes.patch		\
   %D%/packages/patches/kiki-portability-64bit.patch		\
+  %D%/packages/patches/kinit-kdeinit-extra_libs.patch		\
+  %D%/packages/patches/kinit-kdeinit-libpath.patch		\
+  %D%/packages/patches/kio-search-smbd-on-PATH.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
+  %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
+  %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
   %D%/packages/patches/kobodeluxe-const-charp-conversion.patch	\
   %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
+  %D%/packages/patches/kodi-skip-test-449.patch		\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
@@ -878,6 +945,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
   %D%/packages/patches/libarchive-CVE-2017-14166.patch		\
   %D%/packages/patches/libarchive-CVE-2017-14502.patch		\
+  %D%/packages/patches/libarchive-CVE-2018-1000877.patch	\
+  %D%/packages/patches/libarchive-CVE-2018-1000878.patch	\
+  %D%/packages/patches/libarchive-CVE-2018-1000880.patch	\
   %D%/packages/patches/libbase-fix-includes.patch		\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
@@ -894,6 +964,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
+  %D%/packages/patches/libextractor-CVE-2018-20430.patch	\
+  %D%/packages/patches/libextractor-CVE-2018-20431.patch	\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgit2-oom-test.patch			\
   %D%/packages/patches/libgdata-fix-tests.patch			\
@@ -917,7 +989,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
   %D%/packages/patches/libsndfile-CVE-2017-12562.patch		\
-  %D%/packages/patches/libssh-hostname-parser-bug.patch		\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
@@ -940,6 +1011,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
+  %D%/packages/patches/linkchecker-mark-more-tests-that-require-the-network.patch	\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
@@ -966,11 +1038,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
   %D%/packages/patches/maven-generate-component-xml.patch		\
   %D%/packages/patches/maven-generate-javax-inject-named.patch		\
-  %D%/packages/patches/mcron-install.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
-  %D%/packages/patches/meandmyshadow-define-paths-earlier.patch	\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/mescc-tools-boot.patch			\
   %D%/packages/patches/meson-for-build-rpath.patch		\
@@ -995,7 +1065,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/m4-gnulib-libio.patch			\
-  %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
   %D%/packages/patches/netsurf-message-timestamp.patch		\
@@ -1010,24 +1079,22 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
   %D%/packages/patches/nyacc-binary-literals.patch		\
-  %D%/packages/patches/nyx-show-header-stats-with-python3.patch	\
   %D%/packages/patches/oath-toolkit-glibc-compat.patch		\
   %D%/packages/patches/ocaml-bisect-fix-camlp4-in-another-directory.patch	\
   %D%/packages/patches/ocaml-bitstring-fix-configure.patch \
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
   %D%/packages/patches/ocaml-enable-ocamldoc-reproducibility.patch	\
-  %D%/packages/patches/ocaml-findlib-make-install.patch	\
-  %D%/packages/patches/ocaml-graph-honor-source-date-epoch.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
+  %D%/packages/patches/opencv-rgbd-aarch64-test-fix.patch	\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
-  %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
+  %D%/packages/patches/openssh-CVE-2018-20685.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
@@ -1035,6 +1102,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/owncloud-disable-updatecheck.patch	\
+  %D%/packages/patches/p11-kit-jks-timestamps.patch		\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
@@ -1104,7 +1172,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-cffi-x87-stack-clean.patch	\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
-  %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
@@ -1119,6 +1186,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
+  %D%/packages/patches/qemu-CVE-2018-16872.patch 		\
+  %D%/packages/patches/qemu-CVE-2019-6778.patch 		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
@@ -1137,7 +1206,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/rct-add-missing-headers.patch		\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
-  %D%/packages/patches/readline-7.0-mingw.patch			\
   %D%/packages/patches/reposurgeon-add-missing-docbook-files.patch	\
   %D%/packages/patches/reptyr-fix-gcc-7.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
@@ -1156,10 +1224,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
-  %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/scotch-build-parallelism.patch		\
-  %D%/packages/patches/scotch-graph-diam-64.patch		\
-  %D%/packages/patches/scotch-graph-induce-type-64.patch	\
+  %D%/packages/patches/scotch-integer-declarations.patch	\
   %D%/packages/patches/scribus-poppler.patch			\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
@@ -1176,6 +1242,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundtouch-CVE-2018-14044-14045.patch 	\
   %D%/packages/patches/soundtouch-CVE-2018-1000223.patch 	\
   %D%/packages/patches/steghide-fixes.patch			\
+  %D%/packages/patches/streamlink-update-test.patch		\
+  %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swig-guile-gc.patch			\
   %D%/packages/patches/swish-e-search.patch			\
@@ -1210,13 +1278,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
-  %D%/packages/patches/u-boot-pinebook-a64-update-dts.patch	\
-  %D%/packages/patches/u-boot-pinebook-mmc-calibration.patch	\
-  %D%/packages/patches/u-boot-pinebook-r_i2c-controller.patch	\
-  %D%/packages/patches/u-boot-pinebook-dts.patch		\
-  %D%/packages/patches/u-boot-pinebook-syscon-node.patch	\
-  %D%/packages/patches/u-boot-pinebook-video-bridge.patch	\
-  %D%/packages/patches/unrtf-CVE-2016-10091.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
   %D%/packages/patches/unzip-CVE-2014-8141.patch		\
@@ -1236,8 +1297,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/valgrind-glibc-compat.patch		\
-  %D%/packages/patches/vinagre-revert-1.patch                   \
-  %D%/packages/patches/vinagre-revert-2.patch                   \
+  %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
+  %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\
+  %D%/packages/patches/vboot-utils-skip-test-workbuf.patch	\
+  %D%/packages/patches/vinagre-newer-freerdp.patch             \
+  %D%/packages/patches/vinagre-newer-rdp-parameters.patch      \
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
@@ -1266,8 +1330,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/x265-arm-flags.patch			\
-  %D%/packages/patches/x265-detect512-all-arches.patch		\
-  %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\

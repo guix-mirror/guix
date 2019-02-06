@@ -29,7 +29,6 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -39,6 +38,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml))
@@ -126,9 +126,9 @@ reliability in mind.")
                     (let ((out (assoc-ref outputs "out")))
                       (setenv "CONFIG_SHELL" (which "sh"))
                       (setenv "SHELL" (which "sh"))
-                      (zero? (system* "./configure"
-                                      (string-append "--prefix=" out)))))))
-                #:tests? #f))           ;there are no tests
+                      (invoke "./configure"
+                              (string-append "--prefix=" out))))))
+       #:tests? #f)) ;there are no tests
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.ncftp.com/ncftp/")
     (synopsis "Command-line File Transfer Protocol (FTP) client")

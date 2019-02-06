@@ -1224,14 +1224,8 @@ static void checkSecrecy(const Path & path)
 
 static std::string runAuthenticationProgram(const Strings & args)
 {
-    /* Use the 'authenticate' script from 'LIBEXECDIR/guix' or just
-       'LIBEXECDIR', depending on whether we're uninstalled or not.  */
-    const bool installed = getenv("GUIX_UNINSTALLED") == NULL;
-    const string program = settings.nixLibexecDir
-	+ (installed ? "/guix" : "")
-	+ "/authenticate";
-
-    return runProgram(program, false, args);
+    return runProgram(settings.nixLibexecDir + "/authenticate",
+		      false, args);
 }
 
 void LocalStore::exportPath(const Path & path, bool sign,

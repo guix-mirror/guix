@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +65,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -231,6 +232,18 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
 
+(define %linux-libre-arm-export-__sync_icache_dcache-patch
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "https://salsa.debian.org/kernel-team/linux"
+          "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
+          "/debian/patches/bugfix/arm/"
+          "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
+    (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
+    (sha256
+     (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
+
 (define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
 for ARCH and optionally VARIANT, or #f if there is no such configuration."
@@ -294,14 +307,16 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
        ("flex" ,flex)
        ("bison" ,bison)
-       ;; On x86, build with GCC-7 for full retpoline support.
+
+       ;; Build with GCC-7 for full retpoline support.
        ;; FIXME: Remove this when our default compiler has retpoline support.
-       ,@(match (system->linux-architecture
-                 (or (%current-target-system) (%current-system)))
-           ((or "x86_64" "i386")
-            `(("gcc" ,gcc-7)))
-           (_
-            '()))
+       ("gcc" ,gcc-7)
+
+       ;; These are needed to compile the GCC plugins.
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("mpc" ,mpc)
+
        ,@(match (and configuration-file
                      (configuration-file
                       (system->linux-architecture
@@ -322,6 +337,11 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda _
              (substitute* (find-files "." "^Makefile(\\.include)?$")
                (("/bin/pwd") "pwd"))
+             #t))
+         (add-before 'configure 'work-around-gcc-7-include-path-issue
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
@@ -393,38 +413,36 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
-(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
+(define %linux-libre-version "4.20.6")
+(define %linux-libre-hash "1wn5qf40xapsl3j19wrvgfz7ar5i0sfrri72wi78ydy4c7ik3gs5")
 
-;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
-;; supports qemu "virt" machine and possibly a large number of ARM boards.
-;; See : https://wiki.debian.org/DebianKernel/ARMMP.
-
-(define %linux-libre-version "4.19.10")
-(define %linux-libre-hash "1gazdjnm9hhsclc6l7g7rn9545m1gdil1zxrziihs71hi20rx1pf")
-
-(define %linux-libre-4.19-patches
+(define %linux-libre-4.20-patches
   (list %boot-logo-patch
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://salsa.debian.org/kernel-team/linux"
-                "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
-                "/debian/patches/bugfix/arm/"
-                "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-          (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))))
+        %linux-libre-arm-export-__sync_icache_dcache-patch))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
-                    %linux-compatible-systems
+                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:configuration-file kernel-config))
+
+(define %linux-libre-4.19-version "4.19.19")
+(define %linux-libre-4.19-hash "1sgcca9zpw5hza6vkza7613pd8bmvvd2kmd2f0xkl5fyrna7dipq")
+
+(define %linux-libre-4.19-patches
+  (list %boot-logo-patch
+        %linux-libre-arm-export-__sync_icache_dcache-patch))
+
+(define-public linux-libre-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
+                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.89")
-(define %linux-libre-4.14-hash "12n6qpcng7c7vdb1p3p914bn3g2namaam6d55ipvz0dv5k283h75")
+(define %linux-libre-4.14-version "4.14.97")
+(define %linux-libre-4.14-hash "056cnap79a0m4n9cldqfr3sbx61wvxwnpz6x9fh6lq0byqcil26k")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -433,20 +451,28 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.146"
-                    "0z1jdpa5z3kcgl29am19rvips03w7hr106rc3p9rzggblr623dy5"
-                    %intel-compatible-systems
+  (make-linux-libre "4.9.154"
+                    "18qy7d8ndjwx65s2z18z30px94y8ci3ymvbv0mgdcbp16brak9zf"
+                    '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.168"
-                    "12wb8fjmgkal1s4sfkfa5gi8bza22ah4p762gl33v4qc9nvjmmpf"
-                    %intel-compatible-systems
+  (make-linux-libre "4.4.172"
+                    "000bz3jfg0li3rwlf2c80df6682lhi59hj1kwm4hw7whgg69xi7b"
+                    '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-generic-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
                     '("armhf-linux")
                     #:patches %linux-libre-4.19-patches
                     #:defconfig "multi_v7_defconfig"
@@ -462,6 +488,14 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-arm-omap2plus
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-4.20-patches
+                    #:defconfig "omap2plus_defconfig"
+                    #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-arm-omap2plus-4.19
+  (make-linux-libre %linux-libre-4.19-version
+                    %linux-libre-4.19-hash
                     '("armhf-linux")
                     #:patches %linux-libre-4.19-patches
                     #:defconfig "omap2plus_defconfig"
@@ -757,7 +791,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.44.3")
+    (version "1.44.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -766,7 +800,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1djb9qnid1j0vvna2bhq4jsz2ig1xckbx7h4d86cr0gl61yrz2ax"))))
+               "1ff56h6h1h17sj2zvlddv5c88nmbx46p1fcbh6b0s5k9kl3b6pms"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -937,7 +971,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.25")
+    (version "4.26")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -945,7 +979,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "00f7zagfh3np5gwi0z7hi7zjd7s5nixcaq7z78n87dvhakkgi1fn"))))
+               "070yz8xii8gnb4psiz628zwm5srh266sfb06f7f1qzagxzz2ykbw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -964,7 +998,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
 trace of all the system calls made by a another process/program.")
-    (license license:bsd-3)))
+    (license license:lgpl2.1+)))
 
 (define-public ltrace
   (package
@@ -1477,25 +1511,23 @@ transparently through a bridge.")
          (add-after 'install 'install-python
            (lambda* (#:key outputs #:allow-other-keys)
              (define (python-inst python)
-               (let ((ldflags (format #f "LDFLAGS=-Wl,-rpath=~a/lib"
-                                      (assoc-ref %outputs "out")))
-                     (pyout (assoc-ref %outputs python)))
-                 (and
-                  (zero? (system (format #f "~a ~a setup.py build"
-                                         ldflags python pyout)))
-                  (zero?
-                   (system (format #f "~a ~a setup.py install --prefix=~a"
-                                   ldflags python pyout)))
-                  (zero? (system* python "setup.py" "clean")))))
+               (invoke python "setup.py" "build")
+               (invoke python "setup.py" "install"
+                       (string-append "--prefix="
+                                      (assoc-ref %outputs python)))
+               (invoke python "setup.py" "clean"))
+             (setenv "LDFLAGS" (format #f "-Wl,-rpath=~a/lib"
+                                       (assoc-ref %outputs "out")))
              (with-directory-excursion "./python"
-               (every python-inst '("python2" "python3")))))
+               (for-each python-inst '("python2" "python3")))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((dest (string-append (assoc-ref outputs "doc")
                                         "/share/doc/libnl")))
                (mkdir-p dest)
-               (zero? (system* "tar" "xf" (assoc-ref inputs "libnl3-doc")
-                               "--strip-components=1" "-C" dest))))))))
+               (invoke "tar" "xf" (assoc-ref inputs "libnl3-doc")
+                       "--strip-components=1" "-C" dest)))))))
     (home-page "https://www.infradead.org/~tgr/libnl/")
     (synopsis "NetLink protocol library suite")
     (description
@@ -1777,9 +1809,9 @@ UnionFS-FUSE additionally supports copy-on-write.")
                #t))))))
     (inputs `(("fuse" ,fuse-static)))))
 
-(define-public sshfs-fuse
+(define-public sshfs
   (package
-    (name "sshfs-fuse")
+    (name "sshfs")
     (version "2.10")
     (source (origin
               (method url-fetch)
@@ -1803,6 +1835,11 @@ Since most SSH servers already support this protocol it is very easy to set
 up: on the server side there's nothing to do; on the client side mounting the
 file system is as easy as logging into the server with an SSH client.")
     (license license:gpl2+)))
+
+(define-public sshfs-fuse
+  (package (inherit sshfs)
+    (name "sshfs-fuse")
+    (properties `((superseded . ,sshfs)))))
 
 (define-public archivemount
   (package
@@ -4973,3 +5010,114 @@ infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log,
 nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or
 management tools in userspace.")
     (license license:gpl2)))
+
+(define-public xfsprogs
+  (package
+    (name "xfsprogs")
+    (version "4.19.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/utils/fs/xfs/xfsprogs/"
+                    "xfsprogs-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gs39yiyamjw516jbak3nj4dy4h2a2g48c1mmv4wbppsccvwmwh5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; Kernel/user integration tests are in package "xfstests"
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("util-linux" ,util-linux)))
+    (home-page "https://xfs.wiki.kernel.org/")
+    (synopsis "XFS file system tools")
+    (description "This package provides commands to create and check XFS
+file systems.")
+    ;; The library "libhandle" and the headers in "xfslibs-dev" are
+    ;; licensed under lgpl2.1. the other stuff is licensed under gpl2.
+    (license (list license:gpl2 license:lgpl2.1))))
+
+(define-public genext2fs
+  (package
+    (name "genext2fs")
+    (version "1.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jeremie-koenig/genext2fs.git")
+                    (commit (string-append "genext2fs-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r0n74pyypv63qfqqpvx75dwijcsvcrvqrlv8sldbhv0nwr1gk53"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/jeremie-koenig/genext2fs")
+    (synopsis "Generate ext2 filesystem as a normal user")
+    (description "This package provides a program to general an ext2
+filesystem as a normal (non-root) user.  It does not require you to mount
+the image file to copy files on it, nor does it require that you become
+the superuser to make device nodes.")
+    (license license:gpl2)))
+
+(define-public fakeroot
+  (package
+    (name "fakeroot")
+    (version "1.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.debian.org/debian/pool/main/f/"
+                                  "fakeroot/fakeroot_" version ".orig.tar.xz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xpl0s2yjyjwlf832b6kbkaa5921liybaar13k7n45ckd9lxd700"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (add-after 'configure 'patch-Makefile
+          (lambda _
+            ;; Note: The root of the problem is already in "Makefile.am".
+            (substitute* "Makefile"
+             (("/bin/sh") (which "sh")))
+            #t))
+        (add-after 'unpack 'patch-getopt
+          (lambda*  (#:key inputs #:allow-other-keys)
+            (substitute* "scripts/fakeroot.in"
+             (("getopt")
+              (string-append (assoc-ref inputs "util-linux")
+                             "/bin/getopt")))
+            #t))
+        (add-before 'check 'prepare-check
+          (lambda _
+            (setenv "SHELL" (which "bash"))
+            (setenv "VERBOSE" "1")
+            (substitute* "test/t.touchinstall"
+             ;; We don't have the name of the root user, so use ID=0.
+             (("grep root") "grep \"\\<0\\>\""))
+            (substitute* "test/tartest"
+             ;; We don't have the name of the root group, so use ID=0.
+             (("ROOTGROUP=root") "ROOTGROUP=0")
+             ;; We don't have the name of the daemon user, so use IDs.
+             (("daemon:sys") "1:3")
+             (("daemon:") "1:"))
+            ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
+            (substitute* "test/compare-tar"
+             (("tar -tvf") "tar --numeric-owner -tvf"))
+            #t)))))
+    (native-inputs
+     `(("sharutils" ,sharutils) ; for the tests
+       ("xz" ,xz))) ; for the tests
+    (inputs
+     `(("libcap" ,libcap)
+       ("util-linux" ,util-linux)))
+    (synopsis "Provides a fake root environment")
+    (description "@command{fakeroot} runs a command in an environment where
+it appears to have root privileges for file manipulation. This is useful
+for allowing users to create archives (tar, ar, .deb etc.) with files in
+them with root permissions/ownership. Without fakeroot one would have to
+have root privileges to create the constituent files of the archives with
+the correct permissions and ownership, and then pack them up, or one would
+have to construct the archives directly, without using the archiver.")
+    (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
+    (license license:gpl3+)))

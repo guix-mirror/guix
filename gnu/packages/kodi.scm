@@ -29,6 +29,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages textutils)
@@ -268,7 +270,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
 (define-public kodi
   (package
     (name "kodi")
-    (version "18.0rc1")
+    (version "18.0rc3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -277,7 +279,8 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xzzp4x8l0ywx8aq93a1323il6wwslmgdbhasv0r8zp3w1c0wqf1"))
+                "0bwi4gwmwppjw6bf0zihyg42zwnd0imq0aw4xxsgnacqakhxzii0"))
+              (patches (search-patches "kodi-skip-test-449.patch"))
               (snippet
                '(begin
                   (use-modules (guix build utils))

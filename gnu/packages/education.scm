@@ -27,7 +27,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -40,7 +39,9 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -115,7 +116,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "0.91")
+    (version "0.95")
     (source
       (origin
         (method url-fetch)
@@ -124,17 +125,17 @@ of categories with some of the activities available in that category.
                version ".tar.xz"))
         (sha256
          (base32
-          "09h098w9q79hnzla1pcpqlnnr6dbafm4q6zmdp7wlk11ym8n9kvg"))))
+          "1aaijjx2b7k1cyx59jhs64hlp1sppw1faa81qxl5lxc79vifrlrl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-for-qt5.11
-           (lambda _
-             (substitute* "src/core/CMakeLists.txt"
-               (("qt5_use_modules") "target_link_libraries")
-               (("Qml Quick Gui Multimedia Network XmlPatterns Svg Xml Sensors Core")
-                "Qt5::Qml Qt5::Quick Qt5::Gui Qt5::Multimedia Qt5::Core Qt5::Svg Qt5::Xml Qt5::XmlPatterns Qt5::Sensors"))
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
              #t))
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -152,13 +153,14 @@ of categories with some of the activities available in that category.
                          '("qtdeclarative" "qtgraphicaleffects"
                            "qtmultimedia" "qtquickcontrols"))))
                #t))))
-       #:configure-flags (list "-DQML_BOX2D_MODULE=disabled")
-       #:tests? #f)) ; no test target
+       #:configure-flags (list "-DQML_BOX2D_MODULE=disabled"
+                               "-DBUILD_TESTING=TRUE")))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("gettext" ,gettext-minimal)
        ("perl" ,perl)
-       ("qttools" ,qttools)))
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server)))
     (inputs
      `(("python-2" ,python-2)
        ("qtbase" ,qtbase)

@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,10 +38,12 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docker)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
@@ -48,7 +51,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages xml))
 
 (define-public android-make-stub
   (package
@@ -758,7 +761,7 @@ def _FindRepo():
          (delete 'build) ; nothing to build
          (replace 'check
            (lambda _
-             (zero? (system* "python" "-m" "nose"))))
+             (invoke "python" "-m" "nose")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -870,14 +873,14 @@ useful for reverse engineering, analysis of Android applications and more.")
 (define-public fdroidserver
   (package
     (name "fdroidserver")
-    (version "1.0.10")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "fdroidserver" version))
         (sha256
          (base32
-          "0n6kkby65qzqdx1jn72grfffvr1w1j1rby5pwm9z8rymmsh8s0pm"))))
+          "0fp7q8faicx6i6wxm717qqaham3jpilb23mvynpz6v73z7hm6wcg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -891,6 +894,7 @@ useful for reverse engineering, analysis of Android applications and more.")
      `(("python-androguard" ,python-androguard)
        ("python-apache-libcloud" ,python-apache-libcloud)
        ("python-clint" ,python-clint)
+       ("python-defusedxml" ,python-defusedxml)
        ("python-docker-py" ,python-docker-py)
        ("python-gitpython" ,python-gitpython)
        ("python-mwclient" ,python-mwclient)

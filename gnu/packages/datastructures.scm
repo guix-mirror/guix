@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2015, 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,10 +20,13 @@
 
 (define-module (gnu packages datastructures)
   #:use-module (gnu packages)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public gdsl
@@ -121,18 +124,18 @@ in between these sequences may be different in both content and length.")
 (define-public liburcu
   (package
     (name "liburcu")
-    (version "0.10.1")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lttng.org/files/urcu/"
                                   "userspace-rcu-" version ".tar.bz2"))
               (sha256
                (base32
-                "01pbg67qy5hcssy2yi0ckqapzfclgdq93li2rmzw4pa3wh5j42cw"))))
+                "1k31faqz9plx5dwxq8g1fnczxda1is4s1x4ph0gjrq3gmy6qixmk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ; for tests
-    (home-page "http://liburcu.org/")
+    (home-page "https://liburcu.org/")
     (synopsis "User-space RCU data synchronisation library")
     (description "liburcu is a user-space @dfn{Read-Copy-Update} (RCU) data
 synchronisation library.  It provides read-side access that scales linearly
@@ -147,13 +150,14 @@ queues, stacks, and doubly-linked lists.")
     (version "2.0.2")
     (source
      (origin
-       (method url-fetch)
-       (file-name (string-append name "-" version ".tar.gz"))
-       (uri (string-append "https://github.com/troydhanson/uthash/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/troydhanson/uthash.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1la82gdlyl7m8ahdjirigwfh7zjgkc24cvydrqcri0vsvm8iv8rl"))))
+         "0kslz8k6lssh7fl7ayzwlj62p0asxs3dq03357ls5ywjad238gqg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -167,8 +171,7 @@ queues, stacks, and doubly-linked lists.")
          (replace 'check
            (lambda* (#:key make-flags #:allow-other-keys)
              (with-directory-excursion "tests"
-               (zero? (apply system* "make"
-                             make-flags)))))
+               (apply invoke "make" make-flags))))
          (replace 'install
            ;; There is no top-level Makefile to do this for us.
            (lambda* (#:key outputs #:allow-other-keys)
@@ -195,3 +198,31 @@ arguments.  Thus, they are able to work with any type of structure and key.
 Any C structure can be stored in a hash table by adding @code{UT_hash_handle}
 to the structure and choosing one or more fields to act as the key.")
     (license license:bsd-2)))
+
+(define-public sdsl-lite
+  (package
+    (name "sdsl-lite")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/simongog/sdsl-lite/"
+                                  "releases/download/v" version "/"
+                                  "sdsl-lite-" version
+                                  ".tar.gz.offline.install.gz"))
+              (sha256
+               (base32
+                "1v86ivv3mmdy802i9xkjpxb4cggj3s27wb19ja4sw1klnivjj69g"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (home-page "https://github.com/simongog/sdsl-lite")
+    (synopsis "Succinct data structure library")
+    (description "The Succinct Data Structure Library (SDSL) is a powerful and
+flexible C++11 library implementing succinct data structures.  In total, the
+library contains the highlights of 40 research publications.  Succinct data
+structures can represent an object (such as a bitvector or a tree) in space
+close to the information-theoretic lower bound of the object while supporting
+operations of the original object efficiently.  The theoretical time
+complexity of an operation performed on the classical data structure and the
+equivalent succinct data structure are (most of the time) identical.")
+    (license license:gpl3+)))

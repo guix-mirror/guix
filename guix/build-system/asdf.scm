@@ -172,7 +172,7 @@ set up using CL source package conventions."
       ;; Special considerations for source packages: CL inputs become
       ;; propagated, and un-handled arguments are removed.
 
-      (define new-propagated-inputs
+      (define (new-propagated-inputs)
         (if target-is-source?
             (map rewrite
                  (append
@@ -218,7 +218,7 @@ set up using CL source package conventions."
            (substitute-keyword-arguments base-arguments
              ((#:phases phases) (list phases-transformer phases))))
           (inputs (new-inputs package-inputs))
-          (propagated-inputs new-propagated-inputs)
+          (propagated-inputs (new-propagated-inputs))
           (native-inputs (new-inputs package-native-inputs))
           (outputs (if target-is-source?
                        '("out")

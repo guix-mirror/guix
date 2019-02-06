@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
-;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -49,6 +49,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls))
 
@@ -370,18 +371,20 @@ demand.")
 (define-public python-prometheus-client
   (package
     (name "python-prometheus-client")
-    (version "0.1.1")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "prometheus_client" version))
        (sha256
         (base32
-         "164qzzg8q8awqk0angcm87p2sjiibaj1wgjz0xk6j0klvqi5q2mz"))))
+         "0g7rpv1pq2lab1nfqdx98z9d3bqwc400alg1j4ynrpjkrbsizhg8"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests.
        #:tests? #f))
+    (propagated-inputs
+     `(("python-twisted" ,python-twisted)))
     (home-page
      "https://github.com/prometheus/client_python")
     (synopsis "Python client for the Prometheus monitoring system")

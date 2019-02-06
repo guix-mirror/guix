@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -38,7 +38,8 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
 
 (define-public time
   (package
@@ -198,17 +199,29 @@ datetime module, available in Python 2.3+.")
 (define-public python-tzlocal
   (package
     (name "python-tzlocal")
-    (version "1.2.2")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tzlocal" version))
        (sha256
         (base32
-         "0paj7vlsb0np8b5sp4bv64wxv7qk2piyp7xg29pkhdjwsbls9fnb"))))
+         "0kiciwiqx0bv0fbc913idxibc4ygg4cb7f8rcpd9ij2shi4bigjf"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-symlink-test
+           ;; see: https://github.com/regebro/tzlocal/issues/53
+           (lambda _
+             (delete-file "tzlocal/test_data/symlink_localtime/etc/localtime")
+             (symlink "../usr/share/zoneinfo/Africa/Harare"
+                      "tzlocal/test_data/symlink_localtime/etc/localtime")
+             #t)))))
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
     (home-page "https://github.com/regebro/tzlocal")
     (synopsis "Local timezone information for Python")
     (description
@@ -216,21 +229,23 @@ datetime module, available in Python 2.3+.")
 This module attempts to fix a glaring hole in pytz, that there is no way to
 get the local timezone information, unless you know the zoneinfo name, and
 under several distributions that's hard or impossible to figure out.")
-    (license cc0)))
+    (license expat)))
 
 (define-public python-isodate
   (package
     (name "python-isodate")
-    (version "0.5.4")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "isodate" version))
        (sha256
         (base32
-         "0cafaiwixgpxwh9dsd28qb0dbzsj6xpxjdkyk30ns91ps10mq422"))))
+         "1n7jkz68kk5pwni540pr5zdh99bf6ywydk1p5pdrqisrawylldif"))))
     (build-system python-build-system)
-    (home-page "http://cheeseshop.python.org/pypi/isodate")
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/gweis/isodate/")
     (synopsis "Python date parser and formatter")
     (description
      "Python-isodate is a python module for parsing and formatting

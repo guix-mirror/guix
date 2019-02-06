@@ -3,14 +3,14 @@
 ;;; Copyright © 2014, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -75,8 +75,10 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -96,6 +98,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -183,18 +186,18 @@ end-to-end encryption.")
        (modify-phases %standard-phases
          (add-after 'install 'install-etc
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "install-etc" make-flags))))
+             (apply invoke "make" "install-etc" make-flags)))
          (add-after 'install-etc 'install-lib
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "install-dev" make-flags))))
+             (apply invoke "make" "install-dev" make-flags)))
          (replace 'configure
            ;; bitlbee's configure script does not tolerate many of the
            ;; variable settings that Guix would pass to it.
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "./configure"
-                             (string-append "--prefix="
-                                            (assoc-ref outputs "out"))
-                             "--otr=1")))))))
+             (invoke "./configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))
+                     "--otr=1"))))))
     (synopsis "IRC to instant messaging gateway")
     (description "BitlBee brings IM (instant messaging) to IRC clients, for
 people who have an IRC client running all the time and don't want to run an
@@ -222,12 +225,12 @@ identi.ca and status.net).")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (add-after 'unpack 'patch-autogen
            (lambda _
              (let ((sh (which "sh")))
                (substitute* "autogen.sh" (("/bin/sh") sh))
-               (setenv "CONFIG_SHELL" sh)
-               (zero? (system* "./autogen.sh")))))
+               (setenv "CONFIG_SHELL" sh))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (invoke "./configure"
@@ -489,14 +492,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.7.1")
+    (version "1.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1i1r1lh9q2mr1bg520zrvrlwhrhy6wibrin78wjxq1gab1qymks4"))))
+                "1ac2csl5jr56vahnxdynlvrhwlvcc1gqxvyifckc6cn5aj7ygd30"))))
     ;; TODO: autotools support has been deprecated, and new features like i18n
     ;; are only supported when building with cmake.
     (build-system gnu-build-system)
@@ -550,14 +553,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.8")
+    (version "0.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "1iip8ijxp86fx4bl1h67p2lp02p2zm1ga2p3q43nv30smj54nawc"))))
+         "03f8dk4kb7ya0pg7v0a0kqms4c7f2bqan5wl4ig0mcwpdmppj3b6"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -575,7 +578,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.1.0")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -583,11 +586,10 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qis8vs7y7g1zn5i5dshwrszidc22qpflycwb4nixvp9lbmkq0va"))))
+                "1lx03cgi58z54xb7mhs6bc715lc00w5mpysf9n3q8zgn759fm0rj"))))
     (build-system python-build-system)
     (arguments
-     `(#:test-target "test_nogui"
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-plugin-dirs
            (lambda _
@@ -595,6 +597,9 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                (("_paths\\['PLUGINS_USER'\\]")
                 "_paths['PLUGINS_USER'],os.getenv('GAJIM_PLUGIN_PATH')"))
              #t))
+         (replace 'check
+           (lambda _
+             (invoke "python" "./setup.py" "test" "-s" "test.no_gui")))
          (add-after 'install 'wrap-gi-typelib-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -678,7 +683,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.23")
+    (version "2.6.26")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -686,7 +691,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "134zbscbcnhx4smad0ryvx3ngkqlsspafqf0kk8y2d3vcd9bf3pa"))))
+                "0amqlmnsijz60s0wwkp7bzix60v5p6khqcdsd6qcwawxq5pdayw0"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -713,20 +718,20 @@ on Axolotl and PEP.")
 (define-public dino
   ;; The only release tarball is for version 0.0, but it is very old and fails
   ;; to build.
-  (let ((commit "f25fadde2d6c9492b9cafe2cddbcc7b966942e47")
-        (revision "3"))
+  (let ((commit "8e14ac6d714b7f88e16de31a6c795e811dc27417")
+        (revision "4"))
     (package
       (name "dino")
-      (version (string-append "0.0-" revision "." (string-take commit 9)))
+      (version (git-version "0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/dino/dino.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1nhzrw3pbpybn9qclckk6z427vbgnqd0y1l63zd1rfw4zw099mzs"))))
+                  "0xfmwnc2f8lsvmp7m8ggikzqjaw5z6wmxrv6j5ljha5ckffrdd9m"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; there are no tests
@@ -745,14 +750,10 @@ on Axolotl and PEP.")
            ;; libsignal-protocol-c, so we need to put the sources there.
            (add-after 'unpack 'unpack-sources
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unpack (lambda (source target)
-                               (with-directory-excursion target
-                                 (zero? (system* "tar" "xvf"
-                                                 (assoc-ref inputs source)
-                                                 "--strip-components=1"))))))
-                 (unpack "libsignal-protocol-c-source"
-                         "plugins/signal-protocol/libsignal-protocol-c")
-                 #t)))
+               (with-directory-excursion "plugins/signal-protocol/libsignal-protocol-c"
+                 (invoke "tar" "xvf"
+                         (assoc-ref inputs "libsignal-protocol-c-source")
+                         "--strip-components=1"))))
            (add-after 'install 'glib-or-gtk-wrap
              (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
       (inputs
@@ -760,7 +761,8 @@ on Axolotl and PEP.")
          ("libsignal-protocol-c" ,libsignal-protocol-c)
          ("libgcrypt" ,libgcrypt)
          ("libsoup" ,libsoup)
-         ("sqlite" ,sqlite)
+         ("qrencode" ,qrencode)
+         ("sqlite" ,sqlite-with-column-metadata)
          ("gpgme" ,gpgme)
          ("gtk+" ,gtk+)
          ("glib-networking" ,glib-networking)
@@ -780,17 +782,17 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.10.2")
+    (version "0.11.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "13knr7izscw0zx648b9582dx11aap4cq9bzfiqh5ykd7wwsz1dbm"))))
+                "0ca8ivqb4hxqka08pwnaqi1bqxrdl8zw47g6z7nw9q5r57fgc4c9"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:tests? #f                      ;tests require "busted"
        #:configure-flags (list "--no-example-certs")
        #:modules ((ice-9 match)
                   (srfi srfi-1)
@@ -807,7 +809,7 @@ a graphical desktop environment like GNOME.")
              #t))
          (add-after 'unpack 'fix-makefile
            (lambda _
-             (substitute* "Makefile"
+             (substitute* "GNUmakefile"
                ;; prosodyctl needs to read the configuration file.
                (("^INSTALLEDCONFIG =.*") "INSTALLEDCONFIG = /etc/prosody\n")
                ;; prosodyctl needs a place to put auto-generated certificates.
@@ -827,15 +829,15 @@ a graphical desktop environment like GNOME.")
                     (lua-path (string-join
                                (map (lambda (path)
                                       (string-append
-                                       path "/share/lua/5.1/?.lua;"
-                                       path "/share/lua/5.1/?/?.lua"))
+                                       path "/share/lua/5.2/?.lua;"
+                                       path "/share/lua/5.2/?/?.lua"))
                                     (cons out deps))
                                ";"))
                     (lua-cpath (string-join
                                 (map (lambda (path)
                                        (string-append
-                                        path "/lib/lua/5.1/?.so;"
-                                        path "/lib/lua/5.1/?/?.so"))
+                                        path "/lib/lua/5.2/?.so;"
+                                        path "/lib/lua/5.2/?/?.so"))
                                      (cons out deps))
                                 ";"))
                     (openssl (assoc-ref inputs "openssl"))
@@ -853,14 +855,12 @@ a graphical desktop environment like GNOME.")
     (inputs
      `(("libidn" ,libidn)
        ("openssl" ,openssl)
-       ;; Lua 5.1 is still recommended for production usage.
-       ;; See https://prosody.im/doc/packagers.
-       ("lua" ,lua-5.1)
-       ("lua5.1-bitop" ,lua5.1-bitop)
-       ("lua5.1-expat" ,lua5.1-expat)
-       ("lua5.1-socket" ,lua5.1-socket)
-       ("lua5.1-filesystem" ,lua5.1-filesystem)
-       ("lua5.1-sec" ,lua5.1-sec)))
+       ("lua" ,lua-5.2)
+       ("lua5.2-bitop" ,lua5.2-bitop)
+       ("lua5.2-expat" ,lua5.2-expat)
+       ("lua5.2-socket" ,lua5.2-socket)
+       ("lua5.2-filesystem" ,lua5.2-filesystem)
+       ("lua5.2-sec" ,lua5.2-sec)))
     (home-page "https://prosody.im/")
     (synopsis "Jabber (XMPP) server")
     (description "Prosody is a modern XMPP communication server.  It aims to
@@ -869,6 +869,71 @@ Additionally, for developers it aims to be easy to extend and give a flexible
 system on which to rapidly develop added functionality, or prototype new
 protocols.")
     (license license:x11)))
+
+(define-public prosody-http-upload
+  (let ((changeset "765735bb590b")
+        (revision "1"))
+    (package
+      (name "prosody-http-upload")
+      (version (string-append "0-" revision "." (string-take changeset 7)))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://hg.prosody.im/prosody-modules/")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "142wrcism70nf8ffahhd961cqg2pi1h7ic8adfs3zwh0j3pnf41f"))))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((out (assoc-ref %outputs "out"))
+                 (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion (in-vicinity source "mod_http_upload")
+               (install-file "mod_http_upload.lua" out))
+             #t))))
+      (home-page "https://modules.prosody.im/mod_http_upload.html")
+      (synopsis "XEP-0363: Allow clients to upload files over HTTP")
+      (description "This module implements XEP-0363: it allows clients to
+upload files over HTTP.")
+      (license (package-license prosody)))))
+
+(define-public prosody-smacks
+  (let ((changeset "67f1d1f22625")
+        (revision "1"))
+    (package
+      (name "prosody-smacks")
+      (version (string-append "0-" revision "." (string-take changeset 7)))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://hg.prosody.im/prosody-modules/")
+                      (changeset changeset)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "020ngpax30fgarah98yvlj0ni8rcdwq60if03a9hqdw8mic0nxxs"))))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((out (assoc-ref %outputs "out"))
+                 (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion (in-vicinity source "mod_smacks")
+               (install-file "mod_smacks.lua" out))
+             #t))))
+      (home-page "https://modules.prosody.im/mod_smacks.html")
+      (synopsis "XEP-0198: Reliability and fast reconnects for XMPP")
+      (description "This module implements XEP-0198: when supported by both
+the client and server, it can allow clients to resume a disconnected session,
+and prevent message loss.")
+      (license (package-license prosody)))))
 
 (define-public libtoxcore
   (let ((revision "2")
@@ -1201,7 +1266,7 @@ into existing applications.")
 (define-public perl-net-psyc
   (package
     (name "perl-net-psyc")
-    (version "1.1")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -1210,13 +1275,10 @@ into existing applications.")
        (file-name (string-append name "-" version ".zip"))
        (sha256
         (base32
-         "1lw6807qrbmvzbrjn1rna1dhir2k70xpcjvyjn45y35hav333a42"))
-       ;; psycmp3 currently depends on MP3::List and rxaudio (shareware),
-       ;; we can add it back when this is no longer the case.
-       (snippet '(begin
-                   (delete-file "contrib/psycmp3")
-                   #t))))
+         "0vsjclglkwgbyd9m5ad642fyysxw2x725nhq4r2m9pvqaq6s5yf2"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
     (inputs
      `(("perl-curses" ,perl-curses)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
@@ -1228,8 +1290,7 @@ into existing applications.")
          ;; (leaves out psycion) and says
          ;; "# Just to give you a rough idea". XXX: Fix it upstream.
          (replace 'build
-           (lambda _
-             (zero? (system* "make" "manuals"))))
+           (lambda _ (invoke "make" "manuals")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1470,9 +1531,6 @@ support, and more.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (zero? (system* "sh" "autogen.sh"))))
          ;; For 'system' commands in Scheme code.
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)

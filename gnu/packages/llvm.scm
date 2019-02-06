@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -97,10 +97,10 @@ of programming tools as well as libraries with equivalent functionality.")
 
 ;; TODO: Build Mesa with LLVM 7 in the next staging cycle.
 ;; TODO: Make LLVM 7 the default LLVM once Clang is also upgraded.
-(define-public llvm-7.0.0
+(define-public llvm-7.0.1
   (package (inherit llvm)
     (name "llvm")
-    (version "7.0.0")
+    (version "7.0.1")
     (source
      (origin
       (method url-fetch)
@@ -108,7 +108,7 @@ of programming tools as well as libraries with equivalent functionality.")
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "08p27wv1pr9ql2zc3f3qkkymci46q7myvh8r5ijippnbwr2gihcb"))))))
+        "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
@@ -400,7 +400,8 @@ code analysis tools.")
   (clang-runtime-from-llvm
    llvm-3.5
    "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"
-   '("clang-runtime-asan-build-fixes.patch")))
+   '("clang-runtime-asan-build-fixes.patch"
+     "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.5
   (clang-from-llvm llvm-3.5 clang-runtime-3.5
@@ -458,6 +459,35 @@ code analysis tools.")
     (description
      "This package provides a Python binding to LLVM for use in Numba.")
     (license license:bsd-3)))
+
+(define (package-elisp-from-package source-package package-name
+                                    source-files)
+  "Return a package definition named PACKAGE-NAME that packages the Emacs Lisp
+SOURCE-FILES found in SOURCE-PACKAGE."
+  (let ((orig (package-source source-package)))
+    (package
+      (inherit source-package)
+      (name package-name)
+      (build-system emacs-build-system)
+      (source (origin
+                (method (origin-method orig))
+                (uri (origin-uri orig))
+                (sha256 (origin-sha256 orig))
+                (file-name (string-append package-name "-"
+                                          (package-version source-package)))
+                (modules '((guix build utils)
+                           (srfi srfi-1)
+                           (ice-9 ftw)))
+                (snippet
+                 `(let* ((source-files (quote ,source-files))
+                         (basenames (map basename source-files)))
+                    (map copy-file
+                         source-files basenames)
+                    (map delete-file-recursively
+                         (fold delete
+                               (scandir ".")
+                               (append '("." "..") basenames)))
+                    #t)))))))
 
 (define-public emacs-clang-format
   (package

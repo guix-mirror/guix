@@ -35,6 +35,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python))
 
 (define-public envstore
@@ -102,7 +103,7 @@ are already there.")
 (define-public direnv
   (package
     (name "direnv")
-    (version "2.11.3")
+    (version "2.15.2")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://github.com/direnv/" name
@@ -110,14 +111,26 @@ are already there.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "01mhwzq9ss2qlnn8aahvwsgnspq8hbz0qfknf290aicngwx10d1d"))))
+               "1hhmc6rb7b1d4s4kgb4blrq35h388ax37ap88dq3dgfcw9w6j1rm"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "test"
+     `(#:test-target "test"
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+       #:modules ((guix build gnu-build-system)
+                  ((guix build go-build-system) #:prefix go:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                            (guix build go-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; Help the build scripts find the Go language dependencies.
+         (add-after 'unpack 'setup-go-environment
+           (assoc-ref go:%standard-phases 'setup-environment)))))
     (inputs
-     `(("go" ,go-1.9)))
+     `(("go" ,go)
+       ("go-github-com-burntsushi-toml" ,go-github-com-burntsushi-toml)
+       ("go-github-com-direnv-go-dotenv" ,go-github-com-direnv-go-dotenv)))
     (native-inputs
       `(("which" ,which)))
     (home-page "https://direnv.net/")

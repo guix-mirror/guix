@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
@@ -46,13 +46,13 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -72,6 +72,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages stb)
@@ -86,21 +87,54 @@
 (define-public bullet
   (package
     (name "bullet")
-    (version "2.87")
+    (version "2.88")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bulletphysics/bullet3/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/bulletphysics/bullet3/")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "15azjc1jj8ak9ad7c5sbp9nv5gpqjsa0s9pc0bwy63w490f1b323"))))
+                "00qkif245yj7n2f262bgjaxv1bz3wmmcsfnjgy3qpzvlpzpns5z8"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "build3" "premake*"))
+                  (with-directory-excursion "examples/ThirdPartyLibs"
+                    (for-each delete-file-recursively
+                              '("Gwen" "clsocket" "enet" "glad" "imgui"
+                                "lua-5.2.3" "midi" "minizip" "openvr"
+                                "optionalX11" "serial" "zlib")))
+                  ;; These need files from ThirdPartyLibs
+                  (substitute* "Extras/CMakeLists.txt"
+                    (("BulletRobotics") "")
+                    (("obj2sdf") ""))
+                  ;; Tests fail on linking, cannot find -lBussIK
+                  (substitute* "test/CMakeLists.txt"
+                    ((" InverseDynamics")
+                     "../examples/ThirdPartyLibs/BussIK InverseDynamics"))
+                  ;  (("SharedMemory") ""))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags (list (string-append
-                                 "-DBUILD_SHARED_LIBS=ON "
-                                 "-DCMAKE_CXX_FLAGS=-fPIC "
-                                 (or (getenv "CXXFLAGS") "")))))
+     '(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
+                               "-DBUILD_CPU_DEMOS=OFF"
+                               "-DBUILD_OPENGL3_DEMOS=OFF"
+                               "-DBUILD_BULLET2_DEMOS=OFF"
+                               (string-append  "-DCMAKE_CXX_FLAGS=-fPIC "
+                                               (or (getenv "CXXFLAGS") "")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-failing-tests
+           ;; These tests fail specifically after removing 3rd party code
+           (lambda _
+             (substitute* "test/SharedMemory/CMakeLists.txt"
+               (("ADD_TEST") "# ADD_TEST"))
+             (substitute* "test/InverseDynamics/CMakeLists.txt"
+               (("ADD_TEST\\(Test_BulletInverseForward")
+                "# ADD_TEST(Test_BulletInverseForward"))
+             #t)))))
     (inputs
      `(("glu" ,glu)
        ("libx11" ,libx11)

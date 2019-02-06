@@ -66,10 +66,9 @@ Settings::Settings()
 void Settings::processEnvironment()
 {
     nixStore = canonPath(getEnv("NIX_STORE_DIR", getEnv("NIX_STORE", NIX_STORE_DIR)));
-    nixDataDir = canonPath(getEnv("NIX_DATA_DIR", NIX_DATA_DIR));
-    nixLogDir = canonPath(getEnv("NIX_LOG_DIR", NIX_LOG_DIR));
-    nixStateDir = canonPath(getEnv("NIX_STATE_DIR", NIX_STATE_DIR));
-    nixDBPath = getEnv("NIX_DB_DIR", nixStateDir + "/db");
+    nixLogDir = canonPath(getEnv("GUIX_LOG_DIRECTORY", NIX_LOG_DIR));
+    nixStateDir = canonPath(getEnv("GUIX_STATE_DIRECTORY", NIX_STATE_DIR));
+    nixDBPath = getEnv("GUIX_DATABASE_DIRECTORY", nixStateDir + "/db");
     nixConfDir = canonPath(getEnv("GUIX_CONFIGURATION_DIRECTORY", GUIX_CONFIGURATION_DIRECTORY));
     nixLibexecDir = canonPath(getEnv("NIX_LIBEXEC_DIR", NIX_LIBEXEC_DIR));
     nixBinDir = canonPath(getEnv("NIX_BIN_DIR", NIX_BIN_DIR));
@@ -142,18 +141,6 @@ void Settings::update()
     _get(gcKeepDerivations, "gc-keep-derivations");
     _get(autoOptimiseStore, "auto-optimise-store");
     _get(envKeepDerivations, "env-keep-derivations");
-
-    string subs = getEnv("NIX_SUBSTITUTERS", "default");
-    if (subs == "default") {
-        substituters.clear();
-#if 0
-        if (getEnv("NIX_OTHER_STORES") != "")
-            substituters.push_back(nixLibexecDir + "/nix/substituters/copy-from-other-stores.pl");
-#endif
-        substituters.push_back(nixLibexecDir + "/nix/substituters/download-using-manifests.pl");
-        substituters.push_back(nixLibexecDir + "/nix/substituters/download-from-binary-cache.pl");
-    } else
-        substituters = tokenizeString<Strings>(subs, ":");
 }
 
 

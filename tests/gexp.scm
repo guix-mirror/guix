@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -919,7 +919,7 @@
                                      (chdir #$output)
                                      (symlink #$%bootstrap-guile "guile"))
                                  #:allowed-references '()))))
-    (guard (c ((nix-protocol-error? c) #t))
+    (guard (c ((store-protocol-error? c) #t))
       (build-derivations %store (list drv))
       #f)))
 
@@ -943,7 +943,7 @@
                                      (chdir #$output)
                                      (symlink #$%bootstrap-guile "guile"))
                                  #:disallowed-references (list %bootstrap-guile)))))
-    (guard (c ((nix-protocol-error? c) #t))
+    (guard (c ((store-protocol-error? c) #t))
       (build-derivations %store (list drv))
       #f)))
 
@@ -1170,6 +1170,24 @@
                                (derivation->output-path guile-drv))
                      (string=? (readlink (string-append comp "/text"))
                                text)))))))
+
+(test-equal "lower-object, computed-file, #:system"
+  '("mips64el-linux")
+  (run-with-store %store
+    (let* ((exp      #~(symlink #$coreutils #$output))
+           (computed (computed-file "computed" exp
+                                    #:guile %bootstrap-guile)))
+      ;; Make sure that the SYSTEM argument to 'lower-object' is honored.
+      (mlet* %store-monad ((drv  (lower-object computed "mips64el-linux"))
+                           (refs (references* (derivation-file-name drv))))
+        (return (delete-duplicates
+                 (filter-map (lambda (file)
+                               (and (string-suffix? ".drv" file)
+                                    (let ((drv (read-derivation-from-file
+                                                file)))
+                                      (derivation-system drv))))
+                             (cons (derivation-file-name drv)
+                                   refs))))))))
 
 (test-assert "lower-object & gexp-input-error?"
   (guard (c ((gexp-input-error? c)

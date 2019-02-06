@@ -24,6 +24,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python))

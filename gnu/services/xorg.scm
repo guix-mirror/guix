@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix records)
+  #:use-module (guix deprecation)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -85,11 +87,11 @@
 ;;; Code:
 
 (define %default-xorg-modules
-  ;; Default list of modules loaded by the server.  Note that the order
-  ;; matters since it determines which driver is going to be used when there's
-  ;; a choice.
+  ;; Default list of modules loaded by the server.  When multiple drivers
+  ;; match, the first one in the list is loaded.
   (list xf86-video-vesa
         xf86-video-fbdev
+        xf86-video-amdgpu
         xf86-video-ati
         xf86-video-cirrus
         xf86-video-intel
@@ -520,14 +522,15 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                                           (const (list xterm)))))
                 (default-value (slim-configuration))))
 
-(define* (slim-service #:key (slim slim)          ;deprecated
-                       (allow-empty-passwords? #t) auto-login?
-                       (default-user "")
-                       (theme %default-slim-theme)
-                       (theme-name %default-slim-theme-name)
-                       (xauth xauth) (shepherd shepherd)
-                       (auto-login-session #f)
-                       (startx (xorg-start-command)))
+(define-deprecated (slim-service #:key (slim slim)
+                                 (allow-empty-passwords? #t) auto-login?
+                                 (default-user "")
+                                 (theme %default-slim-theme)
+                                 (theme-name %default-slim-theme-name)
+                                 (xauth xauth) (shepherd shepherd)
+                                 (auto-login-session #f)
+                                 (startx (xorg-start-command)))
+  slim-service-type
   "Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
 @code{xorg-start-command}.
@@ -625,10 +628,10 @@ makes the good ol' XlockMore usable."
   gdm-configuration?
   (gdm gdm-configuration-gdm (default gdm))
   (allow-empty-passwords? gdm-configuration-allow-empty-passwords? (default #t))
-  (allow-root? gdm-configuration-allow-root? (default #t))
   (auto-login? gdm-configuration-auto-login? (default #f))
   (default-user gdm-configuration-default-user (default #f))
-  (x-server gdm-configuration-x-server))
+  (x-server gdm-configuration-x-server
+            (default (xorg-wrapper))))
 
 (define (gdm-etc-service config)
   (define gdm-configuration-file
@@ -680,18 +683,15 @@ makes the good ol' XlockMore usable."
     (auth (list (pam-entry
                  (control "required")
                  (module "pam_permit.so")))))
-   (unix-pam-service
-    "gdm-password"
-    #:allow-empty-passwords? (gdm-configuration-allow-empty-passwords? config)
-    #:allow-root? (gdm-configuration-allow-root? config))))
+   (unix-pam-service "gdm-password"
+                     #:allow-empty-passwords?
+                     (gdm-configuration-allow-empty-passwords? config))))
 
 (define (gdm-shepherd-service config)
   (list (shepherd-service
          (documentation "Xorg display server (GDM)")
          (provision '(xorg-server))
          (requirement '(dbus-system user-processes host-name udev))
-         ;; While this service isn't working properly, turn off auto-start.
-         (auto-start? #f)
          (start #~(lambda ()
                     (fork+exec-command
                      (list #$(file-append (gdm-configuration-gdm config)
@@ -722,14 +722,20 @@ makes the good ol' XlockMore usable."
                        (service-extension etc-service-type
                                           gdm-etc-service)
                        (service-extension dbus-root-service-type
-                                          (compose list gdm-configuration-gdm))))))
+                                          (compose list
+                                                   gdm-configuration-gdm))))
+                (default-value (gdm-configuration))
+                (description
+                 "Run the GNOME Desktop Manager (GDM), a program that allows
+you to log in in a graphical session, whether or not you use GNOME.")))
 
 ;; This service isn't working yet; it gets as far as starting to run the
 ;; greeter from gnome-shell but doesn't get any further.  It is here because
 ;; it doesn't hurt anyone and perhaps it inspires someone to fix it :)
-(define* (gdm-service #:key (gdm gdm)
-                       (allow-empty-passwords? #t)
-                       (x-server (xorg-wrapper)))
+(define-deprecated (gdm-service #:key (gdm gdm)
+                                (allow-empty-passwords? #t)
+                                (x-server (xorg-wrapper)))
+  gdm-service-type
   "Return a service that spawns the GDM graphical login manager, which in turn
 starts the X display server with @var{X}, a command as returned by
 @code{xorg-wrapper}.

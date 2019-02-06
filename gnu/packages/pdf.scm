@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
@@ -49,7 +49,6 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages game-development)
@@ -72,8 +71,10 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -785,7 +786,7 @@ vector formats.")
 (define-public impressive
   (package
     (name "impressive")
-    (version "0.11.1")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -793,7 +794,7 @@ vector formats.")
                     version "/Impressive-" version ".tar.gz"))
               (sha256
                (base32
-                "0b3rmy6acp2vmf5nill3aknxvr9a5aawk1vnphkah61anxp62gsr"))))
+                "0zaqq3yvd296mfr5bxpj2hqlk7vrb0rsbgd4dc1l5ag46giqvivx"))))
     (build-system python-build-system)
 
     ;; TODO: Add dependency on pdftk.
@@ -1075,3 +1076,47 @@ more sophisticated overview on the other one providing information like a
 picture of the next slide, as well as the left over time till the end of the
 presentation.  The input files processed by pdfpc are PDF documents.")
     (license license:gpl2+)))
+
+(define-public paps
+  (let ((commit "37e6ca1cd96d751bbbff5539d795c90d657289a5")
+        (revision "1"))
+    (package
+      (name "paps")
+      ;; The last release was in 2015, but since then there have been security
+      ;; bug fixes.
+      (version (git-version "0.7.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dov/paps.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ilcyjqdynxsd2p8dnn8h4592dwf531x9pbkxa1w09hkcdn7hgwc"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'do-not-run-configure-script-during-bootstrap
+             (lambda _
+               (substitute* "autogen.sh"
+                 (("^./configure") "#"))
+               #t)))))
+      (inputs
+       `(("pango" ,pango)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gettext" ,gettext-minimal)
+         ("glib" ,glib "bin")
+         ("intltool" ,intltool)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/dov/paps")
+      (synopsis "Pango to PostScript converter")
+      (description
+       "Paps reads a UTF-8 encoded file and generates a PostScript language
+rendering of the file.  The rendering is done by creating outline curves
+through the Pango @code{ft2} backend.")
+      (license license:lgpl2.0+))))

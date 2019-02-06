@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -63,7 +63,7 @@ guile -c "
   (exit (has-substitutes? store \"$out\"))"
 
 # Now, run guix-daemon --no-substitutes.
-socket="$NIX_STATE_DIR/alternate-socket"
+socket="$GUIX_STATE_DIRECTORY/alternate-socket"
 guix-daemon --no-substitutes --listen="$socket" --disable-chroot &
 daemon_pid=$!
 trap 'kill $daemon_pid' EXIT
@@ -109,7 +109,7 @@ guile -c "
 
   (define (build-without-failing drv)
     (lambda (store)
-      (guard (c ((nix-protocol-error? c) (values #t store)))
+      (guard (c ((store-protocol-error? c) (values #t store)))
         (build-derivations store (list drv))
         (values #f store))))
 
@@ -177,9 +177,9 @@ client_code='
                                `("-e" ,build)
                                #:inputs `((,bash) (,build))
                                #:env-vars `(("x" . ,(random-text))))))
-      (exit (guard (c ((nix-protocol-error? c)
+      (exit (guard (c ((store-protocol-error? c)
                        (->bool
-                        (string-contains (pk (nix-protocol-error-message c))
+                        (string-contains (pk (store-protocol-error-message c))
                                          "failed"))))
               (build-derivations store (list drv))
               #f))))'

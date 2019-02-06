@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
@@ -15,13 +15,13 @@
 ;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Gábor Boskovit <boskovits@gmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,8 +82,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
@@ -117,10 +118,12 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages ruby)
@@ -128,6 +131,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
@@ -395,7 +399,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.9")
+    (version "3.0")
     (outputs '("out" "static"))
     (source
       (origin
@@ -404,9 +408,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "090hp4216isis8q5gb7bwzia8rfyzni54z21jnwm97x3hiy6ibpb"))
-        (patches (search-patches "x265-arm-flags.patch"
-                                 "x265-detect512-all-arches.patch"))
+          "0qh65wdpasrspkm1y0dlfa123myax568yi0sas0lmg5b1hkgrff5"))
+        (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -701,6 +704,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
        ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdrm" ,libdrm)
        ("libtheora" ,libtheora)
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
@@ -802,6 +806,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libx265"
          "--enable-openal"
          "--enable-opengl"
+         "--enable-libdrm"
 
          "--enable-runtime-cpudetect"
 
@@ -865,25 +870,33 @@ audio/video codec library.")
               (base32
                "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
 
-(define-public ffmpeg-2.8
-  (package
-    (inherit ffmpeg)
-    (version "2.8.15")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "065xbvnfmxfbfrc14cavpqyd2slil99vcjksw4ndb7w8zdh0wp3v"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ffmpeg)
-       ((#:configure-flags flags)
-        `(map (lambda (flag)
-                (if (string=? flag "--disable-mipsdsp")
-                    "--disable-mipsdspr1"
-                    flag))
-              ,flags))))))
+(define-public ffmpeg-for-stepmania
+  (hidden-package
+   (package
+     (inherit ffmpeg)
+     (version "2.1.3")
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/stepmania/ffmpeg.git")
+              (commit "eda6effcabcf9c238e4635eb058d72371336e09b")))
+        (sha256
+         (base32 "1by8rmbva8mfrivdbbkr2gx4kga89zqygkd4cfjl76nr8mdcdamb"))
+        (file-name (git-file-name "ffmpeg" version))))
+     (arguments
+      (substitute-keyword-arguments (package-arguments ffmpeg)
+        ((#:configure-flags flags)
+         '(list "--disable-programs"
+                "--disable-doc"
+                "--disable-debug"
+                "--disable-avdevice"
+                "--disable-swresample"
+                "--disable-postproc"
+                "--disable-avfilter"
+                "--disable-shared"
+                "--enable-static"))))
+     (inputs '()))))
 
 (define-public ffmpegthumbnailer
   (package
@@ -916,31 +929,19 @@ thumbnailer uses ffmpeg to decode frames from the video files, so supported
 videoformats depend on the configuration flags of ffmpeg.")
     (license license:gpl2+)))
 
-;; Fix build with newer x264.
-(define %vlc-libx264-compat.patch
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://git.videolan.org/?p=vlc.git;a=patch;h="
-                        "a8953ba707cca1f2de372ca24513296bcfcdaaa8"))
-    (file-name "vlc-libx264-compat.patch")
-    (sha256
-     (base32
-      "04igckbdp3sbp8vh0ihmhcf3yjyyk9r3cd5dm9mn9j6vipi1dg3g"))))
-
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.4")
+    (version "3.0.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://download.videolan.org/pub/videolan/vlc/"
                    (car (string-split version #\-))
                    "/vlc-" version ".tar.xz"))
-             (patches (list %vlc-libx264-compat.patch))
              (sha256
               (base32
-               "17jsq0zqpqyxw4ckvjba0hf6zk8ywc4wf8sy3z03hh3ij0vxpwq1"))))
+               "1lvyyahv6g9zv7m5g5qinyrwmw47zdsd5ysimb862j7kw15nvh8q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -977,6 +978,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("libkate" ,libkate)
        ("libmad" ,libmad)
        ("libmatroska" ,libmatroska)
+       ("libmicrodns" ,libmicrodns)
        ("libmodplug" ,libmodplug)
        ("libmpeg2" ,libmpeg2)
        ("libogg" ,libogg)
@@ -1004,6 +1006,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("opus" ,opus)
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
+       ("protobuf" ,protobuf)
        ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
@@ -1088,7 +1091,7 @@ videoformats depend on the configuration flags of ffmpeg.")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
 that plays most multimedia files as well as DVD, Audio CD, VCD, and various
-treaming protocols.")
+streaming protocols.")
     (license license:gpl2+)))
 
 (define-public mplayer
@@ -1270,7 +1273,7 @@ projects while introducing many more.")
 (define-public gnome-mpv
   (package
     (name "gnome-mpv")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
@@ -1279,7 +1282,7 @@ projects while introducing many more.")
                            ".tar.xz"))
        (sha256
         (base32
-         "1y47abkidxh1il0bvq8r3dglwn3ggsy41x2n7ic3x23wvvcqmq74"))))
+         "0jzdzvhcqp5jp1inwk2466zf7r8iimk3x69066gl8mzaay98mk92"))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1338,15 +1341,15 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.11.07")
+    (version "2019.01.30.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://yt-dl.org/downloads/"
-                                  version "/youtube-dl-"
+              (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
+                                  "download/" version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rvc2m2kbm2kycqsa7fkcg5gql9f0w3hn1a7jg48zzl06ayggxk9"))))
+                "0wamv1fs4w8jjx67p60rgrgdi6k04yy0h4p3cwscza5pzhpmvnlf"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1527,6 +1530,15 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        #:module-build-flags '("--gtk")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'install 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sharedir (string-append out "/share")))
+               (install-file "share/gtk-youtube-viewer.desktop"
+                             (string-append sharedir "/applications"))
+               (install-file "share/icons/gtk-youtube-viewer.png"
+                             (string-append sharedir "/pixmaps"))
+               #t)))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1942,7 +1954,8 @@ and custom quantization matrices.")
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "0l2145fd60i76afjisfxd48cwhwyir07i7s3bnimdq5db2kzkix8"))))
+          "0l2145fd60i76afjisfxd48cwhwyir07i7s3bnimdq5db2kzkix8"))
+        (patches (search-patches "streamlink-update-test.patch"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
@@ -2108,16 +2121,16 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "20.1.3")
+    (version "22.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/jp9000/obs-studio.git")
+                    (url "https://github.com/obsproject/obs-studio.git")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qdpa2xxiiw53ksvlrf80jm8gz6kxsn56sffv2v2ijxvy7kw5zcg"))))
+                "0ri9qkqk3h71b1a5bwpjzqdr21bbmfqbykg48l779d20zln23n1i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no tests
@@ -2685,15 +2698,18 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "0.7.95")
+    (version "18.12")
     (source (origin
               (method url-fetch)
+              ;; Warning: This source has proved unreliable 1 time at least.
+              ;; Consider an alternate source or report upstream if this
+              ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
                                   name "/" version "/"
                                   name "_" version ".tar.bz2"))
               (sha256
                (base32
-                "0dy51a3i79jppmg1gi4f6h7jx4hcgnkmfim4d7d3gmnlbkjh8anv"))))
+                "1ix95ilcjlawcq6phh25cgplm3riqa2ii7ql82g8yagqs4ldqp6a"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2711,10 +2727,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
          (add-after 'unpack 'change-to-build-dir
            (lambda _
              (chdir "Project/GNU/CLI")
-             #t))
-         (add-after 'change-to-build-dir 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+             #t)))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Utility for reading media metadata")
     (description "MediaInfo is a utility used for retrieving technical
@@ -3288,3 +3301,32 @@ transitions, and effects and then export your film to many common formats.")
     (description "dav1d is a new AV1 cross-platform decoder, and focused on
 speed and correctness.")
     (license license:bsd-2)))
+
+(define-public wlstream
+  (let ((commit "182076a94562b128c3a97ecc53cc68905ea86838")
+        (revision "1"))
+    (package
+      (name "wlstream")
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/atomnuker/wlstream.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "01qbcgfl3g9kfwn1jf1z9pdj3bvf5lmg71d1vwkcllc2az24bjqp"))))
+      (build-system meson-build-system)
+      (native-inputs `(("libdrm" ,libdrm)
+                       ("pkg-config" ,pkg-config)))
+      (inputs `(("ffmpeg" ,ffmpeg)
+                ("pulseaudio" ,pulseaudio)
+                ("wayland" ,wayland)
+                ("wayland-protocols" ,wayland-protocols)))
+      (home-page "https://github.com/atomnuker/wlstream")
+      (synopsis "Screen capture tool for Wayland sessions")
+      (description "Wlstream is a screen capture tool for recording audio and
+video from a Wayland session.")
+      (license license:lgpl2.1+))))

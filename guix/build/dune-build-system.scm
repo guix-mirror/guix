@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,8 @@
   "Install the given package."
   (let ((out (assoc-ref outputs "out"))
         (program (if jbuild? "jbuilder" "dune")))
-    (invoke program install-target "--prefix" out))
+    (invoke program install-target "--prefix" out "--libdir"
+            (string-append out "/lib/ocaml/site-lib")))
   #t)
 
 (define %standard-phases

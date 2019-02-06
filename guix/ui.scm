@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
@@ -427,11 +427,6 @@ report them in a user-friendly way."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (cond-expand
-        ;; Guile 2.2 already emits a warning, so let's not add a second one.
-        (guile-2.2 #t)
-        (else (warning (G_ "failed to install locale: ~a~%")
-                       (strerror (system-error-errno args)))))
       (display-hint (G_ "Consider installing the @code{glibc-utf8-locales} or
 @code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these
 lines:
@@ -459,14 +454,14 @@ See the \"Application Setup\" section in the manual, for more info.\n")))))
   ;; notified via an EPIPE later.
   (sigaction SIGPIPE SIG_IGN)
 
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF))
+  (setvbuf (current-output-port) 'line)
+  (setvbuf (current-error-port) 'line))
 
 (define* (show-version-and-exit #:optional (command (car (command-line))))
   "Display version information for COMMAND and `(exit 0)'."
   (simple-format #t "~a (~a) ~a~%"
                  command %guix-package-name %guix-version)
-  (format #t "Copyright ~a 2018 ~a"
+  (format #t "Copyright ~a 2019 ~a"
           ;; TRANSLATORS: Translate "(C)" to the copyright symbol
           ;; (C-in-a-circle), if this symbol is available in the user's
           ;; locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
@@ -689,14 +684,14 @@ or remove one of them from the profile.")
                           file (or (port-filename* port) port))
                    (leave (G_ "corrupt input while restoring archive from ~s~%")
                           (or (port-filename* port) port)))))
-            ((nix-connection-error? c)
+            ((store-connection-error? c)
              (leave (G_ "failed to connect to `~a': ~a~%")
-                    (nix-connection-error-file c)
-                    (strerror (nix-connection-error-code c))))
-            ((nix-protocol-error? c)
+                    (store-connection-error-file c)
+                    (strerror (store-connection-error-code c))))
+            ((store-protocol-error? c)
              ;; FIXME: Server-provided error messages aren't i18n'd.
-             (leave (G_ "build failed: ~a~%")
-                    (nix-protocol-error-message c)))
+             (leave (G_ "~a~%")
+                    (store-protocol-error-message c)))
             ((derivation-missing-output-error? c)
              (leave (G_ "reference to invalid output '~a' of derivation '~a'~%")
                     (derivation-missing-output c)

@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -205,7 +205,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
 (define-public autoconf-archive
   (package
     (name "autoconf-archive")
-    (version "2018.03.13")
+    (version "2019.01.06")
     (source
      (origin
       (method url-fetch)
@@ -213,7 +213,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                           version ".tar.xz"))
       (sha256
        (base32
-        "0ng1lvpijf3kv7w7nb1shqs23vp0398yicyvkf9lsk56kw6zjxb1"))))
+        "0gqya7nf4j5k98dkky0c3bnr0paciya91vkqazg7knlq621mq68p"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/autoconf-archive/")
     (synopsis "Collection of freely reusable Autoconf macros")

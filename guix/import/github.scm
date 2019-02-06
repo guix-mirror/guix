@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +26,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (guix utils)
   #:use-module ((guix download) #:prefix download:)
+  #:use-module ((guix git-download) #:prefix download:)
   #:use-module (guix import utils)
   #:use-module (guix import json)
   #:use-module (guix packages)
@@ -86,26 +89,31 @@ false if none is recognized"
            (#t #f))) ; Some URLs are not recognised.
         #f))
 
-  (let ((source-url (and=> (package-source old-package) origin-uri))
+  (let ((source-uri (and=> (package-source old-package) origin-uri))
         (fetch-method (and=> (package-source old-package) origin-method)))
-    (if (eq? fetch-method download:url-fetch)
-        (match source-url
-          ((? string?)
-           (updated-url source-url))
-          ((source-url ...)
-           (find updated-url source-url)))
-        #f)))
+    (cond
+     ((eq? fetch-method download:url-fetch)
+      (match source-uri
+             ((? string?)
+              (updated-url source-uri))
+             ((source-uri ...)
+              (find updated-url source-uri))))
+     ((and (eq? fetch-method download:git-fetch)
+           (string-prefix? "https://github.com/"
+                           (download:git-reference-url source-uri)))
+      (download:git-reference-url source-uri))
+     (else #f))))
 
 (define (github-package? package)
   "Return true if PACKAGE is a package from GitHub, else false."
-  (not (eq? #f (updated-github-url package "dummy"))))
+  (->bool (updated-github-url package "dummy")))
 
 (define (github-repository url)
   "Return a string e.g. bedtools2 of the name of the repository, from a string
 URL of the form 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz'"
   (match (string-split (uri-path (string->uri url)) #\/)
     ((_ owner project . rest)
-     (string-append project))))
+     (string-append (basename project ".git")))))
 
 (define (github-user-slash-repository url)
   "Return a string e.g. arq5x/bedtools2 of the owner and the name of the
@@ -113,7 +121,7 @@ repository separated by a forward slash, from a string URL of the form
 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz'"
   (match (string-split (uri-path (string->uri url)) #\/)
     ((_ owner project . rest)
-     (string-append owner "/" project))))
+     (string-append owner "/" (basename project ".git")))))
 
 (define %github-token
   ;; Token to be passed to Github.com to avoid the 60-request per hour
@@ -163,6 +171,9 @@ empty list."
   "Return a string of the newest released version name given a string URL like
 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz' and the name of
 the package e.g. 'bedtools2'.  Return #f if there is no releases"
+  (define (pre-release? x)
+    (hash-ref x "prerelease"))
+
   (let* ((json (fetch-releases-or-tags url)))
     (if (eq? json #f)
         (if (%github-token)
@@ -172,40 +183,32 @@ API when using a GitHub token")
 API. This may be fixed by using an access token and setting the environment
 variable GUIX_GITHUB_TOKEN, for instance one procured from
 https://github.com/settings/tokens"))
-        (let loop ((releases
-                    (filter
-                     (lambda (x)
-                       ;; example pre-release:
-                       ;; https://github.com/wwood/OrfM/releases/tag/v0.5.1
-                       ;; or an all-prerelease set
-                       ;; https://github.com/powertab/powertabeditor/releases
-                       (not (hash-ref x "prerelease")))
-                     json)))
-          (match releases
-            (()                                   ;empty release list
-             #f)
-            ((release . rest)                     ;one or more releases
-             (let ((tag (or (hash-ref release "tag_name") ;a "release"
-                            (hash-ref release "name")))   ;a tag
-                   (name-length (string-length package-name)))
-               ;; some tags include the name of the package e.g. "fdupes-1.51"
-               ;; so remove these
-               (if (and (< name-length (string-length tag))
-                        (string=? (string-append package-name "-")
-                                  (substring tag 0 (+ name-length 1))))
-                   (substring tag (+ name-length 1))
-                   ;; some tags start with a "v" e.g. "v0.25.0"
-                   ;; where some are just the version number
-                   (if (string-prefix? "v" tag)
-                       (substring tag 1)
-
-                       ;; Finally, reject tags that don't start with a digit:
-                       ;; they may not represent a release.
-                       (if (and (not (string-null? tag))
-                                (char-set-contains? char-set:digit
-                                                    (string-ref tag 0)))
-                           tag
-                           (loop rest)))))))))))
+        (any
+         (lambda (release)
+           (let ((tag (or (hash-ref release "tag_name") ;a "release"
+                          (hash-ref release "name")))   ;a tag
+                 (name-length (string-length package-name)))
+             (cond
+              ;; some tags include the name of the package e.g. "fdupes-1.51"
+              ;; so remove these
+              ((and (< name-length (string-length tag))
+                    (string=? (string-append package-name "-")
+                              (substring tag 0 (+ name-length 1))))
+               (substring tag (+ name-length 1)))
+              ;; some tags start with a "v" e.g. "v0.25.0"
+              ;; where some are just the version number
+              ((string-prefix? "v" tag)
+               (substring tag 1))
+              ;; Finally, reject tags that don't start with a digit:
+              ;; they may not represent a release.
+              ((and (not (string-null? tag))
+                    (char-set-contains? char-set:digit
+                                        (string-ref tag 0)))
+               tag)
+              (else #f))))
+         (match (remove pre-release? json)
+           (() json) ; keep everything
+           (releases releases))))))
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."
@@ -213,6 +216,8 @@ https://github.com/settings/tokens"))
     (match (origin-uri origin)
       ((? string? url)
        url)                                       ;surely a github.com URL
+      ((? download:git-reference? ref)
+       (download:git-reference-url ref))
       ((urls ...)
        (find (cut string-contains <> "github.com") urls))))
 

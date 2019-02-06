@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
@@ -70,6 +70,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -79,7 +80,6 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cyrus-sasl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
@@ -125,11 +125,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -146,12 +148,17 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system meson)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module ((srfi srfi-1) #:hide (zip))
+  #:use-module (srfi srfi-26))
 
 (define-public armagetronad
   (package
@@ -333,14 +340,14 @@ and against the others like yourself, that want what you have.")
          (delete 'build)                ; nothing to be built
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "sh" "install.sh"
-                             (assoc-ref outputs "out")))))
+             (invoke "sh" "install.sh"
+                     (assoc-ref outputs "out"))))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* (string-append (assoc-ref outputs "out")
-                                            "/bin/cowsay")
-                             "We're done!")))))))
+             (invoke (string-append (assoc-ref outputs "out")
+                                    "/bin/cowsay")
+                     "We're done!"))))))
     (inputs
      `(("perl" ,perl)))
     (home-page (string-append "https://web.archive.org/web/20071026043648/"
@@ -573,7 +580,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.5")
+    (version "0.5a")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -581,10 +588,7 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "1b6qf83vdfv8jwn2jq9ywmda2qn2f5914i7mwfy04m17wx593m3m"))
-              (patches (search-patches
-                        ;; This will not be needed in the next release.
-                        "meandmyshadow-define-paths-earlier.patch"))))
+                "0i98v6cgmpsxy7mbb0s2y6f6qq6mkwzk2nrv1nz39ncf948aky2h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1308,7 +1312,7 @@ fight Morgoth, the Lord of Darkness.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)))) ; no configure script
-    (home-page "http://pingus.seul.org/welcome.html")
+    (home-page "https://pingus.seul.org/")
     (synopsis "Lemmings clone")
     (description
      "Pingus is a free Lemmings-like puzzle game in which the player takes
@@ -1361,9 +1365,8 @@ a C library, so they can easily be integrated into other programs.")
              ;; variables passed as arguments.
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
@@ -1415,6 +1418,8 @@ interface or via an external visual interface such as GNU XBoard.")
               ("sdl-gfx" ,sdl-gfx)
               ("fontconfig" ,fontconfig)
               ("check" ,check)))
+    (properties '((ftp-directory . "/freedink")
+                  (upstream-name . "freedink")))
     (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Twisted adventures of young pig farmer Dink Smallwood")
     (description
@@ -1427,14 +1432,14 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
 (define freedink-data
   (package
     (name "freedink-data")
-    (version "1.08.20170401")
+    (version "1.08.20190120")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-data-"
-                                  version ".tar.xz"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1zx7qywibhznj7bnz217404scr8dfh0xj24xjihnda5iapzz7lz8"))))
+                "17gvryadlxk172mblbsil7hina1z5wahwaxnr6g3mdq57dvl8pvi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1442,6 +1447,7 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
          (delete 'configure)            ; no configure script
          (delete 'check))               ; no tests
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (properties '((ftp-directory . "/freedink")))
     (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Game data for GNU Freedink")
     (description
@@ -1465,6 +1471,8 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
     (inputs
      `(("bzip2" ,bzip2)
        ("wxwidgets" ,wxwidgets)))
+    (properties '((ftp-directory . "/freedink")
+                  (upstream-name . "dfarc")))
     (home-page "https://www.gnu.org/software/freedink/")
     (synopsis "Front-end for managing and playing Dink Modules")
     (description "DFArc makes it easy to play and manage the GNU FreeDink game
@@ -1526,61 +1534,6 @@ and Makruk.  Several lesser-known variants are also supported.  It presents a
 fully interactive graphical interface and it can load and save games in the
 Portable Game Notation.")
     (license license:gpl3+)))
-
-
-(define-public xboing
-  (package
-    (name "xboing")
-    (version "2.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://www.techrescue.org/xboing/xboing"
-                           version ".tar.gz"))
-       (sha256
-        (base32 "16m2si8wmshxpifk861vhpqviqxgcg8bxj6wfw8hpnm4r2w9q0b7"))
-       (patches (search-patches "xboing-CVE-2004-0149.patch"))))
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-
-             (substitute* "Imakefile"
-               (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
-                (string-append "XPMINCLUDE = -I"
-                               (assoc-ref %build-inputs "libxpm")
-                               "/include/X11")))
-
-             (substitute* "Imakefile"
-               (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
-
-             ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
-
-             (zero? (system* "xmkmf" "-a"
-                             (string-append "-DProjectRoot="
-                                            (assoc-ref outputs "out"))))))
-        (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (and
-             (zero? (system* "make" "install.man"))
-             (zero? (system* "make" "install"))))))))
-    (inputs `(("libx11" ,libx11)
-              ("libxext" ,libxext)
-              ("libxpm" ,libxpm)))
-    (native-inputs `(("imake" ,imake)
-                     ("inetutils" ,inetutils)
-                     ("makedepend" ,makedepend)))
-    (build-system gnu-build-system)
-    (home-page "http://www.techrescue.org/xboing")
-    (synopsis "Ball and paddle game")
-    (description "XBoing is a blockout type game where you have a paddle which
-you control to bounce a ball around the game zone destroying blocks with a
-proton ball.  Each block carries a different point value.  The more blocks you
-destroy, the better your score.  The person with the highest score wins.")
-    (license (license:x11-style "file://COPYING"
-                                "Very similar to the X11 licence."))))
 
 (define-public gtypist
   (package
@@ -2342,15 +2295,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
                      #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (lzo (assoc-ref inputs "lzo")))
-               (zero?
-                (apply system* "./configure"
-                       (string-append "--prefix=" out)
-                       ;; Provide the "lzo" path.
-                       (string-append "--with-liblzo2="
-                                      lzo "/lib/liblzo2.a")
-                       ;; Put the binary in 'bin' instead of 'games'.
-                       "--binary-dir=bin"
-                       configure-flags))))))))
+               (apply invoke "./configure"
+                      (string-append "--prefix=" out)
+                      ;; Provide the "lzo" path.
+                      (string-append "--with-liblzo2="
+                                     lzo "/lib/liblzo2.a")
+                      ;; Put the binary in 'bin' instead of 'games'.
+                      "--binary-dir=bin"
+                      configure-flags)))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("allegro" ,allegro)
@@ -3464,7 +3416,7 @@ the GNU GPL.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.4")
+    (version "2.01.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/tintin"
@@ -3472,7 +3424,7 @@ the GNU GPL.")
                                   "/tintin" "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g7bh8xs1ml0iyraps3a3dzaycci922y7fk5j0wyr4ssyjzsy8nx"))))
+                "0pnnbcm96xbj69358568rpvp164rjmcvhnnzs7nvj062pi2hqcxx"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -3491,10 +3443,10 @@ the GNU GPL.")
     (home-page "http://tintin.sourceforge.net/")
     (synopsis "MUD client")
     (description
-     "TinTin++ is a MUD client which supports MCCP (Mud Client Compression Protocol),
-MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET options used by MUDs,
-as well as those required to login via telnet on Linux / Mac OS X servers, and an
-auto mapper with a VT100 map display.")
+     "TinTin++ is a MUD client which supports MCCP (Mud Client Compression
+Protocol), MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET
+options used by MUDs, as well as those required to login via telnet on
+Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (license license:gpl2+)))
 
 (define-public laby
@@ -3651,7 +3603,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.5")
+    (version "10.5d")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3662,7 +3614,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "04wk50f51xrb9vszwil4ivkfpy7xc6nw3gnp90hbna2zqi2jnvb8"))))
+                "1ls055v4pv2xmn2a8lav7wl370zn0wsd91q41bk0amxd168kcndy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3739,7 +3691,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0r6xvnr7b56iv27n8z10qmxhsz5h7w6ayhxkz3xinlvch84bk708"))))
+             "13n9hcvf9yv7kjghm5jhjpwq1kh94i4bgvcczky9kvdvw1y9278n"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -4011,7 +3963,7 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.8")
+    (version "0.6.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4020,7 +3972,7 @@ emerges from a sewer hole and pulls her below ground.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v0adxm4xsix6r6j9hs7vmss7pxrb37azwfazr54p1dmfz4s6rp8"))))
+                "13gyv2hzk43za1n3lsjnd5v64xlzfzq7n10scd1rcbsnk1n007zr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -4109,7 +4061,7 @@ over 100 user-created campaigns.")
          (add-before 'build 'build-kodilib
            (lambda* (#:key make-flags #:allow-other-keys)
              (with-directory-excursion "kodilib/linux"
-               (zero? (apply system* "make" make-flags)))))
+               (apply invoke "make" make-flags))))
          (add-after 'build-kodilib 'chdir
            (lambda _ (chdir "linux") #t))
          (replace 'install
@@ -4401,10 +4353,10 @@ shapes are arranged in a series of increasingly complex patterns, forming
              (let ((data (string-append (assoc-ref outputs "out")
                                         "/share/games/fillets-ng")))
                (mkdir-p data)
-               (zero? (system* "tar" "-xvf"
-                               (assoc-ref inputs "fillets-ng-data")
-                               "--strip-components=1"
-                               "-C" data))))))))
+               (invoke "tar" "-xvf"
+                       (assoc-ref inputs "fillets-ng-data")
+                       "--strip-components=1"
+                       "-C" data)))))))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl
                                       sdl-mixer
@@ -4486,10 +4438,10 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (setenv "HOME" (getcwd))
              ;; Fake a terminal for the test cases.
              (setenv "TERM" "xterm-256color")
-             (zero? (apply system* "make" "debug" "test"
-                           (format #f "-j~d" (parallel-job-count))
-                           ;; Force command line build for test cases.
-                           (append make-flags '("GAME=crawl" "TILES=")))))))))
+             (apply invoke "make" "debug" "test"
+                    (format #f "-j~d" (parallel-job-count))
+                    ;; Force command line build for test cases.
+                    (append make-flags '("GAME=crawl" "TILES="))))))))
     (synopsis "Roguelike dungeon crawler game")
     (description "Dungeon Crawl Stone Soup is a roguelike adventure through
 dungeons filled with dangerous monsters in a quest to find the mystifyingly
@@ -4582,7 +4534,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad-data
   (package
     (name "0ad-data")
-    (version "0.0.23-alpha")
+    (version "0.0.23b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4591,7 +4543,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1b6qcvd8yyyxavgdwpcs7asmln3xgnvjkglz6ggvwb956x37ggzx"))
+         "04x7729hk6zw1xj3n4s4lvaviijsnbjf5rhzvjxlr5fygvg4l6z1"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -4635,7 +4587,7 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad
   (package
     (name "0ad")
-    (version "0.0.23-alpha")
+    (version "0.0.23b-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4644,7 +4596,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0qz1sg4n5y766qwgi63drrrx6k17kk0rcnn9a4a9crllk2vf78fg"))))
+         "0draa53xg69i5qhqym85658m45xhwkbiimaldj4sr3703rjgggq1"))))
        ;; A snippet here would cause a build failure because of timestamps
        ;; reset.  See https://bugs.gnu.org/26734.
     (inputs
@@ -5442,6 +5394,9 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
                           (string-append "fortune-mod/cmake/"
                                          (strip-store-file-name cmake-rules)))
                (chdir "fortune-mod")
+               ;; TODO: Valgrind tests fail for some reason.
+               ;; Similar issue: https://github.com/shlomif/fortune-mod/issues/21 (?)
+               (delete-file "tests/t/valgrind.t")
                #t)))
          (add-after 'install 'fix-install-directory
            (lambda* (#:key outputs #:allow-other-keys)
@@ -5877,3 +5832,261 @@ libraries.  AIFF sound effects and music in MOD and OGG formats are supported
 when packaged in Blorb container files or optionally from individual files.")
       (home-page "http://frotz.sourceforge.net")
       (license license:gpl2+))))
+
+(define-public libmanette
+  (package
+    (name "libmanette")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14vqz30p4693yy3yxs0gj858x25sl2kawib1g9lj8g5frgl0hd82"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin")             ; for glib-compile-resources
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("libevdev" ,libevdev)
+       ("libgudev" ,libgudev)))
+    (home-page "https://wiki.gnome.org/Apps/Games")
+    (synopsis "Game controller library")
+    (description "Libmanette is a small GObject library giving you simple
+access to game controllers.  It supports the de-facto standard gamepads as
+defined by the W3C standard Gamepad specification or as implemented by the SDL
+GameController.")
+    (license license:lgpl2.1+)))
+
+(define-public quadrapassel
+  (package
+    (name "quadrapassel")
+    (version "3.31.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08i01nsgfb502xzzrrcxxbs7awb0j1h4c08vmj0j18ipa1sz8vb8"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
+       ("gettext" ,gnu-gettext)
+       ("glib" ,glib "bin")             ;for glib-compile-resources
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)             ;for xmllint
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libmanette" ,libmanette)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Quadrapassel")
+    (synopsis "GNOME version of Tetris")
+    (description "Quadrapassel comes from the classic falling-block game,
+Tetris.  The goal of the game is to create complete horizontal lines of
+blocks, which will disappear.  The blocks come in seven different shapes made
+from four blocks each: one straight, two L-shaped, one square, and two
+S-shaped.  The blocks fall from the top center of the screen in a random
+order.  You rotate the blocks and move them across the screen to drop them in
+complete lines.  You score by dropping blocks fast and completing lines.  As
+your score gets higher, you level up and the blocks fall faster.")
+    (license license:gpl2+)))
+
+(define-public endless-sky
+  (package
+    (name "endless-sky")
+    (version "0.9.8")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/endless-sky/endless-sky")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0i36lawypikbq8vvzfis1dn7yf6q0d2s1cllshfn7kmjb6pqfi6c"))))
+    (build-system scons-build-system)
+    (arguments
+     `(#:scons ,scons-python2
+       #:scons-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-resource-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "source/Files.cpp"
+               (("/usr/local/")
+                (string-append (assoc-ref outputs "out") "/")))
+             #t))
+         (add-after 'unpack 'patch-scons
+           (lambda _
+             (substitute* "SConstruct"
+               ;; Keep environmental variables
+               (("Environment\\(\\)")
+                "Environment(ENV = os.environ)")
+               ;; Install into %out/bin
+               (("games\"") "bin\""))
+             #t)))))
+    (inputs
+     `(("glew" ,glew)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libmad" ,libmad)
+       ("libpng" ,libpng)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)))
+    (home-page "https://endless-sky.github.io/")
+    (synopsis "2D space trading and combat game")
+    (description "Endless Sky is a 2D space trading and combat game.  Explore
+other star systems.  Earn money by trading, carrying passengers, or completing
+missions.  Use your earnings to buy a better ship or to upgrade the weapons and
+engines on your current one.  Blow up pirates.  Take sides in a civil war.  Or
+leave human space behind and hope to find friendly aliens whose culture is more
+civilized than your own.")
+    (license (list license:gpl3+
+                   license:cc-by-sa3.0
+                   license:cc-by-sa4.0
+                   license:public-domain))))
+
+(define-public stepmania
+  (package
+    (name "stepmania")
+    (version "5.1.0-b2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stepmania/stepmania.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0a7y9l7xm510vgnpmj1is7p9m6d6yd0fcaxrjcickz295k5w3rdn"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove song files, which are licensed under a non-commercial
+           ;; clause, and a course pointing to them.
+           (for-each delete-file-recursively
+                     '("Songs/StepMania 5/Goin' Under"
+                       "Songs/StepMania 5/MechaTribe Assault"
+                       "Songs/StepMania 5/Springtime"))
+           (for-each delete-file '("Courses/Default/Jupiter.crs"
+                                   "Courses/Default/Jupiter.png"))
+           ;; Unbundle libpng.
+           (substitute* "extern/CMakeLists.txt"
+             (("include\\(CMakeProject-png.cmake\\)") ""))
+           (delete-file-recursively "extern/libpng")
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;FIXME: couldn't find how to run tests
+       #:build-type "Release"
+       #:out-of-source? #f              ;for the 'install-desktop' phase
+       #:configure-flags
+       (list "-DWITH_SYSTEM_FFMPEG=1"
+             ;; SSE instructions are available on Intel systems only.
+             ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                                    (%current-system)))
+                        '("x64_64" "i686"))
+                   '()
+                   '("-DWITH_SSE2=NO"))
+             ;; Configuration cannot find GTK2 without the two following
+             ;; flags.
+             (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "gtk+")
+                            "/lib/gtk-2.0/include")
+             (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "glib")
+                            "/lib/glib-2.0/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-subdir
+           ;; Installation would be done in "%out/stepmania-X.Y", but we
+           ;; prefer the more common layout "%out/share/stepmania".
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               (("\"stepmania-.*?\"") "\"share/stepmania\""))
+             #t))
+         (add-after 'unpack 'unbundle-libpng
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/CMakeLists.txt"
+               (("\\$\\{SM_EXTERN_DIR\\}/libpng/include")
+                (string-append (assoc-ref inputs "libpng") "/include")))
+             #t))
+         (add-after 'install 'install-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (exe (string-append out "/share/stepmania/stepmania")))
+               (mkdir-p bin)
+               (symlink exe (string-append bin "/stepmania"))
+               #t)))
+         (add-after 'install-executable 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (applications (string-append share "/applications"))
+                    (icons (string-append share "/icons")))
+               (install-file "stepmania.desktop" applications)
+               (mkdir-p icons)
+               (copy-recursively "icons" icons)
+               #t)))
+         ;; Move documentation in a more usual place, i.e.,
+         ;; "%out/share/doc/stepmania/".
+         (add-after 'install-desktop 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
+               (with-directory-excursion share
+                 (mkdir-p "doc")
+                 (symlink "../stepmania/Docs" "doc/stepmania"))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ;; Per upstream, StepMania is only guaranteed to work with a very
+       ;; specific FFmpeg version, which is included in the repository as
+       ;; a Git submodule.  This particular version requirement usually
+       ;; changes every few years.
+       ("ffmpeg" ,ffmpeg-for-stepmania)
+       ("glib" ,glib)
+       ("glew" ,glew)
+       ("gtk+" ,gtk+-2)
+       ("jsoncpp" ,jsoncpp)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg-8)
+       ("libmad" ,libmad)
+       ("libogg" ,libogg)
+       ("libva" ,libva)
+       ("libvorbis" ,libvorbis)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl2)
+       ("udev" ,eudev)
+       ("zlib" ,zlib)))
+    (synopsis "Advanced rhythm game designed for both home and arcade use")
+    (description "StepMania is a dance and rhythm game.  It features 3D
+graphics, keyboard and dance pad support, and an editor for creating your own
+steps.
+
+This package provides the core application, but no song is shipped.  You need
+to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
+    (home-page "https://www.stepmania.com")
+    (license license:expat)))
+

@@ -1,0 +1,182 @@
+From f24c88a0732024028fffe0372039a847e91722ea Mon Sep 17 00:00:00 2001
+From: Christopher Baines <mail@cbaines.net>
+Date: Tue, 1 Jan 2019 22:36:29 +0000
+Subject: [PATCH] Mark more tests that require the network
+
+I believe all these tests require the network, at least they seem to
+fail if it's I run them without connecting my computer to the web.
+
+I'm looking at this as part of packaging linkchecker for GNU Guix,
+where the package is build and the tests are run in a isolated
+environment, intentionally without network access, to avoid issues
+with non-reproducible package builds.
+---
+ tests/checker/test_http.py          | 2 ++
+ tests/checker/test_http_misc.py     | 2 ++
+ tests/checker/test_http_redirect.py | 2 ++
+ tests/checker/test_httpbin.py       | 5 +++++
+ tests/checker/test_misc.py          | 4 ++++
+ tests/checker/test_whitespace.py    | 3 +++
+ 6 files changed, 18 insertions(+)
+
+diff --git a/tests/checker/test_http.py b/tests/checker/test_http.py
+index e4c1e097..8a8af567 100644
+--- a/tests/checker/test_http.py
++++ b/tests/checker/test_http.py
+@@ -20,6 +20,7 @@
+ 
+ import pytest
+ 
++from tests import need_network
+ from .httpserver import HttpServerTest, CookieRedirectHttpRequestHandler
+ 
+ class TestHttp (HttpServerTest):
+@@ -29,6 +30,7 @@ def __init__(self, methodName='runTest'):
+         super(TestHttp, self).__init__(methodName=methodName)
+         self.handler = CookieRedirectHttpRequestHandler
+ 
++    @need_network
+     def test_html (self):
+         confargs = dict(recursionlevel=1)
+         self.file_test("http.html", confargs=confargs)
+diff --git a/tests/checker/test_http_misc.py b/tests/checker/test_http_misc.py
+index 9922d85f..c6b6afdb 100644
+--- a/tests/checker/test_http_misc.py
++++ b/tests/checker/test_http_misc.py
+@@ -20,11 +20,13 @@
+ import os
+ import sys
+ from .httpserver import HttpServerTest
++from tests import need_network
+ from linkcheck.network import iputil
+ 
+ class TestHttpMisc (HttpServerTest):
+     """Test http:// misc link checking."""
+ 
++    @need_network
+     def test_html (self):
+         self.swf_test()
+         self.obfuscate_test()
+diff --git a/tests/checker/test_http_redirect.py b/tests/checker/test_http_redirect.py
+index f212d98e..2253a70d 100644
+--- a/tests/checker/test_http_redirect.py
++++ b/tests/checker/test_http_redirect.py
+@@ -17,6 +17,7 @@
+ """
+ Test http checking.
+ """
++from tests import need_network
+ from .httpserver import HttpServerTest, CookieRedirectHttpRequestHandler
+ 
+ class TestHttpRedirect (HttpServerTest):
+@@ -26,6 +27,7 @@ def __init__(self, methodName='runTest'):
+         super(TestHttpRedirect, self).__init__(methodName=methodName)
+         self.handler = CookieRedirectHttpRequestHandler
+ 
++    @need_network
+     def test_redirect (self):
+         self.redirect1()
+         self.redirect2()
+diff --git a/tests/checker/test_httpbin.py b/tests/checker/test_httpbin.py
+index 0319c2f6..4c8fa846 100644
+--- a/tests/checker/test_httpbin.py
++++ b/tests/checker/test_httpbin.py
+@@ -18,6 +18,7 @@
+ Test http stuff with httpbin.org.
+ """
+ import re
++from tests import need_network
+ from . import LinkCheckTest
+ 
+ 
+@@ -30,6 +31,7 @@ def get_httpbin_url(path):
+ class TestHttpbin(LinkCheckTest):
+     """Test http:// link redirection checking."""
+ 
++    @need_network
+     def test_http_link(self):
+         linkurl = u"http://www.example.com"
+         nlinkurl = self.norm(linkurl)
+@@ -48,6 +50,7 @@ def test_http_link(self):
+         ]
+         self.direct(url, resultlines, recursionlevel=1)
+ 
++    @need_network
+     def test_basic_auth(self):
+         user = u"testuser"
+         password = u"testpassword"
+@@ -67,6 +70,7 @@ def test_basic_auth(self):
+         ]
+         self.direct(url, resultlines, confargs=confargs)
+ 
++    @need_network
+     def test_http_refresh_header(self):
+         linkurl = u"http://www.example.com"
+         nlinkurl = self.norm(linkurl)
+@@ -85,6 +89,7 @@ def test_http_refresh_header(self):
+         ]
+         self.direct(url, resultlines, recursionlevel=1)
+ 
++    @need_network
+     def test_http_content_location_header(self):
+         linkurl = u"http://www.example.com"
+         nlinkurl = self.norm(linkurl)
+diff --git a/tests/checker/test_misc.py b/tests/checker/test_misc.py
+index 2e4cfd07..f9591f9d 100644
+--- a/tests/checker/test_misc.py
++++ b/tests/checker/test_misc.py
+@@ -17,6 +17,7 @@
+ """
+ Test miscellaneous html tag parsing and URL types
+ """
++from tests import need_network
+ from . import LinkCheckTest
+ 
+ 
+@@ -25,15 +26,18 @@ class TestMisc (LinkCheckTest):
+     Test misc link types.
+     """
+ 
++    @need_network
+     def test_misc (self):
+         self.file_test("misc.html")
+ 
+     def test_html5 (self):
+         self.file_test("html5.html")
+ 
++    @need_network
+     def test_archive (self):
+         self.file_test("archive.html")
+ 
++    @need_network
+     def test_itms_services(self):
+         url = u"itms-services:?action=download-manifest&url=http://www.example.com/"
+         resultlines = [
+diff --git a/tests/checker/test_whitespace.py b/tests/checker/test_whitespace.py
+index 609c108a..fc2727d6 100644
+--- a/tests/checker/test_whitespace.py
++++ b/tests/checker/test_whitespace.py
+@@ -17,6 +17,7 @@
+ """
+ Test whitespace handling.
+ """
++from tests import need_network
+ from . import LinkCheckTest
+ 
+ 
+@@ -25,6 +26,7 @@ class TestWhitespace (LinkCheckTest):
+     Test whitespace in URLs.
+     """
+ 
++    @need_network
+     def test_leading_whitespace (self):
+         # Leading whitespace
+         url = u" http://www.example.org/"
+@@ -50,6 +52,7 @@ def test_leading_whitespace (self):
+         ]
+         self.direct(url, resultlines)
+ 
++    @need_network
+     def test_trailing_whitespace (self):
+         # Trailing whitespace
+         url = u"http://www.example.org/ "

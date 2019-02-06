@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (gnu packages)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (guix build-system python))

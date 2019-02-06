@@ -1,17 +1,17 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 André <eu@euandre.org>
@@ -86,9 +86,10 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
@@ -524,7 +525,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.26.8")
+    (version "0.27.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -532,7 +533,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15kp4sq72kh762bm7dgspyrk0a6siarvll3k7nrhs0xy77idf80g"))
+                "0c95pbv7hwclwmn51nqnh1lb0cajpcdb24pbdzcir6vmhfj3am0s"))
               (patches (search-patches "libgit2-mtime-0.patch"
                                        "libgit2-oom-test.patch"))
 
@@ -913,16 +914,15 @@ either a pure Python implementation, or the faster, but more resource intensive
     (name "shflags")
     (version "1.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/kward/shflags/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/kward/shflags.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h9xfrwwdhzflipfwdcgcc3y7zapdslnyk1rg5y8jm7k144rfrs4"))))
+                "1ydx0sb6vz9s2dgp5bd64y7fpzh9qvmlfjxrbmzac8saknijrlly"))))
     (build-system gnu-build-system)
-    (native-inputs `(("tar" ,tar)
-                     ("gzip" ,gzip)))
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases
@@ -1363,7 +1363,7 @@ following features:
     (home-page "https://subversion.apache.org/")
     (synopsis "Revision control system")
     (description
-     "Subversion exists to be universally recognized and adopted as a
+     "Subversion (aka. ``svn'') exists to be recognized and adopted as a
 centralized version control system characterized by its
 reliability as a safe haven for valuable data; the simplicity of its model and
 usage; and its ability to support the needs of a wide variety of users and
@@ -1435,27 +1435,19 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.44")
+    (version "1.45")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.catb.org/~esr/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
+                                  "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "1l7hlys4vw4zk4ikdjiig5vzgv5dv48mbm8bdqgvgkyyxb2j0dm0"))))
+                "19pxg6p0pcgyd2fbnh3wy1kazv6vcfi5lzc2whhdi1w9kj4r9c4z"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'check 'fix-setpython-PATH
-           (lambda _
-             ;; The Makefile does try to add the current working directory to
-             ;; $PATH, but this fails for some reason in 1.44.  Hack around it.
-             (substitute* "tests/Makefile"
-               (("setpython" command)
-                (string-append "./" command)))
-             #t))
+         (delete 'configure)            ; no configure script
          (add-after 'unpack 'remove-optimizations
            (lambda _
              ;; Don't optimize for a specific processor architecture.
@@ -1971,7 +1963,7 @@ be served with a HTTP file server of your choice.")
 (define-public darcs
   (package
     (name "darcs")
-    (version "2.14.1")
+    (version "2.14.2")
     (source
      (origin
        (method url-fetch)
@@ -1979,7 +1971,7 @@ be served with a HTTP file server of your choice.")
                            "darcs-" version ".tar.gz"))
        (sha256
         (base32
-         "0dfd6bp2wy0aabxx7l93gi3dmq21j970cds424xdy1mgmjcvrpb1"))
+         "0zm2486gyhiga1amclbg92cd09bvki6vgh0ll75hv5kl72j61lb5"))
        (modules '((guix build utils)))
        ;; Remove time-dependent code for reproducibility.
        (snippet

@@ -54,6 +54,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
@@ -126,15 +127,15 @@ irssi, but graphical.")
 (define-public irssi
   (package
     (name "irssi")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/irssi/irssi/"
-                                 "releases/download/" version "/irssi-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "1gx1flfh4a09nb3b5pvf0ygnbl7rry3l4gph8wij29dsl7khfj3q"))))
+              (method url-fetch)
+              (uri (string-append "https://github.com/irssi/irssi/"
+                                  "releases/download/" version "/irssi-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0clppwqhllrmqjg1dd47v9v1qiqx7cf9afm81bm1pscllf4jpk2w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

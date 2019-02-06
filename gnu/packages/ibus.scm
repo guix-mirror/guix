@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
@@ -29,14 +29,17 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -47,6 +50,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages xorg))
 
@@ -75,7 +79,9 @@
        (list "CC=gcc"
              (string-append "pyoverridesdir="
                             (assoc-ref %outputs "out")
-                            "/lib/python3.6/site-packages/gi/overrides/"))
+                            "/lib/python"
+                            ,(version-major+minor (package-version python))
+                            "/site-packages/gi/overrides/"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-ucd-dir
@@ -292,7 +298,7 @@ Japanese language input in most graphical applications.")
 (define-public librime
   (package
     (name "librime")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method git-fetch)
@@ -301,8 +307,25 @@ Japanese language input in most graphical applications.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y0h3nnz97smx9z8h5fzk4c27mvrwv8kajxffqc43bhyvxvb2jd6"))))
+        (base32
+         "06q10cv7a3i6d8l3sq79nasw3p1njvmjgh4jq2hqw9abcx351m1r"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "thirdparty/src")
+           (delete-file-recursively "thirdparty/bin")
+           (delete-file-recursively "thirdparty/include/X11")
+           #t))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("include_directories\\($\\{PROJECT_SOURCE_DIR\\}/thirdparty/include\\)") "")
+               (("link_directories\\($\\{PROJECT_SOURCE_DIR\\}/thirdparty/lib\\)") ""))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("glog" ,glog)
@@ -310,6 +333,9 @@ Japanese language input in most graphical applications.")
        ("marisa" ,marisa)
        ("opencc" ,opencc)
        ("yaml-cpp" ,yaml-cpp)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("xorgproto" ,xorgproto))) ; keysym.h
     (home-page "https://rime.im/")
     (synopsis "The core library of Rime Input Method Engine")
     (description "@dfn{librime} is the core library of Rime Input Method

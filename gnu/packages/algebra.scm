@@ -1,13 +1,13 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,43 +138,46 @@ solve the shortest vector problem.")
 
 (define-public pari-gp
   (package
-   (name "pari-gp")
-   (version "2.11.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
-                  version ".tar.gz"))
-            (sha256
-              (base32
+    (name "pari-gp")
+    (version "2.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
                 "1jfax92jpydjd02fwl30r6b8kfzqqd6sm4yx94gidyz9lqjb7a94"))))
-   (build-system gnu-build-system)
-   (native-inputs `(("texlive" ,texlive-tiny)))
-   (inputs `(("gmp" ,gmp)
-             ("libx11" ,libx11)
-             ("perl" ,perl)
-             ("readline" ,readline)))
-   (arguments
-    '(#:make-flags '("all")
-      #:test-target "dobench"
-      #:phases (modify-phases %standard-phases
-                 (replace 'configure
-                          (lambda* (#:key outputs #:allow-other-keys)
-                           (let ((out (assoc-ref outputs "out")))
-                            (zero?
-                             (system* "./Configure"
-                                      (string-append "--prefix=" out)))))))))
-   (synopsis "PARI/GP, a computer algebra system for number theory")
-   (description
-    "PARI/GP is a widely used computer algebra system designed for fast
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("texlive" ,(texlive-union
+                    (list texlive-fonts-amsfonts
+                          texlive-latex-amsfonts)))))
+    (inputs `(("gmp" ,gmp)
+              ("libx11" ,libx11)
+              ("perl" ,perl)
+              ("readline" ,readline)))
+    (arguments
+     '(#:make-flags '("all")
+       #:test-target "dobench"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "./Configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))))))))
+    (synopsis "PARI/GP, a computer algebra system for number theory")
+    (description
+     "PARI/GP is a widely used computer algebra system designed for fast
 computations in number theory (factorisations, algebraic number theory,
 elliptic curves...), but it also contains a large number of other useful
 functions to compute with mathematical entities such as matrices,
 polynomials, power series, algebraic numbers, etc., and a lot of
 transcendental functions.
 PARI is also available as a C library to allow for faster computations.")
-   (license license:gpl2+)
-   (home-page "https://pari.math.u-bordeaux.fr/")))
+    (license license:gpl2+)
+    (home-page "https://pari.math.u-bordeaux.fr/")))
 
 (define-public gp2c
   (package
@@ -243,7 +246,7 @@ precision.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.5.0-19")
+    (version "1.5.0-37")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -255,7 +258,7 @@ precision.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "0ds1zh712sr20qh0fih8jnm4nlv90andllp8n263qs7rlhblz551"))))
+                "1c6jmswv3ay13n6mjgh9w7nbpdgm5lbwdcmva5sli3vqn4chn3vq"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))            ;77MiB of documentation
     (arguments
@@ -354,11 +357,11 @@ or text interfaces) or as a C++ library.")
                    (mpfr (assoc-ref inputs "mpfr")))
                ;; do not pass "--enable-fast-install", which makes the
                ;; homebrew configure process fail
-               (zero? (system*
-                       "./configure"
+               (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
-                       (string-append "--with-mpfr=" mpfr)))))))))
+                       (string-append "--with-mpfr=" mpfr))
+               #t))))))
    (synopsis "Fast library for number theory")
    (description
     "FLINT is a C library for number theory.  It supports arithmetic
@@ -660,7 +663,11 @@ cosine/ sine transforms or DCT/DST).")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
        ((#:configure-flags cf)
-        `(cons "--enable-mpi" ,cf))))
+        `(cons "--enable-mpi" ,cf))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
     (description
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))

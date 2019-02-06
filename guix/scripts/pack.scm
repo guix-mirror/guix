@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
@@ -553,9 +553,7 @@ please email '~a'~%")
                       "run.c" "-o" result)
               (delete-file "run.c")))
 
-          (setvbuf (current-output-port)
-                   (cond-expand (guile-2.2 'line)
-                                (else      _IOLBF)))
+          (setvbuf (current-output-port) 'line)
 
           ;; Link the top-level files of PACKAGE so that search paths are
           ;; properly defined in PROFILE/etc/profile.
@@ -600,7 +598,8 @@ please email '~a'~%")
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
-    (verbosity . 0)
+    (debug . 0)
+    (verbosity . 2)
     (symlinks . ())
     (compressor . ,(first %compressors))))
 
@@ -687,6 +686,11 @@ please email '~a'~%")
                       (alist-cons 'profile-name arg result))
                      (_
                       (leave (G_ "~a: unsupported profile name~%") arg)))))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
          (option '("bootstrap") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'bootstrap? #t result)))
@@ -724,6 +728,8 @@ Create a bundle of PACKAGE.\n"))
   (display (G_ "
       --profile-name=NAME
                          populate /var/guix/profiles/.../NAME"))
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
       --bootstrap        use the bootstrap binaries to build the pack"))
   (newline)
@@ -774,7 +780,7 @@ Create a bundle of PACKAGE.\n"))
 
   (with-error-handling
     (with-store store
-      (with-status-report print-build-event
+      (with-status-verbosity (assoc-ref opts 'verbosity)
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 

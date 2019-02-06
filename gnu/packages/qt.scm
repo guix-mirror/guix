@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -31,7 +31,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build utils)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -62,8 +62,10 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xdisorg)
@@ -77,12 +79,13 @@
     (version "5.1.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/steveire/grantlee/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/steveire/grantlee.git")
+              (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
-         (base32 "1lf9rkv0i0kd7fvpgg5l8jb87zw8dzcwd1liv6hji7g4wlpmfdiq"))))
+         (base32 "1dmah2gd6zd4fgz2f4ir11dazqg067hjz8xshhywhfsmavchi626"))))
     (native-inputs
      ;; Optional: lcov and cccc, both are for code coverage
      `(("doxygen" ,doxygen)))
@@ -1907,11 +1910,11 @@ contain over 620 classes.")
                     (lib (string-append out "/lib/python"
                                         python-major+minor
                                         "/site-packages")))
-               (zero? (system* "python" "configure.py"
-                               "--confirm-license"
-                               "--bindir" bin
-                               "--destdir" lib
-                               "--sipdir" sip))))))))
+               (invoke "python" "configure.py"
+                       "--confirm-license"
+                       "--bindir" bin
+                       "--destdir" lib
+                       "--sipdir" sip)))))))
     (license (list license:gpl2 license:gpl3)))) ; choice of either license
 
 (define-public qscintilla
@@ -2026,15 +2029,17 @@ This package provides the Python bindings.")))
 (define-public qtkeychain
   (package
     (name "qtkeychain")
-    (version "0.8.0")
+    (version "0.9.1")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/frankosterfeld/qtkeychain/"
-                            "archive/v" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/frankosterfeld/qtkeychain/")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256
-         (base32 "0bxi5pfhxdvwk8yxa06lk2d7lcibmfqhahbin82bqf3m341zd4ml"))))
+         (base32
+          "0h4wgngn2yl35hapbjs24amkjfbzsvnna4ixfhn87snjnq5lmjbc"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2045,12 +2050,11 @@ This package provides the Python bindings.")))
      `(#:tests? #f ; No tests included
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-qt-trans-dir
+         (add-before 'configure 'set-qt-trans-dir
            (lambda _
              (substitute* "CMakeLists.txt"
               (("\\$\\{qt_translations_dir\\}")
-               "${CMAKE_INSTALL_PREFIX}/share/qt/translations"))
+               "${CMAKE_INSTALL_PREFIX}/share/qt5/translations"))
              #t)))))
     (home-page "https://github.com/frankosterfeld/qtkeychain")
     (synopsis "Qt API to store passwords")
@@ -2100,7 +2104,7 @@ securely.  It will not store any data unencrypted unless explicitly requested.")
              (substitute* '("doc/doc.pro")
                ;; We'll install them in the 'install-man-pages' phase.
                (("^unix:doc\\.files.*") ""))
-             (zero? (system* "qmake")))))
+             (invoke "qmake"))))
        (add-after 'install 'install-man-pages
          (lambda* (#:key outputs #:allow-other-keys)
            (let* ((out (assoc-ref outputs "out"))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
@@ -219,7 +219,7 @@ provide."
                (set! port (guix:open-connection-for-uri
                            uri #:verify-certificate? #f))
                (unless (or buffered? (not (file-port? port)))
-                 (setvbuf port _IONBF)))
+                 (setvbuf port 'none)))
              (http-fetch uri #:text? #f #:port port
                          #:verify-certificate? #f))))))
     (else
@@ -567,7 +567,7 @@ initial connection on which HTTP requests are sent."
                        verify-certificate?))))
       ;; For HTTPS, P is not a file port and does not support 'setvbuf'.
       (when (file-port? p)
-        (setvbuf p _IOFBF (expt 2 16)))
+        (setvbuf p 'block (expt 2 16)))
 
       ;; Send REQUESTS, up to a certain number, in a row.
       ;; XXX: Do our own caching to work around inefficiencies when

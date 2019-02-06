@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -27,24 +27,29 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages image)
+  #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
-  #:use-module (gnu packages swig)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:))
 
 (define-public graphviz
@@ -114,6 +119,50 @@ software engineering, database and web design, machine learning, and in visual
 interfaces for other technical domains.")
     (license license:epl1.0)))
 
+;; Older Graphviz needed for pygraphviz.  See
+;; https://github.com/pygraphviz/pygraphviz/issues/175
+(define-public graphviz-2.38
+  ;; This commit corresponds to the changelog change for version 2.38.0.
+  ;; There are no tags.
+  (let ((commit "f54ac2c9313ae80ccf76ef4ac6aa9be820a23126")
+        (revision "1"))
+    (package (inherit graphviz)
+      (name "graphviz")
+      (version (git-version "2.38.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/graphviz/graphviz.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1vjg308gflmi1khgjmcj431cnkrlv12bg4cqah39mwhny92jy92x"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments graphviz)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'prepare-bootstrap
+               (lambda _
+                 (substitute* "autogen.sh"
+                   (("/bin/sh") (which "sh"))
+                   (("\\$GRAPHVIZ_VERSION_DATE") "0"))
+                 (setenv "CONFIG_SHELL" (which "sh"))
+                 (setenv "SHELL" (which "sh"))
+
+                 (map make-file-writable (find-files "." ".*"))
+                 #t))
+             (replace 'bootstrap
+               (lambda _ (invoke (which "sh") "autogen.sh" "NOCONFIG") #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("flex" ,flex)
+         ("perl" ,perl)
+         ("tcl" ,tcl)
+         ,@(package-native-inputs graphviz))))))
+
 (define-public python-graphviz
   (package
     (name "python-graphviz")
@@ -136,6 +185,40 @@ visualization tool suite.")
 
 (define-public python2-graphviz
   (package-with-python2 python-graphviz))
+
+(define-public python-pygraphviz
+  (package
+    (name "python-pygraphviz")
+    (version "1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pygraphviz/pygraphviz.git")
+             (commit (string-append "pygraphviz-" version))))
+       (file-name (string-append "pygraphviz-" version "-checkout"))
+       (sha256
+        (base32
+         "1yldym38m8ckgflln83i88143pd9fjj1vfp23sq39fs6np5g0nzp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:configure-flags
+       (let ((graphviz (assoc-ref %build-inputs "graphviz")))
+         (list (string-append "--include-path=" graphviz "/include")
+               (string-append "--library-path=" graphviz "/lib")))))
+    (inputs
+     `(("graphviz" ,graphviz-2.38)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-doctest-ignore-unicode" ,python-doctest-ignore-unicode)))
+    (home-page "http://pygraphviz.github.io")
+    (synopsis "Python interface to Graphviz")
+    (description "PyGraphviz is a Python interface to the Graphviz graph
+layout and visualization package.  With PyGraphviz you can create, edit, read,
+write, and draw graphs using Python to access the Graphviz graph data
+structure and layout algorithms.")
+    (license license:bsd-3)))
 
 (define-public gts
   (package

@@ -1,10 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,6 +90,12 @@
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
+        (option '(#\r "recursive") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'recursive? #t result)))
+        (option '("list-transitive") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'list-transitive? #t result)))
 
         (option '("keyring") #t #f
                 (lambda (opt name arg result)
@@ -140,6 +148,10 @@ specified with `--select'.\n"))
   (display (G_ "
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
+  (display (G_ "
+  -r, --recursive        check the PACKAGE and its inputs for upgrades"))
+  (display (G_ "
+      --list-transitive  list all the packages that PACKAGE depends on"))
   (newline)
   (display (G_ "
       --keyring=FILE     use FILE as the keyring of upstream OpenPGP keys"))
@@ -159,6 +171,79 @@ specified with `--select'.\n"))
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
+
+(define (options->packages opts)
+  "Return the list of packages requested by OPTS, honoring options like
+'--recursive'."
+  (define core-package?
+    (let* ((input->package (match-lambda
+                             ((name (? package? package) _ ...) package)
+                             (_ #f)))
+           (final-inputs   (map input->package %final-inputs))
+           (core           (append final-inputs
+                                   (append-map (compose (cut filter-map input->package <>)
+                                                        package-transitive-inputs)
+                                               final-inputs)))
+           (names          (delete-duplicates (map package-name core))))
+      (lambda (package)
+        "Return true if PACKAGE is likely a \"core package\"---i.e., one whose
+update would trigger a complete rebuild."
+        ;; Compare by name because packages in base.scm basically inherit
+        ;; other packages.  So, even if those packages are not core packages
+        ;; themselves, updating them would also update those who inherit from
+        ;; them.
+        ;; XXX: Fails to catch MPFR/MPC, whose *source* is used as input.
+        (member (package-name package) names))))
+
+  (define (keep-newest package lst)
+    ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
+    ;; return LST minus the other version of PACKAGE in it, plus PACKAGE.
+    (let ((name (package-name package)))
+      (match (find (lambda (p)
+                     (string=? (package-name p) name))
+                   lst)
+        ((? package? other)
+         (if (version>? (package-version other) (package-version package))
+             lst
+             (cons package (delq other lst))))
+        (_
+         (cons package lst)))))
+
+  (define args-packages
+    ;; Packages explicitly passed as command-line arguments.
+    (match (filter-map (match-lambda
+                         (('argument . spec)
+                          ;; Take either the specified version or the
+                          ;; latest one.
+                          (specification->package spec))
+                         (('expression . exp)
+                          (read/eval-package-expression exp))
+                         (_ #f))
+                       opts)
+      (()                                         ;default to all packages
+       (let ((select? (match (assoc-ref opts 'select)
+                        ('core core-package?)
+                        ('non-core (negate core-package?))
+                        (_ (const #t)))))
+         (fold-packages (lambda (package result)
+                          (if (select? package)
+                              (keep-newest package result)
+                              result))
+                        '())))
+      (some                                       ;user-specified packages
+       some)))
+
+  (define packages
+    (match (assoc-ref opts 'manifest)
+      (#f args-packages)
+      ((? string? file) (packages-from-manifest file))))
+
+  (if (assoc-ref opts 'recursive?)
+      (mlet %store-monad ((edges (node-edges %bag-node-type
+                                             (all-packages))))
+        (return (node-transitive-edges packages edges)))
+      (with-monad %store-monad
+        (return packages))))
 
 
 ;;;
@@ -212,7 +297,7 @@ KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
 values: 'interactive' (default), 'always', and 'never'.  When WARN? is true,
 warn about packages that have no matching updater."
   (if (lookup-updater package updaters)
-      (let-values (((version tarball)
+      (let-values (((version tarball changes)
                     (package-update store package updaters
                                     #:key-download key-download))
                    ((loc)
@@ -226,6 +311,26 @@ warn about packages that have no matching updater."
                         (location->string loc)
                         (package-name package)
                         (package-version package) version)
+                (for-each
+                 (lambda (change)
+                   (format (current-error-port)
+                           (match (list (upstream-input-change-action change)
+                                        (upstream-input-change-type change))
+                             (('add 'regular)
+                              (G_ "~a: consider adding this input: ~a~%"))
+                             (('add 'native)
+                              (G_ "~a: consider adding this native input: ~a~%"))
+                             (('add 'propagated)
+                              (G_ "~a: consider adding this propagated input: ~a~%"))
+                             (('remove 'regular)
+                              (G_ "~a: consider removing this input: ~a~%"))
+                             (('remove 'native)
+                              (G_ "~a: consider removing this native input: ~a~%"))
+                             (('remove 'propagated)
+                              (G_ "~a: consider removing this propagated input: ~a~%")))
+                           (package-name package)
+                           (upstream-input-change-name change)))
+                 (changes))
                 (let ((hash (call-with-input-file tarball
                               port-sha256)))
                   (update-package-source package version hash)))
@@ -295,7 +400,7 @@ the latest known version of ~a (~a)~%")
                    (package-version package)))
 
   (mlet %store-monad ((edges (node-back-edges %bag-node-type
-                                              (all-packages))))
+                                              (package-closure (all-packages)))))
     (let* ((dependents (node-transitive-edges packages edges))
            (covering   (filter (lambda (node)
                                  (null? (edges node)))
@@ -314,13 +419,37 @@ the latest known version of ~a (~a)~%")
                  (full-name x)))
         (lst
          (format (current-output-port)
-                 (N_ "Building the following package would ensure ~d \
-dependent packages are rebuilt: ~*~{~a~^ ~}~%"
+                 (N_ "Building the following ~*package would ensure ~d \
+dependent packages are rebuilt: ~{~a~^ ~}~%"
                      "Building the following ~d packages would ensure ~d \
 dependent packages are rebuilt: ~{~a~^ ~}~%"
                      (length covering))
                  (length covering) (length dependents)
                  (map full-name covering))))
+      (return #t))))
+
+(define (list-transitive packages)
+  "List all the packages that would cause PACKAGES to be rebuilt if they are changed."
+  ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
+  ;; because it includes implicit dependencies.
+  (define (full-name package)
+    (string-append (package-name package) "@"
+                   (package-version package)))
+
+  (mlet %store-monad ((edges (node-edges %bag-node-type
+                                         ;; Here we don't want the -boot0 packages.
+                                         (fold-packages cons '()))))
+    (let ((dependent (node-transitive-edges packages edges)))
+      (match packages
+        ((x)
+         (format (current-output-port)
+                 (G_ "~a depends on the following ~d packages: ~{~a~^ ~}~%.")
+                 (full-name x) (length dependent) (map full-name dependent)))
+        (lst
+         (format (current-output-port)
+                 (G_ "The following ~d packages \
+all are dependent packages: ~{~a~^ ~}~%")
+                 (length dependent) (map full-name dependent))))
       (return #t))))
 
 
@@ -365,103 +494,48 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
       (lists
        (concatenate lists))))
 
-  (define (keep-newest package lst)
-    ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
-    ;; return LST minus the other version of PACKAGE in it, plus PACKAGE.
-    (let ((name (package-name package)))
-      (match (find (lambda (p)
-                     (string=? (package-name p) name))
-                   lst)
-        ((? package? other)
-         (if (version>? (package-version other) (package-version package))
-             lst
-             (cons package (delq other lst))))
-        (_
-         (cons package lst)))))
-
-  (define core-package?
-    (let* ((input->package (match-lambda
-                             ((name (? package? package) _ ...) package)
-                             (_ #f)))
-           (final-inputs   (map input->package %final-inputs))
-           (core           (append final-inputs
-                                   (append-map (compose (cut filter-map input->package <>)
-                                                        package-transitive-inputs)
-                                               final-inputs)))
-           (names          (delete-duplicates (map package-name core))))
-      (lambda (package)
-        "Return true if PACKAGE is likely a \"core package\"---i.e., one whose
-update would trigger a complete rebuild."
-        ;; Compare by name because packages in base.scm basically inherit
-        ;; other packages.  So, even if those packages are not core packages
-        ;; themselves, updating them would also update those who inherit from
-        ;; them.
-        ;; XXX: Fails to catch MPFR/MPC, whose *source* is used as input.
-        (member (package-name package) names))))
-
   (let* ((opts            (parse-options))
          (update?         (assoc-ref opts 'update?))
          (updaters        (options->updaters opts))
+         (recursive?      (assoc-ref opts 'recursive?))
          (list-dependent? (assoc-ref opts 'list-dependent?))
+         (list-transitive? (assoc-ref opts 'list-transitive?))
          (key-download    (assoc-ref opts 'key-download))
 
          ;; Warn about missing updaters when a package is explicitly given on
          ;; the command line.
-         (warn?           (or (assoc-ref opts 'argument)
-                              (assoc-ref opts 'expression)))
-         (args-packages
-          (match (filter-map (match-lambda
-                               (('argument . spec)
-                                ;; Take either the specified version or the
-                                ;; latest one.
-                                (specification->package spec))
-                               (('expression . exp)
-                                (read/eval-package-expression exp))
-                               (_ #f))
-                             opts)
-            (()                                   ; default to all packages
-             (let ((select? (match (assoc-ref opts 'select)
-                              ('core core-package?)
-                              ('non-core (negate core-package?))
-                              (_ (const #t)))))
-               (fold-packages (lambda (package result)
-                                (if (select? package)
-                                    (keep-newest package result)
-                                    result))
-                              '())))
-            (some                                 ; user-specified packages
-             some)))
-         (packages
-          (match (assoc-ref opts 'manifest)
-            (#f args-packages)
-            ((? string? file) (packages-from-manifest file)))))
+         (warn?           (and (or (assoc-ref opts 'argument)
+                                   (assoc-ref opts 'expression)
+                                   (assoc-ref opts 'manifest))
+                               (not recursive?))))
     (with-error-handling
       (with-store store
         (run-with-store store
-          (cond
-           (list-dependent?
-            (list-dependents packages))
-           (update?
-            (parameterize ((%openpgp-key-server
-                            (or (assoc-ref opts 'key-server)
-                                (%openpgp-key-server)))
-                           (%gpg-command
-                            (or (assoc-ref opts 'gpg-command)
-                                (%gpg-command)))
-                           (current-keyring
-                            (or (assoc-ref opts 'keyring)
-                                (string-append (config-directory)
-                                               "/upstream/trustedkeys.kbx"))))
-              (for-each
-               (cut update-package store <> updaters
-                    #:key-download key-download
-                    #:warn? warn?)
-               packages)
-              (with-monad %store-monad
-                (return #t))))
-           (else
-            (for-each (cut check-for-package-update <> updaters
-                           #:warn? warn?)
-                      packages)
-            (with-monad %store-monad
+          (mlet %store-monad ((packages (options->packages opts)))
+            (cond
+             (list-dependent?
+              (list-dependents packages))
+             (list-transitive?
+              (list-transitive packages))
+             (update?
+              (parameterize ((%openpgp-key-server
+                              (or (assoc-ref opts 'key-server)
+                                  (%openpgp-key-server)))
+                             (%gpg-command
+                              (or (assoc-ref opts 'gpg-command)
+                                  (%gpg-command)))
+                             (current-keyring
+                              (or (assoc-ref opts 'keyring)
+                                  (string-append (config-directory)
+                                                 "/upstream/trustedkeys.kbx"))))
+                (for-each
+                 (cut update-package store <> updaters
+                      #:key-download key-download
+                      #:warn? warn?)
+                 packages)
+                (return #t)))
+             (else
+              (for-each (cut check-for-package-update <> updaters
+                             #:warn? warn?)
+                        packages)
               (return #t)))))))))

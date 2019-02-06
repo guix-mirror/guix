@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -51,8 +51,10 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages slang))
+  #:use-module (gnu packages slang)
+  #:use-module (gnu packages web))
 
 (define-public dos2unix
   (package
@@ -403,7 +405,7 @@ regular expression object can be specified.")
              #t))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" `("global_install" ,@make-flags))))))))
+             (apply invoke "make" `("global_install" ,@make-flags)))))))
     (home-page "http://www.winfield.demon.nl/")
     (synopsis "Microsoft Word document reader")
     (description "Antiword is an application for displaying Microsoft Word
@@ -758,15 +760,33 @@ indentation.
     (version "1.0.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/BYVoid/OpenCC"
-                           "/archive/ver." version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/BYVoid/OpenCC")
+              (commit (string-append "ver." version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "01870gbkf711msirf3206k0ajaabypjhnx3fny5wikw0ladn9q8w"))))
+        (base32
+         "1pv5md225qwhbn8ql932zdg6gh1qlx3paiajaks8gfsa07yzvhr4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; TODO: Unbundle tclap, darts-clone, gtest
+           (delete-file-recursively "deps/rapidjson-0.11") #t))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-3rd-party-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((rapidjson (assoc-ref inputs "rapidjson")))
+               (substitute* "src/CMakeLists.txt"
+                 (("../deps/rapidjson-0.11")
+                  (string-append rapidjson "/include/rapidjson")))
+             #t))))))
     (native-inputs
-     `(("python" ,python-wrapper)))
+     `(("python" ,python-wrapper)
+       ("rapidjson" ,rapidjson)))
     (home-page "https://github.com/BYVoid/OpenCC")
     (synopsis "Convert between Traditional Chinese and Simplified Chinese")
     (description "Open Chinese Convert (OpenCC) converts between Traditional

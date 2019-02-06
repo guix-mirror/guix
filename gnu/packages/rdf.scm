@@ -30,13 +30,13 @@
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
@@ -45,6 +45,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -299,23 +300,17 @@ ideal (e.g. in LV2 implementations or embedded applications).")
 (define-public python-rdflib
   (package
     (name "python-rdflib")
-    (version "4.1.2")
+    (version "4.2.2")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/r/rdflib/rdflib-"
-              version
-              ".tar.gz"))
-        (patches
-          ;; The patch has no effect under Python 3.
-          (search-patches "python2-rdflib-drop-sparqlwrapper.patch"))
+        (uri (pypi-uri "rdflib" version))
         (sha256
-          (base32
-            "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))
+         (base32
+          "0398c714znnhaa2x7v51b269hk20iz073knq2mvmqp2ma92z27fs"))))
     (build-system python-build-system)
     (arguments
-     '(;; FIXME: Three test failures. Try uncommenting the below next update.
+     '(;; FIXME: Three test failures. Should be fixed next release.
        #:tests? #f))
        ;; #:phases
        ;; (modify-phases %standard-phases
@@ -323,7 +318,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
        ;;     (lambda _
        ;;       ;; Run tests from the build directory so python3 only
        ;;       ;; sees the installed 2to3 version.
-       ;;       (zero? (system* "nosetests" "--where=./build/src")))))
+       ;;       (invoke "nosetests" "--where=./build/src"))))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (propagated-inputs
@@ -331,13 +326,12 @@ ideal (e.g. in LV2 implementations or embedded applications).")
         ("python-isodate" ,python-isodate)
         ("python-pyparsing" ,python-pyparsing)))
     (home-page "https://github.com/RDFLib/rdflib")
-    (synopsis
-      "Python RDF library")
+    (synopsis "Python RDF library")
     (description
       "RDFLib is a Python library for working with RDF, a simple yet
 powerful language for representing information.")
     (license (non-copyleft "file://LICENSE"
-                        "See LICENSE in the distribution."))))
+                           "See LICENSE in the distribution."))))
 
 (define-public python2-rdflib
   (package-with-python2 python-rdflib))

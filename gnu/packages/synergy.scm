@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,12 +22,14 @@
 (define-module (gnu packages synergy)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:select (gpl2))
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-26))
@@ -34,80 +37,52 @@
 (define-public synergy
   (package
     (name "synergy")
-    (version "1.8.8")
+    (version "1.10.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/symless/synergy-core/archive/"
-                          "v" version "-stable.tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/symless/synergy-core.git")
+            (commit (string-append "v" version "-stable"))))
+      (file-name (git-file-name name version))
       (sha256
        (base32
-        "052z1yiwck9hlshf8in2dgz6p7jxmq9yfj32mfzjaygpz6mmmr4y"))
+        "112w2xrp04cysd14xk1ax7cllqpcki0pyica4ivrdngr5qw0r9hp"))
       (modules '((guix build utils)))
       (snippet
-       ;; Remove ~14MB of unnecessary bundled source and binaries
+       ;; Remove unnecessary bundled source and binaries
        '(begin
-          (for-each delete-file-recursively
-                    `("ext/bonjour"
-                      "ext/LICENSE (OpenSSL)"
-                      ,@(find-files "ext" "openssl-.*\\.tar\\.gz")
-                      "ext/openssl-osx"
-                      "ext/openssl-win32"
-                      "ext/openssl-win64"))
+          (delete-file-recursively "ext/openssl")
           #t))))
     (build-system cmake-build-system)
-    (native-inputs `(("unzip" ,unzip)))
+    (arguments
+     `(#:tests? #f ; there is no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-headers
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "avahi")
+                                    "/include/avahi-compat-libdns_sd/:"
+                                    (getenv "CPLUS_INCLUDE_PATH")))
+             ;; See https://github.com/symless/synergy-core/pull/6359/
+             (substitute* "src/gui/src/ScreenSetupView.cpp"
+               (("#include <QtGui>" m)
+                (string-append m "\n#include <QHeaderView>")))
+             (substitute* "src/gui/src/ActionDialog.cpp"
+               (("#include <QtGui>" m)
+                (string-append m "\n#include <QButtonGroup>")))
+             #t)))))
     (inputs
-     `(("python"  ,python-wrapper)
+     `(("avahi" ,avahi)
+       ("python"  ,python-wrapper)
        ("openssl" ,openssl)
        ("curl"    ,curl)
        ("libxi"   ,libxi)
        ("libx11"  ,libx11)
        ("libxtst" ,libxtst)
-       ("xinput"  ,xinput)))
-    (arguments
-     `(#:phases
-       (let ((srcdir (string-append "../synergy-core-" ,version "-stable")))
-         (modify-phases %standard-phases
-           (add-before 'configure 'unpack-aux-src
-             ;; TODO: package and use from system
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unzip (string-append
-                             (assoc-ref inputs "unzip")
-                             "/bin/unzip")))
-                 (with-directory-excursion "ext"
-                   (for-each
-                    (lambda (f)
-                      (system* unzip "-d" f (string-append f ".zip")))
-                    '("gmock-1.6.0" "gtest-1.6.0"))))
-               #t))
-          (replace 'check
-            ;; Don't run "integtests" as it requires network and an X display.
-            (lambda _
-              (zero? (system* (string-append srcdir "/bin/unittests")))))
-          (replace 'install
-            ;; There currently is no installation process, see:
-            ;; http://synergy-project.org/spit/issues/details/3317/
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin"))
-                     (ex  (string-append out "/share/doc/synergy-"
-                                         ,version "/examples")))
-                (begin
-                  (for-each
-                   (lambda (f)
-                     (install-file (string-append srcdir "/bin/" f) bin))
-                   '("synergyc" "synergys" "synergyd"
-                     "usynergy" "syntool"))
-                  ;; Install example configuration files
-                  (for-each
-                   (lambda (e)
-                     (install-file (string-append srcdir "/doc/" e) ex))
-                   '("synergy.conf.example"
-                     "synergy.conf.example-advanced"
-                     "synergy.conf.example-basic"))))
-              #t))))))
+       ("xinput"  ,xinput)
+       ("qtbase" ,qtbase)))
     (home-page "https://symless.com/synergy")
     (synopsis "Mouse and keyboard sharing utility")
     (description

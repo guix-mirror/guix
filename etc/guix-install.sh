@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2017 sharlatan <sharlatanus@gmail.com>
 # Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -18,6 +18,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+# We require Bash but for portability we'd rather not use /bin/bash or
+# /usr/bin/env in the shebang, hence this hack.
+if [ "x$BASH_VERSION" = "x" ]
+then
+    exec bash "$0" "$@"
+fi
 
 set -e
 

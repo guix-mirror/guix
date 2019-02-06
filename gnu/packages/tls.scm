@@ -62,6 +62,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages base)
@@ -122,15 +123,16 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.14")
+    (version "0.23.15")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                           "download/" version "/p11-kit-" version ".tar.gz"))
+      (patches (search-patches "p11-kit-jks-timestamps.patch"))
       (sha256
        (base32
-        "0w0dkq9388grbbn4bv2p55vy1j51f7nd9hzlc9gz4fbm4dnzmf8w"))))
+        "166pwj00cffv4qq4dvx0k53zka0b0r1fa0whc49007vsqyh3khgp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -394,7 +396,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.1")
+    (version "1.1.1a")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -407,16 +409,16 @@ required structures.")
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "0gbab2fjgms1kx5xjvqx8bxhr98k4r8l2fa8vw7kvh491xd8fdi8"))))
+                "0hcz7znzznbibpy3iyyhvlqrq44y88plxwdj32wjzgbwic7i687w"))))
     (outputs '("out"
-               "doc"        ; 6.7 MiB of man3 pages and full HTML documentation
+               "doc"        ; 6.8 MiB of man3 pages and full HTML documentation
                "static"))   ; 6.4 MiB of .a files
     (arguments
      (substitute-keyword-arguments (package-arguments openssl)
        ((#:phases phases)
         `(modify-phases ,phases
            (delete 'patch-tests)          ; These two phases are not needed by
-           (delete 'patch-Makefile.org)   ; OpenSSL 1.1.0.
+           (delete 'patch-Makefile.org)   ; OpenSSL 1.1.
 
            ;; Override configure phase since -rpath is now a configure option.
            (replace 'configure
@@ -522,13 +524,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.29.1")
+    (version "0.30.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "0z5l966b1asbcdzl77bmywf22c1q0xill00jj7qyml9wx2nh7qm2"))))
+                "1wmqxrl4w9w79jd16bmxp8g3xbrx3az4137zbip8x44zrrzmnni9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -579,7 +581,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "14i6yrcb9s7ygy99gccfc8jscymi24xb72s5lgg9b2y40z909ikg"))))
+                "0vkpqwps1c8ja140kiiz2cws9hqjrbkx58wbji3qxv9cap5qfi2k"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -826,7 +828,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.14.1")
+    (version "2.16.0")
     (source
      (origin
        (method url-fetch)
@@ -836,7 +838,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "07f6xn77w5rd6fhq5s1dmna3czs4chk5j2s6wkj366cvikawp2gi"))))
+         "1qlscr0m97favkqmrlj90rlgw40h8lcypxz0snvr1iwkj1pbbnp3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

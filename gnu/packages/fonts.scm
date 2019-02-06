@@ -19,9 +19,10 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
-;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
+;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1162,39 +1163,13 @@ itself."))))
     (version "1.7")
     (source
      (origin
-       (method url-fetch)
+       (method url-fetch/zipbomb)
        (uri (string-append "http://www.impallari.com/media/releases/dosis-"
                            "v" version ".zip"))
        (sha256
         (base32
          "1qhci68f68mf87jd69vjf9qjq3wydgw1q7ivn3amjb65ls1s0c4s"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (ttf-dir (string-append %output
-                                                 "/share/fonts/truetype"))
-                         (otf-dir (string-append %output
-                                                 "/share/fonts/opentype")))
-                     (setenv "PATH" PATH)
-                     (invoke "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p ttf-dir)
-                     (mkdir-p otf-dir)
-                     (for-each (lambda (ttf)
-                                 (install-file ttf ttf-dir))
-                               (find-files "." "\\.ttf$"))
-                     (for-each (lambda (otf)
-                                 (install-file otf otf-dir))
-                               (find-files "." "\\.otf$"))
-                     #t))))
-    (native-inputs `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://www.impallari.com/dosis")
     (synopsis "Very simple, rounded, sans serif family")
     (description
@@ -1350,4 +1325,25 @@ designed to make long texts pleasant and easy to read, even in less than ideal
 reproduction and display environments.  This package provides only TrueType
 files (TTF).")
     (home-page "https://software.sil.org/charis/")
+    (license license:silofl1.1)))
+
+(define-public font-mononoki
+  (package
+    (name "font-mononoki")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/madmalik/mononoki/")
+                    (commit version)))
+              (sha256
+               (base32
+                "1rkzyxn30rn8qv2h2xz324j7q15hzg2lci8790a7cdl1dfgic4xi"))
+              (file-name (git-file-name name version))))
+    (build-system font-build-system)
+    (synopsis "Font for programming and code review")
+    (description
+     "Mononoki is a typeface by Matthias Tellen, created to enhance code
+formatting.")
+    (home-page "https://madmalik.github.io/mononoki/")
     (license license:silofl1.1)))

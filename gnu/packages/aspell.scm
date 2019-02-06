@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -248,7 +248,7 @@ dictionaries, including personal ones.")
                                              (string-downcase language))))
   (package
     (name (string-append "hunspell-dict-" nick))
-    (version "2017.08.24")
+    (version "2018.04.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -256,7 +256,7 @@ dictionaries, including personal ones.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1kdhydzg5z5x20ad2j1x5hbdhvy08ljkfdi2v3gbyvghbagxm15s"))))
+                "11lkrnhwrf5mvrrq45k4mads3n9aswgac8dc25ba61c75alxb5rs"))))
     (native-inputs
      `(("tar" ,tar)
        ("gzip" ,gzip)
@@ -276,7 +276,7 @@ dictionaries, including personal ones.")
              (mkdir "speller/hunspell")
 
              ;; XXX: This actually builds all the dictionary variants.
-             (zero? (system* "make" "-C" "speller" "hunspell"))))
+             (invoke "make" "-C" "speller" "hunspell")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out      (assoc-ref %outputs "out"))

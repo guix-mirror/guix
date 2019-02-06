@@ -9,7 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,6 +44,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libedit)
@@ -58,6 +59,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
@@ -71,15 +73,15 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.16.1")
+    (version "0.17.1")
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "https://bitcoin.org/bin/bitcoin-core-"
+              (string-append "https://bitcoincore.org/bin/bitcoin-core-"
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "1zkqp93yircd3pbxczxfnibkpq0sgcv5r7wg6d196b9pwgr9zd39"))))
+               "0am4pnaf2cisv172jqx6jdpzx770agm8777163lkjbw3ryslymiy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -113,9 +115,15 @@
                          "/bin/lupdate"))
        #:phases
         (modify-phases %standard-phases
+          (add-before 'configure 'make-qt-deterministic
+           (lambda _
+            ;; Make Qt deterministic.
+            (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+            #t))
           (add-before 'check 'set-home
            (lambda _
-            (setenv "HOME" (getenv "TMPDIR"))))))) ; Tests write to $HOME.
+            (setenv "HOME" (getenv "TMPDIR"))  ; Tests write to $HOME.
+            #t)))))
     (home-page "https://bitcoin.org/en/")
     (synopsis "Bitcoin peer-to-peer client")
     (description
@@ -342,7 +350,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3.1")
+    (version "3.3.4")
     (source
      (origin
        (method url-fetch)
@@ -353,7 +361,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1jdy89rfdwc2jadx3rqj5yvynpcn90cx6482ax9f1cj9gfxp9j2b"))
+         "0ipl6vf2n9a5n556sx2z57s7wdvg05xwjvz67kff9nmbx4s8vjyf"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -847,7 +855,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.51.0")
+    (version "0.52.0")
     (source
      (origin
        (method git-fetch)
@@ -858,7 +866,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "074mh2kh3s00ib0h99050ss3j4c51v57py6dzm7crida6l0iydbv"))))
+         "07liba2d21hb8m3n6yccfamq9yq0ryywh18vs9g2sgywfsnv82lh"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
@@ -876,16 +884,17 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
                (copy-recursively "docs/_build/html" doc))
              #t)))))
     (native-inputs
-     `(("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+     `(("sphinx" ,python-sphinx)
+       ("sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)
-       ("python-attr" ,python-attr)
-       ("python-base58" ,python-base58)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-libnacl" ,python-libnacl)
-       ("python-pylibscrypt" ,python-pylibscrypt)
-       ("python-pypeg2" ,python-pypeg2)))
+     `(("aiohttp" ,python-aiohttp)
+       ("attr" ,python-attr)
+       ("base58" ,python-base58)
+       ("jsonschema" ,python-jsonschema)
+       ("libnacl" ,python-libnacl)
+       ("pyaes" ,python-pyaes)
+       ("pylibscrypt" ,python-pylibscrypt)
+       ("pypeg2" ,python-pypeg2)))
     (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
     (description "@code{duniterpy} is an implementation of
@@ -904,7 +913,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.6.1")
+    (version "0.6.5")
     (source
      (origin
        (method git-fetch)
@@ -914,17 +923,16 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0a99gbgdd7m9wisqhqpfyaim0rlv9gkp8gmrppkagqf6j0683igh"))))
+         "1fy509vsmz7rs9m3vah0ky0jvq9mxmfga6b18rkrkl2lbjk872q2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
     (inputs
-     `(("python-commandlines" ,python-commandlines)
-       ("python-ipaddress" ,python-ipaddress)
-       ("python-pyaes" ,python-pyaes)
-       ("python-pynacl" ,python-pynacl)
-       ("python-scrypt" ,python-scrypt)
-       ("python-tabulate" ,python-tabulate)))
+     `(("click" ,python-click)
+       ("duniterpy" ,python-duniterpy)
+       ("ipaddress" ,python-ipaddress)
+       ("pynacl" ,python-pynacl)
+       ("tabulate" ,python-tabulate)))
     (home-page "https://silkaj.duniter.org/")
     (synopsis "Command line client for Duniter network")
     (description "@code{Silkaj} is a command line client for the

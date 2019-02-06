@@ -109,7 +109,7 @@
   "Return the hash of ITEM, a store item, if ITEM was built locally.
 Otherwise return #f."
   (lambda (store)
-    (guard (c ((nix-protocol-error? c)
+    (guard (c ((store-protocol-error? c)
                (values #f store)))
       (if (locally-built? store item)
           (values (query-path-hash store item) store)

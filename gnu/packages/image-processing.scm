@@ -6,6 +6,8 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Lprndn <guix@lprndn.info>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,31 +29,41 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 ;; We use the latest snapshot of this package because the latest release is
 ;; from 2011 and has known vulnerabilities that cannot easily be fixed by
@@ -143,15 +155,15 @@ of external libraries that provide additional functionality.")
 (define-public vtk
   (package
     (name "vtk")
-    (version "7.1.0")
+    (version "8.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.vtk.org/files/release/"
+              (uri (string-append "https://vtk.org/files/release/"
                                   (version-major+minor version)
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "0yj96z58haan77gzilnqp7xpf8hg5jk11a3jx55p2ksd400s0gjz"))))
+                "1fspgp8k0myr6p2a6wkc21ldcswb4bvmb484m12mxgk1a9vxrhrl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"           ;Build without '-g' to save space.
@@ -184,7 +196,7 @@ of external libraries that provide additional functionality.")
        ("png" ,libpng)
        ("tiff" ,libtiff)
        ("zlib" ,zlib)))
-    (home-page "http://www.vtk.org/")
+    (home-page "https://vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
     (description
      "The Visualization Toolkit (VTK) is a C++ library for 3D computer graphics,
@@ -202,13 +214,14 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
     (name "opencv")
     (version "3.4.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/opencv/opencv/archive/"
-                                  version ".zip"))
-              (file-name (string-append name "-" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/opencv/opencv")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pycx1pz8lj794q32mlalyc3ijqxwsyin65r26nh4yc0p71xiirp"))
+                "06bc61r8myym4s8im10brdjfg4wxkrvsbhhl7vr1msdan2xddzi3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -221,38 +234,44 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
                   ;; Some jars found:
                   (for-each delete-file
                             '("modules/java/test/pure_test/lib/junit-4.11.jar"
-                              "samples/java/sbt/sbt/sbt-launch.jar"))))))
+                              "samples/java/sbt/sbt/sbt-launch.jar"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list "-DWITH_IPP=OFF"
              "-DWITH_ITT=OFF"
+             "-DWITH_CAROTENE=OFF" ; only visible on arm/aarch64
+             "-DENABLE_PRECOMPILED_HEADERS=OFF"
 
              ;; CPU-Features:
              ;; See cmake/OpenCVCompilerOptimizations.cmake
              ;; (CPU_ALL_OPTIMIZATIONS) for a list of all optimizations
              ;; BASELINE is the minimum optimization all CPUs must support
              ;;
-             ;; DISPATCH is the list of optional dispatches
-             "-DCPU_BASELINE=SSE2, NEON"
+             ;; DISPATCH is the list of optional dispatches.
+             "-DCPU_BASELINE=SSE2"
 
-             "-DCPU_DISPATCH=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"
-             "-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"
+             ,@(match (%current-system)
+                 ("x86_64-linux"
+                  '("-DCPU_DISPATCH=NEON;VFPV3;FP16;SSE;SSE2;SSE3;SSSE3;SSE4_1;SSE4_2;POPCNT;AVX;FP16;AVX2;FMA3;AVX_512F;AVX512_SKX"
+                    "-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"))
+                 ("armhf-linux"
+                  '("-DCPU_BASELINE_DISABLE=NEON")) ; causes build failures
+                 ("aarch64-linux"
+                  '("-DCPU_BASELINE=NEON"
+                    "-DCPU_DISPATCH=NEON;VFPV3;FP16"))
+                 (_ '()))
 
              "-DBUILD_PERF_TESTS=OFF"
-             "-D BUILD_TESTS=ON"
+             "-DBUILD_TESTS=ON"
 
-             (string-append "-DOPENCV_EXTRA_MODULES_PATH="
-                            "/tmp/guix-build-opencv-" ,version ".drv-0"
-                            "/opencv-contrib/opencv_contrib-" ,version
-                            "/modules")
+             (string-append "-DOPENCV_EXTRA_MODULES_PATH=" (getcwd)
+                            "/opencv-contrib/modules")
 
              ;;Define test data:
-             (string-append "-DOPENCV_TEST_DATA_PATH="
-                            "/tmp/guix-build-opencv-" ,version ".drv-0"
-                            ;;"/opencv-3.4.0"
-                            "/opencv-extra/opencv_extra-" ,version
-                            "/testdata")
+             (string-append "-DOPENCV_TEST_DATA_PATH=" (getcwd)
+                            "/opencv-extra/testdata")
 
              ;; Is ON by default and would try to rebuild 3rd-party protobuf,
              ;; which we had removed, which would lead to an error:
@@ -285,35 +304,28 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
 
              ;; This one fails with "unknown file: Failure"
              ;; But I couldn't figure out which file was missing:
-             (substitute* (list (string-append
-                                 "../opencv-contrib/opencv_contrib-"
-                                 ,version
-                                 "/modules/face/test/test_face_align.cpp"))
+             (substitute* "../opencv-contrib/modules/face/test/test_face_align.cpp"
                (("(TEST\\(CV_Face_FacemarkKazemi, )(can_detect_landmarks\\).*)"
                  all pre post)
                 (string-append pre "DISABLED_" post)))
 
              ;; Failure reason: Bad accuracy
              ;; Incorrect count of accurate poses [2nd case]: 90.000000 / 94.000000
-             (substitute* (list (string-append
-                                 "../opencv-contrib/opencv_contrib-"
-                                 ,version
-                                 "/modules/rgbd/test/test_odometry.cpp"))
+             (substitute* "../opencv-contrib/modules/rgbd/test/test_odometry.cpp"
                (("(TEST\\(RGBD_Odometry_Rgbd, )(algorithmic\\).*)" all pre post)
                 (string-append pre "DISABLED_" post)))
              #t))
 
-         ;; Idea copied from ldc.scm (ldc-bootstrap):
          (add-after 'unpack 'unpack-submodule-sources
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir "../opencv-extra")
              (mkdir "../opencv-contrib")
-             (let ((unpack (lambda (source target)
-                             (with-directory-excursion target
-                               (apply invoke "unzip"
-                                      (list (assoc-ref inputs source)))))))
-               (unpack "opencv-extra" "../opencv-extra")
-               (unpack "opencv-contrib" "../opencv-contrib"))))
+             (copy-recursively (assoc-ref inputs "opencv-extra")
+                               "../opencv-extra")
+             (invoke "tar" "xvf"
+                     (assoc-ref inputs "opencv-contrib")
+                     "--strip-components=1"
+                     "-C" "../opencv-contrib")))
 
          (add-after 'set-paths 'add-ilmbase-include-path
            (lambda* (#:key inputs #:allow-other-keys)
@@ -335,25 +347,27 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
              ;; Therefore we must do it.
              (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server) ; For running the tests
        ("opencv-extra"
         ,(origin
-           (method url-fetch)
-           (uri (string-append "https://codeload.github.com/"
-                               "opencv/opencv_extra/zip/" version))
-           (file-name (string-append "opencv-extra-" version ".zip"))
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/opencv/opencv_extra")
+                  (commit version)))
+           (file-name (git-file-name "opencv_extra" version))
            (sha256
-            (base32 "0yd1vidzbg6himxyh4yzivywijg8548kfmcn421khabnipm7l74y"))))
+            (base32 "08p5xnq8n1jw8svvz0fnirfg7q8dm3p4a5dl7527s5xj0f9qn7lp"))))
        ("opencv-contrib"
         ,(origin
-           (method url-fetch)
-           (uri (string-append "https://codeload.github.com/"
-                               "opencv/opencv_contrib/zip/" version))
-           (file-name (string-append "opencv-contrib-" version ".zip"))
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/opencv/opencv_contrib")
+                  (commit version)))
+           (file-name (git-file-name "opencv_contrib" version))
+           (patches (search-patches "opencv-rgbd-aarch64-test-fix.patch"))
            (sha256
-           (base32 "0j0ci6ia1qwklp9hq07ypl0vkngj1wrgh6n98n657m5d0pyp4m0g"))))))
+            (base32 "1f334glf39nk42mpqq6j732h3ql2mpz89jd4mcl678s8n73nfjh2"))))))
     (inputs `(("libjpeg" ,libjpeg)
               ("libpng" ,libpng)
               ("jasper" ,jasper)
@@ -396,3 +410,100 @@ vision algorithms.  It can be used to do things like:
 @end itemize\n")
     (home-page "https://opencv.org/")
     (license license:bsd-3)))
+
+(define-public vips
+  (package
+    (name "vips")
+    (version "8.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/libvips/libvips/releases/download/v"
+                    version "/vips-" version ".tar.gz"))
+              (sha256
+               (base32 "1w3b90pdw7nj2p0gb4f96h6zhmga513f968ldfhz1rkhg7y81c0s"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("glib" ,glib)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
+       ("libtiff" ,libtiff)
+       ("libexif" ,libexif)
+       ("giflib" ,giflib)
+       ("libgsf" ,libgsf)
+       ("fftw" ,fftw)
+       ("poppler" ,poppler)
+       ("pango" ,pango)
+       ("lcms" ,lcms)
+       ("matio" ,matio)
+       ("libwebp" ,libwebp)
+       ("niftilib" ,niftilib)
+       ("openexr" ,openexr)
+       ("orc" ,orc)
+       ("imagemagick" ,imagemagick)
+       ("libxml2" ,libxml2)
+       ("expat" ,expat)
+       ("hdf5" ,hdf5)))
+    (home-page "https://libvips.github.io/libvips/")
+    (synopsis "Image processing system")
+    (description
+     "vips is a demand-driven, horizontally threaded image processing library.")
+    (license license:lgpl2.1+)))
+
+(define-public nip2
+  (package
+    (name "nip2")
+    (version "8.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/libvips/nip2/releases/download/v"
+                           version "/nip2-" version ".tar.gz" ))
+       (sha256
+        (base32 "08dxfds4n1vxdilxcw01741a2r6fxyhawi656b7f0hy6znnkbsbc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; test_conv.ws keep failing so disabling for now
+         (add-after 'unpack 'disable-test-conv
+           (lambda _
+             (delete-file "test/workspaces/test_conv.ws")
+             #t))
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" "/tmp") #t)))))
+    (inputs
+     `(("vips" ,vips)
+       ("glib" ,glib)
+       ("libtiff" ,libtiff)
+       ("gtk+-2" ,gtk+-2)
+       ("libxml2" ,libxml2)
+       ("libexif" ,libexif)
+       ("libjpeg" ,libjpeg)                       ;required by vips.pc
+       ("librsvg" ,librsvg)
+       ("fftw" ,fftw)
+       ("libgsf" ,libgsf)
+       ("imagemagick" ,imagemagick)
+       ("orc" ,orc)
+       ("matio" ,matio)
+       ("lcms" ,lcms)
+       ("libwebp" ,libwebp)
+       ("openexr" ,openexr)
+       ("poppler" ,poppler)
+       ("gsl" ,gsl)))
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/libvips/nip2")
+    (synopsis "Spreadsheet-like GUI for libvips")
+    (description "This package provide a graphical user interface (GUI) for
+the VIPS image processing library.  It's a little like a spreadsheet: you
+create a set of formula connecting your objects together, and on a change nip2
+recalculates.")
+    (license license:gpl2+)))

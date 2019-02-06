@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -45,11 +45,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl)
-  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
@@ -59,10 +56,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
-  #:use-module (gnu packages java)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
@@ -456,6 +451,39 @@ than gzip and 15 % smaller output than bzip2.")
    (license (list license:gpl2+ license:lgpl2.1+)) ; bits of both
    (home-page "https://tukaani.org/xz/")))
 
+(define-public lhasa
+  (package
+    (name "lhasa")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/fragglet/lhasa/releases/download/v"
+                    version "/lhasa-" version ".tar.gz"))
+              (sha256
+               (base32
+                "092zi9av18ma20c6h9448k0bapvx2plnp292741dvfd9hmgqxc1z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-up-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo"))
+             #t)))))
+    (native-inputs
+     `(("tzdata" ,tzdata)))
+    (home-page "https://fragglet.github.com/lhasa/")
+    (synopsis "LHA archive decompressor")
+    (description "Lhasa is a replacement for the Unix LHA tool, for
+decompressing .lzh (LHA / LHarc) and .lzs (LArc) archives.  The backend for the
+tool is a library, so that it can be reused for other purposes.  Lhasa aims to
+be compatible with as many types of lzh/lzs archives as possible.  It also aims
+to generate the same output as the (non-free) Unix LHA tool, so that it will
+act as a free drop-in replacement.")
+    (license license:isc)))
+
 (define-public lzo
   (package
     (name "lzo")
@@ -481,44 +509,6 @@ compression ratio.
 LZO is written in ANSI C.  Both the source code and the compressed data
 format are designed to be portable across platforms.")
     (license license:gpl2+)))
-
-(define-public python-lzo
-  (package
-    (name "python-lzo")
-    (version "1.12")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "python-lzo" version))
-       (sha256
-        (base32
-         "0iakqgd51n1cd7r3lpdylm2rgbmd16y74cra9kcapwg84mlf9a4p"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:test-target "check"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-setuppy
-           (lambda _
-             (substitute* "setup.py"
-               (("include_dirs.append\\(.*\\)")
-                (string-append "include_dirs.append('"
-                               (assoc-ref %build-inputs "lzo")
-                               "/include/lzo"
-                               "')")))
-             #t)))))
-    (inputs
-     `(("lzo" ,lzo)))
-    (home-page "https://github.com/jd-boyd/python-lzo")
-    (synopsis "Python bindings for the LZO data compression library")
-    (description
-     "Python-LZO provides Python bindings for LZO, i.e. you can access
-the LZO library from your Python scripts thereby compressing ordinary
-Python strings.")
-    (license license:gpl2+)))
-
-(define-public python2-lzo
-  (package-with-python2 python-lzo))
 
 (define-public lzop
   (package
@@ -729,84 +719,6 @@ sfArk file format to the uncompressed sf2 format.")
 decompression of some loosely related file formats used by Microsoft.")
     (license license:lgpl2.1+)))
 
-(define-public perl-compress-raw-bzip2
-  (package
-    (name "perl-compress-raw-bzip2")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "Compress-Raw-Bzip2-" version ".tar.gz"))
-       (sha256
-        (base32
-         "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
-    (build-system perl-build-system)
-    ;; TODO: Use our bzip2 package.
-    (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
-    (synopsis "Low-level interface to bzip2 compression library")
-    (description "This module provides a Perl interface to the bzip2
-compression library.")
-    (license license:perl-license)))
-
-(define-public perl-compress-raw-zlib
-  (package
-    (name "perl-compress-raw-zlib")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "Compress-Raw-Zlib-" version ".tar.gz"))
-       (sha256
-        (base32
-         "06rsm9ahp20xfyvd3jc69sd0k8vqysryxc6apzdbn96jbcsdwmp1"))))
-    (build-system perl-build-system)
-    (inputs
-     `(("zlib" ,zlib)))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'configure-zlib
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (call-with-output-file "config.in"
-                       (lambda (port)
-                         (format port "
-BUILD_ZLIB = False
-INCLUDE = ~a/include
-LIB = ~:*~a/lib
-OLD_ZLIB = False
-GZIP_OS_CODE = AUTO_DETECT"
-                                 (assoc-ref inputs "zlib"))))
-                     #t)))))
-    (home-page "https://metacpan.org/release/Compress-Raw-Zlib")
-    (synopsis "Low-level interface to zlib compression library")
-    (description "This module provides a Perl interface to the zlib
-compression library.")
-    (license license:perl-license)))
-
-(define-public perl-io-compress
-  (package
-    (name "perl-io-compress")
-    (version "2.081")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
-                           "IO-Compress-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1na66ns1g3nni0m9q5494ym4swr21hfgpv88mw8wbj2daiswf4aj"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
-    (home-page "https://metacpan.org/release/IO-Compress")
-    (synopsis "IO Interface to compressed files/buffers")
-    (description "IO-Compress provides a Perl interface to allow reading and
-writing of compressed data created with the zlib and bzip2 libraries.")
-    (license license:perl-license)))
-
 (define-public lz4
   (package
     (name "lz4")
@@ -838,54 +750,6 @@ time for compression ratio.")
     ;; The libraries (lz4, lz4hc, and xxhash) are BSD licenced. The command
     ;; line interface programs (lz4, fullbench, fuzzer, datagen) are GPL2+.
     (license (list license:bsd-2 license:gpl2+))))
-
-(define-public python-lz4
-  (package
-    (name "python-lz4")
-    (version "0.10.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "lz4" version))
-       (sha256
-        (base32
-         "0ghv1xbaq693kgww1x9c22bplz479ls9szjsaa4ig778ls834hm0"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools-scm" ,python-setuptools-scm)))
-    (home-page "https://github.com/python-lz4/python-lz4")
-    (synopsis "LZ4 bindings for Python")
-    (description
-     "This package provides python bindings for the lz4 compression library
-by Yann Collet.  The project contains bindings for the LZ4 block format and
-the LZ4 frame format.")
-    (license license:bsd-3)))
-
-(define-public python2-lz4
-  (package-with-python2 python-lz4))
-
-(define-public python-lzstring
-  (package
-    (name "python-lzstring")
-    (version "1.0.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "lzstring" version))
-       (sha256
-        (base32
-         "18ly9pppy2yspxzw7k1b23wk77k7m44rz2g0271bqgqrk3jn3yhs"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-future" ,python-future)))
-    (home-page "https://github.com/gkovacs/lz-string-python")
-    (synopsis "String compression")
-    (description "Lz-string is a string compressor library for Python.")
-    (license license:expat)))
-
-(define-public python2-lzstring
-  (package-with-python2 python-lzstring))
 
 (define-public squashfs-tools
   (package
@@ -1216,46 +1080,6 @@ well as bzip2.")
     (license (list license:gpl3+
                    license:public-domain)))) ; most files in lzma/
 
-(define-public bitshuffle
-  (package
-    (name "bitshuffle")
-    (version "0.3.5")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "bitshuffle" version))
-              (sha256
-               (base32
-                "1823x61kyax4dc2hjmc1xraskxi1193y8lvxd03vqv029jrj8cjy"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove generated Cython files.
-                  (delete-file "bitshuffle/h5.c")
-                  (delete-file "bitshuffle/ext.c")
-                  #t))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f             ; fail: https://github.com/h5py/h5py/issues/769
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'dont-build-native
-           (lambda _
-             (substitute* "setup.py"
-               (("'-march=native', ") ""))
-             #t)))))
-    (inputs
-     `(("numpy" ,python-numpy)
-       ("h5py" ,python-h5py)
-       ("hdf5" ,hdf5)))
-    (native-inputs
-     `(("cython" ,python-cython)))
-    (home-page "https://github.com/kiyo-masui/bitshuffle")
-    (synopsis "Filter for improving compression of typed binary data")
-    (description "Bitshuffle is an algorithm that rearranges typed, binary data
-for improving compression, as well as a python/C package that implements this
-algorithm within the Numpy framework.")
-    (license license:expat)))
-
 (define-public snappy
   (package
     (name "snappy")
@@ -1281,282 +1105,6 @@ compared to the fastest mode of zlib, Snappy is an order of magnitude faster
 for most inputs, but the resulting compressed files are anywhere from 20% to
 100% bigger.")
     (license license:asl2.0)))
-
-(define bitshuffle-for-snappy
-  (package
-    (inherit bitshuffle)
-    (name "bitshuffle-for-snappy")
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (format #t "\
-libbitshuffle.so: src/bitshuffle.o src/bitshuffle_core.o src/iochain.o lz4/lz4.o
-\tgcc -O3 -ffast-math -std=c99 -o $@ -shared -fPIC $^
-
-%.o: %.c
-\tgcc -O3 -ffast-math -std=c99 -fPIC -Isrc -Ilz4 -c $< -o $@
-
-PREFIX:=~a
-LIBDIR:=$(PREFIX)/lib
-INCLUDEDIR:=$(PREFIX)/include
-
-install: libbitshuffle.so
-\tinstall -dm755 $(LIBDIR)
-\tinstall -dm755 $(INCLUDEDIR)
-\tinstall -m755 libbitshuffle.so $(LIBDIR)
-\tinstall -m644 src/bitshuffle.h $(INCLUDEDIR)
-\tinstall -m644 src/bitshuffle_core.h $(INCLUDEDIR)
-\tinstall -m644 src/iochain.h $(INCLUDEDIR)
-\tinstall -m644 lz4/lz4.h $(INCLUDEDIR)
-" (assoc-ref outputs "out"))))
-             #t)))))
-    (inputs '())
-    (native-inputs '())))
-
-(define-public java-snappy
-  (package
-    (name "java-snappy")
-    (version "1.1.7.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1p557vdv006ysgxbpp83krmq0066k46108vyiyka69w8i4i8rbbm"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:jar-name "snappy.jar"
-       #:source-dir "src/main/java"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'remove-binaries
-           (lambda _
-             (delete-file "lib/org/xerial/snappy/OSInfo.class")
-             (delete-file-recursively "src/main/resources/org/xerial/snappy/native")
-             #t))
-         (add-before 'build 'build-jni
-           (lambda _
-             ;; Rebuild one of the binaries we removed earlier
-             (invoke "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
-                      "-d" "lib")
-             ;; Link to the dynamic bitshuffle and snappy, not the static ones
-             (substitute* "Makefile.common"
-               (("-shared")
-                "-shared -lbitshuffle -lsnappy"))
-             (substitute* "Makefile"
-               ;; Don't try to use git, don't download bitshuffle source
-               ;; and don't build it.
-               (("\\$\\(SNAPPY_GIT_UNPACKED\\) ")
-                "")
-               ((": \\$\\(SNAPPY_GIT_UNPACKED\\)")
-                ":")
-               (("\\$\\(BITSHUFFLE_UNPACKED\\) ")
-                "")
-               ((": \\$\\(SNAPPY_SOURCE_CONFIGURED\\)") ":")
-               ;; What we actually want to build
-               (("SNAPPY_OBJ:=.*")
-                "SNAPPY_OBJ:=$(addprefix $(SNAPPY_OUT)/, \
-                 SnappyNative.o BitShuffleNative.o)\n")
-               ;; Since we removed the directory structure in "native" during
-               ;; the previous phase, we need to recreate it.
-               (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
-                "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
-             ;; Finally we can run the Makefile to build the dynamic library.
-             ;; Use the -nocmake target to avoid a dependency on cmake,
-             ;; which in turn requires the "git_unpacked" directory.
-             (invoke "make" "native-nocmake")))
-         ;; Once we have built the shared library, we need to place it in the
-         ;; "build" directory so it can be added to the jar file.
-         (add-after 'build-jni 'copy-jni
-           (lambda _
-             (copy-recursively "src/main/resources/org/xerial/snappy/native"
-                               "build/classes/org/xerial/snappy/native")
-             #t))
-         (add-before 'check 'fix-failing
-           (lambda _
-             (with-directory-excursion "src/test/java/org/xerial/snappy"
-               ;; This package assumes maven build, which puts results in "target".
-               ;; We put them in "build" instead, so fix that.
-               (substitute* "SnappyLoaderTest.java"
-                 (("target/classes") "build/classes"))
-               ;; This requires Hadoop, which is not in Guix yet.
-               (delete-file "SnappyHadoopCompatibleOutputStreamTest.java"))
-             #t)))))
-    (inputs
-     `(("osgi-framework" ,java-osgi-framework)))
-    (propagated-inputs
-     `(("bitshuffle" ,bitshuffle-for-snappy)
-       ("snappy" ,snappy)))
-    (native-inputs
-     `(("junit" ,java-junit)
-       ("hamcrest" ,java-hamcrest-core)
-       ("xerial-core" ,java-xerial-core)
-       ("classworlds" ,java-plexus-classworlds)
-       ("commons-lang" ,java-commons-lang)
-       ("commons-io" ,java-commons-io)
-       ("perl" ,perl)))
-    (home-page "https://github.com/xerial/snappy-java")
-    (synopsis "Compression/decompression algorithm in Java")
-    (description "Snappy-java is a Java port of snappy, a fast C++
-compressor/decompressor.")
-    (license license:asl2.0)))
-
-(define-public java-snappy-1
-  (package
-    (inherit java-snappy)
-    (version "1.0.3-rc3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
-                                  "snappy-java-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08hsxlqidiqck0q57fshwyv3ynyxy18vmhrai9fyc8mz17m7gsa3"))))
-    (arguments
-     `(#:jar-name "snappy.jar"
-       #:source-dir "src/main/java"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'remove-binaries
-           (lambda _
-             (delete-file "lib/org/xerial/snappy/OSInfo.class")
-             (delete-file-recursively "src/main/resources/org/xerial/snappy/native")
-             #t))
-         (add-before 'build 'build-jni
-           (lambda _
-             ;; Rebuild one of the binaries we removed earlier
-             (invoke "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
-                      "-d" "lib")
-             ;; Link to the dynamic snappy, not the static ones
-             (substitute* "Makefile.common"
-               (("-shared") "-shared -lsnappy"))
-             (substitute* "Makefile"
-               ;; Don't download the sources here.
-               (("\\$\\(SNAPPY_UNPACKED\\) ") "")
-               ((": \\$\\(SNAPPY_UNPACKED\\) ") ":")
-               ;; What we actually want to build
-               (("SNAPPY_OBJ:=.*")
-                "SNAPPY_OBJ:=$(addprefix $(SNAPPY_OUT)/, SnappyNative.o)\n")
-               ;; Since we removed the directory structure in "native" during
-               ;; the previous phase, we need to recreate it.
-               (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
-                "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
-             ;; Finally we can run the Makefile to build the dynamic library.
-             (invoke "make" "native")))
-         ;; Once we have built the shared library, we need to place it in the
-         ;; "build" directory so it can be added to the jar file.
-         (add-after 'build-jni 'copy-jni
-           (lambda _
-             (copy-recursively "src/main/resources/org/xerial/snappy/native"
-                               "build/classes/org/xerial/snappy/native")
-             #t))
-         (add-before 'check 'fix-tests
-           (lambda _
-             (mkdir-p "src/test/resources/org/xerial/snappy/")
-             (copy-recursively "src/test/java/org/xerial/snappy/testdata"
-                               "src/test/resources/org/xerial/snappy/testdata")
-             (install-file "src/test/java/org/xerial/snappy/alice29.txt"
-                           "src/test/resources/org/xerial/snappy/")
-             #t)))))))
-
-(define-public java-iq80-snappy
-  (package
-    (name "java-iq80-snappy")
-    (version "0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dain/snappy/archive/snappy-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0rb3zhci7w9wzd65lfnk7p3ip0n6gb58a9qpx8n7r0231gahyamf"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:jar-name "iq80-snappy.jar"
-       #:source-dir "src/main/java"
-       #:test-dir "src/test"
-       #:jdk ,icedtea-8
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (define (test class)
-               (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                   ":build/classes"
-                                                   ":build/test-classes")
-                       "-Dtest.resources.dir=src/test/resources"
-                       "org.testng.TestNG" "-testclass"
-                       class))
-             (invoke "ant" "compile-tests")
-             (test "org.iq80.snappy.SnappyFramedStreamTest")
-             (test "org.iq80.snappy.SnappyStreamTest")
-             #t))
-         (add-before 'build 'remove-hadoop-dependency
-           (lambda _
-             ;; We don't have hadoop
-             (delete-file "src/main/java/org/iq80/snappy/HadoopSnappyCodec.java")
-             (delete-file "src/test/java/org/iq80/snappy/TestHadoopSnappyCodec.java")
-             #t)))))
-    (home-page "https://github.com/dain/snappy")
-    (native-inputs
-     `(("guava" ,java-guava)
-       ("java-snappy" ,java-snappy)
-       ("hamcrest" ,java-hamcrest-core)
-       ("testng" ,java-testng)))
-    (synopsis "Java port of the Snappy (de)compressor")
-    (description
-     "Iq80-snappy is a port of the Snappy compressor and decompressor rewritten
-in pure Java.  This compression code produces a byte-for-byte exact copy of the
-output created by the original C++ code, and is extremely fast.")
-    (license license:asl2.0)))
-
-(define-public java-jbzip2
-  (package
-    (name "java-jbzip2")
-    (version "0.9.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://storage.googleapis.com/"
-                                  "google-code-archive-source/v2/"
-                                  "code.google.com/jbzip2/"
-                                  "source-archive.zip"))
-              (file-name (string-append name "-" version ".zip"))
-              (sha256
-               (base32
-                "0ncmhlqmrfmj96nqf6p77b9ws35lcfsvpfxzwxi2asissc83z1l3"))))
-    (build-system ant-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("java-junit" ,java-junit)))
-    (arguments
-     `(#:tests? #f                      ; no tests
-       #:jar-name "jbzip2.jar"
-       #:source-dir "tags/release-0.9.1/src"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-encoding-problems
-           (lambda _
-             ;; Some of the files we're patching are
-             ;; ISO-8859-1-encoded, so choose it as the default
-             ;; encoding so the byte encoding is preserved.
-             (with-fluids ((%default-port-encoding #f))
-               (substitute* "tags/release-0.9.1/src/org/itadaki/bzip2/HuffmanAllocator.java"
-                 (("Milidi.") "Milidiu")))
-             #t)))))
-    (home-page "https://code.google.com/archive/p/jbzip2/")
-    (synopsis "Java bzip2 compression/decompression library")
-    (description "Jbzip2 is a Java bzip2 compression/decompression library.
-It can be used as a replacement for the Apache @code{CBZip2InputStream} /
-@code{CBZip2OutputStream} classes.")
-    (license license:expat)))
 
 (define-public p7zip
   (package
@@ -1803,14 +1351,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.7")
+    (version "1.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "0gapsdzqfsfqqddzv22592iwa0008xjyi15f06pfv9hcvwvg4xrj"))))
+        (base32 "13nlsqhkn276frxrzjdn7wz0j9zz414lf336885ykyxcvw2a0gr9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1825,7 +1373,7 @@ or junctions, and always follows hard links.")
              ;; Not currently detected, but be explicit & avoid surprises later.
              "HAVE_LZ4=0"
              "HAVE_ZLIB=0")))
-    (home-page "http://zstd.net/")
+    (home-page "https://facebook.github.io/zstd/")
     (synopsis "Zstandard real-time compression algorithm")
     (description "Zstandard (@command{zstd}) is a lossless compression algorithm
 that combines very fast operation with a compression ratio comparable to that of
@@ -2012,29 +1560,6 @@ recreates the stored directory structure by default.")
     ;; files carry the Zlib license; see "docs/copying.html" for details.
     (license (list license:lgpl2.0+ license:mpl1.1))))
 
-(define-public perl-archive-zip
-  (package
-    (name "perl-archive-zip")
-    (version "1.60")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "02y2ylq83hy9kgj57sc0239x65br9sm98c0chsm61s08yc2mpiza"))))
-    (build-system perl-build-system)
-    (native-inputs
-     ;; For tests.
-     `(("perl-test-mockmodule" ,perl-test-mockmodule)))
-    (synopsis  "Provides an interface to Zip archive files")
-    (description "The @code{Archive::Zip} module allows a Perl program to
-create, manipulate, read, and write Zip archive files.")
-    (home-page "https://metacpan.org/release/Archive-Zip")
-    (license license:perl-license)))
-
 (define-public libzip
   (package
     (name "libzip")
@@ -2094,64 +1619,6 @@ extract files to standard out).  As @command{atool} invokes external programs
 to handle the archives, not all commands may be supported for a certain type
 of archives.")
     (license license:gpl2+)))
-
-(define-public perl-archive-extract
-  (package
-    (name "perl-archive-extract")
-    (version "0.80")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
-    (build-system perl-build-system)
-    (home-page "https://metacpan.org/release/Archive-Extract")
-    (synopsis "Generic archive extracting mechanism")
-    (description "It allows you to extract any archive file of the type .tar,
-.tar.gz, .gz, .Z, tar.bz2, .tbz, .bz2, .zip, .xz,, .txz, .tar.xz or .lzma
-without having to worry how it does so, or use different interfaces for each
-type by using either Perl modules, or command-line tools on your system.")
-    (license license:perl-license)))
-
-(define-public java-tukaani-xz
-  (package
-    (name "java-tukaani-xz")
-    (version "1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://tukaani.org/xz/xz-java-" version ".zip"))
-              (sha256
-               (base32
-                "1z3p1ri1gvl07inxn0agx44ck8n7wrzfmvkz8nbq3njn8r9wba8x"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:tests? #f; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _
-             ;; Our build system enters the first directory in the archive, but
-             ;; the package is not contained in a subdirectory
-             (chdir "..")
-             #t))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Do we want to install *Demo.jar?
-             (install-file "build/jar/xz.jar"
-                           (string-append
-                             (assoc-ref outputs "out")
-                             "/share/java/xz.jar"))
-             #t)))))
-    (native-inputs
-     `(("unzip" ,unzip)))
-    (home-page "https://tukaani.org")
-    (synopsis "XZ in Java")
-    (description "Tukaani-xz is an implementation of xz compression/decompression
-algorithms in Java.")
-    (license license:public-domain)))
 
 (define-public lunzip
   (package

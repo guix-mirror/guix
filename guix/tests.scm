@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +64,7 @@
 
 (define* (open-connection-for-tests #:optional (uri (%daemon-socket-uri)))
   "Open a connection to the build daemon for tests purposes and return it."
-  (guard (c ((nix-error? c)
+  (guard (c ((store-error? c)
              (format (current-error-port)
                      "warning: build daemon error: ~s~%" c)
              #f))
@@ -334,18 +334,19 @@ CONTENTS."
 (define-syntax-rule (dummy-package name* extra-fields ...)
   "Return a \"dummy\" package called NAME*, with all its compulsory fields
 initialized with default values, and with EXTRA-FIELDS set as specified."
-  (package extra-fields ...
-           (name name*) (version "0") (source #f)
-           (build-system gnu-build-system)
-           (synopsis #f) (description #f)
-           (home-page #f) (license #f)))
+  (let ((p (package
+             (name name*) (version "0") (source #f)
+             (build-system gnu-build-system)
+             (synopsis #f) (description #f)
+             (home-page #f) (license #f))))
+    (package (inherit p) extra-fields ...)))
 
 (define-syntax-rule (dummy-origin extra-fields ...)
   "Return a \"dummy\" origin, with all its compulsory fields initialized with
 default values, and with EXTRA-FIELDS set as specified."
-  (origin extra-fields ...
-          (method #f) (uri "http://www.example.com")
-          (sha256 (base32 (make-string 52 #\x)))))
+  (let ((o (origin (method #f) (uri "http://www.example.com")
+                   (sha256 (base32 (make-string 52 #\x))))))
+    (origin (inherit o) extra-fields ...)))
 
 ;; Local Variables:
 ;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)

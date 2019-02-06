@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -707,20 +707,21 @@ memory_cycle_ok( $object );
 (define-public perl-test-mockmodule
   (package
     (name "perl-test-mockmodule")
-    (version "0.13")
+    (version "0.170.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/G/GF/GFRANKS/"
-                           "Test-MockModule-" version ".tar.gz"))
+                           "Test-MockModule-v" version ".tar.gz"))
        (sha256
-        (base32 "0lwh6fvnc16r6d74vvh5h4b5a1spcslpjb3mcqbv23k01lm78wvl"))))
+        (base32 "0pggwrlqj6k44qayhbpjqkzry1r626iy2vf30zlf2jdhbjbvlycz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ;; For tests.
        ("perl-test-pod" ,perl-test-pod)
-       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-super" ,perl-super)))
     (home-page "https://metacpan.org/release/Test-MockModule")
@@ -785,6 +786,28 @@ at specific points in time.  Specifically it overrides localtime, gmtime and
 time at compile time and then relies on the user supplying a mock time via
 set_relative_time, set_absolute_time or set_fixed_time to alter future calls
 to gmtime,time or localtime.")
+    (license perl-license)))
+
+(define-public perl-test-more-utf8
+  (package
+    (name "perl-test-more-utf8")
+    (version "0.05")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/M/MO/MONS/Test-More-UTF8-"
+               version ".tar.gz"))
+        (sha256
+         (base32
+          "016fs77lmw8xxrcnapvp6wq4hjwgsdfi3l9ylpxgxkcpdarw9wdr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Test-More-UTF8")
+    (synopsis "Enhance Test::More for UTF8-based projects")
+    (description "@code{Test::More::UTF8} is a simple extension for the widely
+used @code{Test::More} module.  By default, it will do a @code{binmode ':utf8'}
+on all of @code{Test::Builder}'s output handles thus enabling the easy use
+flagged strings without warnings like \"Wide character in print @dots{}\"")
     (license perl-license)))
 
 (define-public perl-test-most
@@ -1121,14 +1144,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302136")
+    (version "1.302141")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "0inlv8f4rbhsw6qnqhf1w6ay153xbw27fldmb2pmg4ihn19mr6ld"))))
+                "1dwmsf7jzhw8xppzrw2raq3q6nzd1kcl8b53hik4586b2k45n16p"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description

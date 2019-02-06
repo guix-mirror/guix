@@ -348,8 +348,8 @@ SEGGER J-Link and compatible devices.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (home-page "http://jim.tcl.tk")
     (synopsis "Small footprint Tcl implementation")
     (description "Jim is a small footprint implementation of the Tcl programming
@@ -575,7 +575,7 @@ with a layered architecture of JTAG interface and TAP support.")
            ;; have to create the target directories at build time.
            (add-before 'build 'create-target-directories
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-dirs" make-flags))))
+               (apply invoke "make" "install-dirs" make-flags)))
            (add-before 'build 'set-cross-environment-variables
              (lambda* (#:key outputs #:allow-other-keys)
                (setenv "CROSS_LIBRARY_PATH"
@@ -589,7 +589,7 @@ with a layered architecture of JTAG interface and TAP support.")
                #t))
            (add-before 'install 'install-includes
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-includes" make-flags)))))))
+               (apply invoke "make" "install-includes" make-flags))))))
       (native-inputs
        `(("propeller-gcc" ,propeller-gcc)
          ("propeller-binutils" ,propeller-binutils)
@@ -977,14 +977,14 @@ SPI, I2C, JTAG.")
 (define-public fc-host-tools
   (package
     (name "fc-host-tools")
-    (version "8")
+    (version "9a")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.freecalypso.org/pub/GSM/"
                                   "FreeCalypso/fc-host-tools-r" version ".tar.bz2"))
               (sha256
                (base32
-                "00kl9442maaxnsjvl5qc4c6fzjkgr3hac9ax1z2k6ry6byfknj6z"))))
+                "15w1njlvbzzbr9bwj2hwy8na3a55p1z1cysk5h9iziz9y955ansg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -1001,15 +1001,15 @@ SPI, I2C, JTAG.")
          (add-after 'handle-tarbomb 'patch-installation-paths
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("Makefile"
-                            "rvinterf/libasync/launchrvif.c"
+                            "rvinterf/etmsync/fsiomain.c"
+                            "rvinterf/etmsync/fsnew.c"
+                            "rvinterf/asyncshell/help.c"
+                            "rvinterf/libinterf/launchrvif.c"
                             "loadtools/defpath.c"
                             "loadtools/Makefile"
                             "miscutil/c139explore"
                             "miscutil/pirexplore"
                             "ffstools/tiffs-wrappers/installpath.c"
-                            "rvinterf/rvtat/launchrvif.c"
-                            "rvinterf/etmsync/launchrvif.c"
-                            "rvinterf/libasync/launchrvif.c"
                             "uptools/atcmd/atinterf.c")
                (("/opt/freecalypso/loadtools")
                 (string-append (assoc-ref outputs "out") "/lib/freecalypso/loadtools"))

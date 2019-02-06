@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,112 +50,115 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnome)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix utils)
-  #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system glib-or-gtk)
-  #:use-module (guix build-system meson)
-  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages calendar)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages dns)
-  #:use-module (gnu packages documentation)
-  #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages gperf)
   #:use-module (gnu packages guile)
-  #:use-module (gnu packages openldap)
-  #:use-module (gnu packages pdf)
-  #:use-module (gnu packages polkit)
-  #:use-module (gnu packages popt)
-  #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages ibus)
-  #:use-module (gnu packages iso-codes)
-  #:use-module (gnu packages libcanberra)
-  #:use-module (gnu packages libunistring)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages libusb)
-  #:use-module (gnu packages lirc)
-  #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
+  #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lirc)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdesktop)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages slang)
-  #:use-module (gnu packages ssh)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages graphviz)
-  #:use-module (gnu packages compression)
+  #:use-module (gnu packages speech)
   #:use-module (gnu packages spice)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages web)
-  #:use-module (gnu packages webkit)
-  #:use-module (gnu packages xiph)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages mail)
-  #:use-module (gnu packages kerberos)
-  #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages backup)
-  #:use-module (gnu packages nettle)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages video)
-  #:use-module (gnu packages cdrom)
-  #:use-module (gnu packages samba)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages fonts)
-  #:use-module (gnu packages speech)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -401,7 +405,7 @@ access the common Google services, and has full asynchronous support.")
 (define-public libgxps
   (package
     (name "libgxps")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -409,7 +413,7 @@ access the common Google services, and has full asynchronous support.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bhgrpb6ndlp11qwr95g9piklmjcsca7bi04f8gy9ziipm1i6as1"))))
+                "157s4c9gjjss6yd7qp7n4q6s72gz1k4ilsx4xjvp357azk49z4qs"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -1857,17 +1861,17 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.36")
+    (version "0.10.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "1mma1gp179dh7kvwzd7q3mwg0719hhbm9f5sqw28flv5lv05zrng"))))
+               (base32 "1fd7cm6j0g0mqgpqs4y22b4gd2ll4mcyvg4d0q22d5ndjapl4q3d"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;4.1 MiB of gtk-doc
+               "doc"))                            ;4.0 MiB of gtk-doc
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
@@ -2220,19 +2224,31 @@ selection and URL hints.")))
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches ; We have to revert 2 commits to build against freerdp 1.1.
-               (search-patches "vinagre-revert-1.patch"
-                               "vinagre-revert-2.patch"))
+              (patches (search-patches "vinagre-newer-freerdp.patch"
+                                       "vinagre-newer-rdp-parameters.patch"))
               (sha256
                (base32
                 "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           (lambda _
+             ;; Don't create 'icon-theme.cache'
+             (substitute* (find-files "." "^Makefile$")
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'unpack 'patch-configure
+           (lambda _
+             (substitute* "configure"
+               (("freerdp") "freerdp2"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("glib-bin" ,glib "bin")                   ;for glib-compile-schemas
-       ("gtk+-bin" ,gtk+ "bin")))                 ;for gtk-update-icon-cache
+       ("glib-bin" ,glib "bin")))                 ;for glib-compile-schemas
     (inputs
      `(("libxml2" ,libxml2)
        ("gtk-vnc" ,gtk-vnc)
@@ -2243,8 +2259,6 @@ selection and URL hints.")))
        ("spice-gtk" ,spice-gtk)
        ("telepathy-glib" ,telepathy-glib)
        ("vte" ,vte)))
-    (arguments
-     `(#:configure-flags '("--enable-rdp")))
     (home-page "https://wiki.gnome.org/Apps/Vinagre")
     (synopsis "Remote desktop viewer for GNOME")
     (description "Vinagre is a remote display client supporting the VNC, SPICE
@@ -2604,7 +2618,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.18.6")
+    (version "0.18.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2613,7 +2627,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vynag97a9bnnb8ipah45av8xg8jzmhd572rw3zj78s1pa8ciysy"))))
+                "11ylmcfx6ff7xd1gpi58i2nbma83lz2xg0g2dq23w6snqhgzwrhd"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2623,9 +2637,9 @@ and the GLib main loop, to integrate well with GNOME applications.")
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xsltproc" ,libxslt)))
@@ -4422,7 +4436,7 @@ classes for commonly used data structures.")
 (define-public gexiv2
   (package
     (name "gexiv2")
-    (version "0.10.8")
+    (version "0.10.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4430,7 +4444,7 @@ classes for commonly used data structures.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0088m7p044n741ly1m6i7w25z513h9wpgyw0rmx5f0sy3vyjiic1"))))
+                "1qbcwq89g4r67k1dj4laqj441pj4195c8hzhxn8vc6mmg8adg6kx"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")
@@ -5337,6 +5351,10 @@ libxml2.")
          ;; script. It provides a generic one if --enable-gdm-xsession is set.
          "--enable-gdm-xsession"
 
+         ;; Use '/etc/environment' for locale settings instead of the
+         ;; systemd-specific '/etc/locale.conf'.
+         "--with-lang-file=/etc/environment"
+
          "--localstatedir=/var"
          ,(string-append "--with-default-path="
                          (string-join '("/run/setuid-programs"
@@ -5399,6 +5417,11 @@ libxml2.")
                 ;; are met (provided GNOME is installed of course).
                 "gdm_session_set_environment_variable (self, \"XDG_CONFIG_DIRS\",\n"
                 "    \"/run/current-system/profile/etc/xdg\");\n"
+                ;; The session bus (which GDM will initialize from the this
+                ;; session environment) needs to know where to find the system
+                ;; service files.
+                "gdm_session_set_environment_variable (self, \"XDG_DATA_DIRS\",\n"
+                "    \"/run/current-system/profile/share\");\n"
                 )))
             ;; Look for custom GDM conf in /run/current-system.
             (substitute* '("common/gdm-settings-desktop-backend.c")
@@ -7377,3 +7400,50 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
 hexadecimal or ASCII.  It is useful for editing binary files in general.")
     (home-page "https://wiki.gnome.org/Apps/Ghex")
     (license license:gpl2)))
+
+(define-public libdazzle
+  (package
+    (name "libdazzle")
+    (version "3.28.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08qdwv2flywnh6kibkyv0pnm67pk8xlmjh4yqx6hf13hyhkxkqgg"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-test
+           (lambda _
+             ;; Disable failing test.
+             (substitute* "tests/meson.build"
+               (("test\\('test-application") "#"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (native-inputs
+     `(("glib" ,glib "bin") ; glib-compile-resources
+       ("pkg-config" ,pkg-config)
+       ;; For tests
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("vala" ,vala)))
+    (home-page "https://gitlab.gnome.org/GNOME/libdazzle")
+    (synopsis "Companion library to GObject and Gtk+")
+    (description "The libdazzle library is a companion library to GObject and
+Gtk+.  It provides various features that the authors wish were in the
+underlying library but cannot for various reasons.  In most cases, they are
+wildly out of scope for those libraries.  In other cases, they are not quite
+generic enough to work for everyone.")
+    (license license:gpl3+)))

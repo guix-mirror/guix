@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
 
 (define-module (gnu services base)
   #:use-module (guix store)
+  #:use-module (guix deprecation)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
@@ -614,8 +616,9 @@ file systems, as well as corresponding @file{/etc/fstab} entries.")))
 generator (RNG) with the value recorded when the system was last shut
 down.")))
 
-(define (urandom-seed-service)                    ;deprecated
-  (service urandom-seed-service-type #f))
+(define-deprecated (urandom-seed-service)
+  urandom-seed-service-type
+  (service urandom-seed-service-type))
 
 
 ;;;
@@ -816,6 +819,7 @@ Return a service that sets up Unicode support in @var{tty} and loads
   (service-type (name 'login)
                 (extensions (list (service-extension pam-root-service-type
                                                      login-pam-service)))
+                (default-value (login-configuration))
                 (description
                  "Provide a console log-in service as specified by its
 configuration value, a @code{login-configuration} object.")))
@@ -1356,6 +1360,7 @@ the tty to run, among other things."
                            (name-services (append
                                            (nscd-configuration-name-services config)
                                            name-services)))))
+                (default-value %nscd-default-configuration)
                 (description
                  "Runs libc's @dfn{name service cache daemon} (nscd) with the
 given configuration---an @code{<nscd-configuration>} object.  @xref{Name
@@ -1686,7 +1691,9 @@ failed to register public key '~a': ~a~%" key status)))))))
    (description
     "Run the build daemon of GNU@tie{}Guix, aka. @command{guix-daemon}.")))
 
-(define* (guix-service #:optional (config %default-guix-configuration))
+(define-deprecated (guix-service #:optional
+                                 (config %default-guix-configuration))
+  guix-service-type
   "Return a service that runs the Guix build daemon according to
 @var{config}."
   (service guix-service-type config))
@@ -1787,7 +1794,9 @@ failed to register public key '~a': ~a~%" key status)))))))
                  "Add a Shepherd service running @command{guix publish}, a
 command that allows you to share pre-built binaries with others over HTTP.")))
 
-(define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
+(define-deprecated (guix-publish-service #:key (guix guix)
+                                         (port 80) (host "localhost"))
+  guix-publish-service-type
   "Return a service that runs @command{guix publish} listening on @var{host}
 and @var{port} (@pxref{Invoking guix publish}).
 
@@ -1807,7 +1816,7 @@ archive}).  If that is not the case, the service will fail to start."
   udev-configuration make-udev-configuration
   udev-configuration?
   (udev   udev-configuration-udev                 ;<package>
-          (default udev))
+          (default eudev))
   (rules  udev-configuration-rules                ;list of <package>
           (default '())))
 
@@ -1990,6 +1999,7 @@ the udev rules in use.")
                              (udev-configuration
                               (udev udev)
                               (rules (append initial-rules rules)))))))
+                (default-value (udev-configuration))
                 (description
                  "Run @command{udev}, which populates the @file{/dev}
 directory dynamically.  Get extra rules from the packages listed in the
@@ -2078,8 +2088,9 @@ command-line options.  GPM allows users to use the mouse in the console,
 notably to select, copy, and paste text.  The default options use the
 @code{ps2} protocol, which works for both USB and PS/2 mice.")))
 
-(define* (gpm-service #:key (gpm gpm)             ;deprecated
-                      (options %default-gpm-options))
+(define-deprecated (gpm-service #:key (gpm gpm)
+                                (options %default-gpm-options))
+  gpm-service-type
   "Run @var{gpm}, the general-purpose mouse daemon, with the given
 command-line @var{options}.  GPM allows users to use the mouse in the console,
 notably to select, copy, and paste text.  The default value of @var{options}
@@ -2131,7 +2142,7 @@ This service is not part of @var{%base-services}."
 
        (shepherd-service
         (documentation "kmscon virtual terminal")
-        (requirement '(user-processes udev dbus-system virtual-terminal))
+        (requirement '(user-processes udev dbus-system))
         (provision (list (symbol-append 'term- (string->symbol virtual-terminal))))
         (start #~(make-forkexec-constructor #$kmscon-command))
         (stop #~(make-kill-destructor)))))))
@@ -2286,7 +2297,7 @@ to handle."
 
 (define %base-services
   ;; Convenience variable holding the basic services.
-  (list (login-service)
+  (list (service login-service-type)
 
         (service virtual-terminal-service-type)
         (service console-font-service-type
@@ -2294,23 +2305,23 @@ to handle."
                         (cons tty %default-console-font))
                       '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
-        (agetty-service (agetty-configuration
-                         (extra-options '("-L")) ; no carrier detect
-                         (term "vt100")
-                         (tty #f))) ; automatic
+        (service agetty-service-type (agetty-configuration
+                                       (extra-options '("-L")) ; no carrier detect
+                                       (term "vt100")
+                                       (tty #f))) ; automatic
 
-        (mingetty-service (mingetty-configuration
-                           (tty "tty1")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty2")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty3")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty4")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty5")))
-        (mingetty-service (mingetty-configuration
-                           (tty "tty6")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty1")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty2")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty3")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty4")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty5")))
+        (service mingetty-service-type (mingetty-configuration
+                                         (tty "tty6")))
 
         (service static-networking-service-type
                  (list (static-networking (interface "lo")
@@ -2319,13 +2330,15 @@ to handle."
                                           (provision '(loopback)))))
         (syslog-service)
         (service urandom-seed-service-type)
-        (guix-service)
-        (nscd-service)
+        (service guix-service-type)
+        (service nscd-service-type)
 
         ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
         ;; used, so enable them by default.  The FUSE and ALSA rules are
         ;; less critical, but handy.
-        (udev-service #:rules (list lvm2 fuse alsa-utils crda))
+        (service udev-service-type
+                 (udev-configuration
+                   (rules (list lvm2 fuse alsa-utils crda))))
 
         (service special-files-service-type
                  `(("/bin/sh" ,(file-append (canonical-package bash)

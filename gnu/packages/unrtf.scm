@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,37 +32,14 @@
 (define-public unrtf
   (package
     (name "unrtf")
-    (version "0.21.9")
+    (version "0.21.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/unrtf/unrtf-"
                                  version ".tar.gz"))
-             (patches (search-patches "unrtf-CVE-2016-10091.patch"))
              (sha256
               (base32
-               "1pcdzf2h1prn393dkvg93v80vh38q0v817xnbwrlwxbdz4k7i8r2"))
-             (modules '((guix build utils)))
-             (snippet
-              #~(begin
-                  ;; The tarball includes site-specific generated files.
-                  ;; Remove them.
-                  (for-each delete-file '("config.log" "config.h"))
-                  (for-each delete-file
-                            (find-files "." "^Makefile$"))
-
-                  ;; The config/ directory contains dangling symlinks to
-                  ;; /usr/share/automake.
-                  (for-each delete-file (find-files "config"))
-
-                  ;; Regenerate the whole thing.
-                  (setenv "PATH"
-                          (string-append #$autoconf "/bin:"
-                                         #$automake "/bin:"
-                                         #$m4 "/bin:"
-                                         #$grep "/bin:" #$sed "/bin:"
-                                         #$coreutils "/bin:"
-                                         (getenv "PATH")))
-                  (invoke "autoreconf" "-vfi")))))
+               "1bil6z4niydz9gqm2j861dkxmqnpc8m7hvidsjbzz7x63whj17xl"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/unrtf/")
     (synopsis "Convert Rich Text Format documents to other formats")
@@ -69,4 +47,4 @@
      "GNU UnRTF converts text documents from RTF to HTML, LaTeX, or troff.
 It supports changes in font characteristics, underlines and strikethroughs,
 superscripts and subscripts, and more.")
-    (license gpl2+)))
+    (license gpl3+)))

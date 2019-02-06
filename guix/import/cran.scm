@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (ice-9 regex)
   #:use-module ((ice-9 rdelim) #:select (read-string read-line))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 receive)
@@ -124,7 +125,7 @@ package definition."
     ((package-inputs ...)
      `((,type (,'quasiquote ,(format-inputs package-inputs)))))))
 
-(define %cran-url "http://cran.r-project.org/web/packages/")
+(define %cran-url "https://cran.r-project.org/web/packages/")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
 ;; The latest Bioconductor release is 3.8.  Bioconductor packages should be
@@ -160,6 +161,12 @@ bioconductor package NAME, or #F if the package is unknown."
                (bioconductor-packages-list))
          (cut assoc-ref <> "Version")))
 
+;; Little helper to download URLs only once.
+(define download
+  (memoize
+   (lambda (url)
+     (with-store store (download-to-store store url)))))
+
 (define (fetch-description repository name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
 NAME in the given REPOSITORY, or #f in case of failure.  NAME is
@@ -180,9 +187,9 @@ from ~s: ~a (~s)~%"
      ;; Currently, the bioconductor project does not offer a way to access a
      ;; package's DESCRIPTION file over HTTP, so we determine the version,
      ;; download the source tarball, and then extract the DESCRIPTION file.
-     (let* ((version (latest-bioconductor-package-version name))
-            (url     (car (bioconductor-uri name version)))
-            (tarball (with-store store (download-to-store store url))))
+     (and-let* ((version (latest-bioconductor-package-version name))
+                (url     (car (bioconductor-uri name version)))
+                (tarball (download url)))
        (call-with-temporary-directory
         (lambda (dir)
           (parameterize ((current-error-port (%make-void-port "rw+"))
@@ -298,7 +305,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        ((url rest ...) url)
                        ((? string? url) url)
                        (_ #f)))
-         (tarball    (with-store store (download-to-store store source-url)))
+         (tarball    (download source-url))
          (sysdepends (append
                       (if (needs-zlib? tarball) '("zlib") '())
                       (map string-downcase (listify meta "SystemRequirements"))))
@@ -346,10 +353,15 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
    (lambda* (package-name #:optional (repo 'cran))
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
-     (and=> (fetch-description repo package-name)
-            (cut description->package repo <>)))))
+     (let ((description (fetch-description repo package-name)))
+       (if (and (not description)
+                (eq? repo 'bioconductor))
+           ;; Retry import from CRAN
+           (cran->guix-package package-name 'cran)
+           (and description
+                (description->package repo description)))))))
 
-(define* (cran-recursive-import package-name #:optional (repo 'gnu))
+(define* (cran-recursive-import package-name #:optional (repo 'cran))
   (recursive-import package-name repo
                     #:repo->guix-package cran->guix-package
                     #:guix-name cran-guix-name))
@@ -378,11 +390,11 @@ s-expression corresponding to that package, or #f on failure."
              (_ #f)))
           (_ #f)))))
 
-(define (latest-cran-release package)
-  "Return an <upstream-source> for the latest release of PACKAGE."
+(define (latest-cran-release pkg)
+  "Return an <upstream-source> for the latest release of the package PKG."
 
   (define upstream-name
-    (package->upstream-name package))
+    (package->upstream-name pkg))
 
   (define meta
     (fetch-description 'cran upstream-name))
@@ -391,15 +403,18 @@ s-expression corresponding to that package, or #f on failure."
        (let ((version (assoc-ref meta "Version")))
          ;; CRAN does not provide signatures.
          (upstream-source
-          (package (package-name package))
+          (package (package-name pkg))
           (version version)
-          (urls (cran-uri upstream-name version))))))
+          (urls (cran-uri upstream-name version))
+          (input-changes
+           (changed-inputs pkg
+                           (description->package 'cran meta)))))))
 
-(define (latest-bioconductor-release package)
-  "Return an <upstream-source> for the latest release of PACKAGE."
+(define (latest-bioconductor-release pkg)
+  "Return an <upstream-source> for the latest release of the package PKG."
 
   (define upstream-name
-    (package->upstream-name package))
+    (package->upstream-name pkg))
 
   (define version
     (latest-bioconductor-package-version upstream-name))
@@ -407,9 +422,13 @@ s-expression corresponding to that package, or #f on failure."
   (and version
        ;; Bioconductor does not provide signatures.
        (upstream-source
-        (package (package-name package))
+        (package (package-name pkg))
         (version version)
-        (urls (bioconductor-uri upstream-name version)))))
+        (urls (bioconductor-uri upstream-name version))
+        (input-changes
+         (changed-inputs
+          pkg
+          (cran->guix-package upstream-name 'bioconductor))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."

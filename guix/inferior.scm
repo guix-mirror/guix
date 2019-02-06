@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,9 +26,9 @@
                           version>? version-prefix?
                           cache-directory))
   #:use-module ((guix store)
-                #:select (nix-server-socket
-                          nix-server-major-version
-                          nix-server-minor-version
+                #:select (store-connection-socket
+                          store-connection-major-version
+                          store-connection-minor-version
                           store-lift))
   #:use-module ((guix derivations)
                 #:select (read-derivation-from-file))
@@ -54,6 +54,7 @@
   #:use-module ((rnrs bytevectors) #:select (string->utf8))
   #:export (inferior?
             open-inferior
+            port->inferior
             close-inferior
             inferior-eval
             inferior-eval-with-store
@@ -80,6 +81,8 @@
 
             inferior-package->manifest-entry
 
+            gexp->derivation-in-inferior
+
             %inferior-cache-directory
             inferior-for-channels))
 
@@ -93,10 +96,11 @@
 
 ;; Inferior Guix process.
 (define-record-type <inferior>
-  (inferior pid socket version packages table)
+  (inferior pid socket close version packages table)
   inferior?
   (pid      inferior-pid)
   (socket   inferior-socket)
+  (close    inferior-close-socket)               ;procedure
   (version  inferior-version)                    ;REPL protocol version
   (packages inferior-package-promise)            ;promise of inferior packages
   (table    inferior-package-table))             ;promise of vhash
@@ -131,19 +135,15 @@ it's an old Guix."
                           ((@ (guix scripts repl) machine-repl))))))
         pipe)))
 
-(define* (open-inferior directory #:key (command "bin/guix"))
-  "Open the inferior Guix in DIRECTORY, running 'DIRECTORY/COMMAND repl' or
-equivalent.  Return #f if the inferior could not be launched."
-  (define pipe
-    (inferior-pipe directory command))
-
-  (cond-expand
-    ((and guile-2 (not guile-2.2)) #t)
-    (else (setvbuf pipe 'line)))
+(define* (port->inferior pipe #:optional (close close-port))
+  "Given PIPE, an input/output port, return an inferior that talks over PIPE.
+PIPE is closed with CLOSE when 'close-inferior' is called on the returned
+inferior."
+  (setvbuf pipe 'line)
 
   (match (read pipe)
     (('repl-version 0 rest ...)
-     (letrec ((result (inferior 'pipe pipe (cons 0 rest)
+     (letrec ((result (inferior 'pipe pipe close (cons 0 rest)
                                 (delay (%inferior-packages result))
                                 (delay (%inferior-package-table result)))))
        (inferior-eval '(use-modules (guix)) result)
@@ -155,9 +155,18 @@ equivalent.  Return #f if the inferior could not be launched."
     (_
      #f)))
 
+(define* (open-inferior directory #:key (command "bin/guix"))
+  "Open the inferior Guix in DIRECTORY, running 'DIRECTORY/COMMAND repl' or
+equivalent.  Return #f if the inferior could not be launched."
+  (define pipe
+    (inferior-pipe directory command))
+
+  (port->inferior pipe close-pipe))
+
 (define (close-inferior inferior)
   "Close INFERIOR."
-  (close-pipe (inferior-socket inferior)))
+  (let ((close (inferior-close-socket inferior)))
+    (close (inferior-socket inferior))))
 
 ;; Non-self-quoting object of the inferior.
 (define-record-type <inferior-object>
@@ -382,8 +391,8 @@ input/output ports.)"
 
   ;; Use buffered ports so that 'get-bytevector-some' returns up to the
   ;; whole buffer like read(2) would--see <https://bugs.gnu.org/30066>.
-  (setvbuf client _IOFBF 65536)
-  (setvbuf backend _IOFBF 65536)
+  (setvbuf client 'block 65536)
+  (setvbuf backend 'block 65536)
 
   (let loop ()
     (match (select* (list client backend) '() '())
@@ -409,13 +418,14 @@ thus be the code of a one-argument procedure that accepts a store."
   ;; Create a named socket in /tmp and let INFERIOR connect to it and use it
   ;; as its store.  This ensures the inferior uses the same store, with the
   ;; same options, the same per-session GC roots, etc.
+  ;; FIXME: This strategy doesn't work for remote inferiors (SSH).
   (call-with-temporary-directory
    (lambda (directory)
      (chmod directory #o700)
      (let* ((name     (string-append directory "/inferior"))
             (socket   (socket AF_UNIX SOCK_STREAM 0))
-            (major    (nix-server-major-version store))
-            (minor    (nix-server-minor-version store))
+            (major    (store-connection-major-version store))
+            (minor    (store-connection-minor-version store))
             (proto    (logior major minor)))
        (bind socket AF_UNIX name)
        (listen socket 1024)
@@ -441,7 +451,7 @@ thus be the code of a one-argument procedure that accepts a store."
         inferior)
        (match (accept socket)
          ((client . address)
-          (proxy client (nix-server-socket store))))
+          (proxy client (store-connection-socket store))))
        (close-port socket)
        (read-inferior-response inferior)))))
 
@@ -475,6 +485,37 @@ PACKAGE must be live."
                                         target)
   ;; Compile PACKAGE for SYSTEM, optionally cross-building for TARGET.
   (inferior-package->derivation package system #:target target))
+
+(define* (gexp->derivation-in-inferior name exp guix
+                                       #:rest rest)
+  "Return a derivation that evaluates EXP with GUIX, an instance of Guix as
+returned for example by 'channel-instances->derivation'.  Other arguments are
+passed as-is to 'gexp->derivation'."
+  (define script
+    ;; EXP wrapped with a proper (set! %load-path …) prologue.
+    (scheme-file "inferior-script.scm" exp))
+
+  (define trampoline
+    ;; This is a crude way to run EXP on GUIX.  TODO: use 'raw-derivation' and
+    ;; make 'guix repl' the "builder"; this will require "opening up" the
+    ;; mechanisms behind 'gexp->derivation', and adding '-l' to 'guix repl'.
+    #~(begin
+        (use-modules (ice-9 popen))
+
+        (let ((pipe (open-pipe* OPEN_WRITE
+                                #+(file-append guix "/bin/guix")
+                                "repl" "-t" "machine")))
+
+          ;; XXX: EXP presumably refers to #$output but that reference is lost
+          ;; so explicitly reference it here.
+          #$output
+
+          (write `(primitive-load #$script) pipe)
+
+          (unless (zero? (close-pipe pipe))
+            (error "inferior failed" #+guix)))))
+
+  (apply gexp->derivation name trampoline rest))
 
 
 ;;;

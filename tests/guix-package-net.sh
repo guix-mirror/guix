@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -166,6 +166,37 @@ if guix package -p "$profile" --search-paths | grep LIBRARY_PATH
 then false; fi
 guix package -p "$profile" -p "$profile_alt" --search-paths \
      | grep "LIBRARY_PATH.*$profile/lib.$profile_alt/lib"
+
+# Simulate an upgrade and make sure the package order is preserved.
+module_dir="t-guix-package-net-$$"
+trap 'rm -rf "$module_dir"' EXIT
+
+mkdir "$module_dir"
+cat > "$module_dir/new.scm" <<EOF
+(define-module (new)
+  #:use-module (guix)
+  #:use-module (gnu packages bootstrap))
+
+(define-public new-guile
+  (package (inherit %bootstrap-guile)
+           (version (string-append "42." (getenv "V_MINOR")))))
+(define-public new-gcc
+  (package (inherit %bootstrap-gcc)
+           (version (string-append "77." (getenv "V_MINOR")))))
+EOF
+
+guix package --bootstrap -p "$profile" -i gcc-bootstrap
+installed="`guix package -p "$profile" -I | cut -f1`"
+
+for i in 1 2
+do
+    V_MINOR="$i"
+    export V_MINOR
+
+    guix package -p "$profile" --bootstrap -L "$module_dir" -u .
+    post_upgrade="`guix package -p "$profile" -I | cut -f1`"
+    test "$post_upgrade" = "$installed"
+done
 
 #
 # Try with the default profile.

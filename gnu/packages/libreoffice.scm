@@ -1,15 +1,15 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses)
                 #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
                           non-copyleft x11-style bsd-3))
@@ -69,8 +70,10 @@
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
@@ -286,15 +289,15 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
 (define-public libcmis
   (package
     (name "libcmis")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/tdf/libcmis/releases/download/v"
-                          version "/libcmis-" version ".tar.gz"))
+                          version "/libcmis-" version ".tar.xz"))
       (sha256
        (base32
-        "03kvl8ywsv5qrxblf0m6955mmvl5q2zpb6vj51vs7ayvxhidzjva"))))
+        "18h0a2gsfxvlv03nlcfvw9bzsflq5sin9agq6za103hr0ab8vcfp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -312,22 +315,10 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; FIXME: Man pages generation requires docbook-to-man; reenable
           ;; it once this is available.
           "--without-man"
-          ;; avoid triggering configure errors by simple inclusion of
-          ;; boost headers
-          "--disable-werror"
           ;; During configure, the boost headers are found, but linking
           ;; fails without the following flag.
           (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost")))
-        #:phases (modify-phases %standard-phases
-                   (add-before 'build 'fix-boost-include
-                     (lambda _
-                       ;; This library moved in Boost and the compatibility
-                       ;; redirect is no longer available since version 1.68.0.
-                       (substitute* "src/libcmis/xml-utils.cxx"
-                         (("boost/uuid/sha1.hpp")
-                          "boost/uuid/detail/sha1.hpp"))
-                       #t)))))
+                         (assoc-ref %build-inputs "boost")))))
     (home-page "https://github.com/tdf/libcmis")
     (synopsis "CMIS client library")
     (description "LibCMIS is a C++ client library for the CMIS interface.  It
@@ -369,14 +360,14 @@ AbiWord documents.")
 (define-public libcdr
   (package
     (name "libcdr")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0vd6likgk51j46llybkx4wq3674xzrhp0k82220pkx9x1aqfi9z7"))))
+               "0j1skr11jwvafn0l6p37v3i4lqc8wcn489g8f7c4mqwbk94mrkka"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -389,9 +380,6 @@ AbiWord documents.")
        ("zlib" ,zlib)))
     (inputs
      `(("boost" ,boost)))
-    (arguments
-     ;; avoid triggering a build failure due to warnings
-     `(#:configure-flags '("--disable-werror")))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libcdr")
     (synopsis "Library for parsing the CorelDRAW format")
     (description "Libcdr is a library that parses the file format of
@@ -401,39 +389,31 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0bfq9rwm040xhh7b3v0gsdavwvnrz4hkwnhpggarxk70mr3j7jcx"))))
+               "0jhsbdimiyijdqriy0zzkjjgc4wi6fjimhdg4mdybrlwg7l7f5p6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-mdds=1.4")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'support-mdds-1.4
-                    (lambda _
-                      ;; This package already works fine with mdds 1.4, but the
-                      ;; configure check is too strict.  Taken from upstream.
-                      (substitute* "configure"
-                        (("mdds=1\\.2") "mdds=1.4")
-                        (("mdds=\"1\\.2\"") "mdds=\"1.4\""))
-                      #t)))))
+     `(#:configure-flags '("--with-mdds=1.4")))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
-       ("glm" ,glm)
        ("gperf" ,gperf)
-       ("liblangtag" ,liblangtag)
-       ("mdds" ,mdds)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
-     `(("librevenge" ,librevenge)
-       ("libxml2" ,libxml2)))
+     `(("liblangtag" ,liblangtag)
+       ("librevenge" ,librevenge)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
     (inputs
-     `(("boost" ,boost)))
+     `(("boost" ,boost)
+       ("glm" ,glm)
+       ("mdds" ,mdds)))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libetonyek")
     (synopsis "Library for parsing the Apple Keynote format")
     (description "Libetonyek is a library that parses the file format of
@@ -772,15 +752,17 @@ Zoner Draw version 4 and 5.")
 (define-public hunspell
   (package
     (name "hunspell")
-    (version "1.6.2")
+    (version "1.7.0")
     (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/hunspell/hunspell/archive/v"
-                          version ".tar.gz"))
-      (sha256 (base32
-               "1i7lsv2cm0713ia3j5wjkcrhpfp3lqpjpwp4d3v18n7ycaqcxn9w"))
-      (file-name (string-append name "-" version ".tar.gz"))))
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/hunspell/hunspell")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0qxlkd012r45ppd21kldbq9k5ac5nmxz290z6m2kch9l56v768k1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

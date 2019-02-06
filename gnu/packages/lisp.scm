@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
@@ -62,6 +62,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
@@ -504,8 +505,9 @@ statistical profiler, a code coverage tool, and many other extensions.")
        (modify-phases %standard-phases
          (replace 'unpack
            (lambda* (#:key inputs #:allow-other-keys)
-             (and (zero? (system* "tar" "xzvf" (assoc-ref inputs "ccl")))
-                  (begin (chdir "ccl") #t))))
+             (invoke "tar" "xzvf" (assoc-ref inputs "ccl"))
+             (chdir "ccl")
+             #t))
          (delete 'configure)
          (add-before 'build 'pre-build
            ;; Enter the source directory for the current platform's lisp
@@ -526,7 +528,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
              (substitute* '("Makefile")
                (("/bin/rm") "rm"))
              (setenv "CC" "gcc")
-             (zero? (system* "make" "clean"))))
+             (invoke "make" "clean")))
          ;; XXX Do we need to recompile the heap image as well for Guix?
          ;; For now just use the one we already got in the tarball.
          (replace 'install
@@ -3610,7 +3612,7 @@ portability, and boilerplate reduction in CSS.")
 (define-public cl-css
   (sbcl-package->cl-source-package sbcl-cl-css))
 
-(define-public ecl-cl-markup
+(define-public ecl-cl-css
   (sbcl-package->ecl-package sbcl-cl-css))
 
 (define-public sbcl-portable-threads
@@ -3787,19 +3789,20 @@ client and server.")
   (sbcl-package->ecl-package sbcl-s-xml-rpc))
 
 (define-public sbcl-trivial-clipboard
-  (let ((commit "10209a79b6016a4c60820269e5a522d4c11ba21b"))
+  (let ((commit "5af3415d1484e6d69a1b5c178f24680d9fd01796"))
     (package
       (name "sbcl-trivial-clipboard")
-      (version "0.0.0.0")
+      (version (git-version "0.0.0.0" "2" commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/snmsts/trivial-clipboard")
                (commit commit)))
+         (file-name (git-file-name "trivial-clipboard" version))
          (sha256
           (base32
-           "1dn4ayhj3aw4dqbg7m3zhn4p2zgn5xp6m66988jnlh13447ap03k"))))
+           "1gb515z5yq6h5548pb1fwhmb0hhq1ssyb78pvxh4alq799xipxs9"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("xclip" ,xclip)))
@@ -3811,8 +3814,10 @@ client and server.")
            (add-after 'unpack 'fix-paths
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "src/text.lisp"
-                 (("xclip") (string-append
-                             (assoc-ref inputs "xclip") "/bin/xclip"))))))))
+                 (("\\(executable-find \"xclip\"\\)")
+                  (string-append "(executable-find \""
+                                 (assoc-ref inputs "xclip")
+                                 "/bin/xclip\")"))))))))
       (home-page "https://github.com/snmsts/trivial-clipboard")
       (synopsis "Access system clipboard in Common Lisp")
       (description

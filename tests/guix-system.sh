@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 #
@@ -109,7 +109,7 @@ cat > "$tmpfile" <<EOF
   (timezone "Europe/Paris")                           ; 6
   (locale "en_US.UTF-8")                              ; 7
 
-  (bootloader (GRUB-config (device "/dev/sdX")))      ; 9
+  (bootloader (GRUB-config (target "/dev/sdX")))      ; 9
   (file-systems (cons (file-system
                         (device (file-system-label "root"))
                         (mount-point "/")
@@ -137,7 +137,7 @@ OS_BASE='
 
   (bootloader (bootloader-configuration
                (bootloader grub-bootloader)
-               (device "/dev/sdX")))
+               (target "/dev/sdX")))
   (file-systems (cons (file-system
                         (device (file-system-label "root"))
                         (mount-point "/")
@@ -209,7 +209,7 @@ make_user_config ()
 
   (bootloader (bootloader-configuration
                 (bootloader grub-bootloader)
-                (device "/dev/sdX")))
+                (target "/dev/sdX")))
   (file-systems (cons (file-system
                         (device (file-system-label "root"))
                         (mount-point "/")
@@ -258,7 +258,9 @@ cat > "$tmpdir/config.scm"<<EOF
 
 (operating-system
   $OS_BASE
-  (services (cons (tor-service (local-file "my-torrc"))
+  (services (cons (service tor-service-type
+                           (tor-configuration
+                             (config-file (local-file "my-torrc"))))
                   %base-services)))
 EOF
 

@@ -5,6 +5,8 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +28,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages groff)
@@ -81,11 +83,19 @@ a flexible and convenient way.")
                          (remove file-is-directory?
                                  (find-files "src/tests" ".*")))
                #t)))
-         (add-after 'unpack 'patch-iconv-path
+         (add-after 'unpack 'patch-absolute-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/man.c"
                (("\"iconv\"")
                 (string-append "\"" (which "iconv") "\"")))
+             ;; Embed an absolute reference to "preconv", otherwise it
+             ;; falls back to searching in PATH and ultimately fails
+             ;; to render unicode data (see <https://bugs.gnu.org/30785>).
+             (substitute* "lib/encodings.c"
+               (("groff_preconv = NULL")
+                (string-append "groff_preconv = \""
+                               (assoc-ref inputs "groff-minimal")
+                               "/bin/preconv\"")))
              #t)))
        #:configure-flags
        (let ((groff (assoc-ref %build-inputs "groff"))
@@ -227,6 +237,37 @@ automatically.")
               (sha256
                (base32
                 "1p5830h88cx0zn0snwaj0vpph81xicpsirfwlxmcgjrlmn0nm3sj"))))))
+
+(define-public scdoc
+  (package
+   (name "scdoc")
+   (version "1.8.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://git.sr.ht/%7Esircmpwn/scdoc/archive/" version
+                         ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "1f3qrnbjr9ikbdvpsyx726nyiz4f7ka38rimy9fvbl7kmi62w1v7"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:make-flags '("CC=gcc")
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'install 'hardcode-paths
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "Makefile"
+                         (("/usr/local") (assoc-ref outputs "out")))
+            #t)))))
+   (home-page "https://git.sr.ht/~sircmpwn/scdoc")
+   (synopsis "Simple man page generator")
+   (description "scdoc is a simple man page generator written for POSIX systems
+in C99.")
+   ;; MIT license, see /share/doc/scdoc-1.6.0/COPYING.
+   (license expat)))
 
 (define-public txt2man
   (package

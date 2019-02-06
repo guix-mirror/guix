@@ -6,9 +6,9 @@
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +41,6 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -65,8 +64,10 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -237,26 +238,23 @@ turbo speed, networked multiplayer, and graphical enhancements.")
 (define-public dosbox
   (package
     (name "dosbox")
-    (version "0.74.svn3947")
+    (version "0.74-2")
     (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url "http://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk/")
-                    (revision 3947)))
-              (file-name (string-append name "-" version "-checkout"))
-              ;; Use SVN head, since the last release (2010) is incompatible
-              ;; with GCC 4.8+ (see
-              ;; <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=624976>).
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/dosbox"
+                                  "/files/dosbox/" version "/dosbox-"
+                                  version ".tar.gz/download"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p918j6090d1nkvgq7ifvmn506zrdmyi32y7p3ms40d5ssqjg8fj"))))
+                "1ksp1b5szi0vy4x55rm3j1y9wq5mlslpy8llpg87rpdyjlsk0xvh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
                    'unpack 'autogen.sh
                    (lambda _
-                     (zero? (system* "sh" "autogen.sh")))))))
+                     (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -408,15 +406,16 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.6.3")
+    (version "0.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mgba-emu/mgba.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "16hgs6r5iym3lp2cjcnv9955333976yc5sgy2kkxlsi005n91j1m"))
+                "0s4dl4pi8rxqahvzxnh37xdgsfax36cn5wlh1srdcmabwsrfpb3w"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -432,9 +431,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
      `(#:tests? #f                      ;no "test" target
        #:configure-flags
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
-             "-DUSE_LIBZIP=OFF"         ;use "zlib" instead
-             (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib"))))
+             "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ffmpeg" ,ffmpeg)
               ("imagemagick" ,imagemagick)
@@ -1056,7 +1053,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.5")
+    (version "1.7.6")
     (source
      (origin
        (method git-fetch)
@@ -1065,7 +1062,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jfpgl34jjxn3dvxd1kd564swkw7v98hnn562v998b7vllz3dxdm"))))
+        (base32 "122c6cqax92qk2mhm9ywnwhw3qkv8f1ybma9gal5w6i2gsmp0s0s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1075,10 +1072,14 @@ emulation community.  It provides highly accurate emulation.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (etc (string-append out "/etc"))
-                    (vulkan (assoc-ref inputs "vulkan-loader")))
+                    (vulkan (assoc-ref inputs "vulkan-loader"))
+                    (wayland-protocols (assoc-ref inputs "wayland-protocols")))
                ;; Hard-code the path to libvulkan.so.
                (substitute* "gfx/common/vulkan_common.c"
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
+               (substitute* "gfx/common/wayland/generate_wayland_protos.sh"
+                 (("/usr/local/share/wayland-protocols")
+                 (string-append wayland-protocols "/share/wayland-protocols")))
                (substitute* "qb/qb.libs.sh"
                  (("/bin/true") (which "true")))
                ;; Use shared zlib.
@@ -1103,6 +1104,7 @@ emulation community.  It provides highly accurate emulation.")
        ("libxinerama" ,libxinerama)
        ("libxkbcommon" ,libxkbcommon)
        ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
        ("libxv" ,libxv)
        ("mesa" ,mesa)
        ("openal" ,openal)
@@ -1116,6 +1118,7 @@ emulation community.  It provides highly accurate emulation.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("wayland-protocols" ,wayland-protocols)
        ("which" ,which)))
     (home-page "https://www.libretro.com/")
     (synopsis "Reference frontend for the libretro API")
@@ -1186,7 +1189,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.204")
+    (version "0.206")
     (source
      (origin
        (method git-fetch)
@@ -1196,7 +1199,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0yn63v2f1xlksfnvbxc5p5zpc7ps044m1kf69jhzbfirx953slsi"))
+         "0i01h5ars1yd96ndmzhk47931hf261m8frqz1ha7s2gy52f0q86y"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1223,14 +1226,6 @@ play them on systems for which they were never designed!")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         ;; Prevent compilation error: ‘atan’ is not a member of ‘std’.  Also
-         ;; fixed upstream in fec1cde5a40e197d4ed4314bf58b9e66e84e1631.
-         (add-after 'unpack 'fix-build
-           (lambda _
-             (substitute* "src/mame/video/xavix.cpp"
-               (("#include \"logmacro.h\"")
-                "#include \"logmacro.h\"\n#include <cmath>"))
-             #t))
          (add-after 'build 'build-documentation
            (lambda _ (invoke "make" "-C" "docs" "man" "info")))
          (replace 'install
