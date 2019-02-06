@@ -6072,7 +6072,8 @@ sub-process.  For instance if a command is not found, you get a proper
 claimed that nowadays fork is as fast as vfork, however in practice
 fork takes time proportional to the process memory while vfork is
 constant time.  In application using a lot of memory, vfork can be
-thousands of times faster than fork.")
+thousands of times faster than fork.
+@end itemize")
     (license license:asl2.0)))
 
 (define-public ocaml-core
