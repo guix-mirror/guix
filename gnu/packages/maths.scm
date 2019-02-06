@@ -2331,7 +2331,8 @@ void mc64ad_dist (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
               "RowPerm = NOROWPERM;"))
            #t))
        (patches (search-patches "superlu-dist-scotchmetis.patch"
-                                "superlu-dist-awpm-grid.patch"))))
+                                "superlu-dist-awpm-grid.patch"
+                                "superlu-dist-fix-mpi-deprecations.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
