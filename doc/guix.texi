@@ -24256,7 +24256,7 @@ more elaborate, @pxref{Reduced Binary Seed Bootstrap}.
 @end menu
 
 @node Reduced Binary Seed Bootstrap
-@subsection The Reduced Binary Seed Bootstrap
+@section The Reduced Binary Seed Bootstrap
 
 Guix---like other GNU/Linux distributions---is traditionally bootstrapped from
 a set of bootstrap binaries: Bourne shell, command-line tools provided by GNU
@@ -24319,8 +24319,8 @@ compiler used to build the rest of GuixSD.
 
 @image{images/gcc-mesboot-bag-graph,6in,,Dependency graph of the gcc-mesboot}
 
-@unnumberedsec Preparing to Use the Bootstrap Binaries
-
+@node Preparing to Use the Bootstrap Binaries
+@section Preparing to Use the Bootstrap Binaries
 
 @c As of Emacs 24.3, Info-mode displays the image, but since it's a
 @c large image, it's hard to scroll.  Oh well.
