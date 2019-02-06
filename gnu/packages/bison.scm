@@ -31,7 +31,7 @@
 (define-public bison
   (package
     (name "bison")
-    (version "3.2.4")
+    (version "3.3.2")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0d2ny1kmvvlmj4h9gdyqsx4bf01lgdfcjh1pa2385xjdkx0l8gaj"))))
+        "016qp59wxakz3ckxwyrmzxk406q0h286ydz8ww1m0pnrc5dy97h3"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ;; m4 is not present in PATH when cross-building.
