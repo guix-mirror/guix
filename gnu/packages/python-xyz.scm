@@ -57,6 +57,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8750,14 +8751,14 @@ Python.  It generates C++ code and a Makefile."))
 (define-public python2-rope
   (package
     (name "python2-rope")
-    (version "0.10.3")
+    (version "0.11.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "rope" version))
       (sha256
         (base32
-         "18k5znhpwvrfck3yp0jmhd5j8r0f0s8bk1zh5yhs2cfgmfhbwigb"))))
+         "1cppm0pa9aqgsbkq130lskrzmrvjs5vpiavjjbhpz2fdw52w8251"))))
     (arguments
      ;; Rope is currently python-2 only.
      ;; https://github.com/python-rope/rope/issues/57
