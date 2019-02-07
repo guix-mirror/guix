@@ -2375,7 +2375,8 @@ The installation image described above was built using the @command{guix
 system} command, specifically:
 
 @example
-guix system disk-image gnu/system/install.scm
+guix system disk-image --file-system-type=iso9660 \
+  gnu/system/install.scm
 @end example
 
 Have a look at @file{gnu/system/install.scm} in the source tree,
