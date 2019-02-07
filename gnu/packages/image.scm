@@ -86,7 +86,7 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.34")
+   (version "1.6.36")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -99,7 +99,7 @@
                         "/libpng16/libpng-" version ".tar.xz")))
             (sha256
              (base32
-              "1xjr0v34fyjgnhvaa1zixcpx5yvxcg4zwvfh0fyklfyfj86rc7ig"))))
+              "06d35a3xz2a0kph82r56hqm1fn8fbwrqs07xzmr93dx63x695szc"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
