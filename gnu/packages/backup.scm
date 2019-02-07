@@ -197,18 +197,18 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (replacement libarchive-3.3.3)
-    (version "3.3.2")
+    (version "3.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://libarchive.org/downloads/libarchive-"
                            version ".tar.gz"))
-       (patches (search-patches "libarchive-CVE-2017-14166.patch"
-                                "libarchive-CVE-2017-14502.patch"))
+       (patches (search-patches "libarchive-CVE-2018-1000877.patch"
+                                "libarchive-CVE-2018-1000878.patch"
+                                "libarchive-CVE-2018-1000880.patch"))
        (sha256
         (base32
-         "1km0mzfl6in7l5vz9kl09a88ajx562rw93ng9h2jqavrailvsbgd"))))
+         "0bhfncid058p7n1n8v29l6wxm3mhdqfassscihbsxfwz3iwb2zms"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -273,22 +273,6 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
-
-(define-public libarchive-3.3.3
-  (package
-    (inherit libarchive)
-    (version "3.3.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://libarchive.org/downloads/libarchive-"
-                           version ".tar.gz"))
-       (patches (search-patches "libarchive-CVE-2018-1000877.patch"
-                                "libarchive-CVE-2018-1000878.patch"
-                                "libarchive-CVE-2018-1000880.patch"))
-       (sha256
-        (base32
-         "0bhfncid058p7n1n8v29l6wxm3mhdqfassscihbsxfwz3iwb2zms"))))))
 
 (define-public rdup
   (package

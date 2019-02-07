@@ -943,8 +943,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
-  %D%/packages/patches/libarchive-CVE-2017-14166.patch		\
-  %D%/packages/patches/libarchive-CVE-2017-14502.patch		\
   %D%/packages/patches/libarchive-CVE-2018-1000877.patch	\
   %D%/packages/patches/libarchive-CVE-2018-1000878.patch	\
   %D%/packages/patches/libarchive-CVE-2018-1000880.patch	\
