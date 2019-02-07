@@ -4313,3 +4313,44 @@ grid-based methods.  It supports the easy implementation of methods like
 Differences} (FD).")
     ;; GPL version 2 with "runtime exception" to make it behave like LGPLv2.
     (license license:gpl2)))
+
+(define-public dune-geometry
+  (package
+    (name "dune-geometry")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-geometry-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hlaaxjyv9j05blasvb67sy02hd0w4g9znf68gdh3l731dd1aqbn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("openblas" ,openblas)
+       ("gmp" ,gmp)
+       ("python" ,python)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.  It supports the easy implementation of methods like
+@dfn{Finite Elements} (FE), @dfn{Finite Volumes} (FV), and also @dfn{Finite
+Differences} (FD).
+
+This package contains the basic DUNE geometry classes.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
