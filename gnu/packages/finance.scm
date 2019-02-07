@@ -804,19 +804,32 @@ Then set the environment variable GNUPGHOME to
 (define-public trezor-agent
   (package
     (name "trezor-agent")
-    (version "0.9.0")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trezor_agent" version))
        (sha256
         (base32
-         "1i5cdamlf3c0ym600pjklij74p8ifj9cv7xrpnrfl1b8nkadswbz"))))
+         "144657c7bn0a667dq5fv5r6j7iilxf3h9agj29v1m2qpq40g0az8"))))
+    (arguments
+     ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'wrap 'fixup-agent-py
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               ;; overwrite the wrapper with the real thing.
+               (install-file "./trezor_agent.py"
+                             (string-append out "/bin"))
+             #t))))))
     (build-system python-build-system)
     (inputs
      `(("python-trezor" ,python-trezor)
        ("python-trezor-agent" ,python-trezor-agent)))
-    (home-page "http://github.com/romanz/trezor-agent")
+    (native-inputs
+     `(("python-hidapi" ,python-hidapi)))
+    (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Using Trezor as hardware SSH/GPG agent")
     (description "This package allows using Trezor as a hardware SSH/GPG
 agent.")
