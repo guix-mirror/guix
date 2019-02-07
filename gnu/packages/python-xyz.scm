@@ -1695,14 +1695,14 @@ with sensible defaults out of the box.")
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.30.0a0")
+    (version "0.32.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "1nm6mn8isny0hr86rhbfrpfj867c0phf001xgsd69xfp9ady1wwq"))))
+          "1dhxl1bf18bx9szmqcnxbg6204hp3im8089q3hkwh5jfa6zh75q2"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-jsonschema" ,python-jsonschema)
