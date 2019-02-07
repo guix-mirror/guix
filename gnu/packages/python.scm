@@ -279,7 +279,7 @@ data types.")
 (define-public python-3.7
   (package (inherit python-2)
     (name "python")
-    (version "3.7.1")
+    (version "3.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -292,7 +292,7 @@ data types.")
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "0v9x4h22rh5cwpsq1mwpdi3c9lc9820lzp2nmn9g20llij72nzps"))
+                "1fzi9d2gibh0wzwidyckzbywsxcsbckgsl05ryxlifxia77fhgyq"))
               (snippet
                '(begin
                   (for-each delete-file
