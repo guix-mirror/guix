@@ -748,18 +748,20 @@ using a stylus.")
 (define-public python-reportlab
   (package
     (name "python-reportlab")
-    (version "3.4.0")
+    (version "3.5.13")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "reportlab" version))
               (sha256
                (base32
-                "0hy304pzsz9lblmk7mrbk2682bi911lxgvzx2kcfpmfzb5gg7sjv"))))
+                "1wxgcj46rm83qz97i8ygvd59bks60kr6vvnz12ygw640z58ff5k1"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: There is one test failure, but it does not cause the
        ;; build to fail. No time to investigate right now.
        #:test-target "tests"))
+    (inputs
+     `(("freetype" ,freetype)))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
     (home-page "https://www.reportlab.com")
