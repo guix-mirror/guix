@@ -13086,3 +13086,29 @@ GUI.")
       (description "@code{emacs-google-c-style} provides an Emacs settings
 file for Google C and C++ style.")
       (license license:gpl1+))))
+
+(define-public emacs-redshank
+  (let ((commit "f98e68f532e622bcd464292ca4a9cf5fbea14ebb")
+        (revision "1"))
+    (package
+      (name "emacs-redshank")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://www.foldr.org/~michaelw/projects/redshank.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jdkgvd5xy9hl5q611jwah2n05abjp7qcy9sj4k1z11x0ii62b6p"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-paredit" ,emacs-paredit)))
+      (home-page "http://www.foldr.org/~michaelw/emacs/redshank/")
+      (synopsis "Common Lisp Editing Extensions (for Emacs)")
+      (description "Redshank is a collection of code-wrangling Emacs macros
+mostly geared towards Common Lisp, but some are useful for other Lisp
+dialects, too.  Redshank's code transformations aim to be expression-based (as
+opposed to character-based).")
+      (license license:gpl1+))))
