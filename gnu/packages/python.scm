@@ -95,7 +95,6 @@
   (package
     (name "python2")
     (version "2.7.15")
-    (replacement python-2/fixed)
     (source
      (origin
       (method url-fetch)
@@ -108,7 +107,9 @@
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
-                               "python-2.7-adjust-tests.patch"))
+                               "python-2.7-adjust-tests.patch"
+                               "python2-CVE-2018-14647.patch"
+                               "python2-CVE-2018-1000802.patch"))
       (modules '((guix build utils)))
       ;; suboptimal to delete failing tests here, but if we delete them in the
       ;; arguments then we need to make sure to strip out that phase when it
@@ -265,16 +266,6 @@ data types.")
 
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
-
-(define python-2/fixed
-  (package
-    (inherit python-2)
-    (source (origin
-              (inherit (package-source python-2))
-              (patches (append
-                        (origin-patches (package-source python-2))
-                        (search-patches "python2-CVE-2018-14647.patch"
-                                        "python2-CVE-2018-1000802.patch")))))))
 
 (define-public python2-called-python
   ;; Both 2.x and 3.x used to be called "python".  In commit
