@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -95,6 +95,11 @@ guix package --bootstrap -i "guile-bootstrap:out" -p "$profile" -n
 if guix package --bootstrap -i "guile-bootstrap:does-not-exist" -p "$profile" -n;
 then false; else true; fi
 if guix package --bootstrap -i "guile-bootstrap:does-not-exist" -p "$profile";
+then false; else true; fi
+
+# Make sure we get an error when trying to remove something that's not
+# installed.
+if guix package --bootstrap -r something-not-installed -p "$profile";
 then false; else true; fi
 
 # Check whether `--list-available' returns something sensible.
