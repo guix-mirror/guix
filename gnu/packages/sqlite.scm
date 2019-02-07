@@ -46,8 +46,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (replacement sqlite-3.26.0)
-   (version "3.24.0")
+   (version "3.26.0")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -63,7 +62,7 @@
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0jmprv2vpggzhy7ma4ynmv1jzn3pfiwzkld0kkg6hvgvqs44xlfr"))))
+              "0pdzszb4sp73hl36siiv3p300jvfvbcdxi2rrmkwgs6inwznmajx"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
@@ -82,26 +81,6 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
-
-(define-public sqlite-3.26.0
-  (package (inherit sqlite)
-    (version "3.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (let ((numeric-version
-                          (match (string-split version #\.)
-                            ((first-digit other-digits ...)
-                             (string-append first-digit
-                                            (string-pad-right
-                                             (string-concatenate
-                                              (map (cut string-pad <> 2 #\0)
-                                                   other-digits))
-                                             6 #\0))))))
-                     (string-append "https://sqlite.org/2018/sqlite-autoconf-"
-                                    numeric-version ".tar.gz")))
-              (sha256
-               (base32
-                "0pdzszb4sp73hl36siiv3p300jvfvbcdxi2rrmkwgs6inwznmajx"))))))
 
 ;; This is used by Tracker.
 (define-public sqlite-with-fts5
