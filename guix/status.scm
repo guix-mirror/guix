@@ -498,14 +498,12 @@ addition to build events."
              (spin! #f port))))))
 
   (define erase-current-line*
-    (if (isatty?* port)
-        (lambda (port)
+    (if (and (not print-log?) (isatty?* port))
+        (lambda ()
           (erase-current-line port)
           (force-output port))
         (const #t)))
 
-  (unless print-log?
-    (erase-current-line* port))             ;clear the spinner or progress bar
   (match event
     (('build-started drv . _)
      (let ((properties (derivation-properties
@@ -530,6 +528,7 @@ addition to build events."
           (format port (info (G_ "building ~a...")) drv))))
      (newline port))
     (('build-succeeded drv . _)
+     (erase-current-line*)                      ;erase spinner or progress bar
      (when (or print-log? (not (extended-build-trace-supported?)))
        (format port (success (G_ "successfully built ~a")) drv)
        (newline port))
@@ -542,6 +541,7 @@ addition to build events."
                     (length ongoing))
                 (map build-derivation ongoing)))))
     (('build-failed drv . _)
+     (erase-current-line*)                      ;erase spinner or progress bar
      (format port (failure (G_ "build of ~a failed")) drv)
      (newline port)
      (match (derivation-log-file drv)
