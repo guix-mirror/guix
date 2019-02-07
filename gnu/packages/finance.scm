@@ -45,6 +45,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libedit)
@@ -591,7 +592,7 @@ Monero GUI client.")
 (define-public python-trezor-agent
   (package
     (name "python-trezor-agent")
-    (version "0.9.4")
+    (version "0.13.0")
     (source
      (origin
        (method git-fetch)
@@ -600,11 +601,18 @@ Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "15aaqk79d9y9nbsfznf2iscz12z5ispcj8kr8v5bc0sqqj2brs12"))))
+        (base32 "0i4igkxi8fwdlbhg6nx27lhnc9v9nmrw4j5fvpnc202n6yjlc7x7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-requires-backports-shutil-which
+           ;; Remove requires on backport of shutil_which, as python 3.4+ has
+           ;; a built-in implementation supported in python-trezor-agent.
+           (lambda _
+             (substitute* "setup.py"
+               (("'backports.shutil_which>=3.5.1',") ""))
+             #t))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -612,15 +620,22 @@ Monero GUI client.")
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
-     `(("python-ecdsa" ,python-ecdsa)
+     `(("python-configargparse" ,python-configargparse)
+       ("python-daemon" ,python-daemon)
+       ("python-docutils" ,python-docutils)
+       ("python-ecdsa" ,python-ecdsa)
        ("python-ed25519" ,python-ed25519)
+       ("python-mnemonic" ,python-mnemonic)
+       ("python-pymsgbox" ,python-pymsgbox)
        ("python-semver" ,python-semver)
-       ("python-unidecode" ,python-unidecode)))
+       ("python-unidecode" ,python-unidecode)
+       ("python-wheel" ,python-wheel)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("gnupg" ,gnupg)
+       ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/romanz/trezor-agent")
-    (synopsis "TREZOR SSH and GPG host support")
+    (synopsis "Use hardware wallets as SSH and GPG agent")
     (description
      "@code{libagent} is a library that allows using TREZOR, Keepkey and
 Ledger Nano as a hardware SSH/GPG agent.")
