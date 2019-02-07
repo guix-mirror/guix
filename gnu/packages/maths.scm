@@ -4244,3 +4244,72 @@ linear algebra primitives specifically targeting graph analytics.")
               license:gpl2+             ;include/psort/(funnel|sort)*.h
               license:x11               ;usort and psort
               license:bsd-3))))         ;CombBLAS and MersenneTwister.h
+
+(define-public dune-common
+  (package
+    (name "dune-common")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-common-" version ".tar.gz"))
+       (sha256
+        (base32
+         "019wcr1qf7jwyxx1y5y290wdlglylskvbb2m01ljkzcza2xnlmhw"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         ;; These tests fail because they require a fully functional MPI
+         ;; environment.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (setenv "ARGS"
+                     (string-append "--exclude-regex '("
+                                    (string-join
+                                     (list
+                                      "remoteindicestest"
+                                      "remoteindicestest-mpi-2"
+                                      "syncertest"
+                                      "syncertest-mpi-2"
+                                      "variablesizecommunicatortest"
+                                      "variablesizecommunicatortest-mpi-2"
+                                      "arithmetictestsuitetest"
+                                      "assertandreturntest"
+                                      "assertandreturntest_ndebug"
+                                      "concept"
+                                      "debugaligntest"
+                                      "mpicollectivecommunication"
+                                      "mpicollectivecommunication-mpi-2"
+                                      "mpiguardtest"
+                                      "mpiguardtest-mpi-2"
+                                      "mpihelpertest"
+                                      "mpihelpertest-mpi-2"
+                                      "mpihelpertest2"
+                                      "mpihelpertest2-mpi-2")
+                                     "|")
+                                    ")'"))
+             #t)))))
+    (inputs
+     `(("gmp" ,gmp)
+       ("metis" ,metis)
+       ("openmpi" ,openmpi)
+       ("openblas" ,openblas)
+       ("python" ,python)
+       ("superlu" ,superlu)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.  It supports the easy implementation of methods like
+@dfn{Finite Elements} (FE), @dfn{Finite Volumes} (FV), and also @dfn{Finite
+Differences} (FD).")
+    ;; GPL version 2 with "runtime exception" to make it behave like LGPLv2.
+    (license license:gpl2)))
