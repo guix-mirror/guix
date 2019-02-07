@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
@@ -40,6 +40,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages parallel)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages valgrind)
   #:use-module (srfi srfi-1)
@@ -180,7 +181,8 @@ bind processes, and much more.")
              `(("psm2" ,psm2))
              '())
        ("rdma-core" ,rdma-core)
-       ("valgrind" ,valgrind)))
+       ("valgrind" ,valgrind)
+       ("slurm" ,slurm)))              ;for PMI support (launching via "srun")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
@@ -197,7 +199,12 @@ bind processes, and much more.")
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))
                            ,(string-append "--with-hwloc="
-                                           (assoc-ref %build-inputs "hwloc")))
+                                           (assoc-ref %build-inputs "hwloc"))
+
+                           ;; Enable support for SLURM's Process Manager
+                           ;; Interface (PMI).
+                           ,(string-append "--with-pmi="
+                                           (assoc-ref %build-inputs "slurm")))
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'remove-absolute
                     (lambda _
