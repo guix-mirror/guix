@@ -139,7 +139,8 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
          (gem-file-basename (basename gem-file))
          (gem-name (substring gem-file-basename
                               0
-                              (- (string-length gem-file-basename) 4))))
+                              (- (string-length gem-file-basename) 4)))
+         (gem-dir (string-append vendor-dir "/gems/" gem-name)))
     (setenv "GEM_VENDOR" vendor-dir)
 
     (or (zero?
@@ -165,7 +166,7 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
     ;; For gems with native extensions, several Makefile-related files
     ;; are created that contain timestamps or other elements making
     ;; them not reproducible.  They are unnecessary so we remove them.
-    (when (file-exists? (string-append vendor-dir "/ext"))
+    (when (file-exists? (string-append gem-dir "/ext"))
       (for-each (lambda (file)
                   (log-file-deletion file)
                   (delete-file file))
@@ -174,7 +175,7 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
                              "page-Makefile.ri")
                  (find-files (string-append vendor-dir "/extensions")
                              "gem_make.out")
-                 (find-files (string-append vendor-dir "/ext")
+                 (find-files (string-append gem-dir "/ext")
                              "Makefile"))))
 
     #t))
