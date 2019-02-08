@@ -1447,13 +1447,13 @@ instantly.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.70.3")
+    (version "4.5.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "1rshs1japfmwgar98yrkq4hg4z2q76hlnq7w2n3lfbjnscn1jd9b"))))
+                "0fvq4mfybm129l978war86mcshkn28dkrxw7lr8549zr9ywvik1c"))))
     (build-system python-build-system)
     (native-inputs
      `(;; FIXME: Change to python-flake8 in the next rebuild cycle.
