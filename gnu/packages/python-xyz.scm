@@ -8846,8 +8846,7 @@ Python.  It generates C++ code and a Makefile."))
         (base32
          "1cppm0pa9aqgsbkq130lskrzmrvjs5vpiavjjbhpz2fdw52w8251"))))
     (arguments
-     ;; Rope is currently python-2 only.
-     ;; https://github.com/python-rope/rope/issues/57
+     ;; Rope has only partial python3 support, see `python-rope'
      `(#:python ,python-2))
     (build-system python-build-system)
     (native-inputs
