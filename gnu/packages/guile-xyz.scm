@@ -597,7 +597,7 @@ It has a nice, simple s-expression based syntax.")
       (description
        "@code{squee} is a Guile library for connecting to PostgreSQL databases
 using Guile's foreign function interface.")
-      (license license:gpl3+))))
+      (license license:lgpl3+))))
 
 (define-public guile-colorized
   (package
