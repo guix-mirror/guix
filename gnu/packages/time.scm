@@ -145,17 +145,31 @@ Pendulum instances.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.7.3")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dateutil" version))
        (sha256
         (base32
-         "1f7h54lg0w2ckch7592xpjkh8dg87k2br256h0iw49zn6bg02w72"))))
+         "17nsfhy4xdz1khrfxa61vd7pmvd5z0wa3zb6v4gb4kfnykv0b668"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; Delete tests that depend on "freezegun" to avoid a
+                      ;; circular dependency.
+                      (delete-file "dateutil/test/test_utils.py")
+                      (delete-file "dateutil/test/test_rrule.py")
+
+                      ;; XXX: Fails to get timezone from /etc/localtime.
+                      (delete-file "dateutil/test/test_tz.py")
+
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "https://dateutil.readthedocs.io/en/stable/")
