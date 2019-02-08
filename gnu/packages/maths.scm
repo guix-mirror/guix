@@ -4608,3 +4608,43 @@ assemble global function spaces on finite-element grids.")
 implementation of the DUNE grid interface supporting either simplices or
 cubes.")
     (license license:gpl2+)))
+
+(define-public dune-typetree
+  (package
+    (name "dune-typetree")
+    (version "2.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.dune-project.org/staging/dune-typetree.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mnv6w2f22lz3j4bdpdjq55vjm8xxfx9v4vvhg9bd36xpsbjpjp9"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("openblas" ,openblas)
+       ("python" ,python)
+       ("metis" ,metis)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "TypeTree is a template library for constructing and
+operating on statically typed trees of objects.")
+    ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
+    (license (list license:lgpl3+ license:gpl2))))
