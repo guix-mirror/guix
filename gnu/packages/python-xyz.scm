@@ -3593,15 +3593,14 @@ as the original project seems to have been abandoned circa 2007.")
 (define-public python-pycodestyle
   (package
     (name "python-pycodestyle")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycodestyle" version))
        (sha256
         (base32
-         "0fhy4vnlgpjq4qd1wdnl6pvdw7rah0ypmn8c9mkhz8clsndskz6b"))
-       (patches (search-patches "python-pycodestyle-stdlib-tokenize-fix.patch"))))
+         "0v4prb05n21bm8650v0a01k1nyqjdmkrsm3zycfxh2j5k9n962p4"))))
     (build-system python-build-system)
     (home-page "https://pycodestyle.readthedocs.io/")
     (synopsis "Python style guide checker")
