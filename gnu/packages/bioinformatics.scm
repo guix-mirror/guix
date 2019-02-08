@@ -8664,7 +8664,7 @@ library implementing most of the pipeline's features.")
 (define-public rcas-web
   (package
     (name "rcas-web")
-    (version "0.0.5")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -8673,7 +8673,7 @@ library implementing most of the pipeline's features.")
                            "/rcas-web-" version ".tar.gz"))
        (sha256
         (base32
-         "0igz7jpcf7cm9800zcag6p3gd1i649figrhbdba6cjkm8f4gfspr"))))
+         "0wq951aj45gqki1bickg876i993lmawkp8x24agg264br5x716db"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -8696,7 +8696,7 @@ library implementing most of the pipeline's features.")
        ("r-rcas" ,r-rcas)
        ("guile-next" ,guile-2.2)
        ("guile-json" ,guile-json)
-       ("guile-redis" ,guile2.2-redis)))
+       ("guile-redis" ,guile-redis)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BIMSBbioinfo/rcas-web")
