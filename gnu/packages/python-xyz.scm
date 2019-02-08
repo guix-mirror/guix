@@ -8859,6 +8859,16 @@ and parameters in Python 2 source code.  These refactorings can also be applied
 to occurrences in strings and comments.")
     (license license:gpl2)))
 
+(define-public python-rope
+  (package
+    (inherit python2-rope)
+    (name "python-rope")
+    (arguments `(#:python ,python-wrapper
+                 ;; XXX: Only partial python3 support, results in some failing
+                 ;; tests: <https://github.com/python-rope/rope/issues/247>.
+                 #:tests? #f))
+    (properties `((python2-variant . ,(delay python2-rope))))))
+
 (define-public python-py3status
   (package
     (name "python-py3status")
