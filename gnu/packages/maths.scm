@@ -4358,3 +4358,93 @@ Differences} (FD).
 This package contains the basic DUNE geometry classes.")
     ;; GPL version 2 with "runtime exception"
     (license license:gpl2)))
+
+(define-public dune-grid
+  (package
+    (name "dune-grid")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-grid-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jp4vscm9yb9xg0lh7apzccfkhvgbnk652yahigmh3cvzpl4acd0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         ;; These tests fail because they require a fully functional MPI
+         ;; environment.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (setenv "ARGS"
+                     (string-append "--exclude-regex '("
+                                    (string-join
+                                     (list
+                                      "scsgmappertest"
+                                      "conformvolumevtktest"
+                                      "gnuplottest"
+                                      "nonconformboundaryvtktest"
+                                      "subsamplingvtktest"
+                                      "vtktest"
+                                      "vtktest-mpi-2"
+                                      "vtksequencetest"
+                                      "gmshtest-onedgrid"
+                                      "test-dgf-yasp"
+                                      "test-dgf-yasp-offset"
+                                      "test-dgf-oned"
+                                      "test-geogrid-yaspgrid"
+                                      "test-gridinfo"
+                                      "test-identitygrid"
+                                      "testiteratorranges"
+                                      "test-hierarchicsearch"
+                                      "test-parallel-ug-mpi-2"
+                                      "test-yaspgrid-backuprestore-equidistant"
+                                      "test-yaspgrid-backuprestore-equidistant-mpi-2"
+                                      "test-yaspgrid-backuprestore-equidistantoffset"
+                                      "test-yaspgrid-backuprestore-equidistantoffset-mpi-2"
+                                      "test-yaspgrid-backuprestore-tensor"
+                                      "test-yaspgrid-backuprestore-tensor-mpi-2"
+                                      "test-yaspgrid-tensorgridfactory"
+                                      "test-yaspgrid-tensorgridfactory-mpi-2"
+                                      "test-yaspgrid-yaspfactory-1d"
+                                      "test-yaspgrid-yaspfactory-1d-mpi-2"
+                                      "test-yaspgrid-yaspfactory-2d"
+                                      "test-yaspgrid-yaspfactory-2d-mpi-2"
+                                      "test-yaspgrid-yaspfactory-3d"
+                                      "test-yaspgrid-yaspfactory-3d-mpi-2"
+                                      "globalindexsettest"
+                                      "persistentcontainertest"
+                                      "structuredgridfactorytest"
+                                      "tensorgridfactorytest"
+                                      "vertexordertest")
+                                     "|")
+                                    ")'"))
+             #t)))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("gmp" ,gmp)
+       ("metis" ,metis)
+       ("openblas" ,openblas)
+       ("openmpi" ,openmpi)
+       ("python" ,python)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.  It supports the easy implementation of methods like
+@dfn{Finite Elements} (FE), @dfn{Finite Volumes} (FV), and also @dfn{Finite
+Differences} (FD).
+
+This package contains the basic DUNE grid classes.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
