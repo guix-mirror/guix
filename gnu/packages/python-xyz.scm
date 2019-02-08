@@ -7169,13 +7169,13 @@ tables.")
 (define-public python-atomicwrites
   (package
     (name "python-atomicwrites")
-    (version "1.1.5")
+    (version "1.3.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "atomicwrites" version))
              (sha256
               (base32
-               "11bm90fwm2avvf4f3ib8g925w7jr4m11vcsinn1bi6ns4bm32214"))))
+               "19ngcscdf3jsqmpcxn6zl5b6anmsajb6izp1smcd1n02midl9abm"))))
     (build-system python-build-system)
     (synopsis "Atomic file writes in Python")
     (description "Library for atomic file writes using platform dependent tools
