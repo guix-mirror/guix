@@ -90,7 +90,7 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.081")
+    (version "2.084")
     (source
      (origin
        (method url-fetch)
@@ -98,7 +98,7 @@ compression library.")
                            "IO-Compress-" version ".tar.gz"))
        (sha256
         (base32
-         "1na66ns1g3nni0m9q5494ym4swr21hfgpv88mw8wbj2daiswf4aj"))))
+         "1dbdsxhbikmbbfsdam3crv8474l8ax6d9d7r3s6safk4v8z51g8x"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
