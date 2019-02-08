@@ -4648,3 +4648,43 @@ cubes.")
 operating on statically typed trees of objects.")
     ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
     (license (list license:lgpl3+ license:gpl2))))
+
+(define-public dune-functions
+  (package
+    (name "dune-functions")
+    (version "2.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.dune-project.org/staging/dune-functions.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1an8gb477n8j0kzpbrv7nr1snh8pxip0gsxq6w63jc83gg3dj200"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: tests require dune-uugrid
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-istl" ,dune-istl)
+       ("dune-localfunctions" ,dune-localfunctions)
+       ("dune-grid" ,dune-grid)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-typetree" ,dune-typetree)
+       ("openmpi" ,openmpi)
+       ("openblas" ,openblas)
+       ("metis" ,metis)
+       ("python" ,python)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "The dune-functions module provides an abstraction layer for
+global finite element functions.  Its two main concepts are functions
+implemented as callable objects, and bases of finite element spaces.")
+    ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
+    (license (list license:lgpl3+ license:gpl2))))
