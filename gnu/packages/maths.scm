@@ -4556,3 +4556,55 @@ interpolation operators and special keys are provided which can be used to
 assemble global function spaces on finite-element grids.")
     ;; GPL version 2 with "runtime exception"
     (license license:gpl2)))
+
+(define-public dune-alugrid
+  (package
+    (name "dune-alugrid")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-alugrid-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l9adgyjpra8mvwm445s0lpjshnb63jag85fb2hisbjn6bm320yj"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; 7 of 8 tests fail because they need a full MPI
+                   ; environment
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-include
+           (lambda _
+             (substitute* "dune/alugrid/test/test-alugrid.cc"
+               (("doc/grids/gridfactory/testgrids")
+                "doc/dune-grid/grids/gridfactory/testgrids"))
+             #t))
+         (add-after 'build 'build-tests
+           (lambda* (#:key inputs make-flags #:allow-other-keys)
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "dune-grid") "/share:"
+                                    (getenv "CPLUS_INCLUDE_PATH")))
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-grid" ,dune-grid)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("openblas" ,openblas)
+       ("python" ,python)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "ALUGrid is an adaptive, loadbalancing, unstructured
+implementation of the DUNE grid interface supporting either simplices or
+cubes.")
+    (license license:gpl2+)))
