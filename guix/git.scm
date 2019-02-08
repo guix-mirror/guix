@@ -35,6 +35,8 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (%repository-cache-directory
+            honor-system-x509-certificates!
+
             update-cached-checkout
             latest-repository-commit
 
@@ -52,12 +54,48 @@
   (make-parameter (string-append (cache-directory #:ensure? #f)
                                  "/checkouts")))
 
+(define (honor-system-x509-certificates!)
+  "Use the system's X.509 certificates for Git checkouts over HTTPS.  Honor
+the 'SSL_CERT_FILE' and 'SSL_CERT_DIR' environment variables."
+  ;; On distros such as CentOS 7, /etc/ssl/certs contains only a couple of
+  ;; files (instead of all the certificates) among which "ca-bundle.crt".  On
+  ;; other distros /etc/ssl/certs usually contains the whole set of
+  ;; certificates along with "ca-certificates.crt".  Try to choose the right
+  ;; one.
+  (let ((file      (letrec-syntax ((choose
+                                    (syntax-rules ()
+                                      ((_ file rest ...)
+                                       (let ((f file))
+                                         (if (and f (file-exists? f))
+                                             f
+                                             (choose rest ...))))
+                                      ((_)
+                                       #f))))
+                     (choose (getenv "SSL_CERT_FILE")
+                             "/etc/ssl/certs/ca-certificates.crt"
+                             "/etc/ssl/certs/ca-bundle.crt")))
+        (directory (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
+    (and (or file
+             (and=> (stat directory #f)
+                    (lambda (st)
+                      (> (stat:nlink st) 2))))
+         (begin
+           (set-tls-certificate-locations! directory file)
+           #t))))
+
+(define %certificates-initialized?
+  ;; Whether 'honor-system-x509-certificates!' has already been called.
+  #f)
+
 (define-syntax-rule (with-libgit2 thunk ...)
   (begin
     ;; XXX: The right thing to do would be to call (libgit2-shutdown) here,
     ;; but pointer finalizers used in guile-git may be called after shutdown,
     ;; resulting in a segfault. Hence, let's skip shutdown call for now.
     (libgit2-init!)
+    (unless %certificates-initialized?
+      (honor-system-x509-certificates!)
+      (set! %certificates-initialized? #t))
     thunk ...))
 
 (define* (url-cache-directory url

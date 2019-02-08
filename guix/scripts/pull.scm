@@ -216,30 +216,8 @@ true, display what would be built without actually building it."
 
 (define (honor-x509-certificates store)
   "Use the right X.509 certificates for Git checkouts over HTTPS."
-  ;; On distros such as CentOS 7, /etc/ssl/certs contains only a couple of
-  ;; files (instead of all the certificates) among which "ca-bundle.crt".  On
-  ;; other distros /etc/ssl/certs usually contains the whole set of
-  ;; certificates along with "ca-certificates.crt".  Try to choose the right
-  ;; one.
-  (let ((file      (letrec-syntax ((choose
-                                    (syntax-rules ()
-                                      ((_ file rest ...)
-                                       (let ((f file))
-                                         (if (and f (file-exists? f))
-                                             f
-                                             (choose rest ...))))
-                                      ((_)
-                                       #f))))
-                     (choose (getenv "SSL_CERT_FILE")
-                             "/etc/ssl/certs/ca-certificates.crt"
-                             "/etc/ssl/certs/ca-bundle.crt")))
-        (directory (or (getenv "SSL_CERT_DIR") "/etc/ssl/certs")))
-    (if (or file
-            (and=> (stat directory #f)
-                   (lambda (st)
-                     (> (stat:nlink st) 2))))
-        (set-tls-certificate-locations! directory file)
-        (honor-lets-encrypt-certificates! store))))
+  (unless (honor-system-x509-certificates!)
+    (honor-lets-encrypt-certificates! store)))
 
 (define (report-git-error error)
   "Report the given Guile-Git error."
