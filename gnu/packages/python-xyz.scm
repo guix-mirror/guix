@@ -13560,29 +13560,15 @@ file system events on Linux.")
 (define-public python-more-itertools
   (package
     (name "python-more-itertools")
-    (version "4.3.0")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "more-itertools" version))
        (sha256
         (base32
-         "17h3na0rdh8xq30w4b9pizgkdxmm51896bxw600x84jflg9vaxn4"))))
+         "1r12cm6mcdwdzz7d47a6g4l437xsvapdlgyhqay3i2nrlv03da9q"))))
     (build-system python-build-system)
-    (arguments
-     `(,@(if (any (cute string-prefix? <> (or (%current-system)
-                                              (%current-target-system)))
-                  '("armhf" "i686"))
-        '(#:phases
-          (modify-phases %standard-phases
-          ;; This is required for 32-bit hardware.
-          ;; TODO: Try to remove this when upgrading.
-          (add-after 'unpack 'patch-test
-            (lambda _
-              (substitute* "more_itertools/tests/test_more.py"
-                (("10 \\*\\* 10") "9 ** 9"))
-              #t))))
-        '())))
     (propagated-inputs
      `(("python-six" ,python-six-bootstrap)))
     (home-page "https://github.com/erikrose/more-itertools")
