@@ -215,6 +215,28 @@
                                                               file))))))
                        (call-with-output-file "__init__.py" (const #t))
                        #t)))))))
+          (add-after 'remove-tests 'rebuild-bytecode
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                ;; Disable hash randomization to ensure the generated .pycs
+                ;; are reproducible.
+                (setenv "PYTHONHASHSEED" "0")
+                (for-each
+                 (lambda (opt)
+                   (format #t "Compiling with optimization level: ~a\n"
+                           (if (null? opt) "none" (car opt)))
+                   (for-each (lambda (file)
+                               (apply invoke
+                                      `(,(string-append out "/bin/python")
+                                        ,@opt
+                                        "-m" "compileall"
+                                        "-f" ; force rebuild
+                                        ;; Don't build lib2to3, because it contains Python 3 code.
+                                        "-x" "lib2to3/.*"
+                                        ,file)))
+                             (find-files out "\\.py$")))
+                 (list '() '("-O") '("-OO")))
+                #t)))
           (add-after 'install 'move-tk-inter
             (lambda* (#:key outputs #:allow-other-keys)
               ;; When Tkinter support is built move it to a separate output so
@@ -316,10 +338,7 @@ data types.")
             (lambda _ (unsetenv "SOURCE_DATE_EPOCH") #t))
           (add-after 'check 'reset-SOURCE_DATE_EPOCH
             (lambda _ (setenv "SOURCE_DATE_EPOCH" "1") #t))
-           ;; FIXME: Without this phase we have close to 400 files that
-           ;; differ across different builds of this package.  With this phase
-           ;; there are 44 files left that differ.
-           (add-after 'remove-tests 'rebuild-bytecode
+           (replace 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  ;; Disable hash randomization to ensure the generated .pycs
