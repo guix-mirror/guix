@@ -839,8 +839,8 @@ on top of GNU Guix.")
     (version "1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  version "/" name "-" version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/gcab/"
+                                  version "/gcab-" version ".tar.xz"))
               (sha256
                (base32
                 "038h5kk41si2hc9d9169rrlvp8xgsxq27kri7hv2vr39gvz9cbas"))))
