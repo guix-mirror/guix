@@ -144,6 +144,7 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
 
     (or (zero?
          (apply system* "gem" "install" gem-file
+                "--verbose"
                 "--local" "--ignore-dependencies" "--vendor"
                 ;; Executables should go into /bin, not
                 ;; /lib/ruby/gems.
