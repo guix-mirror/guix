@@ -86,28 +86,29 @@ operation is not deterministic, we replace it with `find`."
   "Remove the original gemspec, if present, and replace it with a new one.
 This avoids issues with upstream gemspecs requiring tools such as git to
 generate the files list."
-  (when (gem-archive? source)
-    (let ((gemspec (or (false-if-exception (first-gemspec))
-                       ;; Make new gemspec if one wasn't shipped.
-                       ".gemspec")))
+  (if (gem-archive? source)
+      (let ((gemspec (or (false-if-exception (first-gemspec))
+                         ;; Make new gemspec if one wasn't shipped.
+                         ".gemspec")))
 
-      (when (file-exists? gemspec) (delete-file gemspec))
+        (when (file-exists? gemspec) (delete-file gemspec))
 
-      ;; Extract gemspec from source gem.
-      (let ((pipe (open-pipe* OPEN_READ "gem" "spec" "--ruby" source)))
-        (dynamic-wind
-          (const #t)
-          (lambda ()
-            (call-with-output-file gemspec
-              (lambda (out)
-                ;; 'gem spec' writes to stdout, but 'gem build' only reads
-                ;; gemspecs from a file, so we redirect the output to a file.
-                (while (not (eof-object? (peek-char pipe)))
-                  (write-char (read-char pipe) out))))
-            #t)
-          (lambda ()
-            (close-pipe pipe)))))
-    #t))
+        ;; Extract gemspec from source gem.
+        (let ((pipe (open-pipe* OPEN_READ "gem" "spec" "--ruby" source)))
+          (dynamic-wind
+            (const #t)
+            (lambda ()
+              (call-with-output-file gemspec
+                (lambda (out)
+                  ;; 'gem spec' writes to stdout, but 'gem build' only reads
+                  ;; gemspecs from a file, so we redirect the output to a file.
+                  (while (not (eof-object? (peek-char pipe)))
+                    (write-char (read-char pipe) out))))
+              #t)
+            (lambda ()
+              (close-pipe pipe)))))
+      (display "extract-gemspec: skipping as source is not a gem archive\n"))
+  #t)
 
 (define* (build #:key source #:allow-other-keys)
   "Build a new gem using the gemspec from the SOURCE gem."
