@@ -91,27 +91,24 @@ the application layer) you need to install @code{torsocks}.")
 (define-public torsocks
   (package
     (name "torsocks")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://people.torproject.org/~dgoulet/"
                                   "torsocks/torsocks-" version ".tar.xz"))
               (sha256
                (base32
-                "0byr9ga9w79qz4vp0m11sbmspad7fsal9wm67r4znzb7zb7cis19"))))
+                "08inrkap29gikb6sdmb58z43hw4abwrfw7ny40c4xzdkss0vkwdr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("which" ,which)
-       ("libcap" ,libcap)))
+     `(("libcap" ,libcap)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after 'build 'absolutize
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "src/bin/torsocks"
-                        (("getcap=`.*`")
-                         (string-append "getcap=" (which "getcap")))
-                        (("`which")
-                         (string-append "`" (which "which"))))
+                        (("getcap=.*")
+                         (string-append "getcap=" (which "getcap") "\n")))
                       #t)))))
     (home-page "https://www.torproject.org/")
     (synopsis "Use socks-friendly applications with Tor")
