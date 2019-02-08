@@ -2601,6 +2601,29 @@ Language (TOML) configuration files.")
      "This packages provides a JSON RPC 2.0 server library for Python.")
     (license license:expat)))
 
+(define-public python-pydocstyle
+  (package
+    (name "python-pydocstyle")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydocstyle" version))
+       (sha256
+        (base32
+         "1m1xv9clkg9lgzyza6dnj359z04vh5g0h49nhzghv7lg81gchhap"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-snowballstemmer" ,python-snowballstemmer)))
+    (home-page
+     "https://github.com/PyCQA/pydocstyle/")
+    (synopsis "Python docstring style checker")
+    (description
+     "This package provides a style checker for the Python Language
+Server (PLS).")
+    (license license:expat)))
+
 (define-public python-black
   (package
     (name "python-black")
