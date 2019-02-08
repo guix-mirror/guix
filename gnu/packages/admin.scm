@@ -2640,7 +2640,7 @@ late.")
               (method url-fetch)
               (uri (string-append
                     "https://github.com/LLNL/LaunchMON/releases/download/v"
-                    version "/" name "-v" version ".tar.gz"))
+                    version "/launchmon-v" version ".tar.gz"))
               (sha256
                (base32
                 "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))))
