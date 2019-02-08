@@ -2624,6 +2624,38 @@ Language (TOML) configuration files.")
 Server (PLS).")
     (license license:expat)))
 
+(define-public python-language-server
+  (package
+    (name "python-language-server")
+    (version "0.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-language-server" version))
+       (sha256
+        (base32
+         "04pbxl06hg0ddm2xx99jn9jh40yv0mmzdjw8pqd2rbcdg42hhia6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pluggy" ,python-pluggy)
+       ("python-jsonrpc-server" ,python-jsonrpc-server)
+       ("python-jedi" ,python-jedi)
+       ("python-yapf" ,python-yapf)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-pydocstyle" ,python-pydocstyle)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-mccabe" ,python-mccabe)
+       ("python-rope" ,python-rope)
+       ("python-autopep8" ,python-autopep8)))
+    (home-page "https://github.com/palantir/python-language-server")
+    (synopsis "Python implementation of the Language Server Protocol")
+    (description
+     "The Python Language Server (pyls) is an implementation of the Python 3
+language specification for the Language Server Protocol (LSP).  This tool is
+used in text editing environments to provide a complete and integrated
+feature-set for programming Python effectively.")
+    (license license:expat)))
+
 (define-public python-black
   (package
     (name "python-black")
