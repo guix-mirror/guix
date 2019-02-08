@@ -613,14 +613,14 @@ encoded).")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "40.0.0")
+    (version "40.8.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "setuptools" version ".zip"))
       (sha256
        (base32
-        "0pq116lr14gnc62v76nk0npkm6krb2mpp7p9ab369zgv4n7dnah1"))
+        "0k9hifpgahnw2a26w3cr346iy733k6d3nwh3f7g9m13y6f8fqkkf"))
       (modules '((guix build utils)))
       (snippet
        '(begin
