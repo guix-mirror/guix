@@ -45,7 +45,7 @@
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/florence/florence/" version
-                           "/" name "-" version ".tar.bz2"))
+                           "/florence-" version ".tar.bz2"))
        (sha256
         (base32
          "07h9qm22krlwayhzvc391lr23vicw81s48g7rirvx1fj0zyr4aa2"))))
