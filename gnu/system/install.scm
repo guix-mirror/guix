@@ -409,6 +409,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                      ;; available here, so we keep that.
                      bash-completion
                      nvi                          ;:wq!
+                     nss-certs ; To access HTTPS, use git, etc.
                      %base-packages))))
 
 (define* (os-with-u-boot os board #:key (bootloader-target "/dev/mmcblk0")
