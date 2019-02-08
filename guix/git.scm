@@ -273,9 +273,10 @@ Log progress and checkout info to LOG-PORT."
   git-checkout?
   (url     git-checkout-url)
   (branch  git-checkout-branch (default "master"))
-  (commit  git-checkout-commit (default #f)))
+  (commit  git-checkout-commit (default #f))
+  (recursive? git-checkout-recursive? (default #f)))
 
-(define* (latest-repository-commit* url #:key ref log-port)
+(define* (latest-repository-commit* url #:key ref recursive? log-port)
   ;; Monadic variant of 'latest-repository-commit'.
   (lambda (store)
     ;; The caller--e.g., (guix scripts build)--may not handle 'git-error' so
@@ -284,7 +285,9 @@ Log progress and checkout info to LOG-PORT."
     (catch 'git-error
       (lambda ()
         (values (latest-repository-commit store url
-                                          #:ref ref #:log-port log-port)
+                                          #:ref ref
+                                          #:recursive? recursive?
+                                          #:log-port log-port)
                 store))
       (lambda (key error . _)
         (raise (condition
@@ -306,11 +309,12 @@ Log progress and checkout info to LOG-PORT."
   ;; "Compile" CHECKOUT by updating the local checkout and adding it to the
   ;; store.
   (match checkout
-    (($ <git-checkout> url branch commit)
+    (($ <git-checkout> url branch commit recursive?)
      (latest-repository-commit* url
                                 #:ref (if commit
                                           `(commit . ,commit)
                                           `(branch . ,branch))
+                                #:recursive? recursive?
                                 #:log-port (current-error-port)))))
 
 ;; Local Variables:
