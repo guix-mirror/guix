@@ -7289,7 +7289,8 @@ care!
 Build @var{package} from the latest commit of @var{branch}.  The @code{source}
 field of @var{package} must be an origin with the @code{git-fetch} method
 (@pxref{origin Reference}) or a @code{git-checkout} object; the repository URL
-is taken from that @code{source}.
+is taken from that @code{source}.  Git sub-modules of the repository are
+fetched, recursively.
 
 For instance, the following command builds @code{guile-sqlite3} from the
 latest commit of its @code{master} branch, and then builds @code{guix} (which
