@@ -4512,3 +4512,47 @@ include Krylov methods, (block-) incomplete decompositions and
 aggregation-based algebraic multigrid.")
     ;; GPL version 2 with "runtime exception"
     (license license:gpl2)))
+
+(define-public dune-localfunctions
+  (package
+    (name "dune-localfunctions")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-localfunctions-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19c6zjinwwpy8jh4v4prhphyd438rapd4x80fj93apmwgw04nrhl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment") ; TODO
+    (description "This DUNE module provides interface and implementation for
+shape functions defined on the DUNE reference elements.  In addition to the
+shape function, interpolation operators and special keys are provided which
+can be used to assemble global function spaces on finite-element grids.
+
+This package provides an interface and implementation for shape functions
+defined on the DUNE reference elements.  In addition to the shape function,
+interpolation operators and special keys are provided which can be used to
+assemble global function spaces on finite-element grids.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
