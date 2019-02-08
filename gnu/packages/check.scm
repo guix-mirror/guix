@@ -1177,14 +1177,14 @@ have failed since the last commit or what tests are currently failing.")))
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "4.4.1")
+    (version "4.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "097l4s3ssxm1vncsn0nw3a1pbzah28773q36c1ab9wz01r04973s"))))
+         "1d5zlyl3h39d3xlvkpsn4g5gpvdci9arplil2cnz2cs8wsgms8xb"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: 95 tests failed, 539 passed, 6 skipped, 2 errors.
