@@ -4448,3 +4448,67 @@ Differences} (FD).
 This package contains the basic DUNE grid classes.")
     ;; GPL version 2 with "runtime exception"
     (license license:gpl2)))
+
+(define-public dune-istl
+  (package
+    (name "dune-istl")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-istl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l2gyrvys5w6wsmk0ckbb7295s80b7yk7qrl7x66akv2jv1nzq2w"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         ;; These tests fail because they require a fully functional MPI
+         ;; environment.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (setenv "ARGS"
+                     (string-append "--exclude-regex '("
+                                    (string-join
+                                     (list
+                                      "galerkintest"
+	                              "hierarchytest"
+	                              "pamgtest"
+	                              "pamg_comm_repart_test"
+	                              "matrixredisttest"
+	                              "vectorcommtest"
+	                              "matrixmarkettest")
+                                     "|")
+                                    ")'"))
+             #t)))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("superlu" ,superlu)
+       ("openblas" ,openblas)
+       ("gmp" ,gmp)
+       ("python" ,python)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.
+
+This is the iterative solver template library which provides generic sparse
+matrix/vector classes and a variety of solvers based on these classes.  A
+special feature is the use of templates to exploit the recursive block
+structure of finite element matrices at compile time.  Available solvers
+include Krylov methods, (block-) incomplete decompositions and
+aggregation-based algebraic multigrid.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
