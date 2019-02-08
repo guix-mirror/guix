@@ -2578,6 +2578,29 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 Language (TOML) configuration files.")
     (license license:expat)))
 
+(define-public python-jsonrpc-server
+  (package
+    (name "python-jsonrpc-server")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-jsonrpc-server" version))
+       (sha256
+        (base32
+         "0m4ykpcdy52x37n1ikysp07j7p8ialcdvvvsrjp3545sn7iiid09"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/palantir/python-jsonrpc-server")
+    (synopsis "JSON RPC 2.0 server library")
+    (description
+     "This packages provides a JSON RPC 2.0 server library for Python.")
+    (license license:expat)))
+
 (define-public python-black
   (package
     (name "python-black")
