@@ -11348,17 +11348,14 @@ of @code{functools.lru_cache} from python 3.3.")
 (define-public python-configparser
   (package
     (name "python-configparser")
-    (version "3.5.0")
+    (version "3.7.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://bitbucket.org/ambv/configparser/get/"
-             version ".tar.bz2"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "configparser" version))
        (sha256
         (base32
-         "0waq40as14abwzbb321hfz4vr1fi363nscy32ga14qvfygrg96wa"))))
+         "0cnz213il9lhgda6x70fw7mfqr8da43s3wm343lwzhqx94mgmmav"))))
     (build-system python-build-system)
     (home-page "https://github.com/jaraco/configparser/")
     (synopsis "Backport of configparser from python 3.5")
