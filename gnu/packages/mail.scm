@@ -2317,7 +2317,7 @@ on the fly.  Both programs are written in C and are very fast.")
 (define-public swaks
   (package
     (name "swaks")
-    (version "20170101.0")
+    (version "20181104.0")
     (source
      (origin
        (method url-fetch)
@@ -2326,7 +2326,7 @@ on the fly.  Both programs are written in C and are very fast.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0pli4mlhasnqqxmmxalwyg3x7n2vhcbgsnp2xgddamjavv82vrl4"))))
+         "0n1yd27xcyb1ylp5gln3yv5gzi9r377hjy1j32367kgb3247ygq2"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-net-dns" ,perl-net-dns)
