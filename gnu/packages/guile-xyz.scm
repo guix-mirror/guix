@@ -1837,14 +1837,14 @@ interface for reading articles in any format.")
 (define-public guile-redis
   (package
     (name "guile-redis")
-    (version "1.0.0")
+    (version "1.3.0")
     (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "1dp5fmqvma59pvp1nfpq6hqgbmjici8sd1y8llahl87fynw1dvr9"))))
+                "1li70a2716my9q9zfq0qn2x5d1cir9k2vx0jm9glm464yaf1vj39"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
