@@ -4688,3 +4688,45 @@ global finite element functions.  Its two main concepts are functions
 implemented as callable objects, and bases of finite element spaces.")
     ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
     (license (list license:lgpl3+ license:gpl2))))
+
+(define-public dune-pdelab
+  (package
+    (name "dune-pdelab")
+    (version "2.6.0-rc1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.dune-project.org/pdelab/dune-pdelab")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07g0s9448z65vjrq88g5rv3340iifil85k170n8kbqchsvi4ny5v"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f)) ; XXX: the tests cannot be compiled
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-istl" ,dune-istl)
+       ("dune-localfunctions" ,dune-localfunctions)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-grid" ,dune-grid)
+       ("dune-typetree" ,dune-typetree)
+       ("dune-functions" ,dune-functions)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("openblas" ,openblas)
+       ("eigen" ,eigen)
+       ("metis" ,metis)
+       ("python" ,python)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Differential equations solver toolbox")
+    (description "PDELab is a partial differential equations solver toolbox
+built on top of DUNE, the Distributed and Unified Numerics Environment.")
+    ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
+    (license (list license:lgpl3+ license:gpl2))))
