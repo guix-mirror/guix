@@ -11400,7 +11400,7 @@ of @code{functools.lru_cache} from python 3.3.")
         (base32
          "0waq40as14abwzbb321hfz4vr1fi363nscy32ga14qvfygrg96wa"))))
     (build-system python-build-system)
-    (home-page "http://docs.python.org/py3k/library/configparser.html")
+    (home-page "https://github.com/jaraco/configparser/")
     (synopsis "Backport of configparser from python 3.5")
     (description "@code{python-configparser} is a backport of
 @code{configparser} from Python 3.5 so that it can be used directly
