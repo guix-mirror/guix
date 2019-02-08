@@ -727,14 +727,14 @@ TREZOR Hardware Wallet.")
 (define-public python-keepkey
   (package
     (name "python-keepkey")
-    (version "4.0.2")
+    (version "6.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "keepkey" version))
         (sha256
           (base32
-            "0f4iqqjlqmamw4mhyhik4qlb5bnfd10wbjw9yzgir105wh5fdpnd"))))
+            "16j8hnxj9r4b2w6kfncmny09pb1al8ppmn59qxzl3qmh1xhpy45g"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -747,6 +747,7 @@ TREZOR Hardware Wallet.")
     (propagated-inputs
      `(("python-ecdsa" ,python-ecdsa)
        ("python-hidapi" ,python-hidapi)
+       ("python-libusb1" ,python-libusb1)
        ("python-mnemonic" ,python-mnemonic)
        ("python-protobuf" ,python-protobuf)))
     (home-page "https://github.com/keepkey/python-keepkey")
