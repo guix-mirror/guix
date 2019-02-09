@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,15 +29,14 @@
 (define-public plantuml
   (package
     (name "plantuml")
-    (version "8048")
+    (version "1.2019.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/plantuml/plantuml-"
-                    version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/plantuml/"
+                                  version "/plantuml-" version ".tar.gz"))
               (sha256
                (base32
-                "1vipxd6p7isb1k1qqh4hrpfcj27hx1nll2yp0rfwpvps1w2d936i"))))
+                "0mws7g0w3fn0wxizccg2iqisq9ljkn95i5qf8ma07lbw3nj0h48n"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests
