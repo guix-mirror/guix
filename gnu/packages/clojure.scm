@@ -173,12 +173,13 @@ that can be implemented for any data type.")
     (version "0.1.6")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/clojure/algo.monads/archive"
-                       "/algo.monads-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure/algo.monads.git")
+             (commit (string-append "algo.monads-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "14gbvfgmrda990h45yn7zag83vp1kdkz4f4yzmyvkr0sjihlgdmq"))))
+        (base32 "0mv3ba72hyhgasg2k3zy83ij61gak6cs4d6qgh8123z3j02mbh8p"))))
     (build-system clojure-build-system)
     (arguments
      '(#:source-dirs '("src/main/clojure/")
