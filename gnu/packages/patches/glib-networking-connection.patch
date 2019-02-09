@@ -1,0 +1,51 @@
+https://gitlab.gnome.org/GNOME/glib-networking/issues/4
+https://gitlab.gnome.org/GNOME/glib-networking/commit/55daf3e5fd4bc9e4ebad1a9eab93f852dcbf527e.patch
+This ultimately rejected work-around should be removed with the next
+release, as the bug has supposedly been fixed for real.
+
+
+From 55daf3e5fd4bc9e4ebad1a9eab93f852dcbf527e Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@igalia.com>
+Date: Thu, 19 Jul 2018 11:16:35 -0500
+Subject: [PATCH] Fix intermittent failures in missing client private key test
+
+Because our APIs do nice things like encapsulating the TLS connection
+establishment, we have our test server writing to the client after
+establishing the TCP connection, because the TLS connection is
+established. It's fine in theory, but results in some weirdness like the
+server seeing its write having completed successfully before TLS
+connection establishment. Normally that's what happens and this test
+passes (server sees no error), but sometimes the server sees that the
+client has already failed and the test fails.
+
+This is unfortunate, and tricky to fix properly, so let's just remove
+the bad check. The point of the test is to ensure that the TLS
+connection is not established, and the client-side check is going to
+have to be sufficient, because rewriting the test to wait for the TLS
+connection to be established on the server side is quite tricky: my
+naive attempt resulted in both sides waiting forever on the other.
+
+P.S. At no point in this test does the server ever examine the client
+certificate. That's not quite what I expected when I added the test, but
+it's fine.
+
+Fixes #4
+---
+ tls/tests/connection.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tls/tests/connection.c b/tls/tests/connection.c
+index 94645c3..390275d 100644
+--- a/tls/tests/connection.c
++++ b/tls/tests/connection.c
+@@ -1125,7 +1125,6 @@ test_client_auth_fail_missing_client_private_key (TestConnection *test,
+   g_main_loop_run (test->loop);
+ 
+   g_assert_error (test->read_error, G_TLS_ERROR, G_TLS_ERROR_CERTIFICATE_REQUIRED);
+-  g_assert_no_error (test->server_error);
+ }
+ 
+ static void
+-- 
+2.18.1
+

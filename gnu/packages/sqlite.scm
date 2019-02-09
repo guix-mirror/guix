@@ -82,15 +82,6 @@ widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
 
-;; This is used by Tracker.
-(define-public sqlite-with-fts5
-  (package/inherit sqlite
-    (name "sqlite-with-fts5")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(cons "--enable-fts5" ,flags))))))
-
 ;; This is used by Qt.
 (define-public sqlite-with-column-metadata
   (package/inherit sqlite

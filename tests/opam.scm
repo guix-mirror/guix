@@ -192,6 +192,8 @@ url {
          ("{>= \"0.2.0\" | build}" . (condition-or
                                       (condition-greater-or-equal
                                         (condition-string "0.2.0"))
-                                      (condition-var "build"))))))
+                                      (condition-var "build")))
+         ("{ = \"1.0+beta19\" }" . (condition-eq
+                                     (condition-string "1.0+beta19"))))))
 
 (test-end "opam")

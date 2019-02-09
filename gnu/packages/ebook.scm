@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (guix build-system python)
@@ -247,13 +248,15 @@ designed to be used in a generic text renderer.")
     (name "fbreader")
     (version "0.99.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/geometer/FBReader/"
-                                  "archive/" version "-freebsdport.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/geometer/FBReader")
+                     (commit (string-append version "-freebsdport"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gf1nl562fqkwlzcn6rgkp1j8jcixzmfsnwxbc0sm49zh8n3zqib"))))
+                "0c0s4silpax74kwfz3dfmzn4lkv6jsyb800vfak166vii0hvbv3d"))
+              (patches (search-patches "fbreader-curl-7.62.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)
@@ -278,7 +281,13 @@ designed to be used in a generic text renderer.")
                                       (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'unpack 'fix-install-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "fbreader/desktop/Makefile"
+                 (("/usr") out))
+               #t))))))
     (home-page "https://fbreader.org/")
     (synopsis "E-Book reader")
     (description "@code{fbreader} is an E-Book reader.  It supports the

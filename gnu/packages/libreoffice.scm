@@ -966,9 +966,48 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                         (file-name "libreoffice-mdds.patch")
                         (sha256
                          (base32
-                          "0apbmammmp4pk473xiv5vk50r4c5gjvqzf9jkficksvz58q6114f"))))
-                (search-patches "libreoffice-icu.patch"
-                                "libreoffice-glm.patch")))))
+                          "0apbmammmp4pk473xiv5vk50r4c5gjvqzf9jkficksvz58q6114f")))
+                      ;; The Poppler API changed rapidly in the versions leading 0.72.
+                      ;; Thus, we need several patches from upstream, each adapting to
+                      ;; different Poppler changes since version 0.68.
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://github.com/LibreOffice/core/commit/"
+                                            "1688a395d05125b83eac6cd5c43f0e3f2f66c491"
+                                            ".patch"))
+                        (file-name "libreoffice-poppler-compat.patch")
+                        (sha256
+                         (base32
+                          "0ia5avmj772mrgs6m4qqf01hs8hzpy3nafidj7w7gqx2zz2s5ih9")))
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://github.com/LibreOffice/core/commit/"
+                                            "5e8bdd9203dd642111c62a6668ee665a20d4ba19"
+                                            ".patch"))
+                        (file-name "libreoffice-poppler-gbool.patch")
+                        (sha256
+                         (base32
+                          "19kc74h5vnk48l2vny8zmm2lkxpwc7g8n9d3wwpg99748dvbmikd")))
+                      (origin
+                        (method url-fetch)
+                        (uri (string-append "https://github.com/LibreOffice/core/commit/"
+                                            "8ff41a26caf51544699863c89598d37d93dc1b21"
+                                            ".patch"))
+                        (file-name "libreoffice-poppler-0.71.patch")
+                        (sha256
+                         (base32
+                          "1dsd0gynjf7d6412dd2sx70xa2s8kld7ibyjdkwg5w9hhi2zxw2f"))))
+                (search-patches "libreoffice-boost.patch"
+                                "libreoffice-icu.patch"
+                                "libreoffice-glm.patch")))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each (lambda (file)
+                       ;; Adjust to renamed function in Poppler 0.72.
+                       (substitute* file (("getCString") "c_str")))
+                     (find-files "sdext/source/pdfimport/xpdfwrapper"))
+           #t))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)

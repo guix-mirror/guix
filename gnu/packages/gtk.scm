@@ -78,7 +78,9 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public atk
   (package
@@ -115,16 +117,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.12")
+   (version "1.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "05mzyxkvsfc1annjw2dja8vka01ampp9pp93lg09j8hba06g144c"))
-            (patches (search-patches "cairo-CVE-2016-9082.patch"
-                                     "cairo-setjmp-wrapper.patch"))))
+              "0c930mk5xr2bshbdljv005j3j8zr47gqmkry3q6qgvqky6rjjysy"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -182,7 +182,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.8.8")
+   (version "2.2.0")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -190,7 +190,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1ag3scnm1fcviqgx2p4858y433mr0ndqw6zccnccrqcr9mpcird8"))))
+               "047q63jr513azf3g1y7f5xn60b4jdjs9zsmrx04sfw5rasyzrk5p"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -458,7 +458,7 @@ highlighting and other features typical of a source code editor.")
               "0ixfmnxjylx06mjaw116apymwi1a8rnkmkbbvqaxxg2pfwy9fl6x"))))
    (build-system meson-build-system)
    (arguments
-    '(#:configure-flags '("-Dinstalled-tests=false")
+    `(#:configure-flags '("-Dinstalled_tests=false")
       #:phases
       (modify-phases %standard-phases
         (add-after
@@ -473,12 +473,15 @@ highlighting and other features typical of a source code editor.")
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
              ;; assertion failed (error == NULL): Data differ
              ;; (gdk-pixbuf-error-quark, 0)
-             ((".*'pixbuf-jpeg'.*") "")
-             ;; Extend the timeout of the test suite.
-             ;; TODO: Check upstreaming effort:
-             ;; https://gitlab.gnome.org/GNOME/gdk-pixbuf/merge_requests/21
-             (("300") "1800"))
+             ((".*'pixbuf-jpeg'.*") ""))
            #t))
+        ;; The slow tests take longer than the specified timeout.
+        ,@(if (any (cute string=? <> (%current-system))
+                   '("armhf-linux" "aarch64-linux"))
+            '((replace 'check
+              (lambda _
+                (invoke "meson" "test" "--timeout-multiplier" "5"))))
+            '())
         (add-before 'configure 'aid-install-script
           (lambda* (#:key outputs #:allow-other-keys)
             ;; "build-aux/post-install.sh" invokes `gdk-pixbuf-query-loaders`
@@ -690,7 +693,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.24.0")
+   (version "3.24.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -698,9 +701,18 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1a1jbsh9fg5ykmwrcl3svy7xfvx0b87d314qsx9n483pj8w93s82"))
+              "14l8mimdm44r3h5pn5hzigl1z25jna8jxvb16l88v4nc4zj0afsv"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
-                                     "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
+                                     "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                ;; Version 3.24.2 was released with a typo that broke the build.
+                ;; See upstream commit 2905fc861acda3d134a198e56ef2f6c962ad3061
+                ;; at <https://gitlab.gnome.org/GNOME/gtk/tree/gtk-3-24>
+                (substitute* "docs/tools/shooter.c"
+                  (("gdk_screen_get_dfeault") "gdk_screen_get_default"))
+                #t))))
    (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
@@ -1347,7 +1359,7 @@ and routines to assist in editing internationalized text.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.9")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1355,7 +1367,7 @@ and routines to assist in editing internationalized text.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "0lkxrfna818wkkr2f6mdzf15y5z8xl1b9592ylmzjbqsqya3w7x8"))))
+                "1kc6n1mxjxa7wvwnqy94qfg8l9jvx9qrvrr2kc7m4g0z20x3a00p"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)

@@ -368,10 +368,10 @@ connections from and to iOS devices by connecting to a socket provided by a
                             "m"))))
     (propagated-inputs
      `(("openssl" ,openssl)
+       ("libplist" ,libplist)
        ("libusbmuxd" ,libusbmuxd)))
     (inputs
-     `(("libplist" ,libplist)
-       ("python" ,python)))
+     `(("python" ,python)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
@@ -385,6 +385,55 @@ internals, backup/restore the device, manage installed applications, retrieve
 addressbook/calendars/notes and bookmarks and (using libgpod) synchronize
 music and video to the device.")
     (license license:lgpl2.1+)))
+
+(define-public ifuse
+  (package
+    (name "ifuse")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "ifuse-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1p9a4n36jb194cnp6v57cz2bggwbywaz8pbpb95ch83pzdkdx257"))))
+    (inputs
+     `(("fuse" ,fuse)
+       ("libimobiledevice" ,libimobiledevice)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "Mount iOS devices")
+    (description "This package provides @command{ifuse}, a command to mount
+iOS devices and access their contents.")
+    (license license:lgpl2.1+)))
+
+(define-public usbmuxd
+  (package
+    (name "usbmuxd")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "usbmuxd-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0bdlc7a8plvglqqx39qqampqm6y0hcdws76l9dffwl22zss4i29y"))))
+    (inputs
+     `(("libplist" ,libplist)
+       ("libusb" ,libusb)
+       ("libimobiledevice" ,libimobiledevice)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "Multiplex connections over USB to an iOS device")
+    (description "This package provides the @code{usbmuxd} daemon
+which multiplexes connections over USB to an iOS device.  To
+users, it means you can sync your music, contacts, photos, etc.
+over USB.")
+    (license license:gpl2+)))
 
 (define-public libmtp
   (package

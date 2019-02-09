@@ -44,16 +44,19 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.68.0")
+    (version "1.69.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/boost/boost/" version "/boost_"
-                    (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                    ".tar.bz2"))
+              (uri (let ((version-with-underscores
+                          (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)))
+                     (list (string-append "mirror://sourceforge/boost/boost/" version
+                                          "/boost_" version-with-underscores ".tar.bz2")
+                           (string-append "https://dl.bintray.com/boostorg/release/"
+                                          version "/source/boost_"
+                                          version-with-underscores ".tar.bz2"))))
               (sha256
                (base32
-                "1dyqsr9yb01y0nnjdq9b8q5s2kvhxbayk34832k5cpzn7jy30qbz"))
+                "01j4n142dz20lcgqji8d8hspp04p1nv7m8i6dz8w5lchfdhx8clg"))
               (patches (search-patches "boost-fix-icu-build.patch"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
@@ -66,6 +69,7 @@
      `(#:tests? #f
        #:make-flags
        (list "threading=multi" "link=shared"
+             "cxxflags=-std=c++14"
 
              ;; Set the RUNPATH to $libdir so that the libs find each other.
              (string-append "linkflags=-Wl,-rpath="
@@ -120,16 +124,6 @@
 across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
-
-;; Some programs need Boost to be built with C++14 support.
-(define-public boost-cxx14
-  (package (inherit boost)
-    (arguments
-      (substitute-keyword-arguments (package-arguments boost)
-        ((#:make-flags flags)
-         `(append ,flags
-                  '("cxxflags=-std=c++14")))))
-    (properties '((hidden? . #t)))))
 
 (define-public boost-for-mysql
   ;; Older version for MySQL 5.7.23.

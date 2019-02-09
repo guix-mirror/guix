@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2018 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
@@ -33,6 +33,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages xorg)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages parallel)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages valgrind)
   #:use-module (srfi srfi-1)
@@ -156,7 +158,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "3.0.1")
+    (version "4.0.0")
     (source
      (origin
       (method url-fetch)
@@ -165,12 +167,13 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "0pbqrm5faf57nasy1s81wqivl7zvxmv8lzjh8hvb0f3qxv8m0d36"))))
+        "0srnjwzsmyhka9hhnmqm86qck4w3xwjm8g6sbns58wzbrwv8l2rg"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc "lib")
        ("gfortran" ,gfortran)
        ("libfabric" ,libfabric)
+       ("libevent" ,libevent)
        ,@(if (and (not (%current-target-system))
                   (member (%current-system) (package-supported-systems psm)))
              `(("psm" ,psm))
@@ -180,7 +183,8 @@ bind processes, and much more.")
              `(("psm2" ,psm2))
              '())
        ("rdma-core" ,rdma-core)
-       ("valgrind" ,valgrind)))
+       ("valgrind" ,valgrind)
+       ("slurm" ,slurm)))              ;for PMI support (launching via "srun")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
@@ -189,15 +193,15 @@ bind processes, and much more.")
      `(#:configure-flags `("--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
                            "--with-sge"
-
-                           ;; VampirTrace is obsoleted by scorep and disabling
-                           ;; it reduces the closure size considerably.
-                           "--disable-vt"
-
-                           ,(string-append "--with-valgrind="
-                                           (assoc-ref %build-inputs "valgrind"))
-                           ,(string-append "--with-hwloc="
-                                           (assoc-ref %build-inputs "hwloc")))
+                           "--with-psm"
+                           "--with-psm2"
+                           "--with-valgrind"
+                           "--with-hwloc=external"
+                           "--with-libevent"
+                           ;; Enable support for SLURM's Process Manager
+                           ;; Interface (PMI).
+                           ,(string-append "--with-pmi="
+                                           (assoc-ref %build-inputs "slurm")))
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'remove-absolute
                     (lambda _
@@ -212,8 +216,8 @@ bind processes, and much more.")
                         (("_ABSOLUTE") ""))
                       ;; Avoid valgrind (which pulls in gdb etc.).
                       (substitute*
-                          '("./ompi/mca/io/romio314/src/io_romio314_component.c")
-                        (("MCA_io_romio314_COMPLETE_CONFIGURE_FLAGS")
+                          '("./ompi/mca/io/romio321/src/io_romio321_component.c")
+                        (("MCA_io_romio321_COMPLETE_CONFIGURE_FLAGS")
                          "\"[elided to reduce closure]\""))
                       #t))
                   (add-before 'build 'scrub-timestamps ;reproducibility
@@ -263,7 +267,7 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
      (setenv "OMPI_MCA_plm_rsh_agent" (which "false"))
      ;; Allow oversubscription in case there are less physical cores available
      ;; in the build environment than the package wants while testing.
-     (setenv "OMPI_MCA_rmaps_base_oversubscribe" "yes")
+     (setenv "OMPI_MCA_rmaps_base_mapping_policy" "core:OVERSUBSCRIBE")
      #t))
 
 (define-public python-mpi4py

@@ -647,6 +647,8 @@ programming language.")
               (uri (string-append "https://github.com/liballeg/allegro5/"
                                   "releases/download/" version "/allegro-"
                                   version ".tar.gz"))
+              (patches (search-patches
+                        "allegro4-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
                 "1p0ghkmpc4kwij1z9rzxfv7adnpy4ayi0ifahlns1bdzgmbyf88v"))))
@@ -687,7 +689,7 @@ etc.")
                                   "/download/" version "/allegro-"
                                   version ".tar.gz"))
               (patches (search-patches
-                        "allegro-fix-compilation-mesa-18.2.5-and-later.patch"))
+                        "allegro-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
                 "1w9a5yqi5q03b2qvmx5ff90paz0xbr9cy7i7f0xiqa65ava66q9l"))))
@@ -732,6 +734,8 @@ etc.")
                                     (string-drop-right version 2)
                                     version)
                                   ".tar.gz"))
+              (patches (search-patches
+                        "allegro-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
                 "0cd51qrh97jrr0xdmnivqgwljpmizg8pixsgvc4blqqlaz4i9zj9"))))))

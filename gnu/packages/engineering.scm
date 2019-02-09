@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1911,3 +1912,24 @@ editors.")
                    license:cc0 ; libs/optional, libs/sexpresso
                    license:bsd-2 ; libs/optional/tests/catch.hpp
                    license:lgpl2.1+)))) ; libs/quazip
+
+(define-public gpx
+  (package
+    (name "gpx")
+    (version "2.5.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/markwal/GPX.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1yab269x8qyf7rd04vaxyqyjv4pzz9lp4sc4dwh927k23avr3rw5"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/markwal/GPX")
+    (synopsis "Converting gcode to x3g files for 3D printing")
+    (description
+     "GPX is a post processing utility for converting gcode output from 3D
+slicing software to x3g files for standalone 3D printing on common 3D
+printers.")
+    (license license:gpl2+)))

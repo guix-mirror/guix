@@ -4,9 +4,9 @@
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -836,23 +836,14 @@ on top of GNU Guix.")
 (define-public gcab
   (package
     (name "gcab")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  version "/" name "-" version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/gcab/"
+                                  version "/gcab-" version ".tar.xz"))
               (sha256
                (base32
-                "0l19sr6pg0cfcddmi5n79d08mjjbhn427ip5jlsy9zddq9r24aqr"))
-              ;; gcab 1.1 has a hard dependency on git — even when building
-              ;; from a tarball.  Remove it early so ‘guix environment gcab’
-              ;; can actually build what ‘guix build --source gcab’ returns.
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "meson.build"
-                    (("git_version = .*$") "git_version = []\n"))
-                  #t))))
+                "038h5kk41si2hc9d9169rrlvp8xgsxq27kri7hv2vr39gvz9cbas"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums
@@ -961,7 +952,7 @@ the bootloader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.1.0")
+   (version "1.2.0")
    (source
     (origin
      (method url-fetch)
@@ -969,7 +960,7 @@ the bootloader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "0bkjwh49kajyd78vdh0g9arb352a7rccaifas9zxa78phhja2v2p"))))
+       "1bdk6qmsvy4d80245x1si9qvrga2f2yalj9qfmf1lqj5ljxxxifv"))))
    (build-system gnu-build-system)
    (arguments
     '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
@@ -988,6 +979,7 @@ the bootloader configuration.")
                     ("pkg-config" ,pkg-config)))
    (inputs `(("appstream-glib" ,appstream-glib)
              ("bubblewrap" ,bubblewrap)
+             ("dconf" ,dconf)
              ("gdk-pixbuf" ,gdk-pixbuf)
              ("gpgme" ,gpgme)
              ("json-glib" ,json-glib)

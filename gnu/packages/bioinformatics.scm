@@ -6020,7 +6020,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.7.0a")
+    (version "2.7.0b")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6029,7 +6029,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1yx28gra6gqdx1ps5y8mpdinsn8r0dhsc2m3gcvjfrk71i9yhd6l"))
+                "1lih6cbpvnvhyvvswdhy06mwyzvwax96m723378v4z6psqzsh11d"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -6054,6 +6054,13 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
              (substitute* "Makefile"
                (("(COMPILATION_TIME_PLACE=\")(.*)(\")" _ pre mid post)
                 (string-append pre "Built with Guix" post)))
+             #t))
+         ;; See https://github.com/alexdobin/STAR/pull/562
+         (add-after 'enter-source-dir 'add-missing-header
+           (lambda _
+             (substitute* "SoloReadFeature_inputRecords.cpp"
+               (("#include \"binarySearch2.h\"" h)
+                (string-append h "\n#include <math.h>")))
              #t))
          (add-after 'enter-source-dir 'do-not-use-bundled-htslib
            (lambda _
@@ -8657,7 +8664,7 @@ library implementing most of the pipeline's features.")
 (define-public rcas-web
   (package
     (name "rcas-web")
-    (version "0.0.5")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -8666,7 +8673,7 @@ library implementing most of the pipeline's features.")
                            "/rcas-web-" version ".tar.gz"))
        (sha256
         (base32
-         "0igz7jpcf7cm9800zcag6p3gd1i649figrhbdba6cjkm8f4gfspr"))))
+         "0wq951aj45gqki1bickg876i993lmawkp8x24agg264br5x716db"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -8689,7 +8696,7 @@ library implementing most of the pipeline's features.")
        ("r-rcas" ,r-rcas)
        ("guile-next" ,guile-2.2)
        ("guile-json" ,guile-json)
-       ("guile-redis" ,guile2.2-redis)))
+       ("guile-redis" ,guile-redis)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BIMSBbioinfo/rcas-web")

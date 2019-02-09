@@ -2375,7 +2375,8 @@ The installation image described above was built using the @command{guix
 system} command, specifically:
 
 @example
-guix system disk-image gnu/system/install.scm
+guix system disk-image --file-system-type=iso9660 \
+  gnu/system/install.scm
 @end example
 
 Have a look at @file{gnu/system/install.scm} in the source tree,
@@ -7288,7 +7289,8 @@ care!
 Build @var{package} from the latest commit of @var{branch}.  The @code{source}
 field of @var{package} must be an origin with the @code{git-fetch} method
 (@pxref{origin Reference}) or a @code{git-checkout} object; the repository URL
-is taken from that @code{source}.
+is taken from that @code{source}.  Git sub-modules of the repository are
+fetched, recursively.
 
 For instance, the following command builds @code{guile-sqlite3} from the
 latest commit of its @code{master} branch, and then builds @code{guix} (which
@@ -14400,13 +14402,49 @@ The @code{(gnu services databases)} module provides the following services.
 
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
        [#:config-file] [#:data-directory ``/var/lib/postgresql/data''] @
-       [#:port 5432] [#:locale ``en_US.utf8'']
+       [#:port 5432] [#:locale ``en_US.utf8''] [#:extension-packages '()]
 Return a service that runs @var{postgresql}, the PostgreSQL database
 server.
 
 The PostgreSQL daemon loads its runtime configuration from @var{config-file},
 creates a database cluster with @var{locale} as the default
 locale, stored in @var{data-directory}.  It then listens on @var{port}.
+
+@cindex postgresql extension-packages
+Additional extensions are loaded from packages listed in
+@var{extension-packages}.  Extensions are available at runtime.  For instance,
+to create a geographic database using the @code{postgis} extension, a user can
+configure the postgresql-service as in this example:
+
+@cindex postgis
+@example
+(use-package-modules databases geo)
+
+(operating-system
+  ...
+  ;; postgresql is required to run `psql' but postgis is not required for
+  ;; proper operation.
+  (packages (cons* postgresql %base-packages))
+  (services
+    (cons*
+      (postgresql-service #:extension-packages (list postgis))
+      %base-services)))
+@end example
+
+Then the extension becomes visible and you can initialise an empty geographic
+database in this way:
+
+@example
+psql -U postgres
+> create database postgistest;
+> \connect postgistest;
+> create extension postgis;
+> create extension postgis_topology;
+@end example
+
+There is no need to add this field for contrib extensions such as hstore or
+dblink as they are already loadable by postgresql.  This field is only
+required to add extensions provided by other packages.
 @end deffn
 
 @deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]

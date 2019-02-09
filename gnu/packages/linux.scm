@@ -413,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.6")
-(define %linux-libre-hash "1wn5qf40xapsl3j19wrvgfz7ar5i0sfrri72wi78ydy4c7ik3gs5")
+(define %linux-libre-version "4.20.7")
+(define %linux-libre-hash "05jbpg4ivcbr8xi5ki03f4n57hnhc52nfjk1ik8czag7f4ph9v0b")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -427,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.19")
-(define %linux-libre-4.19-hash "1sgcca9zpw5hza6vkza7613pd8bmvvd2kmd2f0xkl5fyrna7dipq")
+(define %linux-libre-4.19-version "4.19.20")
+(define %linux-libre-4.19-hash "1rs4jvp88n23n9a6f037sn498fzl1fn96zsjjmjngb8nmjr1y9vp")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -441,8 +441,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.97")
-(define %linux-libre-4.14-hash "056cnap79a0m4n9cldqfr3sbx61wvxwnpz6x9fh6lq0byqcil26k")
+(define %linux-libre-4.14-version "4.14.98")
+(define %linux-libre-4.14-hash "165wlqqpb16zhrwihsb75y153xyz8q5dbi14xim7jsnvwlbh5i79")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -451,14 +451,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.154"
-                    "18qy7d8ndjwx65s2z18z30px94y8ci3ymvbv0mgdcbp16brak9zf"
+  (make-linux-libre "4.9.155"
+                    "0fyj8dqhpqi3jh6i58avyvmg4mp9bplnpiffpp3fdka4v85lx152"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.172"
-                    "000bz3jfg0li3rwlf2c80df6682lhi59hj1kwm4hw7whgg69xi7b"
+  (make-linux-libre "4.4.173"
+                    "1iy8qzjvcssf7ppb590lqzhb01ap2fjqv9iam691q1d4r8vmgcsh"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -1027,7 +1027,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.6")
+    (version "1.1.7")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1035,7 +1035,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "096pwrnhj36yndldvs2pj4r871zhcgisks0is78f1jkjn9sd4b2z"))))
+               "02fw7dw202mjid49w9ki3dsfcyvid5fj488561bdzcm3haw00q4x"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -1047,14 +1047,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.6")
+    (version "1.1.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0vnkyymgwj9rfdb11nvab30dnfrylmakdfildxl0y8mj836awp0m"))))
+               "02jlw6a22j2rr7inggfgk2hzx3w0fjhvhs0dn1afpzdp9aspzchx"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1094,14 +1094,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.6")
+    (version "1.1.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "04qcwkisbh0d6lnh0rw1k6n869fbs6zbfq6yvb41rymiwgmk27bg"))))
+               "0iys4zl1davzyg3mn9lvil1n3k1ifrg3v1caj3k4dqyrnrd40jx7"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
@@ -1110,7 +1110,12 @@ MIDI functionality to the Linux-based operating system.")
     ;; obsolete.
     (outputs '("out" "pulseaudio" "jack"))
     (arguments
-     `(#:phases
+     `(#:configure-flags '(;; Do not install a "local" configuration targeted
+                           ;; for /etc/alsa.  On GuixSD plugins are loaded from
+                           ;; the ALSA service, and other distributions likely
+                           ;; won't use these files.
+                           "--with-alsalconfdir=/tmp/noop")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'split
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1119,27 +1124,17 @@ MIDI functionality to the Linux-based operating system.")
                     (jack (assoc-ref outputs "jack"))
                     (jacklib (string-append jack "/lib/alsa-lib"))
                     (pua (assoc-ref outputs "pulseaudio"))
-                    (pualib (string-append pua "/lib/alsa-lib"))
-                    (puaconf (string-append pua "/share/alsa/alsa.conf.d")))
+                    (pualib (string-append pua "/lib/alsa-lib")))
                ;; For jack.
                (mkdir-p jacklib)
                (for-each (lambda (file)
                            (rename-file file (string-append jacklib "/" (basename file))))
                          (find-files out ".*jack\\.(la|so)"))
-               ;; For pluseaudio.
-               (mkdir-p puaconf)
+               ;; For pulseaudio.
                (mkdir-p pualib)
-               (chdir (string-append out "/share"))
-               (for-each (lambda (file)
-                           (rename-file file (string-append puaconf "/" (basename file))))
-                         (find-files out "\\.(conf|example)"))
                (for-each (lambda (file)
                            (rename-file file (string-append pualib "/" (basename file))))
                          (find-files out ".*pulse\\.(la|so)"))
-               (chdir "..")
-               ;; We have moved the files to output pulsaudio, the
-               ;; directory is now empty.
-               (delete-file-recursively (string-append out "/share"))
                #t))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1257,7 +1252,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.19.0")
+    (version "4.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1265,7 +1260,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "114rlb3bvrf7q6yr03mn1rj6gl7mrg0psvm2dx0qb2kxyjhmrv6r"))))
+                "1a7xyvqjxfnm7rk21amm0xgxa38clg7q7cmc4dmlg27q81mambf8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -2075,20 +2070,26 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2.5")
+    (version "3.2.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/gentoo/eudev/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url "https://github.com/gentoo/eudev")
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dlkcgy7j4fdcksqrpc373zfybiif1bal3n6lpy1kfc5280j02c7"))
+                "1la7x7v7yqb84wnc7w0kj53sa0an0m9xp6wn01ypi8drh02wjjy2"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-source-writable
+           (lambda _
+             ;; XXX: Git checkouts are read-only, but this package needs to
+             ;; modify some of its files.
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'bootstrap 'patch-file-names
            (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "man/make.sh"
@@ -4717,6 +4718,13 @@ libraries, which are often integrated directly into libfabric.")
                          (string-append %output "/include")))
                       (substitute* "Makefile"
                         (("/lib64") "/lib"))
+                      #t))
+                  (add-after 'unpack 'patch-sysmacros
+                    (lambda _
+                      (substitute* "ipath/ipath_proto.c"
+                        (("#include <sys/poll.h>" m)
+                         (string-append m "\n"
+                                        "#include <sys/sysmacros.h>")))
                       #t)))))
     (synopsis "Intel Performance Scaled Messaging (PSM) Libraries")
     (description

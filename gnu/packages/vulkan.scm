@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -163,19 +163,19 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.85.0")
+    (version "1.1.99")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/KhronosGroup/Vulkan-Headers/"
-             "archive/sdk-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/Vulkan-Headers")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         "166hqqb97kjg6h9vp8yxb1cq02i1kqaxvl693482gf8v21fl7ink"))))
+         "166z6wn5kxnqm55zgzhmqa9hg48d11bfmi3wnf1mqhsx48xw6b8z"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; No tests.
+     `(#:tests? #f))                    ; No tests.
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Headers")
     (synopsis "Vulkan Header files and API registry")
@@ -189,13 +189,13 @@ interpretation of the specifications for these languages.")
     (version (package-version vulkan-headers))
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/KhronosGroup/Vulkan-Loader/"
-             "archive/sdk-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/Vulkan-Loader")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         "04d53ynlc0ww8r67hv4sxwg5sirjhpr1laaa9hc6j4niliw0166n"))))
+         "02m3sdcbl8s6qr1nsba5621vg3f4akkfaa7g9hi70cpvws4x0gg8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -210,7 +210,7 @@ interpretation of the specifications for these languages.")
                           "-DBUILD_LAYERS=OFF" ; FIXME: Fails to build.
                           "-DBUILD_TESTS=OFF" ; FIXME: Needs 'googletest' submodule.
                           (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                              (assoc-ref %outputs "out") "/lib"))))
+                                         (assoc-ref %outputs "out") "/lib"))))
     (inputs `(("glslang" ,glslang)
               ("libxcb" ,libxcb)
               ("libx11" ,libx11)
@@ -242,16 +242,16 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version (package-version vulkan-headers))
+    (version "1.1.97.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/KhronosGroup/Vulkan-Tools/"
-             "archive/sdk-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/Vulkan-Tools")
+             (commit (string-append "sdk-" version))))
        (sha256
         (base32
-         "0r26px9rh09giddajlmafv21rx1la1y3bbnjgnpai8aw98wvq9mm"))))
+         "1p70wk0x546w1dlvlghrqm4l4b6ql0x08pdybyagnwwph0gdvqy3"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
@@ -264,7 +264,7 @@ and the ICD.")
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
     (arguments
-     `(#:tests? #f)) ; No tests.
+     `(#:tests? #f))                    ; No tests.
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Tools")
     (synopsis "Tools and utilities for Vulkan")

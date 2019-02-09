@@ -57,6 +57,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1695,14 +1696,14 @@ with sensible defaults out of the box.")
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.30.0a0")
+    (version "0.32.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "1nm6mn8isny0hr86rhbfrpfj867c0phf001xgsd69xfp9ady1wwq"))))
+          "1dhxl1bf18bx9szmqcnxbg6204hp3im8089q3hkwh5jfa6zh75q2"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-jsonschema" ,python-jsonschema)
@@ -7108,13 +7109,13 @@ config files.")
 (define-public python-configargparse
   (package
     (name "python-configargparse")
-    (version "0.12.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ConfigArgParse" version))
               (sha256
                (base32
-                "0fgkiqh6r3rbkdq3k8c48m85g52k96686rw3a6jg4lcncrkpvk98"))))
+                "149fy4zya0rsnlkvxbbq43cyr8lscb5k4pj1m6n7f1grwcmzwbif"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)))
@@ -8754,14 +8755,14 @@ Python.  It generates C++ code and a Makefile."))
 (define-public python2-rope
   (package
     (name "python2-rope")
-    (version "0.10.3")
+    (version "0.11.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "rope" version))
       (sha256
         (base32
-         "18k5znhpwvrfck3yp0jmhd5j8r0f0s8bk1zh5yhs2cfgmfhbwigb"))))
+         "1cppm0pa9aqgsbkq130lskrzmrvjs5vpiavjjbhpz2fdw52w8251"))))
     (arguments
      ;; Rope is currently python-2 only.
      ;; https://github.com/python-rope/rope/issues/57
@@ -11403,7 +11404,7 @@ of @code{functools.lru_cache} from python 3.3.")
         (base32
          "0waq40as14abwzbb321hfz4vr1fi363nscy32ga14qvfygrg96wa"))))
     (build-system python-build-system)
-    (home-page "http://docs.python.org/py3k/library/configparser.html")
+    (home-page "https://github.com/jaraco/configparser/")
     (synopsis "Backport of configparser from python 3.5")
     (description "@code{python-configparser} is a backport of
 @code{configparser} from Python 3.5 so that it can be used directly

@@ -4000,8 +4000,8 @@ navigate code in a tree-like fashion.")
 (define-public emacs-lispy
   ;; Release 0.26.0 was almost 3 years ago, and there have been ~772 commits
   ;; since.
-  (let ((commit "c2a358a7a15fcf056a5b7461a8e690b481b03b80")
-        (revision "0"))
+  (let ((commit "f94cfc6b8f9c3afe7d028c366928049c011023de")
+        (revision "1"))
     (package
       (name "emacs-lispy")
       (version (git-version "0.26.0" revision commit))
@@ -4011,7 +4011,7 @@ navigate code in a tree-like fashion.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "1g6756qqx2n4cx8jac6mlwayilsiyc5rz8nrqjnywvzc75xdinjd"))
+                  "1bm2cpwizg1qfpm377gpx1af1hm5maw69if1csnk5vwaphmv8c4g"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
@@ -4031,10 +4031,8 @@ S-expression.")
       (license license:gpl3+))))
 
 (define-public emacs-lispyville
-  ;; Later versions need a more recent Evil, with an evil-define-key*
-  ;; supporting nil for the state.
-  (let ((commit "b4291857ed6a49a67c4ea77522889ce51fb171ab")
-        (revision "0"))
+  (let ((commit "d28b937f0cabd8ce61e2020fe9a733ca80d82c74")
+        (revision "1"))
     (package
       (name "emacs-lispyville")
       (version (git-version "0.1" revision commit))
@@ -4044,7 +4042,7 @@ S-expression.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "095zibzc3naknahdrnb59g9rbljy8wz9rkc7rf8avb3wxlwvxhm3"))
+                  "0f6srwj1qqkfkbmp5n5pjvi6gm7b7xav05p5hrs2i83rjrakzzqx"))
                 (file-name (git-file-name name version))))
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -5184,35 +5182,34 @@ news items, openrc and runscripts.")
     (license license:gpl2+)))
 
 (define-public emacs-evil
-  (let ((commit "230b87212c81aaa68ef5547a6b998d9c365fe139"))
-    (package
-      (name "emacs-evil")
-      (version (git-version "1.2.13" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-evil/evil")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "0c9zy3bpck10gcrv79kd3h7i4ygd5bgbgy773n0lg7a2r5kwn1gx"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-undo-tree" ,emacs-undo-tree)
-         ("emacs-goto-chg" ,emacs-goto-chg)))
-      (home-page "https://github.com/emacs-evil/evil")
-      (synopsis "Extensible Vi layer for Emacs")
-      (description
-       "Evil is an extensible vi layer for Emacs.  It emulates the
+  (package
+    (name "emacs-evil")
+    (version "1.2.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-evil/evil")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-undo-tree" ,emacs-undo-tree)
+       ("emacs-goto-chg" ,emacs-goto-chg)))
+    (home-page "https://github.com/emacs-evil/evil")
+    (synopsis "Extensible Vi layer for Emacs")
+    (description
+     "Evil is an extensible vi layer for Emacs.  It emulates the
 main features of Vim, and provides facilities for writing custom
 extensions.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "4e1f0e0b17153d460805a0da90d6191d66b2673d")
-        (revision "5"))
+  (let ((commit "0cfdf4ecf0420aac2a9dd29ff7b54067c3433d71")
+        (revision "6"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.1" revision commit))
@@ -5224,7 +5221,7 @@ extensions.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "11d5ppdnb2y2mwsdd9g62h7zds962kw3nss89zv5iwgcf9f1fb5x"))))
+                  "1igsvgxvij918myc397cjhfybmm11znc7961vnbcd5xlviq2p01y"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -11310,39 +11307,38 @@ Org-mode.  It features:
       (license license:gpl3+))))
 
 (define-public emacs-fish-completion
-  (let ((commit "bac15fda1392a891070574dfe5d2d50b10831e8b"))
-    (package
-      (name "emacs-fish-completion")
-      (version (git-version "20180616" "1" commit))
-      (source
-       (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://gitlab.com/Ambrevar/emacs-fish-completion/repository/"
-               "archive.tar.gz?ref="
-               commit))
-         (sha256
-          (base32
-           "093qzdrbkl7dhjk16zq8i13kh1phyigkblcfrbgbrxjqd2ndrfdi"))))
-      (build-system emacs-build-system)
-      (inputs `(("fish" ,fish)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((fish (assoc-ref inputs "fish")))
-                 ;; Specify the absolute file names of the various
-                 ;; programs so that everything works out-of-the-box.
-                 (emacs-substitute-variables
-                     "fish-completion.el"
-                   ("fish-completion-command"
-                    (string-append fish "/bin/fish")))))))))
-      (home-page
-       "https://gitlab.com/Ambrevar/emacs-fish-completion")
-      (synopsis "Fish completion for Emacs pcomplete")
-      (description
-       "This package provides completion for the Fish shell to pcomplete (used
+  (package
+    (name "emacs-fish-completion")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://gitlab.com/Ambrevar/emacs-fish-completion/repository/"
+             "archive.tar.gz?ref="
+             version))
+       (sha256
+        (base32
+         "1hpma1c5j50ja03ibr7h1xmyv7k8j3rbvqivad47kwqhlsgw0jk0"))))
+    (build-system emacs-build-system)
+    (inputs `(("fish" ,fish)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((fish (assoc-ref inputs "fish")))
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (emacs-substitute-variables
+                   "fish-completion.el"
+                 ("fish-completion-command"
+                  (string-append fish "/bin/fish")))))))))
+    (home-page
+     "https://gitlab.com/Ambrevar/emacs-fish-completion")
+    (synopsis "Fish completion for Emacs pcomplete")
+    (description
+     "This package provides completion for the Fish shell to pcomplete (used
 by shell and Eshell).  You can set it up globally with:
 
 @example
@@ -11357,7 +11353,7 @@ shell/Eshell mode hook.
 The package @code{emacs-bash-completion} is an optional dependency: if available,
 @code{fish-completion-complete} can be configured to fall back on bash to further
 try completing.  See @code{fish-completion-fallback-on-bash-p}.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-gif-screencast
   (let ((commit "12b25442b97b84abae74ecb5190a9d14ff7cfe5a"))
@@ -13088,4 +13084,30 @@ GUI.")
       (synopsis "Emacs settings file for Google C/C++ style")
       (description "@code{emacs-google-c-style} provides an Emacs settings
 file for Google C and C++ style.")
+      (license license:gpl1+))))
+
+(define-public emacs-redshank
+  (let ((commit "f98e68f532e622bcd464292ca4a9cf5fbea14ebb")
+        (revision "1"))
+    (package
+      (name "emacs-redshank")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://www.foldr.org/~michaelw/projects/redshank.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jdkgvd5xy9hl5q611jwah2n05abjp7qcy9sj4k1z11x0ii62b6p"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-paredit" ,emacs-paredit)))
+      (home-page "http://www.foldr.org/~michaelw/emacs/redshank/")
+      (synopsis "Common Lisp Editing Extensions (for Emacs)")
+      (description "Redshank is a collection of code-wrangling Emacs macros
+mostly geared towards Common Lisp, but some are useful for other Lisp
+dialects, too.  Redshank's code transformations aim to be expression-based (as
+opposed to character-based).")
       (license license:gpl1+))))

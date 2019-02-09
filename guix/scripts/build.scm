@@ -308,7 +308,8 @@ strings like \"guile-next=stable-3.0\" meaning that packages are built using
     (package
       (inherit old)
       (version (string-append "git." branch))
-      (source (git-checkout (url url) (branch branch)))))
+      (source (git-checkout (url url) (branch branch)
+                            (recursive? #t)))))
 
   (let* ((replacements (evaluate-git-replacement-specs replacement-specs
                                                        replace))

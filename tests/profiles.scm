@@ -93,10 +93,7 @@
 (test-assert "manifest-matching-entries"
   (let* ((e (list guile-2.0.9 guile-2.0.9:debug))
          (m (manifest e)))
-    (and (null? (manifest-matching-entries m
-                                           (list (manifest-pattern
-                                                   (name "python")))))
-         (equal? e
+    (and (equal? e
                  (manifest-matching-entries m
                                             (list (manifest-pattern
                                                     (name "guile")
@@ -106,6 +103,15 @@
                                             (list (manifest-pattern
                                                     (name "guile")
                                                     (version "2.0.9"))))))))
+
+(test-assert "manifest-matching-entries, no match"
+  (let ((m (manifest (list guile-2.0.9)))
+        (p (manifest-pattern (name "python"))))
+    (guard (c ((unmatched-pattern-error? c)
+               (and (eq? p (unmatched-pattern-error-pattern c))
+                    (eq? m (unmatched-pattern-error-manifest c)))))
+      (manifest-matching-entries m (list p))
+      #f)))
 
 (test-assert "manifest-remove"
   (let* ((m0 (manifest (list guile-2.0.9 guile-2.0.9:debug)))
@@ -165,8 +171,7 @@
 (test-assert "manifest-transaction-effects"
   (let* ((m0 (manifest (list guile-1.8.8)))
          (t  (manifest-transaction
-              (install (list guile-2.0.9 glibc))
-              (remove (list (manifest-pattern (name "coreutils")))))))
+              (install (list guile-2.0.9 glibc)))))
     (let-values (((remove install upgrade downgrade)
                   (manifest-transaction-effects m0 t)))
       (and (null? remove) (null? downgrade)

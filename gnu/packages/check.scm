@@ -672,7 +672,7 @@ standard library.")
        ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest-bootstrap)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (home-page "http://pytest.org")
+    (home-page "https://docs.pytest.org/en/latest/")
     (synopsis "Python testing library")
     (description
      "Pytest is a testing tool that provides auto-discovery of test modules

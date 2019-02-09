@@ -3637,7 +3637,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3646,7 +3646,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "085qwfv3fsgry1pnx531w83lnyvf7kbaklipdf8zqa9shi6d3x9i"))
+                "1w9il6gg0dh4yi20nbdcibx5z5z4bvzppq8wsqf1l916hnczsj3s"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3660,7 +3660,11 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
                             '("thirdparty/freetype"
                               "thirdparty/openssl"
                               "thirdparty/portmidi"))
-                  #t))))
+                  #t))
+              ;; Fix compilation error due to BUILD_WEBENGINE CMake option not
+              ;; properly handled.  Applied upstream already:
+              ;; <https://github.com/musescore/MuseScore/commit/bb0c1a9b4940f3f6b52c0df535289ec8a3bc9e03>
+              (patches (search-patches "musescore-fix-use_webengine.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

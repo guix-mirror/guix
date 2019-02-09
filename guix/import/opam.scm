@@ -1,4 +1,3 @@
-;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -90,8 +89,8 @@
 (define-peg-pattern condition-lower all (and (ignore "<") (* SP) condition-string))
 (define-peg-pattern condition-and all (and condition-form2 (* SP) (? (ignore "&")) (* SP) condition-form))
 (define-peg-pattern condition-or all (and condition-form2 (* SP) (ignore "|") (* SP) condition-form))
-(define-peg-pattern condition-eq all (and condition-content (* SP) (ignore "=") (* SP) condition-content))
-(define-peg-pattern condition-neq all (and condition-content (* SP) (ignore (and "!" "=")) (* SP) condition-content))
+(define-peg-pattern condition-eq all (and (? condition-content) (* SP) (ignore "=") (* SP) condition-content))
+(define-peg-pattern condition-neq all (and (? condition-content) (* SP) (ignore (and "!" "=")) (* SP) condition-content))
 (define-peg-pattern condition-content body (or condition-string condition-var))
 (define-peg-pattern condition-content2 body (and condition-content (* SP) (not-followed-by (or "&" "=" "!"))))
 (define-peg-pattern condition-string all (and QUOTE (* STRCHR) QUOTE))
@@ -117,7 +116,11 @@ path to the repository."
                         (lambda (dir)
                           (string-join (cdr (string-split dir #\.)) "."))
                         versions)))
-        (latest-version versions))
+        ;; Workaround for janestreet re-versionning
+        (let ((v-versions (filter (lambda (version) (string-prefix? "v" version)) versions)))
+          (if (null? v-versions)
+            (latest-version versions)
+            (string-append "v" (latest-version (map (lambda (version) (substring version 1)) v-versions))))))
       (begin
         (format #t (G_ "Package not found in opam repository: ~a~%") package)
         #f))))
@@ -127,12 +130,17 @@ path to the repository."
     (lambda _
       (peg:tree (match-pattern records (get-string-all (current-input-port)))))))
 
+(define (substitute-char str what with)
+  (string-join (string-split str what) with))
+
 (define (ocaml-name->guix-name name)
-  (cond
-    ((equal? name "ocamlfind") "ocaml-findlib")
-    ((string-prefix? "ocaml" name) name)
-    ((string-prefix? "conf-" name) (substring name 5))
-    (else (string-append "ocaml-" name))))
+  (substitute-char
+    (cond
+      ((equal? name "ocamlfind") "ocaml-findlib")
+      ((string-prefix? "ocaml" name) name)
+      ((string-prefix? "conf-" name) (substring name 5))
+      (else (string-append "ocaml-" name)))
+    #\_ "-"))
 
 (define (metadata-ref file lookup)
   (fold (lambda (record acc)
@@ -234,7 +242,9 @@ path to the repository."
                  (values
                   `(package
                      (name ,(ocaml-name->guix-name name))
-                     (version ,version)
+                     (version ,(if (string-prefix? "v" version)
+                                 (substring version 1)
+                                 version))
                      (source
                        (origin
                          (method url-fetch)
@@ -247,6 +257,10 @@ path to the repository."
                      ,@(if (null? native-inputs)
                          '()
                          `((native-inputs ,(list 'quasiquote native-inputs))))
+                     ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
+                         '()
+                         `((properties
+                             ,(list 'quasiquote `((upstream-name . ,name))))))
                      (home-page ,(metadata-ref opam-content "homepage"))
                      (synopsis ,(metadata-ref opam-content "synopsis"))
                      (description ,(metadata-ref opam-content "description"))
@@ -259,6 +273,11 @@ path to the repository."
                                            (opam->guix-package name))
                     #:guix-name ocaml-name->guix-name))
 
+(define (guix-name->opam-name name)
+  (if (string-prefix? "ocaml-" name)
+    (substring name 6)
+    name))
+
 (define (guix-package->opam-name package)
   "Given an OCaml PACKAGE built from OPAM, return the name of the
 package in OPAM."
@@ -266,10 +285,9 @@ package in OPAM."
                          (package-properties package)
                          'upstream-name))
         (name (package-name package)))
-    (cond
-      (upstream-name upstream-name)
-      ((string-prefix? "ocaml-" name) (substring name 6))
-      (else name))))
+    (if upstream-name
+      upstream-name
+      (guix-name->opam-name name))))
 
 (define (opam-package? package)
   "Return true if PACKAGE is an OCaml package from OPAM"

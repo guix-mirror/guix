@@ -174,14 +174,15 @@ algorithm within the Numpy framework.")
     (name "bitshuffle-for-snappy")
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (format #t "\
+     (substitute-keyword-arguments (package-arguments bitshuffle)
+       ((#:tests? _ #f) #f)
+       ((#:phases phases)
+        `(modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (with-output-to-file "Makefile"
+                 (lambda _
+                   (format #t "\
 libbitshuffle.so: src/bitshuffle.o src/bitshuffle_core.o src/iochain.o lz4/lz4.o
 \tgcc -O3 -ffast-math -std=c99 -o $@ -shared -fPIC $^
 
@@ -201,6 +202,6 @@ install: libbitshuffle.so
 \tinstall -m644 src/iochain.h $(INCLUDEDIR)
 \tinstall -m644 lz4/lz4.h $(INCLUDEDIR)
 " (assoc-ref outputs "out"))))
-             #t)))))
+               #t))))))
     (inputs '())
     (native-inputs '())))

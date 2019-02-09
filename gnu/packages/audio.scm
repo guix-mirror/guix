@@ -2300,7 +2300,7 @@ external_libraries/yaml-cpp/include)"))
        ("eudev" ,eudev)                 ;for user interactions with devices
        ("avahi" ,avahi)                 ;zeroconf service discovery support
        ("icu4c" ,icu4c)
-       ("boost" ,boost-cxx14)
+       ("boost" ,boost)
        ("boost-sync" ,boost-sync)
        ("yaml-cpp" ,yaml-cpp)))
     (home-page "https://github.com/supercollider/supercollider")

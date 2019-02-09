@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -34,7 +34,7 @@
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.081")
+    (version "2.084")
     (source
      (origin
        (method url-fetch)
@@ -42,7 +42,7 @@
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
         (base32
-         "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
+         "0kwjrsl519bv48b7698a9anj6l0n3z1vrd1a7im2r1pbffxxw5kx"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
@@ -54,7 +54,7 @@ compression library.")
 (define-public perl-compress-raw-zlib
   (package
     (name "perl-compress-raw-zlib")
-    (version "2.081")
+    (version "2.084")
     (source
      (origin
        (method url-fetch)
@@ -62,7 +62,7 @@ compression library.")
                            "Compress-Raw-Zlib-" version ".tar.gz"))
        (sha256
         (base32
-         "06rsm9ahp20xfyvd3jc69sd0k8vqysryxc6apzdbn96jbcsdwmp1"))))
+         "0vv69a8kjx64cxhjgaccidy2yyij2j3aqlrv1r0dwa1fl9xijpim"))))
     (build-system perl-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -90,7 +90,7 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.081")
+    (version "2.084")
     (source
      (origin
        (method url-fetch)
@@ -98,7 +98,7 @@ compression library.")
                            "IO-Compress-" version ".tar.gz"))
        (sha256
         (base32
-         "1na66ns1g3nni0m9q5494ym4swr21hfgpv88mw8wbj2daiswf4aj"))))
+         "1dbdsxhbikmbbfsdam3crv8474l8ax6d9d7r3s6safk4v8z51g8x"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081

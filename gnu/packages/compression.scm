@@ -725,13 +725,13 @@ decompression of some loosely related file formats used by Microsoft.")
     (version "1.8.1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lz4/lz4/archive/"
-                           "v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference (url "https://github.com/lz4/lz4")
+                           (commit (string-append "v" version))))
        (sha256
         (base32
-         "1y93h6dyi3026gvpzdv310ldcylnnhwf32n75mdjf8x9fvkskwqj"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "1jggv4lvfav53advnj0pwqgxzn868lrj8dc9zp73iwvqlj82mhmx"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs `(("valgrind" ,valgrind)))   ; for tests
     (arguments
@@ -1747,7 +1747,7 @@ single-member files which can't be decompressed in parallel.")
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f)) ;; No tests available.
-   (inputs `(("boost" ,boost-cxx14)
+   (inputs `(("boost" ,boost)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))
    (native-inputs `(("pkg-config" ,pkg-config)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -82,7 +82,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.12.10")
+    (version "1.12.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -90,7 +90,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "1xywijmgfad4m3cxp0b4l6kvypwc53ckmhwwzbrc6n32jwj3ssab"))
+                "1y7mxhkw2shd9mi9s62k81lz8npjkrafapr4fyfms7hs04kg4ilm"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -159,7 +159,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.56.2")
+   (version "2.56.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -167,7 +167,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "12d738n1wpvrn39zvy9xazg5h6vzyiwsw8z1qibcj09mh4bbsjnn"))
+              "1cjcqz77m62zrx7224vl3f2cxwqf28r5xpqb2jy7av0vr2scb959"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -194,9 +194,6 @@ shared NFS home directories.")
       (modify-phases %standard-phases
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; For building deterministic pyc files
-            (setenv "DETERMINISTIC_BUILD" "1")
-
             ;; For tests/gdatetime.c.
             (setenv "TZDIR"
                     (string-append (assoc-ref inputs "tzdata")
@@ -495,7 +492,7 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.10.0")
+    (version "2.10.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -503,7 +500,7 @@ by GDBus included in Glib.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "10cd54l4zihss9qxfhd2iip2k7mr292k37i54r2cpgv0c8sdchzq"))))
+               "00v08km4wwzbh6vjxb21388wb9dm6g2xh14rgwabnv4c2wk5z8n9"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
@@ -722,7 +719,15 @@ up the Gnome environment, and are used in many unrelated projects.")
              "0z261fwrszxb28ccg3hsg9rizig4s84zvwmx6y31a4pyv7bvs5w3")))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-vala-bindings")))
+     '(#:configure-flags '("--enable-vala-bindings")
+
+       ;; '../tools/glib-*.py' generate files but the target dependencies are
+       ;; (presumably) not fully specified in the makefile, leading to
+       ;; parallel build errors like:
+       ;;
+       ;;   EOFError: EOF read where object expected
+       ;;   make[2]: *** [Makefile:1906: _gen/register-dbus-glib-marshallers-body.h] Error 1
+       #:parallel-build? #f))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("gobject-introspection" ,gobject-introspection)

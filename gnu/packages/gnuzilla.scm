@@ -442,7 +442,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.39")
+    (version "3.41")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -453,7 +453,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0jw6qlfl2g47hhx056nvnj6h92bk3sn46hy3ig61a911dzblvrkb"))
+                "0bbif42fzz5gk451sv3yphdrl7m4p6zgk5jk0307j06xs3sihbmb"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))
@@ -493,7 +493,7 @@ in the Mozilla clients.")
            (lambda _
              ;; Use 127.0.0.1 instead of $HOST.$DOMSUF as HOSTADDR for testing.
              ;; The later requires a working DNS or /etc/hosts.
-             (setenv "DOMSUF" "(none)")
+             (setenv "DOMSUF" "localdomain")
              (setenv "USE_IP" "TRUE")
              (setenv "IP_ADDRESS" "127.0.0.1")
 
@@ -501,7 +501,7 @@ in the Mozilla clients.")
              ;; leading to test failures:
              ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
              ;; work around that, set the time to roughly the release date.
-             (invoke "faketime" "2018-09-01" "./nss/tests/all.sh")))
+             (invoke "faketime" "2018-12-01" "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -827,7 +827,7 @@ from forcing GEXP-PROMISE."
        ("libxt" ,libxt)
        ("libffi" ,libffi)
        ("ffmpeg" ,ffmpeg)
-       ("libvpx" ,libvpx)
+       ("libvpx" ,libvpx-1.7)
        ("icu4c" ,icu4c)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)

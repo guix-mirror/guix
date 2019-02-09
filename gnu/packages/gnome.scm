@@ -364,12 +364,6 @@ formats like PNG, SVG, PDF and EPS.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'use-empty-ssl-cert-file
-           (lambda _
-             ;; The ca-certificates.crt is not available in the build
-             ;; environment.
-             (setenv "SSL_CERT_FILE" "/dev/null")
-             #t))
          (add-before 'check 'disable-failing-tests
            (lambda _
              ;; The PicasaWeb API tests fail with gnome-online-accounts@3.24.2.
@@ -2309,16 +2303,15 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.4.2")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "json-glib-fix-tests-32bit.patch"))
               (sha256
                (base32
-                "1j3dd2xj1l9fi12m1gpmfgf5p4c1w0i970m6k62k3is98yj0jxrd"))))
+                "0ixwyis47v5bkx6h8a1iqlw3638cxcv57ivxv4gw2gaig51my33j"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -2411,7 +2404,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.54.1")
+    (version "2.58.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -2419,29 +2412,18 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bq16m9nh3gcz9x2fvygr0iwxd2pxcbrm3lj3kihsnh1afv8g9za"))
-              (patches
-               (search-patches "glib-networking-ssl-cert-file.patch"))))
-    (build-system gnu-build-system)
+                "0s006gs9nsq6mg31spqha1jffzmp6qjh10y27h0fxf1iw1ah5ymx"))
+              (patches (search-patches "glib-networking-connection.patch"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       '("--with-ca-certificates=/etc/ssl/certs/ca-certificates.crt")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-giomoduledir
-           ;; Install GIO modules into $out/lib/gio/modules.
-           (lambda _
-             (substitute* "configure"
-               (("GIO_MODULE_DIR=.*")
-                (string-append "GIO_MODULE_DIR=" %output
-                               "/lib/gio/modules\n")))
-             #t))
-         (add-before 'check 'use-empty-ssl-cert-file
-           (lambda _
-             ;; The ca-certificates.crt is not available in the build
-             ;; environment.
-             (setenv "SSL_CERT_FILE" "/dev/null")
-             #t)))))
+     `(#:configure-flags '("-Dlibproxy_support=false")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-TLSv1.3
+                    (lambda _
+                      ;; XXX: One test fails when TLS 1.3 is enabled, fixed in 2.60.0:
+                      ;; <https://gitlab.com/gnutls/gnutls/issues/615>.
+                      (setenv "G_TLS_GNUTLS_PRIORITY" "NORMAL:-VERS-TLS1.3")
+                      #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -2531,9 +2513,6 @@ libxml to ease remote use of the RESTful API.")
              ;; The 'check-local' target runs 'env LANG=C sort -u',
              ;; unset 'LC_ALL' to make 'LANG' working.
              (unsetenv "LC_ALL")
-             ;; The ca-certificates.crt is not available in the build
-             ;; environment.
-             (setenv "SSL_CERT_FILE" "/dev/null")
              ;; HTTPD in Guix uses mod_event and does not build prefork.
              (substitute* "tests/httpd.conf"
                (("^LoadModule mpm_prefork_module.*$") "\n"))
@@ -2571,7 +2550,8 @@ libxml to ease remote use of the RESTful API.")
                            ""               ;URI of subject
                            "127.0.0.1"      ;IP address of subject
                            ""               ;signing?
-                           ""               ;encryption?
+                           ""               ;encryption (RSA)?
+                           ""               ;data encryption?
                            ""               ;sign OCSP requests?
                            ""               ;sign code?
                            ""               ;time stamping?
@@ -5678,7 +5658,7 @@ like switching to windows and launching applications.")
 (define-public gtk-vnc
   (package
     (name "gtk-vnc")
-    (version "0.7.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -5687,7 +5667,7 @@ like switching to windows and launching applications.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cdaywj5lqnl5b22qzd7k7lmacsnmk8b8rc4drk6gvqmcrlsljzk"))))
+         "1dya1wc9vis8h0fv625pii1n70cckf1xjg1m2hndz989d118i6is"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-gtk=3.0")))
@@ -5767,7 +5747,7 @@ easy, safe, and automatic.")
        ("dbus" ,dbus)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("sqlite" ,sqlite-with-fts5)
+       ("sqlite" ,sqlite)
        ("nettle" ,nettle)  ; XXX why is this needed?
        ("poppler" ,poppler)
        ("libgsf" ,libgsf)

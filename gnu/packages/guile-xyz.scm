@@ -560,6 +560,45 @@ HTML (via SXML) or any other format for rendering.")
 It has a nice, simple s-expression based syntax.")
     (license license:lgpl3+)))
 
+(define-public guile-squee
+  (let ((commit "a85902a92bf6f58a1d35fd974a01ade163deda8d")
+        (revision "0"))
+    (package
+      (name "guile-squee")
+      (version (string-append "0-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/cwebber/guile-squee.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0p1lpsp4kx57j3ai1dkxilm4ziavzzx8wbbc42m3hpziq0a7qz5z"))))
+      (build-system guile-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "squee.scm"
+                 (("dynamic-link \"libpq\"")
+                  (string-append
+                   "dynamic-link \""
+                   (assoc-ref inputs "postgresql") "/lib/libpq.so"
+                   "\"")))
+               #t)))))
+      (inputs
+       `(("postgresql" ,postgresql)))
+      (native-inputs
+       `(("guile" ,guile-2.2)))
+      (home-page "https://notabug.org/cwebber/guile-squee")
+      (synopsis "Connect to PostgreSQL using Guile")
+      (description
+       "@code{squee} is a Guile library for connecting to PostgreSQL databases
+using Guile's foreign function interface.")
+      (license license:lgpl3+))))
+
 (define-public guile-colorized
   (package
     (name "guile-colorized")
@@ -1798,14 +1837,14 @@ interface for reading articles in any format.")
 (define-public guile-redis
   (package
     (name "guile-redis")
-    (version "1.0.0")
+    (version "1.3.0")
     (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "1dp5fmqvma59pvp1nfpq6hqgbmjici8sd1y8llahl87fynw1dvr9"))))
+                "1li70a2716my9q9zfq0qn2x5d1cir9k2vx0jm9glm464yaf1vj39"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

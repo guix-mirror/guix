@@ -749,7 +749,7 @@ incompatible with HDF5.")
 (define-public hdf5
   (package
     (name "hdf5")
-    (version "1.8.19")
+    (version "1.8.21")
     (source
      (origin
       (method url-fetch)
@@ -759,12 +759,14 @@ incompatible with HDF5.")
                                 version ".tar.bz2")
                  (string-append "https://support.hdfgroup.org/ftp/HDF5/"
                                 "current"
-                                (apply string-append
-                                       (take (string-split version #\.) 2))
+                                (match (string-split version #\.)
+                                  ((major minor _ ...)
+                                   (string-append major minor)))
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
-       (base32 "0f3jfbqpaaq21ighi40qzs52nb52kc2d2yjk541rjmsx20b3ih2r"))
-      (patches (list (search-patch "hdf5-config-date.patch")))))
+       (base32 "03glk4w4wyb1jyb443g53y3y1ncnf6mj2cqwm6avfr2awkgb3cg5"))
+      (patches (search-patches "hdf5-config-date.patch"
+                               "hdf5-1.8-mpi-deprecations.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -877,7 +879,8 @@ extremely large and complex data collections.")
                                 "/src/hdf5-" version ".tar.bz2")))
       (sha256
        (base32 "1pr85fa1sh2ky6ai2hs3f21lp252grl2cq3wbyi4rh7dm83gyrqj"))
-      (patches (list (search-patch "hdf5-config-date.patch")))))))
+      (patches (search-patches "hdf5-config-date.patch"
+                               "hdf5-mpi-deprecations.patch"))))))
 
 (define-public hdf-java
   (package
@@ -2331,7 +2334,8 @@ void mc64ad_dist (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
               "RowPerm = NOROWPERM;"))
            #t))
        (patches (search-patches "superlu-dist-scotchmetis.patch"
-                                "superlu-dist-awpm-grid.patch"))))
+                                "superlu-dist-awpm-grid.patch"
+                                "superlu-dist-fix-mpi-deprecations.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
@@ -2691,7 +2695,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.42.1")
+    (version "5.42.2")
     (source
      (origin
        (method url-fetch)
@@ -2699,7 +2703,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1ka0xf70a55ndgmyrq7p5xxbd78pq7bfkqhgxsivaqdw6gn5lmcg"))
+         "0kdncy6137sg3rradirxzj10mkcvafxd892zlclwhr9sa7b12zhn"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -2802,7 +2806,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "18.11.4")
+    (version "19.01.3")
     (source
      (origin
        (method git-fetch)
@@ -2812,7 +2816,7 @@ point numbers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1sz8n9v23q442l7yjj67pjh0dk78rl4cbcc3j8m1bm88anlfxl9r"))))
+         "1vwahx3zxkn3qlv4z0fm7v8wh0wspvs026alrh7ff7s0c2dcy95x"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -2926,7 +2930,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -2935,7 +2939,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0cvlixnpc3cdvvn3f30phfvsgnqljqix6wn72ps9rj7xdhvw06jg"))))
+         "1s56lgilyyw86dzmj3jkci9zsg24n60wq4d0zri1hrxlxb6ihimj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -4244,3 +4248,485 @@ linear algebra primitives specifically targeting graph analytics.")
               license:gpl2+             ;include/psort/(funnel|sort)*.h
               license:x11               ;usort and psort
               license:bsd-3))))         ;CombBLAS and MersenneTwister.h
+
+(define-public dune-common
+  (package
+    (name "dune-common")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-common-" version ".tar.gz"))
+       (sha256
+        (base32
+         "019wcr1qf7jwyxx1y5y290wdlglylskvbb2m01ljkzcza2xnlmhw"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         ;; These tests fail because they require a fully functional MPI
+         ;; environment.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (setenv "ARGS"
+                     (string-append "--exclude-regex '("
+                                    (string-join
+                                     (list
+                                      "remoteindicestest"
+                                      "remoteindicestest-mpi-2"
+                                      "syncertest"
+                                      "syncertest-mpi-2"
+                                      "variablesizecommunicatortest"
+                                      "variablesizecommunicatortest-mpi-2"
+                                      "arithmetictestsuitetest"
+                                      "assertandreturntest"
+                                      "assertandreturntest_ndebug"
+                                      "concept"
+                                      "debugaligntest"
+                                      "mpicollectivecommunication"
+                                      "mpicollectivecommunication-mpi-2"
+                                      "mpiguardtest"
+                                      "mpiguardtest-mpi-2"
+                                      "mpihelpertest"
+                                      "mpihelpertest-mpi-2"
+                                      "mpihelpertest2"
+                                      "mpihelpertest2-mpi-2")
+                                     "|")
+                                    ")'"))
+             #t)))))
+    (inputs
+     `(("gmp" ,gmp)
+       ("metis" ,metis)
+       ("openmpi" ,openmpi)
+       ("openblas" ,openblas)
+       ("python" ,python)
+       ("superlu" ,superlu)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.  It supports the easy implementation of methods like
+@dfn{Finite Elements} (FE), @dfn{Finite Volumes} (FV), and also @dfn{Finite
+Differences} (FD).")
+    ;; GPL version 2 with "runtime exception" to make it behave like LGPLv2.
+    (license license:gpl2)))
+
+(define-public dune-geometry
+  (package
+    (name "dune-geometry")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-geometry-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hlaaxjyv9j05blasvb67sy02hd0w4g9znf68gdh3l731dd1aqbn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("openblas" ,openblas)
+       ("gmp" ,gmp)
+       ("python" ,python)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.  It supports the easy implementation of methods like
+@dfn{Finite Elements} (FE), @dfn{Finite Volumes} (FV), and also @dfn{Finite
+Differences} (FD).
+
+This package contains the basic DUNE geometry classes.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
+
+(define-public dune-grid
+  (package
+    (name "dune-grid")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-grid-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jp4vscm9yb9xg0lh7apzccfkhvgbnk652yahigmh3cvzpl4acd0"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         ;; These tests fail because they require a fully functional MPI
+         ;; environment.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (setenv "ARGS"
+                     (string-append "--exclude-regex '("
+                                    (string-join
+                                     (list
+                                      "scsgmappertest"
+                                      "conformvolumevtktest"
+                                      "gnuplottest"
+                                      "nonconformboundaryvtktest"
+                                      "subsamplingvtktest"
+                                      "vtktest"
+                                      "vtktest-mpi-2"
+                                      "vtksequencetest"
+                                      "gmshtest-onedgrid"
+                                      "test-dgf-yasp"
+                                      "test-dgf-yasp-offset"
+                                      "test-dgf-oned"
+                                      "test-geogrid-yaspgrid"
+                                      "test-gridinfo"
+                                      "test-identitygrid"
+                                      "testiteratorranges"
+                                      "test-hierarchicsearch"
+                                      "test-parallel-ug-mpi-2"
+                                      "test-yaspgrid-backuprestore-equidistant"
+                                      "test-yaspgrid-backuprestore-equidistant-mpi-2"
+                                      "test-yaspgrid-backuprestore-equidistantoffset"
+                                      "test-yaspgrid-backuprestore-equidistantoffset-mpi-2"
+                                      "test-yaspgrid-backuprestore-tensor"
+                                      "test-yaspgrid-backuprestore-tensor-mpi-2"
+                                      "test-yaspgrid-tensorgridfactory"
+                                      "test-yaspgrid-tensorgridfactory-mpi-2"
+                                      "test-yaspgrid-yaspfactory-1d"
+                                      "test-yaspgrid-yaspfactory-1d-mpi-2"
+                                      "test-yaspgrid-yaspfactory-2d"
+                                      "test-yaspgrid-yaspfactory-2d-mpi-2"
+                                      "test-yaspgrid-yaspfactory-3d"
+                                      "test-yaspgrid-yaspfactory-3d-mpi-2"
+                                      "globalindexsettest"
+                                      "persistentcontainertest"
+                                      "structuredgridfactorytest"
+                                      "tensorgridfactorytest"
+                                      "vertexordertest")
+                                     "|")
+                                    ")'"))
+             #t)))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("gmp" ,gmp)
+       ("metis" ,metis)
+       ("openblas" ,openblas)
+       ("openmpi" ,openmpi)
+       ("python" ,python)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.  It supports the easy implementation of methods like
+@dfn{Finite Elements} (FE), @dfn{Finite Volumes} (FV), and also @dfn{Finite
+Differences} (FD).
+
+This package contains the basic DUNE grid classes.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
+
+(define-public dune-istl
+  (package
+    (name "dune-istl")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-istl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l2gyrvys5w6wsmk0ckbb7295s80b7yk7qrl7x66akv2jv1nzq2w"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         ;; These tests fail because they require a fully functional MPI
+         ;; environment.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (setenv "ARGS"
+                     (string-append "--exclude-regex '("
+                                    (string-join
+                                     (list
+                                      "galerkintest"
+	                              "hierarchytest"
+	                              "pamgtest"
+	                              "pamg_comm_repart_test"
+	                              "matrixredisttest"
+	                              "vectorcommtest"
+	                              "matrixmarkettest")
+                                     "|")
+                                    ")'"))
+             #t)))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("superlu" ,superlu)
+       ("openblas" ,openblas)
+       ("gmp" ,gmp)
+       ("python" ,python)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.
+
+This is the iterative solver template library which provides generic sparse
+matrix/vector classes and a variety of solvers based on these classes.  A
+special feature is the use of templates to exploit the recursive block
+structure of finite element matrices at compile time.  Available solvers
+include Krylov methods, (block-) incomplete decompositions and
+aggregation-based algebraic multigrid.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
+
+(define-public dune-localfunctions
+  (package
+    (name "dune-localfunctions")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-localfunctions-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19c6zjinwwpy8jh4v4prhphyd438rapd4x80fj93apmwgw04nrhl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment") ; TODO
+    (description "This DUNE module provides interface and implementation for
+shape functions defined on the DUNE reference elements.  In addition to the
+shape function, interpolation operators and special keys are provided which
+can be used to assemble global function spaces on finite-element grids.
+
+This package provides an interface and implementation for shape functions
+defined on the DUNE reference elements.  In addition to the shape function,
+interpolation operators and special keys are provided which can be used to
+assemble global function spaces on finite-element grids.")
+    ;; GPL version 2 with "runtime exception"
+    (license license:gpl2)))
+
+(define-public dune-alugrid
+  (package
+    (name "dune-alugrid")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-alugrid-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l9adgyjpra8mvwm445s0lpjshnb63jag85fb2hisbjn6bm320yj"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; 7 of 8 tests fail because they need a full MPI
+                   ; environment
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-include
+           (lambda _
+             (substitute* "dune/alugrid/test/test-alugrid.cc"
+               (("doc/grids/gridfactory/testgrids")
+                "doc/dune-grid/grids/gridfactory/testgrids"))
+             #t))
+         (add-after 'build 'build-tests
+           (lambda* (#:key inputs make-flags #:allow-other-keys)
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "dune-grid") "/share:"
+                                    (getenv "CPLUS_INCLUDE_PATH")))
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-grid" ,dune-grid)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("openblas" ,openblas)
+       ("python" ,python)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "ALUGrid is an adaptive, loadbalancing, unstructured
+implementation of the DUNE grid interface supporting either simplices or
+cubes.")
+    (license license:gpl2+)))
+
+(define-public dune-typetree
+  (package
+    (name "dune-typetree")
+    (version "2.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.dune-project.org/staging/dune-typetree.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mnv6w2f22lz3j4bdpdjq55vjm8xxfx9v4vvhg9bd36xpsbjpjp9"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("openblas" ,openblas)
+       ("python" ,python)
+       ("metis" ,metis)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "TypeTree is a template library for constructing and
+operating on statically typed trees of objects.")
+    ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
+    (license (list license:lgpl3+ license:gpl2))))
+
+(define-public dune-functions
+  (package
+    (name "dune-functions")
+    (version "2.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.dune-project.org/staging/dune-functions.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1an8gb477n8j0kzpbrv7nr1snh8pxip0gsxq6w63jc83gg3dj200"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: tests require dune-uugrid
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-istl" ,dune-istl)
+       ("dune-localfunctions" ,dune-localfunctions)
+       ("dune-grid" ,dune-grid)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-typetree" ,dune-typetree)
+       ("openmpi" ,openmpi)
+       ("openblas" ,openblas)
+       ("metis" ,metis)
+       ("python" ,python)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "The dune-functions module provides an abstraction layer for
+global finite element functions.  Its two main concepts are functions
+implemented as callable objects, and bases of finite element spaces.")
+    ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
+    (license (list license:lgpl3+ license:gpl2))))
+
+(define-public dune-pdelab
+  (package
+    (name "dune-pdelab")
+    (version "2.6.0-rc1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.dune-project.org/pdelab/dune-pdelab")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07g0s9448z65vjrq88g5rv3340iifil85k170n8kbqchsvi4ny5v"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f)) ; XXX: the tests cannot be compiled
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-istl" ,dune-istl)
+       ("dune-localfunctions" ,dune-localfunctions)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-grid" ,dune-grid)
+       ("dune-typetree" ,dune-typetree)
+       ("dune-functions" ,dune-functions)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("openblas" ,openblas)
+       ("eigen" ,eigen)
+       ("metis" ,metis)
+       ("python" ,python)
+       ("superlu" ,superlu)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Differential equations solver toolbox")
+    (description "PDELab is a partial differential equations solver toolbox
+built on top of DUNE, the Distributed and Unified Numerics Environment.")
+    ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
+    (license (list license:lgpl3+ license:gpl2))))

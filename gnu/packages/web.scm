@@ -77,6 +77,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -507,16 +508,18 @@ libraries for working with JNLP applets.")
 (define-public jansson
   (package
     (name "jansson")
-    (version "2.11")
+    (version "2.12")
     (source (origin
              (method url-fetch)
              (uri
               (string-append "http://www.digip.org/jansson/releases/jansson-"
-                             version ".tar.gz"))
+                             version ".tar.bz2"))
              (sha256
               (base32
-               "1x5jllzzqamq6kahx9d9a5mrarm9m3f30vfxvcqpi6p4mcnz91bf"))))
+               "1lp1mv8pjp5yziws66cy0dhpcam4bbjqhffk13v4vgdybp674pb4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
     (description
@@ -3993,15 +3996,6 @@ you'd expect.")
         (base32
          "163py4klka423x7li2b685gmg3a6hjf074mlff2ajhmi3l0lm8x6"))))
     (build-system glib-or-gtk-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'use-empty-ssl-cert-file
-           (lambda _
-             ;; Search for ca-certificates.crt files
-             ;; during the check phase.
-             (setenv "SSL_CERT_FILE" "/dev/null")
-             #t)))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ;; For check phase.
@@ -6244,7 +6238,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.32.0")
+    (version "1.35.1")
     (source
      (origin
        (method url-fetch)
@@ -6253,12 +6247,13 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0zbgp8f80h2zlfn8cd2ldrmgl81jzcdh1141n71aqmfckzaqj2kh"))))
+         "0fi6qg2w82636wixwkqy7bclpgxslmvg82r431hs8h6aqc4mnzwv"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gcc" ,gcc-7)                   ; 1.35.0 requires GCC6 or later
 
        ;; Required by tests.
        ("cunit" ,cunit)
@@ -6290,6 +6285,9 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                (("@prefix@")
                 (assoc-ref outputs "lib")))
              #t))
+         (add-before 'configure 'work-around-bug-30756
+           (lambda _
+             (for-each unsetenv '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH")) #t))
          (add-before 'check 'set-timezone-directory
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")

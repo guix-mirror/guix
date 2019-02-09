@@ -63,6 +63,10 @@
             &missing-generation-error
             missing-generation-error?
             missing-generation-error-generation
+            &unmatched-pattern-error
+            unmatched-pattern-error?
+            unmatched-pattern-error-pattern
+            unmatched-pattern-error-manifest
 
             manifest make-manifest
             manifest?
@@ -155,6 +159,11 @@
   profile-collision-error?
   (entry    profile-collision-error-entry)        ;<manifest-entry>
   (conflict profile-collision-error-conflict))    ;<manifest-entry>
+
+(define-condition-type &unmatched-pattern-error &error
+  unmatched-pattern-error?
+  (pattern  unmatched-pattern-error-pattern)      ;<manifest-pattern>
+  (manifest unmatched-pattern-error-manifest))    ;<manifest>
 
 (define-condition-type &missing-generation-error &profile-error
   missing-generation-error?
@@ -559,16 +568,21 @@ no match.."
   (->bool (manifest-lookup manifest pattern)))
 
 (define (manifest-matching-entries manifest patterns)
-  "Return all the entries of MANIFEST that match one of the PATTERNS."
-  (define predicates
-    (map entry-predicate patterns))
-
-  (define (matches? entry)
-    (any (lambda (pred)
-           (pred entry))
-         predicates))
-
-  (filter matches? (manifest-entries manifest)))
+  "Return all the entries of MANIFEST that match one of the PATTERNS.  Raise
+an '&unmatched-pattern-error' if none of the entries of MANIFEST matches one
+of PATTERNS."
+  (fold-right (lambda (pattern matches)
+                (match (filter (entry-predicate pattern)
+                               (manifest-entries manifest))
+                  (()
+                   (raise (condition
+                           (&unmatched-pattern-error
+                            (pattern pattern)
+                            (manifest manifest)))))
+                  (lst
+                   (append lst matches))))
+              '()
+              patterns))
 
 (define (manifest-search-paths manifest)
   "Return the list of search path specifications that apply to MANIFEST,

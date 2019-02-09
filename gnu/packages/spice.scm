@@ -96,7 +96,7 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.12.14")
+    (version "0.12.15")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -104,7 +104,7 @@ system to use the host GPU to accelerate 3D rendering.")
                 "spice-protocol-" version ".tar.bz2"))
               (sha256
                (base32
-                "170ckpgazvqv7hxy209myg67pqnd6c0gvr4ysbqgsfch6320nd90"))))
+                "06b461i4jv741in8617jjpfk28wk7zs9p7841njkf4sbm8xv4kcb"))))
     (build-system gnu-build-system)
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
@@ -213,11 +213,7 @@ which allows users to view a desktop computing environment.")
           "--enable-automated-tests")
 
         ;; Several tests appear to be opening the same sockets concurrently.
-        #:parallel-tests? #f
-
-        #:phases (modify-phases %standard-phases
-                   (add-before 'check 'use-empty-ssl-cert-file
-                     (lambda _ (setenv "SSL_CERT_FILE" "/dev/null") #t)))))
+        #:parallel-tests? #f))
     (synopsis "Server implementation of the SPICE protocol")
     (description "SPICE is a remote display system built for virtual
 environments which allows you to view a computing 'desktop' environment

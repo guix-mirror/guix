@@ -135,7 +135,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.24")
+    (version "9.26")
     (source
       (origin
         (method url-fetch)
@@ -145,10 +145,8 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "1mk922rnml93w2g42yxiyn8xqanc50cm65irrgh0b6lp4kgifjfl"))
-        (patches (search-patches "ghostscript-CVE-2018-16509.patch"
-                                 "ghostscript-bug-699708.patch"
-                                 "ghostscript-no-header-creationdate.patch"
+          "1645f47all5w27bfhiq15vycdm954lmr6agqkrp68ksq6xglgvch"))
+        (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
         (modules '((guix build utils)))

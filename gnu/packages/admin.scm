@@ -148,13 +148,15 @@ usual file attributes can be checked for inconsistencies.")
   (package
     (name "progress")
     (version "0.14")
-    (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/Xfennec/"
-                          name "/archive/v" version ".tar.gz"))
-      (sha256
-       (base32 "1wcanixfsi5k4i9h5vrnncgjdncalsdfqllrxibxwpgfnf20sji1"))
-      (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Xfennec/progress.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1lk2v4b767klib93an4g3f7z5qrv9kdk9jf7545vw1immc4kamrl"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -162,12 +164,12 @@ usual file attributes can be checked for inconsistencies.")
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
-     `(#:tests? #f ; There is no test suite.
+     `(#:tests? #f                      ; no test suite
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; There's no configure phase.
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/Xfennec/progress")
     (synopsis "Program to view the progress of the coreutils commands")
     (description "A program that looks for coreutils basic commands (cp, mv,
@@ -219,8 +221,8 @@ interface and is based on GNU Guile.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://cr.yp.to/" name "/"
-                    name "-" version ".tar.gz"))
+                    "https://cr.yp.to/daemontools/"
+                    "daemontools-" version ".tar.gz"))
               (sha256
                (base32
                 "07scvw88faxkscxi91031pjkpccql6wspk4yrlnsbrrb5c0kamd5"))))
@@ -231,7 +233,7 @@ interface and is based on GNU Guile.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _
-             (chdir ,(string-append name "-" version))
+             (chdir ,(string-append "daemontools-" version))
              #t))
          (delete 'configure)
          (add-before 'build 'patch
@@ -1539,14 +1541,13 @@ degradation and failure.")
     (version "1.6.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/adrianlopezroche/fdupes/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/adrianlopezroche/fdupes.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1sj9pa40pbz6xdwbxfwhdhkvhdf1xc5gvggk9mdq26c41gdnyswx"))))
+        (base32 "19b6vqblddaw8ccw4sn0qsqzbswlhrz8ia6n4m3hymvcxn8skpz9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1703,13 +1704,13 @@ lookup to YAML Mode.  You could enable the mode with @code{(add-hook
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/opsengine/cpulimit/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/opsengine/cpulimit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1nn2w849xd5bw4y5sqnll29nxdwl5h0cv4smc7dwmpb9qnd2ycb4"))))
+        (base32 "1dz045yhcsw1rdamzpz4bk8mw888in7fyqk1q1b3m1yk4pd1ahkh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1864,7 +1865,7 @@ platform-specific methods.")
     (version "2.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page name "-" version ".tar.gz"))
+              (uri (string-append home-page "audit-" version ".tar.gz"))
               (sha256
                (base32
                 "0f4ci6ffznnmgblwgv7ich9mjfk3p6y5l6m6h3chhmzw156nj454"))))
@@ -1979,22 +1980,22 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
   (package
     (name "dstat")
     (version "0.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/dagwieers/dstat/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append "dstat-" version ".tar.gz"))
-              (sha256
-               (base32
-                "16286z3y2lc9nsq8njzjkv6k2vyxrj9xiixj1k3gnsbvhlhkirj6"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dagwieers/dstat.git")
+             (commit version)))
+       (file-name (git-file-name "dstat" version))
+       (sha256
+        (base32 "0sbpna531034gr40w4g9cwz35s2fpf9h654paznsxw9fih91rfa5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;; no make check
+     `(#:tests? #f                      ; no make check
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "prefix=/"))
-       ;; no configure script
+       ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs `(("python-2" ,python-2)))
     (synopsis "Versatile resource statistics tool")
@@ -2015,15 +2016,16 @@ throughput (in the same interval).")
   (package
     (name "thefuck")
     (version "3.28")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/nvbn/thefuck/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1i11qlnbg95nx7dcf6wqvfz7b230dqr5m981md4hvyaa1qw3xj5m"))
-              (patches (search-patches "thefuck-test-environ.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nvbn/thefuck.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "070b2sx8r0b4hry6xg97psxlikxghmz91zicg2cm6kc1yhgz4agc"))
+       (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -2089,23 +2091,24 @@ produce uniform output across heterogeneous networks.")
   (package
     (name "cbatticon")
     (version "1.6.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/valr/"
-                                  name "/archive/" version ".tar.gz"))
-              (sha256
-               (base32
-                "185lzvaijvyq7y8r7dvizhri0rf9lpc1anfgbbn4lznr1fr3z7rn"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/valr/cbatticon.git")
+             (commit version)))
+       (sha256
+        (base32 "16g26vin1693dbdr9qsnw36fdchx394lp79gvp7gcbw0w1ny9av6"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; no configure script
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("gtk+" ,gtk+)
        ("gettext" ,gettext-minimal)
@@ -2123,22 +2126,22 @@ the status of your battery in the system tray.")
         (commit "896543735e1c99144765fdbd7b6e6b5afbd8b881"))
     (package
       (name "interrobang")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/TrilbyWhite/interrobang")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "1n13m70p1hfba5dy3i8hfclbr6k9q3d9dai3dg4jvhdhmxcpjzdf"))))
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TrilbyWhite/interrobang.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1n13m70p1hfba5dy3i8hfclbr6k9q3d9dai3dg4jvhdhmxcpjzdf"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; no tests
+       `(#:tests? #f                    ; no tests
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)) ; no configure script
+           (delete 'configure))         ; no configure script
          #:make-flags (list (string-append "PREFIX="
                                            (assoc-ref %outputs "out")))))
       (inputs
@@ -2158,8 +2161,8 @@ shortcut syntax and completion options.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://archives.eyrie.org/software/kerberos/" name "-"
-                    version ".tar.xz"))
+                    "https://archives.eyrie.org/software/kerberos/"
+                    "pam-krb5-" version ".tar.xz"))
               (sha256
                (base32
                 "1qjp8i1s9bz7g6kiqrkzzkxn5pfspa4sy53b6z40fqmdf9przdfb"))))
@@ -2205,11 +2208,12 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
     (version "1.4.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/linux-sunxi/"
-                           "sunxi-tools/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linux-sunxi/sunxi-tools.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "08iqwj95qw2s7ilhrdi2lkbc8dx64zk5lzz1qk587jr0lla81x41"))
+        (base32 "04f3jqg8ww4jxsf9c6ddcdgy2xbhkyp0b3l5f1hvvbv94p81rjxd"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
@@ -2217,7 +2221,7 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
         '(begin
            (delete-file-recursively "bin")
            #t))
-       (file-name (string-append name "-" version ".tar.gz"))))
+       (file-name (git-file-name name version))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"
@@ -2300,16 +2304,16 @@ in order to be able to find it.
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/aureliojargas/sedsed/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aureliojargas/sedsed.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0139jkqvm8ipiwfj7k69ry2f9b1ffgpk79arpz4r7w9kf6h23bnh"))))
+        (base32 "0009lsjsxhqmgaklpwq15hhd94hpiy7r4va69yy0ig3mxi6zbg2z"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; No tests.
+     `(#:tests? #f                      ; no tests
        #:python ,python-2
        #:phases
        (modify-phases %standard-phases
@@ -2364,7 +2368,7 @@ buffers.")
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
                                   "intel-gpu-tools/snapshot/"
-                                  name "-" version ".tar.gz"))
+                                  "igt-gpu-tools-" version ".tar.gz"))
               (sha256
                (base32
                 "0vzv2i4jfv2pkbqby5k3ap9pzidkmajwqmg3s7wnv8i1h33775iq"))))
@@ -2494,7 +2498,7 @@ you are running, what theme or icon set you are using, etc.")
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
-                           version "/" name "-v" version ".tar.gz"))
+                           version "/nnn-v" version ".tar.gz"))
        (sha256
         (base32 "1d6z12y4rlg4dzhpm30irpq2ak8hjh5zykkp2n7vxnz5m4ki89zp"))))
     (build-system gnu-build-system)
@@ -2565,14 +2569,15 @@ on systems running the Linux kernel.")
   (package
     (name "masscan")
     (version "1.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/robertdavidgraham/masscan"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0wxddsgyx27z45906icdhdbfsvfj8ij805208qpqjx46i0lnjs50"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robertdavidgraham/masscan.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q0c7bsf0pbl8napry1qyg0gl4pd8wn872h4mz9b56dx4rx90vqg"))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)))
@@ -2608,7 +2613,7 @@ application, collecting the information received.")
               (method url-fetch)
               (uri (string-append "https://github.com/jwilk/hungrycat/"
                                   "releases/download/" version "/"
-                                  name "-" version ".tar.gz"))
+                                  "hungrycat-" version ".tar.gz"))
               (sha256
                (base32
                 "03fc1zsrf99lvxa7b4ps6pbi43304wbxh1f6ci4q0vkal370yfwh"))))
@@ -2640,7 +2645,7 @@ late.")
               (method url-fetch)
               (uri (string-append
                     "https://github.com/LLNL/LaunchMON/releases/download/v"
-                    version "/" name "-v" version ".tar.gz"))
+                    version "/launchmon-v" version ".tar.gz"))
               (sha256
                (base32
                 "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))))

@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -139,17 +139,17 @@ line client and a client based on Qt.")
   (package
     (name "ledger")
     (version "3.1.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ledger/ledger/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "12jlv3gsjhrja25q9hrwh73cdacd2l3c2yyn8qnijav9mdhnbw4h"))
-              (patches (search-patches "ledger-revert-boost-python-fix.patch"
-                                       "ledger-fix-uninitialized.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ledger/ledger.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1j4p7djkmdmd858hylrsc3inamh9z0vkfl98s9wiqfmrzw51pmxp"))
+       (patches (search-patches "ledger-revert-boost-python-fix.patch"
+                                "ledger-fix-uninitialized.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -252,16 +252,16 @@ in ability, and easy to use.")
     (version "0.9.13")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/stesie/geierlein"
-                           "/archive/V" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stesie/geierlein.git")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "11jfa7mxvvf0ldhx0hsvjbx3xwvzvn2wrfjpms8c7qmrnqhwh4wp"))))
+        (base32 "00zpwr3lk2vdmd60fgdwdk0xxs52wvnm19ln2m75yfphydvkglic"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; would require npm, python and a lot more
+     `(#:tests? #f                  ; would require npm, python and a lot more
        #:phases
         (modify-phases %standard-phases
           (delete 'configure)           ; no configure script
@@ -590,13 +590,13 @@ Monero GUI client.")
     (version "0.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/romanz/trezor-agent/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/romanz/trezor-agent.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0h8jb147vpjk7mqbl4za0xdh7lblhx07n9dfk80kn2plwnvrry1x"))))
+        (base32 "15aaqk79d9y9nbsfznf2iscz12z5ispcj8kr8v5bc0sqqj2brs12"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -604,7 +604,7 @@ Monero GUI client.")
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             ;; Make installed package available for running the tests
+             ;; Make installed package available for running the tests.
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
