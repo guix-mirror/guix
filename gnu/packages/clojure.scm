@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -147,12 +148,13 @@ designs.")
     (version "0.1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/clojure/algo.generic/archive"
-                       "/algo.generic-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure/algo.generic.git")
+             (commit (string-append "algo.generic-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "12w9681i545gp1af4576z1qbixwps1j13c16fmcc7zsb0bd1zr7w"))))
+        (base32 "1s6q10qp276dcpzv06bq1q3bvkvlw03qhmncqcs9cc6p9lc0w4p4"))))
     (build-system clojure-build-system)
     (arguments
      '(#:source-dirs '("src/main/clojure/")
