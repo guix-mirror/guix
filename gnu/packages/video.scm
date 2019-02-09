@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
@@ -1301,7 +1301,7 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.7.0")
+    (version "1.8.0")
     (source (origin
               ;; XXX: Upstream does not provide tarballs for > 1.6.1.
               (method git-fetch)
@@ -1311,9 +1311,8 @@ access to mpv's powerful playback capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
-              (patches (search-patches "libvpx-use-after-free-in-postproc.patch"
-                                       "libvpx-CVE-2016-2818.patch"))))
+                "079pb80am08lj8y5rx99vdr99mdqis9067f172zq12alkz849n93"))
+              (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-shared"
@@ -1337,6 +1336,25 @@ access to mpv's powerful playback capabilities.")
     (description "libvpx is a codec for the VP8/VP9 video compression format.")
     (license license:bsd-3)
     (home-page "https://www.webmproject.org/")))
+
+;; GNU IceCat fails to build against 1.8.0, so keep this version for now.
+(define-public libvpx-1.7
+  (package
+    (inherit libvpx)
+    (version "1.7.0")
+    (source (origin
+              (inherit (package-source libvpx))
+              (uri (git-reference
+                    (url "https://chromium.googlesource.com/webm/libvpx")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "libvpx" version))
+              (sha256
+               (base32
+                "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
+              (patches
+               (append
+                (origin-patches (package-source libvpx))
+                (search-patches "libvpx-use-after-free-in-postproc.patch")))))))
 
 (define-public youtube-dl
   (package

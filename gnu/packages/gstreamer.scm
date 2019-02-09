@@ -216,6 +216,7 @@ for the GStreamer multimedia library.")
       (uri (string-append
             "https://gstreamer.freedesktop.org/src/" name "/"
             name "-" version ".tar.xz"))
+      (patches (search-patches "gst-plugins-good-libvpx-compat.patch"))
       (sha256
        (base32
         "0y89qynb4b6fry3h43z1r99qslmi3m8xhlq0i5baq2nbc0r5b2sz"))))
@@ -249,7 +250,8 @@ for the GStreamer multimedia library.")
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
     (arguments
-     `(#:phases
+     `(#:make-flags '("CFLAGS=-DHAVE_VPX_1_8")   ;XXX: Remove for >1.14.
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'disable-failing-tests
