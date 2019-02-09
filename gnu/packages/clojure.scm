@@ -280,12 +280,13 @@ tree.
     (version "0.1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/clojure/tools.macro/archive"
-                       "/tools.macro-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure/tools.macro.git")
+             (commit (string-append "tools.macro-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0fs64a0g63xx6g7sj6vrsqknhl90s0isf6k053nw8vv5prfzc7v6"))))
+        (base32 "14mdxqkwja0cffmyfav5pbcli2qvw1mjdgz0n619a2z2036andx8"))))
     (build-system clojure-build-system)
     (arguments
      '(#:source-dirs '("src/main/clojure/")
