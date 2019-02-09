@@ -1938,6 +1938,40 @@ easier to build concurrent applications.")
 (define-public python2-pykka
   (package-with-python2 python-pykka))
 
+(define-public python-pymsgbox
+  (package
+    (name "python-pymsgbox")
+    (version "1.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              ;; LICENSE.txt is not present on pypi
+              (url "https://github.com/asweigart/PyMsgBox")
+              (commit "55926b55f46caa969c5ddb87990ebea2737bd66f")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0zy7rjfpwlrd8b64j7jk2lb8m2npc21rnpwakpfvwgl4nxdy80rg"))))
+    (arguments
+     ;; Circular dependency to run tests:
+     ;; Tests need pyautogui, which depends on pymsgbox.
+     '(#:tests? #f))
+    (build-system python-build-system)
+    (home-page "https://github.com/asweigart/PyMsgBox")
+    (synopsis "Python module for JavaScript-like message boxes")
+    (description
+     "PyMsgBox is a simple, cross-platform, pure Python module for
+JavaScript-like message boxes.  Types of dialog boxes include:
+@enumerate
+@item alert
+@item confirm
+@item prompt
+@item password
+@end enumerate
+")
+    (license license:bsd-3)))
+
 (define-public python-pympler
   (package
     (name "python-pympler")
