@@ -1011,13 +1011,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.23.4")
+    (version "0.24.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1x54pd7hr3y7qahx6b5bf2wzj54xvl8r3s1h4pl254pnmi3wl92v"))))
+        (base32 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1025,6 +1025,13 @@ human-friendly syntax.")
                   (ice-9 ftw)
                   (srfi srfi-26))
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-which
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((which (assoc-ref inputs "which")))
+                        (substitute* "pandas/io/clipboard/__init__.py"
+                          (("^CHECK_CMD = .*")
+                           (string-append "CHECK_CMD = \"" which "\"\n"))))
+                      #t))
                   (replace 'check
                     (lambda _
                       (let ((build-directory
@@ -1033,12 +1040,13 @@ human-friendly syntax.")
                               (car (scandir "build"
                                             (cut string-prefix? "lib." <>))))))
                         ;; Disable the "strict data files" option which causes
-                        ;; the build to error out if required data files are not
-                        ;; available (as is the case with PyPI archives).
+                        ;; the build to error out if required data files are
+                        ;; not available (as is the case with PyPI archives).
                         (substitute* "setup.cfg"
                           (("addopts = --strict-data-files") "addopts = "))
                         (with-directory-excursion build-directory
-                          ;; Delete tests that require "moto" which is not yet in Guix.
+                          ;; Delete tests that require "moto" which is not yet
+                          ;; in Guix.
                           (for-each delete-file
                                     '("pandas/tests/io/conftest.py"
                                       "pandas/tests/io/json/test_compression.py"
@@ -1054,13 +1062,16 @@ human-friendly syntax.")
        ("python-pytz" ,python-pytz)
        ("python-dateutil" ,python-dateutil)
        ("python-xlrd" ,python-xlrd)))
+    (inputs
+     `(("which" ,which)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-lxml" ,python-lxml)
        ("python-html5lib" ,python-html5lib)
        ("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://pandas.pydata.org")
     (synopsis "Data structures for data analysis, time series, and statistics")
     (description
