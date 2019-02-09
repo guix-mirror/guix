@@ -103,15 +103,6 @@ is in the public domain.")
                (base32
                 "0pdzszb4sp73hl36siiv3p300jvfvbcdxi2rrmkwgs6inwznmajx"))))))
 
-;; This is used by Tracker.
-(define-public sqlite-with-fts5
-  (package/inherit sqlite
-    (name "sqlite-with-fts5")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(cons "--enable-fts5" ,flags))))))
-
 ;; This is used by Qt.
 (define-public sqlite-with-column-metadata
   (package/inherit sqlite

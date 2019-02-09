@@ -5747,7 +5747,7 @@ easy, safe, and automatic.")
        ("dbus" ,dbus)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("sqlite" ,sqlite-with-fts5)
+       ("sqlite" ,sqlite)
        ("nettle" ,nettle)  ; XXX why is this needed?
        ("poppler" ,poppler)
        ("libgsf" ,libgsf)
