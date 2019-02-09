@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -472,11 +473,11 @@ embedded kernel situations.")
     (license license:expat)))
 
 (define-public cool-retro-term
-  (let ((commit "dd799cf5c0eda92cf44f3938c0c2dcae5651a99e")
-        (revision "1"))
+  (let ((commit "1.1.1")
+        (revision "0"))                 ;not used currently
     (package
       (name "cool-retro-term")
-      (version (string-append "1.0.1-" revision "." (string-take commit 7)))
+      (version "1.1.1")
       (source (origin
                 (method git-fetch)
                 (file-name (string-append name "-" version "-checkout"))
@@ -485,11 +486,7 @@ embedded kernel situations.")
                       (commit commit)
                       (recursive? #t)))
                 (sha256
-                 (base32 "08mrvj8zk9ck15q90ipjzza1acnnsjhprv2rxg8yyck0xl9p40jd"))
-                (patches
-                 (search-patches "cool-retro-term-fix-array-size.patch"
-                                 "cool-retro-term-dont-check-uninit-member.patch"
-                                 "cool-retro-term-memory-leak-1.patch"))
+                 (base32 "0wb6anchxa5jpn9c73kr4byrf2xlj8x8qzc5x7ny6saj7kbbvp75"))
                 (modules '((guix build utils)
                            (srfi srfi-1)
                            (srfi srfi-26)
@@ -497,20 +494,18 @@ embedded kernel situations.")
                            (ice-9 regex)))
                 (snippet
                  '(let* ((fonts '(;"1971-ibm-3278"     ; BSD 3-clause
-                                  ;"1975-knight-tv"    ; GPL
                                   "1977-apple2"        ; Non-Free
                                   "1977-commodore-pet" ; Non-Free
                                   "1979-atari-400-800" ; Non-Free
-                                  "1982-commodore64"   ; Non-Free
-                                  "1985-atari-st"      ; ?
-                                  "1985-ibm-pc-vga"    ; Unclear
+                                  ;"1981-ibm-pc        ; CC-SA 4.0
+                                  "1982-commodore64")) ; Non-Free
+                                  ;"1985-ibm-pc-vga"   ; CC-SA 4.0
                                   ;"modern-fixedsys-excelsior" ; Redistributable
                                   ;"modern-hermit"     ; SIL
                                   ;"modern-inconsolata"; SIL
                                   ;"modern-pro-font-win-tweaked" ; X11
                                   ;"modern-proggy-tiny"; X11
                                   ;"modern-terminus"   ; SIL
-                                  "modern-monaco"))    ; Apple Non-Free
                          (name-rx (make-regexp " *name: *\"([^\"]*)\""))
                          (source-rx (make-regexp " *source: \"fonts/([^/]*)[^\"]*\""))
                          (fontname-rx (make-regexp "\"fontName\":\"([^\"]*).*"))
@@ -626,7 +621,8 @@ embedded kernel situations.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                  (symlink (string-append bin "/cool-retro-term")
-                          (string-append bin "/crt")))))
+                          (string-append bin "/crt"))
+                 #t)))
            (add-after 'install 'install-man
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((mandir (string-append (assoc-ref outputs "out")
