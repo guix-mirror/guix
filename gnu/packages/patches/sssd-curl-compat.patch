@@ -1,0 +1,18 @@
+Fix build with curl >= 7.62.  Patch taken from upstream:
+
+https://pagure.io/SSSD/sssd/c/4d3841ca379afc01184453ba45ab3e75ffec60da?branch=sssd-1-16
+
+diff --git a/src/util/tev_curl.c b/src/util/tev_curl.c
+index 6a7a580..d70a429 100644
+--- a/src/util/tev_curl.c
++++ b/src/util/tev_curl.c
+@@ -97,7 +97,9 @@ static errno_t curl_code2errno(CURLcode crv)
+         return ETIMEDOUT;
+     case CURLE_SSL_ISSUER_ERROR:
+     case CURLE_SSL_CACERT_BADFILE:
++#if LIBCURL_VERSION_NUM < 0x073e00
+     case CURLE_SSL_CACERT:
++#endif
+     case CURLE_SSL_CERTPROBLEM:
+         return ERR_INVALID_CERT;
+ 

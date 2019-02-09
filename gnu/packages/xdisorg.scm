@@ -298,7 +298,7 @@ following the mouse.")
 (define-public pixman
   (package
     (name "pixman")
-    (version "0.34.0")
+    (version "0.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -306,7 +306,7 @@ following the mouse.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "13m842m9ffac3m9r0b4lvwjhwzg3w4353djkjpf00s0wnm4v5di1"))
+                "1blzrx50ssdv0pn56hcv2v0zw0vrjwj1sx22pkgjls1p9n6rr88w"))
               (patches (search-patches "pixman-CVE-2016-5296.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -324,7 +324,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.93")
+    (version "2.4.96")
     (source
       (origin
         (method url-fetch)
@@ -334,7 +334,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "0g6d9wsnb7lx8r1m4kq8js0wsc5jl20cz1csnlh6z9s8jpfd313f"))
+          "14xkip83qgljjaahzq40qgl60j54q7k00la1hbf5kk5lgg7ilmhd"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -343,14 +343,12 @@ rasterisation.")
              ("armhf-linux"
               '("--enable-exynos-experimental-api"
                 "--enable-omap-experimental-api"
-                ;; XXX: This fails a symbol check on a build machine:
-                ;; <https://hydra.gnu.org/build/2270314/nixlog/4/raw>
-                ;; TODO: Update the list of symbols.
-                ;;"--enable-etnaviv-experimental-api"
+                "--enable-etnaviv-experimental-api"
                 "--enable-tegra-experimental-api"
                 "--enable-freedreno-kgsl"))
              ("aarch64-linux"
               '("--enable-tegra-experimental-api"
+                "--enable-etnaviv-experimental-api"
                 "--enable-freedreno-kgsl"))
              (_ '())))))
     (inputs

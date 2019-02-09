@@ -31,7 +31,7 @@
 (define-public cyrus-sasl
   (package
    (name "cyrus-sasl")
-   (version "2.1.26")
+   (version "2.1.27")
    (source (origin
             (method url-fetch)
             (uri (list (string-append
@@ -40,13 +40,14 @@
                        (string-append
                         "ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-"
                         version ".tar.gz")))
-            (patches (search-patches "cyrus-sasl-CVE-2013-4122.patch"))
             (sha256 (base32
-                     "1hvvbcsg21nlncbgs0cgn3iwlnb3vannzwsp6rwvnn9ba4v53g4g"))))
+                     "1m85zcpgfdhm43cavpdkhb1s2zq1b31472hq1w1gs3xh94anp1i6"))))
    (build-system gnu-build-system)
    (inputs `(("gdbm" ,gdbm)
-             ("mit-krb5" ,mit-krb5)
              ("openssl" ,openssl)))
+   (propagated-inputs
+    `(;; cyrus-sasl.pc refers to -lkrb5, so propagate it.
+      ("mit-krb5" ,mit-krb5)))
    (arguments
     '(#:configure-flags (list (string-append "--with-plugindir="
                                              (assoc-ref %outputs "out")

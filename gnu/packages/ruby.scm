@@ -60,7 +60,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.4.3")
+    (version "2.5.3")
     (source
      (origin
        (method url-fetch)
@@ -69,8 +69,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0l9bv67dgsphk42lmiskhrnh47hbyj6rfg2rcjx22xivpx07srr3"))
-       (patches (search-patches "ruby-rubygems-276-for-ruby24.patch"))
+         "0vrhrw7kcz9mg0jkqnihkcxqy5k05v8k1j0y2735z8wfk8sx1j8w"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -111,6 +110,26 @@
 a focus on simplicity and productivity.")
     (home-page "https://www.ruby-lang.org")
     (license license:ruby)))
+
+(define-public ruby-2.4
+  (package
+    (inherit ruby)
+    (version "2.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0l9bv67dgsphk42lmiskhrnh47hbyj6rfg2rcjx22xivpx07srr3"))
+       (patches (search-patches "ruby-rubygems-276-for-ruby24.patch"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
+                   #t))))))
 
 (define-public ruby-2.3
   (package

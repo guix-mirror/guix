@@ -1,0 +1,30 @@
+https://github.com/geometer/FBReader/commit/b7c78e965d06f78043a57e230c866c3af3f5a1eb.patch
+https://github.com/geometer/FBReader/issues/310
+https://github.com/geometer/FBReader/pull/311/commits
+
+From b7c78e965d06f78043a57e230c866c3af3f5a1eb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Vladim=C3=ADr=20=C4=8Cun=C3=A1t?= <vcunat@gmail.com>
+Date: Sun, 9 Dec 2018 10:18:03 +0100
+Subject: [PATCH] fix compatibility with curl-7.62
+
+https://github.com/curl/curl/commit/3f3b26d6fe
+---
+ zlibrary/core/src/unix/curl/ZLCurlNetworkManager.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/zlibrary/core/src/unix/curl/ZLCurlNetworkManager.cpp b/zlibrary/core/src/unix/curl/ZLCurlNetworkManager.cpp
+index 54cc37f6c..03e2a5721 100644
+--- a/zlibrary/core/src/unix/curl/ZLCurlNetworkManager.cpp
++++ b/zlibrary/core/src/unix/curl/ZLCurlNetworkManager.cpp
+@@ -285,9 +285,11 @@ std::string ZLCurlNetworkManager::perform(const ZLExecutionData::Vector &dataLis
+ #endif
+ 					errors.insert(ZLStringUtil::printf(errorResource["peerFailedVerificationMessage"].value(), ZLNetworkUtil::hostFromUrl(url)));
+ 					break;
++#if LIBCURL_VERSION_NUM < 0x073e00
+ 				case CURLE_SSL_CACERT:
+ 					errors.insert(ZLStringUtil::printf(errorResource["sslCertificateAuthorityMessage"].value(), ZLNetworkUtil::hostFromUrl(url)));
+ 					break;
++#endif
+ 				case CURLE_SSL_CACERT_BADFILE:
+ 					errors.insert(ZLStringUtil::printf(errorResource["sslBadCertificateFileMessage"].value(), request.sslCertificate().Path));
+ 					break;

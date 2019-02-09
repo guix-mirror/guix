@@ -1,4 +1,4 @@
-https://sources.debian.org/data/main/p/pyqt5/5.11.2+dfsg-1/debian/patches/public_sip.diff
+https://sources.debian.org/data/main/p/pyqt5/5.11.3+dfsg-1/debian/patches/public_sip.diff
 
 From: Dmitry Shachnev <mitya57@debian.org>
 Date: Tue, 3 Jul 2018 09:46:42 +0300
@@ -6,30 +6,16 @@ Subject: Use the public version of sip module
 
 Per https://www.debian.org/doc/debian-policy/#convenience-copies-of-code.
 ---
- configure.py | 19 +------------------
- 1 file changed, 1 insertion(+), 18 deletions(-)
+ configure.py              | 2 +-
+ designer/pluginloader.cpp | 2 +-
+ qmlscene/pluginloader.cpp | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/configure.py b/configure.py
-index 7c48136..ca23f93 100644
+index 32d03a0..3c43a14 100644
 --- a/configure.py
 +++ b/configure.py
-@@ -642,15 +642,6 @@ class TargetConfiguration:
-                     "Unable to import enum.  Please install the enum34 "
-                     "package from PyPI.")
- 
--        # Check there is a private copy of the sip module already installed.
--        try:
--            from PyQt5 import sip
--        except ImportError:
--            error(
--                    "Unable to import PyQt5.sip.  Make sure you have "
--                    "configured SIP to create a private copy of the sip "
--                    "module.")
--
-         # Get the details of the Python interpreter library.
-         py_major = self.py_version >> 16
-         py_minor = (self.py_version >> 8) & 0x0ff
-@@ -2438,7 +2429,7 @@ def get_sip_flags(target_config):
+@@ -2440,7 +2440,7 @@ def get_sip_flags(target_config):
      the target configuration.
      """
  
@@ -38,18 +24,32 @@ index 7c48136..ca23f93 100644
  
      # If we don't check for signed interpreters, we exclude the 'VendorID'
      # feature
-@@ -2914,14 +2905,6 @@ def check_sip(target_config):
-     target_config is the target configuration.
-     """
+diff --git a/designer/pluginloader.cpp b/designer/pluginloader.cpp
+index f41d391..3ca8b11 100644
+--- a/designer/pluginloader.cpp
++++ b/designer/pluginloader.cpp
+@@ -167,7 +167,7 @@ bool PyCustomWidgets::importPlugins(const QString &dir, const QStringList &plugi
+     // Make sure we have sip.unwrapinstance.
+     if (!sip_unwrapinstance)
+     {
+-        sip_unwrapinstance = getModuleAttr("PyQt5.sip", "unwrapinstance");
++        sip_unwrapinstance = getModuleAttr("sip", "unwrapinstance");
  
--    # Check there is a private copy of the sip module already installed.
--    try:
--        from PyQt5 import sip
--    except ImportError:
--        error(
--                "Unable to import PyQt5.sip.  Make sure you have configured "
--                "SIP to create a private copy of the sip module.")
--
-     if target_config.sip is None:
-         error(
-                 "Make sure you have a working sip on your PATH or use the "
+         if (!sip_unwrapinstance)
+             return true;
+diff --git a/qmlscene/pluginloader.cpp b/qmlscene/pluginloader.cpp
+index e14b946..140e80c 100644
+--- a/qmlscene/pluginloader.cpp
++++ b/qmlscene/pluginloader.cpp
+@@ -412,9 +412,9 @@ PyObject *PyQt5QmlPlugin::getModuleAttr(const char *module, const char *attr)
+ void PyQt5QmlPlugin::getSipAPI()
+ {
+ #if defined(SIP_USE_PYCAPSULE)
+-    sip = (const sipAPIDef *)PyCapsule_Import("PyQt5.sip._C_API", 0);
++    sip = (const sipAPIDef *)PyCapsule_Import("sip._C_API", 0);
+ #else
+-    PyObject *c_api = getModuleAttr("PyQt5.sip", "_C_API");
++    PyObject *c_api = getModuleAttr("sip", "_C_API");
+ 
+     if (c_api)
+     {

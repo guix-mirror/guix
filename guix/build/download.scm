@@ -157,7 +157,8 @@ out if the connection could not be established in less than TIMEOUT seconds."
 ;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
 ;; See <http://bugs.gnu.org/12202>.
 (module-autoload! (current-module)
-                  '(gnutls) '(make-session connection-end/client))
+                  '(gnutls)
+                  '(gnutls-version make-session connection-end/client))
 
 (define %tls-ports
   ;; Mapping of session record ports to the underlying file port.
@@ -268,7 +269,18 @@ host name without trailing dot."
     ;; "(gnutls) Priority Strings"); see <http://bugs.gnu.org/23311>.
     ;; Explicitly disable SSLv3, which is insecure:
     ;; <https://tools.ietf.org/html/rfc7568>.
-    (set-session-priorities! session "NORMAL:%COMPAT:-VERS-SSL3.0")
+    ;;
+    ;; FIXME: Since we currently fail to handle TLS 1.3 (with GnuTLS 3.6.5),
+    ;; remove it; see <https://bugs.gnu.org/34102>.
+    (set-session-priorities! session
+                             (string-append
+                              "NORMAL:%COMPAT:-VERS-SSL3.0"
+
+                              ;; The "VERS-TLS1.3" priority string is not
+                              ;; supported by GnuTLS 3.5.
+                              (if (string-prefix? "3.5." (gnutls-version))
+                                  ""
+                                  ":-VERS-TLS1.3")))
 
     (set-session-credentials! session
                               (if (and verify-certificate? ca-certs)

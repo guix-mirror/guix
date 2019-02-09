@@ -83,15 +83,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (replacement poppler/fixed)
-   (version "0.68.0")
+   (version "0.72.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0n0f7mv24lzv9p3dlzakpdhqg7ygcvl6l40grcz95xldzgq083gr"))))
+              "0lfs1b1jfamxl13zbl5n448dqvl9n8frbv8180y7b7kfyaw7wx61"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -132,14 +131,6 @@
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)
    (home-page "https://poppler.freedesktop.org/")))
-
-(define poppler/fixed
-  (package
-    (inherit poppler)
-    (source (origin
-              (inherit (package-source poppler))
-              (patches (append (origin-patches (package-source poppler))
-                               (search-patches "poppler-CVE-2018-19149.patch")))))))
 
 (define-public poppler-data
   (package
@@ -506,7 +497,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.4.0")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -514,9 +505,7 @@ by using the poppler rendering engine.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "1j0yah09adv3bsjhhbqra5lambal32svk8fxmf89wwmcqrcr4qma"))
-              (patches (search-patches
-                        "zathura-plugindir-environment-variable.patch"))))
+                "0hgx5x09i6d0z45llzdmh4l348fxh1y102sb1w76f2fp4r21j4ky"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
@@ -533,7 +522,7 @@ by using the poppler rendering engine.")
                          ("girara" ,girara)))
     (native-search-paths
      (list (search-path-specification
-            (variable "ZATHURA_PLUGIN_PATH")
+            (variable "ZATHURA_PLUGINS_PATH")
             (files '("lib/zathura")))))
     (build-system meson-build-system)
     (arguments

@@ -18,7 +18,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -583,6 +583,13 @@ Language.")
                       "main.stat_tables_innodb"
                       "roles.acl_statistics"
 
+                      ;; This file contains a time bomb which makes it fail after
+                      ;; 2019-01-01.  See <https://bugs.gnu.org/34351> for details.
+                      "main.mysqldump"
+
+                      ;; XXX: Fails sporadically.
+                      "innodb_fts.crash_recovery"
+
                       ;; FIXME: This test fails on i686:
                       ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
                       ;; +myisampack: Can't create/write to file (Errcode: 17 "File exists)
@@ -687,7 +694,8 @@ as a drop-in replacement of MySQL.")
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jv26y3f10svrjxzsgqxg956c86b664azyk2wppzpa5x11pjga38"))))
+                "0jv26y3f10svrjxzsgqxg956c86b664azyk2wppzpa5x11pjga38"))
+              (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")

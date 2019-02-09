@@ -259,6 +259,8 @@
                          ;; XXX: These test failures appear legitimate, needs investigation.
                          ;; open_basedir() restriction failure.
                          "ext/curl/tests/bug61948.phpt"
+                         ;; Fails on recent curl https://bugs.php.net/patch-display.php?bug_id=77493
+                         "ext/curl/tests/curl_basic_009.phpt"
                          ;; Expects a false boolean, gets empty array from glob().
                          "ext/standard/tests/file/bug41655_1.phpt"
                          "ext/standard/tests/file/glob_variation5.phpt"

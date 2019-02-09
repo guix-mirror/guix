@@ -53,6 +53,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -220,7 +221,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.1.8")
+    (version "18.3.1")
     (source
       (origin
         (method url-fetch)
@@ -232,7 +233,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "06y28hpynb8w1qagznr85ml48hf8264w4ji6cmvm2fy7x5zyc6xx"))
+          "0qyw9dj2p9n91qzc4ylck2an7ibssjvzi2bjcpv2ajk851yq47sv"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
@@ -252,11 +253,11 @@ also known as DXTn or DXTC) for Mesa.")
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
+        ("libxrandr" ,libxrandr)
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             ;; FIXME: Change to 'llvm' in the next rebuild cycle.
-             `(("llvm" ,llvm-without-rtti)))
+             `(("llvm" ,llvm)))
             (_
              `()))
         ("makedepend" ,makedepend)
@@ -264,18 +265,15 @@ also known as DXTn or DXTC) for Mesa.")
         ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("python" ,python-2)
-        ("python2-mako" ,python2-mako)
+        ("python" ,python)
+        ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
-             ("armhf-linux"
-              ;; TODO: Add etnaviv,imx when libdrm supports etnaviv.
-              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,swrast,tegra,vc4,virgl"))
-             ("aarch64-linux"
+             ((or "armhf-linux" "aarch64-linux")
               ;; TODO: Fix svga driver for aarch64 and armhf.
-              '("--with-gallium-drivers=freedreno,nouveau,pl111,r300,r600,swrast,tegra,vc4,virgl"))
+              '("--with-gallium-drivers=etnaviv,freedreno,imx,nouveau,pl111,r300,r600,swrast,tegra,v3d,vc4,virgl"))
              (_
               '("--with-gallium-drivers=i915,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
@@ -290,9 +288,6 @@ also known as DXTn or DXTC) for Mesa.")
          "--enable-gles2"
          "--enable-gbm"
          "--enable-shared-glapi"
-         ;; Without floating point texture support, drivers such as Nouveau
-         ;; are stuck at OpenGL 2.1 instead of OpenGL 3.0+.
-         "--enable-texture-float"
 
          ;; Enable Vulkan on i686-linux and x86-64-linux.
          ,@(match (%current-system)
@@ -457,14 +452,14 @@ glxgears, glxheads, and glxinfo.")
 (define-public glew
   (package
     (name "glew")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/glew/glew/" version
                                   "/glew-" version ".tgz"))
               (sha256
                (base32
-                "0r37fg2s1f0jrvwh6c8cz5x6v4wqmhq42qm15cs9qs349q5c6wn5"))
+                "159wk5dc0ykjbxvag5i1m2mhp23zkk6ra04l26y3jc3nwvkr3ph4"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -547,7 +542,7 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -555,10 +550,11 @@ OpenGL graphics API.")
                     version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "1n57xj5i6giw4mp5s59w1m9bm33sd6gjg7r00dzzvcwya6326mm9"))))
+                "0ga3qjv50x37my6pw5xr14g5n6z78hy5s8s06kays8c3ab2mha80"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap)
          (add-before
            'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -570,7 +566,7 @@ OpenGL graphics API.")
                  (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
                #t))))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))

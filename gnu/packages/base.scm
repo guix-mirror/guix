@@ -1154,7 +1154,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2018e")
+    (version "2018i")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1162,7 +1162,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0bk97fv2i5ns42prpmlaadsswdjwv0ifi7whj2s4q6l44rcqwa3b"))))
+               "1n80ih8agibagic401smqscz3xxqvs5bm5x3lk803g539kw5xi42"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1212,7 +1212,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1kpb02631s58i068mwq63xlamcv1ffj4p6y4wpb9kdl01vr0qd6a"))))))
+                            "1p1jxlnryaxknj0l768h3dmlk2jpqz5n5d24w9c9vyx6dj3xpb5a"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1231,22 +1231,24 @@ and daylight-saving rules.")
   (hidden-package
    (package
      (inherit tzdata)
-     (version "2018d")
+     (version "2018g")
      (source (origin
-               (method url-fetch)
-               (uri (string-append "https://www.iana.org/time-zones/repository"
-                                   "/releases/tzdata" version ".tar.gz"))
-               (sha256
-                (base32
-                 "0m6020dnk9r40z7k36jp13fa06xip3hn0fdx3nly66jzxgffs1ji"))))
-     (inputs `(("tzcode" ,(origin
-                            (method url-fetch)
-                            (uri (string-append
-                                  "http://www.iana.org/time-zones/repository/releases/tzcode"
-                                  version ".tar.gz"))
-                            (sha256
-                             (base32
-                              "1nd882yhsazmcfqmcqyfig3axycryl30gmizgqhqsx5dpa2lxr3x")))))))))
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.iana.org/time-zones/repository/releases/tzdata"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "05kayi3w9pvhj6ljx1hvwd0r8mxfzn436fjmwhx53xkj919xxpq2"))))
+     (inputs
+       `(("tzcode" ,(origin
+                     (method url-fetch)
+                     (uri (string-append
+                           "http://www.iana.org/time-zones/repository/releases/tzcode"
+                           version ".tar.gz"))
+                     (sha256
+                      (base32
+                       "09y44fzcdq3c06saa8iqqa0a59cyw6ni3p31ps0j1w3hcpxz8lxa")))))))))
 
 (define-public libiconv
   (package

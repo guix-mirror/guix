@@ -1288,14 +1288,16 @@ fight Morgoth, the Lord of Darkness.")
     (version "0.7.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Pingus/pingus/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Pingus/pingus.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0r9v6as5vi7skvvy7b0fcaimhdlzmik64pyy68plgljhsghqkkf4"))
-       (patches (search-patches "pingus-sdl-libs-config.patch"))))
+         "0wp06kcmknsnxz7bjnsndb8x062z7r23fb3yrnbfnj68qhz18y74"))
+       (patches (search-patches "pingus-boost-headers.patch"
+                                "pingus-sdl-libs-config.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scons-python2" ,scons-python2)))
@@ -2005,6 +2007,13 @@ This game is based on the GPL version of the famous game TuxRacer.")
              "-DCMAKE_C_FLAGS=-fpermissive")
        #:phases
        (modify-phases %standard-phases
+         ;; see https://github.com/supertuxkart/stk-code/issues/3557
+         (add-after 'unpack 'patch-for-mesa-18.3
+           (lambda _
+             (substitute* "src/graphics/gl_headers.hpp"
+               (("#if !defined\\(USE_GLES2\\)")
+                "#if !defined(USE_GLES2)\n#   define __gl_glext_h_"))
+             #t))
          (add-after 'unpack 'unbundle
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
@@ -2086,7 +2095,8 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))))
+                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))
+              (patches (search-patches "wesnoth-newer-boost.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target

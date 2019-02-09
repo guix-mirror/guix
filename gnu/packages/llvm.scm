@@ -110,26 +110,6 @@ of programming tools as well as libraries with equivalent functionality.")
        (base32
         "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
 
-;; FIXME: This package is here to prevent many rebuilds on x86_64 and i686
-;; from commit fc9dbf41311d99d0fd8befc789ea7c0e35911890.  Update users of
-;; this in the next rebuild cycle.
-(define-public llvm-without-rtti
-  (package
-    (inherit llvm)
-    (arguments
-     `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                           "-DBUILD_SHARED_LIBS:BOOL=TRUE"
-                           "-DLLVM_ENABLE_FFI:BOOL=TRUE"
-                           "-DLLVM_INSTALL_UTILS=ON")
-       #:build-type "Release"
-       #:phases (modify-phases %standard-phases
-                  (add-before 'build 'shared-lib-workaround
-                    (lambda _
-                      (setenv "LD_LIBRARY_PATH"
-                              (string-append (getcwd) "/lib"))
-                      #t)))))))
-
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
   (package

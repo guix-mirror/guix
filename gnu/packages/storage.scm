@@ -322,7 +322,7 @@
        ("python2-testtools" ,python2-testtools)
        ("python2-tox" ,python2-tox)))
     (inputs
-     `(("boost" ,boost-cxx14)
+     `(("boost" ,boost)
        ("curl" ,curl)
        ("cryptsetup" ,cryptsetup)
        ("expat" ,expat)

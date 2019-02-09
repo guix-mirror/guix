@@ -213,11 +213,7 @@ which allows users to view a desktop computing environment.")
           "--enable-automated-tests")
 
         ;; Several tests appear to be opening the same sockets concurrently.
-        #:parallel-tests? #f
-
-        #:phases (modify-phases %standard-phases
-                   (add-before 'check 'use-empty-ssl-cert-file
-                     (lambda _ (setenv "SSL_CERT_FILE" "/dev/null") #t)))))
+        #:parallel-tests? #f))
     (synopsis "Server implementation of the SPICE protocol")
     (description "SPICE is a remote display system built for virtual
 environments which allows you to view a computing 'desktop' environment

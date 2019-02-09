@@ -56,7 +56,59 @@
        (sha256
         (base32
          "00ys0p6h3iq77kh72dkl0qrf7qvznq18qdrgiq10gfxja1995034"))
-       (patches (search-patches "scribus-poppler.patch"))))
+       (patches (append
+                 ;; Scribus relies heavily on Poppler internals, which have
+                 ;; changed a lot since the latest Scribus release (2018-04).
+                 ;; Thus, we require a bunch of patches to stay compatible.
+                 (search-patches "scribus-poppler.patch")
+                 (list (origin
+                         (method url-fetch)
+                         (uri (string-append
+                               "https://github.com/scribusproject/scribus/commit/"
+                               "7d4ceeb5cac32287769e3c0238699e0b3e56c24d.patch"))
+                         (file-name "scribus-poppler-0.64.patch")
+                         (sha256
+                          (base32
+                           "1kr27bfzkpabrh42nsrrvlqyycdg9isbavpaa5spgmrhidcg02xj")))
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append
+                               "https://github.com/scribusproject/scribus/commit/"
+                               "76561c1a55cd07c268f8f2b2fea888532933700b.patch"))
+                         (file-name "scribus-poppler-config.patch")
+                         (sha256
+                          (base32
+                           "01k18xjj82c3ndzp89dlpfhhdccc8z0acf8b04r592jyr5y9rc19")))
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append
+                               "https://github.com/scribusproject/scribus/commit/"
+                               "8e05d26c19097ac2ad5b4ebbf40a3771ee6faf9c.patch"))
+                         (file-name "scribus-poppler-0.69.patch")
+                         (sha256
+                          (base32
+                           "1avdmsj5l543j0irq18nxgiw99n395jj56ih5dsal59fn0wbqk42")))
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append "https://git.archlinux.org/svntogit/"
+                                             "community.git/plain/trunk/scribus-"
+                                             "poppler-0.70.patch?h=packages/scribus&id="
+                                             "8ef43ee2fceb0753ed5a76bb0a11c84775898ffc"))
+                         (file-name "scribus-poppler-0.70.patch")
+                         (sha256
+                          (base32
+                           "0dw7ix3jaj0y1q97cmmqwb2qgdx760yhxx86wa8rnx0xhfi5x6qr"))))))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each (lambda (file)
+                       (substitute* file
+                         ;; These are required for compatibility with Poppler 0.71.
+                         (("GBool") "bool") (("gTrue") "true") (("gFalse") "false")
+                         ;; ...and this for Poppler 0.72.
+                         (("getCString") "c_str")))
+                     (find-files "scribus/plugins/import/pdf"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target

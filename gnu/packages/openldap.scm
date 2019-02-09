@@ -92,11 +92,15 @@
           ;; Give -L arguments for cyrus-sasl to avoid propagation.
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
-                  (sasl (assoc-ref inputs "cyrus-sasl")))
+                  (krb5 (assoc-ref inputs "mit-krb5"))) ;propagated from cyrus-sasl
+
+              ;; The ancient Libtool bundled with OpenLDAP copies the linker flags
+              ;; from Cyrus-SASL and embeds them into its own .la files.  Add an
+              ;; absolute reference to Kerberos so it does not have to be propagated.
               (substitute* (map (lambda (f) (string-append out "/" f))
                                 '("lib/libldap.la" "lib/libldap_r.la"))
-                (("-lsasl2" lib)
-                 (string-append "-L" sasl "/lib " lib)))
+                (("-lkrb5" lib)
+                 (string-append "-L" krb5 "/lib " lib)))
               #t))))))
    (synopsis "Implementation of the Lightweight Directory Access Protocol")
    (description
