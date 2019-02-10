@@ -11493,4 +11493,29 @@ imported with the correct Haskell types.")
 Music Player Daemon.")
     (license license:expat)))
 
+(define-public ghc-alsa-core
+  (package
+    (name "ghc-alsa-core")
+    (version "0.5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/alsa-core/alsa-core-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1avh4a419h9d2zsslg6j8hm87ppgsgqafz8ll037rk2yy1g4jl7b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.haskell.org/haskellwiki/ALSA")
+    (synopsis "Binding to the ALSA Library API (Exceptions)")
+    (description "This package provides access to ALSA infrastructure, that is
+needed by both alsa-seq and alsa-pcm.")
+    (license license:bsd-3)))
 ;;; haskell.scm ends here
