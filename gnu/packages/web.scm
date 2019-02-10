@@ -747,14 +747,14 @@ current version of any major web browser.")
     (name "rapidjson")
     (version "1.1.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/miloyip/rapidjson/archive/v"
-                   version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/miloyip/rapidjson.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))
+               "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
              (modules '((guix build utils)))
              (snippet
               '(begin
