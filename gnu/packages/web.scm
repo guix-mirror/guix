@@ -413,16 +413,16 @@ APIs.")
     (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/gnosek/fcgiwrap/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gnosek/fcgiwrap.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "07y6s4mm86cv7p1ljz94sxnqa89y9amn3vzwsnbq5hrl4vdy0zac"))))
+        (base32 "1ryw66h9aazi83amk8l7ha8k5g0c7qvk5g6jv376a1ws9xk2qw6f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests included
+     `(#:tests? #f                      ; no tests included
        #:make-flags (list "CC=gcc")))
     (native-inputs
      `(("autoconf" ,autoconf)
