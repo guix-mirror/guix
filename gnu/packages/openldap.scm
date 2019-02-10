@@ -56,7 +56,7 @@
 (define-public openldap
   (package
    (name "openldap")
-   (version "2.4.46")
+   (version "2.4.47")
    (source (origin
             (method url-fetch)
 
@@ -73,7 +73,7 @@
                         "openldap-release/openldap-" version ".tgz")))
             (sha256
              (base32
-              "0bab1km8f2nan1x0zgwliknbxg0zlf2pafxrr867kblrdfwdr44s"))))
+              "02sj0p1pq12hqq29b22m3f5zs2rykgvc0q3wlynxjcsjhrvmhk7m"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)
