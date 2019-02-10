@@ -1856,13 +1856,14 @@ low memory footprint.")
     (name "java-kxml2")
     (version "2.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/stefanhaustein/kxml2/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/stefanhaustein/kxml2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "17kh04qf3vll1xx6sv06xlazw2hxa8qdmzyday9r6z2191jlj74w"))))
+                "0g6d8c9r9sh3x04sf4wdpgwvhkqvk11k3kq9skx91i60h4vn01hg"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "kxml2.jar"
@@ -1873,6 +1874,10 @@ low memory footprint.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively "src/main/resources" "build/classes")
