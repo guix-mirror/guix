@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Tobias Geerinckx-Rite <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (gnu packages)
@@ -79,12 +81,14 @@ provides the Maven plugin generating the component metadata.")))
     (name "maven-resolver-api")
     (version "1.3.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/maven-resolver/"
-                                  "archive/maven-resolver-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/apache/maven-resolver.git")
+                    (commit (string-append "maven-resolver-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gfkf8g5zbjh6ciq3dnby9m5irhrbyc7d2jzic9l8xx6hl61q6mm"))))
+                "1x1gll8nkfl6zgnab78fxxvvhg42b2grxgdh1wp2h4qxsjkxg93d"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-resolver-api.jar"
