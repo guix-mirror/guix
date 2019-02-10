@@ -1212,7 +1212,7 @@ hit when running single-threaded.")
 (define-public libsm
   (package
     (name "libsm")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -1222,7 +1222,7 @@ hit when running single-threaded.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1gc7wavgs435g9qkp9jw4lhmaiq6ip9llv49f054ad6ryp4sib0b"))))
+            "1fwwfq9v3sqmpzpscymswxn76xhxnysa24pfim1mcpxhvjcl89id"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libice" ,libice))) ; SMlib.h includes ICElib.h
