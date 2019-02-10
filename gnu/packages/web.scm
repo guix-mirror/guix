@@ -6255,7 +6255,6 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                    "lib"))              ; only libnghttp2
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gcc" ,gcc-7)                   ; 1.35.0 requires GCC6 or later
 
        ;; Required by tests.
        ("cunit" ,cunit)
@@ -6287,9 +6286,6 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                (("@prefix@")
                 (assoc-ref outputs "lib")))
              #t))
-         (add-before 'configure 'work-around-bug-30756
-           (lambda _
-             (for-each unsetenv '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH")) #t))
          (add-before 'check 'set-timezone-directory
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
