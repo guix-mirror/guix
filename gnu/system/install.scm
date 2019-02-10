@@ -36,6 +36,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages certs)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
@@ -409,6 +410,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                      ;; available here, so we keep that.
                      bash-completion
                      nvi                          ;:wq!
+                     nss-certs ; To access HTTPS, use git, etc.
                      %base-packages))))
 
 (define* (os-with-u-boot os board #:key (bootloader-target "/dev/mmcblk0")

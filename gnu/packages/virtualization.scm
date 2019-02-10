@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -815,7 +815,7 @@ Machine Protocol.")
              ("openssl" ,openssl)
              ("sdl2" ,sdl2)
              ("sdl2-ttf" ,sdl2-ttf)
-             ("spice-protocol" ,spice-protocol)))
+             ("spice-protocol" ,spice-protocol-0.12.14)))
    (native-inputs `(("libconfig" ,libconfig)
                     ("nettle" ,nettle)
                     ("pkg-config" ,pkg-config)))

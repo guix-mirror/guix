@@ -30,7 +30,7 @@
 (define-public ninja
   (package
     (name "ninja")
-    (version "1.8.2")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martine/ninja/"
@@ -38,7 +38,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1x66q6494ml1p1f74mxzik1giakl4zj7rxig9jsc50087l671f46"))))
+                "1ffmzj5s9h98qhl94d9i23zcv057rsqbac9g1hdgvlzq51ccfzjx"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (arguments

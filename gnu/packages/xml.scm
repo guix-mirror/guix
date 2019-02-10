@@ -55,6 +55,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -1101,16 +1102,16 @@ C++ programming language.")
     (version "4.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/leethomason/tinyxml2/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leethomason/tinyxml2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
+        (base32 "1a0skfi8rzk53qcxbv88qlvhlqzvsvg4hm20dnx4zw7vrn6anr9y"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))    ; no tests
+     `(#:tests? #f))                    ; no tests
     (synopsis "Small XML parser for C++")
     (description "TinyXML2 is a small and simple XML parsing library for the
 C++ programming language.")
@@ -1209,25 +1210,25 @@ elements to their parents
 (define-public xlsx2csv
   (package
     (name "xlsx2csv")
-    (version "0.7.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/dilshod/"
-                   name "/archive/release/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1gpn6kaa7l1ai8c9zx2j3acf04bvxq79pni8jjfjrk01smjbyyql"))))
+    (version "0.7.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dilshod/xlsx2csv.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "168dm6p7w6pvgd87yb9hcxv9y0liv6mxgril202nfva68cp8y939"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; Use python-2 for the test script.
+     `(#:python ,python-2               ; use python-2 for the test script
        #:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
              (substitute* "test/run"
-               ;; Run tests with `python' only
+               ;; Run tests with `python' only.
                (("^(PYTHON_VERSIONS = ).*" all m) (string-append m "['']")))
              (invoke "test/run"))))))
     (home-page "https://github.com/dilshod/xlsx2csv")
@@ -1656,12 +1657,14 @@ with XPath too.")
     (name "java-xom")
     (version "127")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/elharo/xom/archive/XOM_"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/elharo/xom.git")
+                    (commit (string-append "XOM_" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "04m69db1irqja12a9rfxrac8cbn9psqa1k136wh4ls4pxfsdr5wg"))
+                "1jh6y03g5zzdhsb5jm6ms1xnamr460qmn96y3w6aw0ikfwqlg0bq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1672,9 +1675,13 @@ with XPath too.")
     (arguments
      `(#:jar-name "xom.jar"
        #:jdk ,icedtea-8
-       #:tests? #f; no tests
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'fix-tagsoup-dep
            (lambda _
              ;; FIXME: Where is tagsoup source?
@@ -1788,13 +1795,14 @@ package is in maintenance mode.")
     (name "java-dom4j")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dom4j/dom4j/archive/"
-                                  "version-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dom4j/dom4j.git")
+                    (commit (string-append "version-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "101drpnw6agmcvsi1jrfi0kn97r7liazrh5jbrip9vx26axn2fx9"))
+                "1827jljs8mps489fm7xw63cakdqwc5grilrr5n9spr2rlk76jpx3"))
               (modules '((guix build utils)))
               (snippet
                 '(begin ;; Delete bundled jar archives.
@@ -1860,13 +1868,14 @@ low memory footprint.")
     (name "java-kxml2")
     (version "2.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/stefanhaustein/kxml2/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/stefanhaustein/kxml2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "17kh04qf3vll1xx6sv06xlazw2hxa8qdmzyday9r6z2191jlj74w"))))
+                "0g6d8c9r9sh3x04sf4wdpgwvhkqvk11k3kq9skx91i60h4vn01hg"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "kxml2.jar"
@@ -1877,6 +1886,10 @@ low memory footprint.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively "src/main/resources" "build/classes")
@@ -1929,12 +1942,14 @@ and from a Java application.  It provides a standard pull parser interface.")
     (name "java-jettison")
     (version "1.3.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus/jettison/archive/"
-                                  "jettison-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/codehaus/jettison.git")
+                    (commit (string-append "jettison-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rdhfyxywvga5wiwasc04iqnxyixn3rd8wj01c9ymhvwc3h6dpqg"))))
+                "15sydmi5chdh4126qc7v8bsrp7fp4ldaya8a05iby4pq2324q0qw"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jettison.jar"
@@ -1959,16 +1974,18 @@ implements @code{XMLStreamWriter} and @code{XMLStreamReader} and supports
     (name "java-jdom")
     (version "2.0.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hunterhacker/jdom/archive/JDOM-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hunterhacker/jdom.git")
+                    (commit (string-append "JDOM-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0p8n7inqq2a25wk9ljinl3ixlx1x2la9qaman8ngd75xxjb02yc1"))))
+                "14vv1kxrsdvwi4cz3rx6r48w5y6fvk9cymil8qhvxwp56xxrgxiq"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "package"
-       #:tests? #f; tests are run as part of the build process
+       #:tests? #f                ; tests are run as part of the build process
        #:phases
        (modify-phases %standard-phases
          (replace 'install
@@ -1983,20 +2000,22 @@ outputting XML data from Java code.")
   (package
     (name "java-xstream")
     (version "1.4.10")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                     "https://github.com/x-stream/xstream/archive/XSTREAM_"
-                     (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                     ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "10zbkam05wirxipvgrjimdwsyqrwl4a0n7lhvxbsssqpv727469g"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/x-stream/xstream.git")
+             (commit (string-append
+                      "XSTREAM_"
+                      (string-map (lambda (x) (if (eq? x #\.) #\_ x))
+                                  version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12m2bw8bapdc1w0pni9wl5hh2y8jfdgcvxd464jl9917dsp3ai2n"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "xstream.jar"
-       ;; FIXME: Tests are not in a java subdirectory as assumed by ant-build-system
+       ;; FIXME: Tests are not in a java subdirectory as assumed by ant-build-system.
        #:tests? #f
        #:jdk ,icedtea-8
        #:source-dir "xstream/src/java"))

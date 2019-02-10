@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -4877,15 +4877,17 @@ additional capabilities.")
     (version "2.3.15")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/xinetd-org/xinetd/archive/xinetd-"
-                       (string-join (string-split version #\.) "-") ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xinetd-org/xinetd.git")
+             (commit (string-append "xinetd-"
+                                    (string-join (string-split version #\.)
+                                                 "-")))))
+       (file-name (git-file-name name version))
        (patches (search-patches "xinetd-CVE-2013-4342.patch"
                                 "xinetd-fix-fd-leak.patch"))
        (sha256
-        (base32
-         "0k59x52cbzp5fw0n8zn0y54j1ps0x9b72y8k5grzswjdmgs2a2v2"))))
+        (base32 "0wjai6qagcgxpa1khh639ih7kswgkryc7ll1i4hxhs29sc7irdcn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-loadavg")

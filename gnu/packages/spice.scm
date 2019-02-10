@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,6 +113,22 @@ Environments) is a remote-display system built for virtual environments
 which allows users to view a desktop computing environment.")
     (home-page "https://www.spice-space.org")
     (license (list license:bsd-3 license:lgpl2.1+))))
+
+;; TODO: Package lookingglass doesn't build with spice-protocol 0.12.15. Remove
+;; below once that is fixed.
+(define-public spice-protocol-0.12.14
+  (package
+    (inherit spice-protocol)
+    (name "spice-protocol")
+    (version "0.12.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "https://www.spice-space.org/download/releases/"
+                "spice-protocol-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "170ckpgazvqv7hxy209myg67pqnd6c0gvr4ysbqgsfch6320nd90"))))))
 
 (define-public spice-gtk
   (package

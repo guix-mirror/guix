@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,6 +103,26 @@ Callback Hell.
 @end itemize")
     (license license:asl2.0)))
 
+(define-public python-aiohttp-socks
+  (package
+    (name "python-aiohttp-socks")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiohttp_socks" version))
+       (sha256
+        (base32
+         "0473702jk66xrgpm28wbdgpnak4v0dh2qmdjw7ky7hf3lwwqkggf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-aiohttp" ,python-aiohttp)))
+    (home-page "https://github.com/romis2012/aiohttp-socks")
+    (synopsis "SOCKS proxy connector for aiohttp")
+    (description "This package provides a SOCKS proxy connector for
+aiohttp.  It supports SOCKS4(a) and SOCKS5.")
+    (license license:asl2.0)))
+
 (define-public python-aiodns
   (package
     (name "python-aiodns")
@@ -124,6 +145,31 @@ Callback Hell.
 asynchronous DNS resolutions with a synchronous looking interface by
 using @url{https://github.com/saghul/pycares,pycares}.")
     (license license:expat)))
+
+(define-public python-aiorpcx
+  (package
+    (name "python-aiorpcx")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiorpcX" version))
+       (sha256
+        (base32
+         "1p88k15jh0d2a18pnnbfcamsqi2bxvmmhpizmdlxfdxf8vy5ggyj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)))
+    (home-page "https://github.com/kyuupichan/aiorpcX")
+    (synopsis "Generic asyncio RPC implementation")
+    (description
+     "aiorpcX is a generic asyncio library implementation of RPC suitable for
+an application that is a client, server or both.
+
+The package includes a module with full coverage of JSON RPC versions 1.0 and
+2.0, JSON RPC protocol auto-detection, and arbitrary message framing.  It also
+comes with a SOCKS proxy client.")
+    (license (list license:expat license:bsd-2))))
 
 (define-public python-falcon
   (package

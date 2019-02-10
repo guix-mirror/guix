@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Tobias Geerinck-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (gnu packages)
@@ -30,18 +32,20 @@
   (package
     (name "java-groovy-bootstrap")
     (version "2.4.15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/apache/groovy/archive/GROOVY_"
-                                  (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                                  ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "19f3yd2z6jmz1xhwi5kkg1wmgbqkfs7qvd3rzb43xr3nffz8cisv"))
-              (patches
-                (search-patches
-                  "groovy-add-exceptionutilsgenerator.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/apache/groovy.git")
+             (commit (string-append
+                      "GROOVY_"
+                      (string-map (lambda (x) (if (eq? x #\.) #\_ x))
+                                  version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1q4cplimr18j93zz92kgq8b6wdv0p9svr7cdr47q8b2mbjpd0x3j"))
+       (patches
+        (search-patches "groovy-add-exceptionutilsgenerator.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "groovy.jar"

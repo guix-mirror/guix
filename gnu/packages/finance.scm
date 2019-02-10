@@ -299,7 +299,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.2.2")
+    (version "3.3.3")
     (source
      (origin
        (method url-fetch)
@@ -308,7 +308,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1fxaxlf5vm2zydj678ls3pazyriym188iwzk60kyk26cz2p3xk39"))
+         "0z2zfhyawrbzs0w1426a2w0d4wsajl34ymj77qmpm41138g2ysf2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -326,6 +326,10 @@ do so.")
        ("python-requests" ,python-requests)
        ("python-qrcode" ,python-qrcode)
        ("python-protobuf" ,python-protobuf)
+       ("python-aiohttp" ,python-aiohttp)
+       ("python-aiohttp-socks" ,python-aiohttp-socks)
+       ("python-aiorpcx" ,python-aiorpcx)
+       ("python-certifi" ,python-certifi)
        ("python-dnspython" ,python-dnspython)
        ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)))
     (arguments
@@ -350,18 +354,18 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3.4")
+    (version "3.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://electroncash.org/downloads/"
                            version
-                           "/win-linux/ElectronCash-"
+                           "/win-linux/Electron-Cash-"
                            version
                            ".tar.gz"))
        (sha256
         (base32
-         "0ipl6vf2n9a5n556sx2z57s7wdvg05xwjvz67kff9nmbx4s8vjyf"))
+         "185z3c5j9nvl31ga80hvahx7ghvkgmqgfjrrzw1fbs6p9jxy007w"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -679,14 +683,14 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.10.2")
+    (version "0.11.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "138k6zsqqpb46k3rcpyslm9q7yq5i6k4myvr9n425jnkadf4vfjd"))))
+            "064yds8f4px0c6grkkanpdjx022g4q87ihzhkmdv9qanv0hz6hv0"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -694,21 +698,23 @@ Ledger Blue/Nano S.")
           ;; Default tests run device-specific tests which fail, only run specific tests.
           (replace 'check
             (lambda* (#:key inputs outputs #:allow-other-keys)
-              (invoke "python" "-m" "pytest" "--pyarg" "trezorlib.tests.unit_tests")
-              (invoke "python" "-m" "pytest" "-m" "slow_cosi" "--pyarg" "trezorlib.tests.unit_tests")
-              )))))
+              ;; Delete tests that require network access.
+              (delete-file "trezorlib/tests/unit_tests/test_tx_api.py")
+              (invoke "python" "-m" "pytest" "--pyarg" "trezorlib.tests.unit_tests"))))))
     (propagated-inputs
      `(("python-click" ,python-click)
+       ("python-construct" ,python-construct)
        ("python-ecdsa" ,python-ecdsa)
-       ("python-hidapi" ,python-hidapi)
        ("python-libusb1" ,python-libusb1)
        ("python-mnemonic" ,python-mnemonic)
-       ("python-protobuf" ,python-protobuf)
        ("python-pyblake2" ,python-pyblake2)
        ("python-requests" ,python-requests)
-       ("python-typing" ,python-typing)))
+       ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
-     `(("python-mock" ,python-mock) ; Tests
+     `(("protobuf" ,protobuf) ; Tests
+       ("python-black" ,python-black) ; Tests
+       ("python-protobuf" ,python-protobuf) ; Tests
+       ("python-isort" ,python-isort) ; Tests
        ("python-pyqt" ,python-pyqt) ; Tests
        ("python-pytest" ,python-pytest))) ; Tests
     (home-page "https://github.com/trezor/python-trezor")
@@ -723,14 +729,14 @@ TREZOR Hardware Wallet.")
 (define-public python-keepkey
   (package
     (name "python-keepkey")
-    (version "4.0.2")
+    (version "6.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "keepkey" version))
         (sha256
           (base32
-            "0f4iqqjlqmamw4mhyhik4qlb5bnfd10wbjw9yzgir105wh5fdpnd"))))
+            "16j8hnxj9r4b2w6kfncmny09pb1al8ppmn59qxzl3qmh1xhpy45g"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -743,6 +749,7 @@ TREZOR Hardware Wallet.")
     (propagated-inputs
      `(("python-ecdsa" ,python-ecdsa)
        ("python-hidapi" ,python-hidapi)
+       ("python-libusb1" ,python-libusb1)
        ("python-mnemonic" ,python-mnemonic)
        ("python-protobuf" ,python-protobuf)))
     (home-page "https://github.com/keepkey/python-keepkey")

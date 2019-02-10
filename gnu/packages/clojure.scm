@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -147,12 +148,13 @@ designs.")
     (version "0.1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/clojure/algo.generic/archive"
-                       "/algo.generic-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure/algo.generic.git")
+             (commit (string-append "algo.generic-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "12w9681i545gp1af4576z1qbixwps1j13c16fmcc7zsb0bd1zr7w"))))
+        (base32 "1s6q10qp276dcpzv06bq1q3bvkvlw03qhmncqcs9cc6p9lc0w4p4"))))
     (build-system clojure-build-system)
     (arguments
      '(#:source-dirs '("src/main/clojure/")
@@ -171,12 +173,13 @@ that can be implemented for any data type.")
     (version "0.1.6")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/clojure/algo.monads/archive"
-                       "/algo.monads-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure/algo.monads.git")
+             (commit (string-append "algo.monads-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "14gbvfgmrda990h45yn7zag83vp1kdkz4f4yzmyvkr0sjihlgdmq"))))
+        (base32 "0mv3ba72hyhgasg2k3zy83ij61gak6cs4d6qgh8123z3j02mbh8p"))))
     (build-system clojure-build-system)
     (arguments
      '(#:source-dirs '("src/main/clojure/")
@@ -277,12 +280,13 @@ tree.
     (version "0.1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/clojure/tools.macro/archive"
-                       "/tools.macro-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure/tools.macro.git")
+             (commit (string-append "tools.macro-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0fs64a0g63xx6g7sj6vrsqknhl90s0isf6k053nw8vv5prfzc7v6"))))
+        (base32 "14mdxqkwja0cffmyfav5pbcli2qvw1mjdgz0n619a2z2036andx8"))))
     (build-system clojure-build-system)
     (arguments
      '(#:source-dirs '("src/main/clojure/")

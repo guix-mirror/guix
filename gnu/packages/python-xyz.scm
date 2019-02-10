@@ -138,6 +138,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages serialization)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -13390,6 +13391,43 @@ and other tools.")
 (define-public python2-typing
   (package-with-python2 python-typing))
 
+(define-public python-typing-extensions
+  (package
+    (name "python-typing-extensions")
+    (version "3.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "typing_extensions" version))
+       (sha256
+        (base32
+         "0wfsv71pvkyf2na938l579jh0v3kzl6g744ijgnahcwd4d9x0b7v"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/python/typing/blob/master/typing_extensions/README.rst")
+    (synopsis "Experimental type hints for Python")
+    (description
+     "The typing_extensions module contains additional @code{typing} hints not
+yet present in the of the @code{typing} standard library.
+Included are implementations of:
+@enumerate
+@item ClassVar
+@item ContextManager
+@item Counter
+@item DefaultDict
+@item Deque
+@item NewType
+@item NoReturn
+@item overload
+@item Protocol
+@item runtime
+@item Text
+@item Type
+@item TYPE_CHECKING
+@item AsyncGenerator
+@end enumerate\n")
+    (license license:psfl)))
+
 (define-public bpython
   (package
     (name "bpython")
@@ -14724,4 +14762,34 @@ in doctests.")
     (synopsis "Decorator for attributes of target function or class")
     (description "Simple decorator to set attributes of target function or
 class in a @acronym{DRY, Don't Repeat Yourself} way.")
+    (license license:expat)))
+
+(define-public python-construct
+  (package
+    (name "python-construct")
+    (version "2.9.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "construct" version))
+       (sha256
+        (base32
+         "130iy05awzigm2xah2yvlmb08mac5bi4gzr5m3g7k1krs3ps0w92"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests exist.
+    (propagated-inputs
+     `(("python-extras" ,python-extras)
+       ("python-arrow" ,python-arrow)
+       ("python-numpy" ,python-numpy)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)))
+    (home-page "http://construct.readthedocs.io")
+    (synopsis "Declarative and symmetrical parser and builder for binary data")
+    (description
+     "This package provides both simple, atomic constructs (such as
+integers of various sizes), as well as composite ones which allow you
+form hierarchical and sequential structures of increasing complexity.
+It features bit and byte granularity, easy debugging and testing, an
+easy-to-extend subclass system, and lots of primitive constructs to
+make your work easier.")
     (license license:expat)))

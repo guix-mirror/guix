@@ -1532,7 +1532,7 @@ filters, new key bindings and faces.  It can be enabled by
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
-    (version "0.80")
+    (version "0.90")
     (home-page "https://github.com/politza/pdf-tools")
     (source (origin
               (method git-fetch)
@@ -1541,11 +1541,10 @@ filters, new key bindings and faces.  It can be enabled by
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i4647vax5na73basc5dz4lh9kprir00fh8ps4i0l1y3ippnjs2s"))
-              (patches (search-patches "emacs-pdf-tools-poppler.patch"))))
+                "0iv2g5kd14zk3r5dzdw7b7hk4b5w7qpbilcqkja46jgxbb6xnpl9"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
+     `(#:tests? #f                      ; there are no tests
        #:modules ((guix build gnu-build-system)
                   ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils)
