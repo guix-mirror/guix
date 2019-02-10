@@ -148,14 +148,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.12.3")
+    (version "1.12.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0mg2zqbjcgj0aq7d9nwawvyhx43vakilahrc83hrfyif3a3gyrpj"))))
+                "0pgla0mc6mvyr1ljy10mcqvfz8i5z6yp7dbx2bcd70y67wx05d0j"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")))
