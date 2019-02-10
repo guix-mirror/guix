@@ -1203,25 +1203,25 @@ elements to their parents
 (define-public xlsx2csv
   (package
     (name "xlsx2csv")
-    (version "0.7.2")
+    (version "0.7.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://github.com/dilshod/"
-                   name "/archive/release/" version ".tar.gz"))
+                   name "/archive/" version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1gpn6kaa7l1ai8c9zx2j3acf04bvxq79pni8jjfjrk01smjbyyql"))))
+               "029yp4nlgz079drqxg3kxda98a2lqwgbg8x5q6kfwjm90gnffzda"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; Use python-2 for the test script.
+     `(#:python ,python-2               ; use python-2 for the test script
        #:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
              (substitute* "test/run"
-               ;; Run tests with `python' only
+               ;; Run tests with `python' only.
                (("^(PYTHON_VERSIONS = ).*" all m) (string-append m "['']")))
              (invoke "test/run"))))))
     (home-page "https://github.com/dilshod/xlsx2csv")
