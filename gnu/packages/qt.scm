@@ -2173,6 +2173,11 @@ different kinds of sliders, and much more.")
     (arguments
      `(#:tests? #f ; no apparent tests; it might be necessary to set
                    ; ENABLE_API_TESTS, see CMakeLists.txt
+
+       ;; Parallel builds fail due to a race condition:
+       ;; <https://bugs.gnu.org/34062>.
+       #:parallel-build? #f
+
        #:configure-flags (list ;"-DENABLE_API_TESTS=TRUE"
                                "-DPORT=Qt"
                                "-DUSE_LIBHYPHEN=OFF"
