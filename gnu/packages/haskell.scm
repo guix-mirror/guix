@@ -11546,4 +11546,59 @@ language extension}.  This extension enables Unicode characters to be used to
 stand for certain ASCII character sequences, i.e. → instead of @code{->},
 ∀ instead of @code{forall} and many others.")
     (license license:bsd-3)))
+
+(define-public ghc-stylish-haskell
+  (package
+    (name "ghc-stylish-haskell")
+    (version "0.9.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://hackage/package/stylish-haskell/stylish-haskell-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1ls11fdx6snvfx8yykpidz142zzxwi5bazl49hgfqlwx50rqcp7w"))))
+    (build-system haskell-build-system)
+    (inputs
+      `(("ghc-aeson" ,ghc-aeson)
+        ("ghc-file-embed" ,ghc-file-embed)
+        ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+        ("ghc-semigroups" ,ghc-semigroups)
+        ("ghc-syb" ,ghc-syb)
+        ("ghc-yaml" ,ghc-yaml)
+        ("ghc-strict" ,ghc-strict)
+        ("ghc-optparse-applicative"
+         ,ghc-optparse-applicative)))
+    (native-inputs
+      `(("ghc-hunit" ,ghc-hunit)
+        ("ghc-test-framework" ,ghc-test-framework)
+        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/jaspervdj/stylish-haskell")
+    (synopsis "Haskell code prettifier")
+    (description "Stylish-haskell is a Haskell code prettifier.  The goal is
+not to format all of the code in a file, to avoid \"getting in the way\".
+However, this tool can e.g. clean up import statements and help doing various
+tasks that get tedious very quickly.  It can
+@itemize
+@item
+Align and sort @code{import} statements
+@item
+Group and wrap @code{{-# LANGUAGE #-}} pragmas, remove (some) redundant
+pragmas
+@item
+Remove trailing whitespaces
+@item
+Align branches in @code{case} and fields in records
+@item
+Convert line endings (customisable)
+@item
+Replace tabs by four spaces (turned off by default)
+@item
+Replace some ASCII sequences by their Unicode equivalent (turned off by
+default)
+@end itemize")
+    (license license:bsd-3)))
 ;;; haskell.scm ends here
