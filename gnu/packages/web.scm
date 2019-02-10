@@ -164,17 +164,17 @@ and its related documentation.")
     (name "mod-wsgi")
     (version "4.5.22")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/GrahamDumpleton/mod_wsgi/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/GrahamDumpleton/mod_wsgi.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n1yhmrfp8mjbsngmyjl937c6rc0069p6wdi1lknrbn1q42hzw6q"))))
+                "1q90xw2cbhka5gcd6yc69iir73x4gm7fm75qpkins2ryfl6w1q3f"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; TODO: Can't figure out if there are tests
+     '(#:tests? #f                 ; TODO: can't figure out if there are tests
        #:make-flags (list
                      (string-append "DESTDIR="
                                     (assoc-ref %outputs "out"))
