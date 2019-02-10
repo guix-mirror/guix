@@ -55,6 +55,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -1204,15 +1205,15 @@ elements to their parents
   (package
     (name "xlsx2csv")
     (version "0.7.4")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/dilshod/"
-                   name "/archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "029yp4nlgz079drqxg3kxda98a2lqwgbg8x5q6kfwjm90gnffzda"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dilshod/xlsx2csv.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "168dm6p7w6pvgd87yb9hcxv9y0liv6mxgril202nfva68cp8y939"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2               ; use python-2 for the test script
