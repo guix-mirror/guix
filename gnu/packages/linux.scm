@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -1027,7 +1027,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.7")
+    (version "1.1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1035,7 +1035,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "02fw7dw202mjid49w9ki3dsfcyvid5fj488561bdzcm3haw00q4x"))))
+               "1pxf0zkmps03l3zzd0fr828xhkg6a8hxljmbxzc2cyj2ls9kmp1w"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -1047,14 +1047,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.7")
+    (version "1.1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "02jlw6a22j2rr7inggfgk2hzx3w0fjhvhs0dn1afpzdp9aspzchx"))))
+               "1kx45yhrxai3k595yyqs4wj0p2n5b0c9mf0k36ljjf1bj8lgb6zx"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1067,6 +1067,13 @@ MIDI functionality to the Linux-based operating system.")
                                               "/lib/udev/rules.d"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'disable-broken-test
+           (lambda _
+             ;; XXX: The 1.1.8 release tarball is missing a header that's
+             ;; required for this test to work.  Fixed in 1.1.9.
+             (substitute* "axfer/test/Makefile"
+               ((".*container-test.*") ""))
+             #t))
          (add-before
            'install 'pre-install
            (lambda _
@@ -1094,14 +1101,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.7")
+    (version "1.1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0iys4zl1davzyg3mn9lvil1n3k1ifrg3v1caj3k4dqyrnrd40jx7"))))
+               "152r82i6f97gfilfgiax5prxkd4xlcipciv8ha8yrk452qbxyxvz"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
