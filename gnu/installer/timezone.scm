@@ -25,7 +25,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 receive)
-  #:export (locate-childrens
+  #:export (locate-children
             timezone->posix-tz
             timezone-has-child?
             zonetab->timezone-tree
@@ -94,15 +94,15 @@ timezones."
                     (loop (remove-first same-region))
                     (loop other-region))))))))
 
-(define (locate-childrens tree path)
-  "Return the childrens of the timezone indicated by PATH in the given
+(define (locate-children tree path)
+  "Return the children of the timezone indicated by PATH in the given
 TREE. Raise a condition if the PATH could not be found."
   (let ((extract-proc (cut map car <>)))
     (match path
       (() (sort (extract-proc tree) string<?))
       ((region . rest)
        (or (and=> (assoc-ref tree region)
-                  (cut locate-childrens <> rest))
+                  (cut locate-children <> rest))
            (raise
             (condition
              (&message
@@ -111,7 +111,7 @@ TREE. Raise a condition if the PATH could not be found."
 
 (define (timezone-has-child? tree timezone)
   "Return #t if the given TIMEZONE any child in TREE and #f otherwise."
-  (not (null? (locate-childrens tree timezone))))
+  (not (null? (locate-children tree timezone))))
 
 (define* (zonetab->timezone-tree zonetab)
   "Return the timezone tree corresponding to the given ZONETAB file."

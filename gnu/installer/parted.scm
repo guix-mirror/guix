@@ -677,7 +677,7 @@ otherwise."
 (define* (mkpart disk user-partition
                  #:key (previous-partition #f))
   "Create the given USER-PARTITION on DISK. The PREVIOUS-PARTITION argument as
-to be set to the partition preceeding USER-PARTITION if any."
+to be set to the partition preceding USER-PARTITION if any."
 
   (define (parse-start-end start end)
     "Parse start and end strings as positions on DEVICE expressed with a unit,
@@ -734,8 +734,8 @@ cause them to cross."
                                     (< start-distance 3))
                                (+ start-sector start-offset)
                                start-sector)))
-       ;; This is a hackery but parted almost always fails to create optimally
-       ;; aligned partitions (unless specifiying percentages) because, the
+       ;; This is a hack.  Parted almost always fails to create optimally
+       ;; aligned partitions (unless specifying percentages) because the
        ;; default range of 1MB centered on the start sector is not enough when
        ;; the optimal alignment is 2048 sectors of 512KB.
        (extend-ranges! start-range end-range #:offset start-offset)

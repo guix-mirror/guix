@@ -30,7 +30,7 @@
 (define screen-rows    (make-parameter 0))
 
 (define (destroy-form-and-pop form)
-  "Destory the given FORM and pop the current window."
+  "Destroy the given FORM and pop the current window."
   (destroy-form form)
   (pop-window))
 
