@@ -1651,12 +1651,14 @@ with XPath too.")
     (name "java-xom")
     (version "127")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/elharo/xom/archive/XOM_"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/elharo/xom.git")
+                    (commit (string-append "XOM_" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "04m69db1irqja12a9rfxrac8cbn9psqa1k136wh4ls4pxfsdr5wg"))
+                "1jh6y03g5zzdhsb5jm6ms1xnamr460qmn96y3w6aw0ikfwqlg0bq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1667,9 +1669,13 @@ with XPath too.")
     (arguments
      `(#:jar-name "xom.jar"
        #:jdk ,icedtea-8
-       #:tests? #f; no tests
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'fix-tagsoup-dep
            (lambda _
              ;; FIXME: Where is tagsoup source?
