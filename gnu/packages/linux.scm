@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -3031,7 +3031,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.7")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -3039,7 +3039,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lirhjjv37jnf42r1ylrhi8kbzx9j9xnyfzvxpp6bzcp0fawigig"))
+                "1jhi6bhl4ih75rfmyyjxd35ghgch5ls1gw40cjxwy9d6bd41z6q1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3077,7 +3077,7 @@ arrays when needed.")
                  (("/usr/include/libudev.h")
                   (string-append udev "/include/libudev.h")))
                #t)))
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -3102,7 +3102,7 @@ Linux Device Mapper multipathing driver:
 @code{dm} multipath devices.
 @item @command{kpartx} - Create device maps from partition tables.
 @end enumerate")
-    (license (list license:gpl2+             ; Main distribution.
+    (license (list license:gpl2+             ; main distribution
                    license:lgpl2.0+))))      ; libmpathcmd/mpath_cmd.h
 
 (define-public libaio
