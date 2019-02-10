@@ -11518,4 +11518,32 @@ Music Player Daemon.")
     (description "This package provides access to ALSA infrastructure, that is
 needed by both alsa-seq and alsa-pcm.")
     (license license:bsd-3)))
+
+(define-public ghc-base-unicode-symbols
+  (package
+    (name "ghc-base-unicode-symbols")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/base-unicode-symbols/base-unicode-symbols-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ia6li7qjg1zkak4gf6mnbshw45mq9bfjr0jch58ds0lscmvwyzf"))))
+    (build-system haskell-build-system)
+    (home-page "http://www.haskell.org/haskellwiki/Unicode-symbols")
+    (synopsis "Unicode alternatives for common functions and operators")
+    (description "This package defines new symbols for a number of functions,
+operators and types in the base package.  All symbols are documented with
+their actual definition and information regarding their Unicode code point.
+They should be completely interchangeable with their definitions.  For
+further Unicode goodness you can enable the @code{UnicodeSyntax}
+@url{https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exs.html#unicode-syntax,
+language extension}.  This extension enables Unicode characters to be used to
+stand for certain ASCII character sequences, i.e. → instead of @code{->},
+∀ instead of @code{forall} and many others.")
+    (license license:bsd-3)))
 ;;; haskell.scm ends here
