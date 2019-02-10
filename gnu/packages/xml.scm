@@ -1960,16 +1960,18 @@ implements @code{XMLStreamWriter} and @code{XMLStreamReader} and supports
     (name "java-jdom")
     (version "2.0.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hunterhacker/jdom/archive/JDOM-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hunterhacker/jdom.git")
+                    (commit (string-append "JDOM-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0p8n7inqq2a25wk9ljinl3ixlx1x2la9qaman8ngd75xxjb02yc1"))))
+                "14vv1kxrsdvwi4cz3rx6r48w5y6fvk9cymil8qhvxwp56xxrgxiq"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "package"
-       #:tests? #f; tests are run as part of the build process
+       #:tests? #f                ; tests are run as part of the build process
        #:phases
        (modify-phases %standard-phases
          (replace 'install
