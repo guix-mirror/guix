@@ -620,17 +620,17 @@ project)
     (name "qjson")
     (version "0.9.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/flavio/qjson/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/flavio/qjson.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m0h4rajj99hv9w4i381a8x81lxiv167lxk10ncvphpkfxs624p8"))))
+                "1f4wnxzx0qdmxzc7hqk28m0sva7z9p9xmxm6aifvjlp0ha6pmfxs"))))
     (build-system cmake-build-system)
     (arguments
-     ;; The tests require a X server
+     ;; The tests require a running X server.
      `(#:configure-flags '("-DQJSON_BUILD_TESTS=ON"
                            "-DCMAKE_CXX_FLAGS=-std=gnu++11 -fPIC")
        #:phases
