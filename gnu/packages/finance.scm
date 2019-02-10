@@ -354,18 +354,18 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3.4")
+    (version "3.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://electroncash.org/downloads/"
                            version
-                           "/win-linux/ElectronCash-"
+                           "/win-linux/Electron-Cash-"
                            version
                            ".tar.gz"))
        (sha256
         (base32
-         "0ipl6vf2n9a5n556sx2z57s7wdvg05xwjvz67kff9nmbx4s8vjyf"))
+         "185z3c5j9nvl31ga80hvahx7ghvkgmqgfjrrzw1fbs6p9jxy007w"))
        (modules '((guix build utils)))
        (snippet
         '(begin
