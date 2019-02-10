@@ -1994,20 +1994,22 @@ outputting XML data from Java code.")
   (package
     (name "java-xstream")
     (version "1.4.10")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                     "https://github.com/x-stream/xstream/archive/XSTREAM_"
-                     (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                     ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "10zbkam05wirxipvgrjimdwsyqrwl4a0n7lhvxbsssqpv727469g"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/x-stream/xstream.git")
+             (commit (string-append
+                      "XSTREAM_"
+                      (string-map (lambda (x) (if (eq? x #\.) #\_ x))
+                                  version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12m2bw8bapdc1w0pni9wl5hh2y8jfdgcvxd464jl9917dsp3ai2n"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "xstream.jar"
-       ;; FIXME: Tests are not in a java subdirectory as assumed by ant-build-system
+       ;; FIXME: Tests are not in a java subdirectory as assumed by ant-build-system.
        #:tests? #f
        #:jdk ,icedtea-8
        #:source-dir "xstream/src/java"))
