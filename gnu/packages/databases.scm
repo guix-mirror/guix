@@ -497,7 +497,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.37")
+    (version "10.1.38")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -505,7 +505,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ijdmdn9mcciwv361zfmja6b1h6qpbdqgrnnq6kkdapplyq1dmcc"))
+                "0zq77w3ff9q781fn8cv46vy1v4ggb8vjarjvk51k653x4gyg9wfa"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -584,7 +584,7 @@ Language.")
                       "roles.acl_statistics"
 
                       ;; This file contains a time bomb which makes it fail after
-                      ;; 2019-01-01.  See <https://bugs.gnu.org/34351> for details.
+                      ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
                       "main.mysqldump"
 
                       ;; XXX: Fails sporadically.
