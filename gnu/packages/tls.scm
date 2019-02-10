@@ -164,7 +164,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.6.5")
+    (version "3.6.6")
     (source (origin
              (method url-fetch)
              (uri
@@ -176,16 +176,7 @@ living in the same process.")
              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
              (sha256
               (base32
-               "0ddvg97dyrh8dkffv1mdc0knxx5my3qdbzv97s4a6jggmk9wwgh7"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; XXX: The generated configure script in GnuTLS 3.6.5
-                 ;; apparently does not know about Guile 2.2.
-                 (substitute* "configure"
-                   (("guile_versions_to_search=\"2\\.0 1\\.8\"")
-                    "guile_versions_to_search=\"2.2 2.0 1.8\""))
-                 #t))))
+               "19rcfgsfxb01cyz8jxmmgkjqc7y5s97amajzyknk1i1amywcm6mv"))))
     (build-system gnu-build-system)
     (arguments
      `(; Ensure we don't keep a reference to this buggy software.
