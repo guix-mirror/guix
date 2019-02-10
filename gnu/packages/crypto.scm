@@ -683,7 +683,7 @@ BLAKE.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.3.6")
+    (version "1.3.8")
     (source
      (origin
        (method url-fetch)
@@ -692,7 +692,7 @@ BLAKE.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "14ngzfgmd1lfp7m78sn49x8ymf2s37nrr67c6p5vas85nrrgjkcn"))))
+         "0k60ywyhwqwqxa2q2l85vwgf884hcgy31nxir3dqgz7ymib6llxy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -711,7 +711,7 @@ BLAKE.")
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke
                     "make" "-C" "librhash"
-                    "install-headers" "install-so-link"
+                    "install-lib-headers" "install-so-link"
                     make-flags))))))
     (home-page "https://sourceforge.net/projects/rhash/")
     (synopsis "Utility for computing hash sums")
