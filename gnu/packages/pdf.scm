@@ -83,14 +83,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.72.0")
+   (version "0.74.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lfs1b1jfamxl13zbl5n448dqvl9n8frbv8180y7b7kfyaw7wx61"))))
+              "0bvb0yq9zsl2b811j4l4x0vf8g5lgmqbndkb2hvgsrr5639rzq4j"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -122,7 +122,7 @@
       #:configure-flags
       (let* ((out (assoc-ref %outputs "out"))
              (lib (string-append out "/lib")))
-        (list "-DENABLE_XPDF_HEADERS=ON" ; to install header files
+        (list "-DENABLE_UNSTABLE_API_ABI_HEADERS=ON" ;to install header files
               "-DENABLE_ZLIB=ON"
               (string-append "-DCMAKE_INSTALL_LIBDIR=" lib)
               (string-append "-DCMAKE_INSTALL_RPATH=" lib)))))

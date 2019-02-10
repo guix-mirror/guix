@@ -200,6 +200,15 @@
             (copy-file "texk/web2c/pdftexdir/pdftosrc-newpoppler.cc"
                        "texk/web2c/pdftexdir/pdftosrc.cc")
             #t))
+        (add-after 'use-code-for-new-poppler 'use-code-for-even-newer-poppler
+          (lambda _
+            ;; Adjust for deprecated types in Poppler 0.73.
+            (substitute* (append
+                          (find-files "texk/web2c/luatexdir/" "\\.(cc|w)$")
+                          '("texk/web2c/pdftexdir/pdftosrc.cc"))
+              (("Guint") "unsigned int")
+              (("Guchar") "unsigned char"))
+            #t))
         (add-after 'unpack 'disable-failing-test
           (lambda _
             ;; FIXME: This test fails on 32-bit architectures since Glibc 2.28:

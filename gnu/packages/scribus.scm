@@ -97,7 +97,9 @@
                          (file-name "scribus-poppler-0.70.patch")
                          (sha256
                           (base32
-                           "0dw7ix3jaj0y1q97cmmqwb2qgdx760yhxx86wa8rnx0xhfi5x6qr"))))))
+                           "0dw7ix3jaj0y1q97cmmqwb2qgdx760yhxx86wa8rnx0xhfi5x6qr"))))
+
+                 (search-patches "scribus-poppler-0.73.patch")))
        (modules '((guix build utils)))
        (snippet
         '(begin
