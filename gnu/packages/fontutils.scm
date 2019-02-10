@@ -433,7 +433,7 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.12")
+   (version "1.3.13")
    (source
      (origin
        (method url-fetch)
@@ -441,7 +441,7 @@ applications should be.")
                            "download/" version "/" name "-" version ".tgz"))
        (sha256
         (base32
-         "1l1940d8fz67jm6a0x8cjb5p2dv48cvz3wcskwa83hamd70k15fd"))))
+         "01jzhwnj1c3d68dmw15jdxly0hwkmd8ja4kw755rbkykn1ly2qyx"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
