@@ -1930,12 +1930,14 @@ and from a Java application.  It provides a standard pull parser interface.")
     (name "java-jettison")
     (version "1.3.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus/jettison/archive/"
-                                  "jettison-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/codehaus/jettison.git")
+                    (commit (string-append "jettison-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rdhfyxywvga5wiwasc04iqnxyixn3rd8wj01c9ymhvwc3h6dpqg"))))
+                "15sydmi5chdh4126qc7v8bsrp7fp4ldaya8a05iby4pq2324q0qw"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "jettison.jar"
