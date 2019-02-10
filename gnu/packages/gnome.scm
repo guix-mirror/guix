@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -4572,16 +4572,6 @@ such as gzip tarballs.")
                    (out  (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-session")
                  `("PATH" ":" prefix (,(string-append glib "/bin"))))
-               #t)))
-         (add-after 'install 'disable-hardware-acceleration-check
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Do not abort if hardware acceleration is missing.  This allows
-             ;; GNOME to run in QEMU and on low-end devices.
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* (string-append out
-                                           "/share/xsessions/gnome.desktop")
-                 (("gnome-session")
-                  "gnome-session --disable-acceleration-check"))
                #t))))
 
        #:configure-flags
