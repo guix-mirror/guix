@@ -1783,13 +1783,14 @@ package is in maintenance mode.")
     (name "java-dom4j")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dom4j/dom4j/archive/"
-                                  "version-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dom4j/dom4j.git")
+                    (commit (string-append "version-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "101drpnw6agmcvsi1jrfi0kn97r7liazrh5jbrip9vx26axn2fx9"))
+                "1827jljs8mps489fm7xw63cakdqwc5grilrr5n9spr2rlk76jpx3"))
               (modules '((guix build utils)))
               (snippet
                 '(begin ;; Delete bundled jar archives.
