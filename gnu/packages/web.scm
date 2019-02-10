@@ -993,13 +993,14 @@ of people.")
     (name "websockify")
     (version "0.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/novnc/websockify/archive/v"
-                                  version "/archive.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/novnc/websockify.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kjq6gibsvbb6zx5gi8hgh7110x62pbwcqkwapf3k7s27w5y907h"))))
+                "0pcic8qs0gdwrfjgfaf893jyddaw97wcjm2mmvwn0xyhmy8mbmw1"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; FIXME: 2 out of 6 tests fail with "ImportError: No module
