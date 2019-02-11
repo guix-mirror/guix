@@ -2,7 +2,7 @@
 
 #+TITLE: Hacking GNU Guix and Its Incredible Distro
 
-Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013, 2014, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2015, 2017 Mathieu Lirzin <mthl@gnu.org>
 Copyright © 2017 Leo Famulari <leo@famulari.name>
 Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -41,8 +41,9 @@ make sure to run ‘git pull --rebase’.
 
 All commits that are pushed to the central repository on Savannah must be
 signed with an OpenPGP key, and the public key should be uploaded to your user
-account on Savannah and to public key servers, such as ‘pgp.mit.edu’.  To
-configure Git to automatically sign commits, run:
+account on Savannah and to public key servers, such as
+‘pool.sks-keyservers.net’.  To configure Git to automatically sign commits,
+run:
 
   git config commit.gpgsign true
   git config user.signingkey CABBA6EA1DC0FF33
