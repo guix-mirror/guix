@@ -374,9 +374,16 @@ ARGS is the list of arguments received by the 'throw' handler."
          (report-error (G_ "exception thrown: ~s~%") obj))
      (when (fix-hint? obj)
        (display-hint (condition-fix-hint obj))))
-    ((error args ...)
+    ((key args ...)
      (report-error (G_ "failed to load '~a':~%") file)
-     (apply display-error frame (current-error-port) args))))
+     (match args
+       (((? symbol? proc) (? string? message) (args ...) . rest)
+        (display-error frame (current-error-port) proc message
+                       args rest))
+       (_
+        ;; Some exceptions like 'git-error' do not follow Guile's convention
+        ;; above and need to be printed with 'print-exception'.
+        (print-exception (current-error-port) frame key args))))))
 
 (define (warn-about-load-error file args)         ;FIXME: factorize with ↑
   "Report the failure to load FILE, a user-provided Scheme file, without
