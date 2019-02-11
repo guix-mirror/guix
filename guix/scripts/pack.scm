@@ -26,7 +26,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix store)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
   #:use-module (guix monads)
   #:use-module (guix modules)

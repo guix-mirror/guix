@@ -47,7 +47,7 @@
   #:autoload   (guix download) (download-to-store)
   #:autoload   (guix git-download) (git-reference?)
   #:autoload   (guix git) (git-checkout?)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module ((guix progress) #:select (current-terminal-columns))
   #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:export (%standard-build-options

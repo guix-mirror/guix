@@ -20,7 +20,7 @@
 (define-module (guix scripts pull)
   #:use-module (guix ui)
   #:use-module (guix utils)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix config)

@@ -23,7 +23,7 @@
 (define-module (guix scripts system)
   #:use-module (guix config)
   #:use-module (guix ui)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix store)
   #:autoload   (guix store database) (register-path)
   #:use-module (guix grafts)
