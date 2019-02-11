@@ -302,7 +302,7 @@ following the mouse.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://cairographics.org/releases/pixman-"
+                    "https://www.cairographics.org/releases/pixman-"
                     version ".tar.gz"))
               (sha256
                (base32
