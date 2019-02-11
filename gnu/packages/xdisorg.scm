@@ -298,7 +298,7 @@ following the mouse.")
 (define-public pixman
   (package
     (name "pixman")
-    (version "0.36.0")
+    (version "0.38.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -306,7 +306,7 @@ following the mouse.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1blzrx50ssdv0pn56hcv2v0zw0vrjwj1sx22pkgjls1p9n6rr88w"))
+                "1a0ci5ni7wngh59m0m00wzvhrc39aqj54yj88msw5msn07pjnnd7"))
               (patches (search-patches "pixman-CVE-2016-5296.patch"))))
     (build-system gnu-build-system)
     (inputs
