@@ -456,6 +456,9 @@ TCP, not the SSH protocol.")
                 "0rgavbzw7jrs5wslxm0dnwx2m409yzxd9hazd92r7kx8xikr3yzj"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; there is no "make check" or anything similar
+    ;; TODO: Investigate unbundling libtommath and libtomcrypt or at least
+    ;; cherry-picking important bug fixes from them. See <bugs.gnu.org/24674>
+    ;; for more information.
     (inputs `(("zlib" ,zlib)))
     (synopsis "Small SSH server and client")
     (description "Dropbear is a relatively small SSH server and
