@@ -103,17 +103,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                 "1ix52vfa8k8my4xyr8b0phg8605b2xchyzyva908m08vpzm14w94"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Ddocumentation=true") ; The default is 'false'...
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'expand-C++-include-path
-           ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((path "CPLUS_INCLUDE_PATH")
-                    (gcc  (assoc-ref inputs "gcc"))
-                    (c++  (string-append gcc "/include/c++")))
-               (setenv path (string-append c++ ":" (getenv path)))
-               #t))))))
+     `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
@@ -135,10 +125,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("pulseaudio" ,pulseaudio)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
-    ;; MPD > 0.21 requires > GCC 6
-    (native-inputs `(("gcc" ,gcc-8)
-                     ("gcc-lib" ,gcc-8 "lib")
-                     ("pkg-config" ,pkg-config)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("python-sphinx" ,python-sphinx)))
     ;; Missing optional inputs:
     ;;   libyajl

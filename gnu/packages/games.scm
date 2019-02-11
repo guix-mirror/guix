@@ -2615,16 +2615,12 @@ Transport Tycoon Deluxe.")
                                 "/share/openrct2/title-sequences") "data/title")
               (copy-recursively (string-append objects
                                 "/share/openrct2/objects") "data/object"))))
-          (add-before 'configure 'fixgcc7
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))
-          (add-after 'fixgcc7 'get-rid-of-errors
+          (add-before 'configure 'get-rid-of-errors
             (lambda _
               ;; Don't treat warnings as errors.
               (substitute* "CMakeLists.txt"
-                (("-Werror") "")))))))
+                (("-Werror") ""))
+              #t)))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
@@ -2640,8 +2636,7 @@ Transport Tycoon Deluxe.")
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("gcc" ,gcc-7)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of

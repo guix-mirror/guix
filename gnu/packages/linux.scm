@@ -308,10 +308,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("flex" ,flex)
        ("bison" ,bison)
 
-       ;; Build with GCC-7 for full retpoline support.
-       ;; FIXME: Remove this when our default compiler has retpoline support.
-       ("gcc" ,gcc-7)
-
        ;; These are needed to compile the GCC plugins.
        ("gmp" ,gmp)
        ("mpfr" ,mpfr)
@@ -337,11 +333,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda _
              (substitute* (find-files "." "^Makefile(\\.include)?$")
                (("/bin/pwd") "pwd"))
-             #t))
-         (add-before 'configure 'work-around-gcc-7-include-path-issue
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)

@@ -237,11 +237,6 @@
                  (("^add_ceph_test\\(osd-copy-from\\.sh.*$") "\n")
                  (("^add_ceph_test\\(osd-fast-mark-down\\.sh.*$") "\n"))
                #t)))
-         (add-before 'configure 'gcc-workaround
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t))
          (add-before 'check 'set-check-environment
            (lambda _
              ;; Run tests in parallel.
@@ -289,8 +284,7 @@
     (outputs
      '("out" "lib"))
     (native-inputs
-     `(("gcc" ,gcc-7)                      ;7 or later is required
-       ("gperf" ,gperf)
+     `(("gperf" ,gperf)
        ("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
        ("python-sphinx" ,python-sphinx)
