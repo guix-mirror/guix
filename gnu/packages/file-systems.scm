@@ -109,7 +109,7 @@ single file can be mounted.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.5")
+    (version "0.5.6")
     (source
      (origin
        (method git-fetch)
@@ -119,7 +119,7 @@ single file can be mounted.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "18c32qcdzbxrzg7srnqnw1ls9yqqxyk9b996yxr6w2znw6x6n8v4"))))
+         "1zn2ydap8k9fwjl3ivgrg6l32s5p4ik6ca6j1idp7c77znlv6cpp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
