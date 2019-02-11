@@ -43,7 +43,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "18.09.0")
+(define %docker-version "18.09.2")
 
 (define-public python-docker-py
   (package
@@ -241,7 +241,7 @@ network attachments.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "1liqbx58grqih6m8hz9y20y5waflv19pv15l3wl64skap2bsn21c"))
+        "1zfpk2n8j6gnwbrxrh6d6pj24y60dhbanpf55shrm2yxz54ka36c"))
       (patches
        (search-patches "docker-engine-test-noinstall.patch"
                        "docker-fix-tests.patch"))))
@@ -337,6 +337,7 @@ network attachments.")
                  (substitute-LookPath "blkid" "util-linux" "/sbin/blkid")
                  (substitute-LookPath "unpigz" "pigz" "/bin/unpigz")
                  (substitute-LookPath "iptables" "iptables" "/sbin/iptables")
+                 (substitute-LookPath "iptables-legacy" "iptables" "/sbin/iptables")
                  (substitute-LookPath "ip" "iproute2" "/sbin/ip")
                  (substitute-Command "modprobe" "kmod" "/bin/modprobe")
                  (substitute-Command "pvcreate" "lvm2" "/sbin/pvcreate")
@@ -483,7 +484,7 @@ provisioning etc.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "1ivisys20kphvbqlazc3bsg7pk0ykj9gjx5d4yg439x4n13jxwvb"))))
+        "0jzcqh1kqbfyj6ax7z67gihaqgjiz6ddz6rq6k458l68v7zn77r8"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"
