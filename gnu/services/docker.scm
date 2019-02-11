@@ -77,7 +77,7 @@
                           file-system-/sys/fs/cgroup/devices
                           file-system-/sys/fs/cgroup/memory
                           ; TODO: file-system-/sys/fs/cgroup/pids
-                          ))
+                          networking))
            (start #~(make-forkexec-constructor
                      (list (string-append #$docker "/bin/dockerd")
                            "-p" "/var/run/docker.pid")
