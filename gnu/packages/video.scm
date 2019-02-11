@@ -2877,7 +2877,17 @@ programmers to access a standard API to open and decompress media files.")
          (add-before 'configure 'fix-ldflags
            (lambda _
              (setenv "LDFLAGS" "-pthread")
-             #t)))))
+             #t))
+         (add-after 'unpack 'fix-boost-headers
+               (lambda _
+                 (substitute*
+                     '("src/subtitles_provider_libass.cpp"
+                       "src/colour_button.cpp"
+                       "src/video_provider_dummy.cpp"
+                       "./src/video_frame.cpp")
+                   (("#include <boost/gil/gil_all.hpp>")
+                    "#include <boost/gil.hpp>"))
+                 #t)))))
     (inputs
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)
