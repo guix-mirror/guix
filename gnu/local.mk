@@ -811,6 +811,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
+  %D%/packages/patches/glibc-CVE-2018-11236.patch		\
+  %D%/packages/patches/glibc-CVE-2018-11237.patch		\
   %D%/packages/patches/glibc-allow-kernel-2.6.32.patch		\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
   %D%/packages/patches/glibc-hidden-visibility-ldconfig.patch	\
