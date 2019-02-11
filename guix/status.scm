@@ -506,6 +506,7 @@ addition to build events."
 
   (match event
     (('build-started drv . _)
+     (erase-current-line*)
      (let ((properties (derivation-properties
                         (read-derivation-from-file drv))))
        (match (assq-ref properties 'type)
@@ -552,10 +553,12 @@ addition to build events."
         (format port (info (G_ "View build log at '~a'.")) log)))
      (newline port))
     (('substituter-started item _ ...)
+     (erase-current-line*)
      (when (or print-log? (not (extended-build-trace-supported?)))
        (format port (info (G_ "substituting ~a...")) item)
        (newline port)))
     (('download-started item uri _ ...)
+     (erase-current-line*)
      (format port (info (G_ "downloading from ~a...")) uri)
      (newline port))
     (('download-progress item uri
