@@ -104,7 +104,9 @@ found."
   ;; Guile-Gcrypt, Guile-SQLite3, and their propagated inputs.
   (append-map (lambda (package)
                 (cons package
-                      (package-transitive-propagated-inputs package)))
+                      (match (package-transitive-propagated-inputs package)
+                        (((labels packages) ...)
+                         packages))))
               (list guile-gcrypt guile-sqlite3)))
 
 (define (store-database items)
