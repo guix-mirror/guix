@@ -2843,7 +2843,9 @@ http://lavachat.symlynx.com/unix/")
                 (file-name (string-append name "-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1vs9k6f5fgsiy1n72imlqm8khjwm8cryc08zwd4gr7yxlxv45bs0"))))
+                  "1vs9k6f5fgsiy1n72imlqm8khjwm8cryc08zwd4gr7yxlxv45bs0"))
+                (patches
+                 (search-patches "red-eclipse-remove-gamma-name-hack.patch"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f            ; no check target

@@ -1,0 +1,52 @@
+From b16b4963c1ad81bb9ef784bc4913a4c8ab5f1bb4 Mon Sep 17 00:00:00 2001
+From: Lee Salzman <lsalzman@gmail.com>
+Date: Tue, 12 Sep 2017 14:45:10 -0400
+Subject: [PATCH] remove gamma name hack
+
+---
+ src/engine/main.cpp | 6 +++---
+ src/shared/cube.h   | 8 --------
+ 2 files changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/src/engine/main.cpp b/src/engine/main.cpp
+index 1032004d..77c9233a 100644
+--- a/src/engine/main.cpp
++++ b/src/engine/main.cpp
+@@ -278,10 +278,10 @@ static void setgamma(int val)
+ }
+ 
+ static int curgamma = 100;
+-VARF(IDF_PERSIST, gamma, 30, 100, 300,
++VARFN(IDF_PERSIST, gamma, reqgamma, 30, 100, 300,
+ {
+-    if(initing || gamma == curgamma) return;
+-    curgamma = gamma;
++    if(initing || reqgamma == curgamma) return;
++    curgamma = reqgamma;
+     setgamma(curgamma);
+ });
+ 
+diff --git a/src/shared/cube.h b/src/shared/cube.h
+index 3864c492..7ff5e267 100644
+--- a/src/shared/cube.h
++++ b/src/shared/cube.h
+@@ -3,19 +3,11 @@
+ 
+ #define _FILE_OFFSET_BITS 64
+ 
+-#ifdef __GNUC__
+-#define gamma __gamma
+-#endif
+-
+ #ifdef WIN32
+ #define _USE_MATH_DEFINES
+ #endif
+ #include <math.h>
+ 
+-#ifdef __GNUC__
+-#undef gamma
+-#endif
+-
+ #include <string.h>
+ #include <stdio.h>
+ #include <stdlib.h>
