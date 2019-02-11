@@ -1200,15 +1200,16 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.4")
+    (version "2.3.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.dovecot.org/releases/"
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
-       (sha256 (base32
-                "01ggzf7b3jpl89mjiqr7xbpbs181g2gjf6wzg70qaqfzz3ppc6yr"))))
+       (sha256
+        (base32
+         "01xa8d08c0j51w5kmqb3vnzrvh17hkzx5a5p7fb5hgn3wln3x1xq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
