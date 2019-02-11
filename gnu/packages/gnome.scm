@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -126,6 +126,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
@@ -149,6 +150,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu artwork)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -159,6 +161,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -4572,16 +4575,6 @@ such as gzip tarballs.")
                    (out  (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-session")
                  `("PATH" ":" prefix (,(string-append glib "/bin"))))
-               #t)))
-         (add-after 'install 'disable-hardware-acceleration-check
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Do not abort if hardware acceleration is missing.  This allows
-             ;; GNOME to run in QEMU and on low-end devices.
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* (string-append out
-                                           "/share/xsessions/gnome.desktop")
-                 (("gnome-session")
-                  "gnome-session --disable-acceleration-check"))
                #t))))
 
        #:configure-flags
@@ -5580,11 +5573,37 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1f20x36ymkp1j667hb7s7byly2gqc4m0anldy3qwp38vm8437caq"))))
+                "1f20x36ymkp1j667hb7s7byly2gqc4m0anldy3qwp38vm8437caq"))
+              (patches (search-patches "gnome-shell-theme.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               #~(begin
+                   ;; CSS files have to be regenerated from the .scss source
+                   ;; that 'gnome-shell-theme.patch' modifies.
+                   (for-each delete-file
+                             (find-files "data/theme"
+                                         "^gnome-shell.*\\.css$"))
+
+                   ;; Copy images for use on the GDM log-in screen.
+                   (copy-file #$(file-append %artwork-repository
+                                             "/slim/0.x/background.png")
+                              "data/theme/guix-background.png")
+                   (invoke #+(file-append inkscape "/bin/inkscape")
+                           "--export-png=data/theme/guix-logo.png"
+                           #$(file-append %artwork-repository
+                                          "/logo/Guix-horizontal-white.svg"))
+                   #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'build 'rebuild-css
+           (lambda _
+             ;; Rebuild the CSS files from the .scss files that our patch
+             ;; modifies.
+             (invoke "make" "-C" "data"
+                     "theme/gnome-shell.css"
+                     "theme/gnome-shell-high-contrast.css")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
@@ -5614,7 +5633,8 @@ properties, screen resolution, and other GNOME parameters.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
-       ("xsltproc" ,libxslt)))
+       ("xsltproc" ,libxslt)
+       ("ruby-sass" ,ruby-sass)))
     (inputs
      `(("accountsservice" ,accountsservice)
        ("caribou" ,caribou)
