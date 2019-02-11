@@ -59,14 +59,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.20.5")
+    (version "2.22.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "147r7an41920zl4x9srdva7fxvw2znjin5ldjkhay1cndv9gih0m"))))
+                "0ny8azipr2dmdk79qrf4hvb2p4k5b3af38szjhmhg8mh1nfdp46z"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -160,33 +160,3 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
-
-;; This version of webkitgtk needs to be kept separate, because it requires a
-;; newer version of GCC than our default compiler, and this causes problems
-;; when linked with C++ libraries built using our default compiler.  For now,
-;; we use this newer webkitgtk only for selected packages, e.g. epiphany.
-(define-public webkitgtk-2.22
-  (package/inherit webkitgtk
-    (name "webkitgtk")
-    (version "2.22.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.webkitgtk.org/releases/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0ny8azipr2dmdk79qrf4hvb2p4k5b3af38szjhmhg8mh1nfdp46z"))))
-    (native-inputs
-     `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
-       ,@(package-native-inputs webkitgtk)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments webkitgtk)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'configure 'work-around-gcc-7-include-path-issue
-             ;; FIXME: Work around a problem with gcc-7 includes (see
-             ;; <https://bugs.gnu.org/30756>).
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))))))))

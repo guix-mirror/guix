@@ -383,10 +383,7 @@ driven and does not detract you from your daily work.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags (list "gtk-webkit"
-                          (string-append
-                           "CC="
-                           (assoc-ref %build-inputs "gcc-7")
-                           "/bin/gcc")
+                          "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
@@ -397,10 +394,9 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk-2.22)))
+       ("webkitgtk" ,webkitgtk)))
     (native-inputs
-     `(("gcc-7" ,gcc-7) ; needed because webkitgtk-2.22 is compiled with gcc-7
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://next.atlas.engineer")
     (synopsis "Infinitely extensible web-browser (user interface only)")
     (description "Next is a keyboard-oriented, extensible web-browser

@@ -4130,7 +4130,6 @@ work and the interface is well tested.")
                     ;; These libraries must be on LD_LIBRARY_PATH.
                     (libs '("gtkspell3" "webkitgtk" "libsoup" "libsecret"
                             "atk" "gtk+" "gsettings-desktop-schemas"
-                            "gcc:lib" ; needed b/c webkitgtk is built with gcc-7
                             "gobject-introspection"))
                     (path (string-join
                            (map (lambda (lib)
@@ -4143,8 +4142,7 @@ work and the interface is well tested.")
                  `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
              #t)))))
     (native-inputs
-     `(("gcc:lib" ,gcc-7 "lib") ; needed because webkitgtk is built with gcc-7
-       ("intltool" ,intltool)
+     `(("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
@@ -4165,7 +4163,7 @@ work and the interface is well tested.")
        ("libsecret" ,libsecret)
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk-2.22)))
+       ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Eolie")
     (synopsis "Web browser for GNOME")
     (description
@@ -4203,7 +4201,6 @@ a secret password store, an adblocker, and a modern UI.")
      `(("dconf" ,dconf)))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
-       ("gcc" ,gcc-7)  ; needed because webkitgtk-2.22 is compiled with gcc-7
        ("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
@@ -4224,7 +4221,7 @@ a secret password store, an adblocker, and a modern UI.")
        ("libxslt" ,libxslt)
        ("nettle" ,nettle) ; for hogweed
        ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk-2.22)))
+       ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Web")
     (synopsis "GNOME web browser")
     (description
