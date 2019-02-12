@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -478,7 +478,7 @@ a card with a smaller capacity than stated.")
 (define-public duperemove
   (package
     (name "duperemove")
-    (version "0.11")
+    (version "0.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -486,7 +486,7 @@ a card with a smaller capacity than stated.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0rjmmh42yqw9a5j6sp31cqwxk3s97dsi4xz0wpxpllj7bsp3aiw5"))
+                "1j1alh3blbj1wg1zmkpwrf40nggwg8xbgsk2mnn9albymwdwkhvm"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
