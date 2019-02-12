@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -531,7 +531,7 @@ served by AS112.  Stub and forward zones are supported.")
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
-                         name "-" version "-" build ".tar.gz"))
+                         "yadifa-" version "-" build ".tar.gz"))
          (sha256
           (base32 "15xhzg4crjcxascwpz6y8qpqcgypzv2p9bspdskp4nx1x1y4316c")))))
     (build-system gnu-build-system)
