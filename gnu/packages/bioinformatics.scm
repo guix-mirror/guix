@@ -14441,3 +14441,39 @@ Nanopolish can calculate an improved consensus sequence for a draft genome
 assembly, detect base modifications, call SNPs (Single nucleotide
 polymorphisms) and indels with respect to a reference genome and more.")
       (license license:expat))))
+
+(define-public cnvkit
+  (package
+    (name "cnvkit")
+    (version "0.9.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/etal/cnvkit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g2f78k68yglmj4fsfmgs8idqv3di9aj53fg0ld0hqljg8chhh82"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-future" ,python-future)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-reportlab" ,python-reportlab)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-pyfaidx" ,python-pyfaidx)
+       ("python-scipy" ,python-scipy)
+       ;; R packages
+       ("r-dnacopy" ,r-dnacopy)))
+    (home-page "https://cnvkit.readthedocs.org/")
+    (synopsis "Copy number variant detection from targeted DNA sequencing")
+    (description
+     "CNVkit is a Python library and command-line software toolkit to infer
+and visualize copy number from high-throughput DNA sequencing data.  It is
+designed for use with hybrid capture, including both whole-exome and custom
+target panels, and short-read sequencing platforms such as Illumina and Ion
+Torrent.")
+    (license license:asl2.0)))
