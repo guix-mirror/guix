@@ -27,6 +27,7 @@
   #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages statistics)
@@ -1175,4 +1176,26 @@ Viewer (SAV) files, access data, and generate QC plots.")
     (description
      "This package provides a quality control pipeline for ChIP-exo/nexus
 sequencing data.")
+    (license license:gpl2+)))
+
+(define-public r-dnacopy
+  (package
+    (name "r-dnacopy")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DNAcopy" version))
+       (sha256
+        (base32
+         "04cqdqxhva66xwh1s2vffi56b9fcrqd4slcrvqasj5lp2rkjli82"))))
+    (properties `((upstream-name . "DNAcopy")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://bioconductor.org/packages/DNAcopy")
+    (synopsis "DNA copy number data analysis")
+    (description
+     "This package implements the @dfn{circular binary segmentation} (CBS)
+algorithm to segment DNA copy number data and identify genomic regions with
+abnormal copy number.")
     (license license:gpl2+)))
