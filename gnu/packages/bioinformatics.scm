@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -612,16 +613,22 @@ intended to behave exactly the same as the original BWK awk.")
 (define-public python-pybedtools
   (package
     (name "python-pybedtools")
-    (version "0.7.10")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pybedtools" version))
               (sha256
                (base32
-                "0l2b2wrnj85azfqgr0zwr60f7j58vlla1hcgxvr9rwikpl8j72ji"))))
+                "1xl454ijvd4dzfvqgfahad49b49j7qy710fq9xh1rvk42z6x5ssf"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       ;; See https://github.com/daler/pybedtools/issues/192
+       #:phases
        (modify-phases %standard-phases
          ;; See https://github.com/daler/pybedtools/issues/261
          (add-after 'unpack 'disable-broken-tests
@@ -631,21 +638,59 @@ intended to behave exactly the same as the original BWK awk.")
              (substitute* "pybedtools/test/test_scripts.py"
                (("def test_venn_mpl")
                 "def _do_not_test_venn_mpl"))
-             ;; Requires internet access.
              (substitute* "pybedtools/test/test_helpers.py"
+               ;; Requires internet access.
                (("def test_chromsizes")
-                "def _do_not_test_chromsizes"))
-             ;; FIXME: these two fail for no good reason.
-             (substitute* "pybedtools/test/test1.py"
-               (("def test_issue_157")
-                "def _do_not_test_issue_157")
-               (("def test_to_dataframe")
-                "def _do_not_test_to_dataframe"))
-             #t)))))
+                "def _do_not_test_chromsizes")
+               ;; Broken as a result of the workaround used in the check phase
+               ;; (see: https://github.com/daler/pybedtools/issues/192).
+               (("def test_getting_example_beds")
+                "def _do_not_test_getting_example_beds"))
+             #t))
+         ;; TODO: Remove phase after it's part of PYTHON-BUILD-SYSTEM.
+         ;; build system.
+         ;; Force the Cythonization of C++ files to guard against compilation
+         ;; problems.
+         (add-after 'unpack 'remove-cython-generated-files
+           (lambda _
+             (let ((cython-sources (map (cut string-drop-right <> 4)
+                                        (find-files "." "\\.pyx$")))
+                   (c/c++-files (find-files "." "\\.(c|cpp|cxx)$")))
+               (define (strip-extension filename)
+                 (string-take filename (string-index-right filename #\.)))
+               (define (cythonized? c/c++-file)
+                 (member (strip-extension c/c++-file) cython-sources))
+               (for-each delete-file (filter cythonized? c/c++-files))
+               #t)))
+         (add-after 'remove-cython-generated-files 'generate-cython-extensions
+           (lambda _
+             (invoke "python" "setup.py" "cythonize")))
+         (replace 'check
+           (lambda _
+             (let* ((cwd (getcwd))
+                    (build-root-directory (string-append cwd "/build/"))
+                    (build (string-append
+                            build-root-directory
+                            (find (cut string-prefix? "lib" <>)
+                                  (scandir (string-append
+                                            build-root-directory)))))
+                    (scripts (string-append
+                              build-root-directory
+                              (find (cut string-prefix? "scripts" <>)
+                                    (scandir build-root-directory)))))
+               (setenv "PYTHONPATH"
+                       (string-append build ":" (getenv "PYTHONPATH")))
+               ;; Executable scripts such as 'intron_exon_reads.py' must be
+               ;; available in the PATH.
+               (setenv "PATH"
+                       (string-append scripts ":" (getenv "PATH"))))
+             ;; The tests need to be run from elsewhere...
+             (mkdir-p "/tmp/test")
+             (copy-recursively "pybedtools/test" "/tmp/test")
+             (with-directory-excursion "/tmp/test"
+               (invoke "pytest")))))))
     (propagated-inputs
-     ;; Tests don't pass with Bedtools 2.27.1.
-     ;; See https://github.com/daler/pybedtools/issues/260
-     `(("bedtools" ,bedtools-2.26)
+     `(("bedtools" ,bedtools)
        ("samtools" ,samtools)
        ("python-matplotlib" ,python-matplotlib)
        ("python-pysam" ,python-pysam)
@@ -654,9 +699,11 @@ intended to behave exactly the same as the original BWK awk.")
      `(("python-numpy" ,python-numpy)
        ("python-pandas" ,python-pandas)
        ("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)
-       ("kentutils" ,kentutils) ; for bedGraphToBigWig
-       ("python-six" ,python-six)))
+       ("kentutils" ,kentutils)         ; for bedGraphToBigWig
+       ("python-six" ,python-six)
+       ;; For the test suite.
+       ("python-pytest" ,python-pytest)
+       ("python-psutil" ,python-psutil)))
     (home-page "https://pythonhosted.org/pybedtools/")
     (synopsis "Python wrapper for BEDtools programs")
     (description
@@ -667,34 +714,7 @@ Python.")
     (license license:gpl2+)))
 
 (define-public python2-pybedtools
-  (let ((pkg (package-with-python2 python-pybedtools)))
-    (package (inherit pkg)
-      (arguments
-       `(#:modules ((ice-9 ftw)
-                    (srfi srfi-1)
-                    (srfi srfi-26)
-                    (guix build utils)
-                    (guix build python-build-system))
-         ;; See https://github.com/daler/pybedtools/issues/192
-         ,@(substitute-keyword-arguments (package-arguments pkg)
-             ((#:phases phases)
-              `(modify-phases ,phases
-                 (replace 'check
-                   (lambda _
-                     (let ((cwd (getcwd)))
-                       (setenv "PYTHONPATH"
-                               (string-append cwd "/build/"
-                                              (find (cut string-prefix? "lib" <>)
-                                                    (scandir (string-append cwd "/build")))
-                                              ":" (getenv "PYTHONPATH"))))
-                     ;; The tests need to be run from elsewhere...
-                     (mkdir-p "/tmp/test")
-                     (copy-recursively "pybedtools/test" "/tmp/test")
-                     (with-directory-excursion "/tmp/test"
-                       (invoke "nosetests"
-                               ;; This test fails for unknown reasons
-                               "--exclude=.*test_getting_example_beds"))
-                     #t))))))))))
+  (package-with-python2 python-pybedtools))
 
 (define-public python-biom-format
   (package
