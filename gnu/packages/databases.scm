@@ -1069,7 +1069,7 @@ extremely small.")
 (define-public perl-dbi
   (package
     (name "perl-dbi")
-    (version "1.641")
+    (version "1.642")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1077,7 +1077,7 @@ extremely small.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hf2x29bnqf2x1v4bdhji802z7n2mbg7h1amv8gdkqyhrlrfa2am"))))
+                "0pbzqazrx7pnw4nbyaf27in4b6yddkirbd2ws7mnqa2n7812a81z"))))
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
