@@ -1637,8 +1637,8 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/clzip/"
+                           "clzip-" version ".tar.gz"))
        (sha256
         (base32 "03xcmhl3dya4jrwmsqh09ikimpb36fr3vkh2bwfzz1sbcns0cdg3"))))
     (build-system gnu-build-system)
