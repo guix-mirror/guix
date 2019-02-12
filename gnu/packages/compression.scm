@@ -1668,8 +1668,6 @@ Clzip is intended to be fully compatible with the regular lzip package.")
        (sha256
         (base32 "0djdj4sg33rzi4k84cygvnp09bfsv6i8wy2k7i67rayib63myp3c"))))
     (build-system gnu-build-system)
-    ;; The included minilzip binary is only ~16 smaller than the ‘real’ lzip.
-    ;; It's used during the test suite, but don't be tempted to install it.
     (arguments
      `(#:configure-flags
        (list "CC=gcc"
