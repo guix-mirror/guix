@@ -353,7 +353,13 @@ pairs, and return two values: the list of packages new in ALIST2, and the list
 of packages upgraded in ALIST2."
   (let* ((old      (fold (match-lambda*
                            (((name . version) table)
-                            (vhash-cons name version table)))
+                            (match (vhash-assoc name table)
+                              (#f
+                               (vhash-cons name version table))
+                              ((_ . previous-version)
+                               (if (version>? version previous-version)
+                                   (vhash-cons name version table)
+                                   table)))))
                          vlist-null
                          alist1))
          (new      (remove (match-lambda
@@ -362,11 +368,10 @@ of packages upgraded in ALIST2."
                            alist2))
          (upgraded (filter-map (match-lambda
                                  ((name . new-version)
-                                  (match (vhash-fold* cons '() name old)
-                                    (() #f)
-                                    ((= (cut sort <> version>?) old-versions)
-                                     (and (version>? new-version
-                                                     (first old-versions))
+                                  (match (vhash-assoc name old)
+                                    (#f #f)
+                                    ((_ . old-version)
+                                     (and (version>? new-version old-version)
                                           (string-append name "@"
                                                          new-version))))))
                                alist2)))
