@@ -45,6 +45,7 @@
                 #:select (%bootstrap-guile))
   #:use-module ((gnu packages certs) #:select (le-certs))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -346,11 +347,10 @@ way and displaying details about the channel's source code."
       (close-inferior inferior)
       packages)))
 
-(define* (display-new/upgraded-packages alist1 alist2
-                                        #:key (heading ""))
-  "Given the two package name/version alists ALIST1 and ALIST2, display the
-list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
-and ALIST2 differ, display HEADING upfront."
+(define (new/upgraded-packages alist1 alist2)
+  "Compare ALIST1 and ALIST2, both of which are lists of package name/version
+pairs, and return two values: the list of packages new in ALIST2, and the list
+of packages upgraded in ALIST2."
   (let* ((old      (fold (match-lambda*
                            (((name . version) table)
                             (vhash-cons name version table)))
@@ -370,6 +370,14 @@ and ALIST2 differ, display HEADING upfront."
                                           (string-append name "@"
                                                          new-version))))))
                                alist2)))
+    (values new upgraded)))
+
+(define* (display-new/upgraded-packages alist1 alist2
+                                        #:key (heading ""))
+  "Given the two package name/version alists ALIST1 and ALIST2, display the
+list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
+and ALIST2 differ, display HEADING upfront."
+  (let-values (((new upgraded) (new/upgraded-packages alist1 alist2)))
     (unless (and (null? new) (null? upgraded))
       (display heading))
 
