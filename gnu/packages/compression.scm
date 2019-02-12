@@ -10,7 +10,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -543,8 +543,8 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (version "1.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/lzip/" name "/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "mirror://savannah/lzip/lziprecover/"
+                                  "lziprecover-" version ".tar.gz"))
               (sha256
                (base32
                 "0fpnmdxayvd1ff0rk9606dvr431ji6b1v71km4ww244rih1rmmzz"))))
