@@ -952,7 +952,7 @@ the bootloader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.2.0")
+   (version "1.2.3")
    (source
     (origin
      (method url-fetch)
@@ -960,7 +960,7 @@ the bootloader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "1bdk6qmsvy4d80245x1si9qvrga2f2yalj9qfmf1lqj5ljxxxifv"))))
+       "0i0dn3w3545lvmjlzqj3j70lk8yrq64r9frp1rk6a161gwq20ixv"))))
    (build-system gnu-build-system)
    (arguments
     '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
