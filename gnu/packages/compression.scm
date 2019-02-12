@@ -1691,8 +1691,8 @@ corrupted input.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/plzip/"
+                           "plzip-" version ".tar.gz"))
        (sha256
         (base32 "1dzjp9r7krwpsn224bhcqbzd5aj5b4556sdi9yzl2bzbk3fjrqlm"))))
     (build-system gnu-build-system)
