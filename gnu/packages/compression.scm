@@ -1606,14 +1606,14 @@ of archives.")
 (define-public lunzip
   (package
     (name "lunzip")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://savannah/lzip/lunzip/"
                            "lunzip-" version ".tar.gz"))
        (sha256
-        (base32 "1iw59br6nsxs7l1p875h8w3vxwr04xfhg5zyal64crvamhxkj5kl"))))
+        (base32 "19zq3gmlbia2krq4k4zs1j0xjdv7nsdzqvfb0pyca5n53h2mzb91"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
