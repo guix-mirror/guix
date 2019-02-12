@@ -1610,8 +1610,8 @@ of archives.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/lunzip/"
+                           "lunzip-" version ".tar.gz"))
        (sha256
         (base32 "1iw59br6nsxs7l1p875h8w3vxwr04xfhg5zyal64crvamhxkj5kl"))))
     (build-system gnu-build-system)
