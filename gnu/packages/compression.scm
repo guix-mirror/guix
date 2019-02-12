@@ -1663,8 +1663,8 @@ Clzip is intended to be fully compatible with the regular lzip package.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/lzlib/"
+                           "lzlib-" version ".tar.gz"))
        (sha256
         (base32 "0hqhnj2lzqacdbmmnpy91lsm1rd9zlngs1q6s9pyahsv1a0bfshx"))))
     (build-system gnu-build-system)
