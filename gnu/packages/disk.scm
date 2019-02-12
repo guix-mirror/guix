@@ -479,15 +479,15 @@ a card with a smaller capacity than stated.")
   (package
     (name "duperemove")
     (version "0.11.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/markfasheh/duperemove/archive/v"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1j1alh3blbj1wg1zmkpwrf40nggwg8xbgsk2mnn9albymwdwkhvm"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/markfasheh/duperemove.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1scz76pvpljvrpfn176125xwaqwyy4pirlm11sc9spb2hyzknw2z"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
