@@ -169,11 +169,14 @@ Download and deploy the latest version of Guix.\n"))
                (reverse (profile-generations profile)))
     ((current previous _ ...)
      (newline)
-     (let ((old (fold-packages (lambda (package result)
-                                 (alist-cons (package-name package)
-                                             (package-version package)
-                                             result))
-                               '()))
+     (let ((old (fold-available-packages
+                 (lambda* (name version result
+                                #:key supported? deprecated?
+                                #:allow-other-keys)
+                   (if (and supported? (not deprecated?))
+                       (alist-cons name version result)
+                       result))
+                 '()))
            (new (profile-package-alist
                  (generation-file-name profile current))))
        (display-new/upgraded-packages old new
@@ -338,15 +341,10 @@ way and displaying details about the channel's source code."
 (define profile-package-alist
   (mlambda (profile)
     "Return a name/version alist representing the packages in PROFILE."
-    (fold (lambda (package lst)
-            (alist-cons (inferior-package-name package)
-                        (inferior-package-version package)
-                        lst))
-          '()
-          (let* ((inferior (open-inferior profile))
-                 (packages (inferior-packages inferior)))
-            (close-inferior inferior)
-            packages))))
+    (let* ((inferior (open-inferior profile))
+           (packages (inferior-available-packages inferior)))
+      (close-inferior inferior)
+      packages)))
 
 (define* (display-new/upgraded-packages alist1 alist2
                                         #:key (heading ""))
