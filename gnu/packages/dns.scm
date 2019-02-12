@@ -574,7 +574,7 @@ Extensions} (DNSSEC).")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
-                                  name "-" version ".tar.xz"))
+                                  "knot-" version ".tar.xz"))
               (sha256
                (base32
                 "1pwjcv7hzhqawisibybma160k77a6f1v94xw6ay9c7j49vrw05w7"))
