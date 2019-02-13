@@ -28,6 +28,7 @@
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages display-managers)
@@ -642,6 +643,8 @@ makes the good ol' XlockMore usable."
   (auto-login? gdm-configuration-auto-login? (default #f))
   (dbus-daemon gdm-configuration-dbus-daemon (default dbus-daemon-wrapper))
   (default-user gdm-configuration-default-user (default #f))
+  (gnome-shell-assets gdm-configuration-gnome-shell-assets
+                      (default (list adwaita-icon-theme font-cantarell)))
   (x-server gdm-configuration-x-server
             (default (xorg-wrapper))))
 
@@ -714,13 +717,16 @@ makes the good ol' XlockMore usable."
                            (string-append
                             "GDM_X_SERVER="
                             #$(gdm-configuration-x-server config))
-                           ;; XXX: GDM requires access to a handful of
-                           ;; programs and components from Gnome (gnome-shell,
-                           ;; dbus, and gnome-session among others). The
-                           ;; following variables only work provided Gnome is
-                           ;; installed.
-                           "XDG_DATA_DIRS=/run/current-system/profile/share"
-                           "PATH=/run/current-system/profile/bin"))))
+                           (string-append
+                            "XDG_DATA_DIRS="
+                            ((lambda (ls) (string-join ls ":"))
+                             (map (lambda (path)
+                                    (string-append path "/share"))
+                                  ;; XXX: Remove gnome-shell below when GDM
+                                  ;; can depend on GNOME Shell directly.
+                                  (cons #$gnome-shell
+                                        '#$(gdm-configuration-gnome-shell-assets
+                                            config)))))))))
          (stop #~(make-kill-destructor))
          (respawn? #t))))
 
@@ -733,6 +739,8 @@ makes the good ol' XlockMore usable."
                                           (const %gdm-accounts))
                        (service-extension pam-root-service-type
                                           gdm-pam-service)
+                       (service-extension profile-service-type
+                                          gdm-configuration-gnome-shell-assets)
                        (service-extension dbus-root-service-type
                                           (compose list
                                                    gdm-configuration-gdm))))
