@@ -46,6 +46,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages ftp)
@@ -1001,3 +1002,30 @@ de-duplicated before it is actually written to the storage back end to save
 precious backup space.
 @end itemize")
     (license license:bsd-2)))
+
+(define-public burp
+  (package
+    (name "burp")
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/burp/burp-" version
+                                  "/burp-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0in49c0ir7lb7jli0fcphdq1nh5rclhans4ngm7z7hzyxa4jrgri"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("librsync" ,librsync)
+       ("openssl" ,openssl)
+       ("uthash" ,uthash)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://burp.grke.org")
+    (synopsis "Differential backup and restore")
+    (description "Burp is a network backup and restore program.  It attempts
+to reduce network traffic and the amount of space that is used by each
+backup.")
+    (license license:agpl3)))
