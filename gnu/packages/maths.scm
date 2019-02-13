@@ -584,7 +584,8 @@ problems in numerical linear algebra.")
                            version ".tgz"))
        (sha256
         (base32
-         "0p1r61ss1fq0bs8ynnx7xq4wwsdvs32ljvwjnx6yxr8gd6pawx0c"))))
+         "0p1r61ss1fq0bs8ynnx7xq4wwsdvs32ljvwjnx6yxr8gd6pawx0c"))
+       (patches (search-patches "scalapack-blacs-mpi-deprecations.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("mpi" ,openmpi)
