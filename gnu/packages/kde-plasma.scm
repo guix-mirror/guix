@@ -44,7 +44,6 @@
               (sha256
                (base32
                 "115pli0qpa8lx0jasg1886fcg7gb2kk8v6k8r8l8c820l97sq7in"))))
-    (properties `((tags . '("Desktop" "KDE" "Plasma"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -74,7 +73,6 @@ manager which re-parents a Client window to a window decoration frame.")
               (sha256
                (base32
                 "16amr7pz0k6w5vkk1dwn2qi3s1mln0jypwmjazqq2lbwimn8k56m"))))
-    (properties `((tags . '("Desktop" "KDE" "Plasma"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
