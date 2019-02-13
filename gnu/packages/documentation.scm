@@ -123,7 +123,7 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.14")
+    (version "1.8.15")
     (home-page "http://www.doxygen.nl/")
     (source (origin
              (method url-fetch)
@@ -134,7 +134,7 @@ markup) can be customized and extended by the user.")
                                        ".src.tar.gz")))
              (sha256
               (base32
-               "0kcxymbam9jwiyjwyvwdjj0h74lbb6c467szsipzbxjyfl17wxfi"))
+               "0p94b4yb6bk2dxzs5kyl82xxgq2qakgbx5yy3ssbbadncb20x75x"))
              (patches (search-patches "doxygen-test.patch"))))
     (build-system cmake-build-system)
     (native-inputs
