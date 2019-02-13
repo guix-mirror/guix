@@ -5473,16 +5473,6 @@ libxml2.")
                 ;; Propagate the GDM_CUSTOM_CONF environment variable.
                 "gdm_session_set_environment_variable (self, \"GDM_CUSTOM_CONF\",\n"
                 "    g_getenv (\"GDM_CUSTOM_CONF\"));\n"
-                ;; FIXME: Really glib should be declaring XDG_CONFIG_DIRS as a
-                ;; variable, but it doesn't do that right now.  Anyway
-                ;; /run/current-system/profile/share/gnome-session/sessions/gnome.desktop
-                ;; requires that a number of .desktop files be present, and
-                ;; these special .desktop files are in $XDG_CONFIG_DIRS (which
-                ;; defaults to /etc/xdg if it's not set).  Here we need to
-                ;; provide a value such that the GNOME session's requirements
-                ;; are met (provided GNOME is installed of course).
-                "gdm_session_set_environment_variable (self, \"XDG_CONFIG_DIRS\",\n"
-                "    \"/run/current-system/profile/etc/xdg\");\n"
                 ;; The session bus (which GDM will initialize from the this
                 ;; session environment) needs to know where to find the system
                 ;; service files.
@@ -5502,7 +5492,25 @@ libxml2.")
             (substitute* '("daemon/gdm-x-session.c")
               (("X_SERVER")
                "g_getenv (\"GDM_X_SERVER\")"))
-            #t)))))
+            #t))
+         ;; GDM needs GNOME Session to run these applications.  We link
+         ;; their autostart files in `share/gdm/greeter/autostart'
+         ;; because GDM explicitly tells GNOME Session to look there.
+         ;;
+         ;; XXX: GNOME Shell should be linked here too, but currently
+         ;; GNOME Shell depends on GDM.
+         (add-after 'install 'link-autostart-files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (autostart (string-append out "/share/gdm/"
+                                              "greeter/autostart"))
+                    (settings (assoc-ref inputs "gnome-settings-daemon")))
+               (mkdir-p autostart)
+               (with-directory-excursion autostart
+                 (for-each (lambda (desktop)
+                             (symlink desktop (basename desktop)))
+                           (find-files (string-append settings "/etc/xdg"))))
+               #t))))))
     (native-inputs
      `(("dconf" ,dconf)
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -5515,6 +5523,7 @@ libxml2.")
      `(("accountsservice" ,accountsservice)
        ("check" ,check) ; for testing
        ("elogind" ,elogind)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gtk+" ,gtk+)
        ("iso-codes" ,iso-codes)
        ("libcanberra" ,libcanberra)
