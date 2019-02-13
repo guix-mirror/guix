@@ -4781,13 +4781,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.0.0")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "1vhbdch33m6ig4ijy57zvrramhs9n7cba85wd8rizgxjjnf87cn7"))))
+                "0gf9hzzrr1lndbbqi8cwlfasi7l517cy3nbgna88i78lm247rvp0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -4795,6 +4795,10 @@ deployments.")
                                (string-append "PTHREAD_CC="
                                               (assoc-ref %build-inputs "gcc")
                                               "/bin/gcc")
+                               ;; XXX: Disable PCRE-JIT to work around a segmentation
+                               ;; fault when using jemalloc 5.x:
+                               ;; <https://github.com/varnishcache/varnish-cache/issues/2817>
+                               "--disable-pcre-jit"
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
@@ -4829,6 +4833,7 @@ deployments.")
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
        ("rst2man" ,python-docutils)))
     (inputs
      `(("jemalloc" ,jemalloc)
