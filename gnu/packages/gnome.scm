@@ -4657,6 +4657,14 @@ such as gzip tarballs.")
                    (out  (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-session")
                  `("PATH" ":" prefix (,(string-append glib "/bin"))))
+               #t)))
+         (add-after 'install 'add-absolute-paths-to-desktop-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (substitute* (map (lambda (x)
+                                   (string-append out "/share/xsessions/" x))
+                                 '("gnome.desktop" "gnome-xorg.desktop"))
+                 (("gnome-session") (string-append out "/bin/gnome-session")))
                #t))))
 
        #:configure-flags
