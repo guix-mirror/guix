@@ -5410,10 +5410,6 @@ libxml2.")
          ;; service for TTY 1 before starting GDM).
          "--with-initial-vt=7"
 
-         ;; By default, GDM expects distributions to install a custom Xsession
-         ;; script. It provides a generic one if --enable-gdm-xsession is set.
-         "--enable-gdm-xsession"
-
          ;; Use '/etc/environment' for locale settings instead of the
          ;; systemd-specific '/etc/locale.conf'.
          "--with-lang-file=/etc/environment"
@@ -5463,6 +5459,7 @@ libxml2.")
             (let ((propagate '("GDM_CUSTOM_CONF"
                                "GDM_DBUS_DAEMON"
                                "GDM_X_SERVER"
+                               "GDM_X_SESSION"
                                ;; XXX: Remove this once GNOME Shell is
                                ;; a dependency of GDM.
                                "XDG_DATA_DIRS")))
@@ -5490,7 +5487,9 @@ libxml2.")
               (("\"dbus-daemon\"")
                "g_getenv (\"GDM_DBUS_DAEMON\")")
               (("X_SERVER")
-               "g_getenv (\"GDM_X_SERVER\")"))
+               "g_getenv (\"GDM_X_SERVER\")")
+              (("GDMCONFDIR \"/Xsession\"")
+               "g_getenv (\"GDM_X_SESSION\")"))
             ;; Use an absolute path for GNOME Session.
             (substitute* "daemon/gdm-launch-environment.c"
               (("\"gnome-session\"")

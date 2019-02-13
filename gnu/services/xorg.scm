@@ -646,7 +646,9 @@ makes the good ol' XlockMore usable."
   (gnome-shell-assets gdm-configuration-gnome-shell-assets
                       (default (list adwaita-icon-theme font-cantarell)))
   (x-server gdm-configuration-x-server
-            (default (xorg-wrapper))))
+            (default (xorg-wrapper)))
+  (x-session gdm-configuration-x-session
+             (default (xinitrc))))
 
 (define (gdm-configuration-file config)
   (mixed-text-file "gdm-custom.conf"
@@ -717,6 +719,9 @@ makes the good ol' XlockMore usable."
                            (string-append
                             "GDM_X_SERVER="
                             #$(gdm-configuration-x-server config))
+                           (string-append
+                            "GDM_X_SESSION="
+                            #$(gdm-configuration-x-session config))
                            (string-append
                             "XDG_DATA_DIRS="
                             ((lambda (ls) (string-join ls ":"))
