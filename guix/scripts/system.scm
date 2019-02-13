@@ -492,7 +492,8 @@ STORE is an open connection to the store."
 
          ;; Make the specified system generation the default entry.
          (params (profile-boot-parameters %system-profile (list number)))
-         (old-generations (delv number (generation-numbers %system-profile)))
+         (old-generations
+          (delv number (reverse (generation-numbers %system-profile))))
          (old-params (profile-boot-parameters
                        %system-profile old-generations))
          (entries (map boot-parameters->menu-entry params))
