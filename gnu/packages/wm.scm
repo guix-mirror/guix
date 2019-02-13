@@ -681,20 +681,21 @@ drags, snap-to-border support, and virtual desktops.")
                     (syntax (string-append out "/share/vim/vimfiles/syntax")))
                (copy-recursively "3rd/vim/vim/syntax" syntax)
                #t)))
-         (add-after
-          'install 'install-xsession
-          (lambda _
-            (let ((xsessions (string-append %output "/share/xsessions")))
-              (mkdir-p xsessions)
-              (call-with-output-file
-                  (string-append xsessions "/fluxbox.desktop")
-                (lambda (port)
-                  (format port "~
-                    [Desktop Entry]~@
-                    Name=~a~@
-                    Comment=~a~@
-                    Exec=~a/bin/startfluxbox~@
-                    Type=Application~%" ,name ,synopsis %output)))))))))
+         (add-after 'install 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                 (string-append xsessions "/fluxbox.desktop")
+                 (lambda (port)
+                   (format port "~
+                     [Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a/bin/startfluxbox~@
+                     Type=Application~%" ,name ,synopsis out)))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
