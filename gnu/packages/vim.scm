@@ -675,7 +675,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.3.1")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -684,7 +684,7 @@ are detected, the user is notified.")))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "08mdffcw4k503bccm1plq8r7hjx4w61w5jyfdj80fr079hnkjpmw"))))
+         "03mwfhr9rq86p8lypbdfyl7c7xyn6nzv2ipd8jc33bxzvs5i0hd6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -730,7 +730,7 @@ are detected, the user is notified.")))
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
        ("gperf" ,gperf)))
-    (home-page "http://neovim.io")
+    (home-page "https://neovim.io")
     (synopsis "Fork of vim focused on extensibility and agility")
     (description "Neovim is a project that seeks to aggressively
 refactor Vim in order to:
