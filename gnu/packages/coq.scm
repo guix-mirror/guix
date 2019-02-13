@@ -500,3 +500,44 @@ work on a decision procedure for the equational theory of an extension of the
 sigma-calculus by Abadi et al.  The library is completely written in Coq and
 uses Ltac to synthesize the substitution operation.")
       (license license:bsd-3))))
+
+(define-public coq-equations
+  (package
+    (name "coq-equations")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mattam82/Coq-Equations.git")
+                    (commit (string-append "v" version "-8.8"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "129rxsdsf88vjcw0xhm74yax1hmnk6f8n9ksg0hcyyjq1ijddiwa"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml"  ,ocaml)
+       ("coq"    ,coq)
+       ("camlp5" ,camlp5)))
+    (arguments
+     `(#:test-target "test-suite"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "coq_makefile" "-f" "_CoqProject" "-o" "Makefile")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
+             (invoke "make"
+                     (string-append "COQLIB=" (assoc-ref outputs "out")
+                                    "/lib/coq/")
+                     "install"))))))
+    (home-page "https://mattam82.github.io/Coq-Equations/")
+    (synopsis "Function definition plugin for Coq")
+    (description "Equations provides a notation for writing programs
+by dependent pattern-matching and (well-founded) recursion in Coq.  It
+compiles everything down to eliminators for inductive types, equality
+and accessibility, providing a definitional extension to the Coq
+kernel.")
+    (license license:lgpl2.1)))
