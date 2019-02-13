@@ -5431,7 +5431,7 @@ libxml2.")
        (modify-phases %standard-phases
          (add-before
           'configure 'pre-configure
-          (lambda _
+          (lambda* (#:key inputs #:allow-other-keys)
             ;; We don't have <systemd/sd-daemon.h>.
             (substitute* '("common/gdm-log.c"
                            "daemon/gdm-server.c"
@@ -5492,6 +5492,11 @@ libxml2.")
             (substitute* '("daemon/gdm-x-session.c")
               (("X_SERVER")
                "g_getenv (\"GDM_X_SERVER\")"))
+            ;; Use an absolute path for GNOME Session.
+            (substitute* "daemon/gdm-launch-environment.c"
+              (("\"gnome-session\"")
+               (string-append "\"" (assoc-ref inputs "gnome-session")
+                              "/bin/gnome-session\"")))
             #t))
          ;; GDM needs GNOME Session to run these applications.  We link
          ;; their autostart files in `share/gdm/greeter/autostart'
@@ -5523,6 +5528,7 @@ libxml2.")
      `(("accountsservice" ,accountsservice)
        ("check" ,check) ; for testing
        ("elogind" ,elogind)
+       ("gnome-session" ,gnome-session)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gtk+" ,gtk+)
        ("iso-codes" ,iso-codes)
