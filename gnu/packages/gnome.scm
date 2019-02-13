@@ -5460,25 +5460,21 @@ libxml2.")
                "\"/run/current-system/profile/share/wayland")
               (("DATADIR \"/gnome")
                "\"/run/current-system/profile/share/gnome"))
-            (substitute* '("daemon/gdm-session.c")
-              (("set_up_session_environment \\(self\\);")
-               (string-append
-                "set_up_session_environment (self);\n"
-                ;; Propagate GDM_X_SERVER environment variable (which is set
-                ;; by the GDM service, as it's a function of what X modules
-                ;; the user decides to have available) down to worker
-                ;; processes.
-                "gdm_session_set_environment_variable (self, \"GDM_X_SERVER\",\n"
-                "    g_getenv (\"GDM_X_SERVER\"));\n"
-                ;; Propagate the GDM_CUSTOM_CONF environment variable.
-                "gdm_session_set_environment_variable (self, \"GDM_CUSTOM_CONF\",\n"
-                "    g_getenv (\"GDM_CUSTOM_CONF\"));\n"
-                ;; The session bus (which GDM will initialize from the this
-                ;; session environment) needs to know where to find the system
-                ;; service files.
-                "gdm_session_set_environment_variable (self, \"XDG_DATA_DIRS\",\n"
-                "    \"/run/current-system/profile/share\");\n"
-                )))
+            (let ((propagate '("GDM_CUSTOM_CONF"
+                               "GDM_X_SERVER"
+                               ;; XXX: Remove this once GNOME Shell is
+                               ;; a dependency of GDM.
+                               "XDG_DATA_DIRS")))
+              (substitute* "daemon/gdm-session.c"
+                (("set_up_session_environment \\(self\\);")
+                 (apply string-append
+                        "set_up_session_environment (self);\n"
+                        (map (lambda (name)
+                               (string-append
+                                "gdm_session_set_environment_variable "
+                                "(self, \"" name "\","
+                                "g_getenv (\"" name "\"));\n"))
+                             propagate)))))
             ;; Look for custom GDM conf in /run/current-system.
             (substitute* '("common/gdm-settings-desktop-backend.c")
               (("GDM_CUSTOM_CONF")
