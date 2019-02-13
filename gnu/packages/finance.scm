@@ -216,6 +216,73 @@ in ability, and easy to use.")
                     "file://src/wcwidth.cc"
                     "See src/wcwidth.cc in the distribution.")))))
 
+(define-public emacs-ledger-mode
+  ;; There have been no new releases since 2016.
+  (let ((commit "253a20dc62e137ed0ed8e1dd8614ecba116610ea")
+        (revision "1"))
+    (package
+      (name "emacs-ledger-mode")
+      (version (git-version "3.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ledger/ledger-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "06wrgkqpgvk17vibrk2qikdlqn8y63jg86marp1wgmram92mb3jk"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:modules ((guix build cmake-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%cmake-build-system-modules
+                             (guix build emacs-utils))
+         #:tests? #f ; there are none
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'build 'build-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((target (string-append (assoc-ref outputs "out")
+                                            "/share/info")))
+                 (mkdir-p target)
+                 (invoke "makeinfo" "-o" target
+                         "../source/doc/ledger-mode.texi"))
+               #t))
+           (add-after 'install 'relocate-elisp
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((site-dir (string-append (assoc-ref outputs "out")
+                                               "/share/emacs/site-lisp"))
+                      (guix-dir (string-append site-dir "/guix.d"))
+                      (orig-dir (string-append site-dir "/ledger-mode"))
+                      (dest-dir (string-append guix-dir "/ledger-mode")))
+                 (mkdir-p guix-dir)
+                 (rename-file orig-dir dest-dir)
+                 (emacs-generate-autoloads ,name dest-dir)
+                 #t))))))
+      (native-inputs
+       `(("emacs-minimal" ,emacs-minimal)
+         ("texinfo" ,texinfo)))
+      (home-page "https://ledger-cli.org/")
+      (synopsis "Command-line double-entry accounting program")
+      (description
+       "Ledger is a powerful, double-entry accounting system that is
+accessed from the UNIX command-line.  This may put off some users, since
+there is no flashy UI, but for those who want unparalleled reporting
+access to their data there are few alternatives.
+
+Ledger uses text files for input.  It reads the files and generates
+reports; there is no other database or stored state.  To use Ledger,
+you create a file of your account names and transactions, run from the
+command line with some options to specify input and requested reports, and
+get output.  The output is generally plain text, though you could generate
+a graph or html instead.  Ledger is simple in concept, surprisingly rich
+in ability, and easy to use.
+
+This package provides the Emacs mode.")
+      (license license:gpl2+))))
+
 (define-public geierlein
   (package
     (name "geierlein")
