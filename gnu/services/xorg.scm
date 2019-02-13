@@ -2,7 +2,7 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -633,38 +633,34 @@ makes the good ol' XlockMore usable."
   (x-server gdm-configuration-x-server
             (default (xorg-wrapper))))
 
-(define (gdm-etc-service config)
-  (define gdm-configuration-file
-    (mixed-text-file "gdm-custom.conf"
-                     "[daemon]\n"
-                     "#User=gdm\n"
-                     "#Group=gdm\n"
-                     (if (gdm-configuration-auto-login? config)
-                         (string-append
-                          "AutomaticLoginEnable=true\n"
-                          "AutomaticLogin="
-                          (or (gdm-configuration-default-user config)
-                              (error "missing default user for auto-login"))
-                          "\n")
-                         (string-append
-                          "AutomaticLoginEnable=false\n"
-                          "#AutomaticLogin=\n"))
-                     "#TimedLoginEnable=false\n"
-                     "#TimedLogin=\n"
-                     "#TimedLoginDelay=0\n"
-                     "#InitialSetupEnable=true\n"
-                     ;; Enable me once X is working.
-                     "WaylandEnable=false\n"
-                     "\n"
-                     "[debug]\n"
-                     "#Enable=true\n"
-                     "\n"
-                     "[security]\n"
-                     "#DisallowTCP=true\n"
-                     "#AllowRemoteAutoLogin=false\n"))
-  `(("gdm" ,(file-union
-             "gdm"
-             `(("custom.conf" ,gdm-configuration-file))))))
+(define (gdm-configuration-file config)
+  (mixed-text-file "gdm-custom.conf"
+                   "[daemon]\n"
+                   "#User=gdm\n"
+                   "#Group=gdm\n"
+                   (if (gdm-configuration-auto-login? config)
+                       (string-append
+                        "AutomaticLoginEnable=true\n"
+                        "AutomaticLogin="
+                        (or (gdm-configuration-default-user config)
+                            (error "missing default user for auto-login"))
+                        "\n")
+                       (string-append
+                        "AutomaticLoginEnable=false\n"
+                        "#AutomaticLogin=\n"))
+                   "#TimedLoginEnable=false\n"
+                   "#TimedLogin=\n"
+                   "#TimedLoginDelay=0\n"
+                   "#InitialSetupEnable=true\n"
+                   ;; Enable me once X is working.
+                   "WaylandEnable=false\n"
+                   "\n"
+                   "[debug]\n"
+                   "#Enable=true\n"
+                   "\n"
+                   "[security]\n"
+                   "#DisallowTCP=true\n"
+                   "#AllowRemoteAutoLogin=false\n"))
 
 (define (gdm-pam-service config)
   "Return a PAM service for @command{gdm}."
@@ -698,6 +694,9 @@ makes the good ol' XlockMore usable."
                                           "/bin/gdm"))
                      #:environment-variables
                      (list (string-append
+                            "GDM_CUSTOM_CONF="
+                            #$(gdm-configuration-file config))
+                           (string-append
                             "GDM_X_SERVER="
                             #$(gdm-configuration-x-server config))
                            ;; XXX: GDM requires access to a handful of
@@ -719,8 +718,6 @@ makes the good ol' XlockMore usable."
                                           (const %gdm-accounts))
                        (service-extension pam-root-service-type
                                           gdm-pam-service)
-                       (service-extension etc-service-type
-                                          gdm-etc-service)
                        (service-extension dbus-root-service-type
                                           (compose list
                                                    gdm-configuration-gdm))))

@@ -32,7 +32,7 @@
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5462,6 +5462,9 @@ libxml2.")
                 ;; processes.
                 "gdm_session_set_environment_variable (self, \"GDM_X_SERVER\",\n"
                 "    g_getenv (\"GDM_X_SERVER\"));\n"
+                ;; Propagate the GDM_CUSTOM_CONF environment variable.
+                "gdm_session_set_environment_variable (self, \"GDM_CUSTOM_CONF\",\n"
+                "    g_getenv (\"GDM_CUSTOM_CONF\"));\n"
                 ;; FIXME: Really glib should be declaring XDG_CONFIG_DIRS as a
                 ;; variable, but it doesn't do that right now.  Anyway
                 ;; /run/current-system/profile/share/gnome-session/sessions/gnome.desktop
@@ -5481,7 +5484,9 @@ libxml2.")
             ;; Look for custom GDM conf in /run/current-system.
             (substitute* '("common/gdm-settings-desktop-backend.c")
               (("GDM_CUSTOM_CONF")
-               "\"/run/current-system/etc/gdm/custom.conf\""))
+               (string-append "(g_getenv(\"GDM_CUSTOM_CONF\") != NULL"
+                              " ? g_getenv(\"GDM_CUSTOM_CONF\")"
+                              " : GDM_CUSTOM_CONF)")))
             ;; Use service-supplied path to X.
             (substitute* '("daemon/gdm-server.c")
               (("\\(X_SERVER X_SERVER_ARG_FORMAT")
