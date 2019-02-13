@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -13788,27 +13788,40 @@ file system events on Linux.")
 (define-public python-more-itertools
   (package
     (name "python-more-itertools")
-    (version "5.0.0")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "more-itertools" version))
        (sha256
         (base32
-         "1r12cm6mcdwdzz7d47a6g4l437xsvapdlgyhqay3i2nrlv03da9q"))))
+         "1lfrx2ndnilla3a5lhpjc1wjgkplkxrhp5nyn6ys2l93jkil802r"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six-bootstrap)))
     (home-page "https://github.com/erikrose/more-itertools")
     (synopsis "More routines for operating on iterables, beyond itertools")
     (description "Python's built-in @code{itertools} module implements a
 number of iterator building blocks inspired by constructs from APL, Haskell,
 and SML.  @code{more-itertools} includes additional building blocks for
 working with iterables.")
+    (properties `((python2-variant . ,(delay python2-more-itertools))))
     (license license:expat)))
 
+;; The 5.x series are the last versions supporting Python 2.7.
 (define-public python2-more-itertools
-  (package-with-python2 python-more-itertools))
+  (package
+    (inherit python-more-itertools)
+    (name "python2-more-itertools")
+    (version "5.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "more-itertools" version))
+              (sha256
+               (base32
+                "1r12cm6mcdwdzz7d47a6g4l437xsvapdlgyhqay3i2nrlv03da9q"))))
+    (arguments
+     `(#:python ,python2-minimal))
+    (propagated-inputs
+     `(("python2-six" ,python2-six-bootstrap)))))
 
 (define-public python-latexcodec
   (package
