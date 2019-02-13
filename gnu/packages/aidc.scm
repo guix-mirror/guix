@@ -99,6 +99,6 @@ characters, and is highly robust.")
     (home-page "https://github.com/dmtx")
     (synopsis "Library for reading and writing Data Matrix 2D barcodes")
     (description "libdmtx is software for reading and writing Data Matrix 2D
-barcodes on Linux and Unix.  At its core libdmtx is a shared library, allowing
+barcodes of the modern ECC200 variety.  libdmtx is a shared library, allowing
 C/C++ programs to use its capabilities without restrictions or overhead.")
     (license license:bsd-3)))
