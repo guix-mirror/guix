@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -1070,7 +1070,7 @@ extremely small.")
 (define-public perl-dbi
   (package
     (name "perl-dbi")
-    (version "1.641")
+    (version "1.642")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1078,7 +1078,7 @@ extremely small.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hf2x29bnqf2x1v4bdhji802z7n2mbg7h1amv8gdkqyhrlrfa2am"))))
+                "0pbzqazrx7pnw4nbyaf27in4b6yddkirbd2ws7mnqa2n7812a81z"))))
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
@@ -1491,14 +1491,14 @@ sets, bitmaps and hyperloglogs.")
 (define-public kyotocabinet
   (package
     (name "kyotocabinet")
-    (version "1.2.76")
+    (version "1.2.77")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://fallabs.com/kyotocabinet/pkg/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0g6js20x7vnpq4p8ghbw3mh9wpqksya9vwhzdx6dnlf354zjsal1"))))
+                "1rlx4307adbzd842b4npq6cwlw8h010ingxaz3qz1ijc70lr72an"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

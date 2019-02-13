@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
@@ -675,20 +675,27 @@ drags, snap-to-border support, and virtual desktops.")
      `(#:make-flags '("CPPFLAGS=-U__TIME__") ;ugly, but for reproducibility
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'install 'install-xsession
-          (lambda _
-            (let ((xsessions (string-append %output "/share/xsessions")))
-              (mkdir-p xsessions)
-              (call-with-output-file
-                  (string-append xsessions "/fluxbox.desktop")
-                (lambda (port)
-                  (format port "~
-                    [Desktop Entry]~@
-                    Name=~a~@
-                    Comment=~a~@
-                    Exec=~a/bin/startfluxbox~@
-                    Type=Application~%" ,name ,synopsis %output)))))))))
+         (add-after 'install 'install-vim-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (syntax (string-append out "/share/vim/vimfiles/syntax")))
+               (copy-recursively "3rd/vim/vim/syntax" syntax)
+               #t)))
+         (add-after 'install 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                 (string-append xsessions "/fluxbox.desktop")
+                 (lambda (port)
+                   (format port "~
+                     [Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a/bin/startfluxbox~@
+                     Type=Application~%" ,name ,synopsis out)))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

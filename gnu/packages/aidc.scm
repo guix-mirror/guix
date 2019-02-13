@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darringon <jmd@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages image)
   #:use-module (guix build-system gnu))
@@ -75,21 +77,28 @@ characters, and is highly robust.")
 (define-public libdmtx
   (package
     (name "libdmtx")
-    (version "0.7.4")
+    (version "0.7.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "mirror://sourceforge/libdmtx/" name "/" version "/"
-             name "-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dmtx/libdmtx.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0xnxx075ycy58n92yfda2z9zgd41h3d4ik5d9l197lzsqim5hb5n"))))
+        (base32 "0wk3fkxzf9ip75v8ia54v6ywx72ajp5s6777j4ay8barpbv869rj"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; XXX Test suite is broken: https://github.com/dmtx/libdmtx/issues/22
+     `(#:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "http://libdmtx.sourceforge.net/")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/dmtx")
     (synopsis "Library for reading and writing Data Matrix 2D barcodes")
     (description "libdmtx is software for reading and writing Data Matrix 2D
-barcodes on Linux and Unix.  At its core libdmtx is a shared library, allowing
+barcodes of the modern ECC200 variety.  libdmtx is a shared library, allowing
 C/C++ programs to use its capabilities without restrictions or overhead.")
     (license license:bsd-3)))

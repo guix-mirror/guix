@@ -847,15 +847,17 @@ monitor/GPU.")
 (define-public runc
   (package
     (name "runc")
-    (version "1.0.0-rc5")
+    (version "1.0.0-rc6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/opencontainers/runc/releases/"
                     "download/v" version "/runc.tar.xz"))
+              (file-name (string-append name "-" version ".tar.xz"))
+              (patches (search-patches "runc-CVE-2019-5736.patch"))
               (sha256
                (base32
-                "081avdzwnqpk368wbaihlzsypaxpj42d7699h7jgp0fks14x4103"))))
+                "1c7832dq70slkjh8qp2civ1wxhhdd2hrx84pq7db1mmqc9fdr3cc"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/opencontainers/runc"

@@ -1,0 +1,53 @@
+Adjust GNOME-Shell so that it uses a Guix theme by default.
+
+Patch by Ludovic Courtès <ludo@gnu.org>.
+
+diff --git a/data/gnome-shell-theme.gresource.xml b/data/gnome-shell-theme.gresource.xml
+index 76aeaa5..8eaf32e 100644
+--- a/data/gnome-shell-theme.gresource.xml
++++ b/data/gnome-shell-theme.gresource.xml
+@@ -22,6 +22,8 @@
+     <file>no-events.svg</file>
+     <file>no-notifications.svg</file>
+     <file>noise-texture.png</file>
++    <file>guix-background.png</file>
++    <file>guix-logo.png</file>
+     <file>pad-osd.css</file>
+     <file>page-indicator-active.svg</file>
+     <file>page-indicator-inactive.svg</file>
+diff --git a/data/theme/gnome-shell-sass/_common.scss b/data/theme/gnome-shell-sass/_common.scss
+index 54d9f39..b9badd0 100644
+--- a/data/theme/gnome-shell-sass/_common.scss
++++ b/data/theme/gnome-shell-sass/_common.scss
+@@ -1742,7 +1742,16 @@ $legacy_icon_size: 24px;
+ 
+ }
+ 
+-  .login-dialog-logo-bin { padding: 24px 0px; }
++  .login-dialog-logo-bin {
++      /* Make it a bit narrower than .login-dialog-user-list.  */
++      width: 12em;
++      height: 8em;
++      background: url(resource:///org/gnome/shell/theme/guix-logo.png);
++      background-color: transparent;
++      background-repeat: no-repeat;
++      background-size: contain;
++      background-position: center; }
++
+   .login-dialog-banner { color: darken($osd_fg_color,10%); }
+   .login-dialog-button-box { spacing: 5px; }
+   .login-dialog-message-warning { color: $warning_color; }
+@@ -1889,9 +1898,10 @@ $legacy_icon_size: 24px;
+ }
+ 
+ #lockDialogGroup {
+-  background: #2e3436 url(resource:///org/gnome/shell/theme/noise-texture.png);
+-  background-repeat: repeat;
+-}
++  background: #2e3436 url(resource:///org/gnome/shell/theme/guix-background.png);
++  background-repeat: no-repeat;
++  background-size: cover;
++  background-position: center; }
+ 
+ #screenShieldNotifications {
+   StButton#vhandle, StButton#hhandle {

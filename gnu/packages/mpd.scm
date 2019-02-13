@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -91,7 +91,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.23")
+    (version "0.21.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -100,18 +100,19 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1smg6hab4kwrzsw1k7vlpya3ampdk8psnmkrzxlgb43j4fgmygjh"))))
-    (build-system gnu-build-system)
+                "1ix52vfa8k8my4xyr8b0phg8605b2xchyzyva908m08vpzm14w94"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-Ddocumentation=true") ; The default is 'false'...
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-service-files
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (systemd (string-append out "/etc/systemd/system"))
-                    (systemd-user (string-append out "/etc/systemd/user")))
-               (install-file "systemd/system/mpd.service" systemd)
-               (install-file "systemd/user/mpd.service" systemd-user)
+         (add-before 'configure 'expand-C++-include-path
+           ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((path "CPLUS_INCLUDE_PATH")
+                    (gcc  (assoc-ref inputs "gcc"))
+                    (c++  (string-append gcc "/include/c++")))
+               (setenv path (string-append c++ ":" (getenv path)))
                #t))))))
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
@@ -134,7 +135,11 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("pulseaudio" ,pulseaudio)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    ;; MPD > 0.21 requires > GCC 6
+    (native-inputs `(("gcc" ,gcc-8)
+                     ("gcc-lib" ,gcc-8 "lib")
+                     ("pkg-config" ,pkg-config)
+                     ("python-sphinx" ,python-sphinx)))
     ;; Missing optional inputs:
     ;;   libyajl
     ;;   libcdio_paranoia

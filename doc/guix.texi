@@ -119,6 +119,7 @@ Project}.
 * Installation::                Installing Guix.
 * System Installation::         Installing the whole operating system.
 * Package Management::          Package installation, upgrade, etc.
+* Development::                 Guix-aided software development.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
 * System Configuration::        Configuring the operating system.
@@ -136,6 +137,11 @@ Project}.
 
 @detailmenu
  --- The Detailed Node Listing ---
+
+Introduction
+
+* Managing Software the Guix Way::      What's special.
+* GNU Distribution::                    The packages and tools.
 
 Installation
 
@@ -159,7 +165,7 @@ System Installation
 * USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
-* Installing Guix in a VM::   Guix System playground.
+* Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
 
 Package Management
@@ -173,7 +179,6 @@ Package Management
 * Channels::                    Customizing the package collection.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
-* Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 
 Substitutes
@@ -184,6 +189,11 @@ Substitutes
 * Proxy Settings::              How to get substitutes via proxy.
 * Substitution Failure::        What happens when substitution fails.
 * On Trusting Binaries::        How can you trust that binary blob?
+
+Development
+
+* Invoking guix environment::   Setting up development environments.
+* Invoking guix pack::          Creating software bundles.
 
 Programming Interface
 
@@ -212,7 +222,6 @@ Utilities
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
 * Invoking guix graph::         Visualizing the graph of packages.
-* Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 * Invoking guix challenge::     Challenging substitute servers.
 * Invoking guix copy::          Copying to and from a remote store.
@@ -242,7 +251,7 @@ System Configuration
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
-* Running Guix in a VM::      How to run Guix System in a virtual machine.
+* Running Guix in a VM::        How to run Guix System in a virtual machine.
 * Defining Services::           Adding new service definitions.
 
 Services
@@ -309,12 +318,18 @@ group everything under the ``Guix'' banner since, after all, Guix System is
 readily available through the @command{guix system} command, even if you're
 using a different distro underneath!}.  @xref{GNU Distribution}.
 
+@menu
+* Managing Software the Guix Way::      What's special.
+* GNU Distribution::                    The packages and tools.
+@end menu
+
 @node Managing Software the Guix Way
 @section Managing Software the Guix Way
 
 @cindex user interfaces
 Guix provides a command-line package management interface
-(@pxref{Invoking guix package}), a set of command-line utilities
+(@pxref{Package Management}), tools to help with software development
+(@pxref{Development}), command-line utilities for more advanced usage,
 (@pxref{Utilities}), as well as Scheme programming interfaces
 (@pxref{Programming Interface}).
 @cindex build daemon
@@ -1762,7 +1777,7 @@ available.
 * USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
-* Installing Guix in a VM::   Guix System playground.
+* Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
 @end menu
 
@@ -2431,7 +2446,6 @@ guix package -i emacs-guix
 * Channels::                    Customizing the package collection.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
-* Invoking guix pack::          Creating software bundles.
 * Invoking guix archive::       Exporting and importing store files.
 @end menu
 
@@ -3705,9 +3719,8 @@ share your improvements, which are basic tenets of
 email us at @email{guix-devel@@gnu.org} if you'd like to discuss this.
 @end quotation
 
-Once you have a Git repository containing your own package modules, you can
-write @code{~/.config/guix/channels.scm} to instruct @command{guix pull} to
-pull from your personal channel @emph{in addition} to the default Guix
+To use a channel, write @code{~/.config/guix/channels.scm} to instruct
+@command{guix pull} to pull from it @emph{in addition} to the default Guix
 channel(s):
 
 @vindex %default-channels
@@ -3750,6 +3763,17 @@ both Guix and packages from the @code{my-personal-packages} channel.  Among
 the new and upgraded packages that are listed, some like @code{my-gimp} and
 @code{my-emacs-with-cool-features} might come from
 @code{my-personal-packages}, while others come from the Guix default channel.
+
+To create a channel, create a Git repository containing your own package
+modules and make it available.  The repository can contain anything, but a
+useful channel will contain Guile modules that export packages.  Once you
+start using a channel, Guix will behave as if the root directory of that
+channel's Git repository has been added to the Guile load path (@pxref{Load
+Paths,,, guile, GNU Guile Reference Manual}).  For example, if your channel
+contains a file at @file{my-packages/my-tools.scm} that defines a Guile
+module, then the module will be available under the name @code{(my-packages
+my-tools)}, and you will be able to use it like any other module
+(@pxref{Modules,,, guile, GNU Guile Reference Manual}).
 
 @cindex dependencies, channels
 @cindex meta-data, channels
@@ -4030,6 +4054,510 @@ produce a list of channel specifications in Recutils format.
 Display information about @var{profile}.
 @end table
 
+@node Invoking guix archive
+@section Invoking @command{guix archive}
+
+@cindex @command{guix archive}
+@cindex archive
+The @command{guix archive} command allows users to @dfn{export} files
+from the store into a single archive, and to later @dfn{import} them on
+a machine that runs Guix.
+In particular, it allows store files to be transferred from one machine
+to the store on another machine.
+
+@quotation Note
+If you're looking for a way to produce archives in a format suitable for
+tools other than Guix, @pxref{Invoking guix pack}.
+@end quotation
+
+@cindex exporting store items
+To export store files as an archive to standard output, run:
+
+@example
+guix archive --export @var{options} @var{specifications}...
+@end example
+
+@var{specifications} may be either store file names or package
+specifications, as for @command{guix package} (@pxref{Invoking guix
+package}).  For instance, the following command creates an archive
+containing the @code{gui} output of the @code{git} package and the main
+output of @code{emacs}:
+
+@example
+guix archive --export git:gui /gnu/store/...-emacs-24.3 > great.nar
+@end example
+
+If the specified packages are not built yet, @command{guix archive}
+automatically builds them.  The build process may be controlled with the
+common build options (@pxref{Common Build Options}).
+
+To transfer the @code{emacs} package to a machine connected over SSH,
+one would run:
+
+@example
+guix archive --export -r emacs | ssh the-machine guix archive --import
+@end example
+
+@noindent
+Similarly, a complete user profile may be transferred from one machine
+to another like this:
+
+@example
+guix archive --export -r $(readlink -f ~/.guix-profile) | \
+  ssh the-machine guix-archive --import
+@end example
+
+@noindent
+However, note that, in both examples, all of @code{emacs} and the
+profile as well as all of their dependencies are transferred (due to
+@code{-r}), regardless of what is already available in the store on the
+target machine.  The @code{--missing} option can help figure out which
+items are missing from the target store.  The @command{guix copy}
+command simplifies and optimizes this whole process, so this is probably
+what you should use in this case (@pxref{Invoking guix copy}).
+
+@cindex nar, archive format
+@cindex normalized archive (nar)
+Archives are stored in the ``normalized archive'' or ``nar'' format, which is
+comparable in spirit to `tar', but with differences
+that make it more appropriate for our purposes.  First, rather than
+recording all Unix metadata for each file, the nar format only mentions
+the file type (regular, directory, or symbolic link); Unix permissions
+and owner/group are dismissed.  Second, the order in which directory
+entries are stored always follows the order of file names according to
+the C locale collation order.  This makes archive production fully
+deterministic.
+
+When exporting, the daemon digitally signs the contents of the archive,
+and that digital signature is appended.  When importing, the daemon
+verifies the signature and rejects the import in case of an invalid
+signature or if the signing key is not authorized.
+@c FIXME: Add xref to daemon doc about signatures.
+
+The main options are:
+
+@table @code
+@item --export
+Export the specified store files or packages (see below.)  Write the
+resulting archive to the standard output.
+
+Dependencies are @emph{not} included in the output, unless
+@code{--recursive} is passed.
+
+@item -r
+@itemx --recursive
+When combined with @code{--export}, this instructs @command{guix
+archive} to include dependencies of the given items in the archive.
+Thus, the resulting archive is self-contained: it contains the closure
+of the exported store items.
+
+@item --import
+Read an archive from the standard input, and import the files listed
+therein into the store.  Abort if the archive has an invalid digital
+signature, or if it is signed by a public key not among the authorized
+keys (see @code{--authorize} below.)
+
+@item --missing
+Read a list of store file names from the standard input, one per line,
+and write on the standard output the subset of these files missing from
+the store.
+
+@item --generate-key[=@var{parameters}]
+@cindex signing, archives
+Generate a new key pair for the daemon.  This is a prerequisite before
+archives can be exported with @code{--export}.  Note that this operation
+usually takes time, because it needs to gather enough entropy to
+generate the key pair.
+
+The generated key pair is typically stored under @file{/etc/guix}, in
+@file{signing-key.pub} (public key) and @file{signing-key.sec} (private
+key, which must be kept secret.)  When @var{parameters} is omitted,
+an ECDSA key using the Ed25519 curve is generated, or, for Libgcrypt
+versions before 1.6.0, it is a 4096-bit RSA key.
+Alternatively, @var{parameters} can specify
+@code{genkey} parameters suitable for Libgcrypt (@pxref{General
+public-key related Functions, @code{gcry_pk_genkey},, gcrypt, The
+Libgcrypt Reference Manual}).
+
+@item --authorize
+@cindex authorizing, archives
+Authorize imports signed by the public key passed on standard input.
+The public key must be in ``s-expression advanced format''---i.e., the
+same format as the @file{signing-key.pub} file.
+
+The list of authorized keys is kept in the human-editable file
+@file{/etc/guix/acl}.  The file contains
+@url{http://people.csail.mit.edu/rivest/Sexp.txt, ``advanced-format
+s-expressions''} and is structured as an access-control list in the
+@url{http://theworld.com/~cme/spki.txt, Simple Public-Key Infrastructure
+(SPKI)}.
+
+@item --extract=@var{directory}
+@itemx -x @var{directory}
+Read a single-item archive as served by substitute servers
+(@pxref{Substitutes}) and extract it to @var{directory}.  This is a
+low-level operation needed in only very narrow use cases; see below.
+
+For example, the following command extracts the substitute for Emacs
+served by @code{@value{SUBSTITUTE-SERVER}} to @file{/tmp/emacs}:
+
+@example
+$ wget -O - \
+  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-emacs-24.5 \
+  | bunzip2 | guix archive -x /tmp/emacs
+@end example
+
+Single-item archives are different from multiple-item archives produced
+by @command{guix archive --export}; they contain a single store item,
+and they do @emph{not} embed a signature.  Thus this operation does
+@emph{no} signature verification and its output should be considered
+unsafe.
+
+The primary purpose of this operation is to facilitate inspection of
+archive contents coming from possibly untrusted substitute servers.
+
+@end table
+
+
+@c *********************************************************************
+@node Development
+@chapter Development
+
+@cindex software development
+If you are a software developer, Guix provides tools that you should find
+helpful---independently of the language you're developing in.  This is what
+this chapter is about.
+
+The @command{guix environment} command provides a convenient way to set up
+@dfn{development environments} containing all the dependencies and tools
+necessary to work on the software package of your choice.  The @command{guix
+pack} command allows you to create @dfn{application bundles} that can be
+easily distributed to users who do not run Guix.
+
+@menu
+* Invoking guix environment::   Setting up development environments.
+* Invoking guix pack::          Creating software bundles.
+@end menu
+
+@node Invoking guix environment
+@section Invoking @command{guix environment}
+
+@cindex reproducible build environments
+@cindex development environments
+@cindex @command{guix environment}
+@cindex environment, package build environment
+The purpose of @command{guix environment} is to assist hackers in
+creating reproducible development environments without polluting their
+package profile.  The @command{guix environment} tool takes one or more
+packages, builds all of their inputs, and creates a shell
+environment to use them.
+
+The general syntax is:
+
+@example
+guix environment @var{options} @var{package}@dots{}
+@end example
+
+The following example spawns a new shell set up for the development of
+GNU@tie{}Guile:
+
+@example
+guix environment guile
+@end example
+
+If the needed dependencies are not built yet, @command{guix environment}
+automatically builds them.  The environment of the new shell is an augmented
+version of the environment that @command{guix environment} was run in.
+It contains the necessary search paths for building the given package
+added to the existing environment variables.  To create a ``pure''
+environment, in which the original environment variables have been unset,
+use the @code{--pure} option@footnote{Users sometimes wrongfully augment
+environment variables such as @code{PATH} in their @file{~/.bashrc}
+file.  As a consequence, when @code{guix environment} launches it, Bash
+may read @file{~/.bashrc}, thereby introducing ``impurities'' in these
+environment variables.  It is an error to define such environment
+variables in @file{.bashrc}; instead, they should be defined in
+@file{.bash_profile}, which is sourced only by log-in shells.
+@xref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}, for
+details on Bash start-up files.}.
+
+@vindex GUIX_ENVIRONMENT
+@command{guix environment} defines the @code{GUIX_ENVIRONMENT}
+variable in the shell it spawns; its value is the file name of the
+profile of this environment.  This allows users to, say, define a
+specific prompt for development environments in their @file{.bashrc}
+(@pxref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}):
+
+@example
+if [ -n "$GUIX_ENVIRONMENT" ]
+then
+    export PS1="\u@@\h \w [dev]\$ "
+fi
+@end example
+
+@noindent
+...@: or to browse the profile:
+
+@example
+$ ls "$GUIX_ENVIRONMENT/bin"
+@end example
+
+Additionally, more than one package may be specified, in which case the
+union of the inputs for the given packages are used.  For example, the
+command below spawns a shell where all of the dependencies of both Guile
+and Emacs are available:
+
+@example
+guix environment guile emacs
+@end example
+
+Sometimes an interactive shell session is not desired.  An arbitrary
+command may be invoked by placing the @code{--} token to separate the
+command from the rest of the arguments:
+
+@example
+guix environment guile -- make -j4
+@end example
+
+In other situations, it is more convenient to specify the list of
+packages needed in the environment.  For example, the following command
+runs @command{python} from an environment containing Python@tie{}2.7 and
+NumPy:
+
+@example
+guix environment --ad-hoc python2-numpy python-2.7 -- python
+@end example
+
+Furthermore, one might want the dependencies of a package and also some
+additional packages that are not build-time or runtime dependencies, but
+are useful when developing nonetheless.  Because of this, the
+@code{--ad-hoc} flag is positional.  Packages appearing before
+@code{--ad-hoc} are interpreted as packages whose dependencies will be
+added to the environment.  Packages appearing after are interpreted as
+packages that will be added to the environment directly.  For example,
+the following command creates a Guix development environment that
+additionally includes Git and strace:
+
+@example
+guix environment guix --ad-hoc git strace
+@end example
+
+Sometimes it is desirable to isolate the environment as much as
+possible, for maximal purity and reproducibility.  In particular, when
+using Guix on a host distro that is not Guix System, it is desirable to
+prevent access to @file{/usr/bin} and other system-wide resources from
+the development environment.  For example, the following command spawns
+a Guile REPL in a ``container'' where only the store and the current
+working directory are mounted:
+
+@example
+guix environment --ad-hoc --container guile -- guile
+@end example
+
+@quotation Note
+The @code{--container} option requires Linux-libre 3.19 or newer.
+@end quotation
+
+The available options are summarized below.
+
+@table @code
+@item --root=@var{file}
+@itemx -r @var{file}
+@cindex persistent environment
+@cindex garbage collector root, for environments
+Make @var{file} a symlink to the profile for this environment, and
+register it as a garbage collector root.
+
+This is useful if you want to protect your environment from garbage
+collection, to make it ``persistent''.
+
+When this option is omitted, the environment is protected from garbage
+collection only for the duration of the @command{guix environment}
+session.  This means that next time you recreate the same environment,
+you could have to rebuild or re-download packages.  @xref{Invoking guix
+gc}, for more on GC roots.
+
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Create an environment for the package or list of packages that
+@var{expr} evaluates to.
+
+For example, running:
+
+@example
+guix environment -e '(@@ (gnu packages maths) petsc-openmpi)'
+@end example
+
+starts a shell with the environment for this specific variant of the
+PETSc package.
+
+Running:
+
+@example
+guix environment --ad-hoc -e '(@@ (gnu) %base-packages)'
+@end example
+
+starts a shell with all the base system packages available.
+
+The above commands only use the default output of the given packages.
+To select other outputs, two element tuples can be specified:
+
+@example
+guix environment --ad-hoc -e '(list (@@ (gnu packages bash) bash) "include")'
+@end example
+
+@item --load=@var{file}
+@itemx -l @var{file}
+Create an environment for the package or list of packages that the code
+within @var{file} evaluates to.
+
+As an example, @var{file} might contain a definition like this
+(@pxref{Defining Packages}):
+
+@example
+@verbatiminclude environment-gdb.scm
+@end example
+
+@item --manifest=@var{file}
+@itemx -m @var{file}
+Create an environment for the packages contained in the manifest object
+returned by the Scheme code in @var{file}.
+
+This is similar to the same-named option in @command{guix package}
+(@pxref{profile-manifest, @option{--manifest}}) and uses the same
+manifest files.
+
+@item --ad-hoc
+Include all specified packages in the resulting environment, as if an
+@i{ad hoc} package were defined with them as inputs.  This option is
+useful for quickly creating an environment without having to write a
+package expression to contain the desired inputs.
+
+For instance, the command:
+
+@example
+guix environment --ad-hoc guile guile-sdl -- guile
+@end example
+
+runs @command{guile} in an environment where Guile and Guile-SDL are
+available.
+
+Note that this example implicitly asks for the default output of
+@code{guile} and @code{guile-sdl}, but it is possible to ask for a
+specific output---e.g., @code{glib:bin} asks for the @code{bin} output
+of @code{glib} (@pxref{Packages with Multiple Outputs}).
+
+This option may be composed with the default behavior of @command{guix
+environment}.  Packages appearing before @code{--ad-hoc} are interpreted
+as packages whose dependencies will be added to the environment, the
+default behavior.  Packages appearing after are interpreted as packages
+that will be added to the environment directly.
+
+@item --pure
+Unset existing environment variables when building the new environment.
+This has the effect of creating an environment in which search paths
+only contain package inputs.
+
+@item --search-paths
+Display the environment variable definitions that make up the
+environment.
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system}---e.g., @code{i686-linux}.
+
+@item --container
+@itemx -C
+@cindex container
+Run @var{command} within an isolated container.  The current working
+directory outside the container is mapped inside the container.
+Additionally, unless overridden with @code{--user}, a dummy home
+directory is created that matches the current user's home directory, and
+@file{/etc/passwd} is configured accordingly.  The spawned process runs
+as the current user outside the container, but has root privileges in
+the context of the container.
+
+@item --network
+@itemx -N
+For containers, share the network namespace with the host system.
+Containers created without this flag only have access to the loopback
+device.
+
+@item --link-profile
+@itemx -P
+For containers, link the environment profile to
+@file{~/.guix-profile} within the container.  This is equivalent to
+running the command @command{ln -s $GUIX_ENVIRONMENT ~/.guix-profile}
+within the container.  Linking will fail and abort the environment if
+the directory already exists, which will certainly be the case if
+@command{guix environment} was invoked in the user's home directory.
+
+Certain packages are configured to look in
+@code{~/.guix-profile} for configuration files and data;@footnote{For
+example, the @code{fontconfig} package inspects
+@file{~/.guix-profile/share/fonts} for additional fonts.}
+@code{--link-profile} allows these programs to behave as expected within
+the environment.
+
+@item --user=@var{user}
+@itemx -u @var{user}
+For containers, use the username @var{user} in place of the current
+user.  The generated @file{/etc/passwd} entry within the container will
+contain the name @var{user}; the home directory will be
+@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
+need not exist on the system.
+
+Additionally, any shared or exposed path (see @code{--share} and
+@code{--expose} respectively) whose target is within the current user's
+home directory will be remapped relative to @file{/home/USER}; this
+includes the automatic mapping of the current working directory.
+
+@example
+# will expose paths as /home/foo/wd, /home/foo/test, and /home/foo/target
+cd $HOME/wd
+guix environment --container --user=foo \
+     --expose=$HOME/test \
+     --expose=/tmp/target=$HOME/target
+@end example
+
+While this will limit the leaking of user identity through home paths
+and each of the user fields, this is only one useful component of a
+broader privacy/anonymity solution---not one in and of itself.
+
+@item --expose=@var{source}[=@var{target}]
+For containers, expose the file system @var{source} from the host system
+as the read-only file system @var{target} within the container.  If
+@var{target} is not specified, @var{source} is used as the target mount
+point in the container.
+
+The example below spawns a Guile REPL in a container in which the user's
+home directory is accessible read-only via the @file{/exchange}
+directory:
+
+@example
+guix environment --container --expose=$HOME=/exchange --ad-hoc guile -- guile
+@end example
+
+@item --share=@var{source}[=@var{target}]
+For containers, share the file system @var{source} from the host system
+as the writable file system @var{target} within the container.  If
+@var{target} is not specified, @var{source} is used as the target mount
+point in the container.
+
+The example below spawns a Guile REPL in a container in which the user's
+home directory is accessible for both reading and writing via the
+@file{/exchange} directory:
+
+@example
+guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
+@end example
+@end table
+
+@command{guix environment}
+also supports all of the common build options that @command{guix
+build} supports (@pxref{Common Build Options}) as well as package
+transformation options (@pxref{Package Transformation Options}).
+
 @node Invoking guix pack
 @section Invoking @command{guix pack}
 
@@ -4256,170 +4784,6 @@ In addition, @command{guix pack} supports all the common build options
 (@pxref{Common Build Options}) and all the package transformation
 options (@pxref{Package Transformation Options}).
 
-
-@node Invoking guix archive
-@section Invoking @command{guix archive}
-
-@cindex @command{guix archive}
-@cindex archive
-The @command{guix archive} command allows users to @dfn{export} files
-from the store into a single archive, and to later @dfn{import} them on
-a machine that runs Guix.
-In particular, it allows store files to be transferred from one machine
-to the store on another machine.
-
-@quotation Note
-If you're looking for a way to produce archives in a format suitable for
-tools other than Guix, @pxref{Invoking guix pack}.
-@end quotation
-
-@cindex exporting store items
-To export store files as an archive to standard output, run:
-
-@example
-guix archive --export @var{options} @var{specifications}...
-@end example
-
-@var{specifications} may be either store file names or package
-specifications, as for @command{guix package} (@pxref{Invoking guix
-package}).  For instance, the following command creates an archive
-containing the @code{gui} output of the @code{git} package and the main
-output of @code{emacs}:
-
-@example
-guix archive --export git:gui /gnu/store/...-emacs-24.3 > great.nar
-@end example
-
-If the specified packages are not built yet, @command{guix archive}
-automatically builds them.  The build process may be controlled with the
-common build options (@pxref{Common Build Options}).
-
-To transfer the @code{emacs} package to a machine connected over SSH,
-one would run:
-
-@example
-guix archive --export -r emacs | ssh the-machine guix archive --import
-@end example
-
-@noindent
-Similarly, a complete user profile may be transferred from one machine
-to another like this:
-
-@example
-guix archive --export -r $(readlink -f ~/.guix-profile) | \
-  ssh the-machine guix-archive --import
-@end example
-
-@noindent
-However, note that, in both examples, all of @code{emacs} and the
-profile as well as all of their dependencies are transferred (due to
-@code{-r}), regardless of what is already available in the store on the
-target machine.  The @code{--missing} option can help figure out which
-items are missing from the target store.  The @command{guix copy}
-command simplifies and optimizes this whole process, so this is probably
-what you should use in this case (@pxref{Invoking guix copy}).
-
-@cindex nar, archive format
-@cindex normalized archive (nar)
-Archives are stored in the ``normalized archive'' or ``nar'' format, which is
-comparable in spirit to `tar', but with differences
-that make it more appropriate for our purposes.  First, rather than
-recording all Unix metadata for each file, the nar format only mentions
-the file type (regular, directory, or symbolic link); Unix permissions
-and owner/group are dismissed.  Second, the order in which directory
-entries are stored always follows the order of file names according to
-the C locale collation order.  This makes archive production fully
-deterministic.
-
-When exporting, the daemon digitally signs the contents of the archive,
-and that digital signature is appended.  When importing, the daemon
-verifies the signature and rejects the import in case of an invalid
-signature or if the signing key is not authorized.
-@c FIXME: Add xref to daemon doc about signatures.
-
-The main options are:
-
-@table @code
-@item --export
-Export the specified store files or packages (see below.)  Write the
-resulting archive to the standard output.
-
-Dependencies are @emph{not} included in the output, unless
-@code{--recursive} is passed.
-
-@item -r
-@itemx --recursive
-When combined with @code{--export}, this instructs @command{guix
-archive} to include dependencies of the given items in the archive.
-Thus, the resulting archive is self-contained: it contains the closure
-of the exported store items.
-
-@item --import
-Read an archive from the standard input, and import the files listed
-therein into the store.  Abort if the archive has an invalid digital
-signature, or if it is signed by a public key not among the authorized
-keys (see @code{--authorize} below.)
-
-@item --missing
-Read a list of store file names from the standard input, one per line,
-and write on the standard output the subset of these files missing from
-the store.
-
-@item --generate-key[=@var{parameters}]
-@cindex signing, archives
-Generate a new key pair for the daemon.  This is a prerequisite before
-archives can be exported with @code{--export}.  Note that this operation
-usually takes time, because it needs to gather enough entropy to
-generate the key pair.
-
-The generated key pair is typically stored under @file{/etc/guix}, in
-@file{signing-key.pub} (public key) and @file{signing-key.sec} (private
-key, which must be kept secret.)  When @var{parameters} is omitted,
-an ECDSA key using the Ed25519 curve is generated, or, for Libgcrypt
-versions before 1.6.0, it is a 4096-bit RSA key.
-Alternatively, @var{parameters} can specify
-@code{genkey} parameters suitable for Libgcrypt (@pxref{General
-public-key related Functions, @code{gcry_pk_genkey},, gcrypt, The
-Libgcrypt Reference Manual}).
-
-@item --authorize
-@cindex authorizing, archives
-Authorize imports signed by the public key passed on standard input.
-The public key must be in ``s-expression advanced format''---i.e., the
-same format as the @file{signing-key.pub} file.
-
-The list of authorized keys is kept in the human-editable file
-@file{/etc/guix/acl}.  The file contains
-@url{http://people.csail.mit.edu/rivest/Sexp.txt, ``advanced-format
-s-expressions''} and is structured as an access-control list in the
-@url{http://theworld.com/~cme/spki.txt, Simple Public-Key Infrastructure
-(SPKI)}.
-
-@item --extract=@var{directory}
-@itemx -x @var{directory}
-Read a single-item archive as served by substitute servers
-(@pxref{Substitutes}) and extract it to @var{directory}.  This is a
-low-level operation needed in only very narrow use cases; see below.
-
-For example, the following command extracts the substitute for Emacs
-served by @code{@value{SUBSTITUTE-SERVER}} to @file{/tmp/emacs}:
-
-@example
-$ wget -O - \
-  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-emacs-24.5 \
-  | bunzip2 | guix archive -x /tmp/emacs
-@end example
-
-Single-item archives are different from multiple-item archives produced
-by @command{guix archive --export}; they contain a single store item,
-and they do @emph{not} embed a signature.  Thus this operation does
-@emph{no} signature verification and its output should be considered
-unsafe.
-
-The primary purpose of this operation is to facilitate inspection of
-archive contents coming from possibly untrusted substitute servers.
-
-@end table
 
 @c *********************************************************************
 @node Programming Interface
@@ -6966,7 +7330,6 @@ the Scheme programming interface of Guix in a convenient way.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
 * Invoking guix graph::         Visualizing the graph of packages.
-* Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 * Invoking guix challenge::     Challenging substitute servers.
 * Invoking guix copy::          Copying to and from a remote store.
@@ -8882,325 +9245,6 @@ are some architecture-dependent bits that this option allows you to visualize.
 @end table
 
 
-@node Invoking guix environment
-@section Invoking @command{guix environment}
-
-@cindex reproducible build environments
-@cindex development environments
-@cindex @command{guix environment}
-@cindex environment, package build environment
-The purpose of @command{guix environment} is to assist hackers in
-creating reproducible development environments without polluting their
-package profile.  The @command{guix environment} tool takes one or more
-packages, builds all of their inputs, and creates a shell
-environment to use them.
-
-The general syntax is:
-
-@example
-guix environment @var{options} @var{package}@dots{}
-@end example
-
-The following example spawns a new shell set up for the development of
-GNU@tie{}Guile:
-
-@example
-guix environment guile
-@end example
-
-If the needed dependencies are not built yet, @command{guix environment}
-automatically builds them.  The environment of the new shell is an augmented
-version of the environment that @command{guix environment} was run in.
-It contains the necessary search paths for building the given package
-added to the existing environment variables.  To create a ``pure''
-environment, in which the original environment variables have been unset,
-use the @code{--pure} option@footnote{Users sometimes wrongfully augment
-environment variables such as @code{PATH} in their @file{~/.bashrc}
-file.  As a consequence, when @code{guix environment} launches it, Bash
-may read @file{~/.bashrc}, thereby introducing ``impurities'' in these
-environment variables.  It is an error to define such environment
-variables in @file{.bashrc}; instead, they should be defined in
-@file{.bash_profile}, which is sourced only by log-in shells.
-@xref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}, for
-details on Bash start-up files.}.
-
-@vindex GUIX_ENVIRONMENT
-@command{guix environment} defines the @code{GUIX_ENVIRONMENT}
-variable in the shell it spawns; its value is the file name of the
-profile of this environment.  This allows users to, say, define a
-specific prompt for development environments in their @file{.bashrc}
-(@pxref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}):
-
-@example
-if [ -n "$GUIX_ENVIRONMENT" ]
-then
-    export PS1="\u@@\h \w [dev]\$ "
-fi
-@end example
-
-@noindent
-...@: or to browse the profile:
-
-@example
-$ ls "$GUIX_ENVIRONMENT/bin"
-@end example
-
-Additionally, more than one package may be specified, in which case the
-union of the inputs for the given packages are used.  For example, the
-command below spawns a shell where all of the dependencies of both Guile
-and Emacs are available:
-
-@example
-guix environment guile emacs
-@end example
-
-Sometimes an interactive shell session is not desired.  An arbitrary
-command may be invoked by placing the @code{--} token to separate the
-command from the rest of the arguments:
-
-@example
-guix environment guile -- make -j4
-@end example
-
-In other situations, it is more convenient to specify the list of
-packages needed in the environment.  For example, the following command
-runs @command{python} from an environment containing Python@tie{}2.7 and
-NumPy:
-
-@example
-guix environment --ad-hoc python2-numpy python-2.7 -- python
-@end example
-
-Furthermore, one might want the dependencies of a package and also some
-additional packages that are not build-time or runtime dependencies, but
-are useful when developing nonetheless.  Because of this, the
-@code{--ad-hoc} flag is positional.  Packages appearing before
-@code{--ad-hoc} are interpreted as packages whose dependencies will be
-added to the environment.  Packages appearing after are interpreted as
-packages that will be added to the environment directly.  For example,
-the following command creates a Guix development environment that
-additionally includes Git and strace:
-
-@example
-guix environment guix --ad-hoc git strace
-@end example
-
-Sometimes it is desirable to isolate the environment as much as
-possible, for maximal purity and reproducibility.  In particular, when
-using Guix on a host distro that is not Guix System, it is desirable to
-prevent access to @file{/usr/bin} and other system-wide resources from
-the development environment.  For example, the following command spawns
-a Guile REPL in a ``container'' where only the store and the current
-working directory are mounted:
-
-@example
-guix environment --ad-hoc --container guile -- guile
-@end example
-
-@quotation Note
-The @code{--container} option requires Linux-libre 3.19 or newer.
-@end quotation
-
-The available options are summarized below.
-
-@table @code
-@item --root=@var{file}
-@itemx -r @var{file}
-@cindex persistent environment
-@cindex garbage collector root, for environments
-Make @var{file} a symlink to the profile for this environment, and
-register it as a garbage collector root.
-
-This is useful if you want to protect your environment from garbage
-collection, to make it ``persistent''.
-
-When this option is omitted, the environment is protected from garbage
-collection only for the duration of the @command{guix environment}
-session.  This means that next time you recreate the same environment,
-you could have to rebuild or re-download packages.  @xref{Invoking guix
-gc}, for more on GC roots.
-
-@item --expression=@var{expr}
-@itemx -e @var{expr}
-Create an environment for the package or list of packages that
-@var{expr} evaluates to.
-
-For example, running:
-
-@example
-guix environment -e '(@@ (gnu packages maths) petsc-openmpi)'
-@end example
-
-starts a shell with the environment for this specific variant of the
-PETSc package.
-
-Running:
-
-@example
-guix environment --ad-hoc -e '(@@ (gnu) %base-packages)'
-@end example
-
-starts a shell with all the base system packages available.
-
-The above commands only use the default output of the given packages.
-To select other outputs, two element tuples can be specified:
-
-@example
-guix environment --ad-hoc -e '(list (@@ (gnu packages bash) bash) "include")'
-@end example
-
-@item --load=@var{file}
-@itemx -l @var{file}
-Create an environment for the package or list of packages that the code
-within @var{file} evaluates to.
-
-As an example, @var{file} might contain a definition like this
-(@pxref{Defining Packages}):
-
-@example
-@verbatiminclude environment-gdb.scm
-@end example
-
-@item --manifest=@var{file}
-@itemx -m @var{file}
-Create an environment for the packages contained in the manifest object
-returned by the Scheme code in @var{file}.
-
-This is similar to the same-named option in @command{guix package}
-(@pxref{profile-manifest, @option{--manifest}}) and uses the same
-manifest files.
-
-@item --ad-hoc
-Include all specified packages in the resulting environment, as if an
-@i{ad hoc} package were defined with them as inputs.  This option is
-useful for quickly creating an environment without having to write a
-package expression to contain the desired inputs.
-
-For instance, the command:
-
-@example
-guix environment --ad-hoc guile guile-sdl -- guile
-@end example
-
-runs @command{guile} in an environment where Guile and Guile-SDL are
-available.
-
-Note that this example implicitly asks for the default output of
-@code{guile} and @code{guile-sdl}, but it is possible to ask for a
-specific output---e.g., @code{glib:bin} asks for the @code{bin} output
-of @code{glib} (@pxref{Packages with Multiple Outputs}).
-
-This option may be composed with the default behavior of @command{guix
-environment}.  Packages appearing before @code{--ad-hoc} are interpreted
-as packages whose dependencies will be added to the environment, the
-default behavior.  Packages appearing after are interpreted as packages
-that will be added to the environment directly.
-
-@item --pure
-Unset existing environment variables when building the new environment.
-This has the effect of creating an environment in which search paths
-only contain package inputs.
-
-@item --search-paths
-Display the environment variable definitions that make up the
-environment.
-
-@item --system=@var{system}
-@itemx -s @var{system}
-Attempt to build for @var{system}---e.g., @code{i686-linux}.
-
-@item --container
-@itemx -C
-@cindex container
-Run @var{command} within an isolated container.  The current working
-directory outside the container is mapped inside the container.
-Additionally, unless overridden with @code{--user}, a dummy home
-directory is created that matches the current user's home directory, and
-@file{/etc/passwd} is configured accordingly.  The spawned process runs
-as the current user outside the container, but has root privileges in
-the context of the container.
-
-@item --network
-@itemx -N
-For containers, share the network namespace with the host system.
-Containers created without this flag only have access to the loopback
-device.
-
-@item --link-profile
-@itemx -P
-For containers, link the environment profile to
-@file{~/.guix-profile} within the container.  This is equivalent to
-running the command @command{ln -s $GUIX_ENVIRONMENT ~/.guix-profile}
-within the container.  Linking will fail and abort the environment if
-the directory already exists, which will certainly be the case if
-@command{guix environment} was invoked in the user's home directory.
-
-Certain packages are configured to look in
-@code{~/.guix-profile} for configuration files and data;@footnote{For
-example, the @code{fontconfig} package inspects
-@file{~/.guix-profile/share/fonts} for additional fonts.}
-@code{--link-profile} allows these programs to behave as expected within
-the environment.
-
-@item --user=@var{user}
-@itemx -u @var{user}
-For containers, use the username @var{user} in place of the current
-user.  The generated @file{/etc/passwd} entry within the container will
-contain the name @var{user}; the home directory will be
-@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
-need not exist on the system.
-
-Additionally, any shared or exposed path (see @code{--share} and
-@code{--expose} respectively) whose target is within the current user's
-home directory will be remapped relative to @file{/home/USER}; this
-includes the automatic mapping of the current working directory.
-
-@example
-# will expose paths as /home/foo/wd, /home/foo/test, and /home/foo/target
-cd $HOME/wd
-guix environment --container --user=foo \
-     --expose=$HOME/test \
-     --expose=/tmp/target=$HOME/target
-@end example
-
-While this will limit the leaking of user identity through home paths
-and each of the user fields, this is only one useful component of a
-broader privacy/anonymity solution---not one in and of itself.
-
-@item --expose=@var{source}[=@var{target}]
-For containers, expose the file system @var{source} from the host system
-as the read-only file system @var{target} within the container.  If
-@var{target} is not specified, @var{source} is used as the target mount
-point in the container.
-
-The example below spawns a Guile REPL in a container in which the user's
-home directory is accessible read-only via the @file{/exchange}
-directory:
-
-@example
-guix environment --container --expose=$HOME=/exchange --ad-hoc guile -- guile
-@end example
-
-@item --share=@var{source}[=@var{target}]
-For containers, share the file system @var{source} from the host system
-as the writable file system @var{target} within the container.  If
-@var{target} is not specified, @var{source} is used as the target mount
-point in the container.
-
-The example below spawns a Guile REPL in a container in which the user's
-home directory is accessible for both reading and writing via the
-@file{/exchange} directory:
-
-@example
-guix environment --container --share=$HOME=/exchange --ad-hoc guile -- guile
-@end example
-@end table
-
-@command{guix environment}
-also supports all of the common build options that @command{guix
-build} supports (@pxref{Common Build Options}) as well as package
-transformation options (@pxref{Package Transformation Options}).
-
 
 @node Invoking guix publish
 @section Invoking @command{guix publish}
@@ -9882,7 +9926,7 @@ instance to support new system services.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
-* Running Guix in a VM::      How to run Guix System in a virtual machine.
+* Running Guix in a VM::        How to run Guix System in a virtual machine.
 * Defining Services::           Adding new service definitions.
 @end menu
 
@@ -23027,6 +23071,32 @@ of @command{reconfigure}, and it is exactly the same as invoking
 Currently, as with @command{switch-generation}, you must reboot after
 running this action to actually start using the preceding system
 generation.
+
+@item delete-generations
+@cindex deleting system generations
+@cindex saving space
+Delete system generations, making them candidates for garbage collection
+(@pxref{Invoking guix gc}, for information on how to run the ``garbage
+collector'').
+
+This works in the same way as @command{guix package --delete-generations}
+(@pxref{Invoking guix package, @code{--delete-generations}}).  With no
+arguments, all system generations but the current one are deleted:
+
+@example
+guix system delete-generations
+@end example
+
+You can also select the generations you want to delete.  The example below
+deletes all the system generations that are more than two month old:
+
+@example
+guix system delete-generations 2m
+@end example
+
+Running this command automatically reinstalls the bootloader with an updated
+list of menu entries---e.g., the ``old generations'' sub-menu in GRUB no
+longer lists the generations that have been deleted.
 
 @item build
 Build the derivation of the operating system, which includes all the

@@ -78,13 +78,13 @@ a custom raw video format with a simple container.")
 (define-public dwm
   (package
     (name "dwm")
-    (version "6.1")
+    (version "6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dl.suckless.org/dwm/dwm-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "1zkmwb6df6m254shx06ly90c0q4jl70skk1pvkixpb7hcxhwbxn2"))))
+              (base32 "03hirnj8saxnsfqiszwl2ds7p0avg20izv9vdqyambks00p2x44p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -137,14 +137,14 @@ optimising the environment for the application in use and the task performed.")
 (define-public dmenu
   (package
     (name "dmenu")
-    (version "4.8")
+    (version "4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.suckless.org/tools/dmenu-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qfvfrj10xlwd9hkvb57wshryan65bl6423h0qhiw1h76rf5lqgy"))))
+                "0ia9nqr83bv6x247q30bal0v42chcj9qcjgv59xs6xj46m7iz5xk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests

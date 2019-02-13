@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;; Copyright © 2017 Z. Ren <zren@dlut.edu.cn>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,7 +105,7 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.7.2.1")
+   (version "2.7.2.2")
    (source
     (origin
      (method url-fetch)
@@ -113,7 +113,7 @@ complexity.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "0vyl4wr2l4mp9ams0dyg224qxhl8ksxsv2shs6606lhhp9g1rb6b"))))
+       "0psjmfidjdciswakw9agzzniqfmhrr21765m0q77kwxg7iisgpsq"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))

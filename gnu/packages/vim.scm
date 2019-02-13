@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -519,7 +519,7 @@ commit or run any Git arbitrary command.")
 (define-public vim-airline
   (package
     (name "vim-airline")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method git-fetch)
@@ -529,7 +529,7 @@ commit or run any Git arbitrary command.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hq3304rhakx7x1v7wll7gxinmfz6561bq97qpj8jrk19rhcab75"))))
+         "0k3c6p3xy6514n1n347ci4q9xjm9wwqirpdysam6f7r39crgmfhd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

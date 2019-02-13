@@ -683,14 +683,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1")
+    (version "4.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "150rrm549fy1x71c9whmyi5knyd9sliwvmcsm438bdgg4v8c93m3"))))
+               "11id9pm4azfrhpa4vr2yaw31dzgd55kl1zsxwn24sczx9n14jdrp"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -992,7 +992,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
-       ("libvpx" ,libvpx)
+       ("libvpx" ,libvpx-1.7)
        ("libtheora" ,libtheora)
        ("libx264" ,libx264)
        ("libxext" ,libxext)
@@ -2877,7 +2877,17 @@ programmers to access a standard API to open and decompress media files.")
          (add-before 'configure 'fix-ldflags
            (lambda _
              (setenv "LDFLAGS" "-pthread")
-             #t)))))
+             #t))
+         (add-after 'unpack 'fix-boost-headers
+               (lambda _
+                 (substitute*
+                     '("src/subtitles_provider_libass.cpp"
+                       "src/colour_button.cpp"
+                       "src/video_provider_dummy.cpp"
+                       "./src/video_frame.cpp")
+                   (("#include <boost/gil/gil_all.hpp>")
+                    "#include <boost/gil.hpp>"))
+                 #t)))))
     (inputs
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)

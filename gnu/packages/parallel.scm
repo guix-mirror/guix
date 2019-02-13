@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -48,7 +48,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20181222")
+    (version "20190122")
     (source
      (origin
       (method url-fetch)
@@ -56,7 +56,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0sd39nzgff3rpyzfwkffb5yxbdm5r6amrkslbgpjlrcrymy9z305"))))
+        "030rjhis8s47gkm05k4vc9p886cxvadpgzs8rqmgzvlc38h5ywxf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

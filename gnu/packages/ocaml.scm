@@ -4683,6 +4683,110 @@ in-line tests in ocaml code.  It is part of Jane Street's PPX rewriters
 collection.")
     (license license:expat)))
 
+(define-public ocaml-bindlib
+  (package
+    (name "ocaml-bindlib")
+    (version "5.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rlepigre/ocaml-bindlib.git")
+             (commit (string-append "ocaml-bindlib_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1f8kr81w8vsi4gv61xn1qbc6zrzkjp8l9ix0942vjh4gjxc74v75"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:use-make? #t
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make")))
+         (replace 'install
+           (lambda _
+             (invoke "make" "install"))))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-findlib" ,ocaml-findlib)))
+    (home-page "https://rlepigre.github.io/ocaml-bindlib/")
+    (synopsis "OCaml Bindlib library for bound variables")
+    (description "Bindlib is a library allowing the manipulation of data
+structures with bound variables.  It is particularly useful when writing ASTs
+for programming languages, but also for manipulating terms of the λ-calculus
+or quantified formulas.")
+    (license license:gpl3+)))
+
+(define-public ocaml-earley
+  (package
+    (name "ocaml-earley")
+    (version "2.0.0")
+    (home-page "https://github.com/rlepigre/ocaml-earley")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18k7bi7krc4bvqnhijz1q0pfr0nfahghfjifci8rh1q4i5zd0xz5"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
+    (synopsis "Parsing library based on Earley Algorithm")
+    (description "Earley is a parser combinator library base on Earley's
+algorithm.  It is intended to be used in conjunction with an OCaml syntax
+extension which allows the definition of parsers inside the language.  There
+is also support for writing OCaml syntax extensions in a camlp4 style.")
+    (license license:cecill-b)))
+
+(define-public ocaml-timed
+  (package
+    (name "ocaml-timed")
+    (version "1.0")
+    (home-page "https://github.com/rlepigre/ocaml-timed")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append home-page ".git"))
+                    (commit (string-append name "_" version))))
+              (sha256
+               (base32
+                "0hfxz710faxy5yk97bkfnw87r732jcxxhmjppwrbfdb6pd0wks96"))
+              (file-name (git-file-name name version))))
+    (build-system ocaml-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (invoke "make")))
+         (replace 'install
+           (lambda _
+             (invoke "make" "install")))
+         (replace 'check
+           (lambda _
+             (invoke "make" "tests"))))))
+    (synopsis "Timed references for imperative state")
+    (description "Timed references for imperative state.  This module provides
+an alternative type for references (or mutable cells) supporting undo/redo
+operations.  In particular, an abstract notion of time is used to capture the
+state of the references at any given point, so that it can be restored.  Note
+that usual reference operations only have a constant time / memory overhead
+(compared to those of the standard library).
+
+Moreover, we provide an alternative implementation based on the references
+of the standard library (Pervasives module).  However, it is less efficient
+than the first one.")
+    (license license:expat)))
+
 (define-public ocaml-biniou
  (package
    (name "ocaml-biniou")

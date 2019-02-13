@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -1938,6 +1938,40 @@ easier to build concurrent applications.")
 (define-public python2-pykka
   (package-with-python2 python-pykka))
 
+(define-public python-pymsgbox
+  (package
+    (name "python-pymsgbox")
+    (version "1.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              ;; LICENSE.txt is not present on pypi
+              (url "https://github.com/asweigart/PyMsgBox")
+              (commit "55926b55f46caa969c5ddb87990ebea2737bd66f")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0zy7rjfpwlrd8b64j7jk2lb8m2npc21rnpwakpfvwgl4nxdy80rg"))))
+    (arguments
+     ;; Circular dependency to run tests:
+     ;; Tests need pyautogui, which depends on pymsgbox.
+     '(#:tests? #f))
+    (build-system python-build-system)
+    (home-page "https://github.com/asweigart/PyMsgBox")
+    (synopsis "Python module for JavaScript-like message boxes")
+    (description
+     "PyMsgBox is a simple, cross-platform, pure Python module for
+JavaScript-like message boxes.  Types of dialog boxes include:
+@enumerate
+@item alert
+@item confirm
+@item prompt
+@item password
+@end enumerate
+")
+    (license license:bsd-3)))
+
 (define-public python-pympler
   (package
     (name "python-pympler")
@@ -2188,6 +2222,57 @@ logging and tracing of the execution.")
 
 (define-public python2-joblib
   (package-with-python2 python-joblib))
+
+(define-public python-daemon
+  (package
+    (name "python-daemon")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-daemon" version))
+       (sha256
+        (base32
+         "09fcjdjzk9ywmpnrj62iyxqgcygzdafsz41qlrk2dknzbagcmzmg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-tests
+           (lambda _
+             ;; FIXME: Determine why test fails
+             (substitute* "test/test_daemon.py"
+               (("test_detaches_process_context")
+                "skip_test_detaches_process_context"))
+             #t)))))
+    (propagated-inputs
+     `(("python-lockfile" ,python-lockfile)))
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)
+       ("python-testtools" ,python-testtools)
+       ("python-testscenarios" ,python-testscenarios)
+       ("python-mock" ,python-mock)
+       ("python-docutils" ,python-docutils)))
+    (home-page "https://pagure.io/python-daemon/")
+    (synopsis "Python library for making a Unix daemon process")
+    (description "Python-daemon is a library that assists a Python program to
+turn itself into a well-behaved Unix daemon process, as specified in PEP 3143.
+
+This library provides a @code{DaemonContext} class that manages the following
+important tasks for becoming a daemon process:
+@enumerate
+@item Detach the process into its own process group.
+@item Set process environment appropriate for running inside a chroot.
+@item Renounce suid and sgid privileges.
+@item Close all open file descriptors.
+@item Change the working directory, uid, gid, and umask.
+@item Set appropriate signal handlers.
+@item Open new file descriptors for stdin, stdout, and stderr.
+@item Manage a specified PID lock file.
+@item Register cleanup functions for at-exit processing.
+@end enumerate")
+    ;; Only setup.py is gpl3+, everything else is apache 2.0 licensed.
+    (license (list license:asl2.0 license:gpl3+))))
 
 (define-public python-docutils
   (package
@@ -2493,6 +2578,84 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 Language (TOML) configuration files.")
     (license license:expat)))
 
+(define-public python-jsonrpc-server
+  (package
+    (name "python-jsonrpc-server")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-jsonrpc-server" version))
+       (sha256
+        (base32
+         "0m4ykpcdy52x37n1ikysp07j7p8ialcdvvvsrjp3545sn7iiid09"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/palantir/python-jsonrpc-server")
+    (synopsis "JSON RPC 2.0 server library")
+    (description
+     "This packages provides a JSON RPC 2.0 server library for Python.")
+    (license license:expat)))
+
+(define-public python-pydocstyle
+  (package
+    (name "python-pydocstyle")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydocstyle" version))
+       (sha256
+        (base32
+         "1m1xv9clkg9lgzyza6dnj359z04vh5g0h49nhzghv7lg81gchhap"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-snowballstemmer" ,python-snowballstemmer)))
+    (home-page
+     "https://github.com/PyCQA/pydocstyle/")
+    (synopsis "Python docstring style checker")
+    (description
+     "This package provides a style checker for the Python Language
+Server (PLS).")
+    (license license:expat)))
+
+(define-public python-language-server
+  (package
+    (name "python-language-server")
+    (version "0.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-language-server" version))
+       (sha256
+        (base32
+         "04pbxl06hg0ddm2xx99jn9jh40yv0mmzdjw8pqd2rbcdg42hhia6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pluggy" ,python-pluggy)
+       ("python-jsonrpc-server" ,python-jsonrpc-server)
+       ("python-jedi" ,python-jedi)
+       ("python-yapf" ,python-yapf)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-pydocstyle" ,python-pydocstyle)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-mccabe" ,python-mccabe)
+       ("python-rope" ,python-rope)
+       ("python-autopep8" ,python-autopep8)))
+    (home-page "https://github.com/palantir/python-language-server")
+    (synopsis "Python implementation of the Language Server Protocol")
+    (description
+     "The Python Language Server (pyls) is an implementation of the Python 3
+language specification for the Language Server Protocol (LSP).  This tool is
+used in text editing environments to provide a complete and integrated
+feature-set for programming Python effectively.")
+    (license license:expat)))
+
 (define-public python-black
   (package
     (name "python-black")
@@ -2635,14 +2798,14 @@ and is very extensible.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.28.4")
+    (version "0.29.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "0imw9s2rbrh32clbl10csnwmig9p3nzkrd2baxxxfmnrsc42pb3n"))))
+         "1wfb68g115gmf3mv23w0hh972b0ll85gpb92ci28x6h997br0llx"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -8761,8 +8924,7 @@ Python.  It generates C++ code and a Makefile."))
         (base32
          "1cppm0pa9aqgsbkq130lskrzmrvjs5vpiavjjbhpz2fdw52w8251"))))
     (arguments
-     ;; Rope is currently python-2 only.
-     ;; https://github.com/python-rope/rope/issues/57
+     ;; Rope has only partial python3 support, see `python-rope'
      `(#:python ,python-2))
     (build-system python-build-system)
     (native-inputs
@@ -8774,6 +8936,16 @@ the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
 to occurrences in strings and comments.")
     (license license:gpl2)))
+
+(define-public python-rope
+  (package
+    (inherit python2-rope)
+    (name "python-rope")
+    (arguments `(#:python ,python-wrapper
+                 ;; XXX: Only partial python3 support, results in some failing
+                 ;; tests: <https://github.com/python-rope/rope/issues/247>.
+                 #:tests? #f))
+    (properties `((python2-variant . ,(delay python2-rope))))))
 
 (define-public python-py3status
   (package

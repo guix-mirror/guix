@@ -107,8 +107,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.16.0")
-        (commit "4bddd12ad540d45a33a5f9f129b896843dca603f")
-        (revision 9))
+        (commit "2637cfd7a4894ef2a2a7da3bb46d8815c43d7e75")
+        (revision 10))
     (package
       (name "guix")
 
@@ -124,7 +124,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1abn4ghb25kn0cmr9dbb3q3fxdcc0g2fnnmbrykxv111s6ahdmlw"))
+                  "1m734gm45x9czqspsagdfxfgw5wiiinyq1s6zc9gfv7d3b2w472k"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -541,13 +541,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "106")
+    (version "111")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0qrfp7nha2n2s9h5ibcf7rqji1amh4cqbcf80m6anim6p3ik26da"))))
+                "0sgqx3n0ny75bvcw10pfx61z67mdk5hx3mblw4gqnn2h9vc74qz1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -952,7 +952,7 @@ the bootloader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.2.0")
+   (version "1.2.3")
    (source
     (origin
      (method url-fetch)
@@ -960,7 +960,7 @@ the bootloader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "1bdk6qmsvy4d80245x1si9qvrga2f2yalj9qfmf1lqj5ljxxxifv"))))
+       "0i0dn3w3545lvmjlzqj3j70lk8yrq64r9frp1rk6a161gwq20ixv"))))
    (build-system gnu-build-system)
    (arguments
     '(#:tests? #f ;; Tests fail due to trying to create files where it can't.

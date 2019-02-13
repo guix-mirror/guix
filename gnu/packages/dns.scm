@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -294,15 +294,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.1.25")
+    (version "4.1.26")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0zyzjd3wmq258jiry62ci1z23qfd0rc5ggnpmybc60xvpddgynwg"))))
+        (base32 "1x0mvj4872dzj1rr9adnchdm4dhn41xmc459p5j4s0r13m1l32lz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -524,16 +523,16 @@ served by AS112.  Stub and forward zones are supported.")
 (define-public yadifa
   (package
     (name "yadifa")
-    (version "2.3.8")
+    (version "2.3.9")
     (source
-     (let ((build "7713"))
+     (let ((build "8497"))
        (origin
          (method url-fetch)
          (uri
           (string-append "http://cdn.yadifa.eu/sites/default/files/releases/"
-                         name "-" version "-" build ".tar.gz"))
+                         "yadifa-" version "-" build ".tar.gz"))
          (sha256
-          (base32 "15xhzg4crjcxascwpz6y8qpqcgypzv2p9bspdskp4nx1x1y4316c")))))
+          (base32 "0xvyr91sfgzkpw6g3h893ldbwnki3w2472n56rr18w67qghs1sa5")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -571,14 +570,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.7.3")
+    (version "2.7.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
-                                  name "-" version ".tar.xz"))
+                                  "knot-" version ".tar.xz"))
               (sha256
                (base32
-                "1pwjcv7hzhqawisibybma160k77a6f1v94xw6ay9c7j49vrw05w7"))
+                "18lpyq3vgr2ainmfiy14x7hcf1zxza66bhkpr54jaz2gy1viijx1"))
               (modules '((guix build utils)))
               (snippet
                '(begin

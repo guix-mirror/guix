@@ -1238,7 +1238,7 @@ with several different talk daemons at the same time.")
 (define-public gloox
   (package
     (name "gloox")
-    (version "1.0.21")
+    (version "1.0.22")
     (source
      (origin
        (method url-fetch)
@@ -1246,7 +1246,7 @@ with several different talk daemons at the same time.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1k57qgif1yii515m6jaqaibkdysfab6394bpawd2l67321f1a4rw"))))
+         "0r69gq8if9yy1amjzl7qrq9lzhhna7qgz905ln4wvkwchha1ppja"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)

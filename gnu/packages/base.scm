@@ -892,7 +892,10 @@ with the Linux kernel.")
                                        "glibc-hidden-visibility-ldconfig.patch"
                                        "glibc-versioned-locpath.patch"
                                        "glibc-allow-kernel-2.6.32.patch"
-                                       "glibc-reinstate-prlimit64-fallback.patch"))))))
+                                       "glibc-reinstate-prlimit64-fallback.patch"
+                                       "glibc-CVE-2018-11236.patch"
+                                       "glibc-CVE-2018-11237.patch"))))
+    (properties `((lint-hidden-cve . ("CVE-2017-18269")))))) ; glibc-2.27-git-fixes
 
 (define-public glibc-2.26
   (package

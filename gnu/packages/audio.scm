@@ -1892,19 +1892,17 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.14.0")
+    (version "1.16.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://lv2plug.in/spec/lv2-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0chxwys3vnn3nxc9x2vchm74s9sx0vfra6y893byy12ci61jc1dq"))))
+               "1ppippbpdpv13ibs06b0bixnazwfhiw0d0ja6hx42jnkgdyp5hyy"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
-       ;; XXX: The bundled waf does not work with Python 3.7.
-       #:python ,python-2
        #:configure-flags '("--no-plugins")))
     (inputs
      ;; Leaving off cairo and gtk+-2.0 which are needed for example plugins
@@ -1919,22 +1917,6 @@ At its core, LV2 is a simple stable interface, accompanied by extensions which
 add functionality to support the needs of increasingly powerful audio
 software.")
     (license license:isc)))
-
-(define-public lv2-devel
-  (let ((commit "39c7c726cd52b2863fcea356cafe1bcab2ba7f37")
-        (revision "1"))
-    (package (inherit lv2)
-      (name "lv2-devel")
-      (version (string-append "1.15.3-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "http://lv2plug.in/git/lv2.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1gp2rd99dfmpibvpixrqn115mrhybzf3if3h8bssf6siyi13f29r")))))))
 
 (define-public lv2-mda-piano
   (package
@@ -3225,7 +3207,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -3233,7 +3215,7 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0r4fbajgfmnwgl63hcm56f1j8m5f135q6j5jkzdvrrhpcj39yx06"))))
+         "1p6yz5q7czyf9ard65sp4kawdlkg40cfscr3b24znymmhs3p7rbk"))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))

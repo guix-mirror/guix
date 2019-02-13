@@ -16,7 +16,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2017, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -98,6 +98,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
@@ -1401,7 +1402,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.8.1")
+    (version "2.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1409,7 +1410,7 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "14rqqhfyv49irz8ag0qbv9jn8z0bn3qzxir3r074y16p4sg4674d"))))
+                "103wi6k8xal0z1pyy680gms56skagh6jawa2ja588ljr55jcg4sg"))))
     (build-system gnu-build-system)
     (arguments
      '(;; FIXME: many tests fail with:
@@ -2367,3 +2368,31 @@ communication over HTTP.")
 be used to manage peer-to-peer network connections as needed for real time
 communication.")
     (license license:gpl3+)))
+
+(define-public frrouting
+  (package
+    (name "frrouting")
+    (version "6.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/FRRouting/frr/releases/"
+                                  "download/frr-" version "/frr-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "0xfrvi62w8qlh46f504ka0skb7pm0g0p8vmdng4w90gsbirlzpdd"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("json-c" ,json-c)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://frrouting.org/")
+    (synopsis "IP routing protocol suite")
+    (description "FRRouting (FRR) is an IP routing protocol suite which includes
+protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
+    (license license:gpl2+)))

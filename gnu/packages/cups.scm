@@ -38,6 +38,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -380,6 +382,32 @@ device-specific programs to convert and print many types of files.")
        ("cups-filters" ,cups-filters)
        ("zlib"  ,zlib)))))
 
+(define-public cups-pk-helper
+  (package
+    (name "cups-pk-helper")
+    (version "0.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://freedesktop.org/software/"
+                                  name "/releases/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0a52jw6rm7lr5nbyksiia0rn7sasyb5cjqcb95z1wxm2yprgi6lm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib" ,glib)
+       ("polkit" ,polkit)
+       ("cups" ,cups)))
+    (home-page "https://www.freedesktop.org/wiki/Software/cups-pk-helper/")
+    (synopsis "PolicyKit helper to configure CUPS with fine-grained privileges")
+    (description
+     "This package provides the org.opensuse.CupsPkHelper.Mechanism DBus
+system service which uses @file{cups-pk-helper-mechanism}.  This package
+should only be used as part of the Guix cups-pk-helper service.")
+    (license license:gpl2+)))
+
 (define-public hplip
   (package
     (name "hplip")
@@ -680,4 +708,28 @@ System (CUPS).  It offers high-quality printing with Seiko Epson color ink jet
 printers.  It can only be used with printers that support the Epson ESC/P-R
 language.")
     (home-page "http://download.ebz.epson.net/dsc/search/01/search")
+    (license license:gpl2+)))
+
+(define-public python-pycups
+  (package
+    (name "python-pycups")
+    (version "1.9.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycups" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1ffp7sswhdsfpy88zg0cc8kl04wygkjs01rlm9f0spbwk8jhy2c6"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; Tests require CUPS to be running
+       #:tests? #f))
+    (inputs
+     `(("cups" ,cups)))
+    (home-page "https://github.com/zdohnal/pycups")
+    (synopsis "Python bindings for libcups")
+    (description
+     "This package provides Python bindings for libcups, wrapping the CUPS
+API.")
     (license license:gpl2+)))

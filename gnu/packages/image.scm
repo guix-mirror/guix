@@ -321,7 +321,7 @@ Currently all documentation resides in @file{pnglite.h}.")
    (version "9c")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
+            (uri (string-append "https://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
                      "08kixcf3a7s9x91174abjnk1xbvj4v8crdc73zi4k9h3jfbm00k5"))))
@@ -342,14 +342,14 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
 @item wrjpgcom
 @end enumerate")
    (license license:ijg)
-   (home-page "http://www.ijg.org/")))
+   (home-page "https://www.ijg.org/")))
 
 (define-public libjpeg-8
   (package (inherit libjpeg)
    (version "8d")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
+            (uri (string-append "https://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
                      "1cz0dy05mgxqdgjf52p54yxpyy95rgl30cnazdrfmw7hfca9n0h0"))))))

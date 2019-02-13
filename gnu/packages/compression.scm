@@ -10,7 +10,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -540,14 +540,14 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
 (define-public lziprecover
   (package
     (name "lziprecover")
-    (version "1.20")
+    (version "1.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/lzip/" name "/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "mirror://savannah/lzip/lziprecover/"
+                                  "lziprecover-" version ".tar.gz"))
               (sha256
                (base32
-                "0fpnmdxayvd1ff0rk9606dvr431ji6b1v71km4ww244rih1rmmzz"))))
+                "094w2z8fz41yaq0gkyr61cl7pb1d7kchpl5dka7rvm3qvbb7ncd2"))))
     (build-system gnu-build-system)
     (home-page "https://www.nongnu.org/lzip/lziprecover.html")
     (synopsis "Recover and decompress data from damaged lzip files")
@@ -1606,14 +1606,14 @@ of archives.")
 (define-public lunzip
   (package
     (name "lunzip")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/lunzip/"
+                           "lunzip-" version ".tar.gz"))
        (sha256
-        (base32 "1iw59br6nsxs7l1p875h8w3vxwr04xfhg5zyal64crvamhxkj5kl"))))
+        (base32 "19zq3gmlbia2krq4k4zs1j0xjdv7nsdzqvfb0pyca5n53h2mzb91"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1633,14 +1633,14 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
 (define-public clzip
   (package
     (name "clzip")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/clzip/"
+                           "clzip-" version ".tar.gz"))
        (sha256
-        (base32 "03xcmhl3dya4jrwmsqh09ikimpb36fr3vkh2bwfzz1sbcns0cdg3"))))
+        (base32 "1h14dmc9fi10gcdpdpbgq1bwvcxvivppilj64pf720x8mw915mfr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1659,17 +1659,15 @@ Clzip is intended to be fully compatible with the regular lzip package.")
 (define-public lzlib
   (package
     (name "lzlib")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/lzlib/"
+                           "lzlib-" version ".tar.gz"))
        (sha256
-        (base32 "0hqhnj2lzqacdbmmnpy91lsm1rd9zlngs1q6s9pyahsv1a0bfshx"))))
+        (base32 "0djdj4sg33rzi4k84cygvnp09bfsv6i8wy2k7i67rayib63myp3c"))))
     (build-system gnu-build-system)
-    ;; The included minilzip binary is only ~16 smaller than the ‘real’ lzip.
-    ;; It's used during the test suite, but don't be tempted to install it.
     (arguments
      `(#:configure-flags
        (list "CC=gcc"
@@ -1687,14 +1685,14 @@ corrupted input.")
 (define-public plzip
   (package
     (name "plzip")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://savannah/lzip/"
-                           name "/" name "-" version ".tar.gz"))
+       (uri (string-append "mirror://savannah/lzip/plzip/"
+                           "plzip-" version ".tar.gz"))
        (sha256
-        (base32 "1dzjp9r7krwpsn224bhcqbzd5aj5b4556sdi9yzl2bzbk3fjrqlm"))))
+        (base32 "04indil809qgfmz776imb3dnhkysh7zk28jcv3mw0ahl2lyaxbzd"))))
     (build-system gnu-build-system)
     (inputs
      `(("lzlib" ,lzlib)))

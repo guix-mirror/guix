@@ -8918,7 +8918,7 @@ outline-mode), so there is no such thing like an outshine mode, only
 (define-public emacs-biblio
   (package
     (name "emacs-biblio")
-    (version "0.1")
+    (version "0.2")
     (source
      (origin
        (method url-fetch)
@@ -8927,7 +8927,7 @@ outline-mode), so there is no such thing like an outshine mode, only
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "109fvivsb4r0rbqljngqrmxqvbnbkqlivczx6brrvlr7ci625lhf"))))
+         "0vwrljmab8m1z83048gxx5mryml9f5pb3h0jpwkvqcl0ra152lzx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-seq" ,emacs-seq)

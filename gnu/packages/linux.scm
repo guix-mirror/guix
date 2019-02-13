@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -413,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.7")
-(define %linux-libre-hash "05jbpg4ivcbr8xi5ki03f4n57hnhc52nfjk1ik8czag7f4ph9v0b")
+(define %linux-libre-version "4.20.8")
+(define %linux-libre-hash "0qhwavylmkqqd84dym87ajzwnxc6rjpdijw7kbriqjmgjfsmf8sw")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -427,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.20")
-(define %linux-libre-4.19-hash "1rs4jvp88n23n9a6f037sn498fzl1fn96zsjjmjngb8nmjr1y9vp")
+(define %linux-libre-4.19-version "4.19.21")
+(define %linux-libre-4.19-hash "064vwfkcmc8ad37m1ziqc14vhvx3mba12rc9220xng3a48gwpi2m")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -441,8 +441,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.98")
-(define %linux-libre-4.14-hash "165wlqqpb16zhrwihsb75y153xyz8q5dbi14xim7jsnvwlbh5i79")
+(define %linux-libre-4.14-version "4.14.99")
+(define %linux-libre-4.14-hash "1d9h4l22j3jy1bkq8i4g6axwpq04jbsys4bg6bx8sbl590c9lrwx")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -451,8 +451,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.155"
-                    "0fyj8dqhpqi3jh6i58avyvmg4mp9bplnpiffpp3fdka4v85lx152"
+  (make-linux-libre "4.9.156"
+                    "1ipmn5axlhfsfzqvwwyv7scrvfja39w7v68cnvbqiaq8fkjgffxg"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -3031,7 +3031,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.7")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -3039,7 +3039,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lirhjjv37jnf42r1ylrhi8kbzx9j9xnyfzvxpp6bzcp0fawigig"))
+                "1jhi6bhl4ih75rfmyyjxd35ghgch5ls1gw40cjxwy9d6bd41z6q1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3077,7 +3077,7 @@ arrays when needed.")
                  (("/usr/include/libudev.h")
                   (string-append udev "/include/libudev.h")))
                #t)))
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -3102,7 +3102,7 @@ Linux Device Mapper multipathing driver:
 @code{dm} multipath devices.
 @item @command{kpartx} - Create device maps from partition tables.
 @end enumerate")
-    (license (list license:gpl2+             ; Main distribution.
+    (license (list license:gpl2+             ; main distribution
                    license:lgpl2.0+))))      ; libmpathcmd/mpath_cmd.h
 
 (define-public libaio

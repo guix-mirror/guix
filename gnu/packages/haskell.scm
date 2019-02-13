@@ -11493,4 +11493,112 @@ imported with the correct Haskell types.")
 Music Player Daemon.")
     (license license:expat)))
 
+(define-public ghc-alsa-core
+  (package
+    (name "ghc-alsa-core")
+    (version "0.5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/alsa-core/alsa-core-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1avh4a419h9d2zsslg6j8hm87ppgsgqafz8ll037rk2yy1g4jl7b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.haskell.org/haskellwiki/ALSA")
+    (synopsis "Binding to the ALSA Library API (Exceptions)")
+    (description "This package provides access to ALSA infrastructure, that is
+needed by both alsa-seq and alsa-pcm.")
+    (license license:bsd-3)))
+
+(define-public ghc-base-unicode-symbols
+  (package
+    (name "ghc-base-unicode-symbols")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/base-unicode-symbols/base-unicode-symbols-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ia6li7qjg1zkak4gf6mnbshw45mq9bfjr0jch58ds0lscmvwyzf"))))
+    (build-system haskell-build-system)
+    (home-page "http://www.haskell.org/haskellwiki/Unicode-symbols")
+    (synopsis "Unicode alternatives for common functions and operators")
+    (description "This package defines new symbols for a number of functions,
+operators and types in the base package.  All symbols are documented with
+their actual definition and information regarding their Unicode code point.
+They should be completely interchangeable with their definitions.  For
+further Unicode goodness you can enable the @code{UnicodeSyntax}
+@url{https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exs.html#unicode-syntax,
+language extension}.  This extension enables Unicode characters to be used to
+stand for certain ASCII character sequences, i.e. → instead of @code{->},
+∀ instead of @code{forall} and many others.")
+    (license license:bsd-3)))
+
+(define-public ghc-stylish-haskell
+  (package
+    (name "ghc-stylish-haskell")
+    (version "0.9.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://hackage/package/stylish-haskell/stylish-haskell-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1ls11fdx6snvfx8yykpidz142zzxwi5bazl49hgfqlwx50rqcp7w"))))
+    (build-system haskell-build-system)
+    (inputs
+      `(("ghc-aeson" ,ghc-aeson)
+        ("ghc-file-embed" ,ghc-file-embed)
+        ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+        ("ghc-semigroups" ,ghc-semigroups)
+        ("ghc-syb" ,ghc-syb)
+        ("ghc-yaml" ,ghc-yaml)
+        ("ghc-strict" ,ghc-strict)
+        ("ghc-optparse-applicative"
+         ,ghc-optparse-applicative)))
+    (native-inputs
+      `(("ghc-hunit" ,ghc-hunit)
+        ("ghc-test-framework" ,ghc-test-framework)
+        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/jaspervdj/stylish-haskell")
+    (synopsis "Haskell code prettifier")
+    (description "Stylish-haskell is a Haskell code prettifier.  The goal is
+not to format all of the code in a file, to avoid \"getting in the way\".
+However, this tool can e.g. clean up import statements and help doing various
+tasks that get tedious very quickly.  It can
+@itemize
+@item
+Align and sort @code{import} statements
+@item
+Group and wrap @code{{-# LANGUAGE #-}} pragmas, remove (some) redundant
+pragmas
+@item
+Remove trailing whitespaces
+@item
+Align branches in @code{case} and fields in records
+@item
+Convert line endings (customisable)
+@item
+Replace tabs by four spaces (turned off by default)
+@item
+Replace some ASCII sequences by their Unicode equivalent (turned off by
+default)
+@end itemize")
+    (license license:bsd-3)))
 ;;; haskell.scm ends here

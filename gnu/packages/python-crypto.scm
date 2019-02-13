@@ -743,14 +743,14 @@ file, and more.")
 (define-public python-ecpy
   (package
     (name "python-ecpy")
-    (version "0.8.2")
+    (version "0.10.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "ECPy" version))
         (sha256
           (base32
-            "090fqnj8z0xm44jrfpll7j45r68m6kp7mjr7yxzg93j42h3sj285"))))
+            "1gc3i5s93zq6x1nkaxkq1dvmsc12vmrw0hns9f5s1hcb78ni52c8"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-future" ,python-future)))
@@ -803,14 +803,14 @@ protocol (Javascript Object Signing and Encryption).")
 (define-public python-pycryptodome
   (package
     (name "python-pycryptodome")
-    (version "3.7.2")
+    (version "3.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pycryptodome" version))
        (sha256
         (base32
-         "1xxf5cyhlc5ak5skf4zgqz9yk5fj5g70hd06hc1jym995lxpxz7m"))))
+         "0dh6ky5ngxayyn5f6n7gdamjl49g3khz6pdx9sdnag1zwi8248hs"))))
     (build-system python-build-system)
     (home-page "https://www.pycryptodome.org")
     (synopsis "Cryptographic library for Python")

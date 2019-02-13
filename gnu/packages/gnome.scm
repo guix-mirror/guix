@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -126,6 +126,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages selinux)
@@ -149,6 +150,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu artwork)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -159,6 +161,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -970,6 +973,88 @@ and the update-mime-database command used to extend it.  It requires glib2 to
 be installed for building the update command.  Additionally, it uses intltool
 for translations, though this is only a dependency for the maintainers.  This
 database is translated at Transifex.")
+    (license license:gpl2+)))
+
+(define-public system-config-printer
+  (package
+    (name "system-config-printer")
+    (version "1.5.11")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/zdohnal/system-config-printer/releases/"
+                   "download/" version
+                   "/system-config-printer-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1lq0q51bhanirpjjvvh4xiafi8hgpk8r32h0dj6dn3f32z8pib9q"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%glib-or-gtk-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile.am
+           (lambda _
+             ;; The Makefile generates some scripts, so set a valid shebang
+             (substitute* "Makefile.am"
+               (("/bin/bash") (which "bash")))
+             (delete-file "configure")
+             #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Modify the man XML otherwise xmlto tries to access the network
+             (substitute* "man/system-config-printer.xml"
+               (("http://www.oasis-open.org/docbook/xml/4.1.2/")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/")))
+             #t))
+         (add-after 'install 'wrap-for-python
+           (@@ (guix build python-build-system) wrap))
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (for-each
+                (lambda (program)
+                  (wrap-program program
+                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                (map (lambda (name)
+                       (string-append out "/bin/" name))
+                     '("system-config-printer"
+                       "system-config-printer-applet"
+                       "install-printerdriver"
+                       "scp-dbus-service"))))
+             #t)))))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python" ,python)
+       ("cups" ,cups)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pycups" ,python-pycups)
+       ("python-requests" ,python-requests)
+       ("python-pycairo" ,python-pycairo)
+       ("libnotify" ,libnotify)
+       ("packagekit" ,packagekit)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("glib" ,glib)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("intltool" ,intltool)
+       ("xmlto" ,xmlto)
+       ("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)))
+    (home-page "https://github.com/zdohnal/system-config-printer")
+    (synopsis "CUPS administration tool")
+    (description
+     "system-config-printer is a CUPS administration tool.  It's written in
+Python using GTK+, and uses the @acronym{IPP, Internet Printing Protocol} when
+configuring CUPS.")
     (license license:gpl2+)))
 
 (define-public hicolor-icon-theme
@@ -4572,16 +4657,6 @@ such as gzip tarballs.")
                    (out  (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-session")
                  `("PATH" ":" prefix (,(string-append glib "/bin"))))
-               #t)))
-         (add-after 'install 'disable-hardware-acceleration-check
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Do not abort if hardware acceleration is missing.  This allows
-             ;; GNOME to run in QEMU and on low-end devices.
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* (string-append out
-                                           "/share/xsessions/gnome.desktop")
-                 (("gnome-session")
-                  "gnome-session --disable-acceleration-check"))
                #t))))
 
        #:configure-flags
@@ -5580,11 +5655,37 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1f20x36ymkp1j667hb7s7byly2gqc4m0anldy3qwp38vm8437caq"))))
+                "1f20x36ymkp1j667hb7s7byly2gqc4m0anldy3qwp38vm8437caq"))
+              (patches (search-patches "gnome-shell-theme.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               #~(begin
+                   ;; CSS files have to be regenerated from the .scss source
+                   ;; that 'gnome-shell-theme.patch' modifies.
+                   (for-each delete-file
+                             (find-files "data/theme"
+                                         "^gnome-shell.*\\.css$"))
+
+                   ;; Copy images for use on the GDM log-in screen.
+                   (copy-file #$(file-append %artwork-repository
+                                             "/slim/0.x/background.png")
+                              "data/theme/guix-background.png")
+                   (invoke #+(file-append inkscape "/bin/inkscape")
+                           "--export-png=data/theme/guix-logo.png"
+                           #$(file-append %artwork-repository
+                                          "/logo/Guix-horizontal-white.svg"))
+                   #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'build 'rebuild-css
+           (lambda _
+             ;; Rebuild the CSS files from the .scss files that our patch
+             ;; modifies.
+             (invoke "make" "-C" "data"
+                     "theme/gnome-shell.css"
+                     "theme/gnome-shell-high-contrast.css")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
@@ -5614,7 +5715,8 @@ properties, screen resolution, and other GNOME parameters.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
-       ("xsltproc" ,libxslt)))
+       ("xsltproc" ,libxslt)
+       ("ruby-sass" ,ruby-sass)))
     (inputs
      `(("accountsservice" ,accountsservice)
        ("caribou" ,caribou)
@@ -6048,6 +6150,7 @@ associations for GNOME.")
        ("pinentry-gnome3"           ,pinentry-gnome3)
        ("pulseaudio"                ,pulseaudio)
        ("shared-mime-info"          ,shared-mime-info)
+       ("system-config-printer"     ,system-config-printer)
        ("totem"                     ,totem)
        ("xdg-user-dirs"             ,xdg-user-dirs)
        ("yelp"                      ,yelp)

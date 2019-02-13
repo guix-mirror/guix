@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -584,7 +584,8 @@ problems in numerical linear algebra.")
                            version ".tgz"))
        (sha256
         (base32
-         "0p1r61ss1fq0bs8ynnx7xq4wwsdvs32ljvwjnx6yxr8gd6pawx0c"))))
+         "0p1r61ss1fq0bs8ynnx7xq4wwsdvs32ljvwjnx6yxr8gd6pawx0c"))
+       (patches (search-patches "scalapack-blacs-mpi-deprecations.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("mpi" ,openmpi)
@@ -1635,7 +1636,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.10.2")
+    (version "3.10.3")
     (source
      (origin
       (method url-fetch)
@@ -1643,7 +1644,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0bl64pydak3rblnjffi482r8bin4xim9sb37ksl2jkcxf0i0irsi"))))
+       (base32 "10p9ap1rp6k8k2g8zdc505kdlsc3976fjymyp393sccjapm50dph"))))
     (outputs '("out"                    ;libraries and headers
                "examples"))             ;~30MiB of examples
     (build-system gnu-build-system)
@@ -3972,6 +3973,96 @@ as equations, scalars, vectors, and matrices.")
     (description "Z3 is a theorem prover and @dfn{satisfiability modulo
 theories} (SMT) solver.  It provides a C/C++ API, as well as Python bindings.")
     (license license:expat)))
+
+(define-public elpa
+  (package
+    (name "elpa")
+    (version "2018.11.001")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.mpcdf.mpg.de/html/Releases/"
+                                  version "/elpa-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05hv3v5i6xmziaizw350ff72y1c3k662r85fm3xfdrkclj5zw9yc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("fortran" ,gfortran)
+       ("perl" ,perl)))                 ;for configure and deps
+    (inputs
+     `(("blas" ,openblas)))
+    (arguments
+     `(#:configure-flags
+       `("--enable-openmp"
+         "--with-mpi=no"
+         ;; ELPA unfortunately does not support runtime dispatch, so we can
+         ;; only enable the "generic" kernels.  See the "Cross compilation"
+         ;; section of INSTALL.md.
+         "--enable-generic"
+         "--disable-sse" "--disable-sse-assembly" ;Require SSE3
+         "--disable-avx" "--disable-avx2" "--disable-avx512"
+         ,(string-append "CFLAGS=-O3 "
+                         "-funsafe-loop-optimizations -funsafe-math-optimizations "
+                         "-ftree-vect-loop-version -ftree-vectorize "
+                         ,(let ((system (or (%current-target-system)
+                                            (%current-system))))
+                            (cond
+                             ((or (string-prefix? "x86_64" system)
+                                  (string-prefix? "i686" system))
+                              "-msse2")
+                             (else "")))))
+       #:parallel-tests? #f             ;tests are multi-threaded, via BLAS
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-header-generation
+           (lambda _
+             (substitute* "configure"
+               (("^  *make.*top_srcdir=\"\\$srcdir\"" &)
+                (string-append & " CPP=\"$CPP\"")))
+             #t))
+         (add-before 'check 'setup-tests
+           (lambda _
+             ;; Decrease test time and RAM use by computing fewer eigenvalues.
+             ;; The flags are (MATRIX-SIZE, EIGENVALUES, BLOCK-SIZE), where
+             ;; the default is (500, 250, 16) for C tests and (5000, 150, 16)
+             ;; for Fortran.  This also causes several tests to pass that
+             ;; otherwise would otherwise fail with matrix size 5000; possibly
+             ;; due to floating point tolerances that are too tight.
+             (setenv "TEST_FLAGS" "1500 50 16") ;from elpa.spec
+             (setenv "OMP_NUM_THREADS" (number->string (parallel-job-count)))
+             (substitute* "Makefile"
+               ;; Test scripts are generated, patch the shebang
+               (("#!/bin/bash") (string-append "#!" (which "sh"))))
+             #t)))))
+    (home-page "http://elpa.mpcdf.mpg.de")
+    (synopsis "Eigenvalue solvers for symmetric matrices")
+    (description
+     "The ELPA library provides efficient and scalable direct eigensolvers for
+symmetric matrices.")
+    (license license:lgpl3)))
+
+(define-public elpa-openmpi
+  (package (inherit elpa)
+    (name "elpa-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ("scalapack" ,scalapack)
+       ,@(package-inputs elpa)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments elpa)
+       ((#:configure-flags cf '())
+        `(cons "--with-mpi=yes" (delete "--with-mpi=no" ,cf)))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'mpi-setup
+             (lambda _
+               ;; Tests use 2 mpi tasks by default, use our remaining build
+               ;; cores as OpenMP threads.
+               (setenv "OMP_NUM_THREADS" (number->string
+                                          (max (quotient (parallel-job-count) 2)
+                                               1)))
+               (,%openmpi-setup)))))))
+    (synopsis "Eigenvalue solvers for symmetric matrices (with MPI support)")))
 
 (define-public elemental
   (package
