@@ -5461,6 +5461,7 @@ libxml2.")
               (("DATADIR \"/gnome")
                "\"/run/current-system/profile/share/gnome"))
             (let ((propagate '("GDM_CUSTOM_CONF"
+                               "GDM_DBUS_DAEMON"
                                "GDM_X_SERVER"
                                ;; XXX: Remove this once GNOME Shell is
                                ;; a dependency of GDM.
@@ -5486,6 +5487,8 @@ libxml2.")
               (("\\(X_SERVER X_SERVER_ARG_FORMAT")
                "(\"%s\" X_SERVER_ARG_FORMAT, g_getenv (\"GDM_X_SERVER\")"))
             (substitute* '("daemon/gdm-x-session.c")
+              (("\"dbus-daemon\"")
+               "g_getenv (\"GDM_DBUS_DAEMON\")")
               (("X_SERVER")
                "g_getenv (\"GDM_X_SERVER\")"))
             ;; Use an absolute path for GNOME Session.

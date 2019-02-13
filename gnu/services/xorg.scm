@@ -29,6 +29,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages display-managers)
   #:use-module (gnu packages gnustep)
   #:use-module (gnu packages gnome)
@@ -623,12 +624,23 @@ makes the good ol' XlockMore usable."
          (home-directory "/var/lib/gdm")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define dbus-daemon-wrapper
+  (program-file "gdm-dbus-wrapper"
+                #~(begin
+                    (setenv "XDG_CONFIG_DIRS"
+                            "/run/current-system/profile/etc/xdg")
+                    (setenv "XDG_DATA_DIRS"
+                            "/run/current-system/profile/share")
+                    (apply execl (string-append #$dbus "/bin/dbus-daemon")
+                           (program-arguments)))))
+
 (define-record-type* <gdm-configuration>
   gdm-configuration make-gdm-configuration
   gdm-configuration?
   (gdm gdm-configuration-gdm (default gdm))
   (allow-empty-passwords? gdm-configuration-allow-empty-passwords? (default #t))
   (auto-login? gdm-configuration-auto-login? (default #f))
+  (dbus-daemon gdm-configuration-dbus-daemon (default dbus-daemon-wrapper))
   (default-user gdm-configuration-default-user (default #f))
   (x-server gdm-configuration-x-server
             (default (xorg-wrapper))))
@@ -696,6 +708,9 @@ makes the good ol' XlockMore usable."
                      (list (string-append
                             "GDM_CUSTOM_CONF="
                             #$(gdm-configuration-file config))
+                           (string-append
+                            "GDM_DBUS_DAEMON="
+                            #$(gdm-configuration-dbus-daemon config))
                            (string-append
                             "GDM_X_SERVER="
                             #$(gdm-configuration-x-server config))
