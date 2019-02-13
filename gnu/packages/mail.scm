@@ -1739,18 +1739,14 @@ maintained.")
                 "1lyjiskc6ckjjylzr04dnm66p3cnn7vlysw9c27qls3y3ywx14zw"))))
     (build-system python-build-system)
     (arguments
-      `(#:phases
-        (modify-phases %standard-phases
-          (add-after 'install 'install-doc
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (doc (string-append out "/share/doc/khard")))
-                (copy-recursively "misc/khard" doc)
-                #t))))
-        ;; Tests are currently only runnable without preexisting data on
-        ;; the development branch:
-        ;; https://github.com/scheibler/khard/issues/176
-        #:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/khard")))
+               (copy-recursively "misc/khard" doc)
+               #t))))))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
