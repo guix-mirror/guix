@@ -55,6 +55,7 @@
   #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
   #:export (build-and-use-profile
             delete-generations
+            delete-matching-generations
             display-search-paths
             guix-package))
 

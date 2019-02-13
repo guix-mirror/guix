@@ -23038,6 +23038,32 @@ Currently, as with @command{switch-generation}, you must reboot after
 running this action to actually start using the preceding system
 generation.
 
+@item delete-generations
+@cindex deleting system generations
+@cindex saving space
+Delete system generations, making them candidates for garbage collection
+(@pxref{Invoking guix gc}, for information on how to run the ``garbage
+collector'').
+
+This works in the same way as @command{guix package --delete-generations}
+(@pxref{Invoking guix package, @code{--delete-generations}}).  With no
+arguments, all system generations but the current one are deleted:
+
+@example
+guix system delete-generations
+@end example
+
+You can also select the generations you want to delete.  The example below
+deletes all the system generations that are more than two month old:
+
+@example
+guix system delete-generations 2m
+@end example
+
+Running this command automatically reinstalls the bootloader with an updated
+list of menu entries---e.g., the ``old generations'' sub-menu in GRUB no
+longer lists the generations that have been deleted.
+
 @item build
 Build the derivation of the operating system, which includes all the
 configuration files and programs needed to boot and run the system.
