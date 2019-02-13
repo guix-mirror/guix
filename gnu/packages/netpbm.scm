@@ -135,7 +135,9 @@
              ;; 'gsc', so look for that instead.
              (substitute* "converter/other/pstopnm.c"
                (("\"%s/gs\"")
-                "\"%s/gsc\"")))
+                "\"%s/gsc\"")
+               (("/usr/bin/gs")
+                (string-append (assoc-ref inputs "ghostscript") "/bin/gsc"))))
            #t))
        (add-before 'check 'setup-check
          (lambda _
