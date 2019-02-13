@@ -138,7 +138,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.2")
+    (version "2.5.3")
     (source
      (origin
       (method url-fetch)
@@ -146,7 +146,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1rw8nw6fx6ppxga6m4cqcp898lnlzf7vn3s5c2lzfxg3fzr1nswq"))))
+        "00p7cpvzf0q3qwcgg51r9d0vbab4qga2xi8wpk2fgd36710b1g4i"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)
