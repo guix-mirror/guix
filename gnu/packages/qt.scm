@@ -512,7 +512,8 @@ system, and the core design of Django is reused in Grantlee.")
               (base32
                "071yc9iz14qs4s8yvrwllyfdzp5yjxsdpvbjxdrf0g5q69vqigy6"))
              ;; Use TZDIR to avoid depending on package "tzdata".
-             (patches (search-patches "qtbase-use-TZDIR.patch"))
+             (patches (search-patches "qtbase-use-TZDIR.patch"
+                                      "qtbase-old-kernel.patch"))
              (modules '((guix build utils)))
              (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3
