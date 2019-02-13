@@ -139,7 +139,7 @@ line client and a client based on Qt.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method git-fetch)
@@ -148,39 +148,17 @@ line client and a client based on Qt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1j4p7djkmdmd858hylrsc3inamh9z0vkfl98s9wiqfmrzw51pmxp"))
-       (patches (search-patches "ledger-revert-boost-python-fix.patch"
-                                "ledger-fix-uninitialized.patch"))))
+        (base32 "0hwnipj2m9p95hhyv6kyq54m27g14r58gnsy2my883kxhpcyb2vc"))
+       (patches (search-patches "ledger-fix-uninitialized.patch"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
-                  ((guix build gnu-build-system) #:prefix gnu:)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                           (guix build emacs-utils))
-       #:configure-flags
+     `(#:configure-flags
        `("-DBUILD_DOCS:BOOL=ON"
          "-DBUILD_WEB_DOCS:BOOL=ON"
-         "-DBUILD_EMACSLISP:BOOL=ON"
          "-DUSE_PYTHON:BOOL=ON"
-         "-DCMAKE_INSTALL_LIBDIR:PATH=lib"
-         ,(string-append "-DUTFCPP_INCLUDE_DIR:PATH="
-                         (assoc-ref %build-inputs "utfcpp")
-                         "/include"))
-       ;; Skip failing test BaselineTest_cmd-org during the check phase.
-       ;; This is a known upstream issue. See
-       ;; https://github.com/ledger/ledger/issues/550
-       #:make-flags (list "ARGS=-E BaselineTest_cmd-org")
+         "-DCMAKE_INSTALL_LIBDIR:PATH=lib")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'boost-compat
-           (lambda _
-             (substitute* "src/utils.h"
-               ;; This library moved in Boost 1.66.  Remove for Ledger
-               ;; versions > 3.1.1.
-               (("boost/uuid/sha1.hpp") "boost/uuid/detail/sha1.hpp"))
-             #t))
          (add-before 'configure 'install-examples
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((examples (string-append (assoc-ref outputs "out")
@@ -196,18 +174,11 @@ line client and a client based on Qt.")
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
-             #t))
-         (replace 'check (assoc-ref gnu:%standard-phases 'check))
-         (add-after 'install 'relocate-elisp
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((site-dir (string-append (assoc-ref outputs "out")
-                                             "/share/emacs/site-lisp"))
-                    (guix-dir (string-append site-dir "/guix.d"))
-                    (orig-dir (string-append site-dir "/ledger-mode"))
-                    (dest-dir (string-append guix-dir "/ledger-mode")))
-               (mkdir-p guix-dir)
-               (rename-file orig-dir dest-dir)
-               (emacs-generate-autoloads ,name dest-dir)))))))
+             ;; Skip failing test BaselineTest_cmd-org.
+             ;; This is a known upstream issue. See
+             ;; https://github.com/ledger/ledger/issues/550
+             (setenv "ARGS" "-E BaselineTest_cmd-org")
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("gmp" ,gmp)
@@ -217,8 +188,7 @@ line client and a client based on Qt.")
        ("tzdata" ,tzdata)
        ("utfcpp" ,utfcpp)))
     (native-inputs
-     `(("emacs" ,emacs-minimal)
-       ("groff" ,groff)
+     `(("groff" ,groff)
        ("texinfo" ,texinfo)))
     (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
@@ -244,8 +214,7 @@ in ability, and easy to use.")
                    license:asl2.0     ; src/strptime.cc
                    (license:non-copyleft
                     "file://src/wcwidth.cc"
-                    "See src/wcwidth.cc in the distribution.")
-                   license:gpl2+))))  ; lisp/*
+                    "See src/wcwidth.cc in the distribution.")))))
 
 (define-public geierlein
   (package
