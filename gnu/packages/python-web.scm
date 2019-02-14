@@ -1566,34 +1566,18 @@ file.")
 (define-public python-webtest
   (package
     (name "python-webtest")
-    (version "2.0.30")
+    (version "2.0.33")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebTest" version))
        (sha256
         (base32
-         "1mb7m4ndklv84mh0pdkhv73yrflcnra61yczj5g3bvwbqlygfsaw"))))
+         "1l3z0cwqslsf4rcrhi2gr8kdfh74wn2dw76376i4g9i38gz8wd21"))))
     (build-system python-build-system)
     (arguments
-     `(;; Unfortunately we have to disable tests!
-       ;; This release of WebTest is pinned to python-nose < 1.3,
-       ;; but older versions of python-nose are plagued with the following
-       ;; bug(s), which rears its ugly head during test execution:
-       ;;   https://github.com/nose-devs/nose/issues/759
-       ;;   https://github.com/nose-devs/nose/pull/811
-       #:tests? #f))
-    ;; Commented out code is no good, but in this case, once tests
-    ;; are ready to be enabled again, we should put the following
-    ;; in place:
-    ;;  (native-inputs
-    ;;   `(("python-nose" ,python-nose) ; technially < 1.3,
-    ;;                                  ; but see above comment
-    ;;     ("python-coverage" ,python-coverage)
-    ;;     ("python-mock" ,python-mock)
-    ;;     ("python-pastedeploy" ,python-pastedeploy)
-    ;;     ("python-wsgiproxy2" ,python-wsgiproxy2)
-    ;;     ("python-pyquery" ,python-pyquery)))
+     ;; Tests require python-pyquery, which creates a circular dependency.
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-waitress" ,python-waitress)
        ("python-webob" ,python-webob)
