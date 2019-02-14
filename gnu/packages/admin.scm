@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -2715,8 +2715,9 @@ Python loading in HPC environments.")
            "1k9148xnfznch1443niaa3w1kmsw4vp0xpwna6npgmi7zqg06ymy"))))
       (build-system trivial-build-system)
       (inputs
-       `(("bash" ,bash)
-         ("perl" ,perl)))
+       `(("bash" ,bash-minimal)
+         ("perl" ,perl)
+         ("procps" ,procps)))
       (native-inputs
        `(("gzip" ,gzip)))
       (arguments
@@ -2789,7 +2790,6 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
        ("lm-sensors" ,lm-sensors)
        ("mesa-utils" ,mesa-utils)
        ("pciutils" ,pciutils)
-       ("procps" ,procps)
        ("tar" ,tar)
        ("tree" ,tree)
        ("util-linux" ,util-linux)       ; lsblk
