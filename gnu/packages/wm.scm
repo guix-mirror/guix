@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
@@ -190,17 +190,12 @@ commands would.")
                 "0xl56y196vxv001gvx35xwfr25zah8m3xwizp9ycdgdc0rfc4rdb"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (list "CC=gcc"
-             (string-append "PREFIX=" %output)
-             ;; This works around the following error:
-             ;; 'error: ‘for’ loop initial declarations are only allowed in C99
-             ;; or C11 mode'
-             "CFLAGS=-std=c11")
+     `(#:configure-flags
        ;; The build system tries to build in a separate directory, but that
        ;; seems to be unnecessary.
-       #:configure-flags '("--disable-builddir")
-       ;; The test suite appears to require the unpackaged Perl module AnyEvent.
+       (list "--disable-builddir")
+
+       ;; The test suite requires the unpackaged Xephyr X server.
        #:tests? #f))
     (inputs
      `(("libxcb" ,libxcb)
