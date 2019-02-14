@@ -223,10 +223,16 @@ commands would.")
        ("libxml2" ,libxml2)
        ("docbook-xsl" ,docbook-xsl)))
     (home-page "https://i3wm.org/")
-    (synopsis "Improved tiling window manager")
-    (description "A tiling window manager, completely written
-from scratch.  i3 is primarily targeted at advanced users and
-developers.")
+    (synopsis "Tiling window manager")
+    (description "i3 is a tiling X11 window manager that dynamically manages
+tiled, stacked, and tabbed window layouts.
+
+i3 primarily targets advanced users.  Windows are managed manually and organised
+inside containers, which can be split vertically or horizontally, and optionally
+resized.
+
+i3 uses a plain-text configuration file, and can be extended and controlled from
+many programming languages.")
     (license license:bsd-3)))
 
 (define-public i3blocks
