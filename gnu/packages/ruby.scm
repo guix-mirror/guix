@@ -5849,19 +5849,36 @@ indentation will probably be an issue and hence this gem.")
   (package
     (name "ruby-safe-yaml")
     (version "1.0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "safe_yaml" version))
-              (sha256
-               (base32
-                "1hly915584hyi9q9vgd968x2nsi5yag9jyf5kq60lwzi5scr7094"))))
+    (source
+     (origin
+       ;; TODO Fetch from the git repository so a patch can be applied
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dtao/safe_yaml.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1wnln8xdy8g6kwdj4amm8773xwffqxpf2sxslk6jjh2wxsy1lrig"))
+       (patches
+        (search-patches "ruby-safe-yaml-add-require-time.patch"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
        ("ruby-hashie" ,ruby-hashie)
        ("ruby-heredoc-unindent" ,ruby-heredoc-unindent)))
-    (arguments `(#:test-target "spec"
-                 #:tests? #f));; FIXME: one failure
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-TZ
+           (lambda _
+             ;; This test is dependent on the timezone
+             ;; spec/transform/to_date_spec.rb:35
+             ;; # SafeYAML::Transform::ToDate converts times to the local
+             ;; timezone
+             (setenv "TZ" "UTC-11")
+             #t)))))
     (home-page "https://github.com/dtao/safe_yaml")
     (synopsis "YAML parser")
     (description "The SafeYAML gem provides an alternative implementation of
