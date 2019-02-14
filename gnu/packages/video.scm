@@ -1638,8 +1638,8 @@ players, like VLC or MPlayer.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
-                                  name "/" version "/"
-                                  name "-" version ".tar.bz2"))
+                                  "libdvdread/" version "/"
+                                  "libdvdread-" version ".tar.bz2"))
               (sha256
                (base32
                 "0dgr23fzcjhb7ck54xkr9zmf4jcq3ph0dz3fbyvla1c6ni9ijfxk"))))
