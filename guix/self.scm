@@ -390,6 +390,10 @@ that provide Guile modules."
                        guile (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
+  (define glibc-utf8-locales
+    (module-ref (resolve-interface '(gnu packages base))
+                'glibc-utf8-locales))
+
   (define module-directory
     ;; To minimize the number of 'stat' calls needed to locate a module,
     ;; create the union of all the module directories.
@@ -409,6 +413,16 @@ load path."
                                            (effective-version)
                                            "/site-ccache")
                             %load-compiled-path))
+
+                    ;; To maximize the chances that locales are set up right
+                    ;; out-of-the-box, bundle "common" UTF-8 locales.
+                    (let ((locpath (getenv "GUIX_LOCPATH")))
+                      (setenv "GUIX_LOCPATH"
+                              (string-append (if locpath
+                                                 (string-append locpath ":")
+                                                 "")
+                                             #$(file-append glibc-utf8-locales
+                                                            "/lib/locale"))))
 
                     (let ((guix-main (module-ref (resolve-interface '(guix ui))
                                                  'guix-main)))
