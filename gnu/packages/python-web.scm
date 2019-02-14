@@ -1277,13 +1277,13 @@ WebSocket usage in Python programs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.13.0")
+    (version "2.21.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "1s0wg4any4dsv5l3hqjxqk2zgb7pdbqhy9rhc8kh3aigfq4ws8jp"))))
+               "13jr0wkj9c2j8c0c8iaal9iivi0bpxghnsdn6lxcpnmc657q4ajh"))))
     ;; TODO: unbundle urllib3 and chardet.
     (build-system python-build-system)
     (arguments
