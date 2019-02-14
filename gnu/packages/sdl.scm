@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -351,15 +351,15 @@ directory.")
 (define-public sdl2-image
   (package (inherit sdl-image)
     (name "sdl2-image")
-    (version "2.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-"
-                              version ".tar.gz"))
-              (sha256
-               (base32
-                "0s13dmakn21q6yw8avl67d4zkxzl1wap6l5nwf6cvzrmlxfw441m"))))
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.libsdl.org/projects/SDL_image/release/"
+                       "SDL2_image-" version ".tar.gz"))
+       (sha256
+        (base32 "1b6f7002bm007y3zpyxb5r6ag0lml51jyvx1pwpj9sq24jfc8kp7"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-image))))
 
