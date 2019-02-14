@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -57,14 +57,14 @@
 (define-public python-base58
   (package
     (name "python-base58")
-    (version "1.0.0")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "base58" version))
        (sha256
         (base32
-         "0lgnk7ycdxwhk2bkygl30nsks56bvrdj79ix76iv965pz808pzn5"))))
+         "0q1yr0n5jaf17xq98m7dma6z4rh8p19ch55l1s09gi3rk5ckqycs"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyhamcrest" ,python-pyhamcrest)))
