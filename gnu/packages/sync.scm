@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -249,7 +249,7 @@ over the Internet in an HTTP and CDN friendly way;
 (define-public rclone
   (package
     (name "rclone")
-    (version "1.45")
+    (version "1.46")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -258,19 +258,13 @@ over the Internet in an HTTP and CDN friendly way;
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06xg0ibv9pnrnmabh1kblvxx1pk8h5rmkr9mjbymv497sx3zgz26"))))
+                "1fl52dl41n76r678nzkxa2kgk9khn1fxraxgk8jd3ayc787qs9ia"))))
     ;; FIXME: Rclone bundles some libraries Guix already provides.  Need to
     ;; un-bundle them.
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/ncw/rclone"
-       #:install-source? #f
-       #:phases
-       (modify-phases %standard-phases
-         ;; Fix failure during "check" phase: "mkdir /homeless-shelter:
-         ;; permission denied".
-         (add-after 'unpack 'set-home-directory
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+       #:install-source? #f))
     (synopsis "@code{rsync} for cloud storage")
     (description "@code{Rclone} is a command line program to sync files and
 directories to and from different cloud storage providers.
