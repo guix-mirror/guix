@@ -2385,7 +2385,7 @@ parsing logic.")
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
-    (version "1.75")
+    (version "1.76")
     (source
      (origin
        (method url-fetch)
@@ -2393,7 +2393,7 @@ parsing logic.")
                            "DateTime-Format-Strptime-" version ".tar.gz"))
        (sha256
         (base32
-         "069wmgbchydgx3nm9klqw0g6ksnja28g61d4allgzmvr9ynb5ksg"))))
+         "03dmzi9n6jmnfjmf0ld5sdmi3ib6jrhz25cjzv7d58ypdr32cg2r"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
