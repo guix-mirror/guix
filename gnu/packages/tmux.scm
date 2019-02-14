@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,21 +62,19 @@ continue running in the background, then later reattached.")
         (revision "1"))
     (package
       (name "tmux-themepack")
-      (version
-       (string-append "0.0.0-" revision "." (string-take commit 7))) ;; No version tags
+      (version (git-version "0.0.0" revision commit)) ; no version tags
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url
-                       (string-append "https://github.com/jimeh/" name ".git"))
+                      (url "https://github.com/jimeh/tmux-themepack.git")
                       (commit commit)))
                 (sha256
                  (base32
                   "1d3k87mq5lca042jbap5kxskjy3kg79wjhhpnm6jacbn3anc67zl"))
-                (file-name (string-append name "-" version "-checkout"))))
+                (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; No test suite.
+       `(#:tests? #f                    ; no test suite
          #:phases (modify-phases %standard-phases
                     (delete 'configure)
                     (delete 'build)
