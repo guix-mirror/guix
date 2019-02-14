@@ -404,7 +404,7 @@ combination with @code{XML::Parser}, PerlSAX, @code{XML::DOM},
 (define-public perl-xml-libxml
   (package
     (name "perl-xml-libxml")
-    (version "2.0132")
+    (version "2.0134")
     (source
      (origin
        (method url-fetch)
@@ -412,7 +412,7 @@ combination with @code{XML::Parser}, PerlSAX, @code{XML::DOM},
                            "XML-LibXML-" version ".tar.gz"))
        (sha256
         (base32
-         "0xnl281hb590i287fxpl947f1s4zl9dnvc4ajvsqi89w23im453j"))))
+         "1ks69xymv6zkj7hvaymjvb78ch81abri7kg4zrwxhdfsqb8a9g7h"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
