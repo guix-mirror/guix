@@ -8041,9 +8041,6 @@ The API is as much as possible the similar to jQuery.  pyquery uses lxml for
 fast xml and html manipulation.")
     (license license:bsd-3)))
 
-(define-public python2-pyquery
-  (package-with-python2 python-pyquery))
-
 (define-public python-anyjson
   (package
     (name "python-anyjson")
