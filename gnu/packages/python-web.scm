@@ -14,7 +14,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -338,14 +338,14 @@ follow links and submit forms.  It doesn’t do JavaScript.")
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sockjs-tornado" version))
        (sha256
         (base32
-         "0zhq8wnnhkfbvdnsggqrc3pp97pqpilsf7fh6ymvnf52r0rwyjsc"))))
+         "15dgv6hw6c7h3m310alw1h6p5443lrm9pyqhcv2smc13fz1v04pc"))))
     (build-system python-build-system)
     (arguments
      `(;; There are no tests, and running the test phase requires missing
