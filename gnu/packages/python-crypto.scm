@@ -950,14 +950,14 @@ been constructed to maintain extensive documentation on how to use
 (define-public python-scrypt
   (package
     (name "python-scrypt")
-    (version "0.8.6")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scrypt" version))
        (sha256
         (base32
-         "0b9nw10hfdl0jflm3b62q485ssc3f3f33lpg4yy407gs8wnrn8zq"))))
+         "0hjk71k3mgnl8siikm9lii9im8kv0rb7inkjzx78rnancra48xxr"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
