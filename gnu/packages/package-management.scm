@@ -34,6 +34,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
@@ -228,6 +229,7 @@
                                                   "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
+                               (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls
                                              git bs ssh))
                                (effective
@@ -246,11 +248,13 @@
                                                   "/lib/guile/" effective
                                                   "/site-ccache")
                                              (delete #f deps))
-                                        ":")))
+                                        ":"))
+                               (locpath (string-append locales "/lib/locale")))
 
                           (wrap-program (string-append out "/bin/guix")
                             `("GUILE_LOAD_PATH" ":" prefix (,path))
-                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
+                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath))
+                            `("GUIX_LOCPATH" ":" suffix (,locpath)))
 
                           #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
@@ -283,7 +287,9 @@
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
-               '())))
+               '())
+
+         ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-gcrypt" ,guile-gcrypt)
