@@ -733,14 +733,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.11")
+    (version "9.6.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0c55akrkzqd6p6a8hr0338wk246hl76r9j16p4zn3s51d7f0l99q"))))))
+                "114xay230xia2fagisxahs5fc2mza8hmmkr6ibd7nxllp938931f"))))))
 
 (define-public python-pymysql
   (package
