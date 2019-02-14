@@ -95,14 +95,14 @@ continue running in the background, then later reattached.")
     (name "tmuxifier")
     (version "0.13.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                    "https://github.com/jimeh/tmuxifier/archive/v"
-                    version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/jimeh/tmuxifier.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1j9fj6zg0j3sdn7svpybzsqh7876rv81zi437976kj7hxnyjkcz7"))))
+               "1b6a1cw2mnml84k5vhbcp58kvp94xlnlpp4kwdhqw4jrzfgcjfzd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
