@@ -2717,14 +2717,14 @@ available in Django, but is a standalone package.")
 (define-public python-paste
   (package
     (name "python-paste")
-    (version "3.0.4")
+    (version "3.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Paste" version))
        (sha256
         (base32
-         "01w26w9jyfkh0mfydhfz3dwy3pj3fw7mzvj0lna3vs8hyx1hwl0n"))
+         "14lbi9asn5agsdf7r97prkjpz7amgmp529lbvfhf0nv881xczah6"))
        (patches (search-patches "python-paste-remove-timing-test.patch"))
        (modules '((guix build utils)))
        (snippet
