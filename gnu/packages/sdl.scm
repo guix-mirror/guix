@@ -366,20 +366,20 @@ directory.")
 (define-public sdl2-mixer
   (package (inherit sdl-mixer)
     (name "sdl2-mixer")
-    (version "2.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-"
-                              version ".tar.gz"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; Remove bundled libraries.
-                          (delete-file-recursively "external")
-                          #t))
-              (sha256
-               (base32
-                "1fw3kkqi5346ai5if4pxrcbhs5c4vv3a4smgz6fl6kyaxwkmwqaf"))))
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://www.libsdl.org/projects/SDL_mixer/release/"
+                       "SDL2_mixer-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Remove bundled libraries.
+                   (delete-file-recursively "external")
+                   #t))
+       (sha256
+        (base32 "0694vsz5bjkcdgfdra6x9fq8vpzrl8m6q96gh58df7065hw5mkxl"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-mixer))))
 
