@@ -14497,3 +14497,33 @@ designed for use with hybrid capture, including both whole-exome and custom
 target panels, and short-read sequencing platforms such as Illumina and Ion
 Torrent.")
     (license license:asl2.0)))
+
+(define-public python-pyfit-sne
+  (package
+    (name "python-pyfit-sne")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KlugerLab/pyFIt-SNE.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13wh3qkzs56azmmgnxib6xfr29g7xh09sxylzjpni5j0pp0rc5qw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (inputs
+     `(("fftw" ,fftw)))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://github.com/KlugerLab/pyFIt-SNE")
+    (synopsis "FFT-accelerated Interpolation-based t-SNE")
+    (description
+     "t-Stochastic Neighborhood Embedding (t-SNE) is a highly successful
+method for dimensionality reduction and visualization of high dimensional
+datasets.  A popular implementation of t-SNE uses the Barnes-Hut algorithm to
+approximate the gradient at each iteration of gradient descent.  This package
+is a Cython wrapper for FIt-SNE.")
+    (license license:bsd-4)))
