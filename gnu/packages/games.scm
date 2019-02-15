@@ -5382,7 +5382,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method git-fetch)
@@ -5392,7 +5392,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17183z8ls6hrngh8a3374csagqa2acs8jl21dqm7gwj4lk0ghkba"))))
+         "11xff87s8ifw2dqs90n0rjq0psv4i7ykybygmibsqjj7id3xxw4c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"
