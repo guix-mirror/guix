@@ -333,15 +333,14 @@ programming in Scheme.")
         (revision "1"))
     (package
       (name "chez-sockets")
-      (version (string-append "0.0-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/arcfide/chez-sockets.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "1n5fbwwz51fdzvjackgmnsgh363g9inyxv7kmzi0469cwavwcx5m"))))
       (build-system gnu-build-system)
