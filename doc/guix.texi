@@ -31,7 +31,7 @@ Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nils Gillmann@*
-Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
@@ -13140,6 +13140,7 @@ type @code{<sddm-configuration>}.
   [#:fonts %default-xorg-fonts] @
   [#:configuration-file (xorg-configuration-file @dots{})] @
   [#:xorg-server @var{xorg-server}]
+  [#:xserver-arguments '("-nolisten" "tcp")]
 Return a @code{startx} script in which @var{modules}, a list of X module
 packages, and @var{fonts}, a list of X font directories, are available.  See
 @code{xorg-wrapper} for more details on the arguments.  The result should be
@@ -13147,6 +13148,22 @@ used in place of @code{startx}.
 
 Usually the X server is started by a login manager.
 @end deffn
+
+@cindex @code{-listen tcp}, for X11.
+This procedure is useful to override command line options for the X server,
+such as having it listen to over TCP:
+
+@example
+(operating-system
+  ...
+  (services
+    (modify-services %desktop-services
+      (slim-service-type config =>
+        (slim-configuration
+          (inherit config)
+          (startx (xorg-start-command
+                   #:xserver-arguments '("-listen" "tcp"))))))))
+@end example
 
 @deffn {Scheme Procedure} xorg-configuration-file @
   [#:modules %default-xorg-modules] @

@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -292,7 +293,8 @@ in place of @code{/usr/bin/X}."
                              (configuration-file
                               (xorg-configuration-file #:modules modules
                                                        #:fonts fonts))
-                             (xorg-server xorg-server))
+                             (xorg-server xorg-server)
+                             (xserver-arguments '("-nolisten" "tcp")))
   "Return a @code{startx} script in which @var{modules}, a list of X module
 packages, and @var{fonts}, a list of X font directories, are available.  See
 @code{xorg-wrapper} for more details on the arguments.  The result should be
@@ -305,8 +307,8 @@ used in place of @code{startx}."
   (define exp
     ;; Write a small wrapper around the X server.
     #~(apply execl #$X #$X ;; Second #$X is for argv[0].
-             "-logverbose" "-verbose" "-nolisten" "tcp" "-terminate"
-             (cdr (command-line))))
+             "-logverbose" "-verbose" "-terminate" #$@xserver-arguments
+              (cdr (command-line))))
 
   (program-file "startx" exp))
 
