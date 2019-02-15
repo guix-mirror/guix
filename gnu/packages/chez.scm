@@ -464,13 +464,13 @@ Chez Scheme.")
     (version "0.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/fedeinthemix/chez-irregex/archive"
-             "/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fedeinthemix/chez-irregex.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "0ywy5syaw549a58viz68dmgnv756ic705rcnlqxgjq27lnaim53b"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "0jh6piylw545j81llay9wfivgpv6lcnwd81gm4w17lkasslir50q"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("chez-matchable" ,chez-matchable))) ; for tests
