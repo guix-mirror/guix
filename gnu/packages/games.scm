@@ -24,7 +24,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -4954,7 +4954,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
   (package
     (inherit quakespasm)
     (name "vkquake")
-    (version "1.00.0")
+    (version "1.01.0")
     (source
      (origin
        (method url-fetch)
@@ -4963,7 +4963,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bviv18jvp41jvrabgl7l5kq4n1p6p3rywij481yswawdw6l5idh"))))
+         "0j8lh5by3pvjh6qr9piqlnq8mb5vv7sh0h3b9bqxlqm2ys0ap8hi"))))
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs
