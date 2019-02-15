@@ -1280,10 +1280,12 @@ files.  It is designed to be fast and to handle large input files.")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (home-page "http://libxls.sourceforge.net/")
-    (synopsis "Read Excel files")
+    (synopsis "Read binary (.xls) Excel spreadsheet files")
     (description
-     "libxls is a C library which can read Excel (xls) files since Excel 97 (the BIFF8 format).
-libxls cannot write Excel files.")
+     "libxls is a C library to read .xls spreadsheet files in the binary OLE
+BIFF8 format as created by Excel 97 and later versions.  It cannot write them.
+
+This package also provides @command{xls2csv} to export Excel files to CSV.")
     (license license:bsd-2)))
 
 (define-public freexl
