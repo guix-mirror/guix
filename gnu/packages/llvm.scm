@@ -51,7 +51,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://llvm.org/releases/"
+      (uri (string-append "https://llvm.org/releases/"
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
@@ -118,7 +118,7 @@ of programming tools as well as libraries with equivalent functionality.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://llvm.org/releases/"
+       (uri (string-append "https://llvm.org/releases/"
                            version "/compiler-rt-" version ".src.tar.xz"))
        (sha256 (base32 hash))
        (patches (map search-patch patches))))
@@ -150,7 +150,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://llvm.org/releases/"
+       (uri (string-append "https://llvm.org/releases/"
                            version "/cfe-" version ".src.tar.xz"))
        (sha256 (base32 hash))
        (patches (map search-patch patches))))
@@ -291,7 +291,7 @@ code analysis tools.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://llvm.org/releases/"
+      (uri (string-append "https://llvm.org/releases/"
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
@@ -341,7 +341,7 @@ code analysis tools.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://llvm.org/releases/"
+       (uri (string-append "https://llvm.org/releases/"
                            version "/llvm-" version ".src.tar.xz"))
        (sha256
         (base32
@@ -365,7 +365,7 @@ code analysis tools.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://llvm.org/releases/"
+       (uri (string-append "https://llvm.org/releases/"
                            version "/llvm-" version ".src.tar.xz"))
        (sha256
         (base32
@@ -388,7 +388,7 @@ code analysis tools.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://llvm.org/releases/"
+       (uri (string-append "https://llvm.org/releases/"
                            version "/llvm-" version ".src.tar.xz"))
        (patches
         (search-patches "llvm-3.5-fix-clang-build-with-gcc5.patch"))
@@ -511,7 +511,7 @@ SOURCE-FILES found in SOURCE-PACKAGE."
     (description "This package allows to filter code through @code{clang-format}
 to fix its formatting.  @code{clang-format} is a tool that formats
 C/C++/Obj-C code according to a set of style options, see
-@url{http://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")))
+@url{https://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")))
 
 (define-public emacs-clang-rename
   (package
