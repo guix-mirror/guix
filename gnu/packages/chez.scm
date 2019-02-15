@@ -264,16 +264,15 @@ and 32-bit PowerPC architectures.")
         (revision "1"))
     (package
       (name "chez-web")
-      ;; release 2.0 is different and doesn't work.
-      (version (string-append "2.0-" revision "."
-                              (string-take commit 7)))
+      ;; Release 2.0 is different and doesn't work.
+      (version (git-version "2.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/arcfide/ChezWEB.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "1dq25qygyncbfq4kwwqqgyyakfqjwhp5q23vrf3bff1p66nyfl3b"))))
       (build-system gnu-build-system)
