@@ -4454,9 +4454,24 @@ default behavior.  Packages appearing after are interpreted as packages
 that will be added to the environment directly.
 
 @item --pure
-Unset existing environment variables when building the new environment.
-This has the effect of creating an environment in which search paths
-only contain package inputs.
+Unset existing environment variables when building the new environment, except
+those specified with @option{--inherit} (see below.)  This has the effect of
+creating an environment in which search paths only contain package inputs.
+
+@item --inherit=@var{regexp}
+When used alongside @option{--pure}, inherit all the environment variables
+matching @var{regexp}---in other words, put them on a ``white list'' of
+environment variables that must be preserved.
+
+@example
+guix environment --pure --inherit=^SLURM --ad-hoc openmpi @dots{} \
+  -- mpirun @dots{}
+@end example
+
+This example runs @command{mpirun} in a context where the only environment
+variables defined are @code{PATH}, environment variables whose name starts
+with @code{SLURM}, as well as the usual ``precious'' variables (@code{HOME},
+@code{USER}, etc.)
 
 @item --search-paths
 Display the environment variable definitions that make up the
