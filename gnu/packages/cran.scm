@@ -10558,3 +10558,35 @@ conservative or liberal.  The objective of this package is to make it as
 simple as possible to identify global objects for the purpose of exporting
 them in distributed compute environments.")
     (license license:lgpl2.1+)))
+
+(define-public r-future
+  (package
+    (name "r-future")
+    (version "1.11.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "future" version))
+       (sha256
+        (base32
+         "1s4lyqg4mm1drzc6czaalmhmxfjgp4nznb14ql5xzny9rprgz43i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-globals" ,r-globals)
+       ("r-listenv" ,r-listenv)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/future")
+    (synopsis "Unified parallel and distributed processing in R")
+    (description
+     "The purpose of this package is to provide a lightweight and unified
+Future API for sequential and parallel processing of R expression via futures.
+This package implements sequential, multicore, multisession, and cluster
+futures.  With these, R expressions can be evaluated on the local machine, in
+parallel a set of local machines, or distributed on a mix of local and remote
+machines.  Extensions to this package implement additional backends for
+processing futures via compute cluster schedulers etc.  Because of its unified
+API, there is no need to modify any code in order to switch from sequential on
+the local machine to, say, distributed processing on a remote compute cluster.")
+    (license license:lgpl2.1+)))
