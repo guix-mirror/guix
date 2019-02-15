@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -303,7 +303,7 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.86")
+    (version "1.87")
     (source (origin
       (method git-fetch)
       (uri (git-reference
@@ -311,7 +311,7 @@ format.")
              (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0jr4aah72c7wy94a8vlj3k050rx6pmc7m9nvmll1jwbscxj5f7ff"))))
+       (base32 "1xiy54rz99nzbpwj35jiyssd2nc6k5k0lw5ml6nh2qnmbfkl8swl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TESTS=ON")))
