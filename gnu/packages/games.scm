@@ -4299,17 +4299,17 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.15")
+    (version "1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0nzm3j5wjazr1d6pkydqlc48sjf72hggq0hmx8mhq03114mmiir5"))))
+                "1gfaw1kf7cxf5ibr61n6dxjihi49gmysn4cvawx1pqvy52ljpk0p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; no tests included
+     `(#:tests? #f))                    ; no tests included
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
        ("freetype" ,freetype)
