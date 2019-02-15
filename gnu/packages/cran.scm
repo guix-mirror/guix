@@ -10511,3 +10511,26 @@ tempering (function @code{temper}), and morphometric random walk
 Metropolis (function @code{morph.metrop}), which achieves geometric ergodicity
 by change of variable.")
     (license license:expat)))
+
+(define-public r-listenv
+  (package
+    (name "r-listenv")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "listenv" version))
+       (sha256
+        (base32
+         "0ma5jsri2zqkrlsm9nqpikl7imbwfy1glsmk13mblw0q245h49k1"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/listenv")
+    (synopsis "Environments behaving (almost) as lists")
+    (description
+     "This package implements list environments.  List environments are
+environments that have list-like properties.  For instance, the elements of a
+list environment are ordered and can be accessed and iterated over using index
+subsetting.")
+    (license license:lgpl2.1+)))
