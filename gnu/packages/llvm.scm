@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -47,7 +47,7 @@
 (define-public llvm
   (package
     (name "llvm")
-    (version "6.0.1")
+    (version "7.0.1")
     (source
      (origin
       (method url-fetch)
@@ -55,7 +55,7 @@
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn"))))
+        "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
@@ -94,21 +94,6 @@ front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
-
-;; TODO: Build Mesa with LLVM 7 in the next staging cycle.
-;; TODO: Make LLVM 7 the default LLVM once Clang is also upgraded.
-(define-public llvm-7.0.1
-  (package (inherit llvm)
-    (name "llvm")
-    (version "7.0.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "http://llvm.org/releases/"
-                          version "/llvm-" version ".src.tar.xz"))
-      (sha256
-       (base32
-        "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
@@ -190,7 +175,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                            (compiler-rt (assoc-ref inputs "clang-runtime")))
                        (case (string->number ,(version-major
                                                (package-version clang-runtime)))
-                         ((6)
+                         ((or 6 7)
                           ;; Link to libclang_rt files from clang-runtime.
                           (substitute* "lib/Driver/ToolChain.cpp"
                             (("getDriver\\(\\)\\.ResourceDir")
@@ -277,10 +262,32 @@ code analysis tools.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"))
+   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
+                   "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
+                   #:patches '("clang-7.0-libc-search-path.patch")))
+
+(define-public llvm-6
+  (package
+    (inherit llvm)
+    (version "6.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://llvm.org/releases/"
+                                  version "/llvm-" version ".src.tar.xz"))
+              (sha256
+               (base32
+                "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn"))))))
+
+(define-public clang-runtime-6
+  (clang-runtime-from-llvm
+   llvm-6
+   "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"))
+
+(define-public clang-6
+  (clang-from-llvm llvm-6 clang-runtime
                    "0rxn4rh7rrnsqbdgp4gzc8ishbkryhpl1kd3mpnxzpxxhla3y93w"
                    #:patches '("clang-6.0-libc-search-path.patch")))
 
