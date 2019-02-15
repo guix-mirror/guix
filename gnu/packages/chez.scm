@@ -318,7 +318,8 @@ and 32-bit PowerPC architectures.")
                               (("\\./chezweave" all)
                                (string-append "chez-scheme --program " all)))
                             (substitute* "installit"
-                              (("-g \\$GROUP -o \\$OWNER") "")))))))
+                              (("-g \\$GROUP -o \\$OWNER") ""))
+                            #t)))))
       (home-page "https://github.com/arcfide/ChezWEB")
       (synopsis "Hygienic Literate Programming for Chez Scheme")
       (description "ChezWEB is a system for doing Knuthian style WEB
