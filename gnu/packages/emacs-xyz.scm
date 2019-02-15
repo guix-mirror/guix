@@ -12457,10 +12457,10 @@ correctly.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-slime
-  (let ((commit "9980925f3e5f6ac5a30369d2a544e82006a79c76"))
+  (let ((commit "bc4af154f2c18c8d9af968840f599d4c9974b668"))
     (package
       (name "emacs-helm-slime")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "0.0.1" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -12469,7 +12469,7 @@ correctly.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0xa07gpfkzwn522x9573mq5mfxvbawdgd0m93gqj6w5a14wk8zzh"))))
+                  "0abfbzw1yaj9gscdxvvd3nf4h6krg6kyl5gpwgiyrq39x16pa9q2"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
