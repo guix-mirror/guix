@@ -656,7 +656,7 @@ destroying an ancient book using a special wand.")
 (define-public gnubg
   (package
     (name "gnubg")
-    (version "1.06.001")
+    (version "1.06.002")
     (source
      (origin
        (method url-fetch)
@@ -664,7 +664,7 @@ destroying an ancient book using a special wand.")
                            version "-sources." "tar.gz"))
        (sha256
         (base32
-         "0snz3j1bvr25ji7lg82bl2gm2s2x9lrpc7viw0hclgz0ql74cw7b"))))
+         "11xwhcli1h12k6rnhhyq4jphzrhfik7i8ah3k32pqw803460n6yf"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("readline" ,readline)
