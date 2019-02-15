@@ -1316,12 +1316,14 @@ above command-line parameters.")
         ("texinfo" ,texinfo)))
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-      `(("guile-config" ,guile-config "out")))
+     `(("guile-config" ,guile-config)))
     (synopsis "Guile project tooling")
     (description
-      "Hall is a command-line application and a set of Guile libraries that allow you to quickly create and publish Guile projects.  It allows you to transparently support the GNU build system, manage a project hierarchy & provides tight coupling to Guix.")
-    (home-page
-      "https://gitlab.com/a-sassmannshausen/guile-hall")
+     "Hall is a command-line application and a set of Guile libraries that
+allow you to quickly create and publish Guile projects.  It allows you to
+transparently support the GNU build system, manage a project hierarchy &
+provides tight coupling to Guix.")
+    (home-page "https://gitlab.com/a-sassmannshausen/guile-hall")
     (license license:gpl3+)))
 
 (define-public guile-ics
