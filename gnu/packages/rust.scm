@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
+;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -194,7 +195,7 @@ safety and thread safety guarantees.")
     (properties '((timeout . 72000)               ;20 hours
                   (max-silent-time . 18000)))     ;5 hours (for armel)
     (arguments
-     `(#:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
+     `(#:imported-modules ,%cargo-utils-modules ;for `generate-checksums'
        #:modules ((guix build utils) (ice-9 match) (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
@@ -273,7 +274,7 @@ test = { path = \"../libtest\" }
                 (string-append name "\"" ,%cargo-reference-hash "\"")))
              (for-each
               (lambda (filename)
-                (use-modules (guix build cargo-build-system))
+                (use-modules (guix build cargo-utils))
                 (delete-file filename)
                 (let* ((dir (dirname filename)))
                   (display (string-append
