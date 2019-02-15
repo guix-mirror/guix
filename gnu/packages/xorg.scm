@@ -5145,8 +5145,8 @@ over Xlib, including:
         ("xcb-util-renderutil" ,xcb-util-renderutil)
         ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
-       `(("python" ,python-minimal-wrapper)
-         ("pkg-config" ,pkg-config)))
+     `(("python" ,python-wrapper)
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:parallel-tests? #f
        #:configure-flags
