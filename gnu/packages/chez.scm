@@ -435,11 +435,13 @@ Chez Scheme.")
     (home-page "https://github.com/fedeinthemix/chez-matchable")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive" "/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "0cl4vc6487pikjq159pj4n5ghyaax31nywb5n4yn1682h3ir1hs0"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "02qn7x348p23z1x5lwhkyj7i8z6mgwpzpnwr8dyina0yzsdkr71s"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("chez-srfi" ,chez-srfi))) ; for tests
