@@ -2143,22 +2143,22 @@ Battle for Wesnoth}.")))
 (define-public gamine
   (package
     (name "gamine")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gamine-game/"
                                   "gamine-" version ".tar.gz"))
               (sha256
                (base32
-                "08wnk7w84c2413hwny89j2cn89cvfdf67bfc6wl0bf475if0mf4h"))))
+                "1sc6f4445ciigd6yw0ri92746k4hk6ps0bvj9fm1gbp3c3fslk5n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base) ;playbin plugin
-       ("gst-plugins-good" ,gst-plugins-good) ;for wav playback
+       ("gst-plugins-base" ,gst-plugins-base) ; playbin plugin
+       ("gst-plugins-good" ,gst-plugins-good) ; for wav playback
        ("gtk+" ,gtk+)))
     (arguments
      `(#:tests? #f
