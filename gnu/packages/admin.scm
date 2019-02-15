@@ -285,26 +285,26 @@ graphs and can export its output to different formats.")
 
 (define-public htop
   (package
-   (name "htop")
-   (version "2.2.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "http://hisham.hm/htop/releases/"
-                  version "/htop-" version ".tar.gz"))
-            (sha256
-             (base32
-              "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
-   (build-system gnu-build-system)
-   (inputs
-    `(("ncurses" ,ncurses)))
-   (native-inputs
-    `(("python" ,python-wrapper))) ; for scripts/MakeHeader.py
-   (home-page "https://hisham.hm/htop/")
-   (synopsis "Interactive process viewer")
-   (description
-    "This is htop, an interactive process viewer.  It is a text-mode
+    (name "htop")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hisham.hm/htop/releases/"
+                                  version "/htop-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("python" ,python-wrapper)))     ;for scripts/MakeHeader.py
+    (home-page "https://hisham.hm/htop/")
+    (synopsis "Interactive process viewer")
+    (description
+     "This is htop, an interactive process viewer.  It is a text-mode
 application (for console or X terminals) and requires ncurses.")
-   (license license:gpl2)))
+    (license license:gpl2)))
 
 (define-public pies
   (package
