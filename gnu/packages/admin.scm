@@ -298,7 +298,7 @@ graphs and can export its output to different formats.")
    (inputs
     `(("ncurses" ,ncurses)))
    (native-inputs
-    `(("python" ,python-minimal-wrapper))) ; for scripts/MakeHeader.py
+    `(("python" ,python-wrapper))) ; for scripts/MakeHeader.py
    (home-page "https://hisham.hm/htop/")
    (synopsis "Interactive process viewer")
    (description

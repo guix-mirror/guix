@@ -2413,7 +2413,7 @@ OpenGFX provides you with...
     (build-system gnu-build-system)
     (native-inputs
      `(("catcodec" ,catcodec)
-       ("python" ,python2-minimal)))
+       ("python" ,python-2)))
     (arguments
      `(#:make-flags
        (list (string-append "INSTALL_DIR=" %output
@@ -2450,7 +2450,7 @@ the original Transport Tycoon Deluxe.")
          "0nskq97a6fsv1v6d62zf3yb8whzhqnlh3lap3va3nzvj7csjgf7c"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python2-minimal)))
+     `(("python" ,python-2)))
     (arguments
      `(#:make-flags
        (list (string-append "INSTALL_DIR=" %output

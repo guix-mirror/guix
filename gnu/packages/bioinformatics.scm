@@ -11192,7 +11192,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
     (native-inputs
      `(("ldc" ,ldc)
        ("rdmd" ,rdmd)
-       ("python" ,python-minimal)
+       ("python" ,python)
        ("biod"
         ,(let ((commit "4f1a7d2fb7ef3dfe962aa357d672f354ebfbe42e"))
            (origin

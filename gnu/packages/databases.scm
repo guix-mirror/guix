@@ -335,7 +335,7 @@ applications.")
     (native-inputs
      `(("valgrind" ,valgrind)
        ("perl" ,perl)
-       ("python" ,python2-minimal)
+       ("python" ,python-2)
        ("python2-pymongo" ,python2-pymongo)
        ("python2-pyyaml" ,python2-pyyaml)
        ("tzdata" ,tzdata)))

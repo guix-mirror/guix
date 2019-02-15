@@ -751,7 +751,7 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
          (replace 'check
            (lambda _ (invoke "./botan-test"))))))
     (native-inputs
-     `(("python" ,python-minimal-wrapper)
+     `(("python" ,python-wrapper)
        ("python-docutils" ,python-docutils)))
     (inputs
      `(("sqlite" ,sqlite)
