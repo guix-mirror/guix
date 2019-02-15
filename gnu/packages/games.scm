@@ -4957,13 +4957,13 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
     (version "1.01.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Novum/vkQuake/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Novum/vkQuake.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0j8lh5by3pvjh6qr9piqlnq8mb5vv7sh0h3b9bqxlqm2ys0ap8hi"))))
+        (base32 "1iwin8j5kbyrknbkhjgpy8nmm7pxqzr0daa9gn7p38qhg2mh0a39"))))
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs
