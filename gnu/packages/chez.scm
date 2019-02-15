@@ -515,10 +515,10 @@ syntax, with various aliases for commonly used patterns.")
          (replace 'configure ,chez-configure)
          (replace 'build
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "chez-build" make-flags))))
+             (apply invoke "make" "chez-build" make-flags)))
          (replace 'install
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "chez-install" make-flags)))))))
+             (apply invoke "make" "chez-install" make-flags))))))
     (home-page "http://synthcode.com/scheme/fmt")
     (synopsis "Combinator formatting library for Chez Scheme")
     (description "This package provides a library of procedures for
