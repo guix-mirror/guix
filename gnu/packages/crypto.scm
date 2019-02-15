@@ -228,7 +228,7 @@ the wrong hands.")
 (define-public keyutils
   (package
     (name "keyutils")
-    (version "1.5.11")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -237,7 +237,7 @@ the wrong hands.")
                        version ".tar.bz2"))
        (sha256
         (base32
-         "1ddig6j5xjyk6g9l2wlqc7k1cgvryxdqbsv3c9rk1p3f42448n0i"))
+         "05bi5ja6f3h3kdi7p9dihlqlfrsmi1wh1r2bdgxc0180xh6g5bnk"))
        (modules '((guix build utils)))
        ;; Create relative symbolic links instead of absolute ones to /lib/*.
        (snippet '(begin
