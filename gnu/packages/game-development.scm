@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -641,17 +641,15 @@ programming language.")
 (define-public allegro-4
   (package
     (name "allegro")
-    (version "4.4.2")
+    (version "4.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/"
                                   "releases/download/" version "/allegro-"
                                   version ".tar.gz"))
-              (patches (search-patches
-                        "allegro4-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
-                "1p0ghkmpc4kwij1z9rzxfv7adnpy4ayi0ifahlns1bdzgmbyf88v"))))
+                "1d5ws3ihvpa6f4qc6a6drq31pajw6bblxifr4kcxzqj9br1nw28y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
