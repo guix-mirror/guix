@@ -237,13 +237,13 @@ and 32-bit PowerPC architectures.")
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/fedeinthemix/chez-srfi/archive"
-             "/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fedeinthemix/chez-srfi.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "17i4wly7bcr5kb5hf04ljpbvv4r5hsr9xsmw650fj43z9jr303gs"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1vgn984mj2q4w6r2q66h7qklp2hrh85wwh4k9yisga5fi0ps7myf"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("chez-scheme" ,chez-scheme)))
