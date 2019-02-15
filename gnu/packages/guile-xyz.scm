@@ -1251,65 +1251,78 @@ above command-line parameters.")
 (define-public guile-hall
   (package
     (name "guile-hall")
-    (version "0.1.1")
+    (version "0.2")
     (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.com/a-sassmannshausen/guile-hall")
-             (commit "7d1094a12fe917209ce5b76c681cc8c862d4c65b")))
-       (file-name "guile-hall-0.1.1-checkout")
-       (sha256
-        (base32
-         "03kb09cjca98hlbx9mj12mqinzsnnvp6ci6i975n88pjhaxigyp1"))))
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://gitlab.com/a-sassmannshausen/guile-hall")
+               (commit "54aeeb088ea2f1168090b7cdb95e3e70884f52f3")))
+        (file-name "guile-hall-0.2-checkout")
+        (sha256 (base32
+                 "1bkbqgj24xh5b65sw2m98iggpi67b72szx1dsiq3cpzlcxplmgaz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules
-       ((ice-9 match)
-        (ice-9 ftw)
-        ,@%gnu-build-system-modules)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'hall-wrap-binaries
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bin  (string-append out "/bin/"))
-                    (site (string-append out "/share/guile/site"))
-                    (config (assoc-ref inputs "guile-config")))
-               (match (scandir site)
-                 (("." ".." version)
-                  (let ((modules (string-append site "/" version))
-                        (compiled-modules (string-append
-                                           out "/lib/guile/" version
-                                           "/site-ccache")))
-                    (wrap-program (string-append bin "hall")
-                      `("GUILE_LOAD_PATH" ":" prefix
-                        (,modules
-                         ,(string-append config
-                                         "/share/guile/site/"
-                                         version)))
-                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                        (,compiled-modules
-                         ,(string-append config "/lib/guile/"
-                                         version
-                                         "/site-ccache"))))
-                    #t)))))))))
+      `(#:modules
+        ((ice-9 match)
+         (ice-9 ftw)
+         ,@%gnu-build-system-modules)
+        #:phases
+        (modify-phases
+          %standard-phases
+          (add-after 'install 'hall-wrap-binaries
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((compiled-dir
+                       (lambda (out version)
+                         (string-append
+                           out "/lib/guile/" version "/site-ccache")))
+                     (uncompiled-dir
+                       (lambda (out version)
+                         (string-append
+                          out "/share/guile/site"
+                          (if (string-null? version) "" "/") version)))
+                     (dep-path
+                       (lambda (env modules path)
+                         (list env ":" 'prefix
+                               (cons modules
+                                     (map (lambda (input)
+                                            (string-append
+                                              (assoc-ref inputs input)
+                                              path))
+                                          ,''("guile-config"))))))
+                     (out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin/"))
+                     (site (uncompiled-dir out "")))
+                (match (scandir site)
+                       (("." ".." version)
+                        (for-each
+                          (lambda (file)
+                            (wrap-program
+                              (string-append bin file)
+                              (dep-path
+                                "GUILE_LOAD_PATH"
+                                (uncompiled-dir out version)
+                                (uncompiled-dir "" version))
+                              (dep-path
+                                "GUILE_LOAD_COMPILED_PATH"
+                                (compiled-dir out version)
+                                (compiled-dir "" version))))
+                          ,''("hall"))
+                        #t))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("pkg-config" ,pkg-config)
+        ("texinfo" ,texinfo)))
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-config" ,guile-config)))
+      `(("guile-config" ,guile-config "out")))
     (synopsis "Guile project tooling")
     (description
-     "Hall is a command-line application and a set of Guile libraries that
-allow you to quickly create and publish Guile projects.  It allows you to
-transparently support the GNU build system, manage a project hierarchy &
-provides tight coupling to Guix.")
-    (home-page "https://gitlab.com/a-sassmannshausen/guile-hall")
-    (license license:gpl3+)))
+      "Hall is a command-line application and a set of Guile libraries that allow you to quickly create and publish Guile projects.  It allows you to transparently support the GNU build system, manage a project hierarchy & provides tight coupling to Guix.")
+    (home-page
+      "https://gitlab.com/a-sassmannshausen/guile-hall")
+    (license gpl3+)))
 
 (define-public guile-ics
   (package
