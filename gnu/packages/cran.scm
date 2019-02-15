@@ -10618,3 +10618,35 @@ the local machine to, say, distributed processing on a remote compute cluster.")
 can be resolved using any future-supported backend, e.g. parallel on the local
 machine or distributed on a compute cluster.")
     (license license:gpl2+)))
+
+(define-public r-rsvd
+  (package
+    (name "r-rsvd")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsvd" version))
+       (sha256
+        (base32
+         "0vjhrvnkl9rmvl8sv2kac5sd10z3fgxymb676ynxzc2pmhydy3an"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/erichson/rSVD")
+    (synopsis "Randomized singular value decomposition")
+    (description
+     "Low-rank matrix decompositions are fundamental tools and widely used for
+data analysis, dimension reduction, and data compression.  Classically, highly
+accurate deterministic matrix algorithms are used for this task.  However, the
+emergence of large-scale data has severely challenged our computational
+ability to analyze big data.  The concept of randomness has been demonstrated
+as an effective strategy to quickly produce approximate answers to familiar
+problems such as the @dfn{singular value decomposition} (SVD).  This package
+provides several randomized matrix algorithms such as the randomized singular
+value decomposition (@code{rsvd}), randomized principal component
+analysis (@code{rpca}), randomized robust principal component
+analysis (@code{rrpca}), randomized interpolative decomposition (@code{rid}),
+and the randomized CUR decomposition (@code{rcur}).  In addition several plot
+functions are provided.")
+    (license license:gpl3+)))
