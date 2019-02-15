@@ -10534,3 +10534,27 @@ environments that have list-like properties.  For instance, the elements of a
 list environment are ordered and can be accessed and iterated over using index
 subsetting.")
     (license license:lgpl2.1+)))
+
+(define-public r-globals
+  (package
+    (name "r-globals")
+    (version "0.12.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "globals" version))
+       (sha256
+        (base32
+         "0szyv1ayyk31bh3xqlkj43020w44xq6s4rw2bxwizyjssxm3b1br"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)))
+    (home-page "https://github.com/HenrikBengtsson/globals")
+    (synopsis "Identify global objects in R expressions")
+    (description
+     "This package provides tools to identify global (\"unknown\" or \"free\")
+objects in R expressions by code inspection using various strategies, e.g.
+conservative or liberal.  The objective of this package is to make it as
+simple as possible to identify global objects for the purpose of exporting
+them in distributed compute environments.")
+    (license license:lgpl2.1+)))
