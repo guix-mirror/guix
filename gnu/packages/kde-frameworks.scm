@@ -78,7 +78,7 @@
 (define-public extra-cmake-modules
   (package
     (name "extra-cmake-modules")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -87,7 +87,7 @@
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0i3iqwvdqf2wpg8lsbna4vgmb18pnbv2772sg9k6zzhvkwsskdwi"))))
+                "1x868hs9jiqzkqx7gld4mdm5dzfxc5kann22y15a4f7g5a957534"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("qtbase" ,qtbase))) ; For tests (needs qmake)
@@ -253,7 +253,7 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
 (define-public attica
   (package
     (name "attica")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -262,7 +262,7 @@ Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1gr7w0mf3aq5xyl9il3483m9aqgb981vxn02g2khm6dfsr6z2aln"))))
+                "0bsn9mi3nj23k2r3mfgjm9i1mp8qnwf08xn9x757wk3xas0cx98v"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -293,7 +293,7 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
 (define-public bluez-qt
   (package
     (name "bluez-qt")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -302,7 +302,7 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1br9496lahzqmzmvdic5835ig18w3g211l1w4qfzpgr50yin9n5v"))))
+                "1ixad1ya3c339c675w8nwmbga8ydq16db9fk2az3gjm68z3dch8a"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("dbus" ,dbus)
@@ -326,7 +326,7 @@ Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
 (define-public breeze-icons
   (package
     (name "breeze-icons")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -335,7 +335,7 @@ Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1g5dppg2iq5bd3r3s8bi8jqnvnh1rm7s3sv51shmaamq5qf0n5jy"))))
+                "03mb7x8mc2h6cjb4mrifrbkbpj3lv9c0mg4m619rqiydg0p1yf49"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -355,7 +355,7 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
 (define-public kapidox
   (package
     (name "kapidox")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -364,7 +364,7 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0zwjychzcamsky9l67xnw820b9m8r8pi56gsccg023l1rcigz46c"))))
+                "0x41adp3rnvr6njc57ffdyh6d5i5aw13xcjdr4p6kacw9pk63ajf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; has no test target
@@ -397,7 +397,7 @@ documentation.")
 (define-public karchive
   (package
     (name "karchive")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -406,7 +406,7 @@ documentation.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "141xqgdk7g3ky0amblrqr4pab1xvvdim5wvckrgawdkjiy5ana4g"))))
+                "1llznxc5wjjnmbjx8iwi3a93gc2z0z344viknsgls1fwdjjfyxc4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -431,7 +431,7 @@ GZip format, via a subclass of QIODevice.")
 (define-public kcodecs
   (package
     (name "kcodecs")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -440,7 +440,7 @@ GZip format, via a subclass of QIODevice.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1s0ky187fbi34wabpfvdwb1zbblzvk8g83h37ckj9j4rd69mjksc"))))
+                "0491j6l28jwfpgaqs2816qpyggnra2df33iw3fgvb0wd4r4gvmjb"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -467,7 +467,7 @@ Internet).")
 (define-public kconfig
   (package
     (name "kconfig")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -476,7 +476,7 @@ Internet).")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14p4w0m04c8msdwb3mjfzx6w0lcmln65j3rfvqp58nv5n4yh5dp7"))))
+                "06gscipc3914gwiswhp1xx4sy74bpy645ykq2i6r1sb6sm16hmja"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("dbus" ,dbus)
@@ -532,7 +532,7 @@ propagate their changes to their respective configuration files.")
 (define-public kcoreaddons
   (package
     (name "kcoreaddons")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -541,7 +541,7 @@ propagate their changes to their respective configuration files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n27786js8j8na7kgxirhmswxcz3qkfiqzfabqmmsd0jp4rx1s79"))))
+                "1j7bc5fhak8db3vdfslbjdffbdclakhfwsni2a855d08yfrl1n1w"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -589,7 +589,7 @@ many more.")
 (define-public kdbusaddons
   (package
     (name "kdbusaddons")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -598,7 +598,7 @@ many more.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fvlspqc3w3y4p04gnqz6vrfvl93iwckfk16p608fz7yfgdmlzbf"))
+                "1sj3cycgci3ih65bkh7bsvbzyp7r654ppcryj4azpcsxqhy5gc7l"))
               (patches (search-patches "kdbusaddons-kinit-file-name.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -634,7 +634,7 @@ as well as an API to create KDED modules.")
 (define-public kdnssd
   (package
     (name "kdnssd")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -643,7 +643,7 @@ as well as an API to create KDED modules.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00sqx2hyqd9yw4nwdl8kmbzm0v0szgqv4nz0q6bchv3hfbax6zk7"))))
+                "0lljj7mxmqm60kfzr37zb7z58mfyfh7zgykf7a5is1k0lxpgk6zc"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -662,7 +662,7 @@ infrastructure.")
 (define-public kguiaddons
   (package
     (name "kguiaddons")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -671,7 +671,7 @@ infrastructure.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lkqxsqdjmc7060pxi5j8gx15kmrb8450cpinzn89nzpdl7rj935"))))
+                "190jwhvq2fi8g03saszlaslzxmcbqrbwli9f9vm6h5j9nnc0z6h3"))))
     (build-system cmake-build-system)
     ;; TODO: Build packages for the Python bindings.  Ideally this will be
     ;; done for all versions of python guix supports.  Requires python,
@@ -700,7 +700,7 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
 (define-public ki18n
   (package
     (name "ki18n")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -709,7 +709,7 @@ interfaces in the areas of colors, fonts, text, images, keyboard input.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0drbyr2y44h1d88nbgxvp4ix46lin51r8vzhhnjhq2ydqy5za3p3"))))
+                "0kvwjzqibby9fawyfb8bd81abjhsjlyi8xy9mcapnih5x2gx3z92"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("gettext" ,gettext-minimal)
@@ -743,7 +743,7 @@ translation scripting.")
 (define-public kidletime
   (package
     (name "kidletime")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -752,7 +752,7 @@ translation scripting.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1x0z0ipdizgv6jkklxp6maclx8f6ya2bv1q39hvxxnnmly8q3vjm"))))
+                "1kq6zh6cjhzffjhxnc7l1pw6g38swxyspp8xl8c860zdhc9xfd1g"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -774,7 +774,7 @@ or user activity.")
   ;; plasma-framework which is tier 3.
   (package
     (name "kirigami")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -783,7 +783,7 @@ or user activity.")
                     "kirigami2-" version ".tar.xz"))
               (sha256
                (base32
-                "0iny9br3vpakvv0bmgy0mmw2y10d4kqbahjpfa3726qai4gligp2"))))
+                "11djxli5cq7pn19lmjz2y7z39mhlr98jskasfzyax546j47v973k"))))
     (properties `((upstream-name . "kirigami2")))
     (build-system cmake-build-system)
     (native-inputs
@@ -810,7 +810,7 @@ of applications that follow the Kirigami Human Interface Guidelines.")
 (define-public kitemmodels
   (package
     (name "kitemmodels")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -819,7 +819,7 @@ of applications that follow the Kirigami Human Interface Guidelines.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1s3wv75sbb4kpgz02cbm7smp8h6rk1ixv0gafbvz9514i9g4d760"))))
+                "13609avkqrfi79zyr737662nr8bwcfdya9dxc6gzyqx5i0l2nbw6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -869,7 +869,7 @@ model to observers
 (define-public kitemviews
   (package
     (name "kitemviews")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -878,7 +878,7 @@ model to observers
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cw9i8xik287rvb12alpqsph902nhfmbn4cfjx5gj7k888n8k3mk"))))
+                "1mgh7z5xcbhc7a2qq8mqfp7j4amk93hypkpy2zc3rdhc60ps94ad"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -904,7 +904,7 @@ to flat and hierarchical lists.")
 (define-public kplotting
   (package
     (name "kplotting")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -913,7 +913,7 @@ to flat and hierarchical lists.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02mab80jyfgdj8xwbwkm181cc5vpsmbn561242q7ayjgxdiszzw9"))))
+                "0nn2v1yvvpzpi1y1pm47zvmwsa942c7d9n8iqymqihnp0fqjr8y7"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -939,7 +939,7 @@ pixel units.")
 (define-public ksyntaxhighlighting
   (package
     (name "ksyntaxhighlighting")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -948,7 +948,7 @@ pixel units.")
                     "syntax-highlighting-" version ".tar.xz"))
               (sha256
                (base32
-                "022mpkbgc458qcn25pn3a3m2dzy6lq23r7fqbgp22jr6xalfi5hl"))))
+                "00w5nmz9l70znv8q7q1zw3f7gngwfgf41iwbs53zqcv1z7wmrz6m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -988,7 +988,7 @@ integration with a custom editor as well as a ready-to-use
 (define-public kwayland
   (package
     (name "kwayland")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -997,7 +997,7 @@ integration with a custom editor as well as a ready-to-use
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0y1710l68qlf37zy26nyn25r50a00mrm5cnwgfs9f40s749amigf"))))
+                "0m9q13qzgvp03jrsyc59l6pp7jf0dvhx768p21drs46qxw6wla7l"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1027,7 +1027,7 @@ represented by a QPoint or a QSize.")
 (define-public kwidgetsaddons
   (package
     (name "kwidgetsaddons")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1036,7 +1036,7 @@ represented by a QPoint or a QSize.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01qxklhigfazhma0f6m1fkcbh9waxpvzpz6y2jlflvgbw2db82gh"))))
+                "0kpbvvmjrhxxjqc0cb63zlq06a3xspq43xv3wdingcn28zypynzc"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1074,7 +1074,7 @@ configuration pages, message boxes, and password requests.")
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1083,7 +1083,7 @@ configuration pages, message boxes, and password requests.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n9h4gg5ih29avvcpplqfy7nq58xx6jv6a04m1wkjr1rzn4dyfnb"))))
+                "10zdxm08d758zbwlrbsn0ghxjpf39ids2s5pnca072gbrbrxv656"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1135,7 +1135,7 @@ lower level classes for interaction with the X Windowing System.")
 (define-public modemmanager-qt
   (package
     (name "modemmanager-qt")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1144,7 +1144,7 @@ lower level classes for interaction with the X Windowing System.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0n54gh83b6d42azv40km7j223qb2f4f9ng23xvvawzc7l2ksm350"))))
+                "10pkgm4dzsrfnjsf78pssd1wp0y27d1y834chd267hx9vgrv8axm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1173,7 +1173,7 @@ messages.")
 (define-public networkmanager-qt
   (package
     (name "networkmanager-qt")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1182,7 +1182,7 @@ messages.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bh5li6r7r3nws5zj0hp4iy4xhiyh7rszzwpp6ag93vz5g5fsl9y"))))
+                "0j8l4k13vsqh0a8mw8dw5bc78xvxhz2rh7bb870as04i32bvw772"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1212,7 +1212,7 @@ which are used in DBus communication.")
 (define-public oxygen-icons
   (package
     (name "oxygen-icons")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1221,7 +1221,7 @@ which are used in DBus communication.")
                     name "5" "-" version ".tar.xz"))
               (sha256
                (base32
-                "1sdd8ygkyl4d1mwrachcf0ahpikkby3xhdyz212xj9qmhmsgwa46"))))
+                "0fvm9bq1573xkha4a577s1iik8nwzks8xhrli5mm6rbh53s12wp4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1237,7 +1237,7 @@ which are used in DBus communication.")
 (define-public prison
   (package
     (name "prison")
-    (version "5.54.0")
+    (version "5.55.0")
     (source
      (origin
        (method url-fetch)
@@ -1245,7 +1245,7 @@ which are used in DBus communication.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "1z7gymk4hkwaa0ni1454ndvpm2lwqyyfbih38h0lfb8lrswnv3kb"))))
+        (base32 "1xadc2fq6csml78czg5p572cwvmqmn334a5dxjnd7k1pdx50gi07"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1262,7 +1262,7 @@ provides uniform access to generation of barcodes with data.")
 (define-public qqc2-desktop-style
   (package
     (name "qqc2-desktop-style")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1271,7 +1271,7 @@ provides uniform access to generation of barcodes with data.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1shw3c6cr5xanzyl5zv3isyhvzi20zn3xf7m963z1qn8ypaz1by8"))))
+                "0aj37ldc3ywqap3sz73j54kbzycn529imr15jgl252k04rqpjya5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1296,7 +1296,7 @@ feel.")
 (define-public solid
   (package
     (name "solid")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1305,7 +1305,7 @@ feel.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hmh9hndfs1ikaja07ddag7jr8804q4g6p74rhqsrfk2sjz0pmr9"))))
+                "18dw55g41q34m2qzvybvpsas1dnyryqxnlf2md0xc4r36ib9p2pn"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1335,7 +1335,7 @@ system.")
 (define-public sonnet
   (package
     (name "sonnet")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1344,7 +1344,7 @@ system.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ccz0gbypzdndaxrfkjhry90jjdh5a56pm4j41z835q96w6piclz"))))
+                "13bb1s2f4kfaikcga297j2fqlyr4qxdcq4v1b3zs1gas4z1wpcg6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1372,7 +1372,7 @@ ASpell and HUNSPELL.")
 (define-public threadweaver
   (package
     (name "threadweaver")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1381,7 +1381,7 @@ ASpell and HUNSPELL.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "011k2pm0wr60sxnydicnchnarx4r6qja0w6iih3jfkw733qm6bxp"))))
+                "0r0ml5pz7h0vmydcg4gqqkl21lp6c5gqdwyfsnyad02dcjkh4hql"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1402,7 +1402,7 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
 (define-public kactivities
   (package
     (name "kactivities")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1411,7 +1411,7 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ipq71g6g7q6yncvbiabwn5kg2280k8ssibbbf6jyh2lg09dmjil"))))
+                "0dp9vx2nl9fnawzcz04fqa731s3bk2izxrqbvn71aqyrs7fymabg"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1447,7 +1447,7 @@ with other frameworks.")
 (define-public kauth
   (package
     (name "kauth")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1456,7 +1456,7 @@ with other frameworks.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ciabazig77rpfksvdlmixj2sa2qnasq13nwvjn3xksnajfm4p2h"))))
+                "1w6bp2kbp1sn4cl76fgl2pqrg660ix99qq4h65g090kc934np3zc"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("dbus" ,dbus)
@@ -1494,7 +1494,7 @@ utilities.")
 (define-public kcompletion
   (package
     (name "kcompletion")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1503,7 +1503,7 @@ utilities.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0sgg09l97amnng0ddxyjpk535097f87bmn60hjqrmpsqb0n3a460"))))
+                "08ym79fqk7vshsf3jk37d6jvg7ys63kwflcn5dff5ci18jan2ir2"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1530,7 +1530,7 @@ integrated it into your application's other widgets.")
 (define-public kcrash
   (package
     (name "kcrash")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1539,7 +1539,7 @@ integrated it into your application's other widgets.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wlrlzwdi9dpxkky9sadmbgw0rjisxhym9hr8gzydd2y8q4cr8a7"))))
+                "08a8c5mbj6ll0d1ivhcjx5ga1jfbnwxsk618wcfpwwi6mkxrc3f9"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1565,7 +1565,7 @@ application crashes.")
 (define-public kdoctools
   (package
     (name "kdoctools")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1574,7 +1574,7 @@ application crashes.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xbmdqlvyw9s2g8kwn1wmvz09pn4vs386ibm1p92wdnpspp5did6"))))
+                "0dlal0vkxf5yh1hbfhrcrxqqi1w43q7bvv8ws8pb18jjgimzr46l"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1622,7 +1622,7 @@ from DocBook files.")
 (define-public kfilemetadata
   (package
     (name "kfilemetadata")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1631,7 +1631,7 @@ from DocBook files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hl61y15nqr5h5k4jqfz9bjj4gw6wdaiacxaslcwzn0sg4xyavab"))))
+                "0fqj266f9f66rfjzg0rl35fac5rn5n3npyfb4gsla3mdc8fjz9mi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1674,7 +1674,7 @@ by applications to write metadata.")
 (define-public kimageformats
   (package
     (name "kimageformats")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1683,7 +1683,7 @@ by applications to write metadata.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xfzpzaqgdncwxvg27qb0ryqi78nbsi0xcsg9cjmgspfx5mlgi15"))))
+                "0hhxv8m5993vlpi5yf7w3fadzckficn16flshdkby7bwq8agrbz1"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1728,7 +1728,7 @@ formats.")
 (define-public kjobwidgets
   (package
     (name "kjobwidgets")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1737,7 +1737,7 @@ formats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d3jxabjlf2s4p34pzrpfsg4xp9s8qd7dmg50yxl59dijd42xgxq"))))
+                "1pbx974jpn8n2080gblmbh8q0yb5wxb9xblpm100rbhpg20sc2by"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1756,7 +1756,7 @@ asynchronous jobs.")
 (define-public knotifications
   (package
     (name "knotifications")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1765,7 +1765,7 @@ asynchronous jobs.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1agglvwaf0wh3fcs0ww3jxn900ych4dsvbaylrx4qip6girfmiyn"))))
+                "1dbrk9r3w8pmg15bhrb8qdk4fiqvc9qggb67zvk1n7ddlfkyarz6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -1802,7 +1802,7 @@ covers feedback and persistent events.")
 (define-public kpackage
   (package
     (name "kpackage")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1811,7 +1811,7 @@ covers feedback and persistent events.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1s1n7r3j7l4kvd85dgssaaz70dd2w8vp34kwg49ak58cdai01vzb"))
+                "175b0lj4qybddjpc25b1p60lr8f9220i9ymk3wk3y3vf4893v833"))
               ;; Default to: external paths/symlinks can be followed by a
               ;; package
               (patches (search-patches "kpackage-allow-external-paths.patch"))))
@@ -1863,7 +1863,7 @@ were traditional plugins.")
 (define-public kpty
   (package
     (name "kpty")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1872,7 +1872,7 @@ were traditional plugins.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04sj612x15311yk2jmr3ak430syp5p59w559670sd18ih99mf8m3"))))
+                "0r5080xl7x13qmjnjssb0d1pk626anaa4xahb7fi869fndr4xhzn"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -1900,7 +1900,7 @@ and communicating with them using a pty.")
 (define-public kunitconversion
   (package
     (name "kunitconversion")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1909,7 +1909,7 @@ and communicating with them using a pty.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lxrydnjlilfm92aqrpd76dk8yfprgnb7nr66dwmbdmqz7znbl8h"))))
+                "1v5cfxk5v76w1f1qvrpilrs111wvp8bn2p3bswhqp4lg0qxync0q"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1943,7 +1943,7 @@ gallons).")
 (define-public baloo
   (package
     (name "baloo")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1952,7 +1952,7 @@ gallons).")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wv8zi03plr279v9p923rwkx2kwhbpd6xlzyqi4v14vhcrmapg1c"))))
+                "068ms071639pskhjz37cszylvfzzqhp7x1rmwdfn5nlvzrv6lrxh"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kcoreaddons" ,kcoreaddons)
@@ -2008,7 +2008,7 @@ maintaining an index of the contents of your files.")
 (define-public kactivities-stats
   (package
     (name "kactivities-stats")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2017,7 +2017,7 @@ maintaining an index of the contents of your files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ns7f110a5vwabb33b1lnpa85kk5radf87bxm1gw4gzglsv7747d"))))
+                "12n178244ysfak0x9qm9a2k814qi56w8xpkg03na7hlsz2l4y9v6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -2038,7 +2038,7 @@ by which applications, and what documents have been linked to which activity.")
 (define-public kbookmarks
   (package
     (name "kbookmarks")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2047,7 +2047,7 @@ by which applications, and what documents have been linked to which activity.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1w4rqnzyars1pxam3nym1qily3ihd2j8cpkq8aha70nbj0dj3ckw"))))
+                "0vsn98znzdbiy8clbl9p3kiag3zvxgc9701gwg2ig8mpv3ci9lkg"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kwidgetsaddons" ,kwidgetsaddons)))
@@ -2081,7 +2081,7 @@ using the XBEL format.")
 (define-public kcmutils
   (package
     (name "kcmutils")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2090,7 +2090,7 @@ using the XBEL format.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0a5jz9m27nyl1vchp68170j9v5z4csyv43vpnfs09l6wk9ggdcwh"))))
+                "1f49864xpxrbj77n7l474wkn3rw4zy8vkl3psdya7ccdk7ac2s0k"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kconfigwidgets" ,kconfigwidgets)
@@ -2134,7 +2134,7 @@ KCModules can be created with the KConfigWidgets framework.")
 (define-public kconfigwidgets
   (package
     (name "kconfigwidgets")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2143,7 +2143,7 @@ KCModules can be created with the KConfigWidgets framework.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1l3hh7qgnz7mnn55abv03pq7zal9dgcw5gnhfr747wknd4h90w31"))))
+                "0npfp6z5lc2h8y6slmz3sbymyyv9k2w73rpsjzl5zswqhzlvrb5k"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kauth" ,kauth)
@@ -2184,7 +2184,7 @@ their settings.")
 (define-public kdeclarative
   (package
     (name "kdeclarative")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2193,7 +2193,7 @@ their settings.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ankjqrlpnj3c9sjnv5p8w279zizkl5ps3i5zw16hg44v6hdmcj0"))))
+                "043jl7rn9yawh04fwgaxb8iwksn3z8qb4yfc4s6v1znwcs7ajlda"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kconfig" ,kconfig)
@@ -2247,7 +2247,7 @@ that offer bindings to some of the Frameworks.")
 (define-public kded
   (package
     (name "kded")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2256,7 +2256,7 @@ that offer bindings to some of the Frameworks.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "131hvxpqvkyh1sfb1j19jjzy7fyy6xisvpmx12lw1pvks0cnrqgn"))))
+                "0kn9kzzji257mppd12jzwiibha8127ajxvng2ls765lylv9nad7q"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -2280,7 +2280,7 @@ started on demand.")
 (define-public kdesignerplugin
   (package
     (name "kdesignerplugin")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2289,7 +2289,7 @@ started on demand.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hlywnzd3d6bvhib1xqiqx39m7k8g16wsj102f7awd5gw3xrz8ga"))))
+                "114035wil0p5z6h0li8wjzivsdxhqbih54kn4nvhn43b71xnzs3y"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -2331,7 +2331,7 @@ ini-style description files.")
 (define-public kdesu
   (package
     (name "kdesu")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2340,7 +2340,7 @@ ini-style description files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qhw1hmq2b6rkyibidmg532llv31vkhmp0a7j2myzi40ydbx1lar"))))
+                "1x2gjnmgpcaxvfav2pm92zfgxbn60awpvmn9ycs68rq47p6h9x0f"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kpty" ,kpty)))
@@ -2362,7 +2362,7 @@ with su and ssh respectively.")
 (define-public kdewebkit
   (package
     (name "kdewebkit")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2371,7 +2371,7 @@ with su and ssh respectively.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0prl9751a8nv7qhg7fv8qygq0llh71w2p25sldl3zif44340jnhf"))))
+                "1mnbdsiih94hlwwff9fs9gnzl3y7ayf1pskmz1rajgjmqd6rm7mm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -2394,7 +2394,7 @@ engine WebKit via QtWebKit.")
 (define-public kemoticons
   (package
     (name "kemoticons")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2403,7 +2403,7 @@ engine WebKit via QtWebKit.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ypcffpp0m75qwam386q6pyfbsij16y2vgpkn38li6ypxlxsvx2v"))))
+                "03vx22f9mjd10qm61f6ihr283w2sarrhg0rssxp7g7wahvshcvmh"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kservice" ,kservice)))
@@ -2434,7 +2434,7 @@ emoticons coming from different providers.")
 (define-public kglobalaccel
   (package
     (name "kglobalaccel")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2443,7 +2443,7 @@ emoticons coming from different providers.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10gl8prc1n0si52cmiglkz8dx79dylmxrh5mjpmyy5yy16chs1s1"))))
+                "1c6dxp6jvbw8l74n1mv0v62yr34b9447szhvd61y4sxmmfjimhz4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -2478,7 +2478,7 @@ window does not need focus for them to be activated.")
 (define-public kiconthemes
   (package
     (name "kiconthemes")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2487,7 +2487,7 @@ window does not need focus for them to be activated.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hc3a6ax3yizpbvklxw3pm0r6j0r5jqx2ffbz1980g21lcgshd7g"))))
+                "1rgbfklb7xxg7z2zyrsmaxf883ixgfbkqilps3npwk3xac2f66rw"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -2525,7 +2525,7 @@ in applications using the KDE Frameworks.")
 (define-public kinit
   (package
     (name "kinit")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2534,7 +2534,7 @@ in applications using the KDE Frameworks.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pmr6ckysdqpni49i9jgapsk88jfbrnlfybpcp3v51kl2nkwm0i9"))
+                "11xwiny5sfqbdls249vnq6ssp5pzw1w9wg4ql9nkwwygl4ml8b9y"))
               ;; Use the store paths for other packages and dynamically loaded
               ;; libs
               (patches (search-patches "kinit-kdeinit-extra_libs.patch"
@@ -2593,7 +2593,7 @@ makes starting KDE applications faster and reduces memory consumption.")
 (define-public kio
   (package
     (name "kio")
-    (version "5.54.1")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2602,7 +2602,7 @@ makes starting KDE applications faster and reduces memory consumption.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11wdsq87w1ddkrm0mpik2qf0c0k897f1rflszfrrwkplfb0z63xp"))
+                "1k3cn7hvp5z9nirss29v164hahrlvlqivxlk64c8w9ynjx699ira"))
               (patches (search-patches "kio-search-smbd-on-PATH.patch"))))
     (build-system cmake-build-system)
     (propagated-inputs
@@ -2686,7 +2686,7 @@ KIO enabled infrastructure.")
 (define-public knewstuff
   (package
     (name "knewstuff")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2695,7 +2695,7 @@ KIO enabled infrastructure.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1l3ibadjvaqqjsb1lhkf6jkzy80dk15fgid125bqk4amwsyygnd3"))))
+                "0a2d9wrhjsjl0klsrn501sp9681v7qmq6hmalw061arjv165dzw2"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("attica" ,attica)
@@ -2742,7 +2742,7 @@ specification.")
 (define-public knotifyconfig
   (package
     (name "knotifyconfig")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2751,7 +2751,7 @@ specification.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ibxqi0y43qgjj4nikxwfppmda9xjmz63c5fml8c4w5d9mdag3if"))))
+                "01hxj6s2sq5k5j6j1y4c5gxyl1886j7ghh0hdc95b7n4gdjwwbci"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -2784,7 +2784,7 @@ notifications which can be embedded in your application.")
 (define-public kparts
   (package
     (name "kparts")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2793,7 +2793,7 @@ notifications which can be embedded in your application.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0y2dr286hb2w4r7ifq39vd7ajsalqyh9d91dm19b2rpgdmvgxai6"))))
+                "0gqkgnvkdai8hbg1n32jq4a3yzlkarmw8a7hxlfr0ykgysanjh65"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kio" ,kio)
@@ -2836,7 +2836,7 @@ widgets with a user-interface defined in terms of actions.")
 (define-public kpeople
   (package
     (name "kpeople")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2845,7 +2845,7 @@ widgets with a user-interface defined in terms of actions.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0sl8wcj7w9vgczcv8mfvjlnghidyadbh1qsiv0pj63ywl7xgr1hx"))))
+                "0vbgi4l14g4f0klbxqbkjcag6yi0ghhpxn5nik5sssmcx8qyk885"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -2879,7 +2879,7 @@ to easily extend the contacts collection.")
 (define-public krunner
   (package
     (name "krunner")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2888,7 +2888,7 @@ to easily extend the contacts collection.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "06y592v32926wq9iaypryj0173ca05vv0p5rrs4n77kwhkl0zq0v"))))
+                "0yw2jh9dailhcwkkjl2qggg5k90bwbfsn88a3hzwyj2ng2haypis"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("plasma-framework" ,plasma-framework)))
@@ -2949,7 +2949,7 @@ typed.")
 (define-public kservice
   (package
     (name "kservice")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2958,7 +2958,7 @@ typed.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10qmrqyfjhf5nzjailgmb86nq62ffrmiddk3880mh49fwxs4l3qx"))))
+                "0k8xksmw2ai7m0js7l98rv5v6ykifmnqiyy2yc1xhgn40lf1r89j"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kconfig" ,kconfig)
@@ -3008,7 +3008,7 @@ types or handled by application specific code.")
 (define-public ktexteditor
   (package
     (name "ktexteditor")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3017,7 +3017,7 @@ types or handled by application specific code.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12yywvv82lmqmx89j1qxj45an49vx34brifxs9rpy3nxyh9c3vzy"))))
+                "0b5zqhm5aw7jj7dj600xa674ik11gwyzamhyz5962xhvsg5pyjwx"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kparts" ,kparts)))
@@ -3088,7 +3088,7 @@ library.")
 (define-public ktextwidgets
   (package
     (name "ktextwidgets")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3097,7 +3097,7 @@ library.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "154j3an7x787l44hw1fmksm3h6kziyaw4l61zw9mas24z3d86hl5"))))
+                "1ymqmb5z4flzrns3wdjagxbzbpighbincwbhy29a0mqg4zcm82xk"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("ki18n" ,ki18n)
@@ -3135,7 +3135,7 @@ It supports rich text as well as plain text.")
 (define-public kwallet
   (package
     (name "kwallet")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3144,7 +3144,7 @@ It supports rich text as well as plain text.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hyipka97g2djk43x8pqbjvrgswsp8kph6za0s5dl4napfikq8k2"))))
+                "1dp072h5r6yd81i69759pj8klfsikrg25za44sry2kh6fxvwmngm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -3177,7 +3177,7 @@ the passwords on KDE work spaces.")
 (define-public kxmlgui
   (package
     (name "kxmlgui")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3186,7 +3186,7 @@ the passwords on KDE work spaces.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01napbq81mcp9ngyl26an52l6ndsgrhzhy2mfd8jrbil2sbrcxq7"))))
+                "0ph67zarf1sccvp7882brrihv4dsmxq0nggan0rnk54qg0zdhgcn"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kconfig" ,kconfig)
@@ -3229,7 +3229,7 @@ descriptions for integrating actions from plugins.")
 (define-public kxmlrpcclient
   (package
     (name "kxmlrpcclient")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3238,7 +3238,7 @@ descriptions for integrating actions from plugins.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "199syc5wl8myc4vcvbnw4a8mlfkb2gcmgs57p8w7akp7mz6l75y6"))))
+                "1573wnv2fbjjzgx3f1qm7y8wlj22bz45mny0rxci90i76nnh4538"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kio" ,kio)))
@@ -3272,7 +3272,7 @@ setUrl, setUserAgent and call.")
 (define-public plasma-framework
   (package
     (name "plasma-framework")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3281,7 +3281,7 @@ setUrl, setUserAgent and call.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1933i8irn76ilz3nychbnhy1bsc39iscn3qrab0lwmshfmw8c4zj"))))
+                "1pvxxw52s03i11p5byd2sh8sbvlk6h8q6briq9d4qvjy6c0pmbq4"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("kpackage" ,kpackage)
@@ -3369,7 +3369,7 @@ script engines.")
 (define-public kde-frameworkintegration
   (package
     (name "kde-frameworkintegration")
-    (version "5.54.0")
+    (version "5.55.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3378,7 +3378,7 @@ script engines.")
                     "frameworkintegration-" version ".tar.xz"))
               (sha256
                (base32
-                "1rzi3ydw7hjhg4vbsfan7zgaa2a2bmp7mph95h2kidf8x816qv2d"))))
+                "0pfpk268x06pjwciv4jr5v259kjck0sf4xzsgn29ifkmsk74wwmi"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3426,7 +3426,7 @@ workspace.")
 (define-public kdelibs4support
   (package
     (name "kdelibs4support")
-    (version "5.54.0")
+    (version "5.55.0")
     (source
      (origin
        (method url-fetch)
@@ -3435,7 +3435,7 @@ workspace.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "02kklfcjsll4pf4rfll7jrr7jpcwd57954ypjjhn3xgr6p0w0hdm"))))
+        (base32 "1l1gjv06yp9jdiapiypwscbb6y0rfgrnw9rdsl7kkxh9ps8b8j39"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("dbus" ,dbus)
@@ -3542,7 +3542,7 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
 (define-public khtml
   (package
     (name "khtml")
-    (version "5.54.0")
+    (version "5.55.0")
     (source
      (origin
        (method url-fetch)
@@ -3551,7 +3551,7 @@ http://community.kde.org/Frameworks/Porting_Notes should help with this.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "17d8cim4ph7nxc5gkidhxc659yn9a7dqvnrihx9sj1cy01qnc7da"))))
+        (base32 "0wh9z5xm0gaf1c2s7cq7763jfyv83d58x80nwsvb0ayd6y8id1bq"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3601,7 +3601,7 @@ technology and using KJS for JavaScript support.")
 (define-public kjs
   (package
     (name "kjs")
-    (version "5.54.0")
+    (version "5.55.0")
     (source
      (origin
        (method url-fetch)
@@ -3610,7 +3610,7 @@ technology and using KJS for JavaScript support.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "0bidbvbwbrbwwm0drw6l43vgmsp50c946jjq7pgnq1gf7mhscwcy"))))
+        (base32 "0c1wyxsgn70jvw7zcjjpw12w9sg9xxvyslgnqlnnyh8sx7rrp70c"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3634,7 +3634,7 @@ support.")
 (define-public kjsembed
   (package
     (name "kjsembed")
-    (version "5.54.0")
+    (version "5.55.0")
     (source
      (origin
        (method url-fetch)
@@ -3643,7 +3643,7 @@ support.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "1pjpk8ysrnh78infq99i0wrf78h8h7hbfnr1m7agzffhbqa671z8"))))
+        (base32 "0dh9012y9bqj48jp50lrsmd28bbvf4jd93l34vfzmza252yvyw3l"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3663,7 +3663,7 @@ QObjects, so you can script your applications.")
 (define-public kmediaplayer
   (package
     (name "kmediaplayer")
-    (version "5.54.0")
+    (version "5.55.0")
     (source
      (origin
        (method url-fetch)
@@ -3672,7 +3672,7 @@ QObjects, so you can script your applications.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "0qalqqkn2yvxgr45l7zm36bcpxwbgn8ngxsvyb5cxfaalwr0mkyf"))))
+        (base32 "0gpfrhgk2l63lyz0bz93cg7mc5g7mjvrkfvpyndmi1v7vhndp5zq"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -3709,7 +3709,7 @@ KParts instead.")
 (define-public kross
   (package
     (name "kross")
-    (version "5.54.0")
+    (version "5.55.0")
     (source
      (origin
        (method url-fetch)
@@ -3718,7 +3718,7 @@ KParts instead.")
              (version-major+minor version) "/portingAids/"
              name "-" version ".tar.xz"))
        (sha256
-        (base32 "18ij9339khskla4r0afl0n6x4pd157y1l5bk2ldb9anpck3p71kd"))))
+        (base32 "0p3q36gka6m62nryc3l11d30mlhiqjpghvfcyq6wikiqlv2kqvjs"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
