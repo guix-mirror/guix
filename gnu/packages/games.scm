@@ -4110,9 +4110,8 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.7.0")
+    (version "0.7.2")
     (source (origin
-              ;; do not use auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/teeworlds/teeworlds.git")
@@ -4120,7 +4119,7 @@ small robot living in the nano world, repair its maker.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jigg2yikihbivzs7hpljr0mghx1l9v4f1cdr8fbmqv2wb51ah8q"))
+                "15l988qcsqgb6rjais0qd5sd2rjanm2708jmzvkariqzz0d6pb93"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (ice-9 regex)
@@ -4137,7 +4136,7 @@ small robot living in the nano world, repair its maker.")
                (search-patches "teeworlds-use-latest-wavpack.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests included
+     `(#:tests? #f                      ; no tests included
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-26))
