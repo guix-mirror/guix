@@ -10590,3 +10590,31 @@ processing futures via compute cluster schedulers etc.  Because of its unified
 API, there is no need to modify any code in order to switch from sequential on
 the local machine to, say, distributed processing on a remote compute cluster.")
     (license license:lgpl2.1+)))
+
+(define-public r-future-apply
+  (package
+    (name "r-future-apply")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "future.apply" version))
+       (sha256
+        (base32
+         "0b6v9rxvnnz13sydbgkapw71hx98fwdczjchgqnspjmq2340kdc0"))))
+    (properties `((upstream-name . "future.apply")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-future" ,r-future)
+       ("r-globals" ,r-globals)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/future.apply")
+    (synopsis "Apply function to elements in parallel using futures")
+    (description
+     "This package provides implementations of @code{apply()},
+@code{eapply()}, @code{lapply()}, @code{Map()}, @code{mapply()},
+@code{replicate()}, @code{sapply()}, @code{tapply()}, and @code{vapply()} that
+can be resolved using any future-supported backend, e.g. parallel on the local
+machine or distributed on a compute cluster.")
+    (license license:gpl2+)))
