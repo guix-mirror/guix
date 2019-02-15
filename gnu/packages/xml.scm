@@ -1257,29 +1257,16 @@ files.  It is designed to be fast and to handle large input files.")
 (define-public libxls
   (package
     (name "libxls")
-    (version "1.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://sourceforge.net/projects/"
-                                  name "/files/" name "-"
-                                  version ".zip"))
-              (sha256
-               (base32
-                "1g8ds7wbhsa4hdcn77xc2c0l3vvz5bx2hx9ng9c9n7aii92ymfnk"))))
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/libxls/libxls/releases/download/"
+                           "v" version "/libxls-" version ".tar.gz"))
+       (sha256
+        (base32 "00j2lrcvvhclmh3z9vy7myqq1br1jnnqkz2wzgk4a1gbg8c5afn5"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Bootstrapping is required in order to fix the test driver script.
-         (replace 'bootstrap
-           (lambda _
-             (invoke "bash" "bootstrap"))))))
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (home-page "http://libxls.sourceforge.net/")
+    (home-page "https://github.com/libxls/libxls")
     (synopsis "Read binary (.xls) Excel spreadsheet files")
     (description
      "libxls is a C library to read .xls spreadsheet files in the binary OLE
