@@ -1254,27 +1254,6 @@ files.  It is designed to be fast and to handle large input files.")
 (define-public python2-defusedxml
   (package-with-python2 python-defusedxml))
 
-(define-public libxls
-  (package
-    (name "libxls")
-    (version "1.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/libxls/libxls/releases/download/"
-                           "v" version "/libxls-" version ".tar.gz"))
-       (sha256
-        (base32 "00j2lrcvvhclmh3z9vy7myqq1br1jnnqkz2wzgk4a1gbg8c5afn5"))))
-    (build-system gnu-build-system)
-    (home-page "https://github.com/libxls/libxls")
-    (synopsis "Read binary (.xls) Excel spreadsheet files")
-    (description
-     "libxls is a C library to read .xls spreadsheet files in the binary OLE
-BIFF8 format as created by Excel 97 and later versions.  It cannot write them.
-
-This package also provides @command{xls2csv} to export Excel files to CSV.")
-    (license license:bsd-2)))
-
 (define-public freexl
   (package
     (name "freexl")
