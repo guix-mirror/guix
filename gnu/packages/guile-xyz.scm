@@ -1253,14 +1253,14 @@ above command-line parameters.")
     (name "guile-hall")
     (version "0.2")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://gitlab.com/a-sassmannshausen/guile-hall")
-               (commit "54aeeb088ea2f1168090b7cdb95e3e70884f52f3")))
-        (file-name "guile-hall-0.2-checkout")
-        (sha256 (base32
-                 "1bkbqgj24xh5b65sw2m98iggpi67b72szx1dsiq3cpzlcxplmgaz"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/a-sassmannshausen/guile-hall")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32
+                "1bkbqgj24xh5b65sw2m98iggpi67b72szx1dsiq3cpzlcxplmgaz"))))
     (build-system gnu-build-system)
     (arguments
       `(#:modules
