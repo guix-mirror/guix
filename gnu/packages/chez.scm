@@ -42,12 +42,12 @@
 (define nanopass
   (let ((version "1.9"))
     (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://github.com/nanopass/nanopass-framework-scheme/archive"
-            "/v" version ".tar.gz"))
-      (sha256 (base32 "11pwyy4jiwhcl2am3a4ciczacjbjkyvdizqzdglb3l1hj2gj6nv2"))
-      (file-name (string-append "nanopass-" version ".tar.gz")))))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/nanopass/nanopass-framework-scheme.git")
+            (commit (string-append "v" version))))
+      (sha256 (base32 "0lrngdna6w7v9vlp1a873hgwrwsz2p0pgkccswa4smzvdyhgfsri"))
+      (file-name (git-file-name "nanopass" version)))))
 
 (define stex
   (let ((version "1.2.1"))
@@ -142,7 +142,7 @@
                          (apply patch-source-shebangs (list #:source src)))
                        (delete-file-recursively new-name)
                        (invoke "mv" orig-name new-name)))
-                    `((,nanopass "nanopass-framework-scheme-1.9" "nanopass")
+                    `((,nanopass "source" "nanopass")
                       (,stex "stex-1.2.1" "stex")))
                ;; The Makefile wants to download and compile "zlib".  We patch
                ;; it to use the one from our 'zlib' package.
