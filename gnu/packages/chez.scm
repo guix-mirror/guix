@@ -539,14 +539,16 @@ strings.")
     (home-page "https://github.com/fedeinthemix/chez-mit")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "1p11q061znwxzxrxg3vw4dbsnpv1dav12hjhnkrjnzyyjvvdm2kn"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "0c7i3b6i90xk96nmxn1pc9272a4yal4v40dm1a4ybdi87x53zkk0"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi))) ; for tests
+     `(("chez-srfi" ,chez-srfi)))       ; for tests
     (native-inputs
      `(("chez-scheme" ,chez-scheme)))
     (arguments
