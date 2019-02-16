@@ -1299,6 +1299,7 @@ PNG, and performs PNG integrity checks and corrections.")
   (package
     (name "libjpeg-turbo")
     (version "2.0.1")
+    (replacement libjpeg-turbo-2.0.2)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
@@ -1327,6 +1328,18 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
+
+(define-public libjpeg-turbo-2.0.2
+  (package
+    (inherit libjpeg-turbo)
+    (version "2.0.2")
+    (source (origin
+              (inherit (package-source libjpeg-turbo))
+              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
+                                  version "/libjpeg-turbo-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))))
 
 (define-public niftilib
   (package
