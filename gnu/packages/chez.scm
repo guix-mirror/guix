@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -179,17 +179,18 @@
          ;; Installation of the documentation requires a running "chez".
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                   (doc (string-append (assoc-ref outputs "doc")
+             (let ((doc (string-append (assoc-ref outputs "doc")
                                        "/share/doc/" ,name "-" ,version)))
-               (setenv "HOME" (getcwd))
-               (setenv "PATH" (string-append (getenv "PATH") ":" bin))
-               (with-directory-excursion "stex"
-                 (system* "make" (string-append "BIN=" bin)))
                (system* "make" "docs")
                (with-directory-excursion "csug"
                  (substitute* "Makefile"
-                   (("/tmp/csug9") doc))
+                   ;; The ‘installdir=’ can't be overruled on the command line.
+                   (("/tmp/csug9") doc)
+                   ;; $m is the ‘machine type’, e.g. ‘ta6le’ on x86_64, but is
+                   ;; set incorrectly for some reason, e.g. to ‘a6le’ on x86_64.
+                   ;; Avoid the whole mess by running the (machine-independent)
+                   ;; ‘installsh’ script at its original location.
+                   (("\\$m/installsh") "makefiles/installsh"))
                  (system* "make" "install")
                  (install-file "csug.pdf" doc))
                (with-directory-excursion "release_notes"
