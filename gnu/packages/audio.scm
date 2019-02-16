@@ -2447,18 +2447,17 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.10.0")
+    (version "0.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/suil-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0j489gm3fhnmwmbgw30bvd4byw1vsy4yazdlnji8jzhcz0qwb5cq"))))
+               "00d43m0nai63ajb7rkm9v084jcih206y17ib3160zcvzc885ji4z"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
-       #:python ,python-2 ;XXX: The bundled waf does not work with Python 3.7.0.
+     `(#:tests? #f        ; no check target
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
