@@ -569,14 +569,16 @@ required to port the program 'Scmutils' to Chez Scheme.")
     (home-page "https://github.com/fedeinthemix/chez-scmutils")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "1a5j61pggaiwl1gl6m038rcy5n8r2sj5nyjmz86jydx97mm5i8hj"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "0lb05wlf8qpgg8y0gdsyaxg1nbfx1qbaqdjvygrp64ndn8fnhq7l"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi)))      ; for tests
+     `(("chez-srfi" ,chez-srfi)))       ; for tests
     (native-inputs
      `(("chez-scheme" ,chez-scheme)))
     (propagated-inputs
@@ -584,7 +586,7 @@ required to port the program 'Scmutils' to Chez Scheme.")
        ("chez-srfi" ,chez-srfi)))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
-       #:tests? #f ; no test suite
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (replace 'configure ,chez-configure)
