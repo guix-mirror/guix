@@ -598,7 +598,7 @@ required to port the program 'Scmutils' to Chez Scheme.")
          (delete 'build)
          (add-after 'install 'install-src
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "install-src" make-flags))))
+             (apply invoke "make" "install-src" make-flags)))
          (add-after 'install-src 'absolute-path-in-scm-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -618,12 +618,13 @@ required to port the program 'Scmutils' to Chez Scheme.")
              (let* ((out (assoc-ref outputs "out"))
                     (mk-file (car (find-files out "Makefile"))))
                (with-directory-excursion (dirname mk-file)
-                 (zero? (apply system* "make" "build" make-flags))))))
+                 (apply invoke "make" "build" make-flags)))))
          (add-after 'build 'clean-up
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
                (for-each delete-file
-                         (find-files out "Makefile|compile-all\\.ss"))))))))
+                         (find-files out "Makefile|compile-all\\.ss"))
+               #t))))))
     (synopsis "Port of MIT/GNU Scheme Scmutils to Chez Scheme")
     (description "This package provides a port of the MIT/GNU Scheme
 Scmutils program to Chez Scheme.  The port consists of a set of
