@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -1677,7 +1677,7 @@ popular spread sheet programs.")
 (define-public yad
   (package
     (name "yad")
-    (version "0.40.3")
+    (version "0.41.0")
     (source
      (origin
        (method git-fetch)
@@ -1686,7 +1686,7 @@ popular spread sheet programs.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vpgbjbkkbk5plicyklzpf65j1vlig4n4bi3qpvrz5bb09ic5alw"))))
+        (base32 "1hkxiich898sbacpg3jflf6i8l4hkfnc0zh10rr376v0mnzbn6jn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
