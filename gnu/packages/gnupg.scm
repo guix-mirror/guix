@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -628,7 +628,7 @@ signing, decryption, verification, and key-listing parsing.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.2.6")
+   (version "2.2.7")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -636,15 +636,14 @@ signing, decryption, verification, and key-listing parsing.")
                   version "/pius-" version ".tar.bz2"))
             (sha256
              (base32
-              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))
-            (patches (search-patches "pius.patch"))))
+              "1nsl7czicv95j0gfz4s82ys3g3h2mwr6cq3ilid8bpz3iy7z4ipy"))))
    (build-system python-build-system)
-   (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
+   (inputs `(("perl" ,perl)             ; for 'pius-party-worksheet'
              ("gpg" ,gnupg)
              ("python-six" ,python2-six)))
    (arguments
     `(#:tests? #f
-      #:python ,python-2                     ;uses the Python 2 'print' syntax
+      #:python ,python-2                ; uses the Python 2 'print' syntax
       #:phases
       (modify-phases %standard-phases
         (add-before
