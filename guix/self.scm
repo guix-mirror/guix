@@ -771,7 +771,7 @@ Info manual."
                                ((_ variable rest ...)
                                 (cons `(variable . ,variable)
                                       (variables rest ...))))))
-    (variables %localstatedir %storedir %sysconfdir %system)))
+    (variables %localstatedir %storedir %sysconfdir)))
 
 (define* (make-config.scm #:key zlib gzip xz bzip2
                           (package-name "GNU Guix")
@@ -789,6 +789,7 @@ Info manual."
                                %guix-version
                                %guix-bug-report-address
                                %guix-home-page-url
+                               %system
                                %store-directory
                                %state-directory
                                %store-database-directory
@@ -797,6 +798,9 @@ Info manual."
                                %gzip
                                %bzip2
                                %xz))
+
+                   (define %system
+                     #$(%current-system))
 
                    #$@(map (match-lambda
                              ((name . value)
