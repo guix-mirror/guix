@@ -122,7 +122,8 @@
              ;; next one; see <https://github.com/cisco/ChezScheme/issues/209>.
              (substitute* "csug/copyright.stex"
                (("\\\\INSERTREVISIONMONTHSPACEYEAR" )
-                "October 2017"))))     ; tarball release date
+                "October 2017"))       ; tarball release date
+             #t))
          ;; Adapt the custom 'configure' script.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -140,7 +141,7 @@
                          (apply unpack (list #:source src))
                          (apply patch-source-shebangs (list #:source src)))
                        (delete-file-recursively new-name)
-                       (system* "mv" orig-name new-name)))
+                       (invoke "mv" orig-name new-name)))
                     `((,nanopass "nanopass-framework-scheme-1.9" "nanopass")
                       (,stex "stex-1.2.1" "stex")))
                ;; The Makefile wants to download and compile "zlib".  We patch
@@ -174,14 +175,14 @@
                  (("/bin/true") (which "true")))
                (substitute* "stex/Makefile"
                  (("PREFIX=/usr") (string-append "PREFIX=" out)))
-               (zero? (system* "./configure" "--threads"
-                               (string-append "--installprefix=" out))))))
+               (invoke "./configure" "--threads"
+                       (string-append "--installprefix=" out)))))
          ;; Installation of the documentation requires a running "chez".
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((doc (string-append (assoc-ref outputs "doc")
                                        "/share/doc/" ,name "-" ,version)))
-               (system* "make" "docs")
+               (invoke "make" "docs")
                (with-directory-excursion "csug"
                  (substitute* "Makefile"
                    ;; The ‘installdir=’ can't be overruled on the command line.
@@ -191,7 +192,7 @@
                    ;; Avoid the whole mess by running the (machine-independent)
                    ;; ‘installsh’ script at its original location.
                    (("\\$m/installsh") "makefiles/installsh"))
-                 (system* "make" "install")
+                 (invoke "make" "install")
                  (install-file "csug.pdf" doc))
                (with-directory-excursion "release_notes"
                  (install-file "release_notes.pdf" doc))
