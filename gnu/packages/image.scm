@@ -1301,8 +1301,8 @@ PNG, and performs PNG integrity checks and corrections.")
     (version "2.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" version "/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
+                                  version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
                 "1zv6z093l3x3jzygvni7b819j7xhn6d63jhcdrckj7fz67n6ry75"))))
