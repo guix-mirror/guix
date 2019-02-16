@@ -880,7 +880,7 @@ over ssh connections.")
 (define-public rename
   (package
     (name "rename")
-    (version "1.00")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -888,7 +888,7 @@ over ssh connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "03yhf8nmqsb0zyliv501fdvwlp589jqfn44yqkrflmpzrbik3zxl"))))
+                "137m8s06r4n038ivlr5r1d9a7q9l7shmwpvnyx053r9ndhvbnkh5"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
