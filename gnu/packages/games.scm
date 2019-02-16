@@ -3428,22 +3428,23 @@ the GNU GPL.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/tintin"
-                                  "/TinTin++ Source Code/" version
-                                  "/tintin" "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pnnbcm96xbj69358568rpvp164rjmcvhnnzs7nvj062pi2hqcxx"))))
+    (version "2.01.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tintin/TinTin++ Source Code/"
+                           (version-major+minor version)
+                           "/tintin-" version ".tar.gz"))
+       (sha256
+        (base32
+         "033n84pyxml3n3gd4dq0497n9w331bnrr1gppwipz9ashmq8jz7v"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
        ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
-     '(#:tests? #f ; no test suite
+     '(#:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          ;; The source is in tt/src.
