@@ -65,12 +65,13 @@
     (version "9.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cisco/ChezScheme/archive/"
-                           "v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cisco/ChezScheme.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "135991hspq0grf26pvl2lkwhp92yz204h6rgiwyym0x6v0xzknd1"))
-       (file-name (string-append "chez-scheme-" version ".tar.gz"))
+        (base32 "132fal5hwiq0bqzvfhjsqr4d11cfdh1670f6286ks29xxj1c04zq"))
+       (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
