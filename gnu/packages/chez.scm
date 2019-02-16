@@ -52,12 +52,12 @@
 (define stex
   (let ((version "1.2.1"))
     (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://github.com/dybvig/stex/archive"
-            "/v" version ".tar.gz"))
-      (sha256 (base32 "03pl3f668h24dn51vccr1sj5lsba9zq3j37bnxjvdadcdaj4qy5z"))
-      (file-name (string-append "stex-" version ".tar.gz")))))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/dybvig/stex.git")
+            (commit (string-append "v" version))))
+      (sha256 (base32 "1jiawhhqnsj42hzmlbq5xby3iarhf8vhiqs0kg1a0zg5jsn6cf8n"))
+      (file-name (git-file-name "stex" version)))))
 
 (define-public chez-scheme
   (package
@@ -143,7 +143,7 @@
                        (delete-file-recursively new-name)
                        (invoke "mv" orig-name new-name)))
                     `((,nanopass "source" "nanopass")
-                      (,stex "stex-1.2.1" "stex")))
+                      (,stex "source" "stex")))
                ;; The Makefile wants to download and compile "zlib".  We patch
                ;; it to use the one from our 'zlib' package.
                (substitute* "configure"
