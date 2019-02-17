@@ -3820,6 +3820,52 @@ file or directories are modified.")
     (home-page "http://guardgem.org/")
     (license license:expat)))
 
+(define-public ruby-tilt
+  (package
+    (name "ruby-tilt")
+    (version "2.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "tilt" version))
+       (sha256
+        (base32
+         "0ca4k0clwf0rkvy7726x4nxpjxkpv67w043i39saxgldxd97zmwz"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-some-dependencies
+           (lambda _
+             (substitute* "Gemfile"
+               ;; TODO ronn is used for generating the manual
+               (("gem 'ronn'.*") "\n")
+               ;; ruby-haml has a runtime dependency on ruby-tilt, so don't
+               ;; pass it in as a native-input
+               (("gem 'haml'.*") "\n")
+               ;; TODO Not all of these gems are packaged for Guix yet:
+               ;; less, coffee-script, livescript, babel-transpiler,
+               ;; typescript-node
+               (("if can_execjs") "if false")
+               ;; Disable the secondary group to reduce the number of
+               ;; dependencies. None of the normal approaches work, so patch
+               ;; the Gemfile instead.
+               (("group :secondary") "[].each"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-builder" ,ruby-builder)
+       ("ruby-erubis" ,ruby-erubis)
+       ("ruby-markaby" ,ruby-markaby)
+       ("ruby-sassc" ,ruby-sassc)))
+    (synopsis "Generic interface to multiple Ruby template engines")
+    (description
+     "Tilt is a thin interface over a number of different Ruby template
+engines in an attempt to make their usage as generic as possible.")
+    (home-page "https://github.com/rtomayko/tilt/")
+    (license license:expat)))
+
 (define-public ruby-thread-safe
   (package
     (name "ruby-thread-safe")
