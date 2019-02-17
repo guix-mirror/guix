@@ -29,32 +29,32 @@
 
 
 (define-public python-cypari2
- (package
-   (name "python-cypari2")
-   (version "2.0.3")
-   (source
+  (package
+    (name "python-cypari2")
+    (version "2.0.3")
+    (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cypari2" version))
        (sha256
-         (base32
-           "0mghbmilmy34xp1d50xdx76sijqxmpkm2bcgx2v1mdji2ff7n0yc"))))
-   (build-system python-build-system)
-   (native-inputs
+        (base32
+         "0mghbmilmy34xp1d50xdx76sijqxmpkm2bcgx2v1mdji2ff7n0yc"))))
+    (build-system python-build-system)
+    (native-inputs
      `(("python-cython" ,python-cython)))
-   (propagated-inputs
+    (propagated-inputs
      `(("python-cysignals" ,python-cysignals)))
-   (inputs
+    (inputs
      `(("gmp" ,gmp)
        ("pari-gp", pari-gp)))
-   (home-page "https://cypari2.readthedocs.io/")
-   (synopsis
+    (home-page "https://cypari2.readthedocs.io/")
+    (synopsis
      "Python interface to the number theory library libpari")
-   (description
+    (description
      "Cypari2 provides a Python interface to the number theory library
 PARI/GP.  It has been spun off from the SageMath mathematics software system,
 but it can be used independently.")
-   (license license:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public python2-cypari2
   (package-with-python2 python-cypari2))
