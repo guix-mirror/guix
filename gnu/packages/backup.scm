@@ -606,10 +606,7 @@ detection, and lossless compression.")
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)
-       ;; For generating the documentation.
-       ("python-sphinx" ,python-sphinx)
-       ("python-guzzle-sphinx-theme" ,python-guzzle-sphinx-theme)))
+       ("python-pytest" ,python-pytest)))
     (inputs
      `(("acl" ,acl)
        ("libb2" ,libb2)
