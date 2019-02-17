@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
@@ -375,14 +375,14 @@ types of devices that provide serial consoles.")
     (version "1.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.johnath.com/" name "/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "http://www.johnath.com/beep/"
+                                  "beep-" version ".tar.gz"))
               (sha256
                (base32
                 "0bgch6jq5cahakk3kbr9549iysf2dik09afixxy5brbxk1xfzb2r"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests.
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
