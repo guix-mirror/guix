@@ -3788,6 +3788,27 @@ rate.")
     (home-page "https://github.com/paul/progress_bar")
     (license license:wtfpl2)))
 
+(define-public ruby-dep
+  (package
+    (name "ruby-dep")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby_dep" version))
+       (sha256
+        (base32
+         "1c1bkl97i9mkcvkn1jks346ksnvnnp84cs22gwl0vd7radybrgy5"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (synopsis "Creates a version constraint of supported Rubies")
+    (description
+     "This package helps create a version constraint of supported Rubies,
+suitable for a gemspec file.")
+    (home-page "https://github.com/e2/ruby_dep")
+    (license license:expat)))
+
 (define-public ruby-progressbar
   (package
     (name "ruby-progressbar")
