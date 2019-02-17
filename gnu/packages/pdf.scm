@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -835,7 +835,7 @@ the PDF pages.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.kraxel.org/releases/fbida/"
-                                  name "-" version ".tar.gz"))
+                                  "fbida-" version ".tar.gz"))
               (sha256
                (base32
                 "0bw224vb7jh0lrqaf4jgxk48xglvxs674qcpj5y0axyfbh896cfk"))))
