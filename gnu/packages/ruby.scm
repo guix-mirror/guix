@@ -5588,6 +5588,31 @@ boolean expression used by Cucumber.")
     (home-page "https://github.com/cucumber/tag-expressions-ruby")
     (license license:expat)))
 
+(define-public ruby-bindex
+  (package
+    (name "ruby-bindex")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bindex" version))
+       (sha256
+        (base32
+         "1wvhf4v8sk5x8li03pcc0v0wglmyv7ikvvg05bnms83dfy7s4k8i"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "default"))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Provides access for bindings relating to Ruby exceptions")
+    (description
+     "@code{bindex} provides a way to access the bindings that relate to
+exceptions in Ruby, providing more information about the context in which the
+exception occurred.")
+    (home-page "https://github.com/gsamokovarov/bindex")
+    (license license:expat)))
+
 (define-public ruby-bio-logger
   (package
     (name "ruby-bio-logger")
