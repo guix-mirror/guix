@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
@@ -426,7 +426,7 @@ desktops.")
 (define-public qbittorrent
   (package
     (name "qbittorrent")
-    (version "4.1.3")
+    (version "4.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -435,7 +435,7 @@ desktops.")
               (file-name (string-append name "-release-" version ".tar.gz"))
               (sha256
                (base32
-                "00zrpnwanq9f7maky2z4wnzw08xy902s77scm2gcvxxxankr4j92"))))
+                "0b0xy48szhbdljvy1c92rj31kdh0jpc4v4sni5gz9nd7430dkivn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
