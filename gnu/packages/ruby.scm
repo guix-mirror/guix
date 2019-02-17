@@ -2242,6 +2242,29 @@ use GNU gettext tools for maintenance.")
     (home-page "http://ranguba.org/packnga/")
     (license license:lgpl2.0+)))
 
+(define-public ruby-test-construct
+  (package
+    (name "ruby-test-construct")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "test_construct" version))
+       (sha256
+        (base32
+         "1a2ym3l068d0pxzzr95kvqx87zpdsarxslz9ygd4qfm9frrz0kgj"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Creates temporary files and directories for testing")
+    (description
+     "TestConstruct is a @acronym{DSL, Domain Specific Language} for creating
+temporary files and directories during tests.")
+    (home-page "https://github.com/bhb/test_construct")
+    (license license:expat)))
+
 (define-public ruby-test-unit
   (package
     (name "ruby-test-unit")
