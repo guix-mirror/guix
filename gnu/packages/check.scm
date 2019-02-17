@@ -711,23 +711,22 @@ and many external plugins.")
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
-         (base32
-          "0qnpp9y3ygx4jk4pf5ad71fh2skbvnr6gl54m7rg5qysnx4g0q73"))))
+         (base32 "0cyxbbghx2l4p60w10k00j1j74q1ngfiffr0pxn73ababjr69dha"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
           (lambda _
-            ;; options taken from tox.ini
+            ;; Options taken from tox.ini.
             ;; TODO: make "--restructuredtext" tests pass. They currently fail
-            ;; with "Duplicate implicit target name"
+            ;; with "Duplicate implicit target name".
             (invoke "python" "./setup.py" "check"
                     "--strict" "--metadata"))))))
     (propagated-inputs
