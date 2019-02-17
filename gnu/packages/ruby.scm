@@ -2170,6 +2170,29 @@ localization.")
     (home-page "https://github.com/ruby-gettext/locale")
     (license (list license:lgpl3+ license:ruby))))
 
+(define-public ruby-temple
+  (package
+    (name "ruby-temple")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "temple" version))
+       (sha256
+        (base32
+         "158d7ygbwcifqnvrph219p7m78yjdjazhykv5darbkms7bxm5y09"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-tilt" ,ruby-tilt)
+       ("ruby-bacon" ,ruby-bacon)
+       ("ruby-erubis" ,ruby-erubis)))
+    (synopsis "Template compilation framework in Ruby")
+    (description
+     "Temple is an abstraction and framework for compiling templates to pure
+Ruby.")
+    (home-page "https://github.com/judofyr/temple")
+    (license license:expat)))
+
 (define-public ruby-text
   (package
     (name "ruby-text")
