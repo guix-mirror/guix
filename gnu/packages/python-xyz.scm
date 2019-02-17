@@ -4682,6 +4682,31 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python2-ipykernel
   (package-with-python2 python-ipykernel))
 
+(define-public python-pari-jupyter
+  (package
+    (name "python-pari-jupyter")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pari_jupyter" version))
+       (sha256
+        (base32
+         "1yash0p422nnin7z58b99d0p23nx79f5m0mainc9hsjg72jhdhr6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)))
+    (inputs
+     `(("pari-gp" ,pari-gp)
+       ("readline" ,readline)))
+    (arguments
+     `(#:tests? #f)) ; no test suite
+    (home-page
+     "https://github.com/jdemeyer/pari_jupyter")
+    (synopsis "A Jupyter kernel for PARI/GP")
+    (description "The package provides a PARI/GP kernel for Jupyter.")
+    (license license:gpl3+)))
+
 ;; This is the latest release of the LTS version of ipython with support for
 ;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
 ;; dropped support for Python 2.7.  We may want to rename this package.
