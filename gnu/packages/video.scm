@@ -3026,7 +3026,7 @@ It counts more than 100 plugins.")
 (define-public motion
   (package
     (name "motion")
-    (version "4.2")
+    (version "4.2.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
               (method git-fetch)
@@ -3035,7 +3035,7 @@ It counts more than 100 plugins.")
                     (commit (string-append "release-" version))))
               (sha256
                (base32
-                "0c0q6dl4v561m5y8bp0c0h4p3s52fjgcdnsrrf5ygdi288d3rfxv"))
+                "05c1gx75xy2hw49x6vkydvwxbr80kipsc3nr906k3hq8735svx6f"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -3059,7 +3059,7 @@ It counts more than 100 plugins.")
                                          (assoc-ref %outputs "out")
                                          "/etc"))
 
-       #:tests? #f))                              ;no 'check' target
+       #:tests? #f))                    ; no 'check' target
     (synopsis "Detect motion from video signals")
     (description
      "Motion is a program that monitors the video signal from one or more
