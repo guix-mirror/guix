@@ -3098,6 +3098,27 @@ options and parsing command line flags.")
                (base32
                 "00w8g3j7k7kl8ri2cf1m58ckxk8rn350gp4chfscmgv6pq1spk3n"))))))
 
+(define-public ruby-multi-xml
+  (package
+    (name "ruby-multi-xml")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "multi_xml" version))
+       (sha256
+        (base32
+         "0lmd4f401mvravi1i1yq7b2qjjli0yq7dfc4p1nj5nwajp7r6hyj"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (synopsis "Swappable XML backends for Ruby")
+    (description
+     "@code{MultiXml} provides swappable XML backends utilizing either LibXML,
+Nokogiri, Ox, or REXML.")
+    (home-page "https://github.com/sferik/multi_xml")
+    (license license:expat)))
+
 (define-public ruby-multipart-post
   (package
     (name "ruby-multipart-post")
