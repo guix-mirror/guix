@@ -2158,7 +2158,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.11.3")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -2166,7 +2166,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "1in2hdan1g62wpvgjlj8mci85551ipr1964j2b9j06gm3blpihcx"))))
+                "1hx5jm9afng6hw9wyp524z8nwdp6w053pca0w2c0gqpgrmvjxvd2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2179,8 +2179,8 @@ provides a simple way to achieve this.")
              #t)))))
     (native-inputs
      `(("vala" ,vala)
-       ("python" ,python) ; for tests
-       ("which" ,which) ; for tests
+       ("python" ,python)               ; for tests
+       ("which" ,which)                 ; for tests
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (inputs
