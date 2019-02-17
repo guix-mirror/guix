@@ -4061,16 +4061,16 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
 (define-public perl-inline
   (package
    (name "perl-inline")
-   (version "0.80")
+   (version "0.81")
    (source
     (origin
      (method url-fetch)
      (uri (string-append
-           "mirror://cpan/authors/id/I/IN/INGY/Inline-"
+           "mirror://cpan/authors/id/T/TI/TINITA/Inline-"
            version ".tar.gz"))
      (sha256
       (base32
-       "1xnf5hykcr54271x5jsnr61bcv1c7x39cy4kdcrkxm7bn62djavy"))))
+       "1qxi0xvn8rqj4sca9gwb1xkm6bdz33x57li5kfls6mnavil3i5qz"))))
    (build-system perl-build-system)
    (native-inputs
     `(("perl-test-warn" ,perl-test-warn)))
