@@ -15060,3 +15060,24 @@ make your work easier.")
 and dates in \"human readable\" forms.  For example, it would display
 \"12345591313\" as \"12.3 billion\".")
     (license license:expat)))
+
+(define-public python-txaio
+  (package
+    (name "python-txaio")
+    (version "18.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "txaio" version))
+        (sha256
+         (base32
+          "1zmpdph6zddgrnkkcykh6qk5s46l7s5mzfqrh82m4b5iffn61qv7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-twisted" ,python-twisted)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/crossbario/txaio")
+    (synopsis "Compatibility layer between Python asyncio and Twisted")
+    (description "Txaio provides a compatibility layer between the Python
+@code{asyncio} module and @code{Twisted}.")
+    (license license:expat)))
