@@ -1225,6 +1225,48 @@ authentication.")
     (home-page "https://github.com/omniauth/omniauth")
     (license license:expat)))
 
+(define-public ruby-omniauth-oauth2
+  (package
+    (name "ruby-omniauth-oauth2")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "omniauth-oauth2" version))
+       (sha256
+        (base32
+         "11mi36l9d97r77q99jnafdc1yaa0a9wahhpp7dj7ank8q52g7g79"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unnecessary-dependencies
+           (lambda _
+             ;; The coveralls gem submits coverage information to an online
+             ;; service, and is unnecessary when running the tests
+             (substitute* "Gemfile"
+               ((".*coveralls\"") ""))
+             (substitute* "spec/helper.rb"
+               (("require \"coveralls\"") "")
+               (("Coveralls::SimpleCov::Formatter") ""))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-oauth2" ,ruby-oauth2)
+       ("ruby-omniauth" ,ruby-omniauth)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-rack-test" ,ruby-rack-test)
+       ("ruby-webmock" ,ruby-webmock-2)))
+    (synopsis "Abstract OAuth2 strategy for OmniAuth")
+    (description
+     "This library provides a generic OAuth2 strategy for OmniAuth.  It
+doesn't provide a way to gather user information, so should be used as a
+building block for authentication strategies.")
+    (home-page "https://github.com/omniauth/omniauth-oauth2")
+    (license license:expat)))
+
 (define-public ruby-open4
   (package
   (name "ruby-open4")
