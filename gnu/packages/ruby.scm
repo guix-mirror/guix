@@ -7415,6 +7415,81 @@ the @file{spec} directory.")
 features that don't exist yet like variables, nesting, mixins and inheritance.")
     (license license:expat)))
 
+(define-public ruby-sassc
+  (package
+    (name "ruby-sassc")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sassc" version))
+       (sha256
+        (base32
+         "1sr4825rlwsrl7xrsm0sgalcpf5zgp4i56dbi3qxfa9lhs8r6zh4"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; TODO: This would be better as a snippet, but the ruby-build-system
+         ;; doesn't seem to support that
+         (add-after 'unpack 'remove-libsass
+           (lambda _
+             (delete-file-recursively "ext")
+             #t))
+         (add-after 'unpack 'dont-check-the-libsass-version
+           (lambda _
+             (substitute* "test/native_test.rb"
+               (("assert_equal.*Native\\.version") ""))
+             #t))
+         (add-after 'unpack 'remove-git-from-gemspec
+           (lambda _
+             (substitute* "sassc.gemspec"
+               (("`git ls-files -z`") "`find . -type f -print0 |sort -z`")
+               (("`git submodule --quiet foreach pwd`") "''"))
+             #t))
+         (add-after 'unpack 'remove-extensions-from-gemspec
+           (lambda _
+             (substitute* "sassc.gemspec"
+               (("\\[\"ext/Rakefile\"\\]") "[]"))
+             #t))
+         (add-after 'unpack 'fix-Rakefile
+           (lambda _
+             (substitute* "Rakefile"
+               (("test: 'libsass:compile'") ":test"))
+             #t))
+         (add-after 'unpack 'remove-unnecessary-dependencies
+           (lambda _
+             (substitute* "test/test_helper.rb"
+               (("require \"pry\"") ""))
+             #t))
+         (add-before 'build 'patch-native.rb
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/sassc/native.rb"
+               ((".*gem_root = spec.gem_dir") "")
+               (("ffi_lib .*\n")
+                (string-append
+                 "ffi_lib '" (assoc-ref inputs "libsass") "/lib/libsass.so'")))
+             #t))
+         ;; The gemspec still references the libsass files, so just keep the
+         ;; one in the gem.
+         (delete 'extract-gemspec))))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)
+       ("ruby-rake" ,ruby-rake)))
+    (inputs
+     `(("libsass" ,libsass)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest-around" ,ruby-minitest-around)
+       ("ruby-test-construct" ,ruby-test-construct)))
+    (synopsis "Use libsss from Ruby")
+    (description
+     "This library provides Ruby q@acronym{FFI, Foreign Function Interface}
+bindings to the libsass library.  This enables rendering
+@acronym{SASS,Syntactically awesome style sheets} from Ruby code.")
+    (home-page "https://github.com/sass/sassc-ruby")
+    (license license:expat)))
+
 (define-public ruby-jekyll-sass-converter
   (package
     (name "ruby-jekyll-sass-converter")
