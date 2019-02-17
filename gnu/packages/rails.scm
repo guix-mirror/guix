@@ -65,6 +65,33 @@ migration.")
     (home-page "https://github.com/rails/spring")
     (license license:expat)))
 
+(define-public ruby-sass-rails
+  (package
+    (name "ruby-sass-rails")
+    (version "5.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sass-rails" version))
+       (sha256
+        (base32
+         "1wa63sbsimrsf7nfm8h0m1wbsllkfxvd7naph5d1j6pbc555ma7s"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-railties" ,ruby-railties)
+       ("ruby-sass" ,ruby-sass)
+       ("ruby-sprockets" ,ruby-sprockets)
+       ("ruby-sprockets-rails" ,ruby-sprockets-rails)
+       ("ruby-tilt" ,ruby-tilt)))
+    (synopsis "Sass adapter for the Rails asset pipeline")
+    (description
+     "This library integrates the SASS stylesheet language into Ruby on
+Rails.")
+    (home-page "https://github.com/rails/sass-rails")
+    (license license:expat)))
+
 (define-public ruby-debug-inspector
   (package
     (name "ruby-debug-inspector")
