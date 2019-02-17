@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -996,3 +996,23 @@ relevant RFCs too.")
 
 (define-public python2-service-identity
   (package-with-python2 python-service-identity))
+
+(define-public python-hkdf
+  (package
+    (name "python-hkdf")
+    (version "0.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "hkdf" version))
+        (sha256
+         (base32
+          "1jhxk5vhxmxxjp3zj526ry521v9inzzl8jqaaf0ma65w6k332ak2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/casebeer/python-hkdf")
+    (synopsis "HMAC-based Extract-and-Expand Key Derivation Function (HKDF)")
+    (description "This package provides a Python implementation of the HMAC Key
+Derivation function (HKDF) defined in RFC 5869.")
+    (license license:bsd-2)))
