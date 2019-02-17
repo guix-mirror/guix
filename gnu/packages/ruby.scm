@@ -5815,6 +5815,29 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
     (home-page "https://github.com/knu/ruby-unf")
     (license license:bsd-2)))
 
+(define-public ruby-warden
+  (package
+    (name "ruby-warden")
+    (version "1.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "warden" version))
+       (sha256
+        (base32
+         "1fr9n9i9r82xb6i61fdw4xgc7zjv7fsdrr4k0njchy87iw9fl454"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-rack" ,ruby-rack)))
+    (synopsis "Rack middleware providing authentication")
+    (description
+     "Warden is a Rack-based middleware that provides a mechanism for
+authentication in Ruby web applications.")
+    (home-page "https://github.com/wardencommunity/warden")
+    (license license:expat)))
+
 (define-public ruby-webmock-2
   (package
     (name "ruby-webmock")
