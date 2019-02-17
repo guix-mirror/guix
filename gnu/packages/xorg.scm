@@ -3355,7 +3355,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
 (define-public xf86-video-tdfx
   (package
     (name "xf86-video-tdfx")
-    (version "1.4.7")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
@@ -3365,7 +3365,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0hia45z4jc472fxp00803nznizcn4h1ybp63jcsb4lmd9vhqxx2c"))))
+           "0qc5wzwf1n65si9rc37bh224pzahh7gp67vfimbxs0b9yvhq0i9g"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
