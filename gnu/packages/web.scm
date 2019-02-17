@@ -1284,56 +1284,53 @@ stylesheets, you'll need to use another program that uses this library,
     (license l:expat)))
 
 (define-public sassc
-  ;; libsass must be statically linked and it isn't included in the sassc
-  ;; release tarballs, hence this odd package recipe.
-  (let* ((version "3.4.5")
-         (libsass
-          (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/sass/libsass/archive/"
-                  version ".tar.gz"))
-            (file-name (string-append "libsass-" version ".tar.gz"))
-            (sha256
-             (base32
-              "1j22138l5ymqjfj5zan9d2hipa3ahjmifgpjahqy1smlg5sb837x")))))
-    (package
-      (name "sassc")
-      (version version)
-      (source (origin
-                (method url-fetch)
-                (uri (string-append "https://github.com/sass/sassc/archive/"
-                                    version ".tar.gz"))
-                (file-name (string-append "sassc-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1xk4kmmvziz9sal3swpqa10q0s289xjpcz8aggmly8mvxvmngsi9"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags
-         (list "CC=gcc"
-               (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:test-target "test"
-         ;; FIXME: "make test" rebuilds the application and gets lost in a
-         ;; non-existing directory.
-         #:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'bootstrap)
-           (delete 'configure)
-           (add-after 'unpack 'unpack-libsass-and-set-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
-               (setenv "SASS_LIBSASS_PATH"
-                       (string-append (getcwd) "/libsass-" ,version))
-               #t)))))
-      (inputs
-       `(("libsass" ,libsass)))
-      (synopsis "CSS pre-processor")
-      (description "SassC is a compiler written in C for the CSS pre-processor
+  (package
+    (name "sassc")
+    (version "3.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sass/sassc.git")
+                    (commit  version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jsfz1zg4gwk0dq8i92ll12axs3s70wsdsmdyi71zx8zmvib5nl6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ;; I don't believe sassc contains any tests
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("build-shared: \\$\\(RESOURCES\\) \\$\\(OBJECTS\\) \\$\\(LIB_SHARED\\)")
+                "build-shared: $(RESOURCES) $(OBJECTS)")
+               (("\\$\\(SASSC_EXE\\): libsass build")
+                "$(SASSC_EXE): build")
+               (("install: libsass-install-\\$\\(BUILD\\) \\\\")
+                "install: \\"))
+             #t))
+         ;; This phase fails for some reason
+         (delete 'bootstrap)
+         ;; There is no configure script
+         (delete 'configure)
+         (add-before 'build 'setup-environment
+           (lambda _
+             (setenv "BUILD" "shared")
+             (setenv "SASSC_VERSION" ,version)
+             #t)))))
+    (inputs
+     `(("libsass" ,libsass)))
+    (synopsis "CSS pre-processor")
+    (description "SassC is a compiler written in C for the CSS pre-processor
 language known as SASS.")
-      (home-page "http://sass-lang.com/libsass")
-      (license l:expat))))
+    (home-page "http://sass-lang.com/libsass")
+    (license l:expat)))
 
 
 (define-public perl-apache-logformat-compiler
