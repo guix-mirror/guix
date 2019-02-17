@@ -2039,7 +2039,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.10.0")
+    (version "6.12.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2048,16 +2048,10 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ki86yslr5ywa6sz8pjrgd9a4rn2rr4mss2zkmqi7pq8prgsm1fr"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; As of glibc 2.26, <xlocale.h> no longer is.
-                          (substitute* "src/framework/mlt_property.h"
-                            (("xlocale\\.h") "locale.h"))
-                          #t))))
+                "0pzm3mjbbdl2rkbswgyfkx552xlxh2qrwzsi2a4dicfr92rfgq6w"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags '("CC=gcc" "CXX=g++ -std=gnu++11")
        #:configure-flags
        (list "--enable-gpl3"
@@ -2065,14 +2059,14 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        #:phases
        (modify-phases %standard-phases
          (add-after
-          'configure 'override-LDFLAGS
-          (lambda* (#:key outputs #:allow-other-keys)
-            (substitute* "config.mak"
-              (("LDFLAGS\\+=")
-               (string-append "LDFLAGS+=-Wl,-rpath="
-                              (assoc-ref outputs "out")
-                              "/lib ")))
-            #t)))))
+             'configure 'override-LDFLAGS
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "config.mak"
+               (("LDFLAGS\\+=")
+                (string-append "LDFLAGS+=-Wl,-rpath="
+                               (assoc-ref outputs "out")
+                               "/lib ")))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg-3.4)
