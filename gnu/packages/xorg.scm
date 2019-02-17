@@ -2908,7 +2908,7 @@ X server.")
 (define-public xf86-video-i128
   (package
     (name "xf86-video-i128")
-    (version "1.3.6")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -2918,8 +2918,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "171b8lbxr56w3isph947dnw7x87hc46v6m3mcxdcz44gk167x0pq"))
-        (patches (search-patches "xf86-video-i128-remove-mibstore.patch"))))
+           "1snhpv1igrhifcls3r498kjd14ml6x2xvih7zk9xlsd1ymmhlb4g"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
