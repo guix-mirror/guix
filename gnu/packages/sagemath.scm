@@ -83,7 +83,8 @@ but it can be used independently.")
     (synopsis
      "GMP/MPIR, MPFR, and MPC interface to Python 2.6+ and 3.x")
     (description
-     "GMP/MPIR, MPFR, and MPC interface to Python 2.6+ and 3.x")
+     "This package provides a Python interface to the GNU multiprecision
+libraries GMO, MPFR and MPC.")
     (license license:lgpl3+)))
 
 (define-public python2-gmpy2
