@@ -413,6 +413,34 @@ application bootup, plugins, generators, and Rake tasks.")
     "https://github.com/rails/sprockets-rails")
    (license license:expat)))
 
+(define-public ruby-with-advisory-lock
+  (package
+    (name "ruby-with-advisory-lock")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "with_advisory_lock" version))
+       (sha256
+        (base32
+         "1k37hxgmaqgsd54gplm5xim9nw3ghvqsbzaw7q4q64ha1nbd9a41"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; TODO Tests require a running MySQL service
+    (propagated-inputs
+     `(("ruby-activerecord" ,ruby-activerecord)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-mysql2" ,ruby-mysql2)))
+    (synopsis "Advisory locking for ActiveRecord")
+    (description
+     "The With advisory lock gem adds advisory locking to ActiveRecord for
+PostgreSQL and MySQL.  SQLite is also supported, but this uses the filesystem
+for locks.")
+    (home-page "https://closuretree.github.io/with_advisory_lock/")
+    (license license:expat)))
+
 (define-public ruby-rails
   (package
    (name "ruby-rails")
