@@ -440,6 +440,62 @@ application bootup, plugins, generators, and Rake tasks.")
     "https://github.com/rails/sprockets-rails")
    (license license:expat)))
 
+(define-public ruby-web-console
+  (package
+    (name "ruby-web-console")
+    (version "3.7.0")
+    (source
+     (origin
+       ;; Download from GitHub as test files are not provided in the gem.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rails/web-console.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ir999p8cnm3l3zwbgpwxxcq1vwkj8d0d3r24362cyaf4v1rglq2"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Gemfile
+           (lambda _
+             (substitute* "Gemfile"
+               ;; Remove the github bit from the Gemfile, so that the Guix
+               ;; packages are used.
+               ((", github: .*") "\n")
+               ;; The usual methods of not loading this group don't work, so
+               ;; patch the Gemfile.
+               (("group :development") "[].each")
+               ;; tzinfo-data is propagated by ruby-activesupport, but it
+               ;; needs to be in the Gemfile to become available.
+               (("group :test do") "group :test do\n  gem 'tzinfo-data'"))
+             #t))
+         (add-after 'unpack 'fix-mocha-minitest-require
+           (lambda _
+             (substitute* "test/test_helper.rb"
+               ;; This chanegd in recent versions of Mocha
+               (("mocha/minitest") "mocha/mini_test"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-actionview" ,ruby-actionview)
+       ("ruby-activemodel" ,ruby-activemodel)
+       ("ruby-bindex" ,ruby-bindex)
+       ("ruby-railties" ,ruby-railties)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rails" ,ruby-rails)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "Debugging tool for your Ruby on Rails applications")
+    (description
+     "This package allows you to create an interactive Ruby session in your
+browser.  Those sessions are launched automatically in case of an error and
+can also be launched manually in any page.")
+    (home-page "https://github.com/rails/web-console")
+    (license license:expat)))
+
 (define-public ruby-with-advisory-lock
   (package
     (name "ruby-with-advisory-lock")
