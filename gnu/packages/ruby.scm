@@ -1174,6 +1174,33 @@ complexity.")
     (home-page "https://github.com/ThoughtWorksStudios/saikuro_treemap")
     (license license:expat)))
 
+(define-public ruby-oauth2
+  (package
+    (name "ruby-oauth2")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "oauth2" version))
+       (sha256
+        (base32
+         "0av6nlb5y2sm6m8fx669ywrqa9858yqaqfqzny75nqp3anag89qh"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-faraday" ,ruby-faraday)
+       ("ruby-jwt" ,ruby-jwt)
+       ("ruby-multi-json" ,ruby-multi-json)
+       ("ruby-multi-xml" ,ruby-multi-xml)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Ruby wrapper for the OAuth 2.0")
+    (description
+     "This package provides a Ruby wrapper for the OAuth 2.0 protocol built
+with a similar style to the original OAuth spec.")
+    (home-page "https://github.com/oauth-xx/oauth2")
+    (license license:expat)))
+
 (define-public ruby-open4
   (package
   (name "ruby-open4")
