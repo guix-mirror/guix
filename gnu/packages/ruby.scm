@@ -1201,6 +1201,30 @@ with a similar style to the original OAuth spec.")
     (home-page "https://github.com/oauth-xx/oauth2")
     (license license:expat)))
 
+(define-public ruby-omniauth
+  (package
+    (name "ruby-omniauth")
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "omniauth" version))
+       (sha256
+        (base32
+         "1p16h1rp8by05k8gfw17xjhgwp60dk8qmj1xalv1n23kmxfsxb1x"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-hashie" ,ruby-hashie)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Generalized Rack framework for multiple-provider authentication")
+    (description
+     "This package provides a generalized Rack framework for multiple-provider
+authentication.")
+    (home-page "https://github.com/omniauth/omniauth")
+    (license license:expat)))
+
 (define-public ruby-open4
   (package
   (name "ruby-open4")
