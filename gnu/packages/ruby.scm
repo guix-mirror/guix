@@ -1326,6 +1326,31 @@ the GNOME Libxml2 XML toolkit.")
     (home-page "https://xml4r.github.com/libxml-ruby")
     (license license:expat)))
 
+(define-public ruby-lino
+  (package
+    (name "ruby-lino")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "lino" version))
+       (sha256
+        (base32
+         "11d29g0fk372b9fcpyr0k6hxm2b4j4igpysmi542hgbbgqgp9cd3"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-hamster" ,ruby-hamster)
+       ("ruby-open4" ,ruby-open4)))
+    (synopsis "Build and execute commands in Ruby")
+    (description
+     "@code{Lino} provides an interface to run external commands.  It provides
+an interface to add options as well as managing the standard input, output and
+error streams.")
+    (home-page "https://github.com/tobyclemson/lino")
+    (license license:expat)))
+
 (define-public ruby-xml-simple
   (package
     (name "ruby-xml-simple")
