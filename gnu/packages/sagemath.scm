@@ -64,28 +64,27 @@ but it can be used independently.")
 ;; use an alpha release. On the other hand, Sage can be built without it.
 (define-public python-gmpy2
   (package
-   (name "python-gmpy2")
-   (version "2.0.8")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "gmpy2" version ".zip"))
-       (sha256
-         (base32
-           "0grx6zmi99iaslm07w6c2aqpnmbkgrxcqjrqpfq223xri0r3w8yx"))))
-   (build-system python-build-system)
-   (native-inputs
-      `(("unzip" ,unzip)))
-   (inputs
-      `(("gmp" ,gmp)
-        ("mpfr" ,mpfr)
-        ("mpc" ,mpc)))
-   (home-page "https://github.com/aleaxit/gmpy")
-   (synopsis
+    (name "python-gmpy2")
+    (version "2.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gmpy2" version ".zip"))
+              (sha256
+               (base32
+                "0grx6zmi99iaslm07w6c2aqpnmbkgrxcqjrqpfq223xri0r3w8yx"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("mpc" ,mpc)))
+    (home-page "https://github.com/aleaxit/gmpy")
+    (synopsis
      "GMP/MPIR, MPFR, and MPC interface to Python 2.6+ and 3.x")
-   (description
+    (description
      "GMP/MPIR, MPFR, and MPC interface to Python 2.6+ and 3.x")
-   (license license:lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python2-gmpy2
   (package-with-python2 python-gmpy2))
