@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages ruby)
   #:use-module (guix build-system ruby))
 
@@ -120,6 +121,59 @@ Rails.")
 API.")
     (home-page
      "https://github.com/banister/debug_inspector")
+    (license license:expat)))
+
+(define-public ruby-autoprefixer-rails
+  (package
+    (name "ruby-autoprefixer-rails")
+    (version "9.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "autoprefixer-rails" version))
+       (sha256
+        (base32
+         "0fxbfl3xrrjj84n98x24yzxbz4nvm6c492dxj41kkrl9z97ga13i"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'remove-unnecessary-dependencies
+           (lambda _
+             ;; Remove the testing of compass, as it's use is deprecated, and
+             ;; it's unpackaged for Guix
+             (substitute* "autoprefixer-rails.gemspec"
+               ((".*%q<compass>.*") "\n")
+               (("\"spec/compass_spec\\.rb\"\\.freeze, ") ""))
+             (delete-file "spec/compass_spec.rb")
+
+             (substitute* "Gemfile"
+               ;; Remove overly strict requirement on sprockets
+               ((", '>= 4\\.0\\.0\\.beta1'") "")
+               ;; The mini_racer gem isn't packaged yet, and it's not directly
+               ;; required, as other backends for ruby-execjs can be used.
+               (("gem 'mini_racer'") "")
+               ;; For some reason, this is required for the gems to be picked
+               ;; up
+               (("gemspec") "gemspec\ngem 'tzinfo-data'\ngem 'sass'"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rails" ,ruby-rails)
+       ("ruby-rspec-rails" ,ruby-rspec-rails)
+       ;; This is needed for a test, but I'm unsure why
+       ("ruby-sass" ,ruby-sass)
+       ;; This is used as the ruby-execjs runtime
+       ("node" ,node)))
+    (propagated-inputs
+     `(("ruby-execjs" ,ruby-execjs)))
+    (synopsis "Parse CSS and add vendor prefixes to CSS rules")
+    (description
+     "This gem provides Ruby and Ruby on Rails integration with Autoprefixer,
+which can parse CSS and add vendor prefixes to CSS rules using values from the
+Can I Use website.")
+    (home-page "https://github.com/ai/autoprefixer-rails")
     (license license:expat)))
 
 (define-public ruby-activemodel
