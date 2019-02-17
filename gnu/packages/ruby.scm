@@ -3812,6 +3812,29 @@ of terminal output.")
     ;; There is no mention of the "or later" clause.
     (license license:gpl2)))
 
+(define-public ruby-terraform
+  (package
+  (name "ruby-terraform")
+  (version "0.22.0")
+  (source
+   (origin
+     (method url-fetch)
+     (uri (rubygems-uri "ruby-terraform" version))
+     (sha256
+      (base32
+       "13zjkp71cd19j2ds2h9rqwcfr1zdg5nsh63p89l6qcsc9z39z324"))))
+  (build-system ruby-build-system)
+  (arguments
+   '(#:tests? #f)) ; No included tests
+  (propagated-inputs
+   `(("ruby-lino" ,ruby-lino)))
+  (synopsis "Ruby wrapper around the Terraform command line interface")
+  (description
+   "This package provides a Ruby wrapper around the Terraform command line
+interface so that Terraform can be more easily invoked from Ruby code.")
+  (home-page "https://github.com/infrablocks/ruby_terraform")
+  (license license:expat)))
+
 (define-public ruby-pstree
   (package
     (name "ruby-pstree")
