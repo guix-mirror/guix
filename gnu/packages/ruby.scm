@@ -2842,6 +2842,40 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
              (delete-file "test/minitest/test_minitest_spec.rb")
              #t)))))))
 
+(define-public ruby-minitest-around
+  (package
+    (name "ruby-minitest-around")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-around" version))
+       (sha256
+        (base32
+         "15ywnqx0719jl9c25yqfshmwcir57i5f4hr1ra9v9vay9ylcwndr"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'remove-unnecessary-dependency-versions
+           (lambda _
+             (substitute* "minitest-around.gemspec"
+               (("%q<cucumber>.*") "%q<cucumber>, [\">= 0\"])\n"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-bump" ,ruby-bump)
+       ("ruby-test-construct" ,ruby-test-construct)))
+    (synopsis "Run code around tests in Minitest")
+    (description
+     "This library provides a way to run code around tests in Minitest,
+written using either the unit test or spec style.")
+    (home-page "https://github.com/splattael/minitest-around")
+    (license license:expat)))
+
 (define-public ruby-minitest-sprint
   (package
     (name "ruby-minitest-sprint")
