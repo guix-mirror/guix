@@ -1375,7 +1375,20 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        (list
         ;; Add the output lib directory to the RUNPATH.
         (string-append "--ldflags=-Wl,-rpath=" %output "/lib")
-        "--cxxflags=-std=c++11")))
+        "--cxxflags=-std=c++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-boost-includes
+           (lambda _
+             (substitute* "src/headers/gx_internal_plugins.h"
+               (("namespace gx_jack" m)
+                (string-append "#include <boost/noncopyable.hpp>\n" m)))
+             (substitute* '("src/headers/gx_system.h"
+                            "src/headers/gx_parameter.h"
+                            "src/headers/gx_json.h")
+               (("namespace gx_system" m)
+                (string-append "#include <boost/noncopyable.hpp>\n" m)))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("boost" ,boost)
