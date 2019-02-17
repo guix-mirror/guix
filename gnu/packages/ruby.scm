@@ -51,6 +51,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
@@ -1432,6 +1433,39 @@ features such as multi-language support, auto escaping, auto trimming spaces
 around @code{<% %>}, a changeable embedded pattern, and Ruby on Rails
 support.")
     (home-page "http://www.kuwata-lab.com/erubis/")
+    (license license:expat)))
+
+(define-public ruby-execjs
+  (package
+    (name "ruby-execjs")
+    (version "2.7.0")
+    (source
+     (origin
+       ;; fetch from github as the gem does not contain testing code
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rails/execjs.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c0vd2mmqq3ar4plbwi2wsbr31vn4h45i19r5km66skydnnbp1y6"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ;; The test suite tests all the available backends. Currenly, this just
+       ;; means the node backend.
+       ;;
+       ;; PASSED: test:node
+       ;; SKIPPED: test:duktape, ;; test:javascriptcore, test:jscript,
+       ;; test:miniracer, test:rubyracer, ;; test:rubyrhino, test:v8
+       ("node" ,node)))
+    (synopsis "Run JavaScript code from Ruby")
+    (description
+     "ExecJS lets you run JavaScript code from Ruby.  It automatically picks a
+runtime to evaluate your JavaScript program, then returns the result to you as
+a Ruby object.")
+    (home-page "https://github.com/rails/execjs")
     (license license:expat)))
 
 (define-public ruby-orderedhash
