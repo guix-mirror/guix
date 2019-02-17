@@ -9232,13 +9232,13 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "17.1.0")
+    (version "17.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "1p245mg15hkxp7hy5cyq2fgvlgjkb4cg0gwkwd148nzy1bbi3wnv"))))
+                "1sh2h23nnizcdyrl2rn7zxijglikxwz7z7grqpvq496zy2aa967i"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Some tests are failing.
@@ -9250,6 +9250,7 @@ format.")
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)
        ("python-incremental" ,python-incremental)
+       ("python-hyperlink" ,python-hyperlink)
        ("python-constantly" ,python-constantly)
        ("python-automat" ,python-automat)))
     (home-page "https://twistedmatrix.com/")
