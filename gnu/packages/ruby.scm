@@ -447,7 +447,7 @@ notebook).")
 ;; RSpec is the dominant testing library for Ruby projects.  Even RSpec's
 ;; dependencies use RSpec for their test suites!  To avoid these circular
 ;; dependencies, we disable tests for all of the RSpec-related packages.
-(define ruby-rspec-support
+(define-public ruby-rspec-support
   (package
     (name "ruby-rspec-support")
     (version "3.8.0")

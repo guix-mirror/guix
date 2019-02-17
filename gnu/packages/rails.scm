@@ -173,6 +173,35 @@ an almost zero-configuration persistence layer for applications.")
    (home-page "https://rubyonrails.org")
    (license license:expat)))
 
+(define-public ruby-rspec-rails
+  (package
+    (name "ruby-rspec-rails")
+    (version "3.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rspec-rails" version))
+       (sha256
+        (base32
+         "1pf6n9l4sw1arlax1bdbm1znsvl8cgna2n6k6yk1bi8vz2n73ls1"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-actionpack" ,ruby-actionpack)
+       ("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-railties" ,ruby-railties)
+       ("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
+       ("ruby-rspec-support" ,ruby-rspec-support)))
+    (synopsis "Use RSpec to test Ruby on Rails applications")
+    (description
+     "This package provides support for using RSpec to test Ruby on Rails
+applications, in pace of the default Minitest testing library.")
+    (home-page "https://github.com/rspec/rspec-rails")
+    (license license:expat)))
+
 (define-public ruby-rails-html-sanitizer
   (package
     (name "ruby-rails-html-sanitizer")
