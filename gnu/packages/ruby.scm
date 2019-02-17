@@ -450,13 +450,13 @@ notebook).")
 (define ruby-rspec-support
   (package
     (name "ruby-rspec-support")
-    (version "3.5.0")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-support" version))
               (sha256
                (base32
-                "10vf3k3d472y573mag2kzfsfrf6rv355s13kadnpryk8d36yq5r0"))))
+                "0p3m7drixrlhvj2zpc38b11x145bvm311x6f33jjcxmvcm0wq609"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -468,13 +468,13 @@ notebook).")
 (define-public ruby-rspec-core
   (package
     (name "ruby-rspec-core")
-    (version "3.5.4")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-core" version))
               (sha256
                (base32
-                "1nacs062qbr98fx6czf1vwppn1js956nv2c8vfwj6i65axdfs46i"))))
+                "1p1s5bnbqp3sxk67y0fh0x884jjym527r0vgmhbm81w7aq6b7l4p"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -521,13 +521,13 @@ standard diff-like tool.")
 (define-public ruby-rspec-expectations
   (package
     (name "ruby-rspec-expectations")
-    (version "3.5.0")
+    (version "3.8.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-expectations" version))
               (sha256
                (base32
-                "0bbqfrb1x8gmwf8x2xhhwvvlhwbbafq4isbvlibxi6jk602f09gs"))))
+                "18l21hy1zdc2pgc2yb17k3n2al1khpfr0z6pijlm852iz6vj0dkm"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -613,13 +613,13 @@ eq(1)\\}}.")
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
-    (version "3.5.0")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-mocks" version))
               (sha256
                (base32
-                "0nl3ksivh9wwrjjd47z5dggrwx40v6gpb3a0gzbp1gs06a5dmk24"))))
+                "06y508cjqycb4yfhxmb3nxn0v9xqf17qbd46l1dh4xhncinr4fyp"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -670,13 +670,13 @@ RSpec tests.")
 (define-public ruby-rspec
   (package
     (name "ruby-rspec")
-    (version "3.5.0")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec" version))
               (sha256
                (base32
-                "16g3mmih999f0b6vcz2c3qsc7ks5zy4lj1rzjh8hf6wk531nvc6s"))))
+                "15ppasvb9qrscwlyjz67ppw1lnxiqnkzx5vkx1bd8x5n3dhikxc3"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
