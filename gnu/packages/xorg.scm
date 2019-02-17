@@ -3040,7 +3040,7 @@ the same level of support for generic VGA or 8514/A adapters.")
 (define-public xf86-video-neomagic
   (package
     (name "xf86-video-neomagic")
-    (version "1.2.9")
+    (version "1.3.0")
     (source
       (origin
         (method url-fetch)
@@ -3050,7 +3050,7 @@ the same level of support for generic VGA or 8514/A adapters.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1whb2kgyqaxdjim27ya404acz50izgmafwnb6y9m89q5n6b97y3j"))))
+            "0r4h673kw8fl7afc30anwbjlbhp82mg15fvaxf470xg7z983k0wk"))))
     (build-system gnu-build-system)
     (inputs `(("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
