@@ -1923,14 +1923,13 @@ JSON APIs with Behave.")
 (define-public python-nose-randomly
   (package
     (name "python-nose-randomly")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nose-randomly" version))
        (sha256
-        (base32
-         "1cw9dlr1zh3w4i438kin7z0rm8092ki52hayisyc43h9pcplq7rn"))))
+        (base32 "0z662rqhfk4bjmg806mn4frb8nz4gbh7mrddsrhfffp1g4yklj3y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
