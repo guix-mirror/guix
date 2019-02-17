@@ -1738,6 +1738,33 @@ failure.")
     (home-page "https://github.com/thekompanee/fuubar")
     (license license:expat)))
 
+(define-public ruby-haml
+  (package
+    (name "ruby-haml")
+    (version "5.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "haml" version))
+       (sha256
+        (base32
+         "1q0a9fvqh8kn6wm97fcks6qzbjd400bv8bx748w8v87m7p4klhac"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-tilt" ,ruby-tilt)
+       ("ruby-temple" ,ruby-temple)))
+    (synopsis "Haml is a Ruby library to generate HTML documents")
+    (description
+     "@acronym{Haml, HTML Abstraction Markup Language} is a layer on top of
+HTML or XML that is designed to express the structure of documents using
+indentation rather than closing tags.  It was originally envisioned as a
+plugin for Ruby on Rails, but it can function as a stand-alone templating
+engine.")
+    (home-page "http://haml.info/")
+    (license license:expat)))
+
 (define-public ruby-hamster
   (package
   (name "ruby-hamster")
