@@ -2973,3 +2973,29 @@ ecosystem.")
     (description "This package provides a Python module to create immutable, and
 correct URLs for Python according to RFCs 3986 and 3987.")
     (license license:expat)))
+
+(define-public python-treq
+  (package
+    (name "python-treq")
+    (version "18.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "treq" version))
+        (sha256
+         (base32
+          "0j4zwq9p1c9piv1vc66nxcv9s6hdinf90jwkbsm91k14npv9zq4i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-idna" ,python-idna)
+       ("python-incremental" ,python-incremental)
+       ("python-requests" ,python-requests)
+       ("python-service-identity" ,python-service-identity)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://github.com/twisted/treq")
+    (synopsis "Requests-like API built on top of twisted.web's Agent")
+    (description "This package provides an HTTP library inspired by
+@code{requests}} but written on top of Twisted's @code{Agents}.  It offers a
+high level API for making HTTP requests when using Twisted.")
+    (license license:expat)))
