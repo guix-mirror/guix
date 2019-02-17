@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -15038,4 +15038,25 @@ form hierarchical and sequential structures of increasing complexity.
 It features bit and byte granularity, easy debugging and testing, an
 easy-to-extend subclass system, and lots of primitive constructs to
 make your work easier.")
+    (license license:expat)))
+
+(define-public python-humanize
+  (package
+    (name "python-humanize")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "humanize" version))
+        (sha256
+         (base32
+          "06dvhm3k8lf2rayn1gxbd46y0fy1db26m3h9vrq7rb1ib08mfgx4"))))
+    (arguments
+     '(#:tests? #f)) ; tests not in pypi archive
+    (build-system python-build-system)
+    (home-page "https://github.com/jmoiron/humanize")
+    (synopsis "Print numerical information in a human-readable form")
+    (description "This package provides a Python module that displays numbers
+and dates in \"human readable\" forms.  For example, it would display
+\"12345591313\" as \"12.3 billion\".")
     (license license:expat)))
