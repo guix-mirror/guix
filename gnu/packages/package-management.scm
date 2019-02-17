@@ -929,8 +929,8 @@ Microsoft cabinet (.@dfn{CAB}) files.")
     (version "0.98")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  version "/" name "-" version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/msitools/"
+                                  version "/msitools-" version ".tar.xz"))
               (sha256
                (base32
                 "19wb3n3nwkpc6bjr0q3f1znaxsfaqgjbdxxnbx8ic8bb5b49hwac"))))
