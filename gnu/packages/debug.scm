@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,11 +31,13 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages code)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages virtualization)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
@@ -336,3 +339,36 @@ conditions.")
 intercepting file operations and changing random bits in the program's
 input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
     (license (non-copyleft "http://www.wtfpl.net/txt/copying/"))))
+
+(define-public scanmem
+  (package
+    (name "scanmem")
+    (version "0.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/scanmem/scanmem")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17p8sh0rj8yqz36ria5bp48c8523zzw3y9g8sbm2jwq7sc27i7s9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("libtool" ,libtool)
+       ("intltool" ,intltool)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)))
+    (inputs
+     `(("readline" ,readline)))
+    (home-page "https://github.com/scanmem/scanmem")
+    (synopsis "Memory scanner")
+    (description "Scanmem is a debugging utility designed to isolate the
+address of an arbitrary variable in an executing process.  Scanmem simply
+needs to be told the pid of the process and the value of the variable at
+several different times.  After several scans of the process, scanmem isolates
+the position of the variable and allows you to modify its value.")
+    ;; The library is covered by LGPLv3 or later; the application is covered
+    ;; by GPLv3 or later.
+    (license (list lgpl3+ gpl3+))))
