@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages fabric-management)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
@@ -174,6 +176,7 @@ bind processes, and much more.")
        ("gfortran" ,gfortran)
        ("libfabric" ,libfabric)
        ("libevent" ,libevent)
+       ("opensm" ,opensm)
        ,@(if (and (not (%current-target-system))
                   (member (%current-system) (package-supported-systems psm)))
              `(("psm" ,psm))
@@ -198,11 +201,31 @@ bind processes, and much more.")
                            "--with-valgrind"
                            "--with-hwloc=external"
                            "--with-libevent"
+
+                           ;; InfiniBand support
+                           "--enable-openib-control-hdr-padding"
+                           "--enable-openib-dynamic-sl"
+                           "--enable-openib-udcm"
+                           "--enable-openib-rdmacm"
+                           "--enable-openib-rdmacm-ibaddr"
+
                            ;; Enable support for SLURM's Process Manager
                            ;; Interface (PMI).
                            ,(string-append "--with-pmi="
                                            (assoc-ref %build-inputs "slurm")))
        #:phases (modify-phases %standard-phases
+                  ;; opensm is needed for InfiniBand support.
+                  (add-after 'unpack 'find-opensm-headers
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "C_INCLUDE_PATH"
+                              (string-append (assoc-ref inputs "opensm")
+                                             "/include/infiniband/:"
+                                             (getenv "C_INCLUDE_PATH")))
+                      (setenv "CPLUS_INCLUDE_PATH"
+                              (string-append (assoc-ref inputs "opensm")
+                                             "/include/infiniband/:"
+                                             (getenv "CPLUS_INCLUDE_PATH")))
+                      #t))
                   (add-before 'build 'remove-absolute
                     (lambda _
                       ;; Remove compiler absolute file names (OPAL_FC_ABSOLUTE
