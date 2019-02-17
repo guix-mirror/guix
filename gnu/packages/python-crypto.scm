@@ -1036,3 +1036,33 @@ Derivation function (HKDF) defined in RFC 5869.")
     (description "This package provides a Python implementation of the SPAKE2
 Password-Authenticated Key Exchange algorithm.")
     (license license:expat)))
+
+(define-public python-txtorcon
+  (package
+    (name "python-txtorcon")
+    (version "19.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "txtorcon" version))
+        (sha256
+         (base32
+          "0fxzhsc62bhmr730vj9pzallmw56gz6iykvl28a5agrycm0bfc9p"))))
+    (build-system python-build-system)
+    (arguments
+      ;; The tests fail immediately due to a missing file. Reported upstream:
+      ;; <https://github.com/meejah/txtorcon/issues/330>
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-automat" ,python-automat)
+       ("python-idna" ,python-idna)
+       ("python-incremental" ,python-incremental)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-service-identity" ,python-service-identity)
+       ("python-twisted" ,python-twisted)
+       ("python-zope-interface" ,python-zope-interface)))
+    (home-page "https://github.com/meejah/txtorcon")
+    (synopsis "Twisted-based Tor controller client")
+    (description "This package provides a Twisted-based Tor controller client,
+with state-tracking and configuration abstractions.")
+    (license license:expat)))
