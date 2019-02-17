@@ -427,15 +427,15 @@ desktops.")
   (package
     (name "qbittorrent")
     (version "4.1.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/qbittorrent/qBittorrent/archive/release-"
-                    version ".tar.gz"))
-              (file-name (string-append name "-release-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0b0xy48szhbdljvy1c92rj31kdh0jpc4v4sni5gz9nd7430dkivn"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/qbittorrent/qBittorrent.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09zcygaxfv9g6av0vsvlyzv4v65wvj766xyfx31yz5ig3xan6ak1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
