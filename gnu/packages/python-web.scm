@@ -12,7 +12,7 @@
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
@@ -2953,3 +2953,23 @@ underlies Mozilla Persona.")
      "This is a Python library for interacting with the Firefox Accounts
 ecosystem.")
     (license license:mpl2.0)))
+
+(define-public python-hyperlink
+  (package
+    (name "python-hyperlink")
+    (version "18.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "hyperlink" version))
+        (sha256
+         (base32
+          "01m3y19arfqljksngy8grc966zdb4larysralb8cajzi8kvly6zh"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-idna" ,python-idna)))
+    (home-page "https://github.com/python-hyper/hyperlink")
+    (synopsis "Python module to create immutable URLs according to spec")
+    (description "This package provides a Python module to create immutable, and
+correct URLs for Python according to RFCs 3986 and 3987.")
+    (license license:expat)))
