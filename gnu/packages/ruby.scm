@@ -4483,16 +4483,44 @@ a native C extension.")
     (version "3.1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "listen" version))
+       ;; The gem does not include a Rakefile, so fetch from the Git
+       ;; repository.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/guard/listen.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01v5mrnfqm6sgm8xn2v5swxsn1wlmq7rzh2i48d4jzjsc7qvb6mx"))))
+         "1hqmkfa9f2xb5jlvqbafdxjd5ax75jm8gqj5nh3k22xq0kacsvgg"))))
     (build-system ruby-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-files-in-gemspec
+           (lambda _
+             (substitute* "listen.gemspec"
+               (("`git ls-files -z`") "`find . -type f -printf '%P\\\\0' |sort -z`"))
+             #t))
+         (add-before 'check 'remove-unnecessary-dependencies'
+           (lambda _
+             (substitute* "Rakefile"
+               ;; Rubocop is for code linting, and is unnecessary for running
+               ;; the tests.
+               ((".*rubocop.*") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(;; ruby-thor is used for the command line interface, and is referenced
+       ;; in the wrapper, and therefore just needs to be an input.
+       ("ruby-thor" ,ruby-thor)))
     (propagated-inputs
-     `(("ruby-rb-inotify" ,ruby-rb-inotify)
-       ("ruby-rb-fsevent" ,ruby-rb-fsevent)))
+     `(("ruby-rb-fsevent" ,ruby-rb-fsevent)
+       ("ruby-rb-inotify" ,ruby-rb-inotify)
+       ("ruby-dep" ,ruby-dep)))
     (synopsis "Listen to file modifications")
     (description "The Listen gem listens to file modifications and notifies
 you about the changes.")
