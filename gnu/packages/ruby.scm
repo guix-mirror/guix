@@ -2852,6 +2852,30 @@ conversion to (X)HTML.")
     (home-page "https://github.com/vmg/redcarpet")
     (license license:expat)))
 
+(define-public ruby-rerun
+  (package
+  (name "ruby-rerun")
+  (version "0.13.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "rerun" version))
+      (sha256
+        (base32
+          "1cskvxk8z8vmfail8na7hj91hs0qnvds9nydj04zi3dbddgnbmvz"))))
+  (build-system ruby-build-system)
+  (arguments
+   '(#:tests? #f)) ; No included tests
+  (propagated-inputs
+   `(("ruby-listen" ,ruby-listen)))
+  (synopsis "Run a process, and restart when some monitored files change")
+  (description
+    "Rerun is a tool to launch programs, then monitor the filesystem, and
+restart the program when any of the monitored files change.  It's written in
+Ruby, but can be used for all programs.")
+  (home-page "https://github.com/alexch/rerun/")
+  (license license:expat)))
+
 (define-public ruby-mocha
   (package
     (name "ruby-mocha")
