@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
@@ -1171,6 +1172,40 @@ which it is run.  It uses Saikuro under the covers to analyze Ruby code
 complexity.")
     (home-page "https://github.com/ThoughtWorksStudios/saikuro_treemap")
     (license license:expat)))
+
+(define-public ruby-open4
+  (package
+  (name "ruby-open4")
+  (version "1.3.4")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "open4" version))
+      (sha256
+        (base32
+          "1cgls3f9dlrpil846q0w7h66vsc33jqn84nql4gcqkk221rh7px1"))))
+  (build-system ruby-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'patch
+         (lambda _
+           (substitute* "rakefile"
+             ;; Update the Rakefile so it works
+             (("-rubygems") "-rrubygems")
+             (("Config") "RbConfig"))
+           #t))
+       (add-before 'check 'set-LIB
+         (lambda _
+           ;; This is used in the rakefile when running the tests
+           (setenv "LIB" "open4")
+           #t)))))
+  (synopsis "Open child processes from Ruby and manage them easily")
+  (description
+    "@code{Open4} is a Ruby library to run child processes and manage their
+input and output.")
+  (home-page "https://github.com/ahoward/open4")
+  (license license:ruby)))
 
 (define-public ruby-options
   (package
