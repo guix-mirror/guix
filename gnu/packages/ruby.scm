@@ -5838,6 +5838,54 @@ authentication in Ruby web applications.")
     (home-page "https://github.com/wardencommunity/warden")
     (license license:expat)))
 
+(define-public ruby-warden-oauth2
+  (package
+    (name "ruby-warden-oauth2")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "warden-oauth2" version))
+       (sha256
+        (base32
+         "1z9154lvzrnnfjbjkmirh4n811nygp6pm2fa6ikr7y1ysa4zv3cz"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unnecessary-dependencies
+           (lambda _
+             (substitute* "Gemfile"
+               ;; All of these gems relate to development, and are unnecessary
+               ;; when running the tests
+               (("gem 'guard-bundler'") "")
+               (("gem 'guard'") "")
+               (("gem 'guard-rspec'") "")
+               (("gem 'rb-fsevent'") "")
+               (("gem 'pry'") "")
+               (("gem 'growl'") ""))
+             #t))
+         ;; The test suite doesn't work with rspec@2, and this is incompatible
+         ;; with the current version of Rake, so invoke Rspec directly
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "bundle" "exec" "rspec"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-warden" ,ruby-warden)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec-2)
+       ("ruby-rack-test" ,ruby-rack-test)))
+    (synopsis "OAuth 2.0 strategies for Warden")
+    (description
+     "This library extends Warden to support OAuth 2.0 authorized API
+requests.")
+    (home-page "https://github.com/opperator/warden-oauth2")
+    (license license:expat)))
+
 (define-public ruby-webmock-2
   (package
     (name "ruby-webmock")
