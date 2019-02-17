@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
@@ -1247,6 +1248,40 @@ minimum to provide high performance operation.")
     ;; Most of the code is covered by the Apache License, Version 2.0, but the
     ;; bundled CuTest framework uses a different non-copyleft license.
     (license (list l:asl2.0 (l:non-copyleft "file://test/CuTest-README.txt")))))
+
+(define-public libsass
+  (package
+    (name "libsass")
+    (version "3.5.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sass/libsass.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'set-LIBSASS_VERSION
+           (lambda _
+             (setenv "LIBSASS_VERSION" ,version)
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://sass-lang.com/libsass")
+    (synopsis "SASS Compiler, implemented as a C/C++ library")
+    (description
+     "LibSass is a @acronym{SASS,Syntactically awesome style sheets} compiler
+library designed for portability and efficiency.  To actually compile SASS
+stylesheets, you'll need to use another program that uses this library,
+@var{sassc} for example.")
+    (license l:expat)))
 
 (define-public sassc
   ;; libsass must be statically linked and it isn't included in the sassc
