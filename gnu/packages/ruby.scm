@@ -6114,6 +6114,27 @@ requirement specifications systems like Cucumber.")
     (home-page "https://rubyworks.github.io/qed")
     (license license:bsd-2)))
 
+(define-public ruby-que
+  (package
+    (name "ruby-que")
+    (version "1.0.0.beta3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "que" version))
+       (sha256
+        (base32
+         "0gr9pb814d4qj3ds98g6cjrdk7wv0yg8aqbm7c1lmgl87jkg8q04"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (synopsis "Job queue using PostgreSQL written in Ruby")
+    (description
+     "This package provides a job queue that uses PostgreSQL for storing jobs
+and locking between worker processes.")
+    (home-page "https://github.com/chanks/que")
+    (license license:expat)))
+
 (define-public ruby-ae
   (package
     (name "ruby-ae")
