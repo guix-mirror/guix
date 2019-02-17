@@ -85,7 +85,7 @@ but it can be used independently.")
      "GMP/MPIR, MPFR, and MPC interface to Python 2.6+ and 3.x")
    (description
      "GMP/MPIR, MPFR, and MPC interface to Python 2.6+ and 3.x")
-   (license #f)))
+   (license license:lgpl3+)))
 
 (define-public python2-gmpy2
   (package-with-python2 python-gmpy2))
