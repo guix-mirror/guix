@@ -2290,6 +2290,43 @@ It allows writing tests, checking results and automated testing in Ruby.")
     (home-page "https://test-unit.github.io/")
     (license (list license:psfl license:ruby))))
 
+(define-public ruby-markaby
+  (package
+    (name "ruby-markaby")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "markaby" version))
+       (sha256
+        (base32
+         "1j4jc31ycydbkh5h3q6zwidzpavg3g5mbb5lqyaczd3jrq78rd7i"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Run rspec manually without using the Rakefile, as the versions of
+         ;; Rake and RSpec 2 are incompatible:
+         ;;
+         ;; NoMethodError: undefined method `last_comment'
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-builder" ,ruby-builder)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec-2)))
+    (synopsis "Write HTML pages in pure Ruby")
+    (description
+     "Markaby allows writing HTML packages in pure Ruby.  This is similar to
+the functionality provided by @acronym{ERB, Embeded Ruby}, but without the
+mixture of HTML and additional ERB syntax.")
+    (home-page "http://markaby.github.io/")
+    (license license:expat)))
+
 (define-public ruby-maruku
   (package
     (name "ruby-maruku")
