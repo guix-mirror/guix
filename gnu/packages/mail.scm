@@ -491,7 +491,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.2")
+    (version "7.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -500,7 +500,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11nj7y9fa7v6vcxk3wr8smfgm3mxxnmq3l8q69rrjxlfzcv7dl8m"))))
+                "18sdnhjldn8zs03bgqy1qa3ikmlfvyxcvwp3nbnv1a74biccqbpa"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
