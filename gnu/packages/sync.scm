@@ -162,13 +162,13 @@ their folder.
     (version "2.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/axkibe/lsyncd/archive/release-"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/axkibe/lsyncd.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "02g054qv8rnbxywd4f0gnd13lrlns9175d3ciqnyslhs1zs15nqb"))))
+        (base32 "1q2ixp52r96ckghgmxdbms6xrq8dbziimp8gmgzqfq4lk1v1w80y"))))
     (build-system cmake-build-system)
     (arguments
      `(;; The "tests" target is broken and assumes that tests are run in the
@@ -184,10 +184,7 @@ their folder.
                     (bin (string-append out "/bin"))
                     (man (string-append out "/share/man/man1")))
                (install-file "lsyncd" bin)
-               (install-file (string-append "../lsyncd-release-"
-                                            ,version
-                                            "/doc/manpage/lsyncd.1")
-                             man)
+               (install-file "../source/doc/manpage/lsyncd.1" man)
                #t))))))
     (native-inputs
      `(("lua" ,lua-5.2)))
