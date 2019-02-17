@@ -926,17 +926,18 @@ Microsoft cabinet (.@dfn{CAB}) files.")
 (define-public msitools
   (package
     (name "msitools")
-    (version "0.98")
+    (version "0.99")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/msitools/"
                                   version "/msitools-" version ".tar.xz"))
               (sha256
                (base32
-                "19wb3n3nwkpc6bjr0q3f1znaxsfaqgjbdxxnbx8ic8bb5b49hwac"))))
+                "0d9nidn5zc81bc30w119933rn2g87mrsqyqkndg20srkbsd96xfl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("gcab" ,gcab)
        ("glib" ,glib)
