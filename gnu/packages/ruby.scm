@@ -7731,16 +7731,16 @@ in Jekyll.")
 (define-public ruby-jekyll-watch
   (package
     (name "ruby-jekyll-watch")
-    (version "2.0.0")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll-watch" version))
               (sha256
                (base32
-                "0m7scvj3ki8bmyx5v8pzibpg6my10nycnc28lip98dskf8iakprp"))))
+                "1s9ly83sp8albvgdff12xy2h4xd8lm6z2fah4lzmk2yvp85jzdzv"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-listen-3.0" ,ruby-listen-3.0)))
+     `(("ruby-listen" ,ruby-listen)))
     (arguments
      ;; No rakefile
      `(#:tests? #f))
