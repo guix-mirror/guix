@@ -56,6 +56,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -2998,4 +2999,33 @@ correct URLs for Python according to RFCs 3986 and 3987.")
     (description "This package provides an HTTP library inspired by
 @code{requests}} but written on top of Twisted's @code{Agents}.  It offers a
 high level API for making HTTP requests when using Twisted.")
+    (license license:expat)))
+
+(define-public python-autobahn
+  (package
+    (name "python-autobahn")
+    (version "19.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "autobahn" version))
+        (sha256
+         (base32
+          "1mm7j24ls01c7jb1ad5p5cpyxvzgydiyf8b04ihykh2v8g98j0x7"))))
+    (build-system python-build-system)
+    (arguments
+      ;; The tests fail to run:
+      ;; https://github.com/crossbario/autobahn-python/issues/1117
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-twisted" ,python-twisted)
+       ("python-txaio" ,python-txaio)))
+    (home-page "https://crossbar.io/autobahn/")
+    (synopsis "Web Application Messaging Protocol implementation")
+    (description "This package provides an implementation of the @dfn{Web Application
+Messaging Protocol} (WAMP).  WAMP connects components in distributed
+applications using Publish and Subscribe (PubSub) and routed Remote Procedure
+Calls (rRPC).  It is ideal for distributed, multi-client and server applications
+such as IoT applications or multi-user database-driven business applications.")
     (license license:expat)))
