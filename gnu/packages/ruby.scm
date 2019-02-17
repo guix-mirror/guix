@@ -4030,6 +4030,44 @@ a native C extension.")
     (home-page "https://flori.github.com/json")
     (license license:ruby)))
 
+(define-public ruby-jwt
+  (package
+    (name "ruby-jwt")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "jwt" version))
+       (sha256
+        (base32
+         "1w0kaqrbl71cq9sbnixc20x5lqah3hs2i93xmhlfdg2y3by7yzky"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unnecessary-dependencies
+           (lambda _
+             (substitute* "spec/spec_helper.rb"
+               (("require 'simplecov.*") "\n")
+               ;; Use [].each to disable running the SimpleCov configuration
+               ;; block
+               (("SimpleCov\\.configure") "[].each")
+               (("require 'codeclimate-test-reporter'") "")
+               (("require 'codacy-coverage'") "")
+               (("Codacy::Reporter\\.start") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rbnacl" ,ruby-rbnacl)))
+    (synopsis "Ruby implementation of the JSON Web Token standard")
+    (description
+     "This package provides a pure Ruby implementation of the RFC 7519 OAuth
+@acronym{JWT, JSON Web Token} standard.")
+    (home-page "https://github.com/jwt/ruby-jwt")
+    (license license:expat)))
+
 ;; Even though this package only provides bindings for a Mac OSX API it is
 ;; required by "ruby-listen" at runtime.
 (define-public ruby-rb-fsevent
