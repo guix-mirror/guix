@@ -1208,7 +1208,7 @@ HTTP proxies.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://enet.bespin.org/download/"
-                                  name "-" version ".tar.gz"))
+                                  "enet-" version ".tar.gz"))
               (sha256
                (base32
                 "0w780zc6cy8yq4cskpphx0f91lzh51vh9lwyc5ll8hhamdxgbxlq"))))
