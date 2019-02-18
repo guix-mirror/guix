@@ -233,7 +233,7 @@ ncursesw library provides wide character support.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://invisible-mirror.net/archives/dialog/dialog-"
+                    "https://invisible-mirror.net/archives/dialog/dialog-"
                     version ".tgz"))
               (sha256
                (base32
