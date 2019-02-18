@@ -31,7 +31,7 @@
     (version "1.1.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.musl-libc.org/releases/"
+              (uri (string-append "https://www.musl-libc.org/releases/"
                                   "musl-" version ".tar.gz"))
               (sha256
                (base32
