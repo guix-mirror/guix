@@ -156,6 +156,47 @@ a focus on simplicity and productivity.")
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
 
+(define-public ruby-commander
+  (package
+    (name "ruby-commander")
+    (version "4.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "commander" version))
+       (sha256
+        (base32
+         "1pxakz596fjqak3cdbha6iva1dlqis86i3kjrgg6lf3sp8i5vhwg"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Don't run or require rubocop, the code linting tool, as this is a
+         ;; bit unnecessary.
+         (add-after 'unpack 'dont-run-rubocop
+           (lambda _
+             (substitute* "Rakefile"
+               ((".*rubocop.*") "")
+               ((".*RuboCop.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-highline" ,ruby-highline)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (home-page "https://github.com/commander-rb/commander")
+    (synopsis "Library for building Ruby command-line executables")
+    (description
+     "Commander aims to be a complete solution for Ruby command-line
+executables.  Commander bridges the gap between other terminal related
+libraries (OptionParser, HighLine), while providing many new features, and an
+elegant API.")
+    (license license:expat)))
+
 (define-public ruby-highline
   (package
     (name "ruby-highline")
