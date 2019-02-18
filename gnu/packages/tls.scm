@@ -318,16 +318,6 @@ required structures.")
                                     "/share/openssl-" ,version)
 
                      (string-append "--prefix=" out)))))
-        (add-after
-         'install 'make-libraries-writable
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Make libraries writable so that 'strip' does its job.
-           (let ((out (assoc-ref outputs "out")))
-             (for-each (lambda (file)
-                         (chmod file #o644))
-                       (find-files (string-append out "/lib")
-                                   "\\.so"))
-             #t)))
         (add-after 'install 'move-static-libraries
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Move static libraries to the "static" output.
