@@ -4227,7 +4227,7 @@ at @code{musicbrainz.org}.")
 (define-public clyrics
   (package
     (name "clyrics")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method git-fetch)
@@ -4237,10 +4237,10 @@ at @code{musicbrainz.org}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1qvj4dyipkkdccx5hci4z0q23i54ldk6hh7x5m35a7f70rrj6fbk"))))
+         "0vfjy555achgi5zwa34x4q7r692nc6bq4jx518a5w4m7k5fvm71j"))))
     (build-system trivial-build-system)
     (inputs
-     `(("bash" ,bash)                             ;for the wrapped program
+     `(("bash" ,bash)                   ; for the wrapped program
        ("perl" ,perl)
        ("perl-www-mechanize" ,perl-www-mechanize)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
@@ -4270,9 +4270,9 @@ at @code{musicbrainz.org}.")
                          ,(delete
                            ""
                            (map (match-lambda
-                                  (((?  (cut string-prefix? "perl-" <>) name) . dir)
-                                   (string-append dir "/lib/perl5/site_perl"))
-                                  (_ ""))
+                                 (((?  (cut string-prefix? "perl-" <>) name) . dir)
+                                  (string-append dir "/lib/perl5/site_perl"))
+                                 (_ ""))
                                 %build-inputs))))
                      (copy-recursively "plugins" (string-append output "/clyrics"))
                      #t))))
