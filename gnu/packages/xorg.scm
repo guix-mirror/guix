@@ -2087,10 +2087,8 @@ legacy X clients.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/app/" name "-"
-             version
-             ".tar.gz"))
+       (uri (string-append "mirror://xorg/individual/app/"
+                           "xcalc-" version ".tar.gz"))
        (sha256
         (base32 "1xgih1iq9498m7vk22qrdsck1rb905sn395azjn4a6pmhfai401b"))))
     (build-system gnu-build-system)
