@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -159,14 +159,14 @@ a focus on simplicity and productivity.")
 (define-public ruby-highline
   (package
     (name "ruby-highline")
-    (version "1.7.10")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "highline" version))
        (sha256
         (base32
-         "01ib7jp85xjc4gh4jg0wyzllm46hwv8p0w1m4c75pbgi41fps50y"))))
+         "0gr6pckj2jayxw1gdgh9193j5jag5zrrqqlrnl4jvcwpyd3sn2zc"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ;; TODO: NameError: uninitialized constant SPEC
