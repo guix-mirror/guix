@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -229,7 +229,7 @@ ncursesw library provides wide character support.")
 (define-public dialog
   (package
     (name "dialog")
-    (version "1.3-20180621")
+    (version "1.3-20190211")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -237,7 +237,7 @@ ncursesw library provides wide character support.")
                     version ".tgz"))
               (sha256
                (base32
-                "0yjqczlf64yppgvk4i6s0jm06mdr0mb5m6sj39nf891dnbi5jj2a"))))
+                "1lx0bvradzx1zl7znlrsnyljcs596r7wamkhyq37ikbxsy4y5h29"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no test suite
