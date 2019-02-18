@@ -32,7 +32,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musl-libc.org/releases/"
-                                  name "-" version ".tar.gz"))
+                                  "musl-" version ".tar.gz"))
               (sha256
                (base32
                 "0i2z52zgc86af1n1gjiz43hgd85mxjgvgn345zsybja9dxpvchn7"))))
