@@ -277,10 +277,10 @@ required structures.")
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
                                        version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/"
-                                       name "-" version ".tar.gz")
+                                       "openssl-" version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
-                                       "/" name "-" version ".tar.gz")))
+                                       "/openssl-" version ".tar.gz")))
              (sha256
               (base32
                "003xh9f898i56344vpvpxxxzmikivxig4xwlm7vbi7m8n43qxaah"))
@@ -409,10 +409,10 @@ required structures.")
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
                                        version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/"
-                                       name "-" version ".tar.gz")
+                                       "openssl-" version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
-                                       "/" name "-" version ".tar.gz")))
+                                       "/openssl-" version ".tar.gz")))
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
