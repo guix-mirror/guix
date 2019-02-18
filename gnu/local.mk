@@ -100,6 +100,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/check.scm			\
   %D%/packages/chemistry.scm			\
   %D%/packages/chez.scm				\
+  %D%/packages/chromium.scm			\
   %D%/packages/ci.scm				\
   %D%/packages/cinnamon.scm			\
   %D%/packages/clojure.scm			\
