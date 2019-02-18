@@ -1602,14 +1602,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.6")
+    (version "2.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0f7b2ghm34ql8yv90wr0ngd6w7wyvnlcxpc3snkj86kcjsnmx1bd"))))
+         "0l4id24jqi578xmybvwrz10sm2jhs90gk9gs1y04gfarz4vcj304"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
