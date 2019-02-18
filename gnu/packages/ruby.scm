@@ -50,6 +50,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -261,6 +262,41 @@ announcement.")
     (description "Rake-compiler provides a framework for building and
 packaging native C and Java extensions in Ruby.")
     (home-page "https://github.com/rake-compiler/rake-compiler")
+    (license license:expat)))
+
+(define-public ruby-rsync
+  (package
+    (name "ruby-rsync")
+    (version "1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rsync" version))
+       (sha256
+        (base32
+         "0p8b27q1gvxilqfq2528xpwglzcm2myikkjxpqk7mwbwg9r6knxv"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-coveralls-requirement
+           (lambda _
+             (substitute* "spec/spec_helper.rb"
+               (("require 'coveralls'") "")
+               (("Coveralls.wear!") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("rsync" ,rsync)
+       ("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks)))
+    (home-page "https://github.com/jbussdieker/ruby-rsync")
+    (synopsis "Ruby wrapper around rsync")
+    (description
+     "Ruby Rsync is a Ruby library that can synchronize files between remote
+hosts by wrapping the @file{rsync} binary.")
     (license license:expat)))
 
 (define-public ruby-i18n
