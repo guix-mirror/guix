@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -743,16 +743,15 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public protozero
   (package
     (name "protozero")
-    (version "1.6.3")
+    (version "1.6.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/mapbox/protozero/archive/v"
-                            version ".tar.gz"))
-    (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1xaj4phz1r7xn0vgdfvfkz8b0bizgb6mavjky1zqcvdmbwgwgly5"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mapbox/protozero/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0y12wz9v5w2gjfipyrw7v1gchnhivzlkkfax37i69l3yp9npimly"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/mapbox/protozero")
     (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
@@ -760,8 +759,8 @@ to create databases that are optimized for rendering/tile/map-services.")
 encoder in C++.  The developer using protozero has to manually translate the
 @file{.proto} description into code.")
     (license (list
-               license:asl2.0; for folly
-               license:bsd-2))))
+              license:asl2.0            ; for folly
+              license:bsd-2))))
 
 (define-public libosmium
   (package
