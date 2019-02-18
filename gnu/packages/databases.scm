@@ -1637,7 +1637,7 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.842")
+  (version "1.843")
   (source
     (origin
       (method url-fetch)
@@ -1647,7 +1647,7 @@ database.")
              ".tar.gz"))
       (sha256
         (base32
-          "0w2d99vs9qarng2f9fpg3gchfdzy6an13507jhclcl8wv183h5hg"))))
+          "0sildz1i3fmh949w1scpjsyjx0cbmfw0yna3y70mc6vbwp8y696y"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
