@@ -230,17 +230,16 @@ and numerical quadrature programs are included.")
 (define-public tomsfastmath
   (package
     (name "tomsfastmath")
-    (version "0.13.0")
+    (version "0.13.1")
     (synopsis "Large integer arithmetic library")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libtom/tomsfastmath/"
                                   "releases/download/v" version "/"
-                                  "tfm-" (version-major+minor version) ".tar.bz2"))
+                                  "tfm-" version ".tar.xz"))
               (sha256
                (base32
-                "01rlsvp6lskk2a0gfdi24ak5h8vdwi6kqbvbwjnmb92r0zrfdvwd"))
-              (patches (search-patches "tomsfastmath-constness.patch"))))
+                "0f0pmiaskh89sp0q933pafxb914shpaj5ad8sb5rzk1wv8d7mja7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("libtool" ,libtool)))
@@ -252,7 +251,7 @@ and numerical quadrature programs are included.")
                           "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ;no configuration
+         (delete 'configure)            ; no configuration
          (replace 'check
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make"
@@ -262,7 +261,7 @@ and numerical quadrature programs are included.")
              (invoke "./test")))
          (add-before 'install 'install-nogroup
            (lambda _
-             ;; Let permissions inherit from the current process
+             ;; Let permissions inherit from the current process.
              (substitute* "makefile.shared"
                (("-g \\$\\(GROUP\\) -o \\$\\(USER\\)") ""))
              #t))
