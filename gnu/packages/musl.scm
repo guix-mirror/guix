@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,17 +28,17 @@
 (define-public musl
   (package
     (name "musl")
-    (version "1.1.20")
+    (version "1.1.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.musl-libc.org/releases/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0q8dsjxl41dccscv9a0r78bs7jap57mn4mni5pwbbip6s1qqggj4"))))
+                "0i2z52zgc86af1n1gjiz43hgd85mxjgvgn345zsybja9dxpvchn7"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; Musl has no tests
+     `(#:tests? #f                      ; musl has no tests
        #:configure-flags
        (list "--disable-gcc-wrapper")))
     (synopsis "Small C standard library")
