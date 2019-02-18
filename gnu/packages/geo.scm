@@ -757,7 +757,7 @@ to create databases that are optimized for rendering/tile/map-services.")
     (build-system cmake-build-system)
     (home-page "https://github.com/mapbox/protozero")
     (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
-    (description "Protozero is a minimalistic protocol buffer decored and
+    (description "Protozero is a minimalistic protocol buffer decoder and
 encoder in C++.  The developer using protozero has to manually translate the
 @file{.proto} description into code.")
     (license (list
