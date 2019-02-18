@@ -32,6 +32,7 @@
   #:use-module (guix build-system scons)
   #:use-module (guix build-system r)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -746,12 +747,13 @@ to create databases that are optimized for rendering/tile/map-services.")
     (version "1.6.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mapbox/protozero/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mapbox/protozero.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0y12wz9v5w2gjfipyrw7v1gchnhivzlkkfax37i69l3yp9npimly"))))
+        (base32 "10ldzni46cplmkgx1f73yn95qcb71xh9nxpcfdmi107y3kvicv3c"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/mapbox/protozero")
     (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
