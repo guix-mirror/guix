@@ -296,14 +296,14 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
 (define-public python-mpi4py
   (package
     (name "python-mpi4py")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mpi4py" version))
         (sha256
           (base32
-            "1mzgd26dfv4vwbci8gq77ss9f0x26i9aqzq9b9vs9ndxhlnv0mxl"))))
+            "0ld8rjmsjr0dklvj2g1gr3ax32sdq0xjxyh0cspknc1i36waajb5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
