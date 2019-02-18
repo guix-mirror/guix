@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -606,17 +606,18 @@ ready for production.")
 (define-public gerbv
   (package
     (name "gerbv")
-    (version "2.6.2")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gerbv/gerbv/gerbv-"
                                   version "/gerbv-" version ".tar.gz"))
               (sha256
                (base32
-                "1cw8k6ni0q8kswad03kha86fk7n06vq8p0wzsfhcnalsdshrn17i"))))
+                "1d2k43k7i4yvbpi4sw1263a8d0q98z2n7aqhmpinpkih8a681vn5"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("glib:bin" ,glib "bin")         ; for glib-compile-schemas, etc.
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
        ("gtk" ,gtk+-2)
