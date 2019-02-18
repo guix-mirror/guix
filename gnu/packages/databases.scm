@@ -745,14 +745,13 @@ pictures, sounds, or video.")
 (define-public python-pymysql
   (package
     (name "python-pymysql")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyMySQL" version))
        (sha256
-        (base32
-         "0gvi63f1zq1bbd30x28kqyx351hal1yc323ckp0mihainb5n1iwy"))))
+        (base32 "1ry8lxgdc1p3k7gbw20r405jqi5lvhi5wk83kxdbiv8xv3f5kh6q"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-unittest2" ,python-unittest2)))
