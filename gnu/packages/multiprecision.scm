@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -286,7 +286,7 @@ Libs: -L~a/lib -ltfm~%"
                            ,synopsis ,version out)))
                (install-file "tomsfastmath.pc" pc-dir)
                #t))))))
-    (home-page "http://www.libtom.org/TomsFastMath/")
+    (home-page "https://www.libtom.net/TomsFastMath/")
     (description "TomsFastMath is a large integer library written in portable
 ISO C.  It is a port of LibTomMath with optional support for inline assembler
 multiplies.")
