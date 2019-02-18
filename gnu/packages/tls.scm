@@ -448,15 +448,7 @@ required structures.")
                                         "/share/openssl-" ,version)
 
                          (string-append "--prefix=" out)
-                         (string-append "-Wl,-rpath," lib)
-
-                         ;; XXX FIXME: Work around a code generation bug in GCC
-                         ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                         ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                         ,@(if (and (not (%current-target-system))
-                                    (string-prefix? "armhf" (%current-system)))
-                               '("-mfpu=vfpv3")
-                               '())))))
+                         (string-append "-Wl,-rpath," lib)))))
 
            (delete 'move-man3-pages)
            (add-after 'install 'move-extra-documentation
