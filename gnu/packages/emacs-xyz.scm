@@ -9626,6 +9626,32 @@ until the top-level form is no longer a macro call.")
     (description "Execute menu items as commands, with completion.")
     (license license:gpl3)))
 
+(define-public emacs-isearch-prop
+  (let ((commit "5e9dc44cf582d998aaa73ccd4d07cbda01248156")
+        (revision "1"))
+    (package
+      (name "emacs-isearch-prop")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/isearch-prop.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1xawppy705ybsgx566zvj8zk2aajq0sqvhvfs7nijqq32lx0a2zl"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/isearch-prop.el")
+      (synopsis "Extensions to @code{isearch.el}")
+      (description "The Emacs library @code{isearch-prop.el} lets you search within
+  contexts.  You can limit incremental search to a set of zones of
+  buffer text, search contexts that in effect constitute a multi-region.
+  These zones can be defined in various ways, including some ways
+  provided specially by this library.")
+      (license license:gpl3+))))
+
 (define-public emacs-company-lua
   (let ((commit "0be8122f3adf57ad27953bf4b03545d6298d3da4"))
     (package
