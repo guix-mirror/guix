@@ -2083,7 +2083,7 @@ legacy X clients.")
 (define-public xcalc
   (package
     (name "xcalc")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
@@ -2092,8 +2092,7 @@ legacy X clients.")
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "1lg8xwj0nr8anbd77n3cs87s57sr4gmb3pxs3k22a28n6ndcvmbz"))))
+        (base32 "1xgih1iq9498m7vk22qrdsck1rb905sn395azjn4a6pmhfai401b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
