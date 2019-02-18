@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -341,14 +341,14 @@ the embedded @code{RapidXML} C++ library.")
 (define-public r-modelr
   (package
     (name "r-modelr")
-    (version "0.1.2")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "modelr" version))
        (sha256
         (base32
-         "09whg3q5xq6csbqwgwfwav09vda8vgady5j70sk52xcn232k363a"))))
+         "1ngxphbjkv7yl1rg30sj36mfwhc76g452drjrq9abgab4k0pgnml"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
