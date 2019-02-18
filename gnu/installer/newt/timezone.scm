@@ -30,9 +30,6 @@
   #:use-module (newt)
   #:export (run-timezone-page))
 
-;; Height of the listbox displaying timezones.
-(define timezone-listbox-heigth (make-parameter 20))
-
 ;; Information textbox width.
 (define info-textbox-width (make-parameter 40))
 
