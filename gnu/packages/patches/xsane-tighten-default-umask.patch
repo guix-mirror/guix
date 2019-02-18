@@ -1,0 +1,36 @@
+From 5dc1e301a165709c60c435f00ec9bb6d7d5f21f3 Mon Sep 17 00:00:00 2001
+From: Ralph Little <littlesincanada@yahoo.co.uk>
+Date: Tue, 27 Aug 2019 21:40:02 -0700
+Subject: [PATCH] Apply debian upstream patch 0160-fix_tighten_default_umask
+
+Original patch commentary:
+
+Description: Change default XSane umask from 0007 to 0077
+ A default umask of 0007 can be mildly insecure in a multiuser environment,
+ so tighten things up a bit and go with 0077 instead.
+Author: Adrien Thebo
+Bug-Debian: http://bugs.debian.org/592972
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/xsane/+bug/611950
+
+----
+As above.
+---
+ src/xsane.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/xsane.h b/src/xsane.h
+index 67f06d4..fa04418 100644
+--- a/src/xsane.h
++++ b/src/xsane.h
+@@ -104,7 +104,7 @@
+ #define XSANE_DEBUG_ENVIRONMENT	"XSANE_DEBUG"
+ 
+ #define XSANE_PROGRESS_BAR_MIN_DELTA_PERCENT 0.025
+-#define XSANE_DEFAULT_UMASK		0007
++#define XSANE_DEFAULT_UMASK		0077
+ #define XSANE_HOLD_TIME			200
+ #define XSANE_CONTINUOUS_HOLD_TIME	10
+ #define XSANE_DEFAULT_DEVICE		"SANE_DEFAULT_DEVICE"
+-- 
+2.22.0
+
