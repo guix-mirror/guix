@@ -312,8 +312,8 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
     (version "0.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.leonerd.org.uk/code/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "http://www.leonerd.org.uk/code/libtermkey/"
+                                  "libtermkey-" version ".tar.gz"))
               (sha256
                (base32 "1xfj6lchhfljmbcl6dz8dpakppyy13nbl4ykxiv5x4dr9b4qf3bc"))))
     (build-system gnu-build-system)
