@@ -2268,19 +2268,20 @@ debugging, etc.")
   (package
     (inherit javacc-4)
     (version "7.0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javacc/javacc/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append "javacc-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0z7p9irwarc3avlcdyv9bd3zz57m1aawj8dr95wgxzg5z8fki8m6"))
-              (modules '((guix build utils)))
-              ;; Delete bundled jars.
-              (snippet '(begin (for-each delete-file-recursively
-                                         '("bootstrap" "lib"))
-                               #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/javacc/javacc.git")
+             (commit version)))
+       (file-name (git-file-name "javacc" version))
+       (sha256
+        (base32 "18kkak3gda93gr25jrgy6q00g0jr8i24ri2wk4kybz1v234fxx9i"))
+       (modules '((guix build utils)))
+       ;; Delete bundled jars.
+       (snippet '(begin (for-each delete-file-recursively
+                                  '("bootstrap" "lib"))
+                        #t))))
     (arguments
      `(#:make-flags                     ; bootstrap from javacc-4
        (list (string-append "-Dbootstrap-jar="
