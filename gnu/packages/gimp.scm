@@ -118,7 +118,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.6")
+    (version "2.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -126,7 +126,7 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "07qh2ljbza2mph1gh8sicn27qihhj8hx3ivvry2874cfh8ghgj2f"))))
+                "16sb4kslwin2jbgdb4nhks78pd0af8mvj8g5hap3hj946p7w2jfq"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
