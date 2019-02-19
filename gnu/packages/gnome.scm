@@ -7477,9 +7477,9 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
     (version "3.18.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/ghex/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "ghex-" version ".tar.xz"))
               (sha256
                (base32
                 "1lq8920ad2chi9ibmyq0x9hg9yk63b0kdbzid03w42cwdzw50x66"))))
@@ -7490,7 +7490,7 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
        ("which" ,which)
        ("intltool" ,intltool)
        ("yelp-tools" ,yelp-tools)
-       ("desktop-file-utils" ,desktop-file-utils))) ;for 'desktop-file-validate'
+       ("desktop-file-utils" ,desktop-file-utils))) ; for 'desktop-file-validate'
     (inputs
      `(("atk" ,atk)
        ("gtk" ,gtk+)))
