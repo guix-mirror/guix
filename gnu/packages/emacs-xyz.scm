@@ -13137,3 +13137,24 @@ mostly geared towards Common Lisp, but some are useful for other Lisp
 dialects, too.  Redshank's code transformations aim to be expression-based (as
 opposed to character-based).")
       (license license:gpl1+))))
+
+(define-public emacs-disk-usage
+  (package
+    (name "emacs-disk-usage")
+    (version "1.1.0")
+    (home-page "https://gitlab.com/ambrevar/emacs-disk-usage.git")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c9jmjn8vf0v4776v79pc5w0labfs4v9aysbv2w9423rg4mangbg"))))
+    (build-system emacs-build-system)
+    (synopsis "Sort and browse disk usage listings with Emacs")
+    (description "Disk Usage is a file system analyzer: it offers a tabulated
+view of file listings sorted by size.  Directory sizes are computed
+recursively.  The results are cached for speed.")
+    (license license:gpl3+)))
