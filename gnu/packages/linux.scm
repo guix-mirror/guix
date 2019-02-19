@@ -1843,7 +1843,7 @@ file system is as easy as logging into the server with an SSH client.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.cybernoia.de/software/archivemount/"
+       (uri (string-append "https://www.cybernoia.de/software/archivemount/"
                            "archivemount-" version ".tar.gz"))
        (sha256
         (base32 "12fb8fcmd1zwvfgzx4pay47md5cr2kgxcgq82cm6skmq75alfzi4"))))
@@ -1851,7 +1851,7 @@ file system is as easy as logging into the server with an SSH client.")
     (inputs `(("fuse" ,fuse)
               ("libarchive" ,libarchive)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.cybernoia.de/software/archivemount")
+    (home-page "https://www.cybernoia.de/software/archivemount.html")
     (synopsis "Tool for mounting archive files with FUSE")
     (description "archivemount is a FUSE-based file system for Unix variants,
 including Linux.  Its purpose is to mount archives (i.e. tar, tar.gz, etc.) to a
