@@ -7506,9 +7506,9 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
     (version "3.28.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libdazzle/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libdazzle-" version ".tar.xz"))
               (sha256
                (base32
                 "08qdwv2flywnh6kibkyv0pnm67pk8xlmjh4yqx6hf13hyhkxkqgg"))))
@@ -7529,9 +7529,9 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (native-inputs
-     `(("glib" ,glib "bin") ; glib-compile-resources
+     `(("glib" ,glib "bin")             ; glib-compile-resources
        ("pkg-config" ,pkg-config)
-       ;; For tests
+       ;; For tests.
        ("xorg-server" ,xorg-server)))
     (inputs
      `(("glib" ,glib)
