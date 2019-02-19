@@ -2269,7 +2269,7 @@ you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
 for newer UEFI systems.  For legacy systems, the @code{target} field
 names a device, like @code{/dev/sda}; for UEFI systems it names a path
 to a mounted EFI partition, like @code{/boot/efi}; do make sure the path is
-currently mounted and a @code{file-sytem} entry is specified in your
+currently mounted and a @code{file-system} entry is specified in your
 configuration.
 
 @item
