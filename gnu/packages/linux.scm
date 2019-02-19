@@ -3699,7 +3699,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.6")
+    (version "6.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -3707,11 +3707,12 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c32sxfvngdjzfmxn5ngc5yxwi8ij3yl216nhzyz9r31qi3m14v7"))))
+                "19f75m6mzg8h7b4snzg7d6ypvkz6nq32lrpi9ja95gqz4wsd18a5"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
-       #:configure-flags '("--without-nistbeacon")))
+       #:configure-flags '("--without-nistbeacon"
+                           "--without-pkcs11")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
