@@ -6,7 +6,7 @@
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -5236,18 +5236,18 @@ fundamental protocol access, not higher-level abstractions.")
 (define-public java-jsch
   (package
     (name "java-jsch")
-    (version "0.1.54")
+    (version "0.1.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/jsch/jsch/"
                                   version "/jsch-" version ".zip"))
               (sha256
                (base32
-                "029rdddyq1mh3ghryh3ki99kba1xkf1d1swjv2vi6lk6zzjy2wdb"))))
+                "1lxyjwvmwa723wcf3bqn816hkvc03vz4xhbsi7bvfhrz2rpgcfq6"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "dist"
-       #:tests? #f ; no tests included
+       #:tests? #f                      ; no tests included
        #:phases
        (modify-phases %standard-phases
          (replace 'install (install-jars "dist")))))
