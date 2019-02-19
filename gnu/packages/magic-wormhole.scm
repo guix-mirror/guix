@@ -103,3 +103,58 @@ both are behind NAT boxes.  Each side makes a TCP connection to this server and
 presents a handshake.  Two connections with identical handshakes are glued
 together, allowing them to pretend they have a direct connection.")
     (license expat)))
+
+(define-public magic-wormhole
+  (package
+    (name "magic-wormhole")
+    (version "0.11.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "magic-wormhole" version))
+        (sha256
+         (base32
+          "01fr4bi6kc6fz9n3c4qq892inrc3nf6p2djy65yvm7xkvdxncydf"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; XXX I can't figure out how to build the docs properly.
+         ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=34515#101
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "docs/wormhole.1" man))
+             #t)))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ;; XXX These are required for the test suite but end up being referenced
+       ;; by the built package.
+       ;; https://bugs.gnu.org/25235
+       ("magic-wormhole-mailbox-server" ,magic-wormhole-mailbox-server)
+       ("magic-wormhole-transit-relay" ,magic-wormhole-transit-relay)))
+    (propagated-inputs
+     `(("python-autobahn" ,python-autobahn)
+       ("python-click" ,python-click)
+       ("python-hkdf" ,python-hkdf)
+       ("python-humanize" ,python-humanize)
+       ("python-pynacl" ,python-pynacl)
+       ("python-spake2" ,python-spake2)
+       ("python-tqdm" ,python-tqdm)
+       ("python-twisted" ,python-twisted)
+       ("python-txtorcon" ,python-txtorcon)))
+    (home-page "https://github.com/warner/magic-wormhole")
+    (synopsis "Securely transfer data between computers")
+    (description "Magic-Wormhole is a library and a command-line tool named
+wormhole, which makes it possible to securely transfer arbitrary-sized files and
+directories (or short pieces of text) from one computer to another.  The two
+endpoints are identified by using identical \"wormhole codes\": in general, the
+sending machine generates and displays the code, which must then be typed into
+the receiving machine.
+
+The codes are short and human-pronounceable, using a phonetically-distinct
+wordlist.  The receiving side offers tab-completion on the codewords, so usually
+only a few characters must be typed.  Wormhole codes are single-use and do not
+need to be memorized.")
+    (license expat)))
