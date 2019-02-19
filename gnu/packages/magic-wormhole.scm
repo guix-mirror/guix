@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz))
@@ -63,3 +64,42 @@ clients connect to.  The server performs store-and-forward delivery for small
 key-exchange and control messages.  Bulk data is sent over a direct TCP
 connection, or through a transit-relay.")
    (license expat)))
+
+(define-public magic-wormhole-transit-relay
+  (package
+    (name "magic-wormhole-transit-relay")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "magic-wormhole-transit-relay" version))
+        (sha256
+         (base32
+          "11w5gdc6am2ph5rns60x0694sx4zrlzxj540jljhn5cmnbx1ngxi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (docs (string-append out "/share/doc/magic-wormhole-transit-relay")))
+               (for-each (lambda (file)
+                           (install-file file docs))
+                         (find-files "docs/"))
+               #t))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-tox" ,python-tox)))
+    (propagated-inputs
+     `(("python-twisted" ,python-twisted)))
+    (home-page
+      "https://github.com/warner/magic-wormhole-transit-relay")
+    (synopsis "Magic-Wormhole relay server")
+    (description "This package provides the Magic-Wormhole Transit Relay
+server, which helps clients establish bulk-data transit connections even when
+both are behind NAT boxes.  Each side makes a TCP connection to this server and
+presents a handshake.  Two connections with identical handshakes are glued
+together, allowing them to pretend they have a direct connection.")
+    (license expat)))
