@@ -3517,15 +3517,14 @@ WWW::Mechanize that incorporates features for web application testing.")
 (define-public perl-test-www-mechanize-catalyst
   (package
     (name "perl-test-www-mechanize-catalyst")
-    (version "0.60")
+    (version "0.62")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTROUT/"
                            "Test-WWW-Mechanize-Catalyst-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nhhfrrai3ndziz873vpa1j0vljjnib4wqafd6yyvkf58ad7v0lv"))))
+        (base32 "1cdc2q16vs6fb335pzaislz2rx1ph9acaxyp7v5hv9xbwwddwfqq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
