@@ -4959,7 +4959,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.8.4")
+    (version "10.9")
     (source
      (origin
        (method url-fetch)
@@ -4969,11 +4969,10 @@ functions of Tidy.")
        (snippet '(begin
                    ;; We use packaged libraries, so delete the bundled copies.
                    (for-each delete-file-recursively
-                             (list "nghttp2" "mbedtls"))
+                             (list "extra/nghttp2.tgz" "mbedtls"))
                    #t))
        (sha256
-        (base32
-         "054bcn1rsa064kak5lm961k2l38bz3329ik7j68fxlqs0zlj5cvw"))))
+        (base32 "1f2j2x1ziawz8ijg3s3izqpyzpiwfyhlsvbv0szxvhvj4a0l7pbl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
