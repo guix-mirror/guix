@@ -1591,12 +1591,13 @@ identical visual appearance.")
    (version "1.1")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/emersion/grim/archive/v" version
-                         ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/emersion/grim.git")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
      (sha256
-      (base32 "1zxj1p5rgrhcq88frq2ccc38b7v0hk22mvqwjs4ykrpyhgkxwir1"))))
+      (base32 "1bcvkggqszcwy6hg8g4mch3yr25ic0baafbd90af5s5mrhrjxxxz"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("cairo" ,cairo)
