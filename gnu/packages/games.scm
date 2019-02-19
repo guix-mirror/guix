@@ -63,6 +63,7 @@
 ;;; Copyright © 2021 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Solene Rapenne <solene@perso.pw>
 ;;; Copyright © 2021 Noisytoot <noisytoot@disroot.org>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -551,6 +552,47 @@ Instead, it uses a special algorithm to choose the worst brick possible.
 Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
+
+(define-public tetrinet
+  (package
+    (name "tetrinet")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://tetrinet.or.cz/download/tetrinet-" version
+             ".tar.bz2"))
+       (sha256
+        (base32
+         "0b4pddqz6is1771qmvcj8qqlr4in2djdbkk13agvp9yhfah2v8x7"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'unpack 'fix-install-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (substitute* "Makefile"
+                 (("/usr/games") (string-append out "/bin"))))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (for-each (lambda (file)
+                           (install-file file doc))
+                         (list "README" "tetrinet.txt"))))))))
+    (home-page "http://tetrinet.or.cz")
+    (synopsis "Terminal-based multiplayer Tetris clone")
+    (description "Tetrinet is a multiplayer Tetris-like game with powerups and
+attacks you can use on opponents.")
+    (license license:public-domain)))
 
 (define-public vitetris
   (package
