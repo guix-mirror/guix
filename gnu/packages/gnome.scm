@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
@@ -7371,7 +7371,7 @@ mp3, Ogg Vorbis and FLAC")
 (define-public soundconverter
   (package
     (name "soundconverter")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
@@ -7380,8 +7380,7 @@ mp3, Ogg Vorbis and FLAC")
                            "soundconverter-" version ".tar.xz"))
 
        (sha256
-        (base32
-         "1wrxf5py54xplrf97qp24pzbis0cvax5c6k0c7vr3z3ry8r7gd7c"))
+        (base32 "1d6x1yf8psqbd9zbybxivfqg55khcnngp2mn92l161dfdk9512c5"))
        (patches
         (search-patches
          "soundconverter-remove-gconf-dependency.patch"))))
@@ -7398,12 +7397,6 @@ mp3, Ogg Vorbis and FLAC")
 
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-POTFILES.in
-           (lambda _
-             (substitute* "po/POTFILES.in"
-               ;; This file doesn't exist, so without removing it, the 'check
-               ;; phase fails for the po directory
-               (("soundconverter/gconfstore\\.py") ""))))
          (add-after 'install 'wrap-soundconverter-for-python
            (assoc-ref python:%standard-phases 'wrap))
          (add-after 'install 'wrap-soundconverter
