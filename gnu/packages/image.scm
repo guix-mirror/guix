@@ -1588,7 +1588,7 @@ identical visual appearance.")
 (define-public grim
   (package
    (name "grim")
-   (version "1.0")
+   (version "1.1")
    (source
     (origin
      (method url-fetch)
@@ -1596,7 +1596,7 @@ identical visual appearance.")
                          ".tar.gz"))
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
-      (base32 "0xkk5nqyp1px0sxz4asmchznc0q39wdx1b67ql741k8aj815km0f"))))
+      (base32 "1zxj1p5rgrhcq88frq2ccc38b7v0hk22mvqwjs4ykrpyhgkxwir1"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("cairo" ,cairo)
