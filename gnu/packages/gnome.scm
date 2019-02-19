@@ -7427,52 +7427,49 @@ configurable file renaming. ")
     (license license:gpl3)))
 
 (define-public workrave
-  (let ((commit "v1_10_21"))
-    (package
-      (name "workrave")
-      (version (string-map (match-lambda
-                             (#\_ #\.)
-                             (chr chr))
-                           (string-drop commit 1)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rcaelers/workrave.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
-      (build-system glib-or-gtk-build-system)
-      (propagated-inputs `(("glib" ,glib)
-                           ("gtk+" ,gtk+)
-                           ("gdk-pixbuf" ,gdk-pixbuf)
-                           ("gtkmm" ,gtkmm)
-                           ("glibmm" ,glibmm)
-                           ("libx11" ,libx11)
-                           ("libxtst" ,libxtst)
-                           ("dconf" ,dconf)
-                           ("libice" ,libice)))
-      (inputs `(("libsm" ,libsm)
-                ("python-cheetah" ,python2-cheetah)))
-      (native-inputs `(("glib" ,glib "bin")
-                       ("pkg-config" ,pkg-config)
-                       ("gettext" ,gnu-gettext)
-                       ("autoconf" ,autoconf)
-                       ("autoconf-archive" , autoconf-archive)
-                       ("automake" ,automake)
-                       ("libtool" ,libtool)
-                       ("intltool" ,intltool)
-                       ("libxscrnsaver" ,libxscrnsaver)
-                       ("gobject-introspection" ,gobject-introspection)
-                       ("python2" ,python-2)))
-      (synopsis "Tool to help prevent repetitive strain injury (RSI)")
-      (description
-       "Workrave is a program that assists in the recovery and prevention of
+  (package
+    (name "workrave")
+    (version "1.10.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rcaelers/workrave.git")
+             (commit (string-map (match-lambda (#\_ #\.) (chr chr)) version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
+    (build-system glib-or-gtk-build-system)
+    (propagated-inputs `(("glib" ,glib)
+                         ("gtk+" ,gtk+)
+                         ("gdk-pixbuf" ,gdk-pixbuf)
+                         ("gtkmm" ,gtkmm)
+                         ("glibmm" ,glibmm)
+                         ("libx11" ,libx11)
+                         ("libxtst" ,libxtst)
+                         ("dconf" ,dconf)
+                         ("libice" ,libice)))
+    (inputs `(("libsm" ,libsm)
+              ("python-cheetah" ,python2-cheetah)))
+    (native-inputs `(("glib" ,glib "bin")
+                     ("pkg-config" ,pkg-config)
+                     ("gettext" ,gnu-gettext)
+                     ("autoconf" ,autoconf)
+                     ("autoconf-archive" , autoconf-archive)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)
+                     ("intltool" ,intltool)
+                     ("libxscrnsaver" ,libxscrnsaver)
+                     ("gobject-introspection" ,gobject-introspection)
+                     ("python2" ,python-2)))
+    (synopsis "Tool to help prevent repetitive strain injury (RSI)")
+    (description
+     "Workrave is a program that assists in the recovery and prevention of
 repetitive strain injury (@dfn{RSI}).  The program frequently alerts you to take
 micro-pauses and rest breaks, and restricts you to your daily limit.")
-      (home-page "http://www.workrave.org")
-      (license license:gpl3+))))
+    (home-page "http://www.workrave.org")
+    (license license:gpl3+)))
 
 (define-public ghex
   (package
