@@ -85,7 +85,7 @@ provided, as well as a framework to add new color models and data types.")
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
                                         (string-take version 3)
-                                        "/" name "-" version ".tar.bz2")))
+                                        "/gegl-" version ".tar.bz2")))
               (sha256
                (base32
                 "0ljqxc4iyy2hrj31pxcy1xp4xm5zbx1nigqisphmg4p8mcz2jrz9"))))
