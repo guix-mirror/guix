@@ -1839,15 +1839,14 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public archivemount
   (package
     (name "archivemount")
-    (version "0.8.9")
+    (version "0.8.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.cybernoia.de/software/archivemount/"
                            "archivemount-" version ".tar.gz"))
        (sha256
-        (base32
-         "0v4si1ri6lhnq9q87gkx7fsh6lv6xz4bynknwndqncpvfp5cy1jg"))))
+        (base32 "12fb8fcmd1zwvfgzx4pay47md5cr2kgxcgq82cm6skmq75alfzi4"))))
     (build-system gnu-build-system)
     (inputs `(("fuse" ,fuse)
               ("libarchive" ,libarchive)))
