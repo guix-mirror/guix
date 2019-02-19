@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,18 +46,18 @@
 (define-public rdesktop
   (package
     (name "rdesktop")
-    (version "1.8.3")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/rdesktop/rdesktop/" version "/"
-                    "rdesktop-" version ".tar.gz"))
+              (uri (string-append "https://github.com/rdesktop/rdesktop/"
+                                  "releases/download/v" version "/rdesktop-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1r7c1rjmw2xzq8fw0scyb453gy9z19774z1z8ldmzzsfndb03cl8"))))
+                "0bfd9nl2dfr1931fv6bpnrj5yf88ikijrs4s3nm96gm87bkvi64v"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list (string-append "--with-openssl="
+     `(#:configure-flags (list (string-append "--with-openssl="
                                               (assoc-ref %build-inputs
                                                          "openssl"))
 
@@ -64,11 +65,22 @@
                                "--disable-credssp"
                                "--disable-smartcard")
 
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install-license-files 'delete-extraneous-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (license-dir (string-append out "/share/doc/"
+                                                ,name "-" ,version)))
+               ;; XXX These files are installed erroneously.
+               (delete-file (string-append license-dir "/licence.c"))
+               (delete-file (string-append license-dir "/licence.o")))
+             #t)))
        #:tests? #f))                              ;no 'check' target
     (inputs
      `(("libx11" ,libx11)
        ("openssl" ,openssl)))
-    (home-page "http://www.rdesktop.org/")
+    (home-page "https://www.rdesktop.org/")
     (synopsis "Client for Windows Terminal Services")
     (description
      "rdesktop is a client for Microsoft's Windows Remote Desktop Services,
