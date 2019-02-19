@@ -2267,7 +2267,7 @@ debugging, etc.")
 (define-public javacc
   (package
     (inherit javacc-4)
-    (version "7.0.3")
+    (version "7.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/javacc/javacc/"
@@ -2275,14 +2275,14 @@ debugging, etc.")
               (file-name (string-append "javacc-" version ".tar.gz"))
               (sha256
                (base32
-                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))
+                "0z7p9irwarc3avlcdyv9bd3zz57m1aawj8dr95wgxzg5z8fki8m6"))
               (modules '((guix build utils)))
-              ;; delete bundled jars
+              ;; Delete bundled jars.
               (snippet '(begin (for-each delete-file-recursively
                                          '("bootstrap" "lib"))
                                #t))))
     (arguments
-     `(#:make-flags ; bootstrap from javacc-4
+     `(#:make-flags                     ; bootstrap from javacc-4
        (list (string-append "-Dbootstrap-jar="
                             (assoc-ref %build-inputs "javacc")
                             "/share/java/javacc.jar"))
