@@ -309,20 +309,20 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
 (define-public libtermkey
   (package
     (name "libtermkey")
-    (version "0.20")
+    (version "0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.leonerd.org.uk/code/libtermkey/"
                                   "libtermkey-" version ".tar.gz"))
               (sha256
-               (base32 "1xfj6lchhfljmbcl6dz8dpakppyy13nbl4ykxiv5x4dr9b4qf3bc"))))
+               (base32 "0fzb5pvj139di02saffhy3ajchmksn1rs41kplkv2zjyjv7xbsvr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list
                      "CC=gcc"
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+                  (delete 'configure))  ; no configure script
        #:test-target "test"))
     (inputs `(("ncurses" ,ncurses)))
     (native-inputs `(("libtool" ,libtool)
