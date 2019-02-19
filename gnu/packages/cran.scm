@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6589,19 +6590,19 @@ used to teach mathematics, statistics, computation and modeling.")
 (define-public r-raster
   (package
     (name "r-raster")
-    (version "2.8-4")
+    (version "2.8-19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "raster" version))
        (sha256
         (base32
-         "14pcfznxm5kdwd908axkr9v1l0hzxlrwd8kwrz0liqnfh9cx5rsa"))))
+         "1lmhf7p7is8ai7lv7zsj2rdzf83j7ccl4x7a9vwxxa824zy4bkf4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("r-sp" ,r-sp)))
-    (home-page "http://www.rspatial.org/")
+    (home-page "https://www.rspatial.org/")
     (synopsis "Geographic data analysis and modeling")
     (description
      "The package implements basic and high-level functions for reading,
