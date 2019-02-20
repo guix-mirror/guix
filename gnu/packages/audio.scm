@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1374,7 +1375,20 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        (list
         ;; Add the output lib directory to the RUNPATH.
         (string-append "--ldflags=-Wl,-rpath=" %output "/lib")
-        "--cxxflags=-std=c++11")))
+        "--cxxflags=-std=c++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-boost-includes
+           (lambda _
+             (substitute* "src/headers/gx_internal_plugins.h"
+               (("namespace gx_jack" m)
+                (string-append "#include <boost/noncopyable.hpp>\n" m)))
+             (substitute* '("src/headers/gx_system.h"
+                            "src/headers/gx_parameter.h"
+                            "src/headers/gx_json.h")
+               (("namespace gx_system" m)
+                (string-append "#include <boost/noncopyable.hpp>\n" m)))
+             #t)))))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("boost" ,boost)
@@ -2446,18 +2460,17 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.10.0")
+    (version "0.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/suil-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0j489gm3fhnmwmbgw30bvd4byw1vsy4yazdlnji8jzhcz0qwb5cq"))))
+               "00d43m0nai63ajb7rkm9v084jcih206y17ib3160zcvzc885ji4z"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
-       #:python ,python-2 ;XXX: The bundled waf does not work with Python 3.7.0.
+     `(#:tests? #f        ; no check target
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
@@ -3207,7 +3220,7 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -3215,11 +3228,20 @@ with support for HD extensions.")
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
         (base32
-         "0r4fbajgfmnwgl63hcm56f1j8m5f135q6j5jkzdvrrhpcj39yx06"))))
+         "1p6yz5q7czyf9ard65sp4kawdlkg40cfscr3b24znymmhs3p7rbk"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; XXX
+           (substitute* "bs1770gain/bs1770gain.c"
+             (("\"N.*\"") "\"\""))
+           (substitute* "configure"
+             (("URL=.*$")
+              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html\n"))))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))
-    (home-page "http://bs1770gain.sourceforge.net/")
+    (home-page "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html")
     (synopsis "Tool to adjust loudness of media files")
     (description
      "BS1770GAIN is a loudness scanner compliant with ITU-R BS.1770 and its

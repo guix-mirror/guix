@@ -21,7 +21,7 @@
   #:use-module (guix scripts)
   #:use-module (guix ssh)
   #:use-module (guix store)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix scripts build)

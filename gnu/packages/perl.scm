@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -2385,7 +2385,7 @@ parsing logic.")
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
-    (version "1.75")
+    (version "1.76")
     (source
      (origin
        (method url-fetch)
@@ -2393,7 +2393,7 @@ parsing logic.")
                            "DateTime-Format-Strptime-" version ".tar.gz"))
        (sha256
         (base32
-         "069wmgbchydgx3nm9klqw0g6ksnja28g61d4allgzmvr9ynb5ksg"))))
+         "03dmzi9n6jmnfjmf0ld5sdmi3ib6jrhz25cjzv7d58ypdr32cg2r"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
@@ -2414,7 +2414,7 @@ takes a string and a pattern and returns the `DateTime` object associated.")
 (define-public perl-datetime-locale
   (package
     (name "perl-datetime-locale")
-    (version "1.17")
+    (version "1.23")
     (source
      (origin
        (method url-fetch)
@@ -2422,10 +2422,11 @@ takes a string and a pattern and returns the `DateTime` object associated.")
                            "DateTime-Locale-" version ".tar.gz"))
        (sha256
         (base32
-         "1jawnci23kik5x4gln6ixvv9bxznd5f6ira024yjxsc97y5mk9hc"))))
+         "05f0jchminv5g2nrvsx5v1ihc5919fzzhh4f82dxi5ns8bkq2nis"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-ipc-system-simple" ,perl-ipc-system-simple)
        ("perl-test-file-sharedir-dist" ,perl-test-file-sharedir-dist)
        ("perl-test-warnings" ,perl-test-warnings)
        ("perl-test-requires" ,perl-test-requires)
@@ -4060,16 +4061,16 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
 (define-public perl-inline
   (package
    (name "perl-inline")
-   (version "0.80")
+   (version "0.81")
    (source
     (origin
      (method url-fetch)
      (uri (string-append
-           "mirror://cpan/authors/id/I/IN/INGY/Inline-"
+           "mirror://cpan/authors/id/T/TI/TINITA/Inline-"
            version ".tar.gz"))
      (sha256
       (base32
-       "1xnf5hykcr54271x5jsnr61bcv1c7x39cy4kdcrkxm7bn62djavy"))))
+       "1qxi0xvn8rqj4sca9gwb1xkm6bdz33x57li5kfls6mnavil3i5qz"))))
    (build-system perl-build-system)
    (native-inputs
     `(("perl-test-warn" ,perl-test-warn)))

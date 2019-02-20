@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -277,15 +277,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.10")
+    (version "1.5.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32
-         "0jqw3z0408yx0lzc6ykn4d29n02dk31kqnmq9b3ldmcnpl6hck29"))))
+        (base32 "0aav15f0lh8k4i62aza2bdv4s8vv65j38pz2zc4v45snd3arfby0"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -335,7 +334,7 @@ applications.")
     (native-inputs
      `(("valgrind" ,valgrind)
        ("perl" ,perl)
-       ("python" ,python2-minimal)
+       ("python" ,python-2)
        ("python2-pymongo" ,python2-pymongo)
        ("python2-pyyaml" ,python2-pyyaml)
        ("tzdata" ,tzdata)))
@@ -687,18 +686,18 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.6")
+    (version "10.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jv26y3f10svrjxzsgqxg956c86b664azyk2wppzpa5x11pjga38"))
+                "1piyfcrcqscjhnnwn91kdvr764s7d0qz4lgygf9bl6qc71ji1vdz"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-uuid=e2fs")
+     `(#:configure-flags '("--with-uuid=e2fs" "--with-openssl")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
@@ -717,6 +716,7 @@ as a drop-in replacement of MySQL.")
     (inputs
      `(("readline" ,readline)
        ("libuuid" ,util-linux)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://www.postgresql.org/")
     (synopsis "Powerful object-relational database system")
@@ -733,26 +733,25 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.11")
+    (version "9.6.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0c55akrkzqd6p6a8hr0338wk246hl76r9j16p4zn3s51d7f0l99q"))))))
+                "114xay230xia2fagisxahs5fc2mza8hmmkr6ibd7nxllp938931f"))))))
 
 (define-public python-pymysql
   (package
     (name "python-pymysql")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyMySQL" version))
        (sha256
-        (base32
-         "0gvi63f1zq1bbd30x28kqyx351hal1yc323ckp0mihainb5n1iwy"))))
+        (base32 "1ry8lxgdc1p3k7gbw20r405jqi5lvhi5wk83kxdbiv8xv3f5kh6q"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-unittest2" ,python-unittest2)))
@@ -1069,7 +1068,7 @@ extremely small.")
 (define-public perl-dbi
   (package
     (name "perl-dbi")
-    (version "1.641")
+    (version "1.642")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1077,7 +1076,7 @@ extremely small.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hf2x29bnqf2x1v4bdhji802z7n2mbg7h1amv8gdkqyhrlrfa2am"))))
+                "0pbzqazrx7pnw4nbyaf27in4b6yddkirbd2ws7mnqa2n7812a81z"))))
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
@@ -1490,14 +1489,14 @@ sets, bitmaps and hyperloglogs.")
 (define-public kyotocabinet
   (package
     (name "kyotocabinet")
-    (version "1.2.76")
+    (version "1.2.77")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://fallabs.com/kyotocabinet/pkg/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0g6js20x7vnpq4p8ghbw3mh9wpqksya9vwhzdx6dnlf354zjsal1"))))
+                "1rlx4307adbzd842b4npq6cwlw8h010ingxaz3qz1ijc70lr72an"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1637,7 +1636,7 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.842")
+  (version "1.843")
   (source
     (origin
       (method url-fetch)
@@ -1647,7 +1646,7 @@ database.")
              ".tar.gz"))
       (sha256
         (base32
-          "0w2d99vs9qarng2f9fpg3gchfdzy6an13507jhclcl8wv183h5hg"))))
+          "0sildz1i3fmh949w1scpjsyjx0cbmfw0yna3y70mc6vbwp8y696y"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))

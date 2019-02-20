@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -37,6 +37,7 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -340,14 +341,14 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "0.32.0")
+    (version "0.33.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "1fjp4c8jc0kjbbih1x1vs9v40d9lncma642kflnmy0bixxnvh7df"))))
+        (base32 "1ml1ky3s75lbxr91p608q3prsdh9x899mw7nbgk252pqhg4vh8sh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; tests require a network connection
@@ -478,16 +479,16 @@ a card with a smaller capacity than stated.")
 (define-public duperemove
   (package
     (name "duperemove")
-    (version "0.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/markfasheh/duperemove/archive/v"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0rjmmh42yqw9a5j6sp31cqwxk3s97dsi4xz0wpxpllj7bsp3aiw5"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (version "0.11.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/markfasheh/duperemove.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1scz76pvpljvrpfn176125xwaqwyy4pirlm11sc9spb2hyzknw2z"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -609,7 +610,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "63")
+    (version "64.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -618,7 +619,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "060nsza8xic769bxj3pvl70a9885bwrc0myw16l095i3z6w7yzwq"))))
+                "1la82fqbdwjkw6il498nkdfgqc4aszv481xf2p9p07jfvankx24v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -635,6 +636,7 @@ passphrases.")
     (inputs
      `(("eudev" ,eudev)
        ("json-c" ,json-c)
+       ("keyutils" ,keyutils)
        ("kmod" ,kmod)
        ("util-linux" ,util-linux)))
     (arguments

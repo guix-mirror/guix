@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;;
@@ -190,17 +190,12 @@ commands would.")
                 "0xl56y196vxv001gvx35xwfr25zah8m3xwizp9ycdgdc0rfc4rdb"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       (list "CC=gcc"
-             (string-append "PREFIX=" %output)
-             ;; This works around the following error:
-             ;; 'error: ‘for’ loop initial declarations are only allowed in C99
-             ;; or C11 mode'
-             "CFLAGS=-std=c11")
+     `(#:configure-flags
        ;; The build system tries to build in a separate directory, but that
        ;; seems to be unnecessary.
-       #:configure-flags '("--disable-builddir")
-       ;; The test suite appears to require the unpackaged Perl module AnyEvent.
+       (list "--disable-builddir")
+
+       ;; The test suite requires the unpackaged Xephyr X server.
        #:tests? #f))
     (inputs
      `(("libxcb" ,libxcb)
@@ -228,10 +223,16 @@ commands would.")
        ("libxml2" ,libxml2)
        ("docbook-xsl" ,docbook-xsl)))
     (home-page "https://i3wm.org/")
-    (synopsis "Improved tiling window manager")
-    (description "A tiling window manager, completely written
-from scratch.  i3 is primarily targeted at advanced users and
-developers.")
+    (synopsis "Tiling window manager")
+    (description "i3 is a tiling X11 window manager that dynamically manages
+tiled, stacked, and tabbed window layouts.
+
+i3 primarily targets advanced users.  Windows are managed manually and organised
+inside containers, which can be split vertically or horizontally, and optionally
+resized.
+
+i3 uses a plain-text configuration file, and can be extended and controlled from
+many programming languages.")
     (license license:bsd-3)))
 
 (define-public i3blocks
@@ -675,20 +676,27 @@ drags, snap-to-border support, and virtual desktops.")
      `(#:make-flags '("CPPFLAGS=-U__TIME__") ;ugly, but for reproducibility
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'install 'install-xsession
-          (lambda _
-            (let ((xsessions (string-append %output "/share/xsessions")))
-              (mkdir-p xsessions)
-              (call-with-output-file
-                  (string-append xsessions "/fluxbox.desktop")
-                (lambda (port)
-                  (format port "~
-                    [Desktop Entry]~@
-                    Name=~a~@
-                    Comment=~a~@
-                    Exec=~a/bin/startfluxbox~@
-                    Type=Application~%" ,name ,synopsis %output)))))))))
+         (add-after 'install 'install-vim-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (syntax (string-append out "/share/vim/vimfiles/syntax")))
+               (copy-recursively "3rd/vim/vim/syntax" syntax)
+               #t)))
+         (add-after 'install 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                 (string-append xsessions "/fluxbox.desktop")
+                 (lambda (port)
+                   (format port "~
+                     [Desktop Entry]~@
+                     Name=~a~@
+                     Comment=~a~@
+                     Exec=~a/bin/startfluxbox~@
+                     Type=Application~%" ,name ,synopsis out)))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

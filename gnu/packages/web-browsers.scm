@@ -144,14 +144,14 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
 (define-public luakit
   (package
     (name "luakit")
-    (version "2017.08.10")
+    (version "2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/luakit/luakit/archive/" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "0dwxhnq90whakgdg21lzcf03n2g1c7hqgliwhav8av5na5mqpn93"))
+                "09kgsm2w2xa4xwylsi0bwjvdl9k6hkyjyyrq2i3l8bvi2qrs5gzc"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (inputs
      `(("lua-5.1" ,lua-5.1)

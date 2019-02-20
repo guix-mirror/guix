@@ -995,14 +995,15 @@ lot easier.")
   (package
     (name "stgit")
     (version "0.18")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ctmarinas/stgit/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "19fk6vw3pgp2a98wpd4j3kyiyll5dy9bi4921wq1mrky0l53mj00"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ctmarinas/stgit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ydgg744m671nkhg7h4q2z3b9vpbc9914rbc0wcgimqfqsxkxx2y"))))
     (build-system python-build-system)
     (inputs
      `(("git" ,git)))
@@ -1012,7 +1013,7 @@ lot easier.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; two tests will fail -> disable them. TODO: fix the failing tests
+             ;; Two tests will fail -> disable them. TODO: fix the failing tests
              (delete-file "t/t3300-edit.sh")
              (delete-file "t/t7504-commit-msg-hook.sh")
              (invoke "make" "test"))))))

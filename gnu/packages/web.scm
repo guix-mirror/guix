@@ -164,17 +164,17 @@ and its related documentation.")
     (name "mod-wsgi")
     (version "4.5.22")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/GrahamDumpleton/mod_wsgi/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/GrahamDumpleton/mod_wsgi.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n1yhmrfp8mjbsngmyjl937c6rc0069p6wdi1lknrbn1q42hzw6q"))))
+                "1q90xw2cbhka5gcd6yc69iir73x4gm7fm75qpkins2ryfl6w1q3f"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; TODO: Can't figure out if there are tests
+     '(#:tests? #f                 ; TODO: can't figure out if there are tests
        #:make-flags (list
                      (string-append "DESTDIR="
                                     (assoc-ref %outputs "out"))
@@ -413,16 +413,16 @@ APIs.")
     (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/gnosek/fcgiwrap/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gnosek/fcgiwrap.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "07y6s4mm86cv7p1ljz94sxnqa89y9amn3vzwsnbq5hrl4vdy0zac"))))
+        (base32 "1ryw66h9aazi83amk8l7ha8k5g0c7qvk5g6jv376a1ws9xk2qw6f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests included
+     `(#:tests? #f                      ; no tests included
        #:make-flags (list "CC=gcc")))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -620,17 +620,17 @@ project)
     (name "qjson")
     (version "0.9.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/flavio/qjson/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/flavio/qjson.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m0h4rajj99hv9w4i381a8x81lxiv167lxk10ncvphpkfxs624p8"))))
+                "1f4wnxzx0qdmxzc7hqk28m0sva7z9p9xmxm6aifvjlp0ha6pmfxs"))))
     (build-system cmake-build-system)
     (arguments
-     ;; The tests require a X server
+     ;; The tests require a running X server.
      `(#:configure-flags '("-DQJSON_BUILD_TESTS=ON"
                            "-DCMAKE_CXX_FLAGS=-std=gnu++11 -fPIC")
        #:phases
@@ -747,14 +747,14 @@ current version of any major web browser.")
     (name "rapidjson")
     (version "1.1.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/miloyip/rapidjson/archive/v"
-                   version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/miloyip/rapidjson.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))
+               "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -786,13 +786,14 @@ style API.")
     (name "libyajl")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lloyd/yajl/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lloyd/yajl.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nmcqpaiq4pv7dymyg3n3jsd57yhp5npxl26a1hzw3m3lmj37drz"))))
+                "00yj06drb6izcxfxfqlhimlrb089kka0w0x8k27pyzyiq7qzcvml"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
@@ -992,13 +993,14 @@ of people.")
     (name "websockify")
     (version "0.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/novnc/websockify/archive/v"
-                                  version "/archive.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/novnc/websockify.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kjq6gibsvbb6zx5gi8hgh7110x62pbwcqkwapf3k7s27w5y907h"))))
+                "0pcic8qs0gdwrfjgfaf893jyddaw97wcjm2mmvwn0xyhmy8mbmw1"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; FIXME: 2 out of 6 tests fail with "ImportError: No module
@@ -3515,15 +3517,14 @@ WWW::Mechanize that incorporates features for web application testing.")
 (define-public perl-test-www-mechanize-catalyst
   (package
     (name "perl-test-www-mechanize-catalyst")
-    (version "0.60")
+    (version "0.62")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTROUT/"
                            "Test-WWW-Mechanize-Catalyst-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nhhfrrai3ndziz873vpa1j0vljjnib4wqafd6yyvkf58ad7v0lv"))))
+        (base32 "1cdc2q16vs6fb335pzaislz2rx1ph9acaxyp7v5hv9xbwwddwfqq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
@@ -3882,14 +3883,14 @@ a pure C99 library.")
 (define-public uwsgi
   (package
     (name "uwsgi")
-    (version "2.0.17.1")
+    (version "2.0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://projects.unbit.it/downloads/uwsgi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xxjb9dyivq5531birvxq2gnyxf2x5q7gz54440acra6qwsq4cfj"))))
+                "10zmk4npknigmbqcq1wmhd461dk93159px172112vyq0i19sqwj9"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (arguments
@@ -4779,13 +4780,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.0.0")
+    (version "6.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "1vhbdch33m6ig4ijy57zvrramhs9n7cba85wd8rizgxjjnf87cn7"))))
+                "0gf9hzzrr1lndbbqi8cwlfasi7l517cy3nbgna88i78lm247rvp0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -4793,6 +4794,10 @@ deployments.")
                                (string-append "PTHREAD_CC="
                                               (assoc-ref %build-inputs "gcc")
                                               "/bin/gcc")
+                               ;; XXX: Disable PCRE-JIT to work around a segmentation
+                               ;; fault when using jemalloc 5.x:
+                               ;; <https://github.com/varnishcache/varnish-cache/issues/2817>
+                               "--disable-pcre-jit"
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
@@ -4827,6 +4832,7 @@ deployments.")
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
        ("rst2man" ,python-docutils)))
     (inputs
      `(("jemalloc" ,jemalloc)
@@ -4952,7 +4958,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.8.3")
+    (version "10.9")
     (source
      (origin
        (method url-fetch)
@@ -4962,11 +4968,10 @@ functions of Tidy.")
        (snippet '(begin
                    ;; We use packaged libraries, so delete the bundled copies.
                    (for-each delete-file-recursively
-                             (list "nghttp2" "mbedtls"))
+                             (list "extra/nghttp2.tgz" "mbedtls"))
                    #t))
        (sha256
-        (base32
-         "0w7047pwijhsbvvv1qjynp7gvn0nil56w82f7ax0gabrg7ddzk6s"))))
+        (base32 "1f2j2x1ziawz8ijg3s3izqpyzpiwfyhlsvbv0szxvhvj4a0l7pbl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included

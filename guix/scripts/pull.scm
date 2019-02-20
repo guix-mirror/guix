@@ -20,7 +20,7 @@
 (define-module (guix scripts pull)
   #:use-module (guix ui)
   #:use-module (guix utils)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix config)
@@ -45,6 +45,7 @@
                 #:select (%bootstrap-guile))
   #:use-module ((gnu packages certs) #:select (le-certs))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -169,11 +170,14 @@ Download and deploy the latest version of Guix.\n"))
                (reverse (profile-generations profile)))
     ((current previous _ ...)
      (newline)
-     (let ((old (fold-packages (lambda (package result)
-                                 (alist-cons (package-name package)
-                                             (package-version package)
-                                             result))
-                               '()))
+     (let ((old (fold-available-packages
+                 (lambda* (name version result
+                                #:key supported? deprecated?
+                                #:allow-other-keys)
+                   (if (and supported? (not deprecated?))
+                       (alist-cons name version result)
+                       result))
+                 '()))
            (new (profile-package-alist
                  (generation-file-name profile current))))
        (display-new/upgraded-packages old new
@@ -338,24 +342,24 @@ way and displaying details about the channel's source code."
 (define profile-package-alist
   (mlambda (profile)
     "Return a name/version alist representing the packages in PROFILE."
-    (fold (lambda (package lst)
-            (alist-cons (inferior-package-name package)
-                        (inferior-package-version package)
-                        lst))
-          '()
-          (let* ((inferior (open-inferior profile))
-                 (packages (inferior-packages inferior)))
-            (close-inferior inferior)
-            packages))))
+    (let* ((inferior (open-inferior profile))
+           (packages (inferior-available-packages inferior)))
+      (close-inferior inferior)
+      packages)))
 
-(define* (display-new/upgraded-packages alist1 alist2
-                                        #:key (heading ""))
-  "Given the two package name/version alists ALIST1 and ALIST2, display the
-list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
-and ALIST2 differ, display HEADING upfront."
+(define (new/upgraded-packages alist1 alist2)
+  "Compare ALIST1 and ALIST2, both of which are lists of package name/version
+pairs, and return two values: the list of packages new in ALIST2, and the list
+of packages upgraded in ALIST2."
   (let* ((old      (fold (match-lambda*
                            (((name . version) table)
-                            (vhash-cons name version table)))
+                            (match (vhash-assoc name table)
+                              (#f
+                               (vhash-cons name version table))
+                              ((_ . previous-version)
+                               (if (version>? version previous-version)
+                                   (vhash-cons name version table)
+                                   table)))))
                          vlist-null
                          alist1))
          (new      (remove (match-lambda
@@ -364,14 +368,21 @@ and ALIST2 differ, display HEADING upfront."
                            alist2))
          (upgraded (filter-map (match-lambda
                                  ((name . new-version)
-                                  (match (vhash-fold* cons '() name old)
-                                    (() #f)
-                                    ((= (cut sort <> version>?) old-versions)
-                                     (and (version>? new-version
-                                                     (first old-versions))
+                                  (match (vhash-assoc name old)
+                                    (#f #f)
+                                    ((_ . old-version)
+                                     (and (version>? new-version old-version)
                                           (string-append name "@"
                                                          new-version))))))
                                alist2)))
+    (values new upgraded)))
+
+(define* (display-new/upgraded-packages alist1 alist2
+                                        #:key (heading ""))
+  "Given the two package name/version alists ALIST1 and ALIST2, display the
+list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
+and ALIST2 differ, display HEADING upfront."
+  (let-values (((new upgraded) (new/upgraded-packages alist1 alist2)))
     (unless (and (null? new) (null? upgraded))
       (display heading))
 

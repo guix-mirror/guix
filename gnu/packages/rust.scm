@@ -105,7 +105,9 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))))
+                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))
+                (patches
+                 (search-patches "mrustc-0.8.0-fix-variable-length-integer-receiving.patch"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
@@ -746,7 +748,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn thin_lto_works") "#[ignore]\nfn thin_lto_works"))
                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.28
   (let ((base-rust
          (rust-bootstrapped-package rust-1.27 "1.28.0"
                                     "11k4rn77bca2rikykkk9fmprrgjswd4x4kaq7fia08vgkir82nhx"
@@ -779,3 +781,13 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  #t))
              ;; The thinlto test should pass with llvm 6.
              (delete 'disable-thinlto-test))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.28 "1.29.2"
+                                    "1jb787080z754caa2w3w1amsygs4qlzj9rs1vy64firfmabfg22h"
+                                    #:patches
+                                    '("rust-1.25-accept-more-detailed-gdb-lines.patch"
+                                      "rust-reproducible-builds.patch"))))
+    (package
+      (inherit base-rust))))

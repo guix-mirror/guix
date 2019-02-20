@@ -1,0 +1,28 @@
+From 40538ad31a71495649d174b0f7be5f7135d0a905 Mon Sep 17 00:00:00 2001
+From: David Wells <drwells@email.unc.edu>
+Date: Sat, 2 Feb 2019 10:00:38 -0500
+Subject: [PATCH] Avoid calling a deprecated MPI function.
+
+This was deprecated a long time ago (1996) and is not present in the
+latest version of openMPI (4.0): see
+
+https://www.open-mpi.org/faq/?category=mpi-removed
+
+Credit goes to Pratik Nayak for finding this issue.
+---
+ source/base/mpi.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/base/mpi.cc b/source/base/mpi.cc
+index bd1f7f9846a..b8cd45e7c26 100644
+--- a/source/base/mpi.cc
++++ b/source/base/mpi.cc
+@@ -448,7 +448,7 @@ namespace Utilities
+       MPI_Aint     displacements[] = {0, offsetof(MinMaxAvg, min_index)};
+       MPI_Datatype types[]         = {MPI_DOUBLE, MPI_INT};
+ 
+-      ierr = MPI_Type_struct(2, lengths, displacements, types, &type);
++      ierr = MPI_Type_create_struct(2, lengths, displacements, types, &type);
+       AssertThrowMPI(ierr);
+ 
+       ierr = MPI_Type_commit(&type);

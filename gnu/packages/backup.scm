@@ -46,6 +46,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages ftp)
@@ -495,14 +496,14 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.8")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
         (base32
-         "0qqvcscn1l4y83x4sh3izdpmr8zq38j8chjkpfq4q4d01i470hqb"))
+         "0x95nhv4h34m8cxycbwc4xdz350saaxlgh727b23bgn4ci7gh3vx"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -548,11 +549,6 @@ detection, and lossless compression.")
                ;; HOME=/homeless-shelter.
                (setenv "HOME" "/tmp")
                #t)))
-         (add-after 'unpack 'remove-documentation-timestamps ; reproducibility
-           (lambda _
-             (substitute* "setup.py"
-               (("write\\(':Date:'.*") "\n"))
-             #t))
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
@@ -589,17 +585,12 @@ detection, and lossless compression.")
                          '("docs/misc/create_chunker-params.txt"
                            "docs/misc/internals-picture.txt"
                            "docs/misc/prune-example.txt"))
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python3" "setup.py" "build_man")
                (copy-recursively "docs/man" man)
                #t))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)
-       ;; For generating the documentation.
-       ("python-sphinx" ,python-sphinx)
-       ("python-guzzle-sphinx-theme" ,python-guzzle-sphinx-theme)))
+       ("python-pytest" ,python-pytest)))
     (inputs
      `(("acl" ,acl)
        ("libb2" ,libb2)
@@ -985,3 +976,30 @@ de-duplicated before it is actually written to the storage back end to save
 precious backup space.
 @end itemize")
     (license license:bsd-2)))
+
+(define-public burp
+  (package
+    (name "burp")
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/burp/burp-" version
+                                  "/burp-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0in49c0ir7lb7jli0fcphdq1nh5rclhans4ngm7z7hzyxa4jrgri"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("librsync" ,librsync)
+       ("openssl" ,openssl)
+       ("uthash" ,uthash)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://burp.grke.org")
+    (synopsis "Differential backup and restore")
+    (description "Burp is a network backup and restore program.  It attempts
+to reduce network traffic and the amount of space that is used by each
+backup.")
+    (license license:agpl3)))

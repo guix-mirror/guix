@@ -1251,54 +1251,69 @@ above command-line parameters.")
 (define-public guile-hall
   (package
     (name "guile-hall")
-    (version "0.1.1")
+    (version "0.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.com/a-sassmannshausen/guile-hall")
-             (commit "7d1094a12fe917209ce5b76c681cc8c862d4c65b")))
-       (file-name "guile-hall-0.1.1-checkout")
-       (sha256
-        (base32
-         "03kb09cjca98hlbx9mj12mqinzsnnvp6ci6i975n88pjhaxigyp1"))))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256 (base32
+                "1bkbqgj24xh5b65sw2m98iggpi67b72szx1dsiq3cpzlcxplmgaz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules
-       ((ice-9 match)
-        (ice-9 ftw)
-        ,@%gnu-build-system-modules)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'hall-wrap-binaries
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bin  (string-append out "/bin/"))
-                    (site (string-append out "/share/guile/site"))
-                    (config (assoc-ref inputs "guile-config")))
-               (match (scandir site)
-                 (("." ".." version)
-                  (let ((modules (string-append site "/" version))
-                        (compiled-modules (string-append
-                                           out "/lib/guile/" version
-                                           "/site-ccache")))
-                    (wrap-program (string-append bin "hall")
-                      `("GUILE_LOAD_PATH" ":" prefix
-                        (,modules
-                         ,(string-append config
-                                         "/share/guile/site/"
-                                         version)))
-                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                        (,compiled-modules
-                         ,(string-append config "/lib/guile/"
-                                         version
-                                         "/site-ccache"))))
-                    #t)))))))))
+      `(#:modules
+        ((ice-9 match)
+         (ice-9 ftw)
+         ,@%gnu-build-system-modules)
+        #:phases
+        (modify-phases
+          %standard-phases
+          (add-after 'install 'hall-wrap-binaries
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((compiled-dir
+                       (lambda (out version)
+                         (string-append
+                           out "/lib/guile/" version "/site-ccache")))
+                     (uncompiled-dir
+                       (lambda (out version)
+                         (string-append
+                          out "/share/guile/site"
+                          (if (string-null? version) "" "/") version)))
+                     (dep-path
+                       (lambda (env modules path)
+                         (list env ":" 'prefix
+                               (cons modules
+                                     (map (lambda (input)
+                                            (string-append
+                                              (assoc-ref inputs input)
+                                              path))
+                                          ,''("guile-config"))))))
+                     (out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin/"))
+                     (site (uncompiled-dir out "")))
+                (match (scandir site)
+                       (("." ".." version)
+                        (for-each
+                          (lambda (file)
+                            (wrap-program
+                              (string-append bin file)
+                              (dep-path
+                                "GUILE_LOAD_PATH"
+                                (uncompiled-dir out version)
+                                (uncompiled-dir "" version))
+                              (dep-path
+                                "GUILE_LOAD_COMPILED_PATH"
+                                (compiled-dir out version)
+                                (compiled-dir "" version))))
+                          ,''("hall"))
+                        #t))))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo)))
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("pkg-config" ,pkg-config)
+        ("texinfo" ,texinfo)))
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
      `(("guile-config" ,guile-config)))
@@ -1963,8 +1978,8 @@ format is also supported.")
   (deprecated-package "mcron2" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "1531116036d1b5e0d2482ff2c8d77ad21f1d2bef")
-        (revision "1"))
+  (let ((commit "1ea8b78a8bceb4f7e5eaeb3e76987072267f99bb")
+        (revision "2"))
     (package
       (name "guile-picture-language")
       (version (git-version "0" revision commit))
@@ -1975,7 +1990,7 @@ format is also supported.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "04salmqf5x84vb3qkkxx47b64jyl290zsf3ik81l9hg6fwvvlmq3"))))
+                  "1rvq6q2zq21x7dx0qq1hn568wglsl4bkd8gacbarcx1fs0rrxcqw"))))
       (build-system guile-build-system)
       (inputs
        `(("guile" ,guile-2.2)))

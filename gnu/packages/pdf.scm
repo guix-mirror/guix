@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -748,18 +748,20 @@ using a stylus.")
 (define-public python-reportlab
   (package
     (name "python-reportlab")
-    (version "3.4.0")
+    (version "3.5.13")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "reportlab" version))
               (sha256
                (base32
-                "0hy304pzsz9lblmk7mrbk2682bi911lxgvzx2kcfpmfzb5gg7sjv"))))
+                "1wxgcj46rm83qz97i8ygvd59bks60kr6vvnz12ygw640z58ff5k1"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: There is one test failure, but it does not cause the
        ;; build to fail. No time to investigate right now.
        #:test-target "tests"))
+    (inputs
+     `(("freetype" ,freetype)))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
     (home-page "https://www.reportlab.com")
@@ -828,22 +830,23 @@ the PDF pages.")
 (define-public fbida
   (package
     (name "fbida")
-    (version "2.12")
+    (version "2.14")
     (home-page "https://www.kraxel.org/blog/linux/fbida/")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.kraxel.org/releases/fbida/"
-                                  name "-" version ".tar.gz"))
+                                  "fbida-" version ".tar.gz"))
               (sha256
                (base32
-                "0bw224vb7jh0lrqaf4jgxk48xglvxs674qcpj5y0axyfbh896cfk"))))
+                "0f242mix20rgsqz1llibhsz4r2pbvx6k32rmky0zjvnbaqaw1dwm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-ldconfig
+         (add-after 'unpack 'patch-FHS-file-names
            (lambda _
              (substitute* "mk/Autoconf.mk"
+               (("/bin/echo") "echo")
                (("/sbin/ldconfig -p") "echo lib")) #t))
          (delete 'configure))
         #:tests? #f

@@ -188,7 +188,7 @@ If SORT-LISTBOX-ITEMS? is set to #t, the listbox items are sorted using
 'string<=' procedure (after being converted to text).
 
 If ALLOW-DELETE? is #t, the form will return if the <DELETE> key is pressed,
-otherwise nothing will happend.
+otherwise nothing will happen.
 
 Each time the listbox current item changes, call SKIP-ITEM-PROCEDURE? with the
 current listbox item as argument. If it returns #t, skip the element and jump

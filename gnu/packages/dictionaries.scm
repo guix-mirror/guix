@@ -372,7 +372,7 @@ word (e.g. cats) into its lemma \"cat\" and the grammatical information
        ("flex" ,flex)
        ("pkg-config" ,pkg-config)
        ;; python is only required for running the test suite
-       ("python-minimal" ,python-minimal)))
+       ("python" ,python)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -404,8 +404,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.7")
-(define %linux-libre-hash "05jbpg4ivcbr8xi5ki03f4n57hnhc52nfjk1ik8czag7f4ph9v0b")
+(define %linux-libre-version "4.20.10")
+(define %linux-libre-hash "0d386gb1s9ag80iqzms9gdsfzirq7nlkpkkx2d6ky01rv0g4vgqn")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -418,8 +418,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.20")
-(define %linux-libre-4.19-hash "1rs4jvp88n23n9a6f037sn498fzl1fn96zsjjmjngb8nmjr1y9vp")
+(define %linux-libre-4.19-version "4.19.23")
+(define %linux-libre-4.19-hash "0s207vqq2vcrgydjjwb5n2j7di0rjahnrbn3xv4xxlp5scjp59xq")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -432,8 +432,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.98")
-(define %linux-libre-4.14-hash "165wlqqpb16zhrwihsb75y153xyz8q5dbi14xim7jsnvwlbh5i79")
+(define %linux-libre-4.14-version "4.14.101")
+(define %linux-libre-4.14-hash "02j240x30zkhpazdimlfi0xq6zjdw6fidgdfrdnvfryvhf6j097j")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -442,8 +442,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.155"
-                    "0fyj8dqhpqi3jh6i58avyvmg4mp9bplnpiffpp3fdka4v85lx152"
+  (make-linux-libre "4.9.158"
+                    "11v56dzp87wyxrymf2s1cmk7jr440z11m3yan73rnnnqlfq460ig"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -1830,20 +1830,19 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public archivemount
   (package
     (name "archivemount")
-    (version "0.8.9")
+    (version "0.8.12")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.cybernoia.de/software/archivemount/"
+       (uri (string-append "https://www.cybernoia.de/software/archivemount/"
                            "archivemount-" version ".tar.gz"))
        (sha256
-        (base32
-         "0v4si1ri6lhnq9q87gkx7fsh6lv6xz4bynknwndqncpvfp5cy1jg"))))
+        (base32 "12fb8fcmd1zwvfgzx4pay47md5cr2kgxcgq82cm6skmq75alfzi4"))))
     (build-system gnu-build-system)
     (inputs `(("fuse" ,fuse)
               ("libarchive" ,libarchive)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.cybernoia.de/software/archivemount")
+    (home-page "https://www.cybernoia.de/software/archivemount.html")
     (synopsis "Tool for mounting archive files with FUSE")
     (description "archivemount is a FUSE-based file system for Unix variants,
 including Linux.  Its purpose is to mount archives (i.e. tar, tar.gz, etc.) to a
@@ -3022,7 +3021,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.7")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -3030,7 +3029,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lirhjjv37jnf42r1ylrhi8kbzx9j9xnyfzvxpp6bzcp0fawigig"))
+                "1jhi6bhl4ih75rfmyyjxd35ghgch5ls1gw40cjxwy9d6bd41z6q1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3068,7 +3067,7 @@ arrays when needed.")
                  (("/usr/include/libudev.h")
                   (string-append udev "/include/libudev.h")))
                #t)))
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -3093,7 +3092,7 @@ Linux Device Mapper multipathing driver:
 @code{dm} multipath devices.
 @item @command{kpartx} - Create device maps from partition tables.
 @end enumerate")
-    (license (list license:gpl2+             ; Main distribution.
+    (license (list license:gpl2+             ; main distribution
                    license:lgpl2.0+))))      ; libmpathcmd/mpath_cmd.h
 
 (define-public libaio
@@ -3690,7 +3689,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.6")
+    (version "6.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -3698,11 +3697,12 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0c32sxfvngdjzfmxn5ngc5yxwi8ij3yl216nhzyz9r31qi3m14v7"))))
+                "19f75m6mzg8h7b4snzg7d6ypvkz6nq32lrpi9ja95gqz4wsd18a5"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
-       #:configure-flags '("--without-nistbeacon")))
+       #:configure-flags '("--without-nistbeacon"
+                           "--without-pkcs11")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

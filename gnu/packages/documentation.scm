@@ -123,14 +123,18 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.14")
+    (version "1.8.15")
+    (home-page "http://www.doxygen.nl/")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://ftp.stack.nl/pub/users/dimitri/"
-                                 name "-" version ".src.tar.gz"))
+             (uri (list (string-append home-page "files/doxygen-"
+                                       version ".src.tar.gz")
+                        (string-append "mirror://sourceforge/doxygen/rel-"
+                                       version "/doxygen-" version
+                                       ".src.tar.gz")))
              (sha256
               (base32
-               "0kcxymbam9jwiyjwyvwdjj0h74lbb6c467szsipzbxjyfl17wxfi"))
+               "0p94b4yb6bk2dxzs5kyl82xxgq2qakgbx5yy3ssbbadncb20x75x"))
              (patches (search-patches "doxygen-test.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -150,7 +154,6 @@ markup) can be customized and extended by the user.")
                                    (string-append
                                     (assoc-ref inputs "bash") "/bin/sh")))
                                 #t)))))
-    (home-page "http://www.stack.nl/~dimitri/doxygen/")
     (synopsis "Generate documentation from annotated sources")
     (description "Doxygen is the de facto standard tool for generating
 documentation from annotated C++ sources, but it also supports other popular

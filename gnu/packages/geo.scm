@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -32,6 +32,7 @@
   #:use-module (guix build-system scons)
   #:use-module (guix build-system r)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -743,25 +744,25 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public protozero
   (package
     (name "protozero")
-    (version "1.6.3")
+    (version "1.6.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/mapbox/protozero/archive/v"
-                            version ".tar.gz"))
-    (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "1xaj4phz1r7xn0vgdfvfkz8b0bizgb6mavjky1zqcvdmbwgwgly5"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mapbox/protozero.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10ldzni46cplmkgx1f73yn95qcb71xh9nxpcfdmi107y3kvicv3c"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/mapbox/protozero")
     (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
-    (description "Protozero is a minimalistic protocol buffer decored and
+    (description "Protozero is a minimalistic protocol buffer decoder and
 encoder in C++.  The developer using protozero has to manually translate the
 @file{.proto} description into code.")
     (license (list
-               license:asl2.0; for folly
-               license:bsd-2))))
+              license:asl2.0            ; for folly
+              license:bsd-2))))
 
 (define-public libosmium
   (package

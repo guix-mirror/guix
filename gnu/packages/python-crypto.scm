@@ -1,14 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -57,14 +57,14 @@
 (define-public python-base58
   (package
     (name "python-base58")
-    (version "1.0.0")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "base58" version))
        (sha256
         (base32
-         "0lgnk7ycdxwhk2bkygl30nsks56bvrdj79ix76iv965pz808pzn5"))))
+         "0q1yr0n5jaf17xq98m7dma6z4rh8p19ch55l1s09gi3rk5ckqycs"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyhamcrest" ,python-pyhamcrest)))
@@ -950,14 +950,14 @@ been constructed to maintain extensive documentation on how to use
 (define-public python-scrypt
   (package
     (name "python-scrypt")
-    (version "0.8.6")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scrypt" version))
        (sha256
         (base32
-         "0b9nw10hfdl0jflm3b62q485ssc3f3f33lpg4yy407gs8wnrn8zq"))))
+         "0hjk71k3mgnl8siikm9lii9im8kv0rb7inkjzx78rnancra48xxr"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -996,3 +996,73 @@ relevant RFCs too.")
 
 (define-public python2-service-identity
   (package-with-python2 python-service-identity))
+
+(define-public python-hkdf
+  (package
+    (name "python-hkdf")
+    (version "0.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "hkdf" version))
+        (sha256
+         (base32
+          "1jhxk5vhxmxxjp3zj526ry521v9inzzl8jqaaf0ma65w6k332ak2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/casebeer/python-hkdf")
+    (synopsis "HMAC-based Extract-and-Expand Key Derivation Function (HKDF)")
+    (description "This package provides a Python implementation of the HMAC Key
+Derivation function (HKDF) defined in RFC 5869.")
+    (license license:bsd-2)))
+
+(define-public python-spake2
+  (package
+    (name "python-spake2")
+    (version "0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "spake2" version))
+        (sha256
+         (base32
+          "1x16r7lrbklvfzbacb66qv9iiih6liq1y612dqh2chgf555n2yn1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-hkdf" ,python-hkdf)))
+    (home-page "https://github.com/warner/python-spake2")
+    (synopsis "SPAKE2 password-authenticated key exchange in Python")
+    (description "This package provides a Python implementation of the SPAKE2
+Password-Authenticated Key Exchange algorithm.")
+    (license license:expat)))
+
+(define-public python-txtorcon
+  (package
+    (name "python-txtorcon")
+    (version "19.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "txtorcon" version))
+        (sha256
+         (base32
+          "0fxzhsc62bhmr730vj9pzallmw56gz6iykvl28a5agrycm0bfc9p"))))
+    (build-system python-build-system)
+    (arguments
+      ;; The tests fail immediately due to a missing file. Reported upstream:
+      ;; <https://github.com/meejah/txtorcon/issues/330>
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-automat" ,python-automat)
+       ("python-idna" ,python-idna)
+       ("python-incremental" ,python-incremental)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-service-identity" ,python-service-identity)
+       ("python-twisted" ,python-twisted)
+       ("python-zope-interface" ,python-zope-interface)))
+    (home-page "https://github.com/meejah/txtorcon")
+    (synopsis "Twisted-based Tor controller client")
+    (description "This package provides a Twisted-based Tor controller client,
+with state-tracking and configuration abstractions.")
+    (license license:expat)))

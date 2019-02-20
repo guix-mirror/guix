@@ -45,6 +45,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libedit)
@@ -138,7 +139,7 @@ line client and a client based on Qt.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method git-fetch)
@@ -147,39 +148,17 @@ line client and a client based on Qt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1j4p7djkmdmd858hylrsc3inamh9z0vkfl98s9wiqfmrzw51pmxp"))
-       (patches (search-patches "ledger-revert-boost-python-fix.patch"
-                                "ledger-fix-uninitialized.patch"))))
+        (base32 "0hwnipj2m9p95hhyv6kyq54m27g14r58gnsy2my883kxhpcyb2vc"))
+       (patches (search-patches "ledger-fix-uninitialized.patch"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:modules ((guix build cmake-build-system)
-                  ((guix build gnu-build-system) #:prefix gnu:)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                           (guix build emacs-utils))
-       #:configure-flags
+     `(#:configure-flags
        `("-DBUILD_DOCS:BOOL=ON"
          "-DBUILD_WEB_DOCS:BOOL=ON"
-         "-DBUILD_EMACSLISP:BOOL=ON"
          "-DUSE_PYTHON:BOOL=ON"
-         "-DCMAKE_INSTALL_LIBDIR:PATH=lib"
-         ,(string-append "-DUTFCPP_INCLUDE_DIR:PATH="
-                         (assoc-ref %build-inputs "utfcpp")
-                         "/include"))
-       ;; Skip failing test BaselineTest_cmd-org during the check phase.
-       ;; This is a known upstream issue. See
-       ;; https://github.com/ledger/ledger/issues/550
-       #:make-flags (list "ARGS=-E BaselineTest_cmd-org")
+         "-DCMAKE_INSTALL_LIBDIR:PATH=lib")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'boost-compat
-           (lambda _
-             (substitute* "src/utils.h"
-               ;; This library moved in Boost 1.66.  Remove for Ledger
-               ;; versions > 3.1.1.
-               (("boost/uuid/sha1.hpp") "boost/uuid/detail/sha1.hpp"))
-             #t))
          (add-before 'configure 'install-examples
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((examples (string-append (assoc-ref outputs "out")
@@ -195,18 +174,11 @@ line client and a client based on Qt.")
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
-             #t))
-         (replace 'check (assoc-ref gnu:%standard-phases 'check))
-         (add-after 'install 'relocate-elisp
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((site-dir (string-append (assoc-ref outputs "out")
-                                             "/share/emacs/site-lisp"))
-                    (guix-dir (string-append site-dir "/guix.d"))
-                    (orig-dir (string-append site-dir "/ledger-mode"))
-                    (dest-dir (string-append guix-dir "/ledger-mode")))
-               (mkdir-p guix-dir)
-               (rename-file orig-dir dest-dir)
-               (emacs-generate-autoloads ,name dest-dir)))))))
+             ;; Skip failing test BaselineTest_cmd-org.
+             ;; This is a known upstream issue. See
+             ;; https://github.com/ledger/ledger/issues/550
+             (setenv "ARGS" "-E BaselineTest_cmd-org")
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("gmp" ,gmp)
@@ -216,8 +188,7 @@ line client and a client based on Qt.")
        ("tzdata" ,tzdata)
        ("utfcpp" ,utfcpp)))
     (native-inputs
-     `(("emacs" ,emacs-minimal)
-       ("groff" ,groff)
+     `(("groff" ,groff)
        ("texinfo" ,texinfo)))
     (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
@@ -243,8 +214,74 @@ in ability, and easy to use.")
                    license:asl2.0     ; src/strptime.cc
                    (license:non-copyleft
                     "file://src/wcwidth.cc"
-                    "See src/wcwidth.cc in the distribution.")
-                   license:gpl2+))))  ; lisp/*
+                    "See src/wcwidth.cc in the distribution.")))))
+
+(define-public emacs-ledger-mode
+  ;; There have been no new releases since 2016.
+  (let ((commit "253a20dc62e137ed0ed8e1dd8614ecba116610ea")
+        (revision "1"))
+    (package
+      (name "emacs-ledger-mode")
+      (version (git-version "3.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ledger/ledger-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "06wrgkqpgvk17vibrk2qikdlqn8y63jg86marp1wgmram92mb3jk"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:modules ((guix build cmake-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%cmake-build-system-modules
+                             (guix build emacs-utils))
+         #:tests? #f ; there are none
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'build 'build-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((target (string-append (assoc-ref outputs "out")
+                                            "/share/info")))
+                 (mkdir-p target)
+                 (invoke "makeinfo" "-o" target
+                         "../source/doc/ledger-mode.texi"))
+               #t))
+           (add-after 'install 'relocate-elisp
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((site-dir (string-append (assoc-ref outputs "out")
+                                               "/share/emacs/site-lisp"))
+                      (guix-dir (string-append site-dir "/guix.d"))
+                      (orig-dir (string-append site-dir "/ledger-mode"))
+                      (dest-dir (string-append guix-dir "/ledger-mode")))
+                 (mkdir-p guix-dir)
+                 (rename-file orig-dir dest-dir)
+                 (emacs-generate-autoloads ,name dest-dir)
+                 #t))))))
+      (native-inputs
+       `(("emacs-minimal" ,emacs-minimal)
+         ("texinfo" ,texinfo)))
+      (home-page "https://ledger-cli.org/")
+      (synopsis "Command-line double-entry accounting program")
+      (description
+       "Ledger is a powerful, double-entry accounting system that is
+accessed from the UNIX command-line.  This may put off some users, since
+there is no flashy UI, but for those who want unparalleled reporting
+access to their data there are few alternatives.
+
+Ledger uses text files for input.  It reads the files and generates
+reports; there is no other database or stored state.  To use Ledger,
+you create a file of your account names and transactions, run from the
+command line with some options to specify input and requested reports, and
+get output.  The output is generally plain text, though you could generate
+a graph or html instead.  Ledger is simple in concept, surprisingly rich
+in ability, and easy to use.
+
+This package provides the Emacs mode.")
+      (license license:gpl2+))))
 
 (define-public geierlein
   (package
@@ -591,7 +628,7 @@ Monero GUI client.")
 (define-public python-trezor-agent
   (package
     (name "python-trezor-agent")
-    (version "0.9.4")
+    (version "0.13.0")
     (source
      (origin
        (method git-fetch)
@@ -600,11 +637,18 @@ Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "15aaqk79d9y9nbsfznf2iscz12z5ispcj8kr8v5bc0sqqj2brs12"))))
+        (base32 "0i4igkxi8fwdlbhg6nx27lhnc9v9nmrw4j5fvpnc202n6yjlc7x7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'remove-requires-backports-shutil-which
+           ;; Remove requires on backport of shutil_which, as python 3.4+ has
+           ;; a built-in implementation supported in python-trezor-agent.
+           (lambda _
+             (substitute* "setup.py"
+               (("'backports.shutil_which>=3.5.1',") ""))
+             #t))
          (delete 'check)
          (add-after 'install 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -612,15 +656,22 @@ Monero GUI client.")
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
-     `(("python-ecdsa" ,python-ecdsa)
+     `(("python-configargparse" ,python-configargparse)
+       ("python-daemon" ,python-daemon)
+       ("python-docutils" ,python-docutils)
+       ("python-ecdsa" ,python-ecdsa)
        ("python-ed25519" ,python-ed25519)
+       ("python-mnemonic" ,python-mnemonic)
+       ("python-pymsgbox" ,python-pymsgbox)
        ("python-semver" ,python-semver)
-       ("python-unidecode" ,python-unidecode)))
+       ("python-unidecode" ,python-unidecode)
+       ("python-wheel" ,python-wheel)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("gnupg" ,gnupg)
+       ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/romanz/trezor-agent")
-    (synopsis "TREZOR SSH and GPG host support")
+    (synopsis "Use hardware wallets as SSH and GPG agent")
     (description
      "@code{libagent} is a library that allows using TREZOR, Keepkey and
 Ledger Nano as a hardware SSH/GPG agent.")
@@ -789,19 +840,32 @@ Then set the environment variable GNUPGHOME to
 (define-public trezor-agent
   (package
     (name "trezor-agent")
-    (version "0.9.0")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "trezor_agent" version))
        (sha256
         (base32
-         "1i5cdamlf3c0ym600pjklij74p8ifj9cv7xrpnrfl1b8nkadswbz"))))
+         "144657c7bn0a667dq5fv5r6j7iilxf3h9agj29v1m2qpq40g0az8"))))
+    (arguments
+     ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'wrap 'fixup-agent-py
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               ;; overwrite the wrapper with the real thing.
+               (install-file "./trezor_agent.py"
+                             (string-append out "/bin"))
+             #t))))))
     (build-system python-build-system)
     (inputs
      `(("python-trezor" ,python-trezor)
        ("python-trezor-agent" ,python-trezor-agent)))
-    (home-page "http://github.com/romanz/trezor-agent")
+    (native-inputs
+     `(("python-hidapi" ,python-hidapi)))
+    (home-page "https://github.com/romanz/trezor-agent")
     (synopsis "Using Trezor as hardware SSH/GPG agent")
     (description "This package allows using Trezor as a hardware SSH/GPG
 agent.")

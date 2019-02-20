@@ -299,7 +299,7 @@ to merge stdout and stderr using bash redirection. Then error messages are
 extracted from connmanctl output using a regexp. This makes the whole
 procedure even more unreliable.
 
-Raise &connman-connection-error if an error occured during connection. Raise
+Raise &connman-connection-error if an error occurred during connection. Raise
 &connman-password-error if the given password is incorrect."
 
   (define connman-error-regexp (make-regexp "Error[ ]*([^\n]+)\n"))

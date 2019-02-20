@@ -1,0 +1,15 @@
+https://github.com/thepowersgang/mrustc/issues/109
+From: Danny Milosavljevic <dannym@scratchpost.org>
+Date: Fri, 3 Jan 2019 13:00:00 +0100
+
+--- mrustc/src/expand/proc_macro.cpp.orig	2019-02-01 14:16:54.208486062 +0100
++++ mrustc/src/expand/proc_macro.cpp	2019-02-01 14:17:14.350925705 +0100
+@@ -977,7 +977,7 @@
+     for(;;)
+     {
+         auto b = recv_u8();
+-        v |= static_cast<uint64_t>(b) << ofs;
++        v |= static_cast<uint64_t>(b & 0x7F) << ofs;
+         if( (b & 0x80) == 0 )
+             break;
+         ofs += 7;

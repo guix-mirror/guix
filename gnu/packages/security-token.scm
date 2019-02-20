@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -95,7 +95,7 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "4.4.3")
+    (version "4.4.13")
     (source
      (origin
        (method git-fetch)
@@ -103,7 +103,7 @@ readers and is needed to communicate with such devices through the
              (url "https://github.com/Fedict/eid-mw")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1h90iz4l85drchpkmhlsvg7f9abhw6890fdr9x5n5ir3kxikwcdm"))))
+        (base32 "14bgn2k0xbd6241qdghg787pgxy7k9rvcspaf74zwwyibaqknzyx"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -130,7 +130,7 @@ readers and is needed to communicate with such devices through the
              ;; Patch it to just return the real version number directly.
              (substitute* "scripts/build-aux/genver.sh"
                (("/bin/sh") (which "sh"))
-               (("\\$GITDESC") ,version))
+               (("^(GITDESC=).*" match) (string-append match ,version "\n")))
              (invoke "sh" "./bootstrap.sh"))))))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with

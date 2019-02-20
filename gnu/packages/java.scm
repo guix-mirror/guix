@@ -6,7 +6,7 @@
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -2267,22 +2267,23 @@ debugging, etc.")
 (define-public javacc
   (package
     (inherit javacc-4)
-    (version "7.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javacc/javacc/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append "javacc-" version ".tar.gz"))
-              (sha256
-               (base32
-                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))
-              (modules '((guix build utils)))
-              ;; delete bundled jars
-              (snippet '(begin (for-each delete-file-recursively
-                                         '("bootstrap" "lib"))
-                               #t))))
+    (version "7.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/javacc/javacc.git")
+             (commit version)))
+       (file-name (git-file-name "javacc" version))
+       (sha256
+        (base32 "18kkak3gda93gr25jrgy6q00g0jr8i24ri2wk4kybz1v234fxx9i"))
+       (modules '((guix build utils)))
+       ;; Delete bundled jars.
+       (snippet '(begin (for-each delete-file-recursively
+                                  '("bootstrap" "lib"))
+                        #t))))
     (arguments
-     `(#:make-flags ; bootstrap from javacc-4
+     `(#:make-flags                     ; bootstrap from javacc-4
        (list (string-append "-Dbootstrap-jar="
                             (assoc-ref %build-inputs "javacc")
                             "/share/java/javacc.jar"))
@@ -5236,18 +5237,18 @@ fundamental protocol access, not higher-level abstractions.")
 (define-public java-jsch
   (package
     (name "java-jsch")
-    (version "0.1.54")
+    (version "0.1.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/jsch/jsch/"
                                   version "/jsch-" version ".zip"))
               (sha256
                (base32
-                "029rdddyq1mh3ghryh3ki99kba1xkf1d1swjv2vi6lk6zzjy2wdb"))))
+                "1lxyjwvmwa723wcf3bqn816hkvc03vz4xhbsi7bvfhrz2rpgcfq6"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "dist"
-       #:tests? #f ; no tests included
+       #:tests? #f                      ; no tests included
        #:phases
        (modify-phases %standard-phases
          (replace 'install (install-jars "dist")))))

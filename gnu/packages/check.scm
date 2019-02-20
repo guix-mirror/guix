@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -286,7 +286,7 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.86")
+    (version "1.87")
     (source (origin
       (method git-fetch)
       (uri (git-reference
@@ -294,7 +294,7 @@ format.")
              (commit version)))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "0jr4aah72c7wy94a8vlj3k050rx6pmc7m9nvmll1jwbscxj5f7ff"))))
+       (base32 "1xiy54rz99nzbpwj35jiyssd2nc6k5k0lw5ml6nh2qnmbfkl8swl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TESTS=ON")))
@@ -694,23 +694,22 @@ and many external plugins.")
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
-         (base32
-          "0qnpp9y3ygx4jk4pf5ad71fh2skbvnr6gl54m7rg5qysnx4g0q73"))))
+         (base32 "0cyxbbghx2l4p60w10k00j1j74q1ngfiffr0pxn73ababjr69dha"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
           (lambda _
-            ;; options taken from tox.ini
+            ;; Options taken from tox.ini.
             ;; TODO: make "--restructuredtext" tests pass. They currently fail
-            ;; with "Duplicate implicit target name"
+            ;; with "Duplicate implicit target name".
             (invoke "python" "./setup.py" "check"
                     "--strict" "--metadata"))))))
     (propagated-inputs
@@ -755,14 +754,14 @@ supports coverage of subprocesses.")
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-mock" version))
         (sha256
          (base32
-          "1h6lgpmsvs9s8j2s80v06f9f3iaw1n1rc51mbrxk1f12sw4q56nq"))))
+          "1i5mg3ff1qk0wqfcxfz60hwy3q5dskdp36i10ckigkzffg8hc3ad"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
@@ -1905,14 +1904,13 @@ JSON APIs with Behave.")
 (define-public python-nose-randomly
   (package
     (name "python-nose-randomly")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nose-randomly" version))
        (sha256
-        (base32
-         "1cw9dlr1zh3w4i438kin7z0rm8092ki52hayisyc43h9pcplq7rn"))))
+        (base32 "0z662rqhfk4bjmg806mn4frb8nz4gbh7mrddsrhfffp1g4yklj3y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -2140,7 +2138,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.11.3")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -2148,7 +2146,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "1in2hdan1g62wpvgjlj8mci85551ipr1964j2b9j06gm3blpihcx"))))
+                "1hx5jm9afng6hw9wyp524z8nwdp6w053pca0w2c0gqpgrmvjxvd2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2161,8 +2159,8 @@ provides a simple way to achieve this.")
              #t)))))
     (native-inputs
      `(("vala" ,vala)
-       ("python" ,python) ; for tests
-       ("which" ,which) ; for tests
+       ("python" ,python)               ; for tests
+       ("which" ,which)                 ; for tests
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (inputs

@@ -26,7 +26,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix store)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
   #:use-module (guix monads)
   #:use-module (guix modules)
@@ -104,7 +104,9 @@ found."
   ;; Guile-Gcrypt, Guile-SQLite3, and their propagated inputs.
   (append-map (lambda (package)
                 (cons package
-                      (package-transitive-propagated-inputs package)))
+                      (match (package-transitive-propagated-inputs package)
+                        (((labels packages) ...)
+                         packages))))
               (list guile-gcrypt guile-sqlite3)))
 
 (define (store-database items)

@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -62,7 +62,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.1.1")
+    (version "3.1.3")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -70,7 +70,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sy8z6rv5sy1bhk3846hgfdy96wdi874yr2fnxfprks46qp29l31"))))
+                "1vsnxf4as3vyzjfhd8frzb1a8i7wnq7ck5ljx7qxqrnfqvxl1s4z"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))

@@ -300,6 +300,14 @@ Log progress and checkout info to LOG-PORT."
                           #:select? (negate dot-git?))
             commit)))
 
+(define (print-git-error port key args default-printer)
+  (match args
+    (((? git-error? error) . _)
+     (format port (G_ "Git error: ~a~%")
+             (git-error-message error)))))
+
+(set-exception-printer! 'git-error print-git-error)
+
 
 ;;;
 ;;; Checkouts.

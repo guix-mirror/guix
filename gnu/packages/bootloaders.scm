@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -773,7 +773,7 @@ tools, and more.")
 (define-public os-prober
   (package
     (name "os-prober")
-    (version "1.76")
+    (version "1.77")
     (source
      (origin
        (method url-fetch)
@@ -781,15 +781,15 @@ tools, and more.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1vb45i76bqivlghrq7m3n07qfmmq4wxrkplqx8gywj011rhq19fk"))))
+         "0pvhrw4h05n21zw7ig3a3bi8aqdh6zxs0x1znz4g7vhspsps93ld"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (ice-9 regex)   ; for string-match
-                  (srfi srfi-26)) ; for cut
+                  (ice-9 regex)         ; for string-match
+                  (srfi srfi-26))       ; for cut
        #:make-flags (list "CC=gcc")
-       #:tests? #f ; no tests
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure

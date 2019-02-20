@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -285,26 +285,26 @@ graphs and can export its output to different formats.")
 
 (define-public htop
   (package
-   (name "htop")
-   (version "2.2.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "http://hisham.hm/htop/releases/"
-                  version "/htop-" version ".tar.gz"))
-            (sha256
-             (base32
-              "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
-   (build-system gnu-build-system)
-   (inputs
-    `(("ncurses" ,ncurses)))
-   (native-inputs
-    `(("python" ,python-minimal-wrapper))) ; for scripts/MakeHeader.py
-   (home-page "https://hisham.hm/htop/")
-   (synopsis "Interactive process viewer")
-   (description
-    "This is htop, an interactive process viewer.  It is a text-mode
+    (name "htop")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hisham.hm/htop/releases/"
+                                  version "/htop-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("python" ,python-wrapper)))     ;for scripts/MakeHeader.py
+    (home-page "https://hisham.hm/htop/")
+    (synopsis "Interactive process viewer")
+    (description
+     "This is htop, an interactive process viewer.  It is a text-mode
 application (for console or X terminals) and requires ncurses.")
-   (license license:gpl2)))
+    (license license:gpl2)))
 
 (define-public pies
   (package
@@ -880,7 +880,7 @@ over ssh connections.")
 (define-public rename
   (package
     (name "rename")
-    (version "1.00")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -888,7 +888,7 @@ over ssh connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "03yhf8nmqsb0zyliv501fdvwlp589jqfn44yqkrflmpzrbik3zxl"))))
+                "137m8s06r4n038ivlr5r1d9a7q9l7shmwpvnyx053r9ndhvbnkh5"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -1602,14 +1602,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.6")
+    (version "2.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0f7b2ghm34ql8yv90wr0ngd6w7wyvnlcxpc3snkj86kcjsnmx1bd"))))
+         "0l4id24jqi578xmybvwrz10sm2jhs90gk9gs1y04gfarz4vcj304"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2715,8 +2715,9 @@ Python loading in HPC environments.")
            "1k9148xnfznch1443niaa3w1kmsw4vp0xpwna6npgmi7zqg06ymy"))))
       (build-system trivial-build-system)
       (inputs
-       `(("bash" ,bash)
-         ("perl" ,perl)))
+       `(("bash" ,bash-minimal)
+         ("perl" ,perl)
+         ("procps" ,procps)))
       (native-inputs
        `(("gzip" ,gzip)))
       (arguments
@@ -2789,7 +2790,6 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
        ("lm-sensors" ,lm-sensors)
        ("mesa-utils" ,mesa-utils)
        ("pciutils" ,pciutils)
-       ("procps" ,procps)
        ("tar" ,tar)
        ("tree" ,tree)
        ("util-linux" ,util-linux)       ; lsblk

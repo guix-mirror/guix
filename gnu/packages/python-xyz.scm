@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -32,7 +32,7 @@
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
@@ -2578,6 +2578,84 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 Language (TOML) configuration files.")
     (license license:expat)))
 
+(define-public python-jsonrpc-server
+  (package
+    (name "python-jsonrpc-server")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-jsonrpc-server" version))
+       (sha256
+        (base32
+         "0m4ykpcdy52x37n1ikysp07j7p8ialcdvvvsrjp3545sn7iiid09"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/palantir/python-jsonrpc-server")
+    (synopsis "JSON RPC 2.0 server library")
+    (description
+     "This packages provides a JSON RPC 2.0 server library for Python.")
+    (license license:expat)))
+
+(define-public python-pydocstyle
+  (package
+    (name "python-pydocstyle")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pydocstyle" version))
+       (sha256
+        (base32
+         "1m1xv9clkg9lgzyza6dnj359z04vh5g0h49nhzghv7lg81gchhap"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-snowballstemmer" ,python-snowballstemmer)))
+    (home-page
+     "https://github.com/PyCQA/pydocstyle/")
+    (synopsis "Python docstring style checker")
+    (description
+     "This package provides a style checker for the Python Language
+Server (PLS).")
+    (license license:expat)))
+
+(define-public python-language-server
+  (package
+    (name "python-language-server")
+    (version "0.23.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-language-server" version))
+       (sha256
+        (base32
+         "1h83x5widj9p630ha9yv39cpp3djxppll3iww9nc8i3hdmyrbnnh"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pluggy" ,python-pluggy)
+       ("python-jsonrpc-server" ,python-jsonrpc-server)
+       ("python-jedi" ,python-jedi)
+       ("python-yapf" ,python-yapf)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-pydocstyle" ,python-pydocstyle)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-mccabe" ,python-mccabe)
+       ("python-rope" ,python-rope)
+       ("python-autopep8" ,python-autopep8)))
+    (home-page "https://github.com/palantir/python-language-server")
+    (synopsis "Python implementation of the Language Server Protocol")
+    (description
+     "The Python Language Server (pyls) is an implementation of the Python 3
+language specification for the Language Server Protocol (LSP).  This tool is
+used in text editing environments to provide a complete and integrated
+feature-set for programming Python effectively.")
+    (license license:expat)))
+
 (define-public python-black
   (package
     (name "python-black")
@@ -2638,14 +2716,14 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "3.7.1")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pelican" version))
        (sha256
         (base32
-         "12spygavv9b6xpb5pgp7f0p3z0mms60nx6zrpx1yfkj68zz4flra"))))
+         "05yda7n6r0ll18fpdjzkzyr0ls8hbb86fnjyb33k9jvv5avah2lr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-feedgenerator" ,python-feedgenerator)
@@ -2720,14 +2798,14 @@ and is very extensible.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.28.4")
+    (version "0.29.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "0imw9s2rbrh32clbl10csnwmig9p3nzkrd2baxxxfmnrsc42pb3n"))))
+         "1wfb68g115gmf3mv23w0hh972b0ll85gpb92ci28x6h997br0llx"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -4603,6 +4681,31 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 
 (define-public python2-ipykernel
   (package-with-python2 python-ipykernel))
+
+(define-public python-pari-jupyter
+  (package
+    (name "python-pari-jupyter")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pari_jupyter" version))
+       (sha256
+        (base32
+         "1yash0p422nnin7z58b99d0p23nx79f5m0mainc9hsjg72jhdhr6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)))
+    (inputs
+     `(("pari-gp" ,pari-gp)
+       ("readline" ,readline)))
+    (arguments
+     `(#:tests? #f)) ; no test suite
+    (home-page
+     "https://github.com/jdemeyer/pari_jupyter")
+    (synopsis "A Jupyter kernel for PARI/GP")
+    (description "The package provides a PARI/GP kernel for Jupyter.")
+    (license license:gpl3+)))
 
 ;; This is the latest release of the LTS version of ipython with support for
 ;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
@@ -7923,9 +8026,6 @@ The API is as much as possible the similar to jQuery.  pyquery uses lxml for
 fast xml and html manipulation.")
     (license license:bsd-3)))
 
-(define-public python2-pyquery
-  (package-with-python2 python-pyquery))
-
 (define-public python-anyjson
   (package
     (name "python-anyjson")
@@ -8806,8 +8906,7 @@ Python.  It generates C++ code and a Makefile."))
         (base32
          "1cppm0pa9aqgsbkq130lskrzmrvjs5vpiavjjbhpz2fdw52w8251"))))
     (arguments
-     ;; Rope is currently python-2 only.
-     ;; https://github.com/python-rope/rope/issues/57
+     ;; Rope has only partial python3 support, see `python-rope'
      `(#:python ,python-2))
     (build-system python-build-system)
     (native-inputs
@@ -8819,6 +8918,16 @@ the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
 to occurrences in strings and comments.")
     (license license:gpl2)))
+
+(define-public python-rope
+  (package
+    (inherit python2-rope)
+    (name "python-rope")
+    (arguments `(#:python ,python-wrapper
+                 ;; XXX: Only partial python3 support, results in some failing
+                 ;; tests: <https://github.com/python-rope/rope/issues/247>.
+                 #:tests? #f))
+    (properties `((python2-variant . ,(delay python2-rope))))))
 
 (define-public python-py3status
   (package
@@ -9083,13 +9192,13 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "17.1.0")
+    (version "17.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "1p245mg15hkxp7hy5cyq2fgvlgjkb4cg0gwkwd148nzy1bbi3wnv"))))
+                "1sh2h23nnizcdyrl2rn7zxijglikxwz7z7grqpvq496zy2aa967i"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Some tests are failing.
@@ -9101,6 +9210,7 @@ format.")
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)
        ("python-incremental" ,python-incremental)
+       ("python-hyperlink" ,python-hyperlink)
        ("python-constantly" ,python-constantly)
        ("python-automat" ,python-automat)))
     (home-page "https://twistedmatrix.com/")
@@ -10724,14 +10834,13 @@ a file-like object from which an arbitrarly-sized key can be read.")
 (define-public python-qrcode
   (package
     (name "python-qrcode")
-    (version "6.0")
+    (version "6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "qrcode" version))
        (sha256
-        (base32
-         "1gz1g2n9kqwqkak78aavr354z1v3yyiksk7q6xp5hi1zr6s0syq3"))))
+        (base32 "0sa3n298b9jpz6zn0birnjii3mg9sihjq28n9nzjlzv09y2m6ljh"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require packaging 'pymaging'.
@@ -10740,10 +10849,6 @@ a file-like object from which an arbitrarly-sized key can be read.")
      `(("python-lxml" ,python-lxml)     ; for SVG output
        ("python-pillow" ,python-pillow) ; for PNG output
        ("python-six" ,python-six)))
-    (inputs
-     `(;; The setup.cfg file needs to be used, and support for this requires
-       ;; at least version 30.3.0 of setuptools
-       ("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/lincolnloop/python-qrcode")
     (synopsis "QR Code image generator")
     (description "This package provides a pure Python QR Code generator
@@ -14877,4 +14982,46 @@ form hierarchical and sequential structures of increasing complexity.
 It features bit and byte granularity, easy debugging and testing, an
 easy-to-extend subclass system, and lots of primitive constructs to
 make your work easier.")
+    (license license:expat)))
+
+(define-public python-humanize
+  (package
+    (name "python-humanize")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "humanize" version))
+        (sha256
+         (base32
+          "06dvhm3k8lf2rayn1gxbd46y0fy1db26m3h9vrq7rb1ib08mfgx4"))))
+    (arguments
+     '(#:tests? #f)) ; tests not in pypi archive
+    (build-system python-build-system)
+    (home-page "https://github.com/jmoiron/humanize")
+    (synopsis "Print numerical information in a human-readable form")
+    (description "This package provides a Python module that displays numbers
+and dates in \"human readable\" forms.  For example, it would display
+\"12345591313\" as \"12.3 billion\".")
+    (license license:expat)))
+
+(define-public python-txaio
+  (package
+    (name "python-txaio")
+    (version "18.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "txaio" version))
+        (sha256
+         (base32
+          "1zmpdph6zddgrnkkcykh6qk5s46l7s5mzfqrh82m4b5iffn61qv7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-twisted" ,python-twisted)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/crossbario/txaio")
+    (synopsis "Compatibility layer between Python asyncio and Twisted")
+    (description "Txaio provides a compatibility layer between the Python
+@code{asyncio} module and @code{Twisted}.")
     (license license:expat)))

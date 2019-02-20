@@ -23,7 +23,7 @@
 (define-module (guix scripts system)
   #:use-module (guix config)
   #:use-module (guix ui)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix store)
   #:autoload   (guix store database) (register-path)
   #:use-module (guix grafts)
@@ -36,6 +36,8 @@
   #:use-module (guix profiles)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:autoload   (guix scripts package) (delete-generations
+                                       delete-matching-generations)
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix build utils)
@@ -490,7 +492,8 @@ STORE is an open connection to the store."
 
          ;; Make the specified system generation the default entry.
          (params (profile-boot-parameters %system-profile (list number)))
-         (old-generations (delv number (generation-numbers %system-profile)))
+         (old-generations
+          (delv number (reverse (generation-numbers %system-profile))))
          (old-params (profile-boot-parameters
                        %system-profile old-generations))
          (entries (map boot-parameters->menu-entry params))
@@ -963,9 +966,11 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "\
    roll-back        switch to the previous operating system configuration\n"))
   (display (G_ "\
+   list-generations list the system generations\n"))
+  (display (G_ "\
    switch-generation switch to an existing operating system configuration\n"))
   (display (G_ "\
-   list-generations list the system generations\n"))
+   delete-generations delete old system generations\n"))
   (display (G_ "\
    build            build the operating system without installing anything\n"))
   (display (G_ "\
@@ -1202,6 +1207,14 @@ argument list and OPTS is the option alist."
      (apply (resolve-subcommand "search") args))
     ;; The following commands need to use the store, but they do not need an
     ;; operating system configuration file.
+    ((delete-generations)
+     (let ((pattern (match args
+                      (() "")
+                      ((pattern) pattern)
+                      (x (leave (G_ "wrong number of arguments~%"))))))
+       (with-store store
+         (delete-matching-generations store %system-profile pattern)
+         (reinstall-bootloader store (generation-number %system-profile)))))
     ((switch-generation)
      (let ((pattern (match args
                       ((pattern) pattern)
@@ -1228,7 +1241,8 @@ argument list and OPTS is the option alist."
         (let ((action (string->symbol arg)))
           (case action
             ((build container vm vm-image disk-image reconfigure init
-              extension-graph shepherd-graph list-generations roll-back
+              extension-graph shepherd-graph
+              list-generations delete-generations roll-back
               switch-generation search docker-image)
              (alist-cons 'action action result))
             (else (leave (G_ "~a: unknown action~%") action))))))

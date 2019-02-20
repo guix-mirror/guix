@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (ice-9 match))
 
 (define-public gnu-efi
   (package
@@ -195,6 +197,12 @@ and EFI variable management.")
     (arguments
      `(#:make-flags
        (list "CC=gcc"
+             ,@(match (%current-system)
+                 ("aarch64-linux"
+                  '("ARCH=aarch64"))
+                 ("armhf-linux"
+                  '("ARCH=arm"))
+                 (_ '()))
              (string-append "INCDIR=" (assoc-ref %build-inputs "gnu-efi")
                             "/include")
              (string-append "LIBDIR=" (assoc-ref %build-inputs "gnu-efi")

@@ -100,7 +100,7 @@ nmc_wifi_strength_bars."
   "Run a page to inform user that a connection error happened."
   (run-error-page
    (format #f
-           (G_ "An error occured while trying to connect to ~a, please retry.")
+           (G_ "An error occurred while trying to connect to ~a, please retry.")
            service-name)
    (G_ "Connection error")))
 
@@ -160,8 +160,8 @@ of <service-item> records present in LISTBOX."
 ;; Maximum length of a wifi service name.
 (define service-name-max-length (make-parameter 20))
 
-;; Heigth of the listbox displaying wifi services.
-(define wifi-listbox-heigth (make-parameter 20))
+;; Height of the listbox displaying wifi services.
+(define wifi-listbox-height (make-parameter 20))
 
 ;; Information textbox width.
 (define info-textbox-width (make-parameter 40))
@@ -188,7 +188,7 @@ network when the corresponding listbox entry is selected. A button allow to
 force a wifi scan."
   (let* ((listbox (make-listbox
                    -1 -1
-                   (wifi-listbox-heigth)
+                   (wifi-listbox-height)
                    (logior FLAG-SCROLL FLAG-BORDER FLAG-RETURNEXIT)))
          (form (make-form))
          (buttons-grid (make-grid 1 1))

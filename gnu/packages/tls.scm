@@ -268,10 +268,10 @@ required structures.")
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
                                        version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/"
-                                       name "-" version ".tar.gz")
+                                       "openssl-" version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
-                                       "/" name "-" version ".tar.gz")))
+                                       "/openssl-" version ".tar.gz")))
              (sha256
               (base32
                "115nisqy7kazbg6br2wrcra9nphyph1l4dgp563b9cf2rv5wyi2p"))
@@ -400,10 +400,10 @@ required structures.")
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
                                        version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/"
-                                       name "-" version ".tar.gz")
+                                       "openssl-" version ".tar.gz")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
-                                       "/" name "-" version ".tar.gz")))
+                                       "/openssl-" version ".tar.gz")))
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
@@ -439,15 +439,7 @@ required structures.")
                                         "/share/openssl-" ,version)
 
                          (string-append "--prefix=" out)
-                         (string-append "-Wl,-rpath," lib)
-
-                         ;; XXX FIXME: Work around a code generation bug in GCC
-                         ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                         ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                         ,@(if (and (not (%current-target-system))
-                                    (string-prefix? "armhf" (%current-system)))
-                               '("-mfpu=vfpv3")
-                               '())))))
+                         (string-append "-Wl,-rpath," lib)))))
 
            (delete 'move-man3-pages)
            (add-after 'install 'move-extra-documentation
@@ -522,13 +514,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.30.2")
+    (version "0.31.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1wmqxrl4w9w79jd16bmxp8g3xbrx3az4137zbip8x44zrrzmnni9"))))
+                "1gxjv09c695lj8swspa390nch117i60qkrgy135383vfk00jsp3y"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -579,7 +571,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0vkpqwps1c8ja140kiiz2cws9hqjrbkx58wbji3qxv9cap5qfi2k"))))
+                "0wq4jgyzli684h154w26xplp0fzyks2vlrnmhafhyb0h1bw9cc8c"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)

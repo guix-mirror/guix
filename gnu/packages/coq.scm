@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,14 +43,15 @@
   (package
     (name "coq")
     (version "8.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/coq/coq/archive/V"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0i2hs0i6rp27cy8zd0mx7jscqw5cx2y0diw0pxgij66s3yr47y7r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/coq/coq.git")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03v8b57mz3ivsijwxy51avzwiyhla5ijaf98a5a2q29yabdq8dkp"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -63,6 +65,10 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -279,20 +285,22 @@ assistant.")
   (package
     (name "coq-mathcomp")
     (version "1.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "05zgyi4wmasi1rcyn5jq42w0bi9713q9m8dl1fdgl66nmacixh39"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/math-comp/math-comp.git")
+             (commit (string-append "mathcomp-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1cdzi67jj440xkdpxm10aly80zpn56vjzj2ygb67iq3xpljlv95h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
        ("which" ,which)
        ("coq" ,coq)))
     (arguments
-     `(#:tests? #f; No need to test formally-verified programs :)
+     `(#:tests? #f             ; no need to test formally-verified programs :)
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -492,3 +500,44 @@ work on a decision procedure for the equational theory of an extension of the
 sigma-calculus by Abadi et al.  The library is completely written in Coq and
 uses Ltac to synthesize the substitution operation.")
       (license license:bsd-3))))
+
+(define-public coq-equations
+  (package
+    (name "coq-equations")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mattam82/Coq-Equations.git")
+                    (commit (string-append "v" version "-8.8"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "129rxsdsf88vjcw0xhm74yax1hmnk6f8n9ksg0hcyyjq1ijddiwa"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml"  ,ocaml)
+       ("coq"    ,coq)
+       ("camlp5" ,camlp5)))
+    (arguments
+     `(#:test-target "test-suite"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "coq_makefile" "-f" "_CoqProject" "-o" "Makefile")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
+             (invoke "make"
+                     (string-append "COQLIB=" (assoc-ref outputs "out")
+                                    "/lib/coq/")
+                     "install"))))))
+    (home-page "https://mattam82.github.io/Coq-Equations/")
+    (synopsis "Function definition plugin for Coq")
+    (description "Equations provides a notation for writing programs
+by dependent pattern-matching and (well-founded) recursion in Coq.  It
+compiles everything down to eliminators for inductive types, equality
+and accessibility, providing a definitional extension to the Coq
+kernel.")
+    (license license:lgpl2.1)))

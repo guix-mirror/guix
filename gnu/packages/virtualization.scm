@@ -571,7 +571,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -579,10 +579,10 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1b48xbrx99mfiv80c60k3ydzkpcpbq57c8h8dl0gnffmnzbs8vzb"))))
+                "1m038kyngmxlgz91c7z8g73lb2wy0ajyah871a3g3wb5cnd0dsil"))))
     (build-system python-build-system)
     (arguments
-     `(#:use-setuptools? #f ; Uses custom distutils 'install' command.
+     `(#:use-setuptools? #f          ; uses custom distutils 'install' command
        ;; Some of the tests seem to require network access to install virtual
        ;; machines.
        #:tests? #f
@@ -602,7 +602,7 @@ virtualization library.")
              #t))
          (add-after 'unpack 'fix-default-uri
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; xen is not available for now - so only patch qemu
+             ;; Xen is not available for now - so only patch qemu.
              (substitute* "virtManager/connect.py"
                (("/usr(/bin/qemu-system)" _ suffix)
                 (string-append (assoc-ref inputs "qemu") suffix)))
@@ -650,7 +650,7 @@ virtualization library.")
     (propagated-inputs
      `(("qemu" ,qemu)))
     (native-inputs
-     `(("glib" ,glib "bin")             ; glib-compile-schemas.
+     `(("glib" ,glib "bin")             ; glib-compile-schemas
        ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
        ("intltool" ,intltool)))
@@ -847,15 +847,17 @@ monitor/GPU.")
 (define-public runc
   (package
     (name "runc")
-    (version "1.0.0-rc5")
+    (version "1.0.0-rc6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/opencontainers/runc/releases/"
                     "download/v" version "/runc.tar.xz"))
+              (file-name (string-append name "-" version ".tar.xz"))
+              (patches (search-patches "runc-CVE-2019-5736.patch"))
               (sha256
                (base32
-                "081avdzwnqpk368wbaihlzsypaxpj42d7699h7jgp0fks14x4103"))))
+                "1c7832dq70slkjh8qp2civ1wxhhdd2hrx84pq7db1mmqc9fdr3cc"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/opencontainers/runc"

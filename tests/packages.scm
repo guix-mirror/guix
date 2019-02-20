@@ -1054,7 +1054,8 @@
                                                       result))
                                               '()))))))
 
-    (lset= equal? no-cache from-cache)))
+    (and (equal? (delete-duplicates from-cache) from-cache)
+         (lset= equal? no-cache from-cache))))
 
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")

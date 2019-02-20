@@ -23,7 +23,7 @@
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix store)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
   #:use-module (guix packages)
   #:use-module (guix derivations)

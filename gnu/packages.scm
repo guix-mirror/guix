@@ -375,34 +375,41 @@ reducing the memory footprint."
   (define cache-file
     (string-append directory %package-cache-file))
 
-  (define (expand-cache module symbol variable result)
+  (define (expand-cache module symbol variable result+seen)
     (match (false-if-exception (variable-ref variable))
       ((? package? package)
-       (if (hidden-package? package)
-           result
-           (cons `#(,(package-name package)
-                    ,(package-version package)
-                    ,(module-name module)
-                    ,symbol
-                    ,(package-outputs package)
-                    ,(->bool (member (%current-system)
-                                     (package-supported-systems package)))
-                    ,(->bool (package-superseded package))
-                    ,@(let ((loc (package-location package)))
-                        (if loc
-                            `(,(location-file loc)
-                              ,(location-line loc)
-                              ,(location-column loc))
-                            '(#f #f #f))))
-                 result)))
+       (match result+seen
+         ((result . seen)
+          (if (or (vhash-assq package seen)
+                  (hidden-package? package))
+              (cons result seen)
+              (cons (cons `#(,(package-name package)
+                             ,(package-version package)
+                             ,(module-name module)
+                             ,symbol
+                             ,(package-outputs package)
+                             ,(->bool
+                               (member (%current-system)
+                                       (package-supported-systems package)))
+                             ,(->bool (package-superseded package))
+                             ,@(let ((loc (package-location package)))
+                                 (if loc
+                                     `(,(location-file loc)
+                                       ,(location-line loc)
+                                       ,(location-column loc))
+                                     '(#f #f #f))))
+                          result)
+                    (vhash-consq package #t seen))))))
       (_
-       result)))
+       result+seen)))
 
   (define exp
-    (fold-module-public-variables* expand-cache '()
-                                   (all-modules (%package-module-path)
-                                                #:warn
-                                                warn-about-load-error)))
+    (first
+     (fold-module-public-variables* expand-cache
+                                    (cons '() vlist-null)
+                                    (all-modules (%package-module-path)
+                                                 #:warn
+                                                 warn-about-load-error))))
 
   (mkdir-p (dirname cache-file))
   (call-with-output-file cache-file

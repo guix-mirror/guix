@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -134,7 +134,9 @@
   ;; Guile-Gcrypt, Guile-SQLite3, and their propagated inputs.
   (append-map (lambda (package)
                 (cons package
-                      (package-transitive-propagated-inputs package)))
+                      (match (package-transitive-propagated-inputs package)
+                        (((labels packages) ...)
+                         packages))))
               (list guile-gcrypt guile-sqlite3)))
 
 (define* (expression->derivation-in-linux-vm name exp

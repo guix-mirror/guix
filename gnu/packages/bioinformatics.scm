@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -612,16 +613,22 @@ intended to behave exactly the same as the original BWK awk.")
 (define-public python-pybedtools
   (package
     (name "python-pybedtools")
-    (version "0.7.10")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pybedtools" version))
               (sha256
                (base32
-                "0l2b2wrnj85azfqgr0zwr60f7j58vlla1hcgxvr9rwikpl8j72ji"))))
+                "1xl454ijvd4dzfvqgfahad49b49j7qy710fq9xh1rvk42z6x5ssf"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       ;; See https://github.com/daler/pybedtools/issues/192
+       #:phases
        (modify-phases %standard-phases
          ;; See https://github.com/daler/pybedtools/issues/261
          (add-after 'unpack 'disable-broken-tests
@@ -631,21 +638,59 @@ intended to behave exactly the same as the original BWK awk.")
              (substitute* "pybedtools/test/test_scripts.py"
                (("def test_venn_mpl")
                 "def _do_not_test_venn_mpl"))
-             ;; Requires internet access.
              (substitute* "pybedtools/test/test_helpers.py"
+               ;; Requires internet access.
                (("def test_chromsizes")
-                "def _do_not_test_chromsizes"))
-             ;; FIXME: these two fail for no good reason.
-             (substitute* "pybedtools/test/test1.py"
-               (("def test_issue_157")
-                "def _do_not_test_issue_157")
-               (("def test_to_dataframe")
-                "def _do_not_test_to_dataframe"))
-             #t)))))
+                "def _do_not_test_chromsizes")
+               ;; Broken as a result of the workaround used in the check phase
+               ;; (see: https://github.com/daler/pybedtools/issues/192).
+               (("def test_getting_example_beds")
+                "def _do_not_test_getting_example_beds"))
+             #t))
+         ;; TODO: Remove phase after it's part of PYTHON-BUILD-SYSTEM.
+         ;; build system.
+         ;; Force the Cythonization of C++ files to guard against compilation
+         ;; problems.
+         (add-after 'unpack 'remove-cython-generated-files
+           (lambda _
+             (let ((cython-sources (map (cut string-drop-right <> 4)
+                                        (find-files "." "\\.pyx$")))
+                   (c/c++-files (find-files "." "\\.(c|cpp|cxx)$")))
+               (define (strip-extension filename)
+                 (string-take filename (string-index-right filename #\.)))
+               (define (cythonized? c/c++-file)
+                 (member (strip-extension c/c++-file) cython-sources))
+               (for-each delete-file (filter cythonized? c/c++-files))
+               #t)))
+         (add-after 'remove-cython-generated-files 'generate-cython-extensions
+           (lambda _
+             (invoke "python" "setup.py" "cythonize")))
+         (replace 'check
+           (lambda _
+             (let* ((cwd (getcwd))
+                    (build-root-directory (string-append cwd "/build/"))
+                    (build (string-append
+                            build-root-directory
+                            (find (cut string-prefix? "lib" <>)
+                                  (scandir (string-append
+                                            build-root-directory)))))
+                    (scripts (string-append
+                              build-root-directory
+                              (find (cut string-prefix? "scripts" <>)
+                                    (scandir build-root-directory)))))
+               (setenv "PYTHONPATH"
+                       (string-append build ":" (getenv "PYTHONPATH")))
+               ;; Executable scripts such as 'intron_exon_reads.py' must be
+               ;; available in the PATH.
+               (setenv "PATH"
+                       (string-append scripts ":" (getenv "PATH"))))
+             ;; The tests need to be run from elsewhere...
+             (mkdir-p "/tmp/test")
+             (copy-recursively "pybedtools/test" "/tmp/test")
+             (with-directory-excursion "/tmp/test"
+               (invoke "pytest")))))))
     (propagated-inputs
-     ;; Tests don't pass with Bedtools 2.27.1.
-     ;; See https://github.com/daler/pybedtools/issues/260
-     `(("bedtools" ,bedtools-2.26)
+     `(("bedtools" ,bedtools)
        ("samtools" ,samtools)
        ("python-matplotlib" ,python-matplotlib)
        ("python-pysam" ,python-pysam)
@@ -654,9 +699,11 @@ intended to behave exactly the same as the original BWK awk.")
      `(("python-numpy" ,python-numpy)
        ("python-pandas" ,python-pandas)
        ("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)
-       ("kentutils" ,kentutils) ; for bedGraphToBigWig
-       ("python-six" ,python-six)))
+       ("kentutils" ,kentutils)         ; for bedGraphToBigWig
+       ("python-six" ,python-six)
+       ;; For the test suite.
+       ("python-pytest" ,python-pytest)
+       ("python-psutil" ,python-psutil)))
     (home-page "https://pythonhosted.org/pybedtools/")
     (synopsis "Python wrapper for BEDtools programs")
     (description
@@ -667,34 +714,7 @@ Python.")
     (license license:gpl2+)))
 
 (define-public python2-pybedtools
-  (let ((pkg (package-with-python2 python-pybedtools)))
-    (package (inherit pkg)
-      (arguments
-       `(#:modules ((ice-9 ftw)
-                    (srfi srfi-1)
-                    (srfi srfi-26)
-                    (guix build utils)
-                    (guix build python-build-system))
-         ;; See https://github.com/daler/pybedtools/issues/192
-         ,@(substitute-keyword-arguments (package-arguments pkg)
-             ((#:phases phases)
-              `(modify-phases ,phases
-                 (replace 'check
-                   (lambda _
-                     (let ((cwd (getcwd)))
-                       (setenv "PYTHONPATH"
-                               (string-append cwd "/build/"
-                                              (find (cut string-prefix? "lib" <>)
-                                                    (scandir (string-append cwd "/build")))
-                                              ":" (getenv "PYTHONPATH"))))
-                     ;; The tests need to be run from elsewhere...
-                     (mkdir-p "/tmp/test")
-                     (copy-recursively "pybedtools/test" "/tmp/test")
-                     (with-directory-excursion "/tmp/test"
-                       (invoke "nosetests"
-                               ;; This test fails for unknown reasons
-                               "--exclude=.*test_getting_example_beds"))
-                     #t))))))))))
+  (package-with-python2 python-pybedtools))
 
 (define-public python-biom-format
   (package
@@ -4344,130 +4364,6 @@ trimming, pruning, condensing, drawing (ASCII graphics or SVG).")
 interrupted by stop codons.  OrfM finds and prints these ORFs.")
     (home-page "https://github.com/wwood/OrfM")
     (license license:lgpl3+)))
-
-(define-public pplacer
-  (let ((commit "807f6f3"))
-    (package
-      (name "pplacer")
-      ;; The commit should be updated with each version change.
-      (version "1.1.alpha19")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/matsen/pplacer.git")
-               (commit (string-append "v" version))))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "11ppbbbx20p2g9wj3ff64dhnarb12q79v7qh4rk0gj6lkbz4n7cn"))))
-      (build-system ocaml-build-system)
-      (arguments
-       `(#:ocaml ,ocaml-4.01
-         #:findlib ,ocaml4.01-findlib
-         #:modules ((guix build ocaml-build-system)
-                    (guix build utils)
-                    (ice-9 ftw))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'replace-bundled-cddlib
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let* ((cddlib-src (assoc-ref inputs "cddlib-src"))
-                      (local-dir "cddlib_guix"))
-                 (mkdir local-dir)
-                 (with-directory-excursion local-dir
-                   (invoke "tar" "xvf" cddlib-src))
-                 (let ((cddlib-src-folder
-                        (string-append local-dir "/"
-                                       (list-ref (scandir local-dir) 2)
-                                       "/lib-src")))
-                   (for-each make-file-writable (find-files "cdd_src" ".*"))
-                   (for-each
-                    (lambda (file)
-                      (copy-file file
-                                 (string-append "cdd_src/" (basename file))))
-                    (find-files cddlib-src-folder ".*[ch]$")))
-                 #t)))
-           (add-after 'unpack 'fix-makefile
-             (lambda _
-               ;; Remove system calls to 'git'.
-               (substitute* "Makefile"
-                 (("^DESCRIPT:=pplacer-.*")
-                  (string-append
-                   "DESCRIPT:=pplacer-$(shell uname)-v" ,version "\n")))
-               (substitute* "myocamlbuild.ml"
-                 (("git describe --tags --long .*\\\" with")
-                  (string-append
-                   "echo -n v" ,version "-" ,commit "\" with")))
-               #t))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin")))
-                 (copy-recursively "bin" bin))
-               #t)))))
-      (native-inputs
-       `(("zlib" ,zlib)
-         ("gsl" ,gsl)
-         ("ocaml-ounit" ,ocaml4.01-ounit)
-         ("ocaml-batteries" ,ocaml4.01-batteries)
-         ("ocaml-camlzip" ,ocaml4.01-camlzip)
-         ("ocaml-csv" ,ocaml4.01-csv)
-         ("ocaml-sqlite3" ,ocaml4.01-sqlite3)
-         ("ocaml-xmlm" ,ocaml4.01-xmlm)
-         ("ocaml-mcl" ,ocaml4.01-mcl)
-         ("ocaml-gsl" ,ocaml4.01-gsl)
-         ("cddlib-src" ,(package-source cddlib))))
-      (propagated-inputs
-       `(("pplacer-scripts" ,pplacer-scripts)))
-      (synopsis "Phylogenetic placement of biological sequences")
-      (description
-       "Pplacer places query sequences on a fixed reference phylogenetic tree
-to maximize phylogenetic likelihood or posterior probability according to a
-reference alignment.  Pplacer is designed to be fast, to give useful
-information about uncertainty, and to offer advanced visualization and
-downstream analysis.")
-      (home-page "http://matsen.fhcrc.org/pplacer")
-      (license license:gpl3))))
-
-;; This package is installed alongside 'pplacer'.  It is a separate package so
-;; that it can use the python-build-system for the scripts that are
-;; distributed alongside the main OCaml binaries.
-(define pplacer-scripts
-  (package
-    (inherit pplacer)
-    (name "pplacer-scripts")
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'enter-scripts-dir
-           (lambda _ (chdir "scripts") #t))
-         (replace 'check
-           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t))
-         (add-after 'install 'wrap-executables
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (let ((path (string-append
-                            (assoc-ref inputs "hmmer") "/bin:"
-                            (assoc-ref inputs "infernal") "/bin")))
-                 (display path)
-                 (wrap-program (string-append bin "/refpkg_align.py")
-                   `("PATH" ":" prefix (,path))))
-               (let ((path (string-append
-                            (assoc-ref inputs "hmmer") "/bin")))
-                 (wrap-program (string-append bin "/hrefpkg_query.py")
-                   `("PATH" ":" prefix (,path)))))
-             #t)))))
-    (inputs
-     `(("infernal" ,infernal)
-       ("hmmer" ,hmmer)))
-    (propagated-inputs
-     `(("python-biopython" ,python2-biopython)
-       ("taxtastic" ,taxtastic)))
-    (synopsis "Pplacer Python scripts")))
 
 (define-public python2-pbcore
   (package
@@ -11172,7 +11068,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
     (native-inputs
      `(("ldc" ,ldc)
        ("rdmd" ,rdmd)
-       ("python" ,python-minimal)
+       ("python" ,python)
        ("biod"
         ,(let ((commit "4f1a7d2fb7ef3dfe962aa357d672f354ebfbe42e"))
            (origin
@@ -14441,3 +14337,69 @@ Nanopolish can calculate an improved consensus sequence for a draft genome
 assembly, detect base modifications, call SNPs (Single nucleotide
 polymorphisms) and indels with respect to a reference genome and more.")
       (license license:expat))))
+
+(define-public cnvkit
+  (package
+    (name "cnvkit")
+    (version "0.9.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/etal/cnvkit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g2f78k68yglmj4fsfmgs8idqv3di9aj53fg0ld0hqljg8chhh82"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-biopython" ,python-biopython)
+       ("python-future" ,python-future)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-reportlab" ,python-reportlab)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-pyfaidx" ,python-pyfaidx)
+       ("python-scipy" ,python-scipy)
+       ;; R packages
+       ("r-dnacopy" ,r-dnacopy)))
+    (home-page "https://cnvkit.readthedocs.org/")
+    (synopsis "Copy number variant detection from targeted DNA sequencing")
+    (description
+     "CNVkit is a Python library and command-line software toolkit to infer
+and visualize copy number from high-throughput DNA sequencing data.  It is
+designed for use with hybrid capture, including both whole-exome and custom
+target panels, and short-read sequencing platforms such as Illumina and Ion
+Torrent.")
+    (license license:asl2.0)))
+
+(define-public python-pyfit-sne
+  (package
+    (name "python-pyfit-sne")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KlugerLab/pyFIt-SNE.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13wh3qkzs56azmmgnxib6xfr29g7xh09sxylzjpni5j0pp0rc5qw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (inputs
+     `(("fftw" ,fftw)))
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (home-page "https://github.com/KlugerLab/pyFIt-SNE")
+    (synopsis "FFT-accelerated Interpolation-based t-SNE")
+    (description
+     "t-Stochastic Neighborhood Embedding (t-SNE) is a highly successful
+method for dimensionality reduction and visualization of high dimensional
+datasets.  A popular implementation of t-SNE uses the Barnes-Hut algorithm to
+approximate the gradient at each iteration of gradient descent.  This package
+is a Cython wrapper for FIt-SNE.")
+    (license license:bsd-4)))

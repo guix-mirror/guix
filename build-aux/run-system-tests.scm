@@ -19,7 +19,7 @@
 (define-module (run-system-tests)
   #:use-module (gnu tests)
   #:use-module (guix store)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix ui)

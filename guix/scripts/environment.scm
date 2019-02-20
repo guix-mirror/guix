@@ -21,7 +21,7 @@
 (define-module (guix scripts environment)
   #:use-module (guix ui)
   #:use-module (guix store)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -57,20 +57,27 @@
 (define %default-shell
   (or (getenv "SHELL") "/bin/sh"))
 
-(define (purify-environment)
-  "Unset almost all environment variables.  A small number of variables such
-as 'HOME' and 'USER' are left untouched."
+(define (purify-environment white-list)
+  "Unset all environment variables except those that match the regexps in
+WHITE-LIST and those listed in %PRECIOUS-VARIABLES.  A small number of
+variables such as 'HOME' and 'USER' are left untouched."
   (for-each unsetenv
-            (remove (cut member <> %precious-variables)
+            (remove (lambda (variable)
+                      (or (member variable %precious-variables)
+                          (find (cut regexp-exec <> variable)
+                                white-list)))
                     (match (get-environment-variables)
                       (((names . _) ...)
                        names)))))
 
-(define* (create-environment profile manifest #:key pure?)
-  "Set the environment variables specified by MANIFEST for PROFILE.  When PURE?
-is #t, unset the variables in the current environment.  Otherwise, augment
-existing environment variables with additional search paths."
-  (when pure? (purify-environment))
+(define* (create-environment profile manifest
+                             #:key pure? (white-list '()))
+  "Set the environment variables specified by MANIFEST for PROFILE.  When
+PURE?  is #t, unset the variables in the current environment except those that
+match the regexps in WHITE-LIST.  Otherwise, augment existing environment
+variables with additional search paths."
+  (when pure?
+    (purify-environment white-list))
   (for-each (match-lambda
               ((($ <search-path-specification> variable _ separator) . value)
                (let ((current (getenv variable)))
@@ -133,6 +140,8 @@ COMMAND or an interactive shell in that environment.\n"))
                          of only their inputs"))
   (display (G_ "
       --pure             unset existing environment variables"))
+  (display (G_ "
+      --inherit=REGEXP   inherit environment variables that match REGEXP"))
   (display (G_ "
       --search-paths     display needed environment variable definitions"))
   (display (G_ "
@@ -206,6 +215,11 @@ COMMAND or an interactive shell in that environment.\n"))
          (option '("pure") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'pure #t result)))
+         (option '("inherit") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'inherit-regexp
+                               (make-regexp* arg)
+                               result)))
          (option '(#\E "exec") #t #f ; deprecated
                  (lambda (opt name arg result)
                    (alist-cons 'exec (list %default-shell "-c" arg) result)))
@@ -397,25 +411,30 @@ and suitable for 'exit'."
 (define primitive-exit/status (compose primitive-exit status->exit-code))
 
 (define* (launch-environment command profile manifest
-                             #:key pure?)
+                             #:key pure? (white-list '()))
   "Run COMMAND in a new environment containing INPUTS, using the native search
 paths defined by the list PATHS.  When PURE?, pre-existing environment
-variables are cleared before setting the new ones."
+variables are cleared before setting the new ones, except those matching the
+regexps in WHITE-LIST."
   ;; Properly handle SIGINT, so pressing C-c in an interactive terminal
   ;; application works.
   (sigaction SIGINT SIG_DFL)
-  (create-environment profile manifest #:pure? pure?)
+  (create-environment profile manifest
+                      #:pure? pure? #:white-list white-list)
   (match command
     ((program . args)
      (apply execlp program program args))))
 
-(define* (launch-environment/fork command profile manifest #:key pure?)
+(define* (launch-environment/fork command profile manifest
+                                  #:key pure? (white-list '()))
   "Run COMMAND in a new process with an environment containing PROFILE, with
 the search paths specified by MANIFEST.  When PURE?, pre-existing environment
-variables are cleared before setting the new ones."
+variables are cleared before setting the new ones, except those matching the
+regexps in WHITE-LIST."
   (match (primitive-fork)
     (0 (launch-environment command profile manifest
-                           #:pure? pure?))
+                           #:pure? pure?
+                           #:white-list white-list))
     (pid (match (waitpid pid)
            ((_ . status) status)))))
 
@@ -672,7 +691,8 @@ message if any test fails."
                                ;; within the container.
                                '("/bin/sh")
                                (list %default-shell))))
-           (mappings   (pick-all opts 'file-system-mapping)))
+           (mappings   (pick-all opts 'file-system-mapping))
+           (white-list (pick-all opts 'inherit-regexp)))
 
       (when container? (assert-container-features))
 
@@ -741,4 +761,5 @@ message if any test fails."
                     (return
                      (exit/status
                       (launch-environment/fork command profile manifest
+                                               #:white-list white-list
                                                #:pure? pure?))))))))))))))

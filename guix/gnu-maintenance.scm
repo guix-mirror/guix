@@ -623,8 +623,7 @@ releases are on gnu.org."
       (package-upstream-name package)
       #:server "mirrors.mit.edu"
       #:directory
-      (string-append "/kde" (dirname (dirname (uri-path uri))))
-      #:file->signature (const #f)))))
+      (string-append "/kde" (dirname (dirname (uri-path uri))))))))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE, the name of an X.org package."

@@ -100,6 +100,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/check.scm			\
   %D%/packages/chemistry.scm			\
   %D%/packages/chez.scm				\
+  %D%/packages/chromium.scm			\
   %D%/packages/ci.scm				\
   %D%/packages/cinnamon.scm			\
   %D%/packages/clojure.scm			\
@@ -191,6 +192,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gcc.scm				\
   %D%/packages/gd.scm				\
   %D%/packages/gdb.scm				\
+  %D%/packages/genimage.scm			\
   %D%/packages/geo.scm				\
   %D%/packages/gettext.scm			\
   %D%/packages/ghostscript.scm			\
@@ -253,8 +255,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/jrnl.scm				\
   %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
-  %D%/packages/kde.scm              \
+  %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
+  %D%/packages/kde-plasma.scm			\
   %D%/packages/kerberos.scm			\
   %D%/packages/key-mon.scm			\
   %D%/packages/kodi.scm				\
@@ -294,6 +297,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/m4.scm				\
   %D%/packages/machine-learning.scm		\
   %D%/packages/man.scm				\
+  %D%/packages/magic-wormhole.scm		\
   %D%/packages/mail.scm				\
   %D%/packages/make-bootstrap.scm		\
   %D%/packages/markup.scm			\
@@ -635,7 +639,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
-  %D%/packages/patches/allegro4-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
@@ -685,6 +688,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-3.5-libsanitizer-ustat-fix.patch	\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clang-6.0-libc-search-path.patch		\
+  %D%/packages/patches/clang-7.0-libc-search-path.patch		\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/classpath-aarch64-support.patch		\
@@ -708,6 +712,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
+  %D%/packages/patches/dealii-mpi-deprecations.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
@@ -793,6 +798,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
   %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-CVE-2018-1000222.patch		\
+  %D%/packages/patches/gd-CVE-2019-6977.patch			\
+  %D%/packages/patches/gd-CVE-2019-6978.patch			\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
   %D%/packages/patches/gdm-CVE-2018-14424.patch			\
@@ -814,6 +821,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt1.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt2.patch		\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
+  %D%/packages/patches/glibc-CVE-2018-11236.patch		\
+  %D%/packages/patches/glibc-CVE-2018-11237.patch		\
   %D%/packages/patches/glibc-allow-kernel-2.6.32.patch		\
   %D%/packages/patches/glibc-boot-2.16.0.patch			\
   %D%/packages/patches/glibc-boot-2.2.5.patch			\
@@ -936,7 +945,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
   %D%/packages/patches/ledger-fix-uninitialized.patch		\
-  %D%/packages/patches/ledger-revert-boost-python-fix.patch	\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -1052,6 +1060,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-tracelogger.patch		\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mrrescue-support-love-11.patch		\
+  %D%/packages/patches/mrustc-0.8.0-fix-variable-length-integer-receiving.patch \
   %D%/packages/patches/mumble-1.2.19-abs.patch			\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
@@ -1126,7 +1135,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pinentry-efl.patch			\
   %D%/packages/patches/pingus-boost-headers.patch		\
   %D%/packages/patches/pingus-sdl-libs-config.patch		\
-  %D%/packages/patches/pius.patch       			\
   %D%/packages/patches/pixman-CVE-2016-5296.patch		\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
@@ -1183,6 +1191,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-CVE-2018-16872.patch 		\
   %D%/packages/patches/qemu-CVE-2019-6778.patch 		\
   %D%/packages/patches/qt4-ldflags.patch			\
+  %D%/packages/patches/qtbase-old-kernel.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
@@ -1199,6 +1208,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rct-add-missing-headers.patch		\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
+  %D%/packages/patches/red-eclipse-remove-gamma-name-hack.patch	\
   %D%/packages/patches/reposurgeon-add-missing-docbook-files.patch	\
   %D%/packages/patches/reptyr-fix-gcc-7.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
@@ -1209,13 +1219,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
+  %D%/packages/patches/ruby-safe-yaml-add-require-time.patch	\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
+  %D%/packages/patches/runc-CVE-2019-5736.patch			\
   %D%/packages/patches/rust-1.19-mrustc.patch			\
   %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
+  %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-integer-declarations.patch	\
@@ -1273,7 +1286,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
-  %D%/packages/patches/tomsfastmath-constness.patch		\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
@@ -1332,7 +1344,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/x265-arm-flags.patch			\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
-  %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-savage-xorg-compat.patch 	\
   %D%/packages/patches/xf86-video-siliconmotion-fix-ftbfs.patch \
@@ -1342,8 +1353,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xfce4-session-fix-xflock4.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
-  %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
-  %D%/packages/patches/xmodmap-asprintf.patch
+  %D%/packages/patches/xinetd-CVE-2013-4342.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

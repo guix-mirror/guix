@@ -24,7 +24,7 @@
 
 (define-module (guix scripts package)
   #:use-module (guix ui)
-  #:use-module (guix status)
+  #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
@@ -55,6 +55,7 @@
   #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
   #:export (build-and-use-profile
             delete-generations
+            delete-matching-generations
             display-search-paths
             guix-package))
 

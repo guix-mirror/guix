@@ -160,7 +160,7 @@ networks.")
 (define-public onionshare
   (package
     (name "onionshare")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method git-fetch)
@@ -169,8 +169,7 @@ networks.")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "02zic4cxwrcfdg22dq9c2rzni3l18wynjxd38scc59s37vlw7w2r"))))
+         (base32 "19zrz9kh7k4pdk4lh3cm0kv02ngdqkrggwma1xdskrrmp2rjkgz7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -182,7 +181,7 @@ networks.")
                (substitute* '("setup.py" "onionshare/common.py")
                  (("sys.prefix,") (string-append "'" out "',")))
                (substitute* "setup.py"
-                 ;; for the nautilus plugin
+                 ;; For the nautilus plugin.
                  (("/usr/share/nautilus") "share/nautilus"))
                (substitute* "install/onionshare.desktop"
                  (("/usr") out))

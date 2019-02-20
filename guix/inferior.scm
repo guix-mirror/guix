@@ -61,6 +61,7 @@
             inferior-object?
 
             inferior-packages
+            inferior-available-packages
             lookup-inferior-packages
 
             inferior-package?
@@ -255,6 +256,31 @@ equivalent.  Return #f if the inferior could not be launched."
                       table))
         vlist-null
         (inferior-packages inferior)))
+
+(define (inferior-available-packages inferior)
+  "Return the list of name/version pairs corresponding to the set of packages
+available in INFERIOR.
+
+This is faster and requires less resource-intensive than calling
+'inferior-packages'."
+  (if (inferior-eval '(defined? 'fold-available-packages)
+                     inferior)
+      (inferior-eval '(fold-available-packages
+                       (lambda* (name version result
+                                      #:key supported? deprecated?
+                                      #:allow-other-keys)
+                         (if (and supported? (not deprecated?))
+                             (acons name version result)
+                             result))
+                       '())
+                     inferior)
+
+      ;; As a last resort, if INFERIOR is old and lacks
+      ;; 'fold-available-packages', fall back to 'inferior-packages'.
+      (map (lambda (package)
+             (cons (inferior-package-name package)
+                   (inferior-package-version package)))
+           (inferior-packages inferior))))
 
 (define* (lookup-inferior-packages inferior name #:optional version)
   "Return the sorted list of inferior packages matching NAME in INFERIOR, with

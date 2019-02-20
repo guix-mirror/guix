@@ -71,7 +71,7 @@
     (cut append <> <>)))
 
 (define (sort-variants variants)
-  "Sort VARIANTS list by putting the internation variant ahead and return it."
+  "Sort VARIANTS list by putting the international variant ahead and return it."
   (call-with-values
       (lambda ()
         (partition

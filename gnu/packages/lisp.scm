@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -984,7 +984,8 @@ from other CLXes around the net.")
                ;; and can be removed when we move to the next release.
                (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
     (build-system asdf-build-system/sbcl)
-    (native-inputs `(("fiasco" ,sbcl-fiasco)))
+    (native-inputs `(("fiasco" ,sbcl-fiasco)
+                     ("texinfo" ,texinfo)))
     (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
               ("clx" ,sbcl-clx)
               ("alexandria" ,sbcl-alexandria)))
@@ -1016,6 +1017,16 @@ from other CLXes around the net.")
                      Icon=~@
                      Type=Application~%"
                     out)))
+               #t)))
+         (add-after 'install 'install-manual
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The proper way to the manual is bootstrapping a full autotools
+             ;; build system and running ‘./configure && make stumpwm.info’ to
+             ;; do some macro substitution.  We can get away with much less.
+             (let* ((out  (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (invoke "makeinfo" "stumpwm.texi.in")
+               (install-file "stumpwm.info" info)
                #t))))))
     (synopsis "Window manager written in Common Lisp")
     (description "Stumpwm is a window manager written entirely in Common Lisp.

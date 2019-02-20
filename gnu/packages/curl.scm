@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -188,15 +189,14 @@ not offer a replacement for libcurl.")
 (define-public guile-curl
   (package
    (name "guile-curl")
-   (version "0.5")
+   (version "0.6")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "http://www.lonelycactus.com/tarball/guile-curl-"
-                  version ".tar.gz"))
+            (uri (string-append "http://www.lonelycactus.com/tarball/"
+                                "guile_curl-" version ".tar.gz"))
             (sha256
              (base32
-              "1846rxgc0ylh8768lr79irc7nwjichzb7qb7lzs2k42m0i53sc46"))))
+              "1pxdhnk288ky6gkpad8i60m0p6404rdvls43lr1b5d3csrklyc70"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list (string-append

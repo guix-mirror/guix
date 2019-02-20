@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -519,7 +519,7 @@ commit or run any Git arbitrary command.")
 (define-public vim-airline
   (package
     (name "vim-airline")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method git-fetch)
@@ -529,7 +529,7 @@ commit or run any Git arbitrary command.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hq3304rhakx7x1v7wll7gxinmfz6561bq97qpj8jrk19rhcab75"))))
+         "0k3c6p3xy6514n1n347ci4q9xjm9wwqirpdysam6f7r39crgmfhd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -675,7 +675,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.3.1")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -684,7 +684,7 @@ are detected, the user is notified.")))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "08mdffcw4k503bccm1plq8r7hjx4w61w5jyfdj80fr079hnkjpmw"))))
+         "03mwfhr9rq86p8lypbdfyl7c7xyn6nzv2ipd8jc33bxzvs5i0hd6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -730,7 +730,7 @@ are detected, the user is notified.")))
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
        ("gperf" ,gperf)))
-    (home-page "http://neovim.io")
+    (home-page "https://neovim.io")
     (synopsis "Fork of vim focused on extensibility and agility")
     (description "Neovim is a project that seeks to aggressively
 refactor Vim in order to:

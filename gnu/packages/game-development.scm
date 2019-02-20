@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -431,7 +431,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -440,7 +440,7 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dl06k2p0r7l20ghxcq5sn7j0jl2l8q4m27vmfs2qfgvldjll2h3"))))
+                "0ay4x1b6h5xfax1cqry2fklcmqi6a16klgmci4gkhga7as66lnnn"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -641,17 +641,15 @@ programming language.")
 (define-public allegro-4
   (package
     (name "allegro")
-    (version "4.4.2")
+    (version "4.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/"
                                   "releases/download/" version "/allegro-"
                                   version ".tar.gz"))
-              (patches (search-patches
-                        "allegro4-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
-                "1p0ghkmpc4kwij1z9rzxfv7adnpy4ayi0ifahlns1bdzgmbyf88v"))))
+                "1d5ws3ihvpa6f4qc6a6drq31pajw6bblxifr4kcxzqj9br1nw28y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases

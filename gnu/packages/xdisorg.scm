@@ -18,7 +18,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
@@ -324,7 +324,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.96")
+    (version "2.4.97")
     (source
       (origin
         (method url-fetch)
@@ -334,7 +334,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "14xkip83qgljjaahzq40qgl60j54q7k00la1hbf5kk5lgg7ilmhd"))
+          "08yimlp6jir1rs5ajgdx74xa5qdzcqahpdzdk0rmkmhh7vdcrl3p"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -455,39 +455,24 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "0.8")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append
-                           "http://linuxbrit.co.uk/downloads/scrot-"
-                           version ".tar.gz")
-                         (string-append
-                           "https://fossies.org/linux/privat/old/scrot-"
-                           version ".tar.gz")))
-              (sha256
-               (base32
-                "1wll744rhb49lvr2zs6m93rdmiq59zm344jzqvijrdn24ksiqgb1"))))
+    (version "0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/resurrecting-open-source-projects/scrot.git")
+         (commit version)))
+       (sha256
+        (base32 "1dg0pnmk09p7zlbyxv7d40vf54amrv73y976ds5p7096x6lmlndy"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; By default, man and doc are put in PREFIX/{man,doc} instead of
-     ;; PREFIX/share/{man,doc}.
-     '(#:configure-flags
-       (list (string-append "--mandir="
-                            (assoc-ref %outputs "out")
-                            "/share/man"))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/scrot")))
-               (mkdir-p doc)
-               (invoke "make" "install"
-                       (string-append "docsdir=" doc))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (inputs
-     `(("libx11" ,libx11)
-       ("giblib" ,giblib)))
-    (home-page "http://linuxbrit.co.uk/software/")
+     `(("giblib" ,giblib)
+       ("libx11" ,libx11)))
+    (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
     (description
      "Scrot allows to save a screenshot of a full screen, a window or a part

@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
@@ -137,7 +137,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.5.2")
+    (version "2.5.3")
     (source
      (origin
       (method url-fetch)
@@ -145,7 +145,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1rw8nw6fx6ppxga6m4cqcp898lnlzf7vn3s5c2lzfxg3fzr1nswq"))))
+        "00p7cpvzf0q3qwcgg51r9d0vbab4qga2xi8wpk2fgd36710b1g4i"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)
@@ -223,14 +223,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.12")
+    (version "2.2.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1jw282iy27j1qygym52aa44zxy7ly4bdadhd628hwr4q9j5hy0yv"))))
+                "1n0igfn9nwdajzkcgdx7apwm9m5rpw0fg6vwskmf1rpranlqgivn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -627,7 +627,7 @@ signing, decryption, verification, and key-listing parsing.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.2.6")
+   (version "2.2.7")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -635,15 +635,14 @@ signing, decryption, verification, and key-listing parsing.")
                   version "/pius-" version ".tar.bz2"))
             (sha256
              (base32
-              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))
-            (patches (search-patches "pius.patch"))))
+              "1nsl7czicv95j0gfz4s82ys3g3h2mwr6cq3ilid8bpz3iy7z4ipy"))))
    (build-system python-build-system)
-   (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
+   (inputs `(("perl" ,perl)             ; for 'pius-party-worksheet'
              ("gpg" ,gnupg)
              ("python-six" ,python2-six)))
    (arguments
     `(#:tests? #f
-      #:python ,python-2                     ;uses the Python 2 'print' syntax
+      #:python ,python-2                ; uses the Python 2 'print' syntax
       #:phases
       (modify-phases %standard-phases
         (add-before
