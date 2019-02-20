@@ -1616,7 +1616,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.14.1")
+    (version "2.15.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1625,7 +1625,7 @@ and stored in memory.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kzijmjxjxgr7p8clphzvmm47vczckbs8mza9an77c25bn627ywl"))))
+                "0dx8q3jr8fh73cfl7mqi5dq0012ambpvc74d2c71fsv9rfw85693"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
