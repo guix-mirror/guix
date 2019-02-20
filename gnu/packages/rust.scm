@@ -762,7 +762,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
       (inherit base-rust)
       (inputs
        ;; Use LLVM 6.0
-       (alist-replace "llvm" (list llvm)
+       (alist-replace "llvm" (list llvm-6)
                       (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
