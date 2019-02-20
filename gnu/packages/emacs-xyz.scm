@@ -13452,3 +13452,30 @@ constant expressions.")
        "This package provides a major mode @code{dockerfile-mode} for use with
 the standard @code{Dockerfile} file format.")
       (license license:asl2.0))))
+
+(define-public emacs-lsp-mode
+  (package
+    (name "emacs-lsp-mode")
+    (version "6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-lsp/lsp-mode.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v1mq6ixzlgiazj8fmg4xaqhsqn3l89iqy74yndhvzh2rdf0pbkl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-ht" ,emacs-ht)
+       ("emacs-spinner" ,emacs-spinner)))
+    (home-page "https://github.com/emacs-lsp/lsp-mode")
+    (synopsis "Emacs client and library for the Language Server Protocol")
+    (description "@code{LSP-mode} is a client and library implmentation for
+the Language Server Protocol.  This mode aims to provide an IDE-like
+experience by providing optional integration with other popular Emacs packages
+like @code{company}, @code{flycheck}, and @code{projectile}.")
+    (license license:gpl3+)))
