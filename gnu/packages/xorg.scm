@@ -5723,14 +5723,14 @@ Intrinsics (Xt) Library.")
 (define-public xclock
   (package
     (name "xclock")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.x.org/releases/individual/app/"
                            name "-" version ".tar.bz2"))
        (sha256
-        (base32 "1l3xv4bsca6bwxx73jyjz0blav86i7vwffkhdb1ac81y9slyrki3"))))
+        (base32 "0m92zhamh15my9f2rqa14q41d6k2cn468azm3g7g3w9n7942024k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -5745,7 +5745,7 @@ Intrinsics (Xt) Library.")
        ("libxkbfile" ,libxkbfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xclock")
     (synopsis "Analog / digital clock for X")
     (description "The xclock program displays the time in analog or digital
 form.")
