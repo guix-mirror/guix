@@ -10655,3 +10655,29 @@ analysis (@code{rrpca}), randomized interpolative decomposition (@code{rid}),
 and the randomized CUR decomposition (@code{rcur}).  In addition several plot
 functions are provided.")
     (license license:gpl3+)))
+
+(define-public r-sloop
+  (package
+    (name "r-sloop")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sloop" version))
+       (sha256
+        (base32
+         "00fk5fr5zsk2qxc1kfhmshhjxgnamm3401089sx8m2l529zd6r8j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-crayon" ,r-crayon)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/r-lib/sloop")
+    (synopsis "Helpers for object-oriented programming in R")
+    (description
+     "This package provides a collection of helper functions designed to
+help you to better understand object oriented programming in R, particularly
+using @code{S3}.")
+    (license license:gpl3)))
