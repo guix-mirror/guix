@@ -2328,7 +2328,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
 (define-public xev
   (package
     (name "xev")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -2338,7 +2338,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0krivhrxpq6719103r541xpi3i3a0y15f7ypc4lnrx8sdhmfcjnr"))))
+            "02ddsdx138g7szhwklpbzi0cxr34871iay3k28kdcihrz8f4zg36"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -2347,7 +2347,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
         ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xev")
     (synopsis "Print contents of X events")
     (description
      "XEv creates a window and then asks the X server to send it X11
