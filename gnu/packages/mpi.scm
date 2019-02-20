@@ -196,8 +196,6 @@ bind processes, and much more.")
      `(#:configure-flags `("--enable-mpi-ext=affinity" ;cr doesn't work
                            "--enable-memchecker"
                            "--with-sge"
-                           "--with-psm"
-                           "--with-psm2"
                            "--with-valgrind"
                            "--with-hwloc=external"
                            "--with-libevent"
