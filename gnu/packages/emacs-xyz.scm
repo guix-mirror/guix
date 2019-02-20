@@ -10672,27 +10672,26 @@ keep Parens and Indentation inline with one another.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-eww
-  (let ((commit "9d36acc433bcf689598b1b4d7d47c9aeb84d6b44"))
-    (package
-      (name "emacs-helm-eww")
-      (version (git-version "0.1" "3" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-eww.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "06gnf84gx6qbhcw1h5jhjnvcdxkdpv0npm53x3pgqybbll5rn5dy"))))
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/emacs-helm/helm-eww/")
-      (synopsis "Helm interface to EWW")
-      (description "This package provides a Helm interface for EWW buffers,
+  (package
+    (name "emacs-helm-eww")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-eww.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0dvlp7y6kqc4azg5b7jx5lz2rwd0ia7y0y3hcj9y23zd88r73lg7"))))
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacs-helm/helm-eww/")
+    (synopsis "Helm interface to EWW")
+    (description "This package provides a Helm interface for EWW buffers,
 bookmarks and history.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-stumpwm-mode
   (let ((commit "8fbe071d2c6c040794060a354eb377218dc10b35")
