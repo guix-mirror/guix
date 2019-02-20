@@ -4210,7 +4210,7 @@ and Reflect (RandR) extension.")
 (define-public xrdb
   (package
     (name "xrdb")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -4220,14 +4220,14 @@ and Reflect (RandR) extension.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dqp486nd5sagbg572kl0k839nwvpqnb7jvppyb7jj5vrpkss8rd"))))
+            "0ik9gh6363c47pr0dp7q22nfs8vmavjg2v4bsr0604ppl77nafpj"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xrdb")
     (synopsis "X server resource database utility")
     (description
      "XRDB is used to get or set the contents of the RESOURCE_MANAGER
