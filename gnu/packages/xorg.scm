@@ -1084,7 +1084,7 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfontenc
   (package
     (name "libfontenc")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -1094,14 +1094,14 @@ synchronization between the X server and direct-rendering clients.")
                ".tar.bz2"))
         (sha256
           (base32
-            "08gxmrhgw97mv0pvkfmd46zzxrn6zdw4g27073zl55gwwqq8jn3h"))))
+            "0y90170dp8wsidr1dzza0grxr1lfh30ji3b5vkjz4j6x1n0wxz1c"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
         ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/lib/libfontenc")
     (synopsis "Xorg font encoding library")
     (description "Xorg font encoding library.")
     (license license:x11)))
