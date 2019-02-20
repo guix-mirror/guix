@@ -13479,3 +13479,30 @@ the Language Server Protocol.  This mode aims to provide an IDE-like
 experience by providing optional integration with other popular Emacs packages
 like @code{company}, @code{flycheck}, and @code{projectile}.")
     (license license:gpl3+)))
+
+(define-public emacs-lsp-ui
+  (package
+    (name "emacs-lsp-ui")
+    (version "6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-lsp/lsp-ui.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r4327fd8cvjxfwkddp5c4bdskyncbs4sx9m3z2w4d773y2jrakc"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("emacs-flycheck" ,emacs-flycheck)))
+    (home-page "https://github.com/emacs-lsp/lsp-ui")
+    (synopsis "User interface extensions for @code{lsp-mode}")
+    (description
+     "@code{LSP-ui} contains several enhancements and integrations for
+@code{lsp-mode}, such as visual flychecking, displaying references in-line,
+and code peeking.")
+    (license license:gpl3+)))
