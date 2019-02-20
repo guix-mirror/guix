@@ -3648,7 +3648,7 @@ monitor via the X video mode extension.")
 (define-public xhost
   (package
     (name "xhost")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -3658,7 +3658,7 @@ monitor via the X video mode extension.")
                ".tar.bz2"))
         (sha256
           (base32
-            "16n26xw6l01zq31d4qvsaz50misvizhn7iihzdn5f7s72pp1krlk"))))
+            "15n3mnd4i5kh4z32qv11580qjgvnng0wry2y753ljrqkkrbkrp52"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -3666,7 +3666,7 @@ monitor via the X video mode extension.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xhost")
     (synopsis "Xorg server access control utility")
     (description
      "XHost is used to manage the list of host names or user names
