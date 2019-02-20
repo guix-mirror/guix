@@ -79,7 +79,13 @@
              (substitute* "test/CMakeLists.txt"
                           (("owncloud_add_test\\(Utility \"\"\\)" test)
                            (string-append "#" test)))
-             #t)))
+             #t))
+         (add-after 'unpack 'dont-embed-store-path
+           (lambda _
+             (substitute* "src/common/utility_unix.cpp"
+               (("QCoreApplication::applicationFilePath\\()") "\"owncloud\""))
+             #t))
+         (delete 'patch-dot-desktop-files))
        #:configure-flags '("-DUNIT_TESTING=ON"
                            ;; build without qtwebkit, which causes the
                            ;; package to FTBFS while looking for QWebView.
