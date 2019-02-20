@@ -5096,6 +5096,10 @@ the superuser to make device nodes.")
               (string-append (assoc-ref inputs "util-linux")
                              "/bin/getopt")))
             #t))
+        (add-before 'configure 'setenv
+          (lambda _
+            (setenv "LIBS" "-lacl")
+            #t))
         (add-before 'check 'prepare-check
           (lambda _
             (setenv "SHELL" (which "bash"))
@@ -5114,7 +5118,8 @@ the superuser to make device nodes.")
              (("tar -tvf") "tar --numeric-owner -tvf"))
             #t)))))
     (native-inputs
-     `(("sharutils" ,sharutils) ; for the tests
+     `(("acl" ,acl)
+       ("sharutils" ,sharutils) ; for the tests
        ("xz" ,xz))) ; for the tests
     (inputs
      `(("libcap" ,libcap)
