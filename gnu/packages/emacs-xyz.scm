@@ -13158,3 +13158,30 @@ opposed to character-based).")
 view of file listings sorted by size.  Directory sizes are computed
 recursively.  The results are cached for speed.")
     (license license:gpl3+)))
+
+(define-public emacs-orgit
+  (let ((commit "ddb830c38cb71e5cf86db7fa62d6ee88ab3962d5"))
+    (package
+      (name "emacs-orgit")
+      (version (git-version "1.5.1" "1" commit))
+      (home-page "https://github.com/magit/orgit")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fy4n71yskfkjl6w9mzrw3pfd5lp8f48g2c9bxiwg7mwzsmsb9nb"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-magit" ,emacs-magit)))
+      (synopsis "Support for Org links to Magit buffers")
+      (description "This package defines several Org link types, which can be
+used to link to certain Magit buffers.  Use the command
+@command{org-store-link} while such a buffer is current to store a link.
+Later you can insert it into an Org buffer using the command
+@code{org-insert-link}.")
+      (license license:gpl3+))))
