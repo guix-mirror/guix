@@ -1345,8 +1345,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xfce4-session-fix-xflock4.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
-  %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
-  %D%/packages/patches/xmodmap-asprintf.patch
+  %D%/packages/patches/xinetd-CVE-2013-4342.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

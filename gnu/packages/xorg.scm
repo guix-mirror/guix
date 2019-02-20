@@ -4061,7 +4061,7 @@ containing one glyph per cell.")
 (define-public xmodmap
   (package
     (name "xmodmap")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
@@ -4071,15 +4071,14 @@ containing one glyph per cell.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0y649an3jqfq9klkp9y5gj20xb78fw6g193f5mnzpl0hbz6fbc5p"))
-        (patches (search-patches "xmodmap-asprintf.patch"))))
+            "0z28331i2pm16x671fa9qwsfqdmr6a43bzwmp0dm17a3sx0hjgs7"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xmodmap")
     (synopsis "Modify keymaps and button mappings on X server")
     (description
      "Xmodmap is used to display and edit the keyboard modifier map and
