@@ -48,14 +48,14 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.5.1.10973")
+    (version "2.5.3.11470")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "19x4rbnqg7f7hspz1xy86b1q51q1n5y7yvq8kqc1m64n2r2s3srk"))
+        (base32 "0cznis8qadsnlgm046lxn8vmbxli6zp4b8nk93n53mkfxlcw355n"))
        (patches (search-patches "owncloud-disable-updatecheck.patch"))
        (modules '((guix build utils)))
        (snippet
