@@ -12484,26 +12484,25 @@ correctly.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-slime
-  (let ((commit "bc4af154f2c18c8d9af968840f599d4c9974b668"))
-    (package
-      (name "emacs-helm-slime")
-      (version (git-version "0.0.1" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-slime")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0abfbzw1yaj9gscdxvvd3nf4h6krg6kyl5gpwgiyrq39x16pa9q2"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-slime" ,emacs-slime)))
-      (home-page "https://github.com/emacs-helm/helm-slime")
-      (synopsis "Helm for SLIME, the Superior Lisp Interaction Mode for Emacs")
-      (description "Helm-SLIME defines a few new commands:
+  (package
+    (name "emacs-helm-slime")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-slime")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vn93vv2wclnwq6f480z14jn9wfp0ylhp5dd48ycc9jicfsnxqfj"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-slime" ,emacs-slime)))
+    (home-page "https://github.com/emacs-helm/helm-slime")
+    (synopsis "Helm for SLIME, the Superior Lisp Interaction Mode for Emacs")
+    (description "Helm-SLIME defines a few new commands:
 
 @itemize
 @item helm-slime-complete: Select a symbol from the SLIME completion systems.
@@ -12511,7 +12510,7 @@ correctly.")
 @item: helm-slime-apropos: Yet another slime-apropos with Helm.
 @item helm-slime-repl-history: Select an input from the SLIME REPL history and insert it.
 @end itemize\n")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-gtk-look
   (package
