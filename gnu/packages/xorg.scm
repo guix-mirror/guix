@@ -3913,7 +3913,7 @@ programs that have displayed undesired windows on a user's screen.")
 (define-public xlsatoms
   (package
     (name "xlsatoms")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -3923,13 +3923,13 @@ programs that have displayed undesired windows on a user's screen.")
                ".tar.bz2"))
         (sha256
           (base32
-            "196yjik910xsr7dwy8daa0amr0r22ynfs360z0ndp9mx7mydrra7"))))
+            "10m3a046jvaw5ywx4y65kl84lsxqan70gww1g1r7cf96ijaqz1jp"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcb" ,libxcb)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xlsatoms")
     (synopsis "List interned X server atoms")
     (description
      "XLsAtoms is used to list the interned atoms defined on X server.")
