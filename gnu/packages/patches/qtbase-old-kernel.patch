@@ -1,0 +1,25 @@
+https://672856.bugs.gentoo.org/attachment.cgi?id=557978
+https://bugs.gentoo.org/672856
+
+The patch fixes building qtbase with linux kernels < 4.11.
+See bug #34431.
+
+diff -Naurp a/src/corelib/global/minimum-linux_p.h b/src/corelib/global/minimum-linux_p.h
+--- a/src/corelib/global/minimum-linux_p.h      2018-11-25 15:51:11.000000000 +0300
++++ b/src/corelib/global/minimum-linux_p.h      2018-12-17 13:25:38.176823753 +0300
+@@ -75,14 +75,9 @@ QT_BEGIN_NAMESPACE
+  * - accept4                    2.6.28
+  * - renameat2                  3.16                    QT_CONFIG(renameat2)
+  * - getrandom                  3.17                    QT_CONFIG(getentropy)
+- * - statx                      4.11                    QT_CONFIG(statx)
+  */
+
+-#if QT_CONFIG(statx)
+-#  define MINLINUX_MAJOR        4
+-#  define MINLINUX_MINOR        11
+-#  define MINLINUX_PATCH        0
+-#elif QT_CONFIG(getentropy)
++#if QT_CONFIG(getentropy)
+ #  define MINLINUX_MAJOR        3
+ #  define MINLINUX_MINOR        17
+ #  define MINLINUX_PATCH        0

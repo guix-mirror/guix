@@ -21,7 +21,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
@@ -32,7 +32,7 @@
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
-;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -277,7 +277,7 @@ features to enable users to create their discs easily and quickly.")
      `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gobject-introspection" ,gobject-introspection)
        ("duplicity" ,duplicity)
-       ("python" ,python2-minimal)
+       ("python" ,python-2)
        ("python-pygobject" ,python2-pygobject)
        ("gtk+" ,gtk+)
        ("libnotify" ,libnotify)
@@ -4657,6 +4657,14 @@ such as gzip tarballs.")
                    (out  (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-session")
                  `("PATH" ":" prefix (,(string-append glib "/bin"))))
+               #t)))
+         (add-after 'install 'add-absolute-paths-to-desktop-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (substitute* (map (lambda (x)
+                                   (string-append out "/share/xsessions/" x))
+                                 '("gnome.desktop" "gnome-xorg.desktop"))
+                 (("gnome-session") (string-append out "/bin/gnome-session")))
                #t))))
 
        #:configure-flags
@@ -5402,10 +5410,6 @@ libxml2.")
          ;; service for TTY 1 before starting GDM).
          "--with-initial-vt=7"
 
-         ;; By default, GDM expects distributions to install a custom Xsession
-         ;; script. It provides a generic one if --enable-gdm-xsession is set.
-         "--enable-gdm-xsession"
-
          ;; Use '/etc/environment' for locale settings instead of the
          ;; systemd-specific '/etc/locale.conf'.
          "--with-lang-file=/etc/environment"
@@ -5423,7 +5427,7 @@ libxml2.")
        (modify-phases %standard-phases
          (add-before
           'configure 'pre-configure
-          (lambda _
+          (lambda* (#:key inputs #:allow-other-keys)
             ;; We don't have <systemd/sd-daemon.h>.
             (substitute* '("common/gdm-log.c"
                            "daemon/gdm-server.c"
@@ -5452,44 +5456,64 @@ libxml2.")
                "\"/run/current-system/profile/share/wayland")
               (("DATADIR \"/gnome")
                "\"/run/current-system/profile/share/gnome"))
-            (substitute* '("daemon/gdm-session.c")
-              (("set_up_session_environment \\(self\\);")
-               (string-append
-                "set_up_session_environment (self);\n"
-                ;; Propagate GDM_X_SERVER environment variable (which is set
-                ;; by the GDM service, as it's a function of what X modules
-                ;; the user decides to have available) down to worker
-                ;; processes.
-                "gdm_session_set_environment_variable (self, \"GDM_X_SERVER\",\n"
-                "    g_getenv (\"GDM_X_SERVER\"));\n"
-                ;; FIXME: Really glib should be declaring XDG_CONFIG_DIRS as a
-                ;; variable, but it doesn't do that right now.  Anyway
-                ;; /run/current-system/profile/share/gnome-session/sessions/gnome.desktop
-                ;; requires that a number of .desktop files be present, and
-                ;; these special .desktop files are in $XDG_CONFIG_DIRS (which
-                ;; defaults to /etc/xdg if it's not set).  Here we need to
-                ;; provide a value such that the GNOME session's requirements
-                ;; are met (provided GNOME is installed of course).
-                "gdm_session_set_environment_variable (self, \"XDG_CONFIG_DIRS\",\n"
-                "    \"/run/current-system/profile/etc/xdg\");\n"
-                ;; The session bus (which GDM will initialize from the this
-                ;; session environment) needs to know where to find the system
-                ;; service files.
-                "gdm_session_set_environment_variable (self, \"XDG_DATA_DIRS\",\n"
-                "    \"/run/current-system/profile/share\");\n"
-                )))
+            (let ((propagate '("GDM_CUSTOM_CONF"
+                               "GDM_DBUS_DAEMON"
+                               "GDM_X_SERVER"
+                               "GDM_X_SESSION"
+                               ;; XXX: Remove this once GNOME Shell is
+                               ;; a dependency of GDM.
+                               "XDG_DATA_DIRS")))
+              (substitute* "daemon/gdm-session.c"
+                (("set_up_session_environment \\(self\\);")
+                 (apply string-append
+                        "set_up_session_environment (self);\n"
+                        (map (lambda (name)
+                               (string-append
+                                "gdm_session_set_environment_variable "
+                                "(self, \"" name "\","
+                                "g_getenv (\"" name "\"));\n"))
+                             propagate)))))
             ;; Look for custom GDM conf in /run/current-system.
             (substitute* '("common/gdm-settings-desktop-backend.c")
               (("GDM_CUSTOM_CONF")
-               "\"/run/current-system/etc/gdm/custom.conf\""))
+               (string-append "(g_getenv(\"GDM_CUSTOM_CONF\") != NULL"
+                              " ? g_getenv(\"GDM_CUSTOM_CONF\")"
+                              " : GDM_CUSTOM_CONF)")))
             ;; Use service-supplied path to X.
             (substitute* '("daemon/gdm-server.c")
               (("\\(X_SERVER X_SERVER_ARG_FORMAT")
                "(\"%s\" X_SERVER_ARG_FORMAT, g_getenv (\"GDM_X_SERVER\")"))
             (substitute* '("daemon/gdm-x-session.c")
+              (("\"dbus-daemon\"")
+               "g_getenv (\"GDM_DBUS_DAEMON\")")
               (("X_SERVER")
-               "g_getenv (\"GDM_X_SERVER\")"))
-            #t)))))
+               "g_getenv (\"GDM_X_SERVER\")")
+              (("GDMCONFDIR \"/Xsession\"")
+               "g_getenv (\"GDM_X_SESSION\")"))
+            ;; Use an absolute path for GNOME Session.
+            (substitute* "daemon/gdm-launch-environment.c"
+              (("\"gnome-session\"")
+               (string-append "\"" (assoc-ref inputs "gnome-session")
+                              "/bin/gnome-session\"")))
+            #t))
+         ;; GDM needs GNOME Session to run these applications.  We link
+         ;; their autostart files in `share/gdm/greeter/autostart'
+         ;; because GDM explicitly tells GNOME Session to look there.
+         ;;
+         ;; XXX: GNOME Shell should be linked here too, but currently
+         ;; GNOME Shell depends on GDM.
+         (add-after 'install 'link-autostart-files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (autostart (string-append out "/share/gdm/"
+                                              "greeter/autostart"))
+                    (settings (assoc-ref inputs "gnome-settings-daemon")))
+               (mkdir-p autostart)
+               (with-directory-excursion autostart
+                 (for-each (lambda (desktop)
+                             (symlink desktop (basename desktop)))
+                           (find-files (string-append settings "/etc/xdg"))))
+               #t))))))
     (native-inputs
      `(("dconf" ,dconf)
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -5502,6 +5526,8 @@ libxml2.")
      `(("accountsservice" ,accountsservice)
        ("check" ,check) ; for testing
        ("elogind" ,elogind)
+       ("gnome-session" ,gnome-session)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gtk+" ,gtk+)
        ("iso-codes" ,iso-codes)
        ("libcanberra" ,libcanberra)
@@ -7345,7 +7371,7 @@ mp3, Ogg Vorbis and FLAC")
 (define-public soundconverter
   (package
     (name "soundconverter")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
@@ -7354,8 +7380,7 @@ mp3, Ogg Vorbis and FLAC")
                            "soundconverter-" version ".tar.xz"))
 
        (sha256
-        (base32
-         "1wrxf5py54xplrf97qp24pzbis0cvax5c6k0c7vr3z3ry8r7gd7c"))
+        (base32 "1d6x1yf8psqbd9zbybxivfqg55khcnngp2mn92l161dfdk9512c5"))
        (patches
         (search-patches
          "soundconverter-remove-gconf-dependency.patch"))))
@@ -7372,12 +7397,6 @@ mp3, Ogg Vorbis and FLAC")
 
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-POTFILES.in
-           (lambda _
-             (substitute* "po/POTFILES.in"
-               ;; This file doesn't exist, so without removing it, the 'check
-               ;; phase fails for the po directory
-               (("soundconverter/gconfstore\\.py") ""))))
          (add-after 'install 'wrap-soundconverter-for-python
            (assoc-ref python:%standard-phases 'wrap))
          (add-after 'install 'wrap-soundconverter
@@ -7408,52 +7427,49 @@ configurable file renaming. ")
     (license license:gpl3)))
 
 (define-public workrave
-  (let ((commit "v1_10_21"))
-    (package
-      (name "workrave")
-      (version (string-map (match-lambda
-                             (#\_ #\.)
-                             (chr chr))
-                           (string-drop commit 1)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rcaelers/workrave.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
-      (build-system glib-or-gtk-build-system)
-      (propagated-inputs `(("glib" ,glib)
-                           ("gtk+" ,gtk+)
-                           ("gdk-pixbuf" ,gdk-pixbuf)
-                           ("gtkmm" ,gtkmm)
-                           ("glibmm" ,glibmm)
-                           ("libx11" ,libx11)
-                           ("libxtst" ,libxtst)
-                           ("dconf" ,dconf)
-                           ("libice" ,libice)))
-      (inputs `(("libsm" ,libsm)
-                ("python-cheetah" ,python2-cheetah)))
-      (native-inputs `(("glib" ,glib "bin")
-                       ("pkg-config" ,pkg-config)
-                       ("gettext" ,gnu-gettext)
-                       ("autoconf" ,autoconf)
-                       ("autoconf-archive" , autoconf-archive)
-                       ("automake" ,automake)
-                       ("libtool" ,libtool)
-                       ("intltool" ,intltool)
-                       ("libxscrnsaver" ,libxscrnsaver)
-                       ("gobject-introspection" ,gobject-introspection)
-                       ("python2" ,python-2)))
-      (synopsis "Tool to help prevent repetitive strain injury (RSI)")
-      (description
-       "Workrave is a program that assists in the recovery and prevention of
+  (package
+    (name "workrave")
+    (version "1.10.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rcaelers/workrave.git")
+             (commit (string-map (match-lambda (#\_ #\.) (chr chr)) version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
+    (build-system glib-or-gtk-build-system)
+    (propagated-inputs `(("glib" ,glib)
+                         ("gtk+" ,gtk+)
+                         ("gdk-pixbuf" ,gdk-pixbuf)
+                         ("gtkmm" ,gtkmm)
+                         ("glibmm" ,glibmm)
+                         ("libx11" ,libx11)
+                         ("libxtst" ,libxtst)
+                         ("dconf" ,dconf)
+                         ("libice" ,libice)))
+    (inputs `(("libsm" ,libsm)
+              ("python-cheetah" ,python2-cheetah)))
+    (native-inputs `(("glib" ,glib "bin")
+                     ("pkg-config" ,pkg-config)
+                     ("gettext" ,gnu-gettext)
+                     ("autoconf" ,autoconf)
+                     ("autoconf-archive" , autoconf-archive)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)
+                     ("intltool" ,intltool)
+                     ("libxscrnsaver" ,libxscrnsaver)
+                     ("gobject-introspection" ,gobject-introspection)
+                     ("python2" ,python-2)))
+    (synopsis "Tool to help prevent repetitive strain injury (RSI)")
+    (description
+     "Workrave is a program that assists in the recovery and prevention of
 repetitive strain injury (@dfn{RSI}).  The program frequently alerts you to take
 micro-pauses and rest breaks, and restricts you to your daily limit.")
-      (home-page "http://www.workrave.org")
-      (license license:gpl3+))))
+    (home-page "http://www.workrave.org")
+    (license license:gpl3+)))
 
 (define-public ghex
   (package
@@ -7461,9 +7477,9 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
     (version "3.18.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/ghex/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "ghex-" version ".tar.xz"))
               (sha256
                (base32
                 "1lq8920ad2chi9ibmyq0x9hg9yk63b0kdbzid03w42cwdzw50x66"))))
@@ -7474,7 +7490,7 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
        ("which" ,which)
        ("intltool" ,intltool)
        ("yelp-tools" ,yelp-tools)
-       ("desktop-file-utils" ,desktop-file-utils))) ;for 'desktop-file-validate'
+       ("desktop-file-utils" ,desktop-file-utils))) ; for 'desktop-file-validate'
     (inputs
      `(("atk" ,atk)
        ("gtk" ,gtk+)))
@@ -7490,9 +7506,9 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
     (version "3.28.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libdazzle/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libdazzle-" version ".tar.xz"))
               (sha256
                (base32
                 "08qdwv2flywnh6kibkyv0pnm67pk8xlmjh4yqx6hf13hyhkxkqgg"))))
@@ -7513,9 +7529,9 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (native-inputs
-     `(("glib" ,glib "bin") ; glib-compile-resources
+     `(("glib" ,glib "bin")             ; glib-compile-resources
        ("pkg-config" ,pkg-config)
-       ;; For tests
+       ;; For tests.
        ("xorg-server" ,xorg-server)))
     (inputs
      `(("glib" ,glib)

@@ -2083,17 +2083,14 @@ legacy X clients.")
 (define-public xcalc
   (package
     (name "xcalc")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://xorg/individual/app/" name "-"
-             version
-             ".tar.gz"))
+       (uri (string-append "mirror://xorg/individual/app/"
+                           "xcalc-" version ".tar.gz"))
        (sha256
-        (base32
-         "1lg8xwj0nr8anbd77n3cs87s57sr4gmb3pxs3k22a28n6ndcvmbz"))))
+        (base32 "1xgih1iq9498m7vk22qrdsck1rb905sn395azjn4a6pmhfai401b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -2204,7 +2201,7 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
 (define-public xcursor-themes
   (package
     (name "xcursor-themes")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -2214,7 +2211,7 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
                ".tar.bz2"))
         (sha256
           (base32
-            "0whjiq6d5z4z75zh37pji6llfcyrg6q3mg9zx5zqyncnj39q30xf"))))
+            "16a96li0s0ggg60v7f6ywxmsrmxdfizcw55ccv7sp4qjfisca7pf"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcursor" ,libxcursor)
@@ -2331,7 +2328,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
 (define-public xev
   (package
     (name "xev")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -2341,7 +2338,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0krivhrxpq6719103r541xpi3i3a0y15f7ypc4lnrx8sdhmfcjnr"))))
+            "02ddsdx138g7szhwklpbzi0cxr34871iay3k28kdcihrz8f4zg36"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -2350,7 +2347,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
         ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xev")
     (synopsis "Print contents of X events")
     (description
      "XEv creates a window and then asks the X server to send it X11
@@ -2452,7 +2449,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.28.1")
+    (version "0.28.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2460,7 +2457,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "12yr0yki94j2416bfhmkz5jpacffm27jkra89fl7h03c0y749nls"))))
+                "0818vr0yhk9j1y1wcbxzcd458vrvp06rrhi8k43bhqkb5jb4dcxq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2908,7 +2905,7 @@ X server.")
 (define-public xf86-video-i128
   (package
     (name "xf86-video-i128")
-    (version "1.3.6")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -2918,8 +2915,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "171b8lbxr56w3isph947dnw7x87hc46v6m3mcxdcz44gk167x0pq"))
-        (patches (search-patches "xf86-video-i128-remove-mibstore.patch"))))
+           "1snhpv1igrhifcls3r498kjd14ml6x2xvih7zk9xlsd1ymmhlb4g"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2932,8 +2928,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "0932a6b37ba6d5c9e916a1cb6ab89c3205b81a0c")
-        (revision "11"))
+  (let ((commit "33ee0c3b21ea279e08d0863fcb2e874f0974b00e")
+        (revision "12"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -2946,7 +2942,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "10pqxp7n53ddiypd3l1i9gkbgzdpi6rz9vksbd16biq7pbijc2xf"))
+           "1ryjaj52nd2fbrjf1id5fr5vndzvv287rggbj3lzhbwzxv52r0gj"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -3015,7 +3011,7 @@ the same level of support for generic VGA or 8514/A adapters.")
 (define-public xf86-video-mga
   (package
     (name "xf86-video-mga")
-    (version "1.6.5")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
@@ -3025,7 +3021,7 @@ the same level of support for generic VGA or 8514/A adapters.")
                ".tar.bz2"))
         (sha256
           (base32
-           "08ll52hlar9z446v0wwca5qkj3hxhswwm7vvcgic9xv4cf7csqxn"))))
+           "0yaxpgyyj9398nzzr5vnsfxcis76z46p9814yzj8179yl7hld296"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
@@ -3040,7 +3036,7 @@ the same level of support for generic VGA or 8514/A adapters.")
 (define-public xf86-video-neomagic
   (package
     (name "xf86-video-neomagic")
-    (version "1.2.9")
+    (version "1.3.0")
     (source
       (origin
         (method url-fetch)
@@ -3050,7 +3046,7 @@ the same level of support for generic VGA or 8514/A adapters.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1whb2kgyqaxdjim27ya404acz50izgmafwnb6y9m89q5n6b97y3j"))))
+            "0r4h673kw8fl7afc30anwbjlbhp82mg15fvaxf470xg7z983k0wk"))))
     (build-system gnu-build-system)
     (inputs `(("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
@@ -3119,7 +3115,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.15")
+    (version "1.0.16")
     (source
      (origin
        (method url-fetch)
@@ -3129,7 +3125,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
              ".tar.bz2"))
        (sha256
         (base32
-         "0k0xah72ryjwak4dc4crszxrlkmi9x1s7p3sd4la642n77yi1pmf"))))
+         "01mz8gnq7j6bvrqb2ljm3d1wpjhi9p2z2w8zbkdrqmqmcj060h1h"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3355,7 +3351,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
 (define-public xf86-video-tdfx
   (package
     (name "xf86-video-tdfx")
-    (version "1.4.7")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
@@ -3365,7 +3361,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0hia45z4jc472fxp00803nznizcn4h1ybp63jcsb4lmd9vhqxx2c"))))
+           "0qc5wzwf1n65si9rc37bh224pzahh7gp67vfimbxs0b9yvhq0i9g"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
@@ -3652,7 +3648,7 @@ monitor via the X video mode extension.")
 (define-public xhost
   (package
     (name "xhost")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -3662,7 +3658,7 @@ monitor via the X video mode extension.")
                ".tar.bz2"))
         (sha256
           (base32
-            "16n26xw6l01zq31d4qvsaz50misvizhn7iihzdn5f7s72pp1krlk"))))
+            "15n3mnd4i5kh4z32qv11580qjgvnng0wry2y753ljrqkkrbkrp52"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -3670,7 +3666,7 @@ monitor via the X video mode extension.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xhost")
     (synopsis "Xorg server access control utility")
     (description
      "XHost is used to manage the list of host names or user names
@@ -3917,7 +3913,7 @@ programs that have displayed undesired windows on a user's screen.")
 (define-public xlsatoms
   (package
     (name "xlsatoms")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -3927,13 +3923,13 @@ programs that have displayed undesired windows on a user's screen.")
                ".tar.bz2"))
         (sha256
           (base32
-            "196yjik910xsr7dwy8daa0amr0r22ynfs360z0ndp9mx7mydrra7"))))
+            "10m3a046jvaw5ywx4y65kl84lsxqan70gww1g1r7cf96ijaqz1jp"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcb" ,libxcb)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xlsatoms")
     (synopsis "List interned X server atoms")
     (description
      "XLsAtoms is used to list the interned atoms defined on X server.")
@@ -4065,7 +4061,7 @@ containing one glyph per cell.")
 (define-public xmodmap
   (package
     (name "xmodmap")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
@@ -4075,15 +4071,14 @@ containing one glyph per cell.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0y649an3jqfq9klkp9y5gj20xb78fw6g193f5mnzpl0hbz6fbc5p"))
-        (patches (search-patches "xmodmap-asprintf.patch"))))
+            "0z28331i2pm16x671fa9qwsfqdmr6a43bzwmp0dm17a3sx0hjgs7"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xmodmap")
     (synopsis "Modify keymaps and button mappings on X server")
     (description
      "Xmodmap is used to display and edit the keyboard modifier map and
@@ -4215,7 +4210,7 @@ and Reflect (RandR) extension.")
 (define-public xrdb
   (package
     (name "xrdb")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -4225,14 +4220,14 @@ and Reflect (RandR) extension.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dqp486nd5sagbg572kl0k839nwvpqnb7jvppyb7jj5vrpkss8rd"))))
+            "0ik9gh6363c47pr0dp7q22nfs8vmavjg2v4bsr0604ppl77nafpj"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xrdb")
     (synopsis "X server resource database utility")
     (description
      "XRDB is used to get or set the contents of the RESOURCE_MANAGER
@@ -4358,7 +4353,7 @@ libICE, the X font server, and related components.")
 (define-public xvinfo
   (package
     (name "xvinfo")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -4368,7 +4363,7 @@ libICE, the X font server, and related components.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1sz5wqhxd1fqsfi1w5advdlwzkizf2fgl12hdpk66f7mv9l8pflz"))))
+            "0gz7fvxavqlrqynpfbrm2nc9yx8h0ksnbnv34fj7n1q6cq6j4lq3"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
@@ -4376,7 +4371,7 @@ libICE, the X font server, and related components.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xvinfo")
     (synopsis "Print out X-Video extension adaptor information")
     (description
      "XVInfo is used to print out the capabilities of any video adaptors
@@ -5728,14 +5723,14 @@ Intrinsics (Xt) Library.")
 (define-public xclock
   (package
     (name "xclock")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.x.org/releases/individual/app/"
                            name "-" version ".tar.bz2"))
        (sha256
-        (base32 "1l3xv4bsca6bwxx73jyjz0blav86i7vwffkhdb1ac81y9slyrki3"))))
+        (base32 "0m92zhamh15my9f2rqa14q41d6k2cn468azm3g7g3w9n7942024k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -5750,7 +5745,7 @@ Intrinsics (Xt) Library.")
        ("libxkbfile" ,libxkbfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xclock")
     (synopsis "Analog / digital clock for X")
     (description "The xclock program displays the time in analog or digital
 form.")

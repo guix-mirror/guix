@@ -364,15 +364,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.8.1")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0p9w6spar5dfi7fplxjcq4394wldabaws0ns30cqq6sxqfwv6qn3"))))
+        (base32 "05xrb8havr2vgjsdy7n85kgnvk1mg7qwhjp4a8n6pg4jhd5zjnj1"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -387,7 +386,7 @@ to result in system-wide compromise.")
        ("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
-       (list "--disable-static" ;save space and non-determinism in libunbound.a
+       (list "--disable-static" ; save space and non-determinism in libunbound.a
              (string-append
               "--with-ssl=" (assoc-ref %build-inputs "openssl"))
              (string-append

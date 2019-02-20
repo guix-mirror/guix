@@ -1261,7 +1261,7 @@ or junctions, and always follows hard links.")
 (define-public unshield
   (package
     (name "unshield")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://github.com/twogood/unshield/archive/"
@@ -1269,25 +1269,36 @@ or junctions, and always follows hard links.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0x7ps644yp5dka2zhb8w0ifqmw3d255jafpzfwv8xbcpgq6fmm2x"))))
+               "1avv5c11jbmzwizq10pwvlh1dmyna8ccvpgacv95h4gbq26rg35a"))))
     (build-system cmake-build-system)
     (inputs
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
-       ;; test data that is otherwise downloaded with curl
+       ;; Test data that is otherwise downloaded with curl.
        ("unshield-avigomanager11b22.zip"
         ,(origin
            (method url-fetch)
-           (uri (string-append "https://www.dropbox.com/s/8r4b6752swe3nhu/"
-                               "unshield-avigomanager11b22.zip?dl=1"))
+           (uri (string-append
+                 "https://www.dropbox.com/s/8r4b6752swe3nhu/"
+                 "unshield-avigomanager11b22.zip?dl=1"))
            (sha256
             (base32 "0fwq7lih04if68wpwpsk5wjqyvh32db76a41sq6gbx4dn1lc3ddn"))
            (file-name "unshield-avigomanager11b22.zip")))
+       ("unshield-baldurs_gate_patch_v1_1_4315_international.zip"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://www.dropbox.com/s/9ruil8oi6amjbbk/"
+                 "unshield-baldurs_gate_patch_v1_1_4315_international.zip?dl=1"))
+           (sha256
+            (base32 "0spaxf6dardlhqxz3ys09fzamj007q3nfyw4xng6gh3qp9780maj"))
+           (file-name "unshield-baldurs_gate_patch_v1_1_4315_international.zip")))
        ("unshield-the-feeble-files-spanish.zip"
         ,(origin
            (method url-fetch)
-           (uri (string-append "https://www.dropbox.com/s/1ng0z9kfxc7eb1e/"
-                               "unshield-the-feeble-files-spanish.zip?dl=1"))
+           (uri (string-append
+                 "https://www.dropbox.com/s/1ng0z9kfxc7eb1e/"
+                 "unshield-the-feeble-files-spanish.zip?dl=1"))
            (sha256
             (base32 "1k5cw6vnpja8yjlnhx5124xrw9i8s1l539hfdqqrqz3l5gn0bnyd"))
            (file-name "unshield-the-feeble-files-spanish.zip")))))
@@ -1303,6 +1314,7 @@ or junctions, and always follows hard links.")
                          (copy-file (assoc-ref inputs i)
                                     (string-append "test/v0/" i)))
                        '("unshield-avigomanager11b22.zip"
+                         "unshield-baldurs_gate_patch_v1_1_4315_international.zip"
                          "unshield-the-feeble-files-spanish.zip"))
              (substitute* (find-files "test/" "/*\\.sh")
                ;; Tests expect the unshield binary in a specific
@@ -1315,7 +1327,12 @@ or junctions, and always follows hard links.")
              (substitute* "test/v0/avigomanager.sh"
                (("test.zip")
                 (string-append (getcwd)
-                  "/test/v0/unshield-avigomanager11b22.zip")))
+                               "/test/v0/unshield-avigomanager11b22.zip")))
+             (substitute* "test/v0/baldurs_gate_patch_v1_1_4315_international.sh"
+               (("test.zip")
+                (string-append
+                 (getcwd)
+                 "/test/v0/unshield-baldurs_gate_patch_v1_1_4315_international.zip")))
              (substitute* "test/v0/the-feeble-files-spanish.sh"
                (("test.zip")
                 (string-append (getcwd)

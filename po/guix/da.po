@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: guix 0.16.0\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2018-11-28 15:05+0100\n"
-"PO-Revision-Date: 2019-02-05 14:10+0200\n"
+"PO-Revision-Date: 2019-02-14 14:10+0200\n"
 "Last-Translator: joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -1462,7 +1462,7 @@ msgstr "    commit: ~a~%"
 msgid "  ~h new package: ~a~%"
 msgid_plural "  ~h new packages: ~a~%"
 msgstr[0] "  ~h: ny pakke: ~a~%"
-msgstr[1] "  ~h: nye pakker ~a~%"
+msgstr[1] "  ~h: nye pakker: ~a~%"
 
 #: guix/scripts/pull.scm:387
 msgid "  ~h package upgraded: ~a~%"
@@ -1765,7 +1765,7 @@ msgid ""
 "upgrade, and restart each service that was not automatically restarted.\n"
 msgstr ""
 "For at fuldføre opgraderingen, kør »herd restart SERVICE« for at\n"
-"stoppe og genstarte hver tjeneste, der ikke blev genstartet\n"
+"stoppe, opgradere og genstarte hver tjeneste, der ikke blev genstartet\n"
 "automatisk.\n"
 
 #: guix/scripts/system.scm:393
@@ -2607,7 +2607,7 @@ msgid ""
 "  -s, --system=SYSTEM    consider packages for SYSTEM--e.g., \"i686-linux\""
 msgstr ""
 "\n"
-"  -s, --system=SYSTEM    tag i betragtning pakker for SYSTEM--f.eks., »i686-linux«"
+"  -s, --system=SYSTEM    tag pakker i betragtning for SYSTEM--f.eks., »i686-linux«"
 
 #. TRANSLATORS: "closure" and "self" must not be translated.
 #: guix/scripts/size.scm:229
@@ -3382,14 +3382,14 @@ msgid ""
 "See the \"Application Setup\" section in the manual, for more info.\n"
 msgstr ""
 "Overvej at installere enten pakken @code{glibc-utf8-locales} eller\n"
-"@code{glibc-locales} og definere @code{GUIX_LOCPATH}; på denne måde:\n"
+"@code{glibc-locales} og definere code{GUIX_LOCPATH} på denne måde:\n"
 "\n"
 "@example\n"
 "guix package -i glibc-utf8-locales\n"
 "export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"\n"
 "@end example\n"
 "\n"
-"Se afsnittet »Programopsætning« i manualen, for yderligere info.\n"
+"Se afsnittet »Programopsætning« i manualen for yderligere info.\n"
 
 #. TRANSLATORS: Translate "(C)" to the copyright symbol
 #. (C-in-a-circle), if this symbol is available in the user's
@@ -3811,7 +3811,7 @@ msgstr "Vis kompileringslog ved »~a«."
 #: guix/status.scm:366
 #, scheme-format
 msgid "substituting ~a..."
-msgstr "erstatter ~a..."
+msgstr "substituere ~a..."
 
 #: guix/status.scm:369
 #, scheme-format
@@ -3826,7 +3826,7 @@ msgstr "substitution af ~a færdig"
 #: guix/status.scm:397
 #, scheme-format
 msgid "substitution of ~a failed"
-msgstr "substituion af ~a mislykkedes"
+msgstr "substitution af ~a mislykkedes"
 
 #. TRANSLATORS: The final string looks like "sha256 hash mismatch for
 #. /gnu/store/…-sth:", where "sha256" is the hash algorithm.
@@ -3918,7 +3918,7 @@ msgstr "under oprettelse af mappen »~a«: ~a"
 #: guix/profiles.scm:1635
 #, scheme-format
 msgid "Please create the @file{~a} directory, with you as the owner."
-msgstr "Opret venligst mappen @file{~a}, med dig som ejer."
+msgstr "Opret venligst mappen @file{~a} med dig som ejer."
 
 #: guix/profiles.scm:1644
 #, scheme-format

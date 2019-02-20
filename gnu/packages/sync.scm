@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -48,14 +48,14 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.5.1.10973")
+    (version "2.5.3.11470")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "19x4rbnqg7f7hspz1xy86b1q51q1n5y7yvq8kqc1m64n2r2s3srk"))
+        (base32 "0cznis8qadsnlgm046lxn8vmbxli6zp4b8nk93n53mkfxlcw355n"))
        (patches (search-patches "owncloud-disable-updatecheck.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -79,7 +79,13 @@
              (substitute* "test/CMakeLists.txt"
                           (("owncloud_add_test\\(Utility \"\"\\)" test)
                            (string-append "#" test)))
-             #t)))
+             #t))
+         (add-after 'unpack 'dont-embed-store-path
+           (lambda _
+             (substitute* "src/common/utility_unix.cpp"
+               (("QCoreApplication::applicationFilePath\\()") "\"owncloud\""))
+             #t))
+         (delete 'patch-dot-desktop-files))
        #:configure-flags '("-DUNIT_TESTING=ON"
                            ;; build without qtwebkit, which causes the
                            ;; package to FTBFS while looking for QWebView.
@@ -162,13 +168,13 @@ their folder.
     (version "2.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/axkibe/lsyncd/archive/release-"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/axkibe/lsyncd.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "02g054qv8rnbxywd4f0gnd13lrlns9175d3ciqnyslhs1zs15nqb"))))
+        (base32 "1q2ixp52r96ckghgmxdbms6xrq8dbziimp8gmgzqfq4lk1v1w80y"))))
     (build-system cmake-build-system)
     (arguments
      `(;; The "tests" target is broken and assumes that tests are run in the
@@ -184,10 +190,7 @@ their folder.
                     (bin (string-append out "/bin"))
                     (man (string-append out "/share/man/man1")))
                (install-file "lsyncd" bin)
-               (install-file (string-append "../lsyncd-release-"
-                                            ,version
-                                            "/doc/manpage/lsyncd.1")
-                             man)
+               (install-file "../source/doc/manpage/lsyncd.1" man)
                #t))))))
     (native-inputs
      `(("lua" ,lua-5.2)))
@@ -249,7 +252,7 @@ over the Internet in an HTTP and CDN friendly way;
 (define-public rclone
   (package
     (name "rclone")
-    (version "1.45")
+    (version "1.46")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -258,19 +261,13 @@ over the Internet in an HTTP and CDN friendly way;
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06xg0ibv9pnrnmabh1kblvxx1pk8h5rmkr9mjbymv497sx3zgz26"))))
+                "1fl52dl41n76r678nzkxa2kgk9khn1fxraxgk8jd3ayc787qs9ia"))))
     ;; FIXME: Rclone bundles some libraries Guix already provides.  Need to
     ;; un-bundle them.
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/ncw/rclone"
-       #:install-source? #f
-       #:phases
-       (modify-phases %standard-phases
-         ;; Fix failure during "check" phase: "mkdir /homeless-shelter:
-         ;; permission denied".
-         (add-after 'unpack 'set-home-directory
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+       #:install-source? #f))
     (synopsis "@code{rsync} for cloud storage")
     (description "@code{Rclone} is a command line program to sync files and
 directories to and from different cloud storage providers.

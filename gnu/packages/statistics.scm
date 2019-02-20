@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;;
@@ -149,6 +149,27 @@ simulation not wholly unlike BUGS.  JAGS was written with three aims in mind:
 @item To be a platform for experimentation with ideas in Bayesian modelling.
 @end enumerate\n")
     (license license:gpl2)))
+
+(define-public libxls
+  (package
+    (name "libxls")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/libxls/libxls/releases/download/"
+                           "v" version "/libxls-" version ".tar.gz"))
+       (sha256
+        (base32 "00j2lrcvvhclmh3z9vy7myqq1br1jnnqkz2wzgk4a1gbg8c5afn5"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/libxls/libxls")
+    (synopsis "Read binary (.xls) Excel spreadsheet files")
+    (description
+     "libxls is a C library to read .xls spreadsheet files in the binary OLE
+BIFF8 format as created by Excel 97 and later versions.  It cannot write them.
+
+This package also provides @command{xls2csv} to export Excel files to CSV.")
+    (license license:bsd-2)))
 
 ;; Update this package together with the set of recommended packages: r-boot,
 ;; r-class, r-cluster, r-codetools, r-foreign, r-kernsmooth, r-lattice,

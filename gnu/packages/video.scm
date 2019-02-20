@@ -1478,7 +1478,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1077")
+    (version "0.4.1210")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1487,7 +1487,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rwkn3wb3r70b8cqj40qdknkg9kqbgzkvi901hbpy2a8s1b7858n"))))
+                "1plw518hzpzzcr38phlnsbpq7aqnps8iwrgr68f6d41rppl1qb25"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -1517,7 +1517,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.5.0")
+    (version "3.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1526,7 +1526,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s7hv2a46cx2nbdykrijqfh8hdkf3zqn6q8sg3ajnnc5agaspyrg"))))
+                "0sx0f7jgc41a4anflw02zqk5yivydn02nn78kxkn3fik6xdmv3yd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -1634,15 +1634,15 @@ players, like VLC or MPlayer.")
 (define-public libdvdread
   (package
     (name "libdvdread")
-    (version "6.0.0")
+    (version "6.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
-                                  name "/" version "/"
-                                  name "-" version ".tar.bz2"))
+                                  "libdvdread/" version "/"
+                                  "libdvdread-" version ".tar.bz2"))
               (sha256
                (base32
-                "0dgr23fzcjhb7ck54xkr9zmf4jcq3ph0dz3fbyvla1c6ni9ijfxk"))))
+                "1gfmh8ii3s2fw1c8vn57piwxc0smd3va4h7xgp9s8g48cc04zki8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-libdvdcss=yes")))
@@ -2039,7 +2039,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.10.0")
+    (version "6.12.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2048,16 +2048,10 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ki86yslr5ywa6sz8pjrgd9a4rn2rr4mss2zkmqi7pq8prgsm1fr"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; As of glibc 2.26, <xlocale.h> no longer is.
-                          (substitute* "src/framework/mlt_property.h"
-                            (("xlocale\\.h") "locale.h"))
-                          #t))))
+                "0pzm3mjbbdl2rkbswgyfkx552xlxh2qrwzsi2a4dicfr92rfgq6w"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags '("CC=gcc" "CXX=g++ -std=gnu++11")
        #:configure-flags
        (list "--enable-gpl3"
@@ -2065,14 +2059,14 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
        #:phases
        (modify-phases %standard-phases
          (add-after
-          'configure 'override-LDFLAGS
-          (lambda* (#:key outputs #:allow-other-keys)
-            (substitute* "config.mak"
-              (("LDFLAGS\\+=")
-               (string-append "LDFLAGS+=-Wl,-rpath="
-                              (assoc-ref outputs "out")
-                              "/lib ")))
-            #t)))))
+             'configure 'override-LDFLAGS
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "config.mak"
+               (("LDFLAGS\\+=")
+                (string-append "LDFLAGS+=-Wl,-rpath="
+                               (assoc-ref outputs "out")
+                               "/lib ")))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ffmpeg" ,ffmpeg-3.4)
@@ -3032,7 +3026,7 @@ It counts more than 100 plugins.")
 (define-public motion
   (package
     (name "motion")
-    (version "4.2")
+    (version "4.2.2")
     (home-page "https://motion-project.github.io/")
     (source (origin
               (method git-fetch)
@@ -3041,7 +3035,7 @@ It counts more than 100 plugins.")
                     (commit (string-append "release-" version))))
               (sha256
                (base32
-                "0c0q6dl4v561m5y8bp0c0h4p3s52fjgcdnsrrf5ygdi288d3rfxv"))
+                "05c1gx75xy2hw49x6vkydvwxbr80kipsc3nr906k3hq8735svx6f"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -3065,7 +3059,7 @@ It counts more than 100 plugins.")
                                          (assoc-ref %outputs "out")
                                          "/etc"))
 
-       #:tests? #f))                              ;no 'check' target
+       #:tests? #f))                    ; no 'check' target
     (synopsis "Detect motion from video signals")
     (description
      "Motion is a program that monitors the video signal from one or more

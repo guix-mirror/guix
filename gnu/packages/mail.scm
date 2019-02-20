@@ -491,7 +491,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.2")
+    (version "7.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -500,7 +500,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11nj7y9fa7v6vcxk3wr8smfgm3mxxnmq3l8q69rrjxlfzcv7dl8m"))))
+                "18sdnhjldn8zs03bgqy1qa3ikmlfvyxcvwp3nbnv1a74biccqbpa"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -757,14 +757,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.28.1")
+    (version "0.28.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0mcsfkrp6mpy374m5rwwgm9md8qzvwa3s4rbzid4cnkx2cwfj4fi"))))
+                "0cg9ff7h7mklgbqqknxigxxx1j3p3s2a9cxvrs5ih7j56f04k9l5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)

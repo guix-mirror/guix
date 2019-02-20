@@ -512,7 +512,8 @@ system, and the core design of Django is reused in Grantlee.")
               (base32
                "071yc9iz14qs4s8yvrwllyfdzp5yjxsdpvbjxdrf0g5q69vqigy6"))
              ;; Use TZDIR to avoid depending on package "tzdata".
-             (patches (search-patches "qtbase-use-TZDIR.patch"))
+             (patches (search-patches "qtbase-use-TZDIR.patch"
+                                      "qtbase-old-kernel.patch"))
              (modules '((guix build utils)))
              (snippet
                ;; corelib uses bundled harfbuzz, md4, md5, sha3
@@ -2231,3 +2232,33 @@ a binding language:
 @item Creating from Singleton QML QObject defined in the binded language
 @end itemize\n")
     (license license:lgpl3)))                    ;version 3 only (+ exception)
+
+;; There have been no public releases yet.
+(define-public qtcolorwidgets
+  (let ((commit "a95f72e935fe9e046061a1d1c3930cbfbcb533e0")
+        (revision "1"))
+    (package
+      (name "qtcolorwidgets")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/mattia.basaglia/Qt-Color-Widgets")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0dkiwlqh2gwhlp78c1fmchj3shl4p9inspcl96ya5aa8mn6kydy8"))))
+      (build-system cmake-build-system)
+      (arguments `(#:tests? #f)) ; There are no tests
+      (native-inputs
+       `(("qttools" ,qttools)))
+      (inputs
+       `(("qtbase" ,qtbase)))
+      (home-page "https://gitlab.com/mattia.basaglia/Qt-Color-Widgets")
+      (synopsis "Color management widgets")
+      (description "QtColorWidgets provides a Qt color dialog that is more
+user-friendly than the default @code{QColorDialog} and several other
+color-related widgets.")
+      ;; Includes a license exception for combining with GPL2 code.
+      (license license:lgpl3+))))

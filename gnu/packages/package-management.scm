@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Vagrant Cascadian <vagrant@reproducible-builds.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
@@ -227,6 +229,7 @@
                                                   "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
+                               (locales (assoc-ref inputs "glibc-utf8-locales"))
                                (deps   (list gcrypt json sqlite gnutls
                                              git bs ssh))
                                (effective
@@ -245,11 +248,13 @@
                                                   "/lib/guile/" effective
                                                   "/site-ccache")
                                              (delete #f deps))
-                                        ":")))
+                                        ":"))
+                               (locpath (string-append locales "/lib/locale")))
 
                           (wrap-program (string-append out "/bin/guix")
                             `("GUILE_LOAD_PATH" ":" prefix (,path))
-                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
+                            `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath))
+                            `("GUIX_LOCPATH" ":" suffix (,locpath)))
 
                           #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
@@ -282,7 +287,9 @@
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
-               '())))
+               '())
+
+         ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-gcrypt" ,guile-gcrypt)
@@ -606,6 +613,55 @@ various binary formats into more human readable forms to compare them.  It can
 compare two tarballs, ISO images, or PDFs just as easily.")
     (license license:gpl3+)))
 
+(define-public trydiffoscope
+ (package
+   (name "trydiffoscope")
+   (version "67.0.1")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://salsa.debian.org/reproducible-builds/trydiffoscope.git")
+            (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "03b66cjii7l2yiwffj6ym6mycd5drx7prfp4j2550281pias6mjh"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((share (string-append (assoc-ref outputs "out") "/share/")))
+               (mkdir-p (string-append share "/man/man1/" ))
+               (invoke "rst2man.py"
+                       "trydiffoscope.1.rst"
+                       (string-append share "/man/man1/trydiffoscope.1"))
+               (mkdir-p (string-append share "/doc/" ,name "-" ,version))
+               (install-file "./README.rst"
+                          (string-append share "/doc/" ,name "-" ,version)))
+             #t)))))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("python-docutils" ,python-docutils)))
+    (build-system python-build-system)
+    (home-page "https://try.diffoscope.org")
+    (synopsis "Client for remote diffoscope service")
+    (description "This is a client for the @url{https://try.diffoscope.org,
+remote diffoscope service}.
+
+Diffoscope tries to get to the bottom of what makes files or directories
+different.  It recursively unpacks archives of many kinds and transforms
+various binary formats into more human readable forms to compare them.  It can
+compare two tarballs, ISO images, or PDFs just as easily.
+
+Results are displayed by default, stored as local text or html files, or made
+available via a URL on @url{https://try.diffoscope.org}.  Results stored on the
+server are purged after 30 days.")
+    (license license:gpl3+)))
+
 (define-public python-anaconda-client
   (package
     (name "python-anaconda-client")
@@ -870,17 +926,18 @@ Microsoft cabinet (.@dfn{CAB}) files.")
 (define-public msitools
   (package
     (name "msitools")
-    (version "0.98")
+    (version "0.99")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  version "/" name "-" version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/msitools/"
+                                  version "/msitools-" version ".tar.xz"))
               (sha256
                (base32
-                "19wb3n3nwkpc6bjr0q3f1znaxsfaqgjbdxxnbx8ic8bb5b49hwac"))))
+                "0d9nidn5zc81bc30w119933rn2g87mrsqyqkndg20srkbsd96xfl"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("gcab" ,gcab)
        ("glib" ,glib)

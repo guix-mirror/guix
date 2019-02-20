@@ -41,6 +41,7 @@
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5052,7 +5053,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.18.0")
+    (version "0.20.0")
     (source
      (origin
        (method git-fetch)
@@ -5062,7 +5063,7 @@ target will call @code{compile} on it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1m9kc88vga3q5d731qnpngnsa0n57pf21k3hll20rw8rggrx4vdn"))))
+         "0lfhzg9c931jbx27hpshk3l76gwbp6ggf668sqa77xrvymwdlsnw"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
@@ -5207,8 +5208,8 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "0cfdf4ecf0420aac2a9dd29ff7b54067c3433d71")
-        (revision "6"))
+  (let ((commit "e7b57aae0131634d0da5e599717a86c4b3ca6092")
+        (revision "7"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.1" revision commit))
@@ -5220,7 +5221,7 @@ extensions.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1igsvgxvij918myc397cjhfybmm11znc7961vnbcd5xlviq2p01y"))))
+                  "1g7bxvgnsikpxxdimy0lymn3xz53fari048l827sjyw5kxi59d20"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -6547,14 +6548,14 @@ which code derived from Kelvin H's org-page.")
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
-    (version "0.16")
+    (version "0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/xelb-"
                                   version ".tar"))
               (sha256
                (base32
-                "03wsr1jr7f7zfd80h864rd4makwh4widdnj1kjv2xyjwdgap9rl8"))))
+                "0k98580vq253fjdgklgqlwl450saninfw39fbq8lv3xsnp3dcgml"))))
     (build-system emacs-build-system)
     ;; The following functions and variables needed by emacs-xelb are
     ;; not included in emacs-minimal:
@@ -6586,7 +6587,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.21")
+    (version "0.22")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -6594,7 +6595,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "07ng1pgsnc3isfsyzh2gfc7391p9il8lb5xqf1z6yqn20w7k6xzj"))))
+                "0lppm8ng37i5s4x7xdrxhjbdcnpl6pyvn4g7w52zbckjsn8qnqh0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -9205,8 +9206,8 @@ navigate and display hierarchy structures.")
       (license license:gpl3+))))
 
 (define-public emacs-pulseaudio-control
-  (let ((commit "1da372ec79f5d2fb901d1f9f0679fee8848fd011")
-        (revision "2"))
+  (let ((commit "7e1a87068379075a5e9ce36c64c686c03d20d379")
+        (revision "3"))
     (package
       (name "emacs-pulseaudio-control")
       (version (git-version "0.0.1" revision commit))
@@ -9219,7 +9220,7 @@ navigate and display hierarchy structures.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "02xrsms2pjqdk6327midi61i5vg2h9cq5jwaxv43ldm68wl7hi6k"))))
+           "0wcaqyh15x56255rrj350089z15pnwixa2vf0ly6dv0hjmzmh3mr"))))
       (build-system emacs-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
@@ -9624,6 +9625,32 @@ until the top-level form is no longer a macro call.")
     (synopsis "Execute menu items as commands, with completion")
     (description "Execute menu items as commands, with completion.")
     (license license:gpl3)))
+
+(define-public emacs-isearch-prop
+  (let ((commit "5e9dc44cf582d998aaa73ccd4d07cbda01248156")
+        (revision "1"))
+    (package
+      (name "emacs-isearch-prop")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/isearch-prop.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1xawppy705ybsgx566zvj8zk2aajq0sqvhvfs7nijqq32lx0a2zl"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/isearch-prop.el")
+      (synopsis "Extensions to @code{isearch.el}")
+      (description "The Emacs library @code{isearch-prop.el} lets you search within
+  contexts.  You can limit incremental search to a set of zones of
+  buffer text, search contexts that in effect constitute a multi-region.
+  These zones can be defined in various ways, including some ways
+  provided specially by this library.")
+      (license license:gpl3+))))
 
 (define-public emacs-company-lua
   (let ((commit "0be8122f3adf57ad27953bf4b03545d6298d3da4"))
@@ -10645,27 +10672,26 @@ keep Parens and Indentation inline with one another.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-eww
-  (let ((commit "9d36acc433bcf689598b1b4d7d47c9aeb84d6b44"))
-    (package
-      (name "emacs-helm-eww")
-      (version (git-version "0.1" "3" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-eww.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "06gnf84gx6qbhcw1h5jhjnvcdxkdpv0npm53x3pgqybbll5rn5dy"))))
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/emacs-helm/helm-eww/")
-      (synopsis "Helm interface to EWW")
-      (description "This package provides a Helm interface for EWW buffers,
+  (package
+    (name "emacs-helm-eww")
+    (version "1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-eww.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0dvlp7y6kqc4azg5b7jx5lz2rwd0ia7y0y3hcj9y23zd88r73lg7"))))
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacs-helm/helm-eww/")
+    (synopsis "Helm interface to EWW")
+    (description "This package provides a Helm interface for EWW buffers,
 bookmarks and history.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-stumpwm-mode
   (let ((commit "8fbe071d2c6c040794060a354eb377218dc10b35")
@@ -12457,26 +12483,25 @@ correctly.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-slime
-  (let ((commit "9980925f3e5f6ac5a30369d2a544e82006a79c76"))
-    (package
-      (name "emacs-helm-slime")
-      (version (git-version "0.0.0" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-slime")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0xa07gpfkzwn522x9573mq5mfxvbawdgd0m93gqj6w5a14wk8zzh"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-slime" ,emacs-slime)))
-      (home-page "https://github.com/emacs-helm/helm-slime")
-      (synopsis "Helm for SLIME, the Superior Lisp Interaction Mode for Emacs")
-      (description "Helm-SLIME defines a few new commands:
+  (package
+    (name "emacs-helm-slime")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-slime")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0vn93vv2wclnwq6f480z14jn9wfp0ylhp5dd48ycc9jicfsnxqfj"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-slime" ,emacs-slime)))
+    (home-page "https://github.com/emacs-helm/helm-slime")
+    (synopsis "Helm for SLIME, the Superior Lisp Interaction Mode for Emacs")
+    (description "Helm-SLIME defines a few new commands:
 
 @itemize
 @item helm-slime-complete: Select a symbol from the SLIME completion systems.
@@ -12484,7 +12509,7 @@ correctly.")
 @item: helm-slime-apropos: Yet another slime-apropos with Helm.
 @item helm-slime-repl-history: Select an input from the SLIME REPL history and insert it.
 @end itemize\n")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-gtk-look
   (package
@@ -13110,3 +13135,51 @@ mostly geared towards Common Lisp, but some are useful for other Lisp
 dialects, too.  Redshank's code transformations aim to be expression-based (as
 opposed to character-based).")
       (license license:gpl1+))))
+
+(define-public emacs-disk-usage
+  (package
+    (name "emacs-disk-usage")
+    (version "1.1.0")
+    (home-page "https://gitlab.com/ambrevar/emacs-disk-usage.git")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c9jmjn8vf0v4776v79pc5w0labfs4v9aysbv2w9423rg4mangbg"))))
+    (build-system emacs-build-system)
+    (synopsis "Sort and browse disk usage listings with Emacs")
+    (description "Disk Usage is a file system analyzer: it offers a tabulated
+view of file listings sorted by size.  Directory sizes are computed
+recursively.  The results are cached for speed.")
+    (license license:gpl3+)))
+
+(define-public emacs-orgit
+  (let ((commit "ddb830c38cb71e5cf86db7fa62d6ee88ab3962d5"))
+    (package
+      (name "emacs-orgit")
+      (version (git-version "1.5.1" "1" commit))
+      (home-page "https://github.com/magit/orgit")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fy4n71yskfkjl6w9mzrw3pfd5lp8f48g2c9bxiwg7mwzsmsb9nb"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-magit" ,emacs-magit)))
+      (synopsis "Support for Org links to Magit buffers")
+      (description "This package defines several Org link types, which can be
+used to link to certain Magit buffers.  Use the command
+@command{org-store-link} while such a buffer is current to store a link.
+Later you can insert it into an Org buffer using the command
+@code{org-insert-link}.")
+      (license license:gpl3+))))

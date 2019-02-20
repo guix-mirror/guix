@@ -751,7 +751,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn thin_lto_works") "#[ignore]\nfn thin_lto_works"))
                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.28
   (let ((base-rust
          (rust-bootstrapped-package rust-1.27 "1.28.0"
                                     "11k4rn77bca2rikykkk9fmprrgjswd4x4kaq7fia08vgkir82nhx"
@@ -784,3 +784,13 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  #t))
              ;; The thinlto test should pass with llvm 6.
              (delete 'disable-thinlto-test))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.28 "1.29.2"
+                                    "1jb787080z754caa2w3w1amsygs4qlzj9rs1vy64firfmabfg22h"
+                                    #:patches
+                                    '("rust-1.25-accept-more-detailed-gdb-lines.patch"
+                                      "rust-reproducible-builds.patch"))))
+    (package
+      (inherit base-rust))))

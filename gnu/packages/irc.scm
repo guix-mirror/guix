@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -67,15 +67,15 @@
 (define-public quassel
   (package
     (name "quassel")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://quassel-irc.org/pub/quassel-"
+        (uri (string-append "https://quassel-irc.org/pub/quassel-"
                             version ".tar.bz2"))
         (sha256
          (base32
-          "0xp9mppxl63qzgsdyprmblvfrj0bb9z57kfc088gvcavvq1210nr"))
+          "0mg8jydc70vlylppzich26q4s40kr78r3ysfyjwisfvlg2byxvs8"))
         (modules '((guix build utils)))
         ;; We don't want to install the bundled scripts.
         (snippet

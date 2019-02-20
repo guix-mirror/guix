@@ -3447,7 +3447,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "8.5.1")
+    (version "9.0.1")
     (source
      (origin
        (method url-fetch)
@@ -3455,7 +3455,8 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "1bh9rsmkrg0zi70n27b11djmac9lximghsiy7mg7w7x544n82gnk"))
+         "0r7f8rhl3xr94imd372plizdcbqk0a70w73lwc3vw912dxk0sbyz"))
+       (patches (search-patches "dealii-mpi-deprecations.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -3508,10 +3509,8 @@ in finite element programs.")
     (arguments
      (substitute-keyword-arguments (package-arguments dealii)
        ((#:configure-flags cf)
-        ``("-DMPI_C_COMPILER=mpicc"
-           "-DMPI_CXX_COMPILER=mpicxx"
-           "-DMPI_Fortran_COMPILER=mpifort"
-           ,@,cf))
+        `(cons "-DDEAL_II_WITH_MPI:BOOL=ON"
+               ,cf))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
            (add-before 'check 'mpi-setup

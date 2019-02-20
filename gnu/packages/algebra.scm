@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
@@ -856,3 +856,147 @@ xtensor provides:
 @item tools to manipulate array expressions and build upon xtensor.
 @end itemize")
     (license license:bsd-3)))
+
+(define-public gap
+  (package
+    (name "gap")
+    (version "4.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gap-system.org/pub/gap/gap-"
+                           (version-major+minor version)
+                           "/tar.bz2/gap-"
+                           version
+                           ".tar.bz2"))
+       (sha256
+        (base32
+         "1dmb8v4p7j1nnf7sx8sg54b49yln36bi9acwp7w1d3a1nxj17ird"))
+       (modules '((guix build utils) (ice-9 ftw) (srfi srfi-1)))
+       (snippet
+        '(begin
+           ;; Delete the external gmp and zlib libraries
+           ;; and a subdirectory not needed for our build.
+           (for-each delete-file-recursively
+                     '("extern" "hpcgap"))
+           ;; Delete a failing test.
+           ;; FIXME: This might be fixed in the next release, see
+           ;; https://github.com/gap-system/gap/issues/3292
+           (delete-file "tst/testinstall/dir.tst")
+           ;; Delete all packages except for a fixed list.
+           (with-directory-excursion "pkg"
+             (for-each delete-file-recursively
+               (lset-difference string=? (scandir ".")
+                 '("." ".."
+                   ;; Necessary packages.
+                   "GAPDoc-1.6.2"
+                   "primgrp-3.3.2"
+                   "SmallGrp-1.3"    ; artistic2.0
+                   "transgrp"        ; artistic2.0 for data,
+                                     ; gpl2 or gpl3 for code
+                   ;; Recommanded package.
+                   "io-4.5.4"        ; gpl3+
+                   ;; Optional packages, searched for at start,
+                   ;; and their depedencies.
+                   "alnuth-3.1.0"
+                   "AutoDoc-2018.09.20"
+                   "autpgrp-1.10"
+                   "crisp-1.4.4"     ; bsd-2
+                   ; "ctbllib"       ; no explicit license, drop
+                   "FactInt-1.6.2"
+                   "fga"
+                   "irredsol-1.4"    ; bsd-2
+                   "laguna-3.9.0"
+                   "polenta-1.3.8"
+                   "polycyclic-2.14"
+                   "radiroot-2.8"
+                   "resclasses-4.7.1"
+                   "sophus-1.24"
+                   ; "tomlib-1.2.7"  ; no explicit license, drop
+                   "utils-0.59"))))
+           #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gmp" ,gmp)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-packages
+           ;; Compile all packages that have not been deleted by the
+           ;; code snippet above.
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "bash"))
+             (with-directory-excursion "pkg"
+               (invoke "../bin/BuildPackages.sh")
+             #t)))
+         (add-after 'build-packages 'build-doc
+           ;; The documentation is bundled, but we create it from source.
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "./make_doc"))
+             #t))
+         (replace 'check
+           (lambda _
+             ;; "make check" is expected to appear in gap-4.10.1
+             (invoke "./gap" "tst/testinstall.g")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (prog (string-append bin "/gap"))
+                    (prog-real (string-append bin "/.gap-real"))
+                    (share (string-append out "/share/gap"))
+                    (include (string-append out "/include/gap")))
+               ;; Install only the gap binary; the gac compiler is left
+               ;; for maybe later. "Wrap" it in a shell script that calls
+               ;; the binary with the correct parameter.
+               (mkdir-p bin)
+               (copy-file "gap" prog-real)
+               (call-with-output-file prog
+                 (lambda (port)
+                   (format port
+                           "#!~a~%exec ~a -l ~a \"$@\"~%"
+                           (which "bash")
+                           prog-real
+                           share)))
+               (chmod prog #o755)
+               ;; Install the headers and the library, which are needed by
+               ;; Sage. The Makefile targets are available in gap-4.10.0,
+               ;; but planned to be removed in gap-4.10.1.
+               (invoke "make" "install-headers")
+               (invoke "make" "install-libgap")
+               (install-file "gen/config.h" include)
+               ;; Install a certain number of files and directories to
+               ;; SHARE, where the wrapped shell script expects them.
+               ;; Remove information on the build directory from sysinfo.gap.
+               (substitute* "sysinfo.gap"
+                 (("GAP_BIN_DIR=\".*\"") "GAP_BIN_DIR=\"\"")
+                 (("GAP_LIB_DIR=\".*\"") "GAP_LIB_DIR=\"\"")
+                 (("GAP_CPPFLAGS=\".*\"") "GAP_CPPFLAGS=\"\""))
+               (install-file "sysinfo.gap" share)
+               (copy-recursively "grp" (string-append share "/grp"))
+               (copy-recursively "pkg" (string-append share "/pkg"))
+               ;; The following is not the C library libgap.so, but a
+               ;; library of GAP code.
+               (copy-recursively "lib" (string-append share "/lib"))
+               ;; The gap binary looks for documentation inside SHARE.
+               (copy-recursively "doc" (string-append share "/doc")))
+             #t)))))
+    (home-page "https://www.gap-system.org/")
+    (synopsis
+     "System for computational group theory")
+    (description
+     "GAP is a system for computational discrete algebra, with particular
+emphasis on computational group theory.  It provides a programming language,
+a library of thousands of functions implementing algebraic algorithms
+written in the GAP language as well as large data libraries of algebraic
+objects.")
+    ;; Some packages have different licenses (effectively forcing the
+    ;; combined work to be licensed as gpl3+); if this is the case, this
+    ;; is mentioned above next to their name.
+    ;; Some packages have no license mentioned explicitly; supposedly this
+    ;; means that the gpl2+ licence of GAP itself applies, but to be on the
+    ;; safe side, we drop them for now.
+    (license license:gpl2+)))

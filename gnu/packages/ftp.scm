@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -175,7 +175,7 @@ as required.")
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/"
-                           name "/" name "-" version ".tar.bz2"))
+                           "libfilezilla/libfilezilla-" version ".tar.bz2"))
        (sha256
         (base32
          "17zlhw5b1a7jzh50cbpy2is3sps5lnzch5yf9qm7mwrviw9c8j10"))))
@@ -209,14 +209,14 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.39.0")
+    (version "3.40.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/client/"
                            "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32 "0ks42q6mi3qx85zpa98izkyficv2bdh3jnvmy97xjnjyfy9mwlgv"))))
+        (base32 "11b0410fcwrahq5dd7ph10bc09m62sxra4bjp0kj5gph822s0v63"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.

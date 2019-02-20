@@ -457,19 +457,19 @@ vision algorithms.  It can be used to do things like:
 (define-public nip2
   (package
     (name "nip2")
-    (version "8.7.0")
+    (version "8.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/libvips/nip2/releases/download/v"
                            version "/nip2-" version ".tar.gz" ))
        (sha256
-        (base32 "08dxfds4n1vxdilxcw01741a2r6fxyhawi656b7f0hy6znnkbsbc"))))
+        (base32 "0l7n427njif53npqn02gfjjly8y3khbrkzqxp10j5vp9h97psgiw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; test_conv.ws keep failing so disabling for now
+         ;; test_conv.ws keep failing so disabling for now.
          (add-after 'unpack 'disable-test-conv
            (lambda _
              (delete-file "test/workspaces/test_conv.ws")
@@ -484,7 +484,7 @@ vision algorithms.  It can be used to do things like:
        ("gtk+-2" ,gtk+-2)
        ("libxml2" ,libxml2)
        ("libexif" ,libexif)
-       ("libjpeg" ,libjpeg)                       ;required by vips.pc
+       ("libjpeg" ,libjpeg)             ; required by vips.pc
        ("librsvg" ,librsvg)
        ("fftw" ,fftw)
        ("libgsf" ,libgsf)

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,22 +42,22 @@
 (define nanopass
   (let ((version "1.9"))
     (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://github.com/nanopass/nanopass-framework-scheme/archive"
-            "/v" version ".tar.gz"))
-      (sha256 (base32 "11pwyy4jiwhcl2am3a4ciczacjbjkyvdizqzdglb3l1hj2gj6nv2"))
-      (file-name (string-append "nanopass-" version ".tar.gz")))))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/nanopass/nanopass-framework-scheme.git")
+            (commit (string-append "v" version))))
+      (sha256 (base32 "0lrngdna6w7v9vlp1a873hgwrwsz2p0pgkccswa4smzvdyhgfsri"))
+      (file-name (git-file-name "nanopass" version)))))
 
 (define stex
   (let ((version "1.2.1"))
     (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://github.com/dybvig/stex/archive"
-            "/v" version ".tar.gz"))
-      (sha256 (base32 "03pl3f668h24dn51vccr1sj5lsba9zq3j37bnxjvdadcdaj4qy5z"))
-      (file-name (string-append "stex-" version ".tar.gz")))))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/dybvig/stex.git")
+            (commit (string-append "v" version))))
+      (sha256 (base32 "1jiawhhqnsj42hzmlbq5xby3iarhf8vhiqs0kg1a0zg5jsn6cf8n"))
+      (file-name (git-file-name "stex" version)))))
 
 (define-public chez-scheme
   (package
@@ -65,12 +65,13 @@
     (version "9.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cisco/ChezScheme/archive/"
-                           "v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cisco/ChezScheme.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "135991hspq0grf26pvl2lkwhp92yz204h6rgiwyym0x6v0xzknd1"))
-       (file-name (string-append "chez-scheme-" version ".tar.gz"))
+        (base32 "132fal5hwiq0bqzvfhjsqr4d11cfdh1670f6286ks29xxj1c04zq"))
+       (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
@@ -122,7 +123,8 @@
              ;; next one; see <https://github.com/cisco/ChezScheme/issues/209>.
              (substitute* "csug/copyright.stex"
                (("\\\\INSERTREVISIONMONTHSPACEYEAR" )
-                "October 2017"))))     ; tarball release date
+                "October 2017"))       ; tarball release date
+             #t))
          ;; Adapt the custom 'configure' script.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -140,9 +142,9 @@
                          (apply unpack (list #:source src))
                          (apply patch-source-shebangs (list #:source src)))
                        (delete-file-recursively new-name)
-                       (system* "mv" orig-name new-name)))
-                    `((,nanopass "nanopass-framework-scheme-1.9" "nanopass")
-                      (,stex "stex-1.2.1" "stex")))
+                       (invoke "mv" orig-name new-name)))
+                    `((,nanopass "source" "nanopass")
+                      (,stex "source" "stex")))
                ;; The Makefile wants to download and compile "zlib".  We patch
                ;; it to use the one from our 'zlib' package.
                (substitute* "configure"
@@ -174,23 +176,24 @@
                  (("/bin/true") (which "true")))
                (substitute* "stex/Makefile"
                  (("PREFIX=/usr") (string-append "PREFIX=" out)))
-               (zero? (system* "./configure" "--threads"
-                               (string-append "--installprefix=" out))))))
+               (invoke "./configure" "--threads"
+                       (string-append "--installprefix=" out)))))
          ;; Installation of the documentation requires a running "chez".
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
-                   (doc (string-append (assoc-ref outputs "doc")
+             (let ((doc (string-append (assoc-ref outputs "doc")
                                        "/share/doc/" ,name "-" ,version)))
-               (setenv "HOME" (getcwd))
-               (setenv "PATH" (string-append (getenv "PATH") ":" bin))
-               (with-directory-excursion "stex"
-                 (system* "make" (string-append "BIN=" bin)))
-               (system* "make" "docs")
+               (invoke "make" "docs")
                (with-directory-excursion "csug"
                  (substitute* "Makefile"
-                   (("/tmp/csug9") doc))
-                 (system* "make" "install")
+                   ;; The ‘installdir=’ can't be overruled on the command line.
+                   (("/tmp/csug9") doc)
+                   ;; $m is the ‘machine type’, e.g. ‘ta6le’ on x86_64, but is
+                   ;; set incorrectly for some reason, e.g. to ‘a6le’ on x86_64.
+                   ;; Avoid the whole mess by running the (machine-independent)
+                   ;; ‘installsh’ script at its original location.
+                   (("\\$m/installsh") "makefiles/installsh"))
+                 (invoke "make" "install")
                  (install-file "csug.pdf" doc))
                (with-directory-excursion "release_notes"
                  (install-file "release_notes.pdf" doc))
@@ -237,13 +240,13 @@ and 32-bit PowerPC architectures.")
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/fedeinthemix/chez-srfi/archive"
-             "/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fedeinthemix/chez-srfi.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "17i4wly7bcr5kb5hf04ljpbvv4r5hsr9xsmw650fj43z9jr303gs"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1vgn984mj2q4w6r2q66h7qklp2hrh85wwh4k9yisga5fi0ps7myf"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("chez-scheme" ,chez-scheme)))
@@ -264,16 +267,15 @@ and 32-bit PowerPC architectures.")
         (revision "1"))
     (package
       (name "chez-web")
-      ;; release 2.0 is different and doesn't work.
-      (version (string-append "2.0-" revision "."
-                              (string-take commit 7)))
+      ;; Release 2.0 is different and doesn't work.
+      (version (git-version "2.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/arcfide/ChezWEB.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "1dq25qygyncbfq4kwwqqgyyakfqjwhp5q23vrf3bff1p66nyfl3b"))))
       (build-system gnu-build-system)
@@ -318,7 +320,8 @@ and 32-bit PowerPC architectures.")
                               (("\\./chezweave" all)
                                (string-append "chez-scheme --program " all)))
                             (substitute* "installit"
-                              (("-g \\$GROUP -o \\$OWNER") "")))))))
+                              (("-g \\$GROUP -o \\$OWNER") ""))
+                            #t)))))
       (home-page "https://github.com/arcfide/ChezWEB")
       (synopsis "Hygienic Literate Programming for Chez Scheme")
       (description "ChezWEB is a system for doing Knuthian style WEB
@@ -330,15 +333,14 @@ programming in Scheme.")
         (revision "1"))
     (package
       (name "chez-sockets")
-      (version (string-append "0.0-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/arcfide/chez-sockets.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "1n5fbwwz51fdzvjackgmnsgh363g9inyxv7kmzi0469cwavwcx5m"))))
       (build-system gnu-build-system)
@@ -435,11 +437,13 @@ Chez Scheme.")
     (home-page "https://github.com/fedeinthemix/chez-matchable")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive" "/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "0cl4vc6487pikjq159pj4n5ghyaax31nywb5n4yn1682h3ir1hs0"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "02qn7x348p23z1x5lwhkyj7i8z6mgwpzpnwr8dyina0yzsdkr71s"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("chez-srfi" ,chez-srfi))) ; for tests
@@ -462,13 +466,13 @@ Chez Scheme.")
     (version "0.9.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/fedeinthemix/chez-irregex/archive"
-             "/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fedeinthemix/chez-irregex.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "0ywy5syaw549a58viz68dmgnv756ic705rcnlqxgjq27lnaim53b"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "0jh6piylw545j81llay9wfivgpv6lcnwd81gm4w17lkasslir50q"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("chez-matchable" ,chez-matchable))) ; for tests
@@ -514,10 +518,10 @@ syntax, with various aliases for commonly used patterns.")
          (replace 'configure ,chez-configure)
          (replace 'build
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "chez-build" make-flags))))
+             (apply invoke "make" "chez-build" make-flags)))
          (replace 'install
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "chez-install" make-flags)))))))
+             (apply invoke "make" "chez-install" make-flags))))))
     (home-page "http://synthcode.com/scheme/fmt")
     (synopsis "Combinator formatting library for Chez Scheme")
     (description "This package provides a library of procedures for
@@ -534,14 +538,16 @@ strings.")
     (home-page "https://github.com/fedeinthemix/chez-mit")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "1p11q061znwxzxrxg3vw4dbsnpv1dav12hjhnkrjnzyyjvvdm2kn"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "0c7i3b6i90xk96nmxn1pc9272a4yal4v40dm1a4ybdi87x53zkk0"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi))) ; for tests
+     `(("chez-srfi" ,chez-srfi)))       ; for tests
     (native-inputs
      `(("chez-scheme" ,chez-scheme)))
     (arguments
@@ -562,14 +568,16 @@ required to port the program 'Scmutils' to Chez Scheme.")
     (home-page "https://github.com/fedeinthemix/chez-scmutils")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "1a5j61pggaiwl1gl6m038rcy5n8r2sj5nyjmz86jydx97mm5i8hj"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "0lb05wlf8qpgg8y0gdsyaxg1nbfx1qbaqdjvygrp64ndn8fnhq7l"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("chez-srfi" ,chez-srfi)))      ; for tests
+     `(("chez-srfi" ,chez-srfi)))       ; for tests
     (native-inputs
      `(("chez-scheme" ,chez-scheme)))
     (propagated-inputs
@@ -577,7 +585,7 @@ required to port the program 'Scmutils' to Chez Scheme.")
        ("chez-srfi" ,chez-srfi)))
     (arguments
      `(#:make-flags ,(chez-make-flags name version)
-       #:tests? #f ; no test suite
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (replace 'configure ,chez-configure)
@@ -589,7 +597,7 @@ required to port the program 'Scmutils' to Chez Scheme.")
          (delete 'build)
          (add-after 'install 'install-src
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "install-src" make-flags))))
+             (apply invoke "make" "install-src" make-flags)))
          (add-after 'install-src 'absolute-path-in-scm-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -609,12 +617,13 @@ required to port the program 'Scmutils' to Chez Scheme.")
              (let* ((out (assoc-ref outputs "out"))
                     (mk-file (car (find-files out "Makefile"))))
                (with-directory-excursion (dirname mk-file)
-                 (zero? (apply system* "make" "build" make-flags))))))
+                 (apply invoke "make" "build" make-flags)))))
          (add-after 'build 'clean-up
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
                (for-each delete-file
-                         (find-files out "Makefile|compile-all\\.ss"))))))))
+                         (find-files out "Makefile|compile-all\\.ss"))
+               #t))))))
     (synopsis "Port of MIT/GNU Scheme Scmutils to Chez Scheme")
     (description "This package provides a port of the MIT/GNU Scheme
 Scmutils program to Chez Scheme.  The port consists of a set of

@@ -36,14 +36,14 @@
 (define-public kdecoration
   (package
     (name "kdecoration")
-    (version "5.14.5")
+    (version "5.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kdecoration-" version ".tar.xz"))
               (sha256
                (base32
-                "115pli0qpa8lx0jasg1886fcg7gb2kk8v6k8r8l8c820l97sq7in"))))
+                "1pcyw6rrz0q7i2jnfvmjz2pixiw2aay19q3pxa1g3qvqydh3id5q"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -65,14 +65,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public kscreenlocker
   (package
     (name "kscreenlocker")
-    (version "5.14.5")
+    (version "5.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kscreenlocker-" version ".tar.xz"))
               (sha256
                (base32
-                "16amr7pz0k6w5vkk1dwn2qi3s1mln0jypwmjazqq2lbwimn8k56m"))))
+                "1hgj2mzbbiqn52j3px2mzz6xzzpzr78q3bcai8ddc4gcl1xgs6yi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -128,14 +128,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public libkscreen
   (package
     (name "libkscreen")
-    (version "5.14.5")
+    (version "5.15.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/plasma/" version "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "1vyaml5ap9siw9idiny92li2bykd0nwjsmwmg0c7ad912j4g1s7y"))))
+        (base32 "1clw8966fmwih1fsjasvpgvfq7w728hlabl3i0zjz53r87hdw3mb"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -167,7 +167,7 @@ basic needs and easy to configure for those who want special setups.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.14.5")
+    (version "5.15.0")
     (source
      (origin
        (method url-fetch)
@@ -175,7 +175,7 @@ basic needs and easy to configure for those who want special setups.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "11nz0g7dqvpvgsv0a7sai445vgfsfi25plj7jb1i46n7zf8i8mya"))))
+         "1aqkzbng2qq09rpb21r6drnn866b9y8yba3klhvhi0q5vg3p605d"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -219,7 +219,7 @@ basic needs and easy to configure for those who want special setups.")
            (lambda _
              ;; TODO: Fix this failing test-case
              (invoke "ctest" "-E" "processtest"))))))
-    (home-page "https://www.kde.org/info/plasma-5.13.4.php")
+    (home-page "https://userbase.kde.org/KSysGuard")
     (synopsis "Network enabled task and system monitoring")
     (description "KSysGuard can obtain information on system load and
 manage running processes.  It obtains this information by interacting

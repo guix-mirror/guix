@@ -24,7 +24,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -656,7 +656,7 @@ destroying an ancient book using a special wand.")
 (define-public gnubg
   (package
     (name "gnubg")
-    (version "1.06.001")
+    (version "1.06.002")
     (source
      (origin
        (method url-fetch)
@@ -664,7 +664,7 @@ destroying an ancient book using a special wand.")
                            version "-sources." "tar.gz"))
        (sha256
         (base32
-         "0snz3j1bvr25ji7lg82bl2gm2s2x9lrpc7viw0hclgz0ql74cw7b"))))
+         "11xwhcli1h12k6rnhhyq4jphzrhfik7i8ah3k32pqw803460n6yf"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("readline" ,readline)
@@ -2143,22 +2143,22 @@ Battle for Wesnoth}.")))
 (define-public gamine
   (package
     (name "gamine")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gamine-game/"
                                   "gamine-" version ".tar.gz"))
               (sha256
                (base32
-                "08wnk7w84c2413hwny89j2cn89cvfdf67bfc6wl0bf475if0mf4h"))))
+                "1sc6f4445ciigd6yw0ri92746k4hk6ps0bvj9fm1gbp3c3fslk5n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("gstreamer" ,gstreamer)
-       ("gst-plugins-base" ,gst-plugins-base) ;playbin plugin
-       ("gst-plugins-good" ,gst-plugins-good) ;for wav playback
+       ("gst-plugins-base" ,gst-plugins-base) ; playbin plugin
+       ("gst-plugins-good" ,gst-plugins-good) ; for wav playback
        ("gtk+" ,gtk+)))
     (arguments
      `(#:tests? #f
@@ -2413,7 +2413,7 @@ OpenGFX provides you with...
     (build-system gnu-build-system)
     (native-inputs
      `(("catcodec" ,catcodec)
-       ("python" ,python2-minimal)))
+       ("python" ,python-2)))
     (arguments
      `(#:make-flags
        (list (string-append "INSTALL_DIR=" %output
@@ -2450,7 +2450,7 @@ the original Transport Tycoon Deluxe.")
          "0nskq97a6fsv1v6d62zf3yb8whzhqnlh3lap3va3nzvj7csjgf7c"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python2-minimal)))
+     `(("python" ,python-2)))
     (arguments
      `(#:make-flags
        (list (string-append "INSTALL_DIR=" %output
@@ -3428,22 +3428,23 @@ the GNU GPL.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.01.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/tintin"
-                                  "/TinTin++ Source Code/" version
-                                  "/tintin" "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pnnbcm96xbj69358568rpvp164rjmcvhnnzs7nvj062pi2hqcxx"))))
+    (version "2.01.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tintin/TinTin++ Source Code/"
+                           (version-major+minor version)
+                           "/tintin-" version ".tar.gz"))
+       (sha256
+        (base32
+         "033n84pyxml3n3gd4dq0497n9w331bnrr1gppwipz9ashmq8jz7v"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
        ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
-     '(#:tests? #f ; no test suite
+     '(#:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          ;; The source is in tt/src.
@@ -4110,9 +4111,8 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.7.0")
+    (version "0.7.2")
     (source (origin
-              ;; do not use auto-generated tarballs
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/teeworlds/teeworlds.git")
@@ -4120,7 +4120,7 @@ small robot living in the nano world, repair its maker.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jigg2yikihbivzs7hpljr0mghx1l9v4f1cdr8fbmqv2wb51ah8q"))
+                "15l988qcsqgb6rjais0qd5sd2rjanm2708jmzvkariqzz0d6pb93"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (ice-9 regex)
@@ -4137,7 +4137,7 @@ small robot living in the nano world, repair its maker.")
                (search-patches "teeworlds-use-latest-wavpack.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests included
+     `(#:tests? #f                      ; no tests included
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-26))
@@ -4299,17 +4299,17 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.15")
+    (version "1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0nzm3j5wjazr1d6pkydqlc48sjf72hggq0hmx8mhq03114mmiir5"))))
+                "1gfaw1kf7cxf5ibr61n6dxjihi49gmysn4cvawx1pqvy52ljpk0p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; no tests included
+     `(#:tests? #f))                    ; no tests included
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
        ("freetype" ,freetype)
@@ -4954,16 +4954,16 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
   (package
     (inherit quakespasm)
     (name "vkquake")
-    (version "1.00.0")
+    (version "1.01.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Novum/vkQuake/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Novum/vkQuake.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0bviv18jvp41jvrabgl7l5kq4n1p6p3rywij481yswawdw6l5idh"))))
+        (base32 "1iwin8j5kbyrknbkhjgpy8nmm7pxqzr0daa9gn7p38qhg2mh0a39"))))
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs
@@ -5382,7 +5382,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method git-fetch)
@@ -5392,7 +5392,7 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17183z8ls6hrngh8a3374csagqa2acs8jl21dqm7gwj4lk0ghkba"))))
+         "11xff87s8ifw2dqs90n0rjq0psv4i7ykybygmibsqjj7id3xxw4c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"

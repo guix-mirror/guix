@@ -31,9 +31,10 @@ Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nils Gillmann@*
-Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
+Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
 Copyright @copyright{} 2017, 2018 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
@@ -2268,7 +2269,7 @@ you are installing GRUB in the legacy way, or @code{grub-efi-bootloader}
 for newer UEFI systems.  For legacy systems, the @code{target} field
 names a device, like @code{/dev/sda}; for UEFI systems it names a path
 to a mounted EFI partition, like @code{/boot/efi}; do make sure the path is
-currently mounted and a @code{file-sytem} entry is specified in your
+currently mounted and a @code{file-system} entry is specified in your
 configuration.
 
 @item
@@ -4454,9 +4455,25 @@ default behavior.  Packages appearing after are interpreted as packages
 that will be added to the environment directly.
 
 @item --pure
-Unset existing environment variables when building the new environment.
-This has the effect of creating an environment in which search paths
-only contain package inputs.
+Unset existing environment variables when building the new environment, except
+those specified with @option{--inherit} (see below.)  This has the effect of
+creating an environment in which search paths only contain package inputs.
+
+@item --inherit=@var{regexp}
+When used alongside @option{--pure}, inherit all the environment variables
+matching @var{regexp}---in other words, put them on a ``white list'' of
+environment variables that must be preserved.  This option can be repeated
+several times.
+
+@example
+guix environment --pure --inherit=^SLURM --ad-hoc openmpi @dots{} \
+  -- mpirun @dots{}
+@end example
+
+This example runs @command{mpirun} in a context where the only environment
+variables defined are @code{PATH}, environment variables whose name starts
+with @code{SLURM}, as well as the usual ``precious'' variables (@code{HOME},
+@code{USER}, etc.)
 
 @item --search-paths
 Display the environment variable definitions that make up the
@@ -13123,6 +13140,7 @@ type @code{<sddm-configuration>}.
   [#:fonts %default-xorg-fonts] @
   [#:configuration-file (xorg-configuration-file @dots{})] @
   [#:xorg-server @var{xorg-server}]
+  [#:xserver-arguments '("-nolisten" "tcp")]
 Return a @code{startx} script in which @var{modules}, a list of X module
 packages, and @var{fonts}, a list of X font directories, are available.  See
 @code{xorg-wrapper} for more details on the arguments.  The result should be
@@ -13130,6 +13148,22 @@ used in place of @code{startx}.
 
 Usually the X server is started by a login manager.
 @end deffn
+
+@cindex @code{-listen tcp}, for X11.
+This procedure is useful to override command line options for the X server,
+such as having it listen to over TCP:
+
+@example
+(operating-system
+  ...
+  (services
+    (modify-services %desktop-services
+      (slim-service-type config =>
+        (slim-configuration
+          (inherit config)
+          (startx (xorg-start-command
+                   #:xserver-arguments '("-listen" "tcp"))))))))
+@end example
 
 @deffn {Scheme Procedure} xorg-configuration-file @
   [#:modules %default-xorg-modules] @
@@ -14276,24 +14310,79 @@ capabilities to ordinary users.  For example, an ordinary user can be granted
 the capability to suspend the system if the user is logged in locally.
 @end deffn
 
-@deffn {Scheme Procedure} upower-service [#:upower @var{upower}] @
-                         [#:watts-up-pro? #f] @
-                         [#:poll-batteries? #t] @
-                         [#:ignore-lid? #f] @
-                         [#:use-percentage-for-policy? #f] @
-                         [#:percentage-low 10] @
-                         [#:percentage-critical 3] @
-                         [#:percentage-action 2] @
-                         [#:time-low 1200] @
-                         [#:time-critical 300] @
-                         [#:time-action 120] @
-                         [#:critical-power-action 'hybrid-sleep]
-Return a service that runs @uref{http://upower.freedesktop.org/,
-@command{upowerd}}, a system-wide monitor for power consumption and battery
-levels, with the given configuration settings.  It implements the
-@code{org.freedesktop.UPower} D-Bus interface, and is notably used by
-GNOME.
-@end deffn
+@defvr {Scheme Variable} upower-service-type
+Service that runs @uref{http://upower.freedesktop.org/, @command{upowerd}}, a
+system-wide monitor for power consumption and battery levels, with the given
+configuration settings.
+
+It implements the @code{org.freedesktop.UPower} D-Bus interface, and is
+notably used by GNOME.
+@end defvr
+
+@deftp {Data Type} upower-configuration
+Data type representation the configuration for UPower.
+
+@table @asis
+
+@item @code{upower} (default: @var{upower})
+Package to use for @code{upower}.
+
+@item @code{watts-up-pro?} (default: @code{#f})
+Enable the Watts Up Pro device.
+
+@item @code{poll-batteries?} (default: @code{#t})
+Enable polling the kernel for battery level changes.
+
+@item @code{ignore-lid?} (default: @code{#f})
+Ignore the lid state, this can be useful if it's incorrect on a device.
+
+@item @code{use-percentage-for-policy?} (default: @code{#f})
+Whether battery percentage based policy should be used.  The default is to use
+the time left, change to @code{#t} to use the percentage.
+
+@item @code{percentage-low} (default: @code{10})
+When @code{use-percentage-for-policy?} is @code{#t}, this sets the percentage
+at which the battery is considered low.
+
+@item @code{percentage-critical} (default: @code{3})
+When @code{use-percentage-for-policy?} is @code{#t}, this sets the percentage
+at which the battery is considered critical.
+
+@item @code{percentage-action} (default: @code{2})
+When @code{use-percentage-for-policy?} is @code{#t}, this sets the percentage
+at which action will be taken.
+
+@item @code{time-low} (default: @code{1200})
+When @code{use-time-for-policy?} is @code{#f}, this sets the time remaining in
+seconds at which the battery is considered low.
+
+@item @code{time-critical} (default: @code{300})
+When @code{use-time-for-policy?} is @code{#f}, this sets the time remaining in
+seconds at which the battery is considered critical.
+
+@item @code{time-action} (default: @code{120})
+When @code{use-time-for-policy?} is @code{#f}, this sets the time remaining in
+seconds at which action will be taken.
+
+@item @code{critical-power-action} (default: @code{'hybrid-sleep})
+The action taken when @code{percentage-action} or @code{time-action} is
+reached (depending on the configuration of @code{use-percentage-for-policy?}).
+
+Possible values are:
+
+@itemize @bullet
+@item
+@code{'power-off}
+
+@item
+@code{'hibernate}
+
+@item
+@code{'hybrid-sleep}.
+@end itemize
+
+@end table
+@end deftp
 
 @deffn {Scheme Procedure} udisks-service [#:udisks @var{udisks}]
 Return a service for @uref{http://udisks.freedesktop.org/docs/latest/,

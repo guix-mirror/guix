@@ -37,6 +37,7 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
@@ -609,7 +610,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "63")
+    (version "64.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -618,7 +619,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "060nsza8xic769bxj3pvl70a9885bwrc0myw16l095i3z6w7yzwq"))))
+                "1la82fqbdwjkw6il498nkdfgqc4aszv481xf2p9p07jfvankx24v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -635,6 +636,7 @@ passphrases.")
     (inputs
      `(("eudev" ,eudev)
        ("json-c" ,json-c)
+       ("keyutils" ,keyutils)
        ("kmod" ,kmod)
        ("util-linux" ,util-linux)))
     (arguments

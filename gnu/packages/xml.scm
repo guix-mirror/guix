@@ -404,7 +404,7 @@ combination with @code{XML::Parser}, PerlSAX, @code{XML::DOM},
 (define-public perl-xml-libxml
   (package
     (name "perl-xml-libxml")
-    (version "2.0132")
+    (version "2.0134")
     (source
      (origin
        (method url-fetch)
@@ -412,7 +412,7 @@ combination with @code{XML::Parser}, PerlSAX, @code{XML::DOM},
                            "XML-LibXML-" version ".tar.gz"))
        (sha256
         (base32
-         "0xnl281hb590i287fxpl947f1s4zl9dnvc4ajvsqi89w23im453j"))))
+         "1ks69xymv6zkj7hvaymjvb78ch81abri7kg4zrwxhdfsqb8a9g7h"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
@@ -1253,38 +1253,6 @@ files.  It is designed to be fast and to handle large input files.")
 
 (define-public python2-defusedxml
   (package-with-python2 python-defusedxml))
-
-(define-public libxls
-  (package
-    (name "libxls")
-    (version "1.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://sourceforge.net/projects/"
-                                  name "/files/" name "-"
-                                  version ".zip"))
-              (sha256
-               (base32
-                "1g8ds7wbhsa4hdcn77xc2c0l3vvz5bx2hx9ng9c9n7aii92ymfnk"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Bootstrapping is required in order to fix the test driver script.
-         (replace 'bootstrap
-           (lambda _
-             (invoke "bash" "bootstrap"))))))
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (home-page "http://libxls.sourceforge.net/")
-    (synopsis "Read Excel files")
-    (description
-     "libxls is a C library which can read Excel (xls) files since Excel 97 (the BIFF8 format).
-libxls cannot write Excel files.")
-    (license license:bsd-2)))
 
 (define-public freexl
   (package

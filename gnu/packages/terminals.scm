@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
@@ -47,6 +47,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -308,20 +309,20 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
 (define-public libtermkey
   (package
     (name "libtermkey")
-    (version "0.20")
+    (version "0.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.leonerd.org.uk/code/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "http://www.leonerd.org.uk/code/libtermkey/"
+                                  "libtermkey-" version ".tar.gz"))
               (sha256
-               (base32 "1xfj6lchhfljmbcl6dz8dpakppyy13nbl4ykxiv5x4dr9b4qf3bc"))))
+               (base32 "0fzb5pvj139di02saffhy3ajchmksn1rs41kplkv2zjyjv7xbsvr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list
                      "CC=gcc"
                      (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))
+                  (delete 'configure))  ; no configure script
        #:test-target "test"))
     (inputs `(("ncurses" ,ncurses)))
     (native-inputs `(("libtool" ,libtool)
@@ -372,36 +373,38 @@ types of devices that provide serial consoles.")
 (define-public beep
   (package
     (name "beep")
-    (version "1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.johnath.com/" name "/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0bgch6jq5cahakk3kbr9549iysf2dik09afixxy5brbxk1xfzb2r"))))
+    (version "1.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             ;; The original beep 1.3 at <http://www.johnath.com/beep> has been
+             ;; unmaintained for some time, and vulnerable to at least two CVEs:
+             ;; https://github.com/johnath/beep/issues/11#issuecomment-454056858
+             ;; Use this maintained fork instead.
+             (url "https://github.com/spkr-beep/beep.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gramwa2zm59kqjhv96fi8vg7l6lyffv02h0310vb90naschi99g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests.
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out"))
+             (string-append "pkgdocdir=$(docdir)/" ,name "-" ,version))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'patch-makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile" (("/usr") (assoc-ref outputs "out")))
-             #t))
-         (add-before 'install 'create-output-directories
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref %outputs "out")))
-               (mkdir-p (string-append out "/bin"))
-               (mkdir-p (string-append out "/man/man1"))))))))
+         (delete 'configure))))         ; no configure script
+    (native-inputs
+     `(("gcc" ,gcc-8)))                 ; for ‘-fstack-clash-protection’
     (synopsis "Linux command-line utility to control the PC speaker")
     (description "beep allows the user to control the PC speaker with precision,
 allowing different sounds to indicate different events.  While it can be run
 quite happily on the command line, its intended place of residence is within
 scripts, notifying the user when something interesting occurs.  Of course, it
 has no notion of what's interesing, but it's very good at that notifying part.")
-    (home-page "http://www.johnath.com/beep")
+    (home-page "https://github.com/spkr-beep/beep")
     (license license:gpl2+)))
 
 (define-public unibilium

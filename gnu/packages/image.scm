@@ -9,7 +9,7 @@
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -1299,10 +1299,11 @@ PNG, and performs PNG integrity checks and corrections.")
   (package
     (name "libjpeg-turbo")
     (version "2.0.1")
+    (replacement libjpeg-turbo-2.0.2)
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" version "/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
+                                  version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
                 "1zv6z093l3x3jzygvni7b819j7xhn6d63jhcdrckj7fz67n6ry75"))))
@@ -1327,6 +1328,18 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
+
+(define-public libjpeg-turbo-2.0.2
+  (package
+    (inherit libjpeg-turbo)
+    (version "2.0.2")
+    (source (origin
+              (inherit (package-source libjpeg-turbo))
+              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
+                                  version "/libjpeg-turbo-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))))
 
 (define-public niftilib
   (package
@@ -1575,15 +1588,16 @@ identical visual appearance.")
 (define-public grim
   (package
    (name "grim")
-   (version "1.0")
+   (version "1.1")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/emersion/grim/archive/v" version
-                         ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/emersion/grim.git")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
      (sha256
-      (base32 "0xkk5nqyp1px0sxz4asmchznc0q39wdx1b67ql741k8aj815km0f"))))
+      (base32 "1bcvkggqszcwy6hg8g4mch3yr25ic0baafbd90af5s5mrhrjxxxz"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("cairo" ,cairo)
@@ -1600,7 +1614,7 @@ identical visual appearance.")
 (define-public slurp
   (package
    (name "slurp")
-   (version "1.0")
+   (version "1.0.1")
    (source
     (origin
      (method git-fetch)
@@ -1609,7 +1623,7 @@ identical visual appearance.")
            (commit (string-append "v" version))))
      (file-name (git-file-name name version))
      (sha256
-      (base32 "03igv8r8n772xb0y7whhs1pa298l3d94jbnknaxpwp2n4fi04syb"))))
+      (base32 "072lkwhpvr753wfqzmd994bnhbrgfavxcgqcyml7abab28sdhs1y"))))
    (build-system meson-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("cairo" ,cairo)

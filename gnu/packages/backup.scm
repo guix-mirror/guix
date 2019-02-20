@@ -512,14 +512,14 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.8")
+    (version "1.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
         (base32
-         "0qqvcscn1l4y83x4sh3izdpmr8zq38j8chjkpfq4q4d01i470hqb"))
+         "0x95nhv4h34m8cxycbwc4xdz350saaxlgh727b23bgn4ci7gh3vx"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -565,11 +565,6 @@ detection, and lossless compression.")
                ;; HOME=/homeless-shelter.
                (setenv "HOME" "/tmp")
                #t)))
-         (add-after 'unpack 'remove-documentation-timestamps ; reproducibility
-           (lambda _
-             (substitute* "setup.py"
-               (("write\\(':Date:'.*") "\n"))
-             #t))
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
@@ -606,17 +601,12 @@ detection, and lossless compression.")
                          '("docs/misc/create_chunker-params.txt"
                            "docs/misc/internals-picture.txt"
                            "docs/misc/prune-example.txt"))
-               (add-installed-pythonpath inputs outputs)
-               (invoke "python3" "setup.py" "build_man")
                (copy-recursively "docs/man" man)
                #t))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-pytest" ,python-pytest)
-       ;; For generating the documentation.
-       ("python-sphinx" ,python-sphinx)
-       ("python-guzzle-sphinx-theme" ,python-guzzle-sphinx-theme)))
+       ("python-pytest" ,python-pytest)))
     (inputs
      `(("acl" ,acl)
        ("libb2" ,libb2)

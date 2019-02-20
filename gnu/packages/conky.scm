@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages lua)
@@ -34,15 +36,17 @@
 (define-public conky
   (package
     (name "conky")
-    (version "1.10.8")
+    (home-page "https://github.com/brndnmtthws/conky")
+    (version "1.11.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/brndnmtthws/conky/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0mw8xbnxr0a7yq2smzi2nln2b5n0q571vdrq6mhvs5n84xd6bg9f"))))
+        (base32 "0yalcpwx85smh6nnvxxsgqi344nk7jzlkkam7yjghm87df4v7xmx"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -73,10 +77,10 @@
        ("libxft" ,libxft)
        ("libxinerama" ,libxinerama)
        ("lua" ,lua)
-       ("ncurses" ,ncurses)))
+       ("ncurses" ,ncurses)
+       ("curl" ,curl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/brndnmtthws/conky")
     (synopsis "Lightweight system monitor for X")
     (description
      "Conky is a lightweight system monitor for X that displays operating

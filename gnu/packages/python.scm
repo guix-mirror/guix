@@ -459,3 +459,65 @@ instead of @command{python3}.")))
 
 (define-public python-wrapper (wrap-python3 python))
 (define-public python-minimal-wrapper (wrap-python3 python-minimal))
+
+(define-public micropython
+  (package
+    (name "micropython")
+    (version "1.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/micropython/micropython/"
+                            "releases/download/v" version
+                            "/micropython-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1g1zjip3rkx6bp16qi1bag72wivnbh56fcsl3nffanrx4j5f4z90"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          (delete-file-recursively "ports/cc3200/FreeRTOS")
+          (with-directory-excursion "lib"
+            ;; TODO: Unbundle axtls and berkley-db-1.xx
+            (for-each delete-file-recursively
+                      '("libffi" "lwip" "stm32lib" "nrfx")))
+          #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'preprare-build
+           (lambda _
+             (chdir "ports/unix")
+             ;; see: https://github.com/micropython/micropython/pull/4246
+             (substitute* "Makefile"
+               (("-Os") "-Os -ffp-contract=off"))
+             #t))
+         (replace 'install-license-files
+           ;; We don't build in the root directory so the file isn't found.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (dest (string-append out "/share/doc/" ,name "-" ,version "/")))
+               (install-file "../../LICENSE" dest))
+             #t))
+         (delete 'configure)) ; no configure
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "V=1")
+       #:test-target "test"))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("libffi" ,libffi)))
+    (home-page "https://micropython.org/")
+    (synopsis "Python implementation for microcontrollers and constrained systems")
+    (description "MicroPython is a lean and efficient implementation of the
+Python 3 programming language that includes a small subset of the Python
+standard library and is optimised to run on microcontrollers and in constrained
+environments.  MicroPython is packed full of advanced features such as an
+interactive prompt, arbitrary precision integers, closures, list comprehension,
+generators, exception handling and more.  Still it is compact enough to fit and
+run within just 256k of code space and 16k of RAM.  MicroPython aims to be as
+compatible with normal Python as possible to allow you to transfer code with
+ease from the desktop to a microcontroller or embedded system.")
+    (license license:expat)))

@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -2249,14 +2249,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.3")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "1010gvkzdzdk39g1g6wx2j19ls0kdl6l9q51xzk2qik7h2fwxl71"))))
+                "1zsikhqj5xzhw2x3b6pqlmcwz3hxx07lbbif8v3m3j41snzjic22"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -4227,7 +4227,7 @@ at @code{musicbrainz.org}.")
 (define-public clyrics
   (package
     (name "clyrics")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method git-fetch)
@@ -4237,10 +4237,10 @@ at @code{musicbrainz.org}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1qvj4dyipkkdccx5hci4z0q23i54ldk6hh7x5m35a7f70rrj6fbk"))))
+         "0vfjy555achgi5zwa34x4q7r692nc6bq4jx518a5w4m7k5fvm71j"))))
     (build-system trivial-build-system)
     (inputs
-     `(("bash" ,bash)                             ;for the wrapped program
+     `(("bash" ,bash)                   ; for the wrapped program
        ("perl" ,perl)
        ("perl-www-mechanize" ,perl-www-mechanize)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
@@ -4270,9 +4270,9 @@ at @code{musicbrainz.org}.")
                          ,(delete
                            ""
                            (map (match-lambda
-                                  (((?  (cut string-prefix? "perl-" <>) name) . dir)
-                                   (string-append dir "/lib/perl5/site_perl"))
-                                  (_ ""))
+                                 (((?  (cut string-prefix? "perl-" <>) name) . dir)
+                                  (string-append dir "/lib/perl5/site_perl"))
+                                 (_ ""))
                                 %build-inputs))))
                      (copy-recursively "plugins" (string-append output "/clyrics"))
                      #t))))

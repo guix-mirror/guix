@@ -1,83 +1,29 @@
-From: Sebastian Ramacher <sebastian@ramacher.at>
-Date: Fri, 6 Apr 2018 13:25:35 +0200
-Subject: Only fetch profiles if GConf is still available
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Tue, 19 Feb 2019 07:46:28 +0100
+Subject: [PATCH] gnu: soundconverter: Catch (and ignore) the right error.
 
+Without this patch and GConf:
+
+  Traceback (most recent call last):
+    File "/gnu/…/bin/...soundconverter-real-real-real", line 164, in <module>
+      from soundconverter.batch import cli_convert_main
+    File "/gnu/…/lib/soundconverter/python/soundconverter/batch.py", line 31, in <module>
+      from soundconverter.gstreamer import TagReader
+    File "/gnu/…/lib/soundconverter/python/soundconverter/gstreamer.py", line 70, in <module>
+      gi.require_version('GConf', '2.0')
+    File "/gnu/…/lib/python3.7/site-packages/gi/__init__.py", line 130, in require_version
+      raise ValueError('Namespace %s not available' % namespace)
+  ValueError: Namespace GConf not available
 ---
- bin/soundconverter.py       |  1 -
- soundconverter/gstreamer.py | 44 ++++++++++++++++++++++++--------------------
- 2 files changed, 24 insertions(+), 21 deletions(-)
-
-diff --git a/bin/soundconverter.py b/bin/soundconverter.py
-index 39055ce..5198443 100644
---- a/bin/soundconverter.py
-+++ b/bin/soundconverter.py
-@@ -66,7 +66,6 @@ def _check_libs():
-         import gi
-         gi.require_version('Gst', '1.0')
-         gi.require_version('Gtk', '3.0')
--        gi.require_version('GConf', '2.0')
-         from gi.repository import GObject
-         # force GIL creation - see https://bugzilla.gnome.org/show_bug.cgi?id=710447
-         import threading
-diff --git a/soundconverter/gstreamer.py b/soundconverter/gstreamer.py
-index 23aaa9b..211b052 100644
---- a/soundconverter/gstreamer.py
-+++ b/soundconverter/gstreamer.py
-@@ -25,7 +25,7 @@ from urllib.parse import urlparse
- from gettext import gettext as _
- 
- import gi
--from gi.repository import Gst, Gtk, GObject, GConf, Gio
-+from gi.repository import Gst, Gtk, GObject, Gio
- 
- from soundconverter.fileoperations import vfs_encode_filename, file_encode_filename
- from soundconverter.fileoperations import unquote_filename, vfs_makedirs, vfs_unlink
-@@ -66,25 +66,29 @@ _GCONF_PROFILE_LIST_PATH = "/system/gstreamer/1.0/audio/global/profile_list"
- audio_profiles_list = []
- audio_profiles_dict = {}
- 
--_GCONF = GConf.Client.get_default()
--profiles = _GCONF.all_dirs(_GCONF_PROFILE_LIST_PATH)
--for name in profiles:
--    if _GCONF.get_bool(_GCONF_PROFILE_PATH + name + "/active"):
--        # get profile
--        description = _GCONF.get_string(_GCONF_PROFILE_PATH + name + "/name")
--        extension = _GCONF.get_string(_GCONF_PROFILE_PATH + name + "/extension")
--        pipeline = _GCONF.get_string(_GCONF_PROFILE_PATH + name + "/pipeline")
--        # check profile validity
--        if not extension or not pipeline:
--            continue
--        if not description:
--            description = extension
--        if description in audio_profiles_dict:
--            continue
--            # store
--        profile = description, extension, pipeline
--        audio_profiles_list.append(profile)
--        audio_profiles_dict[description] = profile
-+try:
-+    from gi.repository import GConf
-+    _GCONF = GConf.Client.get_default()
-+    profiles = _GCONF.all_dirs(_GCONF_PROFILE_LIST_PATH)
-+    for name in profiles:
-+        if _GCONF.get_bool(_GCONF_PROFILE_PATH + name + "/active"):
-+            # get profile
-+            description = _GCONF.get_string(_GCONF_PROFILE_PATH + name + "/name")
-+            extension = _GCONF.get_string(_GCONF_PROFILE_PATH + name + "/extension")
-+            pipeline = _GCONF.get_string(_GCONF_PROFILE_PATH + name + "/pipeline")
-+            # check profile validity
-+            if not extension or not pipeline:
-+                continue
-+            if not description:
-+                description = extension
-+            if description in audio_profiles_dict:
-+                continue
-+                # store
-+            profile = description, extension, pipeline
-+            audio_profiles_list.append(profile)
-+            audio_profiles_dict[description] = profile
-+except ImportError:
-+    pass
+diff -Naur soundconverter-3.0.1/soundconverter/gstreamer.py soundconverter-3.0.1/soundconverter/gstreamer.py
+--- soundconverter-3.0.1/soundconverter/gstreamer.py	2018-11-23 20:38:46.000000000 +0100
++++ soundconverter-3.0.1/soundconverter/gstreamer.py	2019-02-19 07:42:15.767684388 +0100
+@@ -88,7 +88,7 @@
+             profile = description, extension, pipeline
+             audio_profiles_list.append(profile)
+             audio_profiles_dict[description] = profile
+-except ImportError:
++except ValueError:
+     pass
  
  required_elements = ('decodebin', 'fakesink', 'audioconvert', 'typefind', 'audiorate')
- for element in required_elements:

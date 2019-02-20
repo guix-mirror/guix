@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -230,17 +230,16 @@ and numerical quadrature programs are included.")
 (define-public tomsfastmath
   (package
     (name "tomsfastmath")
-    (version "0.13.0")
+    (version "0.13.1")
     (synopsis "Large integer arithmetic library")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libtom/tomsfastmath/"
                                   "releases/download/v" version "/"
-                                  "tfm-" (version-major+minor version) ".tar.bz2"))
+                                  "tfm-" version ".tar.xz"))
               (sha256
                (base32
-                "01rlsvp6lskk2a0gfdi24ak5h8vdwi6kqbvbwjnmb92r0zrfdvwd"))
-              (patches (search-patches "tomsfastmath-constness.patch"))))
+                "0f0pmiaskh89sp0q933pafxb914shpaj5ad8sb5rzk1wv8d7mja7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("libtool" ,libtool)))
@@ -252,7 +251,7 @@ and numerical quadrature programs are included.")
                           "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ;no configuration
+         (delete 'configure)            ; no configuration
          (replace 'check
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make"
@@ -262,7 +261,7 @@ and numerical quadrature programs are included.")
              (invoke "./test")))
          (add-before 'install 'install-nogroup
            (lambda _
-             ;; Let permissions inherit from the current process
+             ;; Let permissions inherit from the current process.
              (substitute* "makefile.shared"
                (("-g \\$\\(GROUP\\) -o \\$\\(USER\\)") ""))
              #t))
@@ -286,7 +285,7 @@ Libs: -L~a/lib -ltfm~%"
                            ,synopsis ,version out)))
                (install-file "tomsfastmath.pc" pc-dir)
                #t))))))
-    (home-page "http://www.libtom.org/TomsFastMath/")
+    (home-page "https://www.libtom.net/TomsFastMath/")
     (description "TomsFastMath is a large integer library written in portable
 ISO C.  It is a port of LibTomMath with optional support for inline assembler
 multiplies.")

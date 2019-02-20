@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
+;;; Copyright © 2015, 2019 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -157,13 +157,13 @@ conversions for values passed between the two languages.")
 (define-public ruby-ffi
   (package
     (name "ruby-ffi")
-    (version "1.9.23")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "ffi" version))
               (sha256
                (base32
-                "0zw6pbyvmj8wafdc7l5h7w20zkp1vbr2805ql5d941g2b20pk4zr"))))
+                "0j8pzj8raxbir5w5k6s7a042sb5k02pg0f8s4na1r5lan901j00p"))))
     (build-system ruby-build-system)
     ;; FIXME: Before running tests the build system attempts to build libffi
     ;; from sources.

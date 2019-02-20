@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2251,14 +2252,14 @@ available in a vignette.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.6.4")
+    (version "1.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "0627cjlg55kzbzcy82w6wykmw2i57qhgfcabn2zy3ydfdswyxij1"))))
+         "13rlqdg42ylnz4hc932bl50xismrcr4d9ykcd9zs19cw5mckjx0f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
@@ -6589,19 +6590,19 @@ used to teach mathematics, statistics, computation and modeling.")
 (define-public r-raster
   (package
     (name "r-raster")
-    (version "2.8-4")
+    (version "2.8-19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "raster" version))
        (sha256
         (base32
-         "14pcfznxm5kdwd908axkr9v1l0hzxlrwd8kwrz0liqnfh9cx5rsa"))))
+         "1lmhf7p7is8ai7lv7zsj2rdzf83j7ccl4x7a9vwxxa824zy4bkf4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("r-sp" ,r-sp)))
-    (home-page "http://www.rspatial.org/")
+    (home-page "https://www.rspatial.org/")
     (synopsis "Geographic data analysis and modeling")
     (description
      "The package implements basic and high-level functions for reading,
@@ -10511,3 +10512,142 @@ tempering (function @code{temper}), and morphometric random walk
 Metropolis (function @code{morph.metrop}), which achieves geometric ergodicity
 by change of variable.")
     (license license:expat)))
+
+(define-public r-listenv
+  (package
+    (name "r-listenv")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "listenv" version))
+       (sha256
+        (base32
+         "0ma5jsri2zqkrlsm9nqpikl7imbwfy1glsmk13mblw0q245h49k1"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/listenv")
+    (synopsis "Environments behaving (almost) as lists")
+    (description
+     "This package implements list environments.  List environments are
+environments that have list-like properties.  For instance, the elements of a
+list environment are ordered and can be accessed and iterated over using index
+subsetting.")
+    (license license:lgpl2.1+)))
+
+(define-public r-globals
+  (package
+    (name "r-globals")
+    (version "0.12.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "globals" version))
+       (sha256
+        (base32
+         "0szyv1ayyk31bh3xqlkj43020w44xq6s4rw2bxwizyjssxm3b1br"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)))
+    (home-page "https://github.com/HenrikBengtsson/globals")
+    (synopsis "Identify global objects in R expressions")
+    (description
+     "This package provides tools to identify global (\"unknown\" or \"free\")
+objects in R expressions by code inspection using various strategies, e.g.
+conservative or liberal.  The objective of this package is to make it as
+simple as possible to identify global objects for the purpose of exporting
+them in distributed compute environments.")
+    (license license:lgpl2.1+)))
+
+(define-public r-future
+  (package
+    (name "r-future")
+    (version "1.11.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "future" version))
+       (sha256
+        (base32
+         "1s4lyqg4mm1drzc6czaalmhmxfjgp4nznb14ql5xzny9rprgz43i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-globals" ,r-globals)
+       ("r-listenv" ,r-listenv)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/future")
+    (synopsis "Unified parallel and distributed processing in R")
+    (description
+     "The purpose of this package is to provide a lightweight and unified
+Future API for sequential and parallel processing of R expression via futures.
+This package implements sequential, multicore, multisession, and cluster
+futures.  With these, R expressions can be evaluated on the local machine, in
+parallel a set of local machines, or distributed on a mix of local and remote
+machines.  Extensions to this package implement additional backends for
+processing futures via compute cluster schedulers etc.  Because of its unified
+API, there is no need to modify any code in order to switch from sequential on
+the local machine to, say, distributed processing on a remote compute cluster.")
+    (license license:lgpl2.1+)))
+
+(define-public r-future-apply
+  (package
+    (name "r-future-apply")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "future.apply" version))
+       (sha256
+        (base32
+         "0b6v9rxvnnz13sydbgkapw71hx98fwdczjchgqnspjmq2340kdc0"))))
+    (properties `((upstream-name . "future.apply")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-future" ,r-future)
+       ("r-globals" ,r-globals)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; vignette builder
+    (home-page "https://github.com/HenrikBengtsson/future.apply")
+    (synopsis "Apply function to elements in parallel using futures")
+    (description
+     "This package provides implementations of @code{apply()},
+@code{eapply()}, @code{lapply()}, @code{Map()}, @code{mapply()},
+@code{replicate()}, @code{sapply()}, @code{tapply()}, and @code{vapply()} that
+can be resolved using any future-supported backend, e.g. parallel on the local
+machine or distributed on a compute cluster.")
+    (license license:gpl2+)))
+
+(define-public r-rsvd
+  (package
+    (name "r-rsvd")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rsvd" version))
+       (sha256
+        (base32
+         "0vjhrvnkl9rmvl8sv2kac5sd10z3fgxymb676ynxzc2pmhydy3an"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/erichson/rSVD")
+    (synopsis "Randomized singular value decomposition")
+    (description
+     "Low-rank matrix decompositions are fundamental tools and widely used for
+data analysis, dimension reduction, and data compression.  Classically, highly
+accurate deterministic matrix algorithms are used for this task.  However, the
+emergence of large-scale data has severely challenged our computational
+ability to analyze big data.  The concept of randomness has been demonstrated
+as an effective strategy to quickly produce approximate answers to familiar
+problems such as the @dfn{singular value decomposition} (SVD).  This package
+provides several randomized matrix algorithms such as the randomized singular
+value decomposition (@code{rsvd}), randomized principal component
+analysis (@code{rpca}), randomized robust principal component
+analysis (@code{rrpca}), randomized interpolative decomposition (@code{rid}),
+and the randomized CUR decomposition (@code{rcur}).  In addition several plot
+functions are provided.")
+    (license license:gpl3+)))

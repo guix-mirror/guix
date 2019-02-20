@@ -2,7 +2,8 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,9 @@
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages display-managers)
   #:use-module (gnu packages gnustep)
   #:use-module (gnu packages gnome)
@@ -290,7 +293,8 @@ in place of @code{/usr/bin/X}."
                              (configuration-file
                               (xorg-configuration-file #:modules modules
                                                        #:fonts fonts))
-                             (xorg-server xorg-server))
+                             (xorg-server xorg-server)
+                             (xserver-arguments '("-nolisten" "tcp")))
   "Return a @code{startx} script in which @var{modules}, a list of X module
 packages, and @var{fonts}, a list of X font directories, are available.  See
 @code{xorg-wrapper} for more details on the arguments.  The result should be
@@ -303,8 +307,8 @@ used in place of @code{startx}."
   (define exp
     ;; Write a small wrapper around the X server.
     #~(apply execl #$X #$X ;; Second #$X is for argv[0].
-             "-logverbose" "-verbose" "-nolisten" "tcp" "-terminate"
-             (cdr (command-line))))
+             "-logverbose" "-verbose" "-terminate" #$@xserver-arguments
+              (cdr (command-line))))
 
   (program-file "startx" exp))
 
@@ -623,48 +627,59 @@ makes the good ol' XlockMore usable."
          (home-directory "/var/lib/gdm")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define dbus-daemon-wrapper
+  (program-file "gdm-dbus-wrapper"
+                #~(begin
+                    (setenv "XDG_CONFIG_DIRS"
+                            "/run/current-system/profile/etc/xdg")
+                    (setenv "XDG_DATA_DIRS"
+                            "/run/current-system/profile/share")
+                    (apply execl (string-append #$dbus "/bin/dbus-daemon")
+                           (program-arguments)))))
+
 (define-record-type* <gdm-configuration>
   gdm-configuration make-gdm-configuration
   gdm-configuration?
   (gdm gdm-configuration-gdm (default gdm))
   (allow-empty-passwords? gdm-configuration-allow-empty-passwords? (default #t))
   (auto-login? gdm-configuration-auto-login? (default #f))
+  (dbus-daemon gdm-configuration-dbus-daemon (default dbus-daemon-wrapper))
   (default-user gdm-configuration-default-user (default #f))
+  (gnome-shell-assets gdm-configuration-gnome-shell-assets
+                      (default (list adwaita-icon-theme font-cantarell)))
   (x-server gdm-configuration-x-server
-            (default (xorg-wrapper))))
+            (default (xorg-wrapper)))
+  (x-session gdm-configuration-x-session
+             (default (xinitrc))))
 
-(define (gdm-etc-service config)
-  (define gdm-configuration-file
-    (mixed-text-file "gdm-custom.conf"
-                     "[daemon]\n"
-                     "#User=gdm\n"
-                     "#Group=gdm\n"
-                     (if (gdm-configuration-auto-login? config)
-                         (string-append
-                          "AutomaticLoginEnable=true\n"
-                          "AutomaticLogin="
-                          (or (gdm-configuration-default-user config)
-                              (error "missing default user for auto-login"))
-                          "\n")
-                         (string-append
-                          "AutomaticLoginEnable=false\n"
-                          "#AutomaticLogin=\n"))
-                     "#TimedLoginEnable=false\n"
-                     "#TimedLogin=\n"
-                     "#TimedLoginDelay=0\n"
-                     "#InitialSetupEnable=true\n"
-                     ;; Enable me once X is working.
-                     "WaylandEnable=false\n"
-                     "\n"
-                     "[debug]\n"
-                     "#Enable=true\n"
-                     "\n"
-                     "[security]\n"
-                     "#DisallowTCP=true\n"
-                     "#AllowRemoteAutoLogin=false\n"))
-  `(("gdm" ,(file-union
-             "gdm"
-             `(("custom.conf" ,gdm-configuration-file))))))
+(define (gdm-configuration-file config)
+  (mixed-text-file "gdm-custom.conf"
+                   "[daemon]\n"
+                   "#User=gdm\n"
+                   "#Group=gdm\n"
+                   (if (gdm-configuration-auto-login? config)
+                       (string-append
+                        "AutomaticLoginEnable=true\n"
+                        "AutomaticLogin="
+                        (or (gdm-configuration-default-user config)
+                            (error "missing default user for auto-login"))
+                        "\n")
+                       (string-append
+                        "AutomaticLoginEnable=false\n"
+                        "#AutomaticLogin=\n"))
+                   "#TimedLoginEnable=false\n"
+                   "#TimedLogin=\n"
+                   "#TimedLoginDelay=0\n"
+                   "#InitialSetupEnable=true\n"
+                   ;; Enable me once X is working.
+                   "WaylandEnable=false\n"
+                   "\n"
+                   "[debug]\n"
+                   "#Enable=true\n"
+                   "\n"
+                   "[security]\n"
+                   "#DisallowTCP=true\n"
+                   "#AllowRemoteAutoLogin=false\n"))
 
 (define (gdm-pam-service config)
   "Return a PAM service for @command{gdm}."
@@ -698,15 +713,27 @@ makes the good ol' XlockMore usable."
                                           "/bin/gdm"))
                      #:environment-variables
                      (list (string-append
+                            "GDM_CUSTOM_CONF="
+                            #$(gdm-configuration-file config))
+                           (string-append
+                            "GDM_DBUS_DAEMON="
+                            #$(gdm-configuration-dbus-daemon config))
+                           (string-append
                             "GDM_X_SERVER="
                             #$(gdm-configuration-x-server config))
-                           ;; XXX: GDM requires access to a handful of
-                           ;; programs and components from Gnome (gnome-shell,
-                           ;; dbus, and gnome-session among others). The
-                           ;; following variables only work provided Gnome is
-                           ;; installed.
-                           "XDG_DATA_DIRS=/run/current-system/profile/share"
-                           "PATH=/run/current-system/profile/bin"))))
+                           (string-append
+                            "GDM_X_SESSION="
+                            #$(gdm-configuration-x-session config))
+                           (string-append
+                            "XDG_DATA_DIRS="
+                            ((lambda (ls) (string-join ls ":"))
+                             (map (lambda (path)
+                                    (string-append path "/share"))
+                                  ;; XXX: Remove gnome-shell below when GDM
+                                  ;; can depend on GNOME Shell directly.
+                                  (cons #$gnome-shell
+                                        '#$(gdm-configuration-gnome-shell-assets
+                                            config)))))))))
          (stop #~(make-kill-destructor))
          (respawn? #t))))
 
@@ -719,8 +746,8 @@ makes the good ol' XlockMore usable."
                                           (const %gdm-accounts))
                        (service-extension pam-root-service-type
                                           gdm-pam-service)
-                       (service-extension etc-service-type
-                                          gdm-etc-service)
+                       (service-extension profile-service-type
+                                          gdm-configuration-gnome-shell-assets)
                        (service-extension dbus-root-service-type
                                           (compose list
                                                    gdm-configuration-gdm))))

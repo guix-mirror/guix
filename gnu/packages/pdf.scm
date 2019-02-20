@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -830,22 +830,23 @@ the PDF pages.")
 (define-public fbida
   (package
     (name "fbida")
-    (version "2.12")
+    (version "2.14")
     (home-page "https://www.kraxel.org/blog/linux/fbida/")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.kraxel.org/releases/fbida/"
-                                  name "-" version ".tar.gz"))
+                                  "fbida-" version ".tar.gz"))
               (sha256
                (base32
-                "0bw224vb7jh0lrqaf4jgxk48xglvxs674qcpj5y0axyfbh896cfk"))))
+                "0f242mix20rgsqz1llibhsz4r2pbvx6k32rmky0zjvnbaqaw1dwm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-ldconfig
+         (add-after 'unpack 'patch-FHS-file-names
            (lambda _
              (substitute* "mk/Autoconf.mk"
+               (("/bin/echo") "echo")
                (("/sbin/ldconfig -p") "echo lib")) #t))
          (delete 'configure))
         #:tests? #f

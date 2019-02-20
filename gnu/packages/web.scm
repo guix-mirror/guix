@@ -3517,15 +3517,14 @@ WWW::Mechanize that incorporates features for web application testing.")
 (define-public perl-test-www-mechanize-catalyst
   (package
     (name "perl-test-www-mechanize-catalyst")
-    (version "0.60")
+    (version "0.62")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTROUT/"
                            "Test-WWW-Mechanize-Catalyst-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nhhfrrai3ndziz873vpa1j0vljjnib4wqafd6yyvkf58ad7v0lv"))))
+        (base32 "1cdc2q16vs6fb335pzaislz2rx1ph9acaxyp7v5hv9xbwwddwfqq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
@@ -3884,14 +3883,14 @@ a pure C99 library.")
 (define-public uwsgi
   (package
     (name "uwsgi")
-    (version "2.0.17.1")
+    (version "2.0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://projects.unbit.it/downloads/uwsgi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xxjb9dyivq5531birvxq2gnyxf2x5q7gz54440acra6qwsq4cfj"))))
+                "10zmk4npknigmbqcq1wmhd461dk93159px172112vyq0i19sqwj9"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (arguments
@@ -4959,7 +4958,7 @@ functions of Tidy.")
 (define-public hiawatha
   (package
     (name "hiawatha")
-    (version "10.8.3")
+    (version "10.9")
     (source
      (origin
        (method url-fetch)
@@ -4969,11 +4968,10 @@ functions of Tidy.")
        (snippet '(begin
                    ;; We use packaged libraries, so delete the bundled copies.
                    (for-each delete-file-recursively
-                             (list "nghttp2" "mbedtls"))
+                             (list "extra/nghttp2.tgz" "mbedtls"))
                    #t))
        (sha256
-        (base32
-         "0w7047pwijhsbvvv1qjynp7gvn0nil56w82f7ax0gabrg7ddzk6s"))))
+        (base32 "1f2j2x1ziawz8ijg3s3izqpyzpiwfyhlsvbv0szxvhvj4a0l7pbl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included

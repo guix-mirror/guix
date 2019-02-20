@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -341,16 +341,16 @@ referred to as the \"Odin 3 protocol\".")
 (define-public ifdtool
   (package
     (name "ifdtool")
-    (version "4.7")
+    (version "4.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://review.coreboot.org/p/coreboot")
+                    (url "https://github.com/coreboot/coreboot.git")
                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nw555i0fm5kljha9h47bk70ykbwv8ddfk6qhz6kfqb79vzhy4h2"))))
+                "0jidj29jh6p65d17k304wlzhxvp4p3c2namgcdwg2sxq8jfr0zlm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -359,12 +359,12 @@ referred to as the \"Odin 3 protocol\".")
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-        (add-after 'unpack 'chdir
-          (lambda _
-            (chdir "util/ifdtool")
-            #t))
-        (delete 'configure)
-        (delete 'check))))
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "util/ifdtool")
+             #t))
+         (delete 'configure))           ; no configure script
+       #:tests? #f))                    ; no test suite
     (home-page "https://github.com/corna/me_cleaner/")
     (synopsis "Intel Firmware Descriptor dumper")
     (description "This package provides @command{ifdtool}, a program to

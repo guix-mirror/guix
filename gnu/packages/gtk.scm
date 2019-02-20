@@ -15,7 +15,7 @@
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -1591,18 +1591,21 @@ misspelled words in a GtkTextView widget.")
 (define-public clipit
   (package
     (name "clipit")
-    (version "1.4.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/downloads/ClipIt/clipit-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0jrwn8qfgb15rwspdp1p8hb1nc0ngmpvgr87d4k3lhlvqg2cfqva"))))
+    (version "1.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CristianHenzel/ClipIt.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05xi29v2y0rvb33fmvrz7r9j4l858qj7ngwd7dp4pzpkkaybjln0"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+-2)))
@@ -1677,7 +1680,7 @@ popular spread sheet programs.")
 (define-public yad
   (package
     (name "yad")
-    (version "0.40.3")
+    (version "0.41.0")
     (source
      (origin
        (method git-fetch)
@@ -1686,7 +1689,7 @@ popular spread sheet programs.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vpgbjbkkbk5plicyklzpf65j1vlig4n4bi3qpvrz5bb09ic5alw"))))
+        (base32 "1hkxiich898sbacpg3jflf6i8l4hkfnc0zh10rr376v0mnzbn6jn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

@@ -12,9 +12,9 @@
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -56,6 +56,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -338,14 +339,14 @@ follow links and submit forms.  It doesn’t do JavaScript.")
 (define-public python-sockjs-tornado
   (package
     (name "python-sockjs-tornado")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "sockjs-tornado" version))
        (sha256
         (base32
-         "0zhq8wnnhkfbvdnsggqrc3pp97pqpilsf7fh6ymvnf52r0rwyjsc"))))
+         "15dgv6hw6c7h3m310alw1h6p5443lrm9pyqhcv2smc13fz1v04pc"))))
     (build-system python-build-system)
     (arguments
      `(;; There are no tests, and running the test phase requires missing
@@ -1566,34 +1567,18 @@ file.")
 (define-public python-webtest
   (package
     (name "python-webtest")
-    (version "2.0.30")
+    (version "2.0.33")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebTest" version))
        (sha256
         (base32
-         "1mb7m4ndklv84mh0pdkhv73yrflcnra61yczj5g3bvwbqlygfsaw"))))
+         "1l3z0cwqslsf4rcrhi2gr8kdfh74wn2dw76376i4g9i38gz8wd21"))))
     (build-system python-build-system)
     (arguments
-     `(;; Unfortunately we have to disable tests!
-       ;; This release of WebTest is pinned to python-nose < 1.3,
-       ;; but older versions of python-nose are plagued with the following
-       ;; bug(s), which rears its ugly head during test execution:
-       ;;   https://github.com/nose-devs/nose/issues/759
-       ;;   https://github.com/nose-devs/nose/pull/811
-       #:tests? #f))
-    ;; Commented out code is no good, but in this case, once tests
-    ;; are ready to be enabled again, we should put the following
-    ;; in place:
-    ;;  (native-inputs
-    ;;   `(("python-nose" ,python-nose) ; technially < 1.3,
-    ;;                                  ; but see above comment
-    ;;     ("python-coverage" ,python-coverage)
-    ;;     ("python-mock" ,python-mock)
-    ;;     ("python-pastedeploy" ,python-pastedeploy)
-    ;;     ("python-wsgiproxy2" ,python-wsgiproxy2)
-    ;;     ("python-pyquery" ,python-pyquery)))
+     ;; Tests require python-pyquery, which creates a circular dependency.
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-waitress" ,python-waitress)
        ("python-webob" ,python-webob)
@@ -2733,14 +2718,14 @@ available in Django, but is a standalone package.")
 (define-public python-paste
   (package
     (name "python-paste")
-    (version "3.0.4")
+    (version "3.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Paste" version))
        (sha256
         (base32
-         "01w26w9jyfkh0mfydhfz3dwy3pj3fw7mzvj0lna3vs8hyx1hwl0n"))
+         "14lbi9asn5agsdf7r97prkjpz7amgmp529lbvfhf0nv881xczah6"))
        (patches (search-patches "python-paste-remove-timing-test.patch"))
        (modules '((guix build utils)))
        (snippet
@@ -2969,3 +2954,78 @@ underlies Mozilla Persona.")
      "This is a Python library for interacting with the Firefox Accounts
 ecosystem.")
     (license license:mpl2.0)))
+
+(define-public python-hyperlink
+  (package
+    (name "python-hyperlink")
+    (version "18.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "hyperlink" version))
+        (sha256
+         (base32
+          "01m3y19arfqljksngy8grc966zdb4larysralb8cajzi8kvly6zh"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-idna" ,python-idna)))
+    (home-page "https://github.com/python-hyper/hyperlink")
+    (synopsis "Python module to create immutable URLs according to spec")
+    (description "This package provides a Python module to create immutable, and
+correct URLs for Python according to RFCs 3986 and 3987.")
+    (license license:expat)))
+
+(define-public python-treq
+  (package
+    (name "python-treq")
+    (version "18.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "treq" version))
+        (sha256
+         (base32
+          "0j4zwq9p1c9piv1vc66nxcv9s6hdinf90jwkbsm91k14npv9zq4i"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-idna" ,python-idna)
+       ("python-incremental" ,python-incremental)
+       ("python-requests" ,python-requests)
+       ("python-service-identity" ,python-service-identity)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://github.com/twisted/treq")
+    (synopsis "Requests-like API built on top of twisted.web's Agent")
+    (description "This package provides an HTTP library inspired by
+@code{requests}} but written on top of Twisted's @code{Agents}.  It offers a
+high level API for making HTTP requests when using Twisted.")
+    (license license:expat)))
+
+(define-public python-autobahn
+  (package
+    (name "python-autobahn")
+    (version "19.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "autobahn" version))
+        (sha256
+         (base32
+          "1mm7j24ls01c7jb1ad5p5cpyxvzgydiyf8b04ihykh2v8g98j0x7"))))
+    (build-system python-build-system)
+    (arguments
+      ;; The tests fail to run:
+      ;; https://github.com/crossbario/autobahn-python/issues/1117
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-twisted" ,python-twisted)
+       ("python-txaio" ,python-txaio)))
+    (home-page "https://crossbar.io/autobahn/")
+    (synopsis "Web Application Messaging Protocol implementation")
+    (description "This package provides an implementation of the @dfn{Web Application
+Messaging Protocol} (WAMP).  WAMP connects components in distributed
+applications using Publish and Subscribe (PubSub) and routed Remote Procedure
+Calls (rRPC).  It is ideal for distributed, multi-client and server applications
+such as IoT applications or multi-user database-driven business applications.")
+    (license license:expat)))

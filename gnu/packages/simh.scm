@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages admin))
 
@@ -27,14 +29,15 @@
   (package
     (name "simh")
     (version "3.9-0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/" name "/" name
-                                  "/archive/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ymfy8j15d1aa4ai5xv9w7mk6lk4zx3zhfv0mfn66pdhrc8jlh0g"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/simh/simh.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1jiq6shj6a9xvzacvmyhxxd6xdyica8q4006qqjh5mh96rxrp15c"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)))

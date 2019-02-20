@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -1204,19 +1204,18 @@ HTTP proxies.")
 (define-public enet
   (package
     (name "enet")
-    (version "1.3.13")
+    (version "1.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://enet.bespin.org/download/"
-                                  name "-" version ".tar.gz"))
+                                  "enet-" version ".tar.gz"))
               (sha256
                (base32
-                "0p53mnmjbm56wizwraznynx13fcibcxiqny110dp6a5a3w174q73"))))
+                "0w780zc6cy8yq4cskpphx0f91lzh51vh9lwyc5ll8hhamdxgbxlq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (synopsis
-     "Network communication layer on top of UDP")
+    (synopsis "Network communication layer on top of UDP")
     (description
      "ENet's purpose is to provide a relatively thin, simple and robust network
 communication layer on top of UDP.  The primary feature it provides is optional

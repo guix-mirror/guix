@@ -234,45 +234,6 @@ functional, imperative and object-oriented styles of programming.")
     ;; distributed under lgpl2.0.
     (license (list license:qpl license:lgpl2.0))))
 
-(define-public ocaml-4.01
-  (package
-    (inherit ocaml-4.02)
-    (version "4.01.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://caml.inria.fr/pub/distrib/ocaml-"
-                    (version-major+minor version)
-                    "/ocaml-" version ".tar.xz"))
-              (sha256
-               (base32
-                "03d7ida94s1gpr3gadf4jyhmh5rrszd5s4m4z59daaib25rvfyv7"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ocaml-4.02)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'build
-             (lambda _
-               ;; Specifying '-j' at all causes the build to fail.
-               (invoke "make" "world.opt")))
-           ,@(if (string=? "aarch64-linux" (%current-system))
-               ;; Custom configure script doesn't recongnize aarch64.
-               '((replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (mandir (string-append out "/share/man")))
-                      (invoke "./configure"
-                              "--prefix" out
-                              "--mandir" mandir
-                              "-host" "armv8l-unknown-linux-gnu")))))
-               '())
-           (replace 'check
-             (lambda _
-               (with-directory-excursion "testsuite"
-                 (invoke "make" "all"
-                         (string-append
-                          "TOPDIR=" (getcwd) "/..")))))))))))
-
 (define-public ocaml-4.07
   (package
     (inherit ocaml-4.02)
@@ -957,14 +918,6 @@ compilers that can directly deal with packages.")
        ("m4" ,m4)
        ("ocaml" ,ocaml-4.02)))))
 
-(define-public ocaml4.01-findlib
-  (package
-    (inherit ocaml-findlib)
-    (name "ocaml4.01-findlib")
-    (native-inputs
-     `(("m4" ,m4)
-       ("ocaml" ,ocaml-4.01)))))
-
 ;; note that some tests may hang for no obvious reason.
 (define-public ocaml-ounit
   (package
@@ -989,9 +942,6 @@ compilers that can directly deal with packages.")
     (description "Unit testing framework for OCaml.  It is similar to JUnit and
 other XUnit testing frameworks.")
     (license license:expat)))
-
-(define-public ocaml4.01-ounit
-  (package-with-ocaml4.01 ocaml-ounit))
 
 (define-public ocaml4.02-ounit
   (package-with-ocaml4.02 ocaml-ounit))
@@ -1037,24 +987,6 @@ other XUnit testing frameworks.")
 JAR format.  It provides functions for reading from and writing to compressed
 files in these formats.")
     (license license:lgpl2.1+)))
-
-(define-public ocaml4.01-camlzip
-  (let ((base (package-with-ocaml4.01 camlzip)))
-    (package
-      (inherit base)
-      (name "ocaml4.01-camlzip")
-      ;; Version 1.05 is the last version to support OCaml 4.01.0.
-      (version "1.05")
-      (source
-       (origin
-         (method url-fetch)
-         (uri
-          (string-append
-           "http://forge.ocamlcore.org/frs/download.php/1037/camlzip-"
-           version ".tar.gz"))
-         (sha256
-          (base32
-           "0syh72jk9s0qwjmmfrkqchaj98m020ii082jn38pwnmb6v3p02wk")))))))
 
 (define-public ocaml4.02-camlzip
   (package-with-ocaml4.02 camlzip))
@@ -1222,9 +1154,6 @@ qcheck library.  The possibilities range from trivial tests -- extremely simple
 to use -- to sophisticated random generation of test cases.")
     (license license:lgpl3+)))
 
-(define-public ocaml4.01-qtest
-  (package-with-ocaml4.01 ocaml-qtest))
-
 (define-public ocaml4.02-qtest
   (package-with-ocaml4.02 ocaml-qtest))
 
@@ -1301,38 +1230,8 @@ tests.  After application execution, it is possible to generate a report in HTML
 format that is the replica of the application source code annotated with code
 coverage information.")
     (properties
-     `((ocaml4.01-variant . ,(delay ocaml4.01-bisect))
-       (ocaml4.02-variant . ,(delay ocaml4.02-bisect))))
+     `((ocaml4.02-variant . ,(delay ocaml4.02-bisect))))
     (license license:gpl3+)))
-
-(define-public ocaml4.01-bisect
-  (let ((base (package-with-ocaml4.01 (strip-ocaml4.01-variant ocaml-bisect))))
-    (package
-      (inherit base)
-      (version "1.3")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append "https://github.com/gasche/bisect/archive/"
-                                    version ".tar.gz"))
-                (file-name (string-append "ocaml-bisect-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1ip49jqf0kkbrqf8qspmfjbg9ap9fhvjkg718myzix88dg5rv8d4"))))
-      (arguments
-       `(#:ocaml ,ocaml-4.01
-         ,@(substitute-keyword-arguments (package-arguments ocaml-bisect)
-            ((#:make-flags flags)
-             `(list "all"))
-            ((#:phases phases)
-             `(modify-phases ,phases
-                (replace 'configure
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (invoke "./configure"
-                            "-ocaml-prefix" (assoc-ref inputs "ocaml"))
-                    #t)))))))
-      (native-inputs `(,@(alist-delete "camlp4" (package-native-inputs base))))
-      (propagated-inputs
-       `(,@(alist-delete "camlp4" (package-propagated-inputs base)))))))
 
 (define-public ocaml4.02-bisect
   (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-bisect))))
@@ -1648,9 +1547,6 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 @code{ocaml-sqlite}.")
     (license license:expat)))
 
-(define-public ocaml4.01-sqlite3
-  (package-with-ocaml4.01 ocaml-sqlite3))
-
 (define-public ocaml4.02-sqlite3
   (package-with-ocaml4.02 ocaml-sqlite3))
 
@@ -1679,9 +1575,6 @@ by all major spreadsheets.  This library implements pure OCaml functions to
 read and write files in this format as well as some convenience functions to
 manipulate such data.")
     (license (package-license camlp4))))
-
-(define-public ocaml4.01-csv
-  (package-with-ocaml4.01 ocaml-csv))
 
 (define-public ocaml4.02-csv
   (package-with-ocaml4.02 ocaml-csv))
@@ -2191,9 +2084,6 @@ format.  It can process XML documents without a complete in-memory
 representation of the data.")
     (license license:isc)))
 
-(define-public ocaml4.01-xmlm
-  (package-with-ocaml4.01 ocaml-xmlm))
-
 (define-public ocaml4.02-xmlm
   (package-with-ocaml4.02 ocaml-xmlm))
 
@@ -2530,8 +2420,7 @@ many additional enhancements, including:
              (invoke "make" "all")
              #t)))))
     (properties
-      `((ocaml4.01-variant . ,(delay ocaml4.01-batteries))
-        (ocaml4.02-variant . ,(delay ocaml4.02-batteries))))
+      `((ocaml4.02-variant . ,(delay ocaml4.02-batteries))))
     (home-page "http://batteries.forge.ocamlcore.org/")
     (synopsis "Development platform for the OCaml programming language")
     (description "Define a standard set of libraries which may be expected on
@@ -2551,12 +2440,6 @@ hierarchy of modules.")
                  (base32
                   "1a97w3x2l1jr5x9kj5gqm1x6b0q9fjqdcsvls7arnl3bvzgsia0n"))))
       (propagated-inputs '()))))
-
-(define-public ocaml4.01-batteries
-  (let ((base (package-with-ocaml4.01 (strip-ocaml4.01-variant ocaml4.02-batteries))))
-    (package
-      (inherit base)
-      (name "ocaml4.01-batteries"))))
 
 (define-public ocaml-pcre
   (package
@@ -4931,9 +4814,6 @@ Atom.")
      "GSL-OCaml is an interface to the @dfn{GNU scientific library} (GSL) for
 the OCaml language.")
     (license license:gpl3+)))
-
-(define-public ocaml4.01-gsl
-  (package-with-ocaml4.01 ocaml-gsl))
 
 (define-public cubicle
   (package
