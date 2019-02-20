@@ -4353,7 +4353,7 @@ libICE, the X font server, and related components.")
 (define-public xvinfo
   (package
     (name "xvinfo")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -4363,7 +4363,7 @@ libICE, the X font server, and related components.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1sz5wqhxd1fqsfi1w5advdlwzkizf2fgl12hdpk66f7mv9l8pflz"))))
+            "0gz7fvxavqlrqynpfbrm2nc9yx8h0ksnbnv34fj7n1q6cq6j4lq3"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
@@ -4371,7 +4371,7 @@ libICE, the X font server, and related components.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/app/xvinfo")
     (synopsis "Print out X-Video extension adaptor information")
     (description
      "XVInfo is used to print out the capabilities of any video adaptors
