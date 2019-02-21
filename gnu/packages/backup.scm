@@ -873,7 +873,7 @@ is like a time machine for your data. ")
 (define-public restic
   (package
     (name "restic")
-    (version "0.9.3")
+    (version "0.9.4")
     ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
     ;; directory.
     (source (origin
@@ -884,7 +884,7 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1l1ddnf61pfsrry97qwhhdzywin2mgnbrkhcc9pabsdfk602anmr"))))
+                "13ksprq1ia86px8x4lqrmx0l6y9rb1ppg8pnp7lcx0zxnq7skp67"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"
