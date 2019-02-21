@@ -3451,7 +3451,7 @@ presentations, kiosk style applications and so on.")
 (define-public clutter-gst
   (package
     (name "clutter-gst")
-    (version "3.0.26")
+    (version "3.0.27")
     (source
      (origin
        (method url-fetch)
@@ -3459,11 +3459,10 @@ presentations, kiosk style applications and so on.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "0fnblqm4igdx4rn3681bp1gm1y2i00if3iblhlm0zv6ck9nqlqfq"))))
+        (base32 "17czmpl92dzi4h3rn5rishk015yi3jwiw29zv8qan94xcmnbssgy"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")     ; for glib-mkenums
+     `(("glib:bin" ,glib "bin")         ; for glib-mkenums
        ("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
