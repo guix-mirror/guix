@@ -43,6 +43,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
+;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11130,6 +11131,29 @@ daemons (services) for those getting tired of typing out @code{sudo service
 my_thing reload} all the time.  It offers a consistent UI over different init
 systems.")
     (license license:gpl3+)))
+
+(define-public emacs-isearch+
+  (let ((commit "95e49af9dbf0254e095a11f115e101b52659520a")
+        (revision "1"))
+    (package
+      (name "emacs-isearch+")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/isearch-plus.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xhd9zgknf4lvzyf4apirpd7spb1hbpzkvys00a7pkmd0vvahk0v"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/isearch+.el")
+      (synopsis "Extensions to @code{isearch.el}")
+      (description "This package extends @code{isearch} with advice, dynamic
+filters, highlighting of regexp group levels, and more.")
+      (license license:gpl2+))))
 
 (define-public emacs-esh-autosuggest
   (package
