@@ -5600,7 +5600,7 @@ procedures for emacs-lisp-mode.")
 (define-public emacs-ht
   (package
     (name "emacs-ht")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
@@ -5610,7 +5610,7 @@ procedures for emacs-lisp-mode.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lpba36kzxcc966fvsbrfpy8ah9gnvay0yk26gbyjil0rggrbqzj"))))
+         "0fsi27gdrh2dgwdbq43vnw5sz25war6shlxaclr60fl7krpxjkzf"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Wilfred/ht.el")
