@@ -7214,7 +7214,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.3.0")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
@@ -7223,7 +7223,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1lsj314111cp2hjjwnv3f46ws1za6bm39rgy3l19044xf6a68j5w"))
+         "1g8k0js21bc8mlw6hvmg93zgfjhil77c30cv1hf85y4qb9ldvika"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments
