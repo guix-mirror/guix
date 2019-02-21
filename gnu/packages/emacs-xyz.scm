@@ -4366,14 +4366,14 @@ indentation and filling of comments and C preprocessor fontification.")
 (define-public emacs-tide
   (package
     (name "emacs-tide")
-    (version "2.8.3.1")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ananthakumaran/tide"
                                   "/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1k0kzqiv1hfs0kqm37947snzhrsmand3i9chvm6a2r5lb8v9q47y"))
+                "1c600myr2yqbkmy9lify38lz0zzjdqk1733db5n7vsay16vn6fzi"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (propagated-inputs
