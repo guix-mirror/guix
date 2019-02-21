@@ -390,6 +390,7 @@ depends = linux_rooted\n")))
              "enable_reporting=false"
              "enable_service_discovery=false"
              "enable_swiftshader=false"
+             "enable_widevine=false"
              ;; Disable type-checking for the Web UI to avoid a Java dependency.
              "closure_compile=false"
 
