@@ -679,7 +679,7 @@ changes are stored.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
-                                  name "-" version ".tar.gz"))
+                                  "wimlib-" version ".tar.gz"))
               (sha256
                (base32
                 "02wpsxjlw9vysj6x6q7kmvbcdkpvdzw201mmj5x0q670mapjrnai"))))
