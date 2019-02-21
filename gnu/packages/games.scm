@@ -5397,6 +5397,34 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
                     "file://dumb/licence.txt"
                     "Dumb license, explicitly GPL compatible.")))))
 
+(define-public odamex
+  (package
+    (name "odamex")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/odamex/Odamex/" version "/"
+             "odamex-src-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sh6lqj7vsdmnqz17hw0b6vy7xx6dp41k2sdw99ympsfa2xd1d2j"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; no tests.
+    (inputs
+     `(("sdl" ,sdl)
+       ("sdl-mixer" ,sdl-mixer)
+       ("zlib" ,zlib)
+       ("libpng" ,libpng)
+       ("alsa-lib" ,alsa-lib)))
+    (home-page "https://odamex.net/")
+    (synopsis "Multiplayer Doom port")
+    (description "Odamex is a modification of the Doom engine that
+allows players to easily join servers dedicated to playing Doom
+online.")
+    (license license:gpl2+)))
+
 (define-public fortune-mod
   (package
     (name "fortune-mod")
