@@ -4591,7 +4591,7 @@ functions to assist in reviewing changes on files.")
 (define-public emacs-pyvenv
   (package
     (name "emacs-pyvenv")
-    (version "1.11")
+    (version "1.20")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4600,7 +4600,7 @@ functions to assist in reviewing changes on files.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1a346qdimr1dvj53q033aqnahwd2dhyn9jadrs019nm0bzgw7g63"))))
+                "1x052fsavb94x3scpqd6n9spqgzaahzbdxhg4qa5sy6hqsabn6zh"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -4614,7 +4614,7 @@ functions to assist in reviewing changes on files.")
      `(("ert-runner" ,emacs-ert-runner)
        ("emacs-mocker" ,emacs-mocker)))
     (home-page "https://github.com/jorgenschaefer/pyvenv")
-    (synopsis "Virtualenv minor mode for Emacs")
+    (synopsis "Python virtual environment interface for Emacs")
     (description "pyvenv.el is a minor mode to support using Python virtual
 environments (virtualenv) inside Emacs.")
     (license license:gpl3+)))
