@@ -3412,9 +3412,9 @@ without stepping on each others toes.")
        ;; same way the cogl tests fail, since clutter is based on cogl.
        #:tests? #f))
     (home-page "http://www.clutter-project.org")
-    (synopsis "Open GL based interactive canvas library")
+    (synopsis "OpenGL-based interactive canvas library")
     (description
-     "Clutter is an Open GL based interactive canvas library, designed for
+     "Clutter is an OpenGL-based interactive canvas library, designed for
 creating fast, mainly 2D single window applications such as media box UIs,
 presentations, kiosk style applications and so on.")
     (license license:lgpl2.0+)))
@@ -3441,9 +3441,9 @@ presentations, kiosk style applications and so on.")
      `(("clutter" ,clutter)
        ("gtk+" ,gtk+)))
     (home-page "http://www.clutter-project.org")
-    (synopsis "Open GL based interactive canvas library GTK+ widget")
+    (synopsis "OpenGL-based interactive canvas library GTK+ widget")
     (description
-     "Clutter is an Open GL based interactive canvas library, designed for
+     "Clutter is an OpenGL-based interactive canvas library, designed for
 creating fast, mainly 2D single window applications such as media box UIs,
 presentations, kiosk style applications and so on.")
     (license license:lgpl2.0+)))
@@ -3474,8 +3474,8 @@ presentations, kiosk style applications and so on.")
     (description
      "Clutter-Gst is an integration library for using GStreamer with Clutter.
 It provides a GStreamer sink to upload frames to GL and an actor that
-implements the ClutterGstPlayer interface using playbin.  Clutter is an Open
-GL based interactive canvas library.")
+implements the ClutterGstPlayer interface using playbin.  Clutter is an
+OpenGL-based interactive canvas library.")
     (license license:lgpl2.0+)))
 
 (define-public libchamplain
