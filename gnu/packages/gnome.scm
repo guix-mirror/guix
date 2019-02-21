@@ -3455,9 +3455,9 @@ presentations, kiosk style applications and so on.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/clutter-gst/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "clutter-gst-" version ".tar.xz"))
        (sha256
         (base32 "17czmpl92dzi4h3rn5rishk015yi3jwiw29zv8qan94xcmnbssgy"))))
     (build-system gnu-build-system)
