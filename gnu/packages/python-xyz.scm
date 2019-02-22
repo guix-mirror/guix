@@ -13957,14 +13957,14 @@ Parso is also able to list multiple syntax errors in your Python file.")
 (define-public python-async-generator
   (package
     (name "python-async-generator")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "async_generator" version))
        (sha256
         (base32
-         "0wc3hidz1q85cja93k5pzybn0fprfnqyrv4qlkdqdzklc5f4dmdp"))))
+         "0i11f6z6lix8ixi3vsk6s76zvvpmgrw6zjrcwjm0m4hjdh83vfvf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
