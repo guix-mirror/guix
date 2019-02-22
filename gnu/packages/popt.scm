@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,14 +96,14 @@ similar to getopt(3), it contains a number of enhancements, including:
 (define-public gflags
   (package
     (name "gflags")
-    (version "2.2.1")
+    (version "2.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/gflags/gflags"
                                   "/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "03lxc2ah8i392kh1naq99iip34k4fpv22kwflyx3byd2ssycs9xf"))
+                "1ksdqrk2jjcrqkgxkp6jj8vf8k5i794x5p1b6lxm2rvkrwajzbrl"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
