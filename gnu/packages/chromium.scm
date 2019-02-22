@@ -220,6 +220,7 @@ from forcing GEXP-PROMISE."
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "computed-origin")
                       (force gexp-promise)
+                      #:graft? #f       ;nothing to graft
                       #:system system
                       #:guile-for-build guile)))
 
