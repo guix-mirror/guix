@@ -2766,13 +2766,13 @@ and is very extensible.")
 (define-public python-scikit-image
   (package
     (name "python-scikit-image")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scikit-image" version))
        (sha256
-        (base32 "0l1c3rl4s1jyv80i5hns4pgih09zrxfj7lygdc51w8sgyysb7ac6"))))
+        (base32 "07qchljkyxvg5nrm12fvszi7pmjk4m01qp0w0z8syxzxxs20pz8s"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Some tests require running X11 server. Disable them?
