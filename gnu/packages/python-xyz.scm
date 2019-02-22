@@ -13490,13 +13490,13 @@ functions by partial application of operators.")
     (version "1.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Suor/funcy/archive/" version
-                           ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Suor/funcy.git")
+             (commit version)))
        (sha256
-        (base32
-         "19nq2qqgavb054wqwi40wiq94sd22rgpvwbjlz6h3g8zv7b8dy14"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1s98vkjnq3zq71737hn8xa15kssvmy1sfzsll3vrlv53902418mw"))
+       (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      `(#:phases
