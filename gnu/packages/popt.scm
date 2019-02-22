@@ -21,6 +21,7 @@
 (define-module (gnu packages popt)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix licenses))
@@ -97,14 +98,15 @@ similar to getopt(3), it contains a number of enhancements, including:
   (package
     (name "gflags")
     (version "2.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/gflags/gflags"
-                                  "/archive/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ksdqrk2jjcrqkgxkp6jj8vf8k5i794x5p1b6lxm2rvkrwajzbrl"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gflags/gflags.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "147i3md3nxkjlrccqg4mq1kyzc7yrhvqv5902iibc7znkvzdvlp0"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
