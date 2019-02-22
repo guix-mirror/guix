@@ -2956,6 +2956,7 @@ parts of it.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
+             "MAKE_NB_JOBS=0"           ;use jobserver for submakes
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
