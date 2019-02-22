@@ -12100,14 +12100,14 @@ terminal such as coloured output in the shell, overwriting output, indentation, 
 (define-public python-misaka
   (package
     (name "python-misaka")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "misaka" version))
        (sha256
         (base32
-         "1yqrq3a5rracirmvk52n28nn6ckdaz897gnigv89a9gmyn87sqw7"))))
+         "1mzc29wwyhyardclj1vg2xsfdibg2lzb7f1azjcxi580ama55wv2"))))
     (build-system python-build-system)
     (arguments
      `(;; Line 37 of setup.py calls self.run_command('develop')
