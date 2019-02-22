@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -290,3 +290,59 @@ Libs: -L~a/lib -ltfm~%"
 ISO C.  It is a port of LibTomMath with optional support for inline assembler
 multiplies.")
     (license public-domain)))
+
+(define-public libtommath
+  (package
+    (name "libtommath")
+    (version "1.1.0")
+    (outputs '("out" "static"))
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/libtom/libtommath/releases/"
+                            "download/v" version "/ltm-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1bbyagqzfdbg37k1n08nsqzdf44z8zsnjjinqbsyj7rxg246qilh"))
+        (patches (search-patches "libtommath-fix-linkage.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure
+         (add-after 'unpack 'prepare-build
+           (lambda _
+             ;; Don't pull in coreutils.
+             (substitute* "makefile_include.mk"
+               (("arch") "uname -m"))
+
+             ;; We want the shared library by default so force it to be the
+             ;; default makefile target.
+             (delete-file "makefile")
+             (symlink "makefile.shared" "makefile")
+             #t))
+         (add-after 'install 'remove-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libtommath.a"))
+             #t))
+         (replace 'check
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "test_standalone" make-flags)
+             (invoke "sh" "test")))
+         (add-after 'install 'install-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "-f" "makefile.unix" "install"
+                     (string-append "PREFIX=" (assoc-ref outputs "static"))
+                     (string-append "CC=" (which "gcc"))))))
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "CC=gcc")))
+    (native-inputs
+     `(("libtool" ,libtool)))
+    (home-page "https://www.libtom.net/LibTomMath/")
+    (synopsis "Portable number theoretic multiple-precision integer library")
+    (description "LibTomMath is a portable number theoretic multiple-precision
+integer library written entirely in C.  It's designed to provide an API that is
+simple to work with that provides fairly efficient routines that build out of
+the box without configuration.")
+    (license unlicense)))
