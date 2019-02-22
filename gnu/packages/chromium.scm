@@ -225,6 +225,11 @@ from forcing GEXP-PROMISE."
 
 (define %chromium-version "72.0.3626.109")
 (define %ungoogled-revision "a58db880c15e5077e881cad7b07d1a277ecd463a")
+(define package-revision "0")
+
+(define %package-version (string-append %chromium-version "-"
+                                        package-revision "."
+                                        (string-take %ungoogled-revision 7)))
 
 ;; This is a "computed" origin that does the following:
 ;; 1) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -253,7 +258,7 @@ from forcing GEXP-PROMISE."
 
     (origin
       (method computed-origin-method)
-      (file-name (string-append "ungoogled-chromium-" %chromium-version ".tar.xz"))
+      (file-name (string-append "ungoogled-chromium-" %package-version ".tar.xz"))
       (sha256 #f)
       (uri
        (delay
@@ -347,7 +352,7 @@ depends = linux_rooted\n")))
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version %chromium-version)
+    (version %package-version)
     (synopsis "Graphical web browser")
     (source ungoogled-chromium-source)
     (build-system gnu-build-system)
