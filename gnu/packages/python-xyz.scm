@@ -1166,7 +1166,11 @@ commands.")
     (license license:lgpl2.1+)))
 
 (define-public python2-empy
-  (package-with-python2 python-empy))
+  (let ((base (package-with-python2 (strip-python2-variant python-empy))))
+    (package
+      (inherit base)
+      (arguments `(,@(package-arguments base)
+                   #:tests? #t)))))
 
 (define-public python2-element-tree
   (package
