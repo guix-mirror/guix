@@ -13487,7 +13487,7 @@ functions by partial application of operators.")
 (define-public python-funcy
   (package
     (name "python-funcy")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
@@ -13495,7 +13495,7 @@ functions by partial application of operators.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1fanxivsip29vgarw6dn39xym3q4pbxcpa11plpp548lvxajpahz"))
+         "19nq2qqgavb054wqwi40wiq94sd22rgpvwbjlz6h3g8zv7b8dy14"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (arguments
