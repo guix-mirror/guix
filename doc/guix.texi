@@ -4626,8 +4626,8 @@ served by @code{@value{SUBSTITUTE-SERVER}} to @file{/tmp/emacs}:
 
 @example
 $ wget -O - \
-  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-emacs-24.5 \
-  | bunzip2 | guix archive -x /tmp/emacs
+  https://@value{SUBSTITUTE-SERVER}/nar/gzip/@dots{}-emacs-24.5 \
+  | gunzip | guix archive -x /tmp/emacs
 @end example
 
 Single-item archives are different from multiple-item archives produced
@@ -4637,7 +4637,8 @@ and they do @emph{not} embed a signature.  Thus this operation does
 unsafe.
 
 The primary purpose of this operation is to facilitate inspection of
-archive contents coming from possibly untrusted substitute servers.
+archive contents coming from possibly untrusted substitute servers
+(@pxref{Invoking guix challenge}).
 
 @item --list
 @itemx -t
@@ -10573,8 +10574,8 @@ Alternately, we can do something along these lines (@pxref{Invoking guix
 archive}):
 
 @example
-$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0 \
-   | guix archive -x /tmp/git
+$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-git-2.5.0 \
+   | lzip -d | guix archive -x /tmp/git
 $ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
 
