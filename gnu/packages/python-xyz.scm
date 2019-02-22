@@ -1138,17 +1138,17 @@ other Python program.")
 (define-public python-empy
   (package
     (name "python-empy")
-    (version "3.3")
+    (version "3.3.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.alcyone.com/software/empy/empy-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01g8mmkfnvjdmlhsihwyx56lrg7r5m5d2fg6mnxsvy6g0dnl69f6"))))
+               "1mxfy5mgp473ga1pgz2nvm8ds6z4g3hdky8523z6jzvcs9ny6hcq"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;python2 only
+     `(#:tests? #f))                    ; python2 only
     (home-page "http://www.alcyone.com/software/empy/")
     (synopsis "Templating system for Python")
     (description
