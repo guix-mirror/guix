@@ -156,14 +156,14 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.31")
+   (version "1.32")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1h9dxhjhz1jnyhmh6jfhqw1g1sxqbg3cd32vpwg7x2xxxqffzwrp"))
+              "1n7xy657ii0sa42zx6944v2m4v9qrh6sqgmw17l3nch3y43sxlyh"))
             (patches (search-patches "tar-skip-unreliable-tests.patch"
                                      "tar-remove-wholesparse-check.patch"))))
    (build-system gnu-build-system)
@@ -177,27 +177,7 @@ implementation offers several extensions over the standard utility.")
                        (substitute* "src/system.c"
                          (("/bin/sh")
                           (string-append bash "/bin/sh")))
-                       #t))))
-
-      ;; Work around a cross-compilation bug whereby libgnu.a would provide
-      ;; '__mktime_internal', which conflicts with the one in libc.a.
-      ,@(if (%current-target-system)
-            `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
-            '())
-
-      ;; Test #92 "link mismatch" expects "a/z: Not linked to a/y" but gets
-      ;; "a/y: Not linked to a/z" and fails, presumably due to differences in
-      ;; the order in which 'diff' traverses directories.  That leads to a
-      ;; test failure even though conceptually the test passes.  Skip it.
-      ;; Test 117 and 118 are prone to race conditions too, particularly
-      ;; when cross-compiling, so we skip those as well.  All issues have
-      ;; been fixed upstream in these commits:
-      ;; <https://git.savannah.gnu.org/cgit/tar.git/commit/?id=847a36f>
-      ;; <https://git.savannah.gnu.org/cgit/tar.git/commit/?id=64b43fd>
-      #:make-flags (list (string-append
-                          "TESTSUITEFLAGS= -k '!link mismatch,"
-                          "!directory removed before reading,"
-                          "!explicitly named directory removed before reading'"))))
+                       #t))))))
 
    ;; When cross-compiling, the 'set-shell-file-name' phase needs to be able
    ;; to refer to the target Bash.
