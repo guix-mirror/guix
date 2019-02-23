@@ -307,11 +307,9 @@ data types.")
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
-                        "python-fix-tests.patch"
                         "python-3-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
-              (patch-flags '("-p0"))
               (sha256
                (base32
                 "1fzi9d2gibh0wzwidyckzbywsxcsbckgsl05ryxlifxia77fhgyq"))

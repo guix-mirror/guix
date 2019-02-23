@@ -1,8 +1,8 @@
 Make sure the build system honors CPATH and LIBRARY_PATH when
 looking for headers and libraries.
 
---- setup.py	2015-10-07 23:32:58.891329173 +0200
-+++ setup.py	2015-10-07 23:46:29.653349924 +0200
+--- a/setup.py	2015-10-07 23:32:58.891329173 +0200
++++ b/setup.py	2015-10-07 23:46:29.653349924 +0200
 @@ -575,8 +575,8 @@
          # if a file is found in one of those directories, it can
          # be assumed that no additional -I,-L directives are needed.

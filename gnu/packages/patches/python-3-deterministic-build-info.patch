@@ -2,8 +2,8 @@ Always provide the same date and time in 'Py_GetBuildInfo'.
 This is the information shown at the REPL and in 'sys.version'.
 We cannot pass it in CPPFLAGS due to whitespace in the DATE string.
 
---- Modules/getbuildinfo.c
-+++ Modules/getbuildinfo.c
+--- a/Modules/getbuildinfo.c
++++ b/Modules/getbuildinfo.c
 @@ -4,6 +4,10 @@
  #include <stdio.h>
  #endif

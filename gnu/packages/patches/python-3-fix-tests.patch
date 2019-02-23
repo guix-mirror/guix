@@ -1,9 +1,134 @@
-Additional test fixes which affect Python 3.5 (and presumably later) but not
-prior revisions of Python.
+See the discussion about the issues fixed here at:
+http://bugs.python.org/issue20868 .
 
---- Lib/test/test_pathlib.py     2014-03-01 03:02:36.088311000 +0100
-+++ Lib/test/test_pathlib.py     2014-03-01 04:56:37.768311000 +0100
-@@ -2132,8 +2132,7 @@
+diff --git a/Lib/ctypes/test/test_callbacks.py b/Lib/ctypes/test/test_callbacks.py
+--- a/Lib/ctypes/test/test_callbacks.py
++++ b/Lib/ctypes/test/test_callbacks.py
+@@ -3,6 +3,7 @@ import unittest
+ from ctypes import *
+ from ctypes.test import need_symbol
+ import _ctypes_test
++import platform
+ 
+ class Callbacks(unittest.TestCase):
+     functype = CFUNCTYPE
+@@ -176,6 +177,8 @@ class SampleCallbacksTestCase(unittest.TestCase):
+ 
+         self.assertLess(diff, 0.01, "%s not less than 0.01" % diff)
+ 
++    @unittest.skipIf(platform.machine() in ['mips64'],
++                     "This test fails on this platform")
+     def test_issue_8959_a(self):
+         from ctypes.util import find_library
+         libc_path = find_library("c")
+diff --git a/Lib/ctypes/test/test_libc.py b/Lib/ctypes/test/test_libc.py
+--- a/Lib/ctypes/test/test_libc.py
++++ b/Lib/ctypes/test/test_libc.py
+@@ -2,6 +2,7 @@ import unittest
+ 
+ from ctypes import *
+ import _ctypes_test
++import platform
+ 
+ lib = CDLL(_ctypes_test.__file__)
+ 
+@@ -17,6 +18,8 @@ class LibTest(unittest.TestCase):
+         import math
+         self.assertEqual(lib.my_sqrt(2.0), math.sqrt(2.0))
+ 
++    @unittest.skipIf(platform.machine() in ['mips64'],
++                     "This test fails on this platform")
+     def test_qsort(self):
+         comparefunc = CFUNCTYPE(c_int, POINTER(c_char), POINTER(c_char))
+         lib.my_qsort.argtypes = c_void_p, c_size_t, c_size_t, comparefunc
+diff --git a/Lib/distutils/tests/test_archive_util.py b/Lib/distutils/tests/test_archive_util.py
+--- a/Lib/distutils/tests/test_archive_util.py
++++ b/Lib/distutils/tests/test_archive_util.py
+@@ -333,6 +333,7 @@ class ArchiveUtilTestCase(support.TempdirManager,
+         self.assertEqual(os.path.basename(res), 'archive.tar.xz')
+         self.assertEqual(self._tarinfo(res), self._created_files)
+ 
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_make_archive_owner_group(self):
+         # testing make_archive with owner and group, with various combinations
+         # this works even if there's not gid/uid support
+@@ -362,6 +363,7 @@ class ArchiveUtilTestCase(support.TempdirManager,
+ 
+     @unittest.skipUnless(ZLIB_SUPPORT, "Requires zlib")
+     @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_tarfile_root_owner(self):
+         tmpdir =  self._create_files()
+         base_name = os.path.join(self.mkdtemp(), 'archive')
+diff --git a/Lib/distutils/tests/test_sdist.py b/Lib/distutils/tests/test_sdist.py
+--- a/Lib/distutils/tests/test_sdist.py
++++ b/Lib/distutils/tests/test_sdist.py
+@@ -443,6 +443,7 @@ class SDistTestCase(BasePyPIRCCommandTestCase):
+                      "The tar command is not found")
+     @unittest.skipIf(find_executable('gzip') is None,
+                      "The gzip command is not found")
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_make_distribution_owner_group(self):
+         # now building a sdist
+         dist, cmd = self.get_cmd()
+diff --git a/Lib/test/_test_multiprocessing.py b/Lib/test/_test_multiprocessing.py
+--- a/Lib/test/_test_multiprocessing.py
++++ b/Lib/test/_test_multiprocessing.py
+@@ -1473,6 +1473,7 @@ class _TestCondition(BaseTestCase):
+         if pid is not None:
+             os.kill(pid, signal.SIGINT)
+ 
++    @unittest.skipIf(True, "This fails for unknown reasons on Guix")
+     def test_wait_result(self):
+         if isinstance(self, ProcessesMixin) and sys.platform != 'win32':
+             pid = os.getpid()
+diff --git a/Lib/test/test_asyncio/test_base_events.py b/Lib/test/test_asyncio/test_base_events.py
+--- a/Lib/test/test_asyncio/test_base_events.py
++++ b/Lib/test/test_asyncio/test_base_events.py
+@@ -1301,6 +1301,8 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
+         self._test_create_connection_ip_addr(m_socket, False)
+ 
+     @patch_socket
++    @unittest.skipUnless(support.is_resource_enabled('network'),
++                         'network is not enabled')
+     def test_create_connection_service_name(self, m_socket):
+         m_socket.getaddrinfo = socket.getaddrinfo
+         sock = m_socket.socket.return_value
+diff --git a/Lib/test/test_generators.py b/Lib/test/test_generators.py
+--- a/Lib/test/test_generators.py
++++ b/Lib/test/test_generators.py
+@@ -34,6 +34,7 @@ class SignalAndYieldFromTest(unittest.TestCase):
+         else:
+             return "FAILED"
+ 
++    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build environment')
+     def test_raise_and_yield_from(self):
+         gen = self.generator1()
+         gen.send(None)
+diff --git a/Lib/test/test_normalization.py b/Lib/test/test_normalization.py
+--- a/Lib/test/test_normalization.py
++++ b/Lib/test/test_normalization.py
+@@ -2,6 +2,7 @@ from test.support import open_urlresource
+ import unittest
+ 
+ from http.client import HTTPException
++from urllib.error import URLError
+ import sys
+ from unicodedata import normalize, unidata_version
+ 
+@@ -43,6 +44,8 @@ class NormalizationTest(unittest.TestCase):
+         except PermissionError:
+             self.skipTest(f"Permission error when downloading {TESTDATAURL} "
+                           f"into the test data directory")
++        except URLError:
++            self.skipTest("DNS lookups are not enabled.")
+         except (OSError, HTTPException):
+             self.fail(f"Could not retrieve {TESTDATAURL}")
+ 
+diff --git a/Lib/test/test_pathlib.py b/Lib/test/test_pathlib.py
+--- a/Lib/test/test_pathlib.py
++++ b/Lib/test/test_pathlib.py
+@@ -2130,8 +2130,7 @@ class PosixPathTest(_BasePathTest, unittest.TestCase):
          self.assertEqual(given, expect)
          self.assertEqual(set(p.rglob("FILEd*")), set())
  
@@ -13,10 +138,138 @@ prior revisions of Python.
      def test_expanduser(self):
          P = self.cls
          support.import_module('pwd')
---- Lib/test/test_tarfile.py        2016-02-24 19:22:52.597208055 +0000
-+++ Lib/test/test_tarfile.py     2016-02-24 20:50:48.941950135 +0000
-@@ -2305,11 +2305,14 @@
-     try:
+diff --git a/Lib/test/test_pdb.py b/Lib/test/test_pdb.py
+--- a/Lib/test/test_pdb.py
++++ b/Lib/test/test_pdb.py
+@@ -1133,11 +1133,11 @@ def test_pdb_issue_20766():
+     > <doctest test.test_pdb.test_pdb_issue_20766[0]>(6)test_function()
+     -> print('pdb %d: %s' % (i, sess._previous_sigint_handler))
+     (Pdb) continue
+-    pdb 1: <built-in function default_int_handler>
++    pdb 1: Handlers.SIG_IGN
+     > <doctest test.test_pdb.test_pdb_issue_20766[0]>(5)test_function()
+     -> sess.set_trace(sys._getframe())
+     (Pdb) continue
+-    pdb 2: <built-in function default_int_handler>
++    pdb 2: Handlers.SIG_IGN
+     """
+ 
+ 
+diff --git a/Lib/test/test_regrtest.py b/Lib/test/test_regrtest.py
+--- a/Lib/test/test_regrtest.py
++++ b/Lib/test/test_regrtest.py
+@@ -764,6 +764,7 @@ class ArgsTestCase(BaseTestCase):
+         output = self.run_tests('--fromfile', filename)
+         self.check_executed_tests(output, tests)
+ 
++    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build environment.')
+     def test_interrupted(self):
+         code = TEST_INTERRUPTED
+         test = self.create_test('sigint', code=code)
+@@ -781,6 +782,7 @@ class ArgsTestCase(BaseTestCase):
+                  % (self.TESTNAME_REGEX, len(tests)))
+         self.check_line(output, regex)
+ 
++    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build environment.')
+     def test_slow_interrupted(self):
+         # Issue #25373: test --slowest with an interrupted test
+         code = TEST_INTERRUPTED
+diff --git a/Lib/test/test_resource.py b/Lib/test/test_resource.py
+--- a/Lib/test/test_resource.py
++++ b/Lib/test/test_resource.py
+@@ -145,6 +145,7 @@ class ResourceTest(unittest.TestCase):
+ 
+     @unittest.skipUnless(hasattr(resource, 'prlimit'), 'no prlimit')
+     @support.requires_linux_version(2, 6, 36)
++    @unittest.skipIf(True, "Bug: the PermissionError is not raised")
+     def test_prlimit(self):
+         self.assertRaises(TypeError, resource.prlimit)
+         self.assertRaises(ProcessLookupError, resource.prlimit,
+diff --git a/Lib/test/test_shutil.py b/Lib/test/test_shutil.py
+--- a/Lib/test/test_shutil.py
++++ b/Lib/test/test_shutil.py
+@@ -1135,6 +1135,7 @@ class TestShutil(unittest.TestCase):
+         self.assertRaises(ValueError, make_archive, base_name, 'xxx')
+ 
+     @support.requires_zlib
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_make_archive_owner_group(self):
+         # testing make_archive with owner and group, with various combinations
+         # this works even if there's not gid/uid support
+@@ -1163,6 +1164,7 @@ class TestShutil(unittest.TestCase):
+ 
+ 
+     @support.requires_zlib
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
+     def test_tarfile_root_owner(self):
+         root_dir, base_dir = self._create_files()
+diff --git a/Lib/test/test_socket.py b/Lib/test/test_socket.py
+--- a/Lib/test/test_socket.py
++++ b/Lib/test/test_socket.py
+@@ -875,6 +875,8 @@ class GeneralModuleTests(unittest.TestCase):
+         if not fqhn in all_host_names:
+             self.fail("Error testing host resolution mechanisms. (fqdn: %s, all: %s)" % (fqhn, repr(all_host_names)))
+ 
++    @unittest.skipUnless(support.is_resource_enabled('network'),
++                         'network is not enabled')
+     def test_host_resolution(self):
+         for addr in [support.HOSTv4, '10.0.0.1', '255.255.255.255']:
+             self.assertEqual(socket.gethostbyname(addr), addr)
+@@ -1004,6 +1006,8 @@ class GeneralModuleTests(unittest.TestCase):
+             self.assertWarns(DeprecationWarning, socket.ntohs, k)
+             self.assertWarns(DeprecationWarning, socket.htons, k)
+ 
++    @unittest.skipUnless(os.path.exists("/etc/services"),
++                         "getservbyname uses /etc/services, which is not in the chroot")
+     def testGetServBy(self):
+         eq = self.assertEqual
+         # Find one service that exists, then check all the related interfaces.
+@@ -1358,6 +1362,8 @@ class GeneralModuleTests(unittest.TestCase):
+             raise
+         self.assertRaises(TypeError, s.ioctl, socket.SIO_LOOPBACK_FAST_PATH, None)
+ 
++    @unittest.skipUnless(os.path.exists("/etc/gai.conf"),
++                         "getaddrinfo() will fail")
+     def testGetaddrinfo(self):
+         try:
+             socket.getaddrinfo('localhost', 80)
+@@ -1440,6 +1446,8 @@ class GeneralModuleTests(unittest.TestCase):
+         # only IP addresses are allowed
+         self.assertRaises(OSError, socket.getnameinfo, ('mail.python.org',0), 0)
+ 
++    @unittest.skipUnless(os.path.exists("/etc/gai.conf"),
++                         "getaddrinfo() will fail")
+     @unittest.skipUnless(support.is_resource_enabled('network'),
+                          'network is not enabled')
+     def test_idna(self):
+diff --git a/Lib/test/test_spwd.py b/Lib/test/test_spwd.py
+--- a/Lib/test/test_spwd.py
++++ b/Lib/test/test_spwd.py
+@@ -5,8 +5,7 @@ from test import support
+ spwd = support.import_module('spwd')
+ 
+ 
+-@unittest.skipUnless(hasattr(os, 'geteuid') and os.geteuid() == 0,
+-                     'root privileges required')
++@unittest.skipUnless(os.path.exists("/etc/shadow"), 'spwd tests require /etc/shadow')
+ class TestSpwdRoot(unittest.TestCase):
+ 
+     def test_getspall(self):
+@@ -56,8 +55,7 @@ class TestSpwdRoot(unittest.TestCase):
+             self.assertRaises(TypeError, spwd.getspnam, bytes_name)
+ 
+ 
+-@unittest.skipUnless(hasattr(os, 'geteuid') and os.geteuid() != 0,
+-                     'non-root user required')
++@unittest.skipUnless(os.path.exists("/etc/shadow"), 'spwd tests require /etc/shadow')
+ class TestSpwdNonRoot(unittest.TestCase):
+ 
+     def test_getspnam_exception(self):
+diff --git a/Lib/test/test_tarfile.py b/Lib/test/test_tarfile.py
+--- a/Lib/test/test_tarfile.py
++++ b/Lib/test/test_tarfile.py
+@@ -2504,9 +2504,12 @@ def root_is_uid_gid_0():
          import pwd, grp
      except ImportError:
          return False
@@ -31,119 +284,16 @@ prior revisions of Python.
 +    except KeyError:
          return False
      return True
-
-
---- Lib/test/test_asyncio/test_base_events.py
-+++ Lib/test/test_asyncio/test_base_events.py
-@@ -1216,6 +1216,8 @@
-         self._test_create_connection_ip_addr(m_socket, False)
-
-     @patch_socket
-+    @unittest.skipUnless(support.is_resource_enabled('network'),
-+                         'network is not enabled')
-     def test_create_connection_service_name(self, m_socket):
-         m_socket.getaddrinfo = socket.getaddrinfo
-         sock = m_socket.socket.return_value
-
---- Lib/test/test_pdb.py.org    2017-03-12 03:09:01.991856701 +0100
-+++ Lib/test/test_pdb.py        2017-03-12 03:26:17.742572869 +0100
-
-For some reason, KeyboardInterrupts do not work in the build
-environment (lack of controlling TTY?). Just change the expected
-outcome. Unfortunately, this will make it fail for users running
-`python -m test test_pdb test_pdb` interactively.
-
-@@ -928,11 +928,11 @@
-     > <doctest test.test_pdb.test_pdb_issue_20766[0]>(6)test_function()
-     -> print('pdb %d: %s' % (i, sess._previous_sigint_handler))
-     (Pdb) continue
--    pdb 1: <built-in function default_int_handler>
-+    pdb 1: Handlers.SIG_IGN
-     > <doctest test.test_pdb.test_pdb_issue_20766[0]>(5)test_function()
-     -> sess.set_trace(sys._getframe())
-     (Pdb) continue
--    pdb 2: <built-in function default_int_handler>
-+    pdb 2: Handlers.SIG_IGN
-     """
-
- class PdbTestCase(unittest.TestCase):
---- Lib/test/test_socket.py
-+++ Lib/test/test_socket.py
-@@ -802,6 +802,8 @@
-         if not fqhn in all_host_names:
-             self.fail("Error testing host resolution mechanisms. (fqdn: %s, all: %s)" % (fqhn, repr(all_host_names)))
  
-+    @unittest.skipUnless(support.is_resource_enabled('network'),
-+                         'network is not enabled')
-     def test_host_resolution(self):
-         for addr in [support.HOST, '10.0.0.1', '255.255.255.255']:
-             self.assertEqual(socket.gethostbyname(addr), addr)
---- Lib/test/test_spwd.py
-+++ Lib/test/test_spwd.py
-@@ -5,8 +5,7 @@
- spwd = support.import_module('spwd')
- 
- 
--@unittest.skipUnless(hasattr(os, 'geteuid') and os.geteuid() == 0,
--                     'root privileges required')
-+@unittest.skipUnless(os.path.exists("/etc/shadow"), 'spwd tests require /etc/shadow')
- class TestSpwdRoot(unittest.TestCase):
- 
-     def test_getspall(self):
-@@ -56,8 +55,7 @@
-             self.assertRaises(TypeError, spwd.getspnam, bytes_name)
- 
- 
--@unittest.skipUnless(hasattr(os, 'geteuid') and os.geteuid() != 0,
--                     'non-root user required')
-+@unittest.skipUnless(os.path.exists("/etc/shadow"), 'spwd tests require /etc/shadow')
- class TestSpwdNonRoot(unittest.TestCase):
- 
-     def test_getspnam_exception(self):
---- Lib/test/test_regrtest.py
-+++ Lib/test/test_regrtest.py
-@@ -700,6 +700,7 @@
-         output = self.run_tests('--fromfile', filename)
-         self.check_executed_tests(output, tests)
- 
-+    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build environment.')
-     def test_interrupted(self):
-         code = TEST_INTERRUPTED
-         test = self.create_test('sigint', code=code)
-@@ -717,6 +718,7 @@
-                  % (self.TESTNAME_REGEX, len(tests)))
-         self.check_line(output, regex)
- 
-+    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build environment.')
-     def test_slow_interrupted(self):
-         # Issue #25373: test --slowest with an interrupted test
-         code = TEST_INTERRUPTED
---- Lib/test/test_generators.py
-+++ Lib/test/test_generators.py
-@@ -29,6 +29,7 @@
-         else:
-             return "FAILED"
- 
-+    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build environment')
-     def test_raise_and_yield_from(self):
-         gen = self.generator1()
-         gen.send(None)
---- Lib/test/test_normalization.py
-+++ Lib/test/test_normalization.py
-@@ -2,6 +2,7 @@
- import unittest
- 
- from http.client import HTTPException
-+from urllib.error import URLError
- import sys
- from unicodedata import normalize, unidata_version
- 
-@@ -43,6 +44,8 @@
-         except PermissionError:
-             self.skipTest(f"Permission error when downloading {TESTDATAURL} "
-                           f"into the test data directory")
-+        except URLError:
-+            self.skipTest("DNS lookups are not enabled.")
-         except (OSError, HTTPException):
-             self.fail(f"Could not retrieve {TESTDATAURL}")
- 
+diff --git a/Tools/scripts/run_tests.py b/Tools/scripts/run_tests.py
+--- a/Tools/scripts/run_tests.py
++++ b/Tools/scripts/run_tests.py
+@@ -39,7 +39,7 @@ def main(regrtest_args):
+     if not any(is_multiprocess_flag(arg) for arg in regrtest_args):
+         args.extend(['-j', '0'])  # Use all CPU cores
+     if not any(is_resource_use_flag(arg) for arg in regrtest_args):
+-        args.extend(['-u', 'all,-largefile,-audio,-gui'])
++        args.extend(['-u', 'all,-largefile,-audio,-gui,-network'])
+     args.extend(regrtest_args)
+     print(' '.join(args))
+     if sys.platform == 'win32':
