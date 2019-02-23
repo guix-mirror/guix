@@ -971,16 +971,17 @@ correct spacing.")
 (define-public font-awesome
   (package
    (name "font-awesome")
-   (version "4.7.0")
+   (version "5.7.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://fontawesome.io/assets/"
-                                name "-" version ".zip"))
+            (uri (string-append
+                  "https://use.fontawesome.com/releases/v" version "/"
+                  "fontawesome-free-" version "-desktop.zip"))
             (sha256
              (base32
-              "1m1rfwm4sjkv10j3xd2dhwk286a5912b2zgvc692cmxi5gxs68jf"))))
+              "0v8nfyjkzgi33i5arpjqzs16mgh2hx02sf906b8a9k1k7yfqpbgs"))))
    (build-system font-build-system)
-   (home-page "http://fontawesome.io")
+   (home-page "https://fontawesome.com")
    (synopsis "Font that contains a rich iconset")
    (description
     "Font Awesome is a full suite of pictographic icons for easy scalable
