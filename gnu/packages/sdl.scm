@@ -80,6 +80,8 @@
                            ;; finding the libGL from mesa at runtime.
                            "LDFLAGS=-lGL")
 
+       #:make-flags '("V=1")            ;build verbosely
+
        #:tests? #f)) ; no check target
     (propagated-inputs
      ;; SDL headers include X11 headers.
