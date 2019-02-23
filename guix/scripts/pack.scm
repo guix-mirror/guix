@@ -28,6 +28,7 @@
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
+  #:autoload   (guix inferior) (inferior-package?)
   #:use-module (guix monads)
   #:use-module (guix modules)
   #:use-module (guix packages)
@@ -586,7 +587,15 @@ please email '~a'~%")
                             (find-files #$(file-append package "/sbin"))
                             (find-files #$(file-append package "/libexec")))))))
 
-  (computed-file (string-append (package-full-name package "-") "R")
+  (computed-file (string-append
+                  (cond ((package? package)
+                         (package-full-name package "-"))
+                        ((inferior-package? package)
+                         (string-append (inferior-package-name package)
+                                        "-"
+                                        (inferior-package-version package)))
+                        (else "wrapper"))
+                  "R")
                  build))
 
 (define (map-manifest-entries proc manifest)
