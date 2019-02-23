@@ -11334,7 +11334,7 @@ iterating over input files.")
 (define-public python2-ttystatus
   (package
     (name "python2-ttystatus")
-    (version "0.35")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
@@ -11343,7 +11343,7 @@ iterating over input files.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0vivqbw7ddhsq1zj3g9cvvv4f0phl0pis2smsnwcr2szz2fk3hl6"))))
+         "06mdk4d19zw2j3is54gndhzl396g3xc8k52m7i86z69s9hcz71by"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
