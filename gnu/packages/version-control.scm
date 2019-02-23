@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1867,7 +1868,7 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.5")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
@@ -1881,7 +1882,7 @@ repository\" with git-annex.")
               "fossil-src-" version ".tar.gz")))
        (sha256
         (base32
-         "1lxawkhr1ki9fqw8076fxib2b1w673449yzb6vxjshqzh5h77c7r"))))
+         "0pbinf8d2kj1j7niblhzjd2l2khg6r2pn2xvig6gavz27p3vwcka"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
@@ -1890,12 +1891,17 @@ repository\" with git-annex.")
     (inputs
      `(("openssl" ,openssl)
        ("zlib" ,zlib)
-       ("sqlite" ,sqlite)))
+       ("sqlite" ,sqlite-3.26.0)))
     (arguments
      `(#:configure-flags (list "--with-openssl=auto"
                                "--disable-internal-sqlite")
        #:test-target "test"
        #:phases (modify-phases %standard-phases
+                  (add-after 'patch-source-shebangs 'patch-sh
+                    (lambda _
+                      (substitute* '("auto.def")
+                        (("/bin/sh") (which "sh")))
+                      #t))
                   (replace 'configure
                     (lambda* (#:key outputs (configure-flags '())
                               #:allow-other-keys)
