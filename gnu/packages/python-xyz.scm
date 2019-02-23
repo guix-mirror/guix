@@ -11293,7 +11293,7 @@ protocols.")
 (define-public python2-cliapp
   (package
     (name "python2-cliapp")
-    (version "1.20170823")
+    (version "1.20180812.1")
     (source
      (origin
        (method url-fetch)
@@ -11302,7 +11302,7 @@ protocols.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1i9gik0xrj6jmi95s5w988jl1y265baz5xm5pbqdyvsh8h9ln6yq"))))
+         "1c1jlblbns8qhiaqjpg4xi6lip8xwfc5w643p43rg543havaj45x"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
