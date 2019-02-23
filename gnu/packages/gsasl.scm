@@ -95,9 +95,11 @@ the underlying security implementation.")
                   (("test-lock\\$\\(EXEEXT\\) ") ""))
                 #t))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags '("--with-gssapi-impl=mit")))
    (inputs `(("libidn" ,libidn)
              ("libntlm" ,libntlm)
-             ("gss" ,gss)
+             ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)))
    (propagated-inputs
     ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a
