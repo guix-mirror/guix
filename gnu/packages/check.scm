@@ -1617,7 +1617,7 @@ failures.")
 (define-public python2-coverage-test-runner
   (package
     (name "python2-coverage-test-runner")
-    (version "1.11")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
@@ -1627,7 +1627,7 @@ failures.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0y1m7z3dl63kmhcmydl1mwg0hacnf6ghrx9dah17j9iasssfa3g7"))))
+         "1kjjb9llckycnfxag8zcvqsn4z1s3dwyw6b1n0avxydihgf30rny"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
