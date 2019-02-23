@@ -167,7 +167,7 @@ avoiding password prompts when X11 forwarding has already been setup.")
     (version "0.8.3")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://xkbcommon.org/download/" name "-"
+             (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                  version ".tar.xz"))
              (sha256
               (base32
