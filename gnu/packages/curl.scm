@@ -37,8 +37,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
-  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -63,7 +63,6 @@
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls)
-             ("gss" ,gss)
              ("libidn" ,libidn)
              ;; TODO XXX <https://bugs.gnu.org/34927>
              ;; Curl doesn't actually use or refer to libssh2 because the build
@@ -71,6 +70,7 @@
              ;; a mass rebuild is appropriate (e.g. core-updates).
              ("libssh2" ,libssh2-1.8.0)
              ("openldap" ,openldap)
+             ("mit-krb5" ,mit-krb5)
              ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))
    (native-inputs
@@ -89,8 +89,10 @@
            (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))))
    (arguments
-    `(#:configure-flags '("--with-gnutls" "--with-gssapi"
-                          "--disable-static")
+    `(#:configure-flags (list "--with-gnutls"
+                              (string-append "--with-gssapi="
+                                             (assoc-ref %build-inputs "mit-krb5"))
+                              "--disable-static")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
       (modify-phases %standard-phases
