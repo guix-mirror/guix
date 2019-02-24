@@ -97,7 +97,7 @@ programmer devices.")
 (define-public 0xffff
   (package
     (name "0xffff")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
       (method url-fetch)
@@ -106,16 +106,19 @@ programmer devices.")
       (file-name (string-append "0xFFFF" version ".tar.gz" ))
       (sha256
        (base32
-        "1g4032c81wkk37wvbg1dxcqq6mnd76y9x7f2crmzqi6z4q9jcxmj"))))
+        "1kk25m2gs417mfhwaq43d62yy5rsjb7llr07zf5aqx31csln3q8k"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb" ,libusb-0.1))) ; doesn't work with libusb-compat
+     `(("libusb" ,libusb-0.1)))         ; doesn't work with libusb-compat
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)) ; no configure
-       #:make-flags (list (string-append "PREFIX=" %output))
-       #:tests? #f)) ; no 'check' target
+         (delete 'configure))           ; no configure
+       #:make-flags
+       (list "CC=gcc"
+             "BUILD_DATE=GNU Guix"
+             (string-append "PREFIX=" %output))
+       #:tests? #f))                    ; no 'check' target
     (home-page "https://github.com/pali/0xFFFF")
     (synopsis "Flash FIASCO images on Maemo devices")
     (description
