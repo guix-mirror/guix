@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -810,7 +810,7 @@ glyph designs, not just an added slant.")
 (define-public font-hack
   (package
     (name "font-hack")
-    (version "3.002")
+    (version "3.003")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -818,7 +818,7 @@ glyph designs, not just an added slant.")
                     version "/Hack-v" version "-ttf.zip"))
               (sha256
                (base32
-                "18fpaczj2rxfwgnrqpkxq0qn01parhmngglc4i1n3gchyzdsrh0x"))))
+                "1b4hh8zkrx92m2v2vfkja1napb0192p0j3laqr0m018z3dih89hc"))))
     (build-system font-build-system)
     (home-page "https://sourcefoundry.org/hack/")
     (synopsis "Typeface designed for source code")
