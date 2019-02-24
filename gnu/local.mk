@@ -1327,12 +1327,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
-  %D%/packages/patches/wpa-supplicant-CVE-2017-13082.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2018-14526.patch	\
-  %D%/packages/patches/wpa-supplicant-fix-key-reuse.patch	\
-  %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
-  %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
-  %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/x265-arm-flags.patch			\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
