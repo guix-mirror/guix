@@ -7428,17 +7428,18 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.21")
+    (version "1.10.23")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/rcaelers/workrave.git")
-             (commit (string-map (match-lambda (#\_ #\.) (chr chr)) version))))
+             (commit (string-append "v" (string-map
+                                         (match-lambda (#\. #\_) (chr chr))
+                                         version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
+        (base32 "1qhlwfhwk5agv4904d6bsf83k9k89q7bms6agg967vsca4905vcw"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs `(("glib" ,glib)
                          ("gtk+" ,gtk+)
