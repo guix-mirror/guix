@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -1149,8 +1149,8 @@ QTermWidget.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://github.com/lxqt/screengrab/releases/download/"
+                           version "/screengrab-" version ".tar.xz"))
        (sha256
         (base32 "17y8rsx9fixvxv2byq8d6c01vry10nv07f8jy85vz7zp4f0rgzz3"))))
     (build-system cmake-build-system)
