@@ -100,13 +100,13 @@ programmer devices.")
     (version "0.8")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/pali/0xffff/archive/"
-                          version ".tar.gz"))
-      (file-name (string-append "0xFFFF" version ".tar.gz" ))
-      (sha256
-       (base32
-        "1kk25m2gs417mfhwaq43d62yy5rsjb7llr07zf5aqx31csln3q8k"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pali/0xffff.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1a5b7k96vzirb0m8lqp7ldn77ppz4ngf56wslhsj2c6flcyvns4v"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb-0.1)))         ; doesn't work with libusb-compat
