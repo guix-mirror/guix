@@ -1565,16 +1565,14 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.9")
+    (version "2.10")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://01.org/sites/default/files/downloads/powertop/powertop-v"
-             version ".tar.gz"))
+       (uri (string-append "https://01.org/sites/default/files/downloads/"
+                           "powertop-v" version ".tar.gz"))
        (sha256
-        (base32
-         "0l4jjlf05li2mc6g8nrss3h435wjhmnqd8m7v3kha3x0x7cbfzxa"))))
+        (base32 "0xaazqccyd42v2q532dxx40nqhb9sfsa6cyx8641rl57mfg4bdyk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
