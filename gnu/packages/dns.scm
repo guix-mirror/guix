@@ -110,8 +110,8 @@ and BOOTP/TFTP for network booting of diskless machines.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://ftp.isc.org/isc/bind9/" version "/" name "-"
-                    version ".tar.gz"))
+                    "https://ftp.isc.org/isc/bind9/" version
+                    "/bind-" version ".tar.gz"))
               (sha256
                (base32
                 "0wzdbn6ig851354cjdys5q3gvqcvl2gmmih1gzr8ldl7sy4r7dvc"))))
