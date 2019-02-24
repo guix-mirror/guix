@@ -1,3 +1,9 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Sun, 24 Feb 2019 15:50:37 +0100
+Subject: gnu: clamav: Add support for system tomsfastmath.
+
+Adjusted from the original for clamav 0.101.1:
+
 From 756ff89526b5ffaa7a4f49b1bbecf2ecbd6f85f9 Mon Sep 17 00:00:00 2001
 From: Andreas Cadhalpun <Andreas.Cadhalpun@googlemail.com>
 Date: Wed, 11 Mar 2015 20:03:15 +0100
@@ -13,17 +19,17 @@ Patch-Name: add-support-for-system-tomsfastmath.patch
  5 files changed, 28 insertions(+), 4 deletions(-)
  create mode 100644 m4/reorganization/libs/tomsfastmath.m4
 
---- a/configure.ac
-+++ b/configure.ac
-@@ -82,6 +82,7 @@ m4_include([m4/reorganization/libs/xml.m
- m4_include([m4/reorganization/libs/openssl.m4])
+--- a/configure.ac	1970-01-01 01:00:00.000000000 +0100
++++ b/configure.ac	2019-02-24 15:47:14.076992864 +0100
+@@ -89,6 +89,7 @@
  m4_include([m4/reorganization/libs/json.m4])
  m4_include([m4/reorganization/libs/pcre.m4])
+ m4_include([m4/reorganization/libs/libmspack.m4])
 +m4_include([m4/reorganization/libs/tomsfastmath.m4])
  
- AM_MAINTAINER_MODE
- m4_include([m4/reorganization/libs/libz.m4])
-@@ -285,6 +286,7 @@ else
+ if test "x$use_internal_mspack" = "xno"; then
+     mspack_msg="External, $LIBMSPACK_CFLAGS $LIBMSPACK_LIBS"
+@@ -297,6 +298,7 @@
  fi
  CL_MSG_STATUS([yara        ],[$enable_yara],[$enable_yara])
  CL_MSG_STATUS([fts         ],[yes],[$lfs_fts_msg])
@@ -31,34 +37,9 @@ Patch-Name: add-support-for-system-tomsfastmath.patch
  
  
  # Yep, downgrading the compiler avoids the bug too:
---- a/libclamav/Makefile.am
-+++ b/libclamav/Makefile.am
-@@ -496,8 +496,10 @@ libclamav_la_SOURCES += yara_arena.c \
- 	yara_clam.h
- endif
- 
--libclamav_la_SOURCES += bignum.h\
--	bignum_fast.h\
-+libclamav_la_SOURCES += bignum.h
-+
-+if !SYSTEM_TOMSFASTMATH
-+libclamav_la_SOURCES += bignum_fast.h\
-         tomsfastmath/addsub/fp_add.c\
-         tomsfastmath/addsub/fp_add_d.c\
-         tomsfastmath/addsub/fp_addmod.c\
-@@ -579,6 +581,10 @@ libclamav_la_SOURCES += bignum.h\
-         tomsfastmath/sqr/fp_sqr_comba_generic.c\
-         tomsfastmath/sqr/fp_sqr_comba_small_set.c\
- 	tomsfastmath/sqr/fp_sqrmod.c
-+else
-+libclamav_la_CFLAGS += $(TOMSFASTMATH_CFLAGS)
-+libclamav_la_LIBADD += $(TOMSFASTMATH_LIBS)
-+endif
- 
- .PHONY: version.h.tmp
- version.c: version.h
---- a/libclamav/bignum.h
-+++ b/libclamav/bignum.h
+diff -Naur clamav-0.101.1/libclamav/bignum.h clamav-0.101.1b/libclamav/bignum.h
+--- a/libclamav/bignum.h	1970-01-01 01:00:00.000000000 +0100
++++ b/libclamav/bignum.h	2019-02-24 15:46:36.216998323 +0100
 @@ -1,9 +1,13 @@
  #ifndef BIGNUM_H_
  #define BIGNUM_H_
@@ -74,9 +55,37 @@ Patch-Name: add-support-for-system-tomsfastmath.patch
  typedef fp_int mp_int;
  #define mp_cmp fp_cmp
  #define mp_toradix_n(a,b,c,d) fp_toradix_n(a,b,c,d)
---- a/libclamav/xdp.c
-+++ b/libclamav/xdp.c
-@@ -57,7 +57,7 @@
+diff -Naur clamav-0.101.1/libclamav/Makefile.am clamav-0.101.1b/libclamav/Makefile.am
+--- a/libclamav/Makefile.am	1970-01-01 01:00:00.000000000 +0100
++++ b/libclamav/Makefile.am	2019-02-24 15:46:36.216998323 +0100
+@@ -597,8 +597,10 @@
+ 	yara_clam.h
+ endif
+ 
+-libclamav_la_SOURCES += bignum.h\
+-	bignum_fast.h\
++libclamav_la_SOURCES += bignum.h
++
++if !SYSTEM_TOMSFASTMATH
++libclamav_la_SOURCES += bignum_fast.h\
+         tomsfastmath/addsub/fp_add.c\
+         tomsfastmath/addsub/fp_add_d.c\
+         tomsfastmath/addsub/fp_addmod.c\
+@@ -680,6 +682,10 @@
+         tomsfastmath/sqr/fp_sqr_comba_generic.c\
+         tomsfastmath/sqr/fp_sqr_comba_small_set.c\
+ 	tomsfastmath/sqr/fp_sqrmod.c
++else
++libclamav_la_CFLAGS += $(TOMSFASTMATH_CFLAGS)
++libclamav_la_LIBADD += $(TOMSFASTMATH_LIBS)
++endif
+ 
+ .PHONY: version.h.tmp
+ version.c: version.h
+diff -Naur clamav-0.101.1/libclamav/xdp.c clamav-0.101.1b/libclamav/xdp.c
+--- a/libclamav/xdp.c	1970-01-01 01:00:00.000000000 +0100
++++ b/libclamav/xdp.c	2019-02-24 15:46:36.216998323 +0100
+@@ -52,7 +52,7 @@
  #include "scanners.h"
  #include "conv.h"
  #include "xdp.h"
@@ -85,8 +94,9 @@ Patch-Name: add-support-for-system-tomsfastmath.patch
  #include "filetypes.h"
  
  static char *dump_xdp(cli_ctx *ctx, const char *start, size_t sz);
---- /dev/null
-+++ b/m4/reorganization/libs/tomsfastmath.m4
+diff -Naur clamav-0.101.1/m4/reorganization/libs/tomsfastmath.m4 clamav-0.101.1b/m4/reorganization/libs/tomsfastmath.m4
+--- a/m4/reorganization/libs/tomsfastmath.m4	1970-01-01 01:00:00.000000000 +0100
++++ b/m4/reorganization/libs/tomsfastmath.m4	2019-02-24 15:46:36.216998323 +0100
 @@ -0,0 +1,12 @@
 +dnl Check for system tomsfastmath
 +PKG_CHECK_MODULES([TOMSFASTMATH], [tomsfastmath], [have_system_tomsfastmath=yes], [have_system_tomsfastmath=no])

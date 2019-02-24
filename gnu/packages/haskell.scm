@@ -937,7 +937,7 @@ efficient memo functions using tries.")
     (home-page "https://github.com/phadej/tree-diff")
     (synopsis "Compute difference between (expression) trees")
     (description "This Haskell library provides a function for computing
-the difference bewteen (expression) trees.  It also provides a way to
+the difference between (expression) trees.  It also provides a way to
 compute the difference between arbitrary abstract datatypes (ADTs) using
 @code{Generics}-derivable helpers.")
     (license license:bsd-3)))

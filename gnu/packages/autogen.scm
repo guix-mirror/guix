@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,29 +32,33 @@
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.14")
+    (version "5.18.16")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/autogen/rel" version
-                          "/autogen-" version ".tar.xz"))
-      (sha256
-       (base32
-        "1r06gam7sicb9ssn02mhv6r0g5vr4k0l0c67shpqa5i172cspizz"))))
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/autogen/rel" version
+                           "/autogen-" version ".tar.xz"))
+       (sha256
+        (base32 "16mlbdys8q4ckxlvxyhwkdnh1ay9f6g0cyp1kylkpalgnik398gq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("which" ,which)))
-    (inputs `(("guile" ,guile-2.0)
+    (inputs `(("guile" ,guile-2.2)
               ("perl" ,perl)))          ; for doc generator mdoc
     (arguments
-     '(#:phases
+     '(#:configure-flags
+       ;; XXX Needed to build 5.18.16.  ./configure fails without it:
+       ;; “Something went wrong bootstrapping makefile fragments for
+       ;;  automatic dependency tracking.  Try re-running configure with […]”
+       (list "--disable-dependency-tracking")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'patch-source-shebangs 'patch-test-scripts
            (lambda _
              (let ((sh (which "sh")))
                (substitute*
-                 (append (find-files "agen5/test" "\\.test$")
-                         (find-files "autoopts/test" "\\.(test|in)$"))
+                   (append (find-files "agen5/test" "\\.test$")
+                           (find-files "autoopts/test" "\\.(test|in)$"))
                  (("/bin/sh") sh))
                #t))))))
     (home-page "https://www.gnu.org/software/autogen/")

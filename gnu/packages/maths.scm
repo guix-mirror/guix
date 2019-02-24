@@ -428,15 +428,17 @@ LP/MIP solver is included in the package.")
 (define-public 4ti2
   (package
     (name "4ti2")
-    (version "1.6.7")
+    (version "1.6.9")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "http://www.4ti2.de/version_" version
-                          "/4ti2-" version ".tar.gz"))
-      (sha256
-       (base32
-        "1frix3rnm9ffr93alqzw4cavxbfpf524l8rfbmcpyhwd3n1km0yl"))))
+       (method url-fetch)
+       (uri (string-append "https://github.com/4ti2/4ti2/releases/download/"
+                           "Release_"
+                           (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                                       version)
+                           "/4ti2-" version ".tar.gz"))
+       (sha256
+        (base32 "0rj92x6p9m3la5gasjbj7sa569im527ffmka5y2sv1amgd3fflrh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,(@ (gnu packages base) which)))) ; for the tests

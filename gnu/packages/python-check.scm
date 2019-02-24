@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,14 +31,14 @@
 (define-public python-coveralls
   (package
     (name "python-coveralls")
-    (version "1.5.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coveralls" version))
        (sha256
         (base32
-         "0vfdny96gcq05qk5wxdbfxfaaprdk7c9q2pqvg7ac5l9sf48wqxb"))))
+         "1dswhd2q2412wrldi97hdwlsymj9pm79v7pvjx53z5wh2d33w8bg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-coverage" ,python-coverage)

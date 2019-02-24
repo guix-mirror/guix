@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,45 +44,43 @@
 (define-public clamav
   (package
     (name "clamav")
-    (version "0.100.2")
+    (version "0.101.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.clamav.net/downloads/production/"
                                   "clamav-" version ".tar.gz"))
               (sha256
                (base32
-                "1mkd41sxbjkfjinpx5b9kb85q529gj2s3d0klysssqhysh64ybja"))
+                "01mq3z04fjbq5iq8wfwfim72iv3dn04d3ishc5lkhxpmnalqydps"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (for-each delete-file-recursively
-                            '("win32"              ;unnecessary
-                              "libclamav/c++/llvm" ;use system llvm
-                              "libclamunrar"))))   ;non-free license
+                            '("win32"                  ; unnecessary
+                              "libclamav/c++/llvm"     ; use system llvm
+                              "libclamav/tomsfastmath" ; use system tomsfastmath
+                              "libclamunrar"))))       ; non-free license
               (patches
                (search-patches "clamav-system-tomsfastmath.patch"
                                "clamav-config-llvm-libs.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("bison" ,bison)
-       ("check" ,check)                 ;for tests
-       ("flex" ,flex)
-       ("pkg-config" ,pkg-config)
-       ;; The tomsfastmath patch touches configure.ac and Makefile.am
-       ("autoconf" ,autoconf)
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("check" ,check)                 ; for tests
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("bzip2" ,bzip2)
        ("libcurl" ,curl)
        ("libjson" ,json-c)
        ("libltdl" ,libltdl)
        ("libmspack" ,libmspack)
-       ("llvm" ,llvm-3.6)               ;requires <3.7, for JIT/verifier
+       ("llvm" ,llvm-3.6)               ; requires <3.7, for JIT/verifier
        ("ncurses" ,ncurses)
        ("openssl" ,libressl)
-       ("pcre" ,pcre "bin")             ;for pcre-config
-       ("sasl" ,cyrus-sasl)             ;for linking curl with libtool
+       ("pcre2" ,pcre2)
+       ("sasl" ,cyrus-sasl)             ; for linking curl with libtool
        ("tomsfastmath" ,tomsfastmath)
        ("xml" ,libxml2)
        ("zlib" ,zlib)))
@@ -99,7 +98,7 @@
                (with "xml")
                (with "openssl")
                (with "libjson")
-               (with "pcre")
+               (with "pcre2")
                (with "zlib")
                (with "libcurl")
                ;; For sanity, specifying --enable-* flags turns

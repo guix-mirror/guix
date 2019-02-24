@@ -106,19 +106,19 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.12.3-P1")
+    (version "9.12.3-P4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://ftp.isc.org/isc/bind9/" version "/" name "-"
-                    version ".tar.gz"))
+                    "https://ftp.isc.org/isc/bind9/" version
+                    "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "0wzdbn6ig851354cjdys5q3gvqcvl2gmmih1gzr8ldl7sy4r7dvc"))))
+                "01pj47z5582rd538dmbzf1msw4jc8j4zr0zx4ciy88r6qr9l80fi"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
-     ;; it would be nice to add GeoIP and gssapi once there is package
+     ;; It would be nice to add GeoIP and gssapi once there are packages.
      `(("libcap" ,libcap)
        ("libxml2" ,libxml2)
        ("openssl" ,openssl)

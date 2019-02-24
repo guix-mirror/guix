@@ -12,7 +12,7 @@
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
@@ -975,7 +975,7 @@ and prevent message loss.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.8")
+    (version "0.2.9")
     (source
      (origin
        (method git-fetch)
@@ -985,7 +985,7 @@ and prevent message loss.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0xgnraysz25fbws5zwjk92mwnl8k1yih701qam8kgm3rxh50kyhm"))))
+         "0aljr9hqybla6p61af6fdkv0x8gph7c2wacqqa9hq2z9w0p4fs5j"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.

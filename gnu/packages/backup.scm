@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -675,14 +675,14 @@ changes are stored.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.12.0")
+    (version "1.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
-                                  name "-" version ".tar.gz"))
+                                  "wimlib-" version ".tar.gz"))
               (sha256
                (base32
-                "0ks6hq7vwq13ljkzxp3a490bf8dnracgl2azf57rg49ad2fzab45"))))
+                "02wpsxjlw9vysj6x6q7kmvbcdkpvdzw201mmj5x0q670mapjrnai"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -873,7 +873,7 @@ is like a time machine for your data. ")
 (define-public restic
   (package
     (name "restic")
-    (version "0.9.3")
+    (version "0.9.4")
     ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
     ;; directory.
     (source (origin
@@ -884,7 +884,7 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1l1ddnf61pfsrry97qwhhdzywin2mgnbrkhcc9pabsdfk602anmr"))))
+                "13ksprq1ia86px8x4lqrmx0l6y9rb1ppg8pnp7lcx0zxnq7skp67"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"

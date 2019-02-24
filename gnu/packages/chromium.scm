@@ -220,11 +220,17 @@ from forcing GEXP-PROMISE."
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "computed-origin")
                       (force gexp-promise)
+                      #:graft? #f       ;nothing to graft
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "72.0.3626.109")
-(define %ungoogled-revision "a58db880c15e5077e881cad7b07d1a277ecd463a")
+(define %chromium-version "72.0.3626.119")
+(define %ungoogled-revision "a80839c418de8843dfcd6c13a557f12d26a0a17a")
+(define package-revision "0")
+
+(define %package-version (string-append %chromium-version "-"
+                                        package-revision "."
+                                        (string-take %ungoogled-revision 7)))
 
 ;; This is a "computed" origin that does the following:
 ;; 1) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -239,7 +245,7 @@ from forcing GEXP-PROMISE."
                                 %chromium-version ".tar.xz"))
             (sha256
              (base32
-              "0bcc0iksk2v30drwd5zbw7v6sfbw16jqllc12ks2nifrvh058jjp"))))
+              "0ylig933xzn6c0018nxq95xhl0wkxcm95fdiy2c7s4a4h3hkr5dk"))))
          (ungoogled-source
           (origin
             (method git-fetch)
@@ -249,11 +255,11 @@ from forcing GEXP-PROMISE."
                                       (string-take %ungoogled-revision 7)))
             (sha256
              (base32
-              "19w60b71rcccp32b7rcpw75kfg4sw2xfr32rfk0hcyaj5rq0mm69")))))
+              "0rgirbxbgjdm3s2kzgj101rjq0clr7x2a7b37kfx2q629z4qlrpc")))))
 
     (origin
       (method computed-origin-method)
-      (file-name (string-append "ungoogled-chromium-" %chromium-version ".tar.xz"))
+      (file-name (string-append "ungoogled-chromium-" %package-version ".tar.xz"))
       (sha256 #f)
       (uri
        (delay
@@ -347,7 +353,7 @@ depends = linux_rooted\n")))
 (define-public ungoogled-chromium
   (package
     (name "ungoogled-chromium")
-    (version %chromium-version)
+    (version %package-version)
     (synopsis "Graphical web browser")
     (source ungoogled-chromium-source)
     (build-system gnu-build-system)
@@ -390,6 +396,7 @@ depends = linux_rooted\n")))
              "enable_reporting=false"
              "enable_service_discovery=false"
              "enable_swiftshader=false"
+             "enable_widevine=false"
              ;; Disable type-checking for the Web UI to avoid a Java dependency.
              "closure_compile=false"
 

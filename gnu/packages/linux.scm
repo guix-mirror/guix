@@ -413,8 +413,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.10")
-(define %linux-libre-hash "0d386gb1s9ag80iqzms9gdsfzirq7nlkpkkx2d6ky01rv0g4vgqn")
+(define %linux-libre-version "4.20.12")
+(define %linux-libre-hash "16w52g5s7qhvmmz3srai1myl8949nxv6cqybiw3wx3mwcvp95mlh")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -427,8 +427,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.23")
-(define %linux-libre-4.19-hash "0s207vqq2vcrgydjjwb5n2j7di0rjahnrbn3xv4xxlp5scjp59xq")
+(define %linux-libre-4.19-version "4.19.25")
+(define %linux-libre-4.19-hash "0kg8gibmyihh4lr7ksp8szrs0jx5sr2g56szm69lff1zmsywpqc6")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -441,8 +441,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.101")
-(define %linux-libre-4.14-hash "02j240x30zkhpazdimlfi0xq6zjdw6fidgdfrdnvfryvhf6j097j")
+(define %linux-libre-4.14-version "4.14.103")
+(define %linux-libre-4.14-hash "05zcb7kaj6cni4v0s0qdywwrqzlr63mkqbhxkbmrjz4blxxxdszg")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -451,14 +451,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.158"
-                    "11v56dzp87wyxrymf2s1cmk7jr440z11m3yan73rnnnqlfq460ig"
+  (make-linux-libre "4.9.160"
+                    "1j3z3kn4n9vm7fkzb63ddmxba9r2pm623kar1jn7i5xsd1vz4qr9"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.174"
-                    "1njd50yc180aarpd5crss3wn0n82lhxbyjrifsm647f3dfjhyvjb"
+  (make-linux-libre "4.4.176"
+                    "0c300zqmsadahs2fpzxh6cn7q3h7jxq69msd17rh8v3wnvql8vzx"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -2787,14 +2787,14 @@ about ACPI devices.")
 (define-public acpid
   (package
     (name "acpid")
-    (version "2.0.30")
+    (version "2.0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/acpid2/acpid-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1jzl7hiaspr5xkmsrbl69bib8cs3dp6bq5ix58fbskpnsdi7pdr8"))))
+                "1hrc0xm6q12knbgzhq0i8g2rfrkwcvh1asd7k9rs3nc5xmlwd7gw"))))
     (build-system gnu-build-system)
     (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
@@ -5103,6 +5103,10 @@ the superuser to make device nodes.")
               (string-append (assoc-ref inputs "util-linux")
                              "/bin/getopt")))
             #t))
+        (add-before 'configure 'setenv
+          (lambda _
+            (setenv "LIBS" "-lacl")
+            #t))
         (add-before 'check 'prepare-check
           (lambda _
             (setenv "SHELL" (which "bash"))
@@ -5121,7 +5125,8 @@ the superuser to make device nodes.")
              (("tar -tvf") "tar --numeric-owner -tvf"))
             #t)))))
     (native-inputs
-     `(("sharutils" ,sharutils) ; for the tests
+     `(("acl" ,acl)
+       ("sharutils" ,sharutils) ; for the tests
        ("xz" ,xz))) ; for the tests
     (inputs
      `(("libcap" ,libcap)

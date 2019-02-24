@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,7 +78,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "2.3.12")
+    (version "2.3.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -86,7 +87,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zzz2yiiny9pm4h6ayb82xzxc2j5djcpf8va2wagcw92m7w6miqw"))))
+                "0imvvs22gyr1v6ydgp5yn2nq8fb8llmz0ra1m733ikjaczl3jm7z"))))
     (build-system cmake-build-system)
     (inputs
      `(("python" ,python-wrapper)))
@@ -99,8 +100,8 @@ generate such a compilation database.")
     (license license:gpl3+)))
 
 (define-public gn
-  (let ((commit "f73698ebb33e26a0bf120e2b55d12528fd1dbe7d")
-        (revision "1481"))          ;as returned by `git describe`, used below
+  (let ((commit "1ab6fa2cab7ec64840db720a56018ca8939329f9")
+        (revision "1530"))          ;as returned by `git describe`, used below
     (package
       (name "gn")
       (version (git-version "0.0" revision commit))
@@ -110,7 +111,7 @@ generate such a compilation database.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "078ydwak4424bkqh3hd7q955zxp2c3qlw44lsb29i8jqap140f9d"))
+                  "06h974d1lag3wwsz6s5asmpv0njmf671ag4la2fpnbh494m97lfk"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -120,10 +121,11 @@ generate such a compilation database.")
                       (lambda _
                         (setenv "CC" "gcc") (setenv "CXX" "g++")
                         (setenv "AR" "ar")
+                        (setenv "LDFLAGS" "-pthread")
                         #t))
                     (replace 'configure
                       (lambda _
-                        (invoke "python" "build/gen.py" "--no-sysroot"
+                        (invoke "python" "build/gen.py"
                                 "--no-last-commit-position")))
                     (add-after 'configure 'create-last-commit-position
                       (lambda _

@@ -4366,14 +4366,14 @@ indentation and filling of comments and C preprocessor fontification.")
 (define-public emacs-tide
   (package
     (name "emacs-tide")
-    (version "2.8.3.1")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ananthakumaran/tide"
                                   "/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1k0kzqiv1hfs0kqm37947snzhrsmand3i9chvm6a2r5lb8v9q47y"))
+                "1c600myr2yqbkmy9lify38lz0zzjdqk1733db5n7vsay16vn6fzi"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -4591,7 +4591,7 @@ functions to assist in reviewing changes on files.")
 (define-public emacs-pyvenv
   (package
     (name "emacs-pyvenv")
-    (version "1.11")
+    (version "1.20")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4600,7 +4600,7 @@ functions to assist in reviewing changes on files.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1a346qdimr1dvj53q033aqnahwd2dhyn9jadrs019nm0bzgw7g63"))))
+                "1x052fsavb94x3scpqd6n9spqgzaahzbdxhg4qa5sy6hqsabn6zh"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -4614,7 +4614,7 @@ functions to assist in reviewing changes on files.")
      `(("ert-runner" ,emacs-ert-runner)
        ("emacs-mocker" ,emacs-mocker)))
     (home-page "https://github.com/jorgenschaefer/pyvenv")
-    (synopsis "Virtualenv minor mode for Emacs")
+    (synopsis "Python virtual environment interface for Emacs")
     (description "pyvenv.el is a minor mode to support using Python virtual
 environments (virtualenv) inside Emacs.")
     (license license:gpl3+)))
@@ -5600,7 +5600,7 @@ procedures for emacs-lisp-mode.")
 (define-public emacs-ht
   (package
     (name "emacs-ht")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
@@ -5610,7 +5610,7 @@ procedures for emacs-lisp-mode.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1lpba36kzxcc966fvsbrfpy8ah9gnvay0yk26gbyjil0rggrbqzj"))))
+         "0fsi27gdrh2dgwdbq43vnw5sz25war6shlxaclr60fl7krpxjkzf"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Wilfred/ht.el")
@@ -7214,7 +7214,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.3.0")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
@@ -7223,7 +7223,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1lsj314111cp2hjjwnv3f46ws1za6bm39rgy3l19044xf6a68j5w"))
+         "1g8k0js21bc8mlw6hvmg93zgfjhil77c30cv1hf85y4qb9ldvika"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
 (define-module (gnu packages popt)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix licenses))
@@ -96,15 +97,16 @@ similar to getopt(3), it contains a number of enhancements, including:
 (define-public gflags
   (package
     (name "gflags")
-    (version "2.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/gflags/gflags"
-                                  "/archive/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "03lxc2ah8i392kh1naq99iip34k4fpv22kwflyx3byd2ssycs9xf"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (version "2.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gflags/gflags.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "147i3md3nxkjlrccqg4mq1kyzc7yrhvqv5902iibc7znkvzdvlp0"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"

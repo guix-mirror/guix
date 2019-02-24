@@ -251,6 +251,9 @@ reconstruction capability.")
              "CONFIG_SHELL=sh" "CCOM=gcc"
              (string-append "INS_BASE=" (assoc-ref %outputs "out"))
              (string-append "INS_RBASE=" (assoc-ref %outputs "out")))
+       ;; Parallel builds appear to be unsafe, see
+       ;; https://hydra.gnu.org/build/3346840/log/raw
+       #:parallel-build? #f
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

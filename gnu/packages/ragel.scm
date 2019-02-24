@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,16 +27,16 @@
 (define-public ragel
   (package
     (name "ragel")
-    (version "6.9")
+    (version "6.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.colm.net/files/ragel/ragel-"
+              (uri (string-append "https://www.colm.net/files/ragel/ragel-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02k6rwh8cr95f1p5sjjr3wa6dilg06572xz1v71dk8awmc7vw1vf"))))
+                "0gvcsl62gh6sg73nwaxav4a5ja23zcnyxncdcdnqa2yjcpdnw5az"))))
     (build-system gnu-build-system)
-    (home-page "http://www.colm.net/open-source/ragel/")
+    (home-page "https://www.colm.net/open-source/ragel/")
     (synopsis "State machine compiler")
     (description
      "Ragel compiles executable finite state machines from regular languages.

@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -279,7 +279,7 @@ problem, and shows the differences.")
 (define-public cmocka
   (package
     (name "cmocka")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmocka.org/files/"
@@ -287,7 +287,7 @@ problem, and shows the differences.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1p9b6ccv939wjsgapn7wx24xw278awsw9h81lm0g4zw257hx276i"))))
+                "1bxzzafjlwzgldcb07hjnlnqvh88wh21r2kw7z8f704w5bvvrsj3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no test target
@@ -323,6 +323,51 @@ in the code.  Cppcheck primarily detects the types of bugs that the compilers
 normally do not detect.  The goal is to detect only real errors in the code
 (i.e. have zero false positives).")
     (license license:gpl3+)))
+
+(define-public cxxtest
+  (package
+    (name "cxxtest")
+    (version "4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/cxxtest/cxxtest/"
+                                  version "/cxxtest-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n7pbj4z9ivx005hqvivj9ddhq8awynzg6jishfbypf6j7ply58w"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-to-source
+           (lambda _
+             (chdir "python")
+             #t))
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (include-dir (string-append out "/include/cxxtest")))
+               (for-each (lambda (header-file)
+                           (install-file header-file include-dir))
+                         (find-files "../cxxtest"))
+               #t)))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc-dir (string-append out "/share/doc/cxxtest")))
+               (install-file "../README" doc-dir)
+               (install-file "../doc/guide.txt" doc-dir)
+               (copy-recursively "../sample" (string-append doc-dir "/sample"))
+               #t))))))
+    (propagated-inputs
+     `(("python-ply" ,python-ply)))
+    (home-page "https://cxxtest.com/")
+    (synopsis "Unit testing framework for C++")
+    (description "CxxTest is a unit testing framework for C++ that is similar
+in spirit to JUnit, CppUnit, and xUnit.  CxxTest does not require precompiling
+a CxxTest testing library, it employs no advanced features of C++ (e.g. RTTI)
+and it supports a very flexible form of test discovery.")
+    (license license:lgpl3+)))
 
 (define-public go-gopkg.in-check.v1
   (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
@@ -1572,7 +1617,7 @@ failures.")
 (define-public python2-coverage-test-runner
   (package
     (name "python2-coverage-test-runner")
-    (version "1.11")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
@@ -1582,7 +1627,7 @@ failures.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0y1m7z3dl63kmhcmydl1mwg0hacnf6ghrx9dah17j9iasssfa3g7"))))
+         "1kjjb9llckycnfxag8zcvqsn4z1s3dwyw6b1n0avxydihgf30rny"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
