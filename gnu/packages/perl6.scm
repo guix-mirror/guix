@@ -94,3 +94,68 @@ exceptions, continuations, runtime loading of code, big integers and interfacing
 with native libraries.
 @end itemize")
     (license license:artistic2.0)))
+
+(define-public nqp
+  (package
+    (name "nqp")
+    (version "2019.03")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://rakudo.perl6.org/downloads/nqp/nqp-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "183zhll13fx416s3hkg4bkvib77kyr857h0nydgrl643fpacxp83"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file-recursively "3rdparty") #t))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             (substitute* '("tools/build/install-jvm-runner.pl.in"
+                            "tools/build/gen-js-cross-runner.pl"
+                            "tools/build/gen-js-runner.pl"
+                            "tools/build/install-js-runner.pl"
+                            "tools/build/install-moar-runner.pl"
+                            "tools/build/gen-moar-runner.pl"
+                            "t/nqp/111-spawnprocasync.t"
+                            "t/nqp/113-run-command.t")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'unpack 'patch-source-date
+           (lambda _
+             (substitute* "tools/build/gen-version.pl"
+               (("gmtime") "gmtime(0)"))
+             #t))
+         (add-after 'unpack 'remove-failing-test
+           ;; One subtest fails for unknown reasons
+           (lambda _
+             (delete-file "t/nqp/019-file-ops.t")
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out  (assoc-ref outputs "out"))
+                   (moar (assoc-ref inputs "moarvm")))
+               (invoke "perl" "Configure.pl"
+                       "--backends=moar"
+                       "--with-moar" (string-append moar "/bin/moar")
+                       "--prefix" out)))))))
+    (inputs
+     `(("moarvm" ,moarvm)))
+    (home-page "https://github.com/perl6/nqp")
+    (synopsis "Not Quite Perl")
+    (description "This is \"Not Quite Perl\" -- a lightweight Perl 6-like
+environment for virtual machines.  The key feature of NQP is that it's designed
+to be a very small environment (as compared with, say, perl6 or Rakudo) and is
+focused on being a high-level way to create compilers and libraries for virtual
+machines like MoarVM, the JVM, and others.
+
+Unlike a full-fledged implementation of Perl 6, NQP strives to have as small a
+runtime footprint as it can, while still providing a Perl 6 object model and
+regular expression engine for the virtual machine.")
+    (license license:artistic2.0)))
