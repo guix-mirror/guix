@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -404,8 +404,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.10")
-(define %linux-libre-hash "0d386gb1s9ag80iqzms9gdsfzirq7nlkpkkx2d6ky01rv0g4vgqn")
+(define %linux-libre-version "4.20.12")
+(define %linux-libre-hash "16w52g5s7qhvmmz3srai1myl8949nxv6cqybiw3wx3mwcvp95mlh")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -418,8 +418,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.23")
-(define %linux-libre-4.19-hash "0s207vqq2vcrgydjjwb5n2j7di0rjahnrbn3xv4xxlp5scjp59xq")
+(define %linux-libre-4.19-version "4.19.25")
+(define %linux-libre-4.19-hash "0kg8gibmyihh4lr7ksp8szrs0jx5sr2g56szm69lff1zmsywpqc6")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -432,8 +432,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.101")
-(define %linux-libre-4.14-hash "02j240x30zkhpazdimlfi0xq6zjdw6fidgdfrdnvfryvhf6j097j")
+(define %linux-libre-4.14-version "4.14.103")
+(define %linux-libre-4.14-hash "05zcb7kaj6cni4v0s0qdywwrqzlr63mkqbhxkbmrjz4blxxxdszg")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -442,14 +442,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.158"
-                    "11v56dzp87wyxrymf2s1cmk7jr440z11m3yan73rnnnqlfq460ig"
+  (make-linux-libre "4.9.160"
+                    "1j3z3kn4n9vm7fkzb63ddmxba9r2pm623kar1jn7i5xsd1vz4qr9"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.174"
-                    "1njd50yc180aarpd5crss3wn0n82lhxbyjrifsm647f3dfjhyvjb"
+  (make-linux-libre "4.4.176"
+                    "0c300zqmsadahs2fpzxh6cn7q3h7jxq69msd17rh8v3wnvql8vzx"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -1018,7 +1018,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.7")
+    (version "1.1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1026,7 +1026,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "02fw7dw202mjid49w9ki3dsfcyvid5fj488561bdzcm3haw00q4x"))))
+               "1pxf0zkmps03l3zzd0fr828xhkg6a8hxljmbxzc2cyj2ls9kmp1w"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -1038,14 +1038,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.7")
+    (version "1.1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "02jlw6a22j2rr7inggfgk2hzx3w0fjhvhs0dn1afpzdp9aspzchx"))))
+               "1kx45yhrxai3k595yyqs4wj0p2n5b0c9mf0k36ljjf1bj8lgb6zx"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1058,6 +1058,13 @@ MIDI functionality to the Linux-based operating system.")
                                               "/lib/udev/rules.d"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'disable-broken-test
+           (lambda _
+             ;; XXX: The 1.1.8 release tarball is missing a header that's
+             ;; required for this test to work.  Fixed in 1.1.9.
+             (substitute* "axfer/test/Makefile"
+               ((".*container-test.*") ""))
+             #t))
          (add-before
            'install 'pre-install
            (lambda _
@@ -1085,14 +1092,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.7")
+    (version "1.1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0iys4zl1davzyg3mn9lvil1n3k1ifrg3v1caj3k4dqyrnrd40jx7"))))
+               "152r82i6f97gfilfgiax5prxkd4xlcipciv8ha8yrk452qbxyxvz"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
@@ -2771,14 +2778,14 @@ about ACPI devices.")
 (define-public acpid
   (package
     (name "acpid")
-    (version "2.0.30")
+    (version "2.0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/acpid2/acpid-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1jzl7hiaspr5xkmsrbl69bib8cs3dp6bq5ix58fbskpnsdi7pdr8"))))
+                "1hrc0xm6q12knbgzhq0i8g2rfrkwcvh1asd7k9rs3nc5xmlwd7gw"))))
     (build-system gnu-build-system)
     (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
@@ -5087,6 +5094,10 @@ the superuser to make device nodes.")
               (string-append (assoc-ref inputs "util-linux")
                              "/bin/getopt")))
             #t))
+        (add-before 'configure 'setenv
+          (lambda _
+            (setenv "LIBS" "-lacl")
+            #t))
         (add-before 'check 'prepare-check
           (lambda _
             (setenv "SHELL" (which "bash"))
@@ -5105,7 +5116,8 @@ the superuser to make device nodes.")
              (("tar -tvf") "tar --numeric-owner -tvf"))
             #t)))))
     (native-inputs
-     `(("sharutils" ,sharutils) ; for the tests
+     `(("acl" ,acl)
+       ("sharutils" ,sharutils) ; for the tests
        ("xz" ,xz))) ; for the tests
     (inputs
      `(("libcap" ,libcap)

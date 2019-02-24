@@ -163,16 +163,17 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.99")
+    (version "1.1.101")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Headers")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "166z6wn5kxnqm55zgzhmqa9hg48d11bfmi3wnf1mqhsx48xw6b8z"))))
+         "1hb1lg56i2685nz7i4hbsv3sz1iym2wimjz4bfa175xh5jyvr0km"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -193,9 +194,10 @@ interpretation of the specifications for these languages.")
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Loader")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "02m3sdcbl8s6qr1nsba5621vg3f4akkfaa7g9hi70cpvws4x0gg8"))))
+         "02xkjaack3zmbsnh95jbkkdarf7ccfpfjby12kikajwr0kr4d4df"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -242,16 +244,17 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.1.97.0")
+    (version "1.1.100")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Tools")
-             (commit (string-append "sdk-" version))))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1p70wk0x546w1dlvlghrqm4l4b6ql0x08pdybyagnwwph0gdvqy3"))))
+         "1b9c8yimn34b77nbrkra4qj71gcw8zr0cgdp85ghxampm7gzx0xi"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)

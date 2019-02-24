@@ -1005,28 +1005,21 @@ painted with a mouse.")
 (define-public ois
   (package
     (name "ois")
-    (version "1.3")
+    (version "1.5")
     (source
      (origin
-       ;; Development has moved to github and there are no recent tarball
-       ;; releases.
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/wgois/OIS.git")
-             (commit "bb75ccc1aabc1c547195579963601ff6080ca2f2")))
-       (file-name (string-append name "-" version))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0w0pamjc3vj0jr718hysrw8x076fq6n9rd6wcb36sn2jd0lqvi98"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("m4" ,m4)
-       ("pkg-config" ,pkg-config)))
+        (base32 "0g8krgq5bdx2rw7ig0xva4kqv4x815672i7z6lljp3n8847wmypa"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no test suite
     (inputs
-     `(("libxaw" ,libxaw)))
+     `(("libx11" ,libx11)))
     (synopsis "Object Oriented Input System")
     (description
      "Cross Platform Object Oriented Input Lib System is a cross platform,

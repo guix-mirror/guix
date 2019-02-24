@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-public agda
   (package
     (name "agda")
-    (version "2.5.4.1")
+    (version "2.5.4.2")
     (source
      (origin
        (method url-fetch)
@@ -41,11 +42,10 @@
              version ".tar.gz"))
        (sha256
         (base32
-         "0bxpibsk98n9xp42d92ma5vj2fam8rsnl61fbhr3askfjdvalnbp"))))
+         "07wvawpfjhx3gw2w53v27ncv1bl0kkx08wkm6wzxldbslkcasign"))))
     (build-system haskell-build-system)
     (inputs
-     `(("cpphs" ,cpphs)
-       ("ghc-alex" ,ghc-alex)
+     `(("ghc-alex" ,ghc-alex)
        ("ghc-async" ,ghc-async)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-boxes" ,ghc-boxes)

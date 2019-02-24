@@ -268,6 +268,11 @@ problems for efficient solution on parallel systems.")
              (setenv "PYTHONPATH"
                      (string-append (getcwd) ":" (getenv "PYTHONPATH")))
              (with-directory-excursion "test"
+               ;; Disable parallel tests to avoid race condition.  See
+               ;; https://github.com/pytest-dev/pytest-cov/issues/237.
+               (substitute* "runtests.sh"
+                 (("for p in 1 4 8 16; do")
+                  "for p in 1; do"))
                (invoke "./runtests.sh"))
              #t)))))
     (home-page "https://bitbucket.org/fenics-project/dijitso/")

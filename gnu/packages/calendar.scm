@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,23 +160,22 @@ able to synchronize with CalDAV servers through vdirsyncer.")
 (define-public remind
   (package
     (name "remind")
-    (version "3.1.15")
+    (version "3.1.16")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.roaringpenguin.com/files/download/"
+       (uri (string-append "https://dianne.skoll.ca/projects/remind/download/"
                            "remind-"
                            (string-join (map (cut string-pad <> 2 #\0)
                                              (string-split version #\.))
                                         ".")
                            ".tar.gz"))
        (sha256
-        (base32
-         "1hcfcxz5fjzl7606prlb7dgls5kr8z3wb51h48s6qm8ang0b9nla"))))
+        (base32 "14yavwqmimba8rdpwx3wlav9sfb0v5rcd1iyzqrs08wx07a9pdzf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f))  ;no "check" target
-    (home-page "http://www.roaringpenguin.com/products/remind/")
+     '(#:tests? #f))                    ; no "check" target
+    (home-page "https://dianne.skoll.ca/projects/remind/")
     (synopsis "Sophisticated calendar and alarm program")
     (description
      "Remind allows you to remind yourself of upcoming events and appointments.

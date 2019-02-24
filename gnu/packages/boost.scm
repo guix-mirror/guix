@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -181,6 +181,34 @@ across a broad spectrum of applications.")
 and events and other thread related facilities.  Boost.Sync originated from
 Boost.Thread.")
       (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt")))))
+
+(define-public boost-signals2
+  (package
+    (name "boost-signals2")
+    (version (package-version boost))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/boostorg/signals2.git")
+                    (commit (string-append "boost-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1nayaqshhzr1n6jj43bpvvay36d5gn075h0b95psii5x8ingszdk"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source")))
+           (copy-recursively (string-append source "/include")
+                             (string-append %output "/include"))))))
+    (home-page "https://github.com/boostorg/signals2")
+    (synopsis "Boost.Signals2 library")
+    (description "The Boost.Signals2 library is an implementation of a managed
+signals and slots system.")
+    (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"))))
 
 (define-public mdds
   (package

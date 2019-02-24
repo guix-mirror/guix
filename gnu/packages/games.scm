@@ -112,6 +112,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages music)
   #:use-module (gnu packages multiprecision)
@@ -1401,25 +1403,35 @@ interface or via an external visual interface such as GNU XBoard.")
 (define freedink-engine
   (package
     (name "freedink-engine")
-    (version "108.4")
+    (version "109.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "08c51imfjfcydm7h0va09z8qfw5nc837bi2x754ni2z737hb5kw2"))))
+                "0iaagwnyfgm3mqzkj550q60hrsjr13gykg5vfn2nz2ia520bb52g"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--disable-embedded-resources")))
-    (native-inputs `(("gettext" ,gettext-minimal)
+    (arguments
+     `(#:configure-flags '("--disable-embedded-resources")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-graphical-tests
+           (lambda _
+             ;; These tests require a graphical interface.
+             (substitute* "src/Makefile.am"
+               (("test_gfx_fonts TestIOGfxDisplay") ""))
+             #t)))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("cxxtest" ,cxxtest)
+                     ("gettext" ,gettext-minimal)
+                     ("help2man" ,help2man)
                      ("pkg-config" ,pkg-config)))
-    (inputs `(("sdl" ,sdl)
-              ("sdl-image" ,sdl-image)
-              ("sdl-mixer" ,sdl-mixer)
-              ("sdl-ttf" ,sdl-ttf)
-              ("sdl-gfx" ,sdl-gfx)
+    (inputs `(("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer
+                                             sdl2-ttf sdl2-gfx)))
               ("fontconfig" ,fontconfig)
-              ("check" ,check)))
+              ("glm" ,glm)))
     (properties '((ftp-directory . "/freedink")
                   (upstream-name . "freedink")))
     (home-page "https://www.gnu.org/software/freedink/")

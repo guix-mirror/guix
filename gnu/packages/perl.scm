@@ -6411,25 +6411,20 @@ system threads instead of Perl threads.")
 (define-public perl-net-idn-encode
   (package
     (name "perl-net-idn-encode")
-    (version "2.400")
+    (version "2.500")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://cpan/authors/id/C/CF/CFAERBER/Net-IDN-Encode-"
-             version
-             ".tar.gz"))
+       (uri (string-append "mirror://cpan/authors/id/C/CF/CFAERBER/"
+                           "Net-IDN-Encode-" version ".tar.gz"))
        (sha256
-        (base32
-         "0a9knav5f9kjldrkxx1k47ivd3p23zkmi8aqgyhnxidhgasz1dlq"))))
+        (base32 "1aiy7adirk3wpwlczd8sldi9k1dray0jrg1lbcrcw97zwcrkciam"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-nowarnings" ,perl-test-nowarnings)))
-    (home-page
-     "https://metacpan.org/release/Net-IDN-Encode")
-    (synopsis
-     "Internationalizing Domain Names in Applications (IDNA)")
+    (home-page "https://metacpan.org/release/Net-IDN-Encode")
+    (synopsis "Internationalizing Domain Names in Applications (IDNA)")
     (description
      "Internationalized Domain Names (IDNs) use characters drawn from a large
 repertoire (Unicode), but IDNA allows the non-ASCII characters to be

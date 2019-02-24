@@ -1138,17 +1138,17 @@ other Python program.")
 (define-public python-empy
   (package
     (name "python-empy")
-    (version "3.3")
+    (version "3.3.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.alcyone.com/software/empy/empy-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01g8mmkfnvjdmlhsihwyx56lrg7r5m5d2fg6mnxsvy6g0dnl69f6"))))
+               "1mxfy5mgp473ga1pgz2nvm8ds6z4g3hdky8523z6jzvcs9ny6hcq"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;python2 only
+     `(#:tests? #f))                    ; python2 only
     (home-page "http://www.alcyone.com/software/empy/")
     (synopsis "Templating system for Python")
     (description
@@ -1166,7 +1166,11 @@ commands.")
     (license license:lgpl2.1+)))
 
 (define-public python2-empy
-  (package-with-python2 python-empy))
+  (let ((base (package-with-python2 (strip-python2-variant python-empy))))
+    (package
+      (inherit base)
+      (arguments `(,@(package-arguments base)
+                   #:tests? #t)))))
 
 (define-public python2-element-tree
   (package
@@ -2762,13 +2766,13 @@ and is very extensible.")
 (define-public python-scikit-image
   (package
     (name "python-scikit-image")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scikit-image" version))
        (sha256
-        (base32 "0l1c3rl4s1jyv80i5hns4pgih09zrxfj7lygdc51w8sgyysb7ac6"))))
+        (base32 "07qchljkyxvg5nrm12fvszi7pmjk4m01qp0w0z8syxzxxs20pz8s"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Some tests require running X11 server. Disable them?
@@ -11249,7 +11253,7 @@ protocols.")
 (define-public python2-cliapp
   (package
     (name "python2-cliapp")
-    (version "1.20170823")
+    (version "1.20180812.1")
     (source
      (origin
        (method url-fetch)
@@ -11258,7 +11262,7 @@ protocols.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1i9gik0xrj6jmi95s5w988jl1y265baz5xm5pbqdyvsh8h9ln6yq"))))
+         "1c1jlblbns8qhiaqjpg4xi6lip8xwfc5w643p43rg543havaj45x"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -11290,7 +11294,7 @@ iterating over input files.")
 (define-public python2-ttystatus
   (package
     (name "python2-ttystatus")
-    (version "0.35")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
@@ -11299,7 +11303,7 @@ iterating over input files.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0vivqbw7ddhsq1zj3g9cvvv4f0phl0pis2smsnwcr2szz2fk3hl6"))))
+         "06mdk4d19zw2j3is54gndhzl396g3xc8k52m7i86z69s9hcz71by"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-coverage-test-runner" ,python2-coverage-test-runner)
@@ -12057,14 +12061,14 @@ terminal such as coloured output in the shell, overwriting output, indentation, 
 (define-public python-misaka
   (package
     (name "python-misaka")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "misaka" version))
        (sha256
         (base32
-         "1yqrq3a5rracirmvk52n28nn6ckdaz897gnigv89a9gmyn87sqw7"))))
+         "1mzc29wwyhyardclj1vg2xsfdibg2lzb7f1azjcxi580ama55wv2"))))
     (build-system python-build-system)
     (arguments
      `(;; Line 37 of setup.py calls self.run_command('develop')
@@ -13440,16 +13444,16 @@ functions by partial application of operators.")
 (define-public python-funcy
   (package
     (name "python-funcy")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Suor/funcy/archive/" version
-                           ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Suor/funcy.git")
+             (commit version)))
        (sha256
-        (base32
-         "1fanxivsip29vgarw6dn39xym3q4pbxcpa11plpp548lvxajpahz"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1s98vkjnq3zq71737hn8xa15kssvmy1sfzsll3vrlv53902418mw"))
+       (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13913,14 +13917,14 @@ Parso is also able to list multiple syntax errors in your Python file.")
 (define-public python-async-generator
   (package
     (name "python-async-generator")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "async_generator" version))
        (sha256
         (base32
-         "0wc3hidz1q85cja93k5pzybn0fprfnqyrv4qlkdqdzklc5f4dmdp"))))
+         "0i11f6z6lix8ixi3vsk6s76zvvpmgrw6zjrcwjm0m4hjdh83vfvf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))

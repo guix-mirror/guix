@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +80,8 @@
                            ;; This add mesa to libsdl's RUNPATH, to make dlopen
                            ;; finding the libGL from mesa at runtime.
                            "LDFLAGS=-lGL")
+
+       #:make-flags '("V=1")            ;build verbosely
 
        #:tests? #f)) ; no check target
     (propagated-inputs
@@ -347,6 +350,21 @@ directory.")
           `("sdl2" ,sdl2))
          (other other))
        (package-propagated-inputs package)))
+
+(define-public sdl2-gfx
+  (package (inherit sdl-gfx)
+    (name "sdl2-gfx")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "0qk2ax7f7grlxb13ba0ll3zlm8780s7j8fmrhlpxzjgdvldf1q33"))))
+    (propagated-inputs
+     (propagated-inputs-with-sdl2 sdl-gfx))))
 
 (define-public sdl2-image
   (package (inherit sdl-image)

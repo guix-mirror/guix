@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -341,14 +341,14 @@ the embedded @code{RapidXML} C++ library.")
 (define-public r-modelr
   (package
     (name "r-modelr")
-    (version "0.1.2")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "modelr" version))
        (sha256
         (base32
-         "09whg3q5xq6csbqwgwfwav09vda8vgady5j70sk52xcn232k363a"))))
+         "1ngxphbjkv7yl1rg30sj36mfwhc76g452drjrq9abgab4k0pgnml"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -2447,16 +2447,20 @@ to access PostgreSQL database systems.")
 (define-public r-geometry
   (package
     (name "r-geometry")
-    (version "0.3-6")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "geometry" version))
        (sha256
         (base32
-         "0s09vi0rr0smys3an83mz6fk41bplxyz4myrbiinf4qpk6n33qib"))))
+         "0lpih1a93jz021krdv78zf6fq95g8i0xw4r9aj5gq36a0vzc3i0y"))))
     (build-system r-build-system)
-    (propagated-inputs `(("r-magic" ,r-magic)))
+    (propagated-inputs
+     `(("r-magic" ,r-magic)
+       ("r-lpsolve" ,r-lpsolve)
+       ("r-rcpp" ,r-rcpp)
+       ("r-cppprogress" ,r-rcppprogress)))
     (home-page "http://geometry.r-forge.r-project.org/")
     (synopsis "Mesh generation and surface tesselation")
     (description
@@ -10651,3 +10655,29 @@ analysis (@code{rrpca}), randomized interpolative decomposition (@code{rid}),
 and the randomized CUR decomposition (@code{rcur}).  In addition several plot
 functions are provided.")
     (license license:gpl3+)))
+
+(define-public r-sloop
+  (package
+    (name "r-sloop")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sloop" version))
+       (sha256
+        (base32
+         "00fk5fr5zsk2qxc1kfhmshhjxgnamm3401089sx8m2l529zd6r8j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-crayon" ,r-crayon)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/r-lib/sloop")
+    (synopsis "Helpers for object-oriented programming in R")
+    (description
+     "This package provides a collection of helper functions designed to
+help you to better understand object oriented programming in R, particularly
+using @code{S3}.")
+    (license license:gpl3)))
