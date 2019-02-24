@@ -3014,7 +3014,7 @@ types or handled by application specific code.")
               (uri (string-append
                     "mirror://kde/stable/frameworks/"
                     (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
+                    "ktexteditor-" version ".tar.xz"))
               (sha256
                (base32
                 "0b5zqhm5aw7jj7dj600xa674ik11gwyzamhyz5962xhvsg5pyjwx"))))
