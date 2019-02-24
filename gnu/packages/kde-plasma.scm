@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,14 +37,14 @@
 (define-public kdecoration
   (package
     (name "kdecoration")
-    (version "5.15.0")
+    (version "5.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kdecoration-" version ".tar.xz"))
               (sha256
                (base32
-                "1pcyw6rrz0q7i2jnfvmjz2pixiw2aay19q3pxa1g3qvqydh3id5q"))))
+                "03lxnjbhlnyiw2znflp0f2w77a5pzv5yvsbngvwgp89ig9mansi1"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
