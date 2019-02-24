@@ -25,7 +25,8 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls))
 
 (define-public moarvm
   (package
@@ -158,4 +159,69 @@ machines like MoarVM, the JVM, and others.
 Unlike a full-fledged implementation of Perl 6, NQP strives to have as small a
 runtime footprint as it can, while still providing a Perl 6 object model and
 regular expression engine for the virtual machine.")
+    (license license:artistic2.0)))
+
+(define-public rakudo
+  (package
+    (name "rakudo")
+    (version "2019.03.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://rakudo.perl6.org/downloads/rakudo/rakudo-"
+                            version ".tar.gz"))
+        (sha256
+         (base32
+          "1nllf69v8xr6v3kkj7pmryg11n5m3ajfkr7j72pvhrgnjy8lv3r1"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source-date
+           (lambda _
+             (substitute* "tools/build/gen-version.pl"
+               (("gmtime") "gmtime(0)"))
+             #t))
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             (substitute* '("tools/build/create-js-runner.pl"
+                            "tools/build/create-moar-runner.p6"
+                            "tools/build/create-jvm-runner.pl"
+                            "src/core/Proc.pm6")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (nqp (assoc-ref inputs "nqp")))
+               (invoke "perl" "./Configure.pl"
+                       "--backend=moar"
+                       "--with-nqp" (string-append nqp "/bin/nqp")
+                       "--prefix" out))))
+         ;; This is the recommended tool for distro maintainers to install perl6
+         ;; modules systemwide.  See: https://github.com/ugexe/zef/issues/117
+         (add-after 'install 'install-dist-tool
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (dest (string-append out "/share/perl6/tools")))
+               (install-file "tools/install-dist.p6" dest)
+               (substitute* (string-append dest "/install-dist.p6")
+                 (("/usr/bin/env perl6")
+                  (string-append out "/bin/perl6"))))
+             #t)))))
+    (inputs
+     `(("moarvm" ,moarvm)
+       ("nqp" ,nqp)
+       ("openssl" ,openssl)))
+    (home-page "https://rakudo.org/")
+    (native-search-paths
+      (list (search-path-specification
+              (variable "PERL6LIB")
+              (separator ",")
+              (files '("share/perl6/lib"
+                       "share/perl6/site/lib"
+                       "share/perl6/vendor/lib")))))
+    (synopsis "Perl 6 Compiler")
+    (description "Rakudo Perl is a compiler that implements the Perl 6
+specification and runs on top of several virtual machines.")
     (license license:artistic2.0)))
