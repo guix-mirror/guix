@@ -824,7 +824,7 @@ glyph designs, not just an added slant.")
     (synopsis "Typeface designed for source code")
     (description
      "Hack is designed to be a workhorse typeface for code.  It expands upon
-the Bitstream Vera & DejaVu projects, provides 1561 glyphs, and includes
+the Bitstream Vera & DejaVu projects, provides over 1,500 glyphs, and includes
 Powerline support.")
     (license
      ;; See https://github.com/source-foundry/Hack/issues/271 for details.
