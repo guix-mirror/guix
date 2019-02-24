@@ -168,7 +168,7 @@ basic needs and easy to configure for those who want special setups.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.15.0")
+    (version "5.15.1")
     (source
      (origin
        (method url-fetch)
@@ -176,7 +176,7 @@ basic needs and easy to configure for those who want special setups.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "1aqkzbng2qq09rpb21r6drnn866b9y8yba3klhvhi0q5vg3p605d"))))
+         "0ml106yq4q9qagkrcaafgcky18wk76px5a1r6j36wfjqdd6wpzvs"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
