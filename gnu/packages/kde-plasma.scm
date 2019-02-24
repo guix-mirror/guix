@@ -66,14 +66,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public kscreenlocker
   (package
     (name "kscreenlocker")
-    (version "5.15.0")
+    (version "5.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kscreenlocker-" version ".tar.xz"))
               (sha256
                (base32
-                "1hgj2mzbbiqn52j3px2mzz6xzzpzr78q3bcai8ddc4gcl1xgs6yi"))))
+                "1jp2z1wjsd99is31igkfnscs55h755cmp86ppkj596fcxv1krymq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
