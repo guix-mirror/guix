@@ -2007,9 +2007,9 @@ Hints specification (EWMH).")
     (version "1.12.36")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gnumeric/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "gnumeric-" version ".tar.xz"))
               (sha256
                (base32
                 "0j28qpbz9a9p80x27kcwxl5n1hf36nn2fa7dxwrbhcdx4rgy5grw"))))
