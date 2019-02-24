@@ -129,14 +129,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public libkscreen
   (package
     (name "libkscreen")
-    (version "5.15.0")
+    (version "5.15.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/plasma/" version "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "1clw8966fmwih1fsjasvpgvfq7w728hlabl3i0zjz53r87hdw3mb"))))
+        (base32 "1zpzqafrb576al10f5873nl1z135gscjza6gd3ickfzlvd9qmr18"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
