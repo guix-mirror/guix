@@ -199,15 +199,15 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
 (define-public font-lato
   (package
     (name "font-lato")
-    (version "2.010")
+    (version "2.010")                   ; also update description
     (source (origin
               (method url-fetch/zipbomb)
-              (uri (string-append "http://www.latofonts.com/download/Lato2OFL.zip"))
+              (uri (string-append "https://www.latofonts.com/download/Lato2OFL.zip"))
               (sha256
                (base32
                 "1f5540g0ja1nx3ddd3ywn77xc81ssrxpq8n3gyb9sabyq2b4xda2"))))
     (build-system font-build-system)
-    (home-page "http://www.latofonts.com/lato-free-fonts/")
+    (home-page "https://www.latofonts.com/lato-free-fonts/")
     (synopsis "Lato sans-serif typeface")
     (description
      "Lato is a sanserif typeface family.  It covers over 3000 glyphs per style.
