@@ -162,8 +162,8 @@ itself as well as other components maintained by the LXQt project.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/lxqt/" name "/releases/download/"
-             version "/" name "-" version ".tar.xz"))
+             "https://github.com/lxqt/libqtxdg/releases/download/"
+             version "/libqtxdg-" version ".tar.xz"))
        (sha256
         (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
     (build-system cmake-build-system)
