@@ -14,7 +14,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
@@ -2134,6 +2134,39 @@ buffers, and audio capture.")
      "Patchage is a modular patch bay for audio and MIDI systems based on JACK
 and ALSA.")
     (license license:gpl3+)))
+
+(define-public pcaudiolib
+  (package
+    (name "pcaudiolib")
+    (version "1.1")
+    (home-page "https://github.com/espeak-ng/pcaudiolib")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0c55hlqqh0m7bcb3nlgv1s4a22s5bgczr1cakjh3767rjb10khi0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "Portable C audio library")
+    (description
+     "The Portable C Audio Library (pcaudiolib) provides a C@tie{}API to
+different audio devices such as ALSA or PulseAudio.")
+    (license (list license:gpl3+
+                   ;; The bundled TPCircularBuffer uses a custom license.
+                   (license:non-copyleft
+                    "file://src/TPCircularBuffer/README.markdown")))))
 
 (define-public qjackctl
   (package
