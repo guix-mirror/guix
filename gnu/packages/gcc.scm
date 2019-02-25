@@ -508,14 +508,14 @@ It also includes runtime support libraries for these languages.")))
 (define-public gcc-8
   (package
     (inherit gcc-7)
-    (version "8.2.0")
+    (version "8.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.xz"))
               (sha256
                (base32
-                "10007smilswiiv2ymazr3b6x2i933c0ycxrr529zh4r6p823qv0r"))
+                "0b3xv411xhlnjmin2979nxcbnidgvzqdf4nbhix99x60dkzavfk4"))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
