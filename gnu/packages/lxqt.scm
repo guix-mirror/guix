@@ -128,8 +128,9 @@ to statistics about the system on which it's run.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://github.com/lxqt/lxqt-build-tools/releases"
+                           "/download/" version
+                           "/lxqt-build-tools-" version ".tar.xz"))
        (sha256
         (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
     (build-system cmake-build-system)
