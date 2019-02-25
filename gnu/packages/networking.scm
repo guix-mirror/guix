@@ -2001,7 +2001,7 @@ eight bytes) tools
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asio/asio/"
-                           version " (Stable)/" name "-" version ".tar.bz2"))
+                           version " (Stable)/asio-" version ".tar.bz2"))
        (sha256
         (base32
          "0nln45662kg799ykvqx5m9z9qcsmadmgg6r5najryls7x16in2d9"))))
