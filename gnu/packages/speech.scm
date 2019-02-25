@@ -164,7 +164,7 @@ efficiency through the use of a compact vector representation of n-grams.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("dotconf" ,dotconf)
-       ("espeak" ,espeak)
+       ("espeak" ,espeak-ng)
        ("glib" ,glib)
        ("libltdl" ,libltdl)
        ("libsndfile" ,libsndfile)
