@@ -907,7 +907,7 @@ Escape key when Left Control is pressed and released on its own.")
               (method url-fetch)
               (uri (string-append
                     "https://github.com/linuxwacom/libwacom/releases/download/"
-                    name "-" version "/" name "-" version ".tar.bz2"))
+                    "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
                 "00xzkxhm0s9bvhbf27hscjbh17wa8lcgvxjqbmzm527f9cjqrm8q"))))
