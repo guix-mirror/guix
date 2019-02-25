@@ -254,39 +254,41 @@ editor (without an X toolkit)" )
                        (package-arguments emacs)))))
 
 (define-public guile-emacs
-  (package (inherit emacs)
-    (name "guile-emacs")
-    (version "20150512.41120e0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.hcoop.net/git/bpt/emacs.git")
-                    (commit "41120e0f595b16387eebfbf731fff70481de1b4b")))
-              (file-name (string-append name "-" version "-checkout"))
-              (patches (search-patches "guile-emacs-fix-configure.patch"))
-              (sha256
-               (base32
-                "0lvcvsz0f4mawj04db35p1dvkffdqkz8pkhc0jzh9j9x2i63kcz6"))))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("guile" ,guile-for-guile-emacs)
-       ,@(package-native-inputs emacs)))
-    (arguments
-     (substitute-keyword-arguments `(;; Build fails if we allow parallel build.
-                                     #:parallel-build? #f
-                                     ;; Tests aren't passing for now.
-                                     #:tests? #f
-                                     ,@(package-arguments emacs))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'autogen
-             (lambda _
-               (invoke "sh" "autogen.sh")))
-           ;; Build sometimes fails: deps/dispnew.d: No such file or directory
-           (add-before 'build 'make-deps-dir
-             (lambda _
-               (invoke "mkdir" "-p" "src/deps")))))))))
+  (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")
+        (revision "0"))
+    (package (inherit emacs)
+      (name "guile-emacs")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.hcoop.net/git/bpt/emacs.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (patches (search-patches "guile-emacs-fix-configure.patch"))
+                (sha256
+                 (base32
+                  "0lvcvsz0f4mawj04db35p1dvkffdqkz8pkhc0jzh9j9x2i63kcz6"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("guile" ,guile-for-guile-emacs)
+         ,@(package-native-inputs emacs)))
+      (arguments
+       (substitute-keyword-arguments `(;; Build fails if we allow parallel build.
+                                       #:parallel-build? #f
+                                       ;; Tests aren't passing for now.
+                                       #:tests? #f
+                                       ,@(package-arguments emacs))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'autogen
+               (lambda _
+                 (invoke "sh" "autogen.sh")))
+             ;; Build sometimes fails: deps/dispnew.d: No such file or directory
+             (add-before 'build 'make-deps-dir
+               (lambda _
+                 (invoke "mkdir" "-p" "src/deps"))))))))))
 
 (define-public m17n-db
   (package
