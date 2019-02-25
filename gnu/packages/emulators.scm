@@ -41,6 +41,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -406,7 +407,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.7.0")
+    (version "0.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -415,7 +416,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s4dl4pi8rxqahvzxnh37xdgsfax36cn5wlh1srdcmabwsrfpb3w"))
+                "0q0yg2zna7gjbvpaswyykbg3lr9k3c8l8fydqa407xrgq77lahq4"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -433,7 +434,8 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
              "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("ffmpeg" ,ffmpeg)
+    (inputs `(("elfutils" ,elfutils)
+              ("ffmpeg" ,ffmpeg)
               ("imagemagick" ,imagemagick)
               ("libedit" ,libedit)
               ("libepoxy" ,libepoxy)
