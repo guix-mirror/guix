@@ -234,14 +234,14 @@ interfaces (GUIs) in the Tcl language.")
 (define-public tcllib
   (package
     (name "tcllib")
-    (version "1.18")
+    (version "1.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/tcllib/tcllib/"
                                   version "/tcllib-" version ".tar.gz"))
               (sha256
                (base32
-                "05dmrk9qsryah2n17z6z85dj9l9lfyvnsd7faw0p9bs1pp5pwrkj"))))
+                "173abxaazdmf210v651708ab6h7xhskvd52krxk6ifam337qgzh1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)))
