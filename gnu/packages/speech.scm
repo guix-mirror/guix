@@ -60,18 +60,20 @@ efficiency through the use of a compact vector representation of n-grams.")
 (define-public speech-dispatcher
   (package
     (name "speech-dispatcher")
-    (version "0.8.5")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://devel.freebsoft.org/pub/"
-                                  "projects/speechd/speech-dispatcher-"
+              (uri (string-append "https://github.com/brailcom/speechd/releases"
+                                  "/download/" version "/speech-dispatcher-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "18jlxnhlahyi6njc6l6576hfvmzivjjgfjyd2n7vvrvx9inphjrb"))))
+                "1yd2rb02565picga4gh2a0bvfxbhdyaj0cv9aaj5a8fc5zs29fbk"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-static")))
+     `(#:configure-flags '("--disable-static"
+                           ;; Disable support for proprietary TTS engines.
+                           "--with-kali=no" "--with-baratinoo=no")))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
