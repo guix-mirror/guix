@@ -111,6 +111,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages speech)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages gettext)

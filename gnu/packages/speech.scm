@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,16 +24,71 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages textutils))
+
+(define-public espeak
+  (package
+    (name "espeak")
+    (version "1.48.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/espeak/espeak/"
+                                  "espeak-" (version-major+minor version)
+                                  "/espeak-" version "-source.zip"))
+              (sha256
+               (base32
+                "0n86gwh9pw0jqqpdz7mxggllfr8k0r7pc67ayy7w5z6z79kig6mz"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; remove prebuilt binaries
+               '(begin
+                  (delete-file-recursively "linux_32bit")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          (string-append "DATADIR="
+                                         (assoc-ref %outputs "out")
+                                         "/share/espeak-data")
+                          (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib")
+                          "AUDIO=pulseaudio")
+       #:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "src")
+             ;; We use version 19 of the PortAudio library, so we must copy the
+             ;; corresponding file to be sure that espeak compiles correctly.
+             (copy-file "portaudio19.h" "portaudio.h")
+             (substitute* "Makefile"
+               (("/bin/ln") "ln"))
+             #t)))))
+       (inputs
+        `(("portaudio" ,portaudio)
+          ("pulseaudio" ,pulseaudio)))
+       (native-inputs `(("unzip" ,unzip)))
+       (home-page "http://espeak.sourceforge.net/")
+       (synopsis "Software speech synthesizer")
+       (description "eSpeak is a software speech synthesizer for English and
+other languages.  eSpeak uses a \"formant synthesis\" method.  This allows many
+languages to be provided in a small size.  The speech is clear, and can be used
+at high speeds, but is not as natural or smooth as larger synthesizers which are
+based on human speech recordings.")
+       (license license:gpl3+)))
 
 (define-public mitlm
   (package
