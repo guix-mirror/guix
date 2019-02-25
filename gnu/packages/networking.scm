@@ -420,7 +420,7 @@ receiving NDP messages.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
-                                  name "/" name "-" version ".tar.xz"))
+                                  "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
                 "11f5503mgcwjn1q4dvhjiqwnw3zmp2gbhirjvgfr71y72ys1wsy4"))))
