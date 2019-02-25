@@ -2308,6 +2308,23 @@ data and settings.")
      `(#:tests? #f                      ; there are no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-latex-errors
+           (lambda _
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "doc/references.bib"
+                 (("\\{S\\}illanp[^,]+,")
+                  "{S}illanp{\\\"a}{\\\"a},")))
+             ;; XXX: I just can't get pdflatex to not complain about these
+             ;; characters.  They end up in the manual via the generated
+             ;; discrover-cli-help.txt.
+             (substitute* "src/hmm/cli.cpp"
+               (("µ") "mu")
+               (("η") "eta")
+               (("≤") "<="))
+             ;; This seems to be a syntax error.
+             (substitute* "doc/discrover-manual.tex"
+               (("theverbbox\\[t\\]") "theverbbox"))
+             #t))
          (add-after 'unpack 'add-missing-includes
            (lambda _
              (substitute* "src/executioninformation.hpp"
@@ -2316,28 +2333,33 @@ data and settings.")
              (substitute* "src/plasma/fasta.hpp"
                (("#define FASTA_HPP" line)
                 (string-append line "\n#include <random>")))
-             #t)))))
+             #t))
+         ;; FIXME: this is needed because we're using texlive-union, which
+         ;; doesn't handle fonts correctly.  It expects to be able to generate
+         ;; fonts in the home directory.
+         (add-before 'build 'setenv-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (inputs
      `(("boost" ,boost)
-       ("cairo" ,cairo)))
+       ("cairo" ,cairo)
+       ("rmath-standalone" ,rmath-standalone)))
     (native-inputs
-     `(("texlive" ,texlive)
-       ;; TODO: Replace texlive with minimal texlive-union.
-       ;; ("texlive" ,(texlive-union (list texlive-latex-doi
-       ;;                             texlive-latex-hyperref
-       ;;                             texlive-latex-oberdiek
-       ;;                             texlive-generic-ifxetex
-       ;;                             texlive-latex-url
-       ;;                             texlive-latex-pgf
-       ;;                             texlive-latex-examplep
-       ;;                             texlive-latex-natbib
-       ;;                             texlive-latex-verbatimbox
-       ;;                             texlive-latex-ms
-       ;;                             texlive-latex-xcolor
-       ;;                             texlive-fonts-amsfonts
-       ;;                             texlive-latex-amsfonts
-       ;;                             ;; ...
-       ;;                             )))
+     `(("texlive" ,(texlive-union (list texlive-fonts-cm
+                                        texlive-fonts-amsfonts
+                                        texlive-generic-ifxetex
+
+                                        texlive-latex-doi
+                                        texlive-latex-examplep
+                                        texlive-latex-hyperref
+                                        texlive-latex-ms
+                                        texlive-latex-natbib
+                                        texlive-bibtex         ; style files used by natbib
+
+                                        texlive-latex-oberdiek ; ltxcmds
+                                        texlive-latex-pgf      ; tikz
+                                        texlive-latex-url
+                                        texlive-latex-verbatimbox
+                                        texlive-latex-xcolor)))
        ("imagemagick" ,imagemagick)))
     (home-page "http://dorina.mdc-berlin.de/public/rajewsky/discrover/")
     (synopsis "Discover discriminative nucleotide sequence motifs")
