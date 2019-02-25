@@ -70,6 +70,8 @@ efficiency through the use of a compact vector representation of n-grams.")
                (base32
                 "18jlxnhlahyi6njc6l6576hfvmzivjjgfjyd2n7vvrvx9inphjrb"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
