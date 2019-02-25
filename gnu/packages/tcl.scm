@@ -237,8 +237,8 @@ interfaces (GUIs) in the Tcl language.")
     (version "1.18")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                  version "/" name "-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/tcllib/tcllib/"
+                                  version "/tcllib-" version ".tar.gz"))
               (sha256
                (base32
                 "05dmrk9qsryah2n17z6z85dj9l9lfyvnsd7faw0p9bs1pp5pwrkj"))))
