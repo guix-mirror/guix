@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
+;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages m4)
@@ -154,8 +156,10 @@ a server that supports the SSH-2 protocol.")
               (base32
                "1b8sy6v0b8v4ggmknwcqx3y1rjcpsll0f1f8f4vyv11x4ni3njvb"))))
    (build-system gnu-build-system)
-   (native-inputs `(("groff" ,groff)))
-   (inputs `(("openssl" ,openssl)
+   (native-inputs `(("groff" ,groff)
+                    ("pkg-config" ,pkg-config)))
+   (inputs `(("libedit" ,libedit)
+             ("openssl" ,openssl)
              ("pam" ,linux-pam)
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
@@ -174,6 +178,9 @@ a server that supports the SSH-2 protocol.")
                           ,(string-append "--with-kerberos5="
                                           (assoc-ref %build-inputs "mit-krb5")
                                           "/bin")
+
+                          ;; libedit needed for sftp completion
+                          "--with-libedit"
 
                           ;; Enable PAM support in sshd.
                           "--with-pam")
