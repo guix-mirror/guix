@@ -93,7 +93,8 @@
         (add-after 'unpack 'fix-docdir
           (lambda _         ;see https://savannah.gnu.org/bugs/index.php?55461
             (substitute* "Makefile.in"
-              (("^docdir =.*") "docdir = @docdir@\n")))))))
+              (("^docdir =.*") "docdir = @docdir@\n"))
+            #t)))))
    (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
     "Groff is a typesetting package that reads plain text and produces
