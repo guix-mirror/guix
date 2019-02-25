@@ -63,6 +63,29 @@
     `(#:parallel-build? #f   ; parallel build fails
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'disable-relocatability
+          (lambda _
+            ;; Groff contains a Rube Goldberg-esque relocator for the file
+            ;; "charset.alias".  It tries to find the current executable
+            ;; using realpath, a do-it-yourself search in $PATH and so on.
+            ;; Furthermore, the routine that does the search is buggy
+            ;; in that it doesn't handle error cases when they arise.
+            ;; This causes preconv to segfault when trying to look up
+            ;; the file "charset.alias" in the NULL location.
+            ;; The "charset.alias" parser is a copy of gnulib's, and a
+            ;; non-broken version of gnulib's "charset.alias" parser is
+            ;; part of glibc's libcharset.
+            ;; However, groff unconditionally uses their own
+            ;; "charset.alias" parser, but then DOES NOT INSTALL the
+            ;; file "charset.alias" when glibc is too new.
+            ;; In Guix, our file "charset.alias" only contains an obscure
+            ;; alias for ASCII and nothing else.  So just disable relocation
+            ;; and make the entire "charset.alias" lookup fail.
+            ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=30785> for
+            ;; details.
+            (substitute* "Makefile.in"
+              (("-DENABLE_RELOCATABLE=1") ""))
+            #t))
         (add-after 'unpack 'setenv
           (lambda _
             (setenv "GS_GENERATE_UUIDS" "0")
@@ -101,36 +124,6 @@ is usually the formatter of \"man\" documentation pages.")
        ,@(substitute-keyword-arguments (package-arguments groff)
            ((#:phases phases)
             `(modify-phases ,phases
-               (add-after 'unpack 'disable-relocatability
-                 (lambda _
-                   ;; Groff contains a Rube Goldberg-esque relocator for the
-                   ;; file "charset.alias".
-                   ;; It tries to find the current executable using realpath,
-                   ;; a do-it-yourself search in $PATH and so on.
-                   ;; Furthermore, the routine that does the search is buggy
-                   ;; in that it doesn't handle error cases when they arise.
-                   ;; This causes preconv to segfault when trying to look up
-                   ;; the file "charset.alias" in the NULL location.
-                   ;; The "charset.alias" parser is a copy of gnulib's, and a
-                   ;; non-broken version of gnulib's "charset.alias" parser
-                   ;; is part of glibc's libcharset.
-                   ;; However, groff unconditionally uses their own
-                   ;; "charset.alias" parser, but then DOES NOT INSTALL the
-                   ;; file "charset.alias" when glibc is too new.
-                   ;; In Guix, our file "charset.alias" only contains an
-                   ;; obscure alias for ASCII and nothing else.
-                   ;; So just disable relocation and make the entire
-                   ;; "charset.alias" lookup fail.
-                   ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=30785>
-                   ;; for details.
-                   (substitute* "src/libs/libgroff/Makefile.sub"
-                    (("-DENABLE_RELOCATABLE=1") ""))
-                   ;; That file contains a crash bug--so make sure that
-                   ;; its contents are not there.
-                   (call-with-output-file "src/libs/libgroff/relocate.cpp"
-                     (lambda (port)
-                       #t))
-                   #t))
                (add-after 'install 'remove-non-essential-programs
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; Keep only the programs that man-db needs at run time,
