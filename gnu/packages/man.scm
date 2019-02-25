@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -40,7 +40,7 @@
 (define-public libpipeline
   (package
     (name "libpipeline")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -48,7 +48,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0avg525wvifcvjrwa6i1r6kvahmsswj0mpxrsxzzdzra9wpf2whd"))))
+                "0bwh5xz5f2czwb7f564jz1mp4znm8pldnvf65fs0hpw4gmmp0cyn"))))
     (build-system gnu-build-system)
     (home-page "http://libpipeline.nongnu.org/")
     (synopsis "C library for manipulating pipelines of subprocesses")
