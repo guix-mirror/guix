@@ -1996,15 +1996,14 @@ eight bytes) tools
 (define-public asio
   (package
     (name "asio")
-    (version "1.12.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asio/asio/"
                            version " (Stable)/asio-" version ".tar.bz2"))
        (sha256
-        (base32
-         "0nln45662kg799ykvqx5m9z9qcsmadmgg6r5najryls7x16in2d9"))))
+        (base32 "1akray4l3hgahmb92sbvsqg128c7g7s92jrkf1sp1fjnfjrxq9sf"))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)
