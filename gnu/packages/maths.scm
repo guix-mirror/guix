@@ -1797,14 +1797,14 @@ scientific applications modeled by partial differential equations.")
 (define-public python-petsc4py
   (package
     (name "python-petsc4py")
-    (version "3.10.0")
+    (version "3.10.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "petsc4py" version))
         (sha256
           (base32
-            "0ch3g6dsvxl7qi984fcssv7cxfbif4bw04gkvxl2l1b8wrmvrm25"))))
+            "094hcnran0r2z1wlvmjswsz3ski1m9kqrl5l0ax8jjhnk55x0flh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
