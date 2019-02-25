@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -32,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -89,6 +90,34 @@ languages to be provided in a small size.  The speech is clear, and can be used
 at high speeds, but is not as natural or smooth as larger synthesizers which are
 based on human speech recordings.")
        (license license:gpl3+)))
+
+(define-public espeak-ng
+  (package
+    (name "espeak-ng")
+    (version "1.49.2")
+    (home-page "https://github.com/espeak-ng/espeak-ng")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/releases/download/" version
+                                  "/espeak-ng-" version ".tar.gz"))
+              (sha256
+               (base32 "1d10x9rbvqi2zwcz65fxh04k0x0scnk7732l37laz6xra1ldhzng"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")
+       ;; Building in parallel triggers a race condition in 1.49.2.
+       #:parallel-build? #f
+       ;; XXX: Some tests require an audio device.
+       #:tests? #f))
+    (inputs
+     `(("libcap" ,libcap)
+       ("pcaudiolib" ,pcaudiolib)))
+    (synopsis "Software speech synthesizer")
+    (description
+     "eSpeak NG is a software speech synthesizer for more than 100 languages.
+It is based on the eSpeak engine and supports spectral and Klatt formant
+synthesis, and the ability to use MBROLA voices.")
+    (license license:gpl3+)))
 
 (define-public mitlm
   (package
