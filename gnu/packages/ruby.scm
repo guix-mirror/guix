@@ -13,6 +13,7 @@
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4982,14 +4983,14 @@ testing libraries to build on.")
 (define-public ruby-rack-protection
   (package
     (name "ruby-rack-protection")
-    (version "2.0.3")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rack-protection" version))
        (sha256
         (base32
-         "1z5598qipilmnf45428jnxi63ykrgvnyywa5ckpr52zv2vpd8jdp"))))
+         "15167q25rmxipqwi6hjqj3i1byi9iwl3xq9b7mdar7qiz39pmjsk"))))
     (build-system ruby-build-system)
     (arguments
      '(;; Tests missing from the gem.
