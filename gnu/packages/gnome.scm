@@ -3521,9 +3521,9 @@ such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/gom/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "gom-" version ".tar.xz"))
        (sha256
         (base32
          "1zaqqwwkyiswib3v1v8wafpbifpbpak0nn2kp13pizzn9bwz1s5w"))))
