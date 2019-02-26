@@ -434,10 +434,10 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
        (list "-DUSE_LZMA=OFF"           ;do not use bundled LZMA
              "-DUSE_LIBZIP=OFF")))      ;use "zlib" instead
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("elfutils" ,elfutils)
-              ("ffmpeg" ,ffmpeg)
+    (inputs `(("ffmpeg" ,ffmpeg)
               ("imagemagick" ,imagemagick)
               ("libedit" ,libedit)
+              ("libelf" ,libelf)
               ("libepoxy" ,libepoxy)
               ("libpng" ,libpng)
               ("mesa" ,mesa)
