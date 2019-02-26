@@ -257,3 +257,34 @@ specification and runs on top of several virtual machines.")
 TAP based test suite and prints a report.  The @command{prove6} command is a
 minimal wrapper around an instance of this module.")
     (license license:artistic2.0)))
+
+(define-public perl6-zef
+  (package
+    (name "perl6-zef")
+    (version "0.6.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/ugexe/zef.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "07n7g1xw2c4g860rs890gx85vyhdq0ysgwbrnzw6q905jph2bkv7"))))
+    (build-system rakudo-build-system)
+    (arguments
+     '(#:with-zef? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (invoke "perl6" "-I." "bin/zef" "--debug"
+                     "--tap-harness" "test" "."))))))
+    (home-page "https://github.com/ugexe/zef")
+    (synopsis "Perl6 Module Management")
+    (description "Zef is a Perl 6 package (module) manager.  It can be used to
+download and install Perl 6 modules in your home directory or as a system-wide
+module.")
+    (license license:artistic2.0)))
