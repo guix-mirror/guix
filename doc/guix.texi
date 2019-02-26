@@ -28,7 +28,7 @@ Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
-Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018, 2019 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
@@ -6000,6 +6000,24 @@ INSTALL --library=/gnu/store/@dots{}} in an environment where
 @code{R_LIBS_SITE} contains the paths to all R package inputs.  Tests
 are run after installation using the R function
 @code{tools::testInstalledPackage}.
+@end defvr
+
+@defvr {Scheme Variable} rakudo-build-system
+This variable is exported by @code{(guix build-system rakudo)} It
+implements the build procedure used by @uref{https://rakudo.org/,
+Rakudo} for @uref{https://perl6.org/, Perl6} packages. It installs the
+package to @code{/gnu/store/@dots{}/NAME-VERSION/share/perl6} and
+installs the binaries, library files and the resources, as well as wrap
+the files under the @code{bin/} directory.  Tests can be skipped by
+passing @code{#f} to the @code{tests?} parameter.
+
+Which rakudo package is used can be specified with @code{rakudo}.
+Which perl6-tap-harness package used for the tests can be specified with
+@code{#:prove6} or removed by passing @code{#f} to the
+@code{with-prove6?} parameter.
+Which perl6-zef package used for tests and installing can be specified
+with @code{#:zef} or removed by passing @code{#f} to the
+@code{with-zef?} parameter.
 @end defvr
 
 @defvr {Scheme Variable} texlive-build-system
