@@ -19,8 +19,10 @@
 (define-module (gnu packages perl6)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system rakudo)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -224,4 +226,34 @@ regular expression engine for the virtual machine.")
     (synopsis "Perl 6 Compiler")
     (description "Rakudo Perl is a compiler that implements the Perl 6
 specification and runs on top of several virtual machines.")
+    (license license:artistic2.0)))
+
+(define-public perl6-tap-harness
+  (package
+    (name "perl6-tap-harness")
+    (version "0.0.7")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/perl6/tap-harness6.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1lig8i0my3fgqvlay9532xslbf3iis2d7wz89gniwvwqffi2kh6r"))))
+    (build-system rakudo-build-system)
+    (arguments
+     '(#:with-zef? #f
+       #:with-prove6? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "perl6" "-Ilib" "bin/prove6" "-l" "t"))))))
+    (home-page "https://github.com/perl6/tap-harness6/")
+    (synopsis "TAP harness for perl6")
+    (description "This module provides the @command{prove6} command which runs a
+TAP based test suite and prints a report.  The @command{prove6} command is a
+minimal wrapper around an instance of this module.")
     (license license:artistic2.0)))
