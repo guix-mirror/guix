@@ -971,17 +971,19 @@ correct spacing.")
 (define-public font-awesome
   (package
    (name "font-awesome")
-   (version "5.7.2")
+   ;; XXX The build scripts of version 5 are not freely licensed and
+   ;; so we have to stick with version 4 for now:
+   ;; <https://bugs.gnu.org/32916>
+   (version "4.7.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "https://use.fontawesome.com/releases/v" version "/"
-                  "fontawesome-free-" version "-desktop.zip"))
+            (uri (string-append "http://fontawesome.io/assets/"
+                                name "-" version ".zip"))
             (sha256
              (base32
-              "0v8nfyjkzgi33i5arpjqzs16mgh2hx02sf906b8a9k1k7yfqpbgs"))))
+              "1m1rfwm4sjkv10j3xd2dhwk286a5912b2zgvc692cmxi5gxs68jf"))))
    (build-system font-build-system)
-   (home-page "https://fontawesome.com")
+   (home-page "http://fontawesome.io")
    (synopsis "Font that contains a rich iconset")
    (description
     "Font Awesome is a full suite of pictographic icons for easy scalable
