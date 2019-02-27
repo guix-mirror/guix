@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,7 +166,19 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                      ,flags))
             flags))
        ((#:phases phases)
-        `(cross-gcc-build-phases ,target ,phases))))))
+        `(cross-gcc-build-phases
+          ,target
+          (modify-phases ,phases
+            (add-before 'configure 'treat-glibc-as-system-header
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((libc (assoc-ref inputs "libc")))
+                  (when libc
+                    ;; For GCC6 and later, make sure Glibc is treated as a "system
+                    ;; header" such that #include_next does the right thing.
+                    (for-each (lambda (var)
+                                (setenv var (string-append libc "/include")))
+                              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH")))
+                  #t))))))))))
 
 (define (cross-gcc-patches target)
   "Return GCC patches needed for TARGET."

@@ -169,16 +169,6 @@ a target triplet."
       (if (string-contains target "mingw")
           set-cross-path/mingw
           set-cross-path))
-    (add-before 'configure 'treat-glibc-as-system-header
-      (lambda* (#:key inputs #:allow-other-keys)
-        (let ((libc (assoc-ref inputs "libc")))
-          (when libc
-            ;; For GCC6 and later, make sure Glibc is treated as a "system
-            ;; header" such that #include_next does the right thing.
-            (for-each (lambda (var)
-                        (setenv var (string-append libc "/include")))
-                      '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH")))
-          #t)))
     (add-after 'install 'make-cross-binutils-visible
       (cut make-cross-binutils-visible #:target target <...>))
     (replace 'install install-strip)))
