@@ -1028,17 +1028,19 @@ determines the frequencies, decay constants, amplitudes, and phases of those sin
 (define-public guile-libctl
   (package
     (name "guile-libctl")
-    (version "3.2.2")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "http://ab-initio.mit.edu/libctl/libctl-"
-                version ".tar.gz"))
+                "https://github.com/NanoComp/libctl/releases/download/v"
+                version "/libctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1g7gqybq20jhdnw5vg18bgbj9jz0408gfmjvs8b4xs30pic8pgca"))))
+                "0x8r56lpfq83kfbq28vr25icl19xpfd6fjrxzcpdmv30l9pash83"))))
     (build-system gnu-build-system)
+    (arguments
+      `(#:configure-flags '("--enable-shared")))
     (native-inputs
      `(("fortran" ,gfortran)))
     (inputs
