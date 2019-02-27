@@ -1097,16 +1097,16 @@ fully-vectorial and three-dimensional methods.")
 (define-public meep
   (package
     (name "meep")
-    (version "1.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "http://ab-initio.mit.edu/meep/meep-"
-                version ".tar.gz"))
+                "https://github.com/NanoComp/meep/releases/download/v"
+                version "/meep-" version ".tar.gz"))
               (sha256
                (base32
-                "0f6lbw2hrksg7xscwdqs78jc9nmzx9fs8j0hz1y4i8qknkqiyk2n"))))
+                "14zyxmm3p80j5fz5b89sl7hgkgcisqjny5hjh4pi274ziqjqz8bm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1120,7 +1120,7 @@ fully-vectorial and three-dimensional methods.")
     (inputs
      `(("fftw" ,fftw)
        ("gsl" ,gsl)
-       ("guile" ,guile-2.0)             ; doesn't build with guile-2.2
+       ("guile" ,guile-2.2)
        ("harminv" ,harminv)
        ("hdf5" ,hdf5)
        ("lapack" ,lapack)
