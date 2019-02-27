@@ -1882,7 +1882,11 @@ repository\" with git-annex.")
               "fossil-src-" version ".tar.gz")))
        (sha256
         (base32
-         "0pbinf8d2kj1j7niblhzjd2l2khg6r2pn2xvig6gavz27p3vwcka"))))
+         "0pbinf8d2kj1j7niblhzjd2l2khg6r2pn2xvig6gavz27p3vwcka"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "compat") #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
