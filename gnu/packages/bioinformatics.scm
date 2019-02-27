@@ -2715,6 +2715,11 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-tune-to-CPU
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               ((" -march=native") ""))
+             #t))
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "PATH" (string-append (getcwd) ":" (getenv "PATH")))
