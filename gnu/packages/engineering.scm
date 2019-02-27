@@ -1055,22 +1055,23 @@ for scientific simulations.")
 (define-public mpb
   (package
     (name "mpb")
-    (version "1.5")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "http://ab-initio.mit.edu/mpb/mpb-"
-                version ".tar.gz"))
+                "https://github.com/NanoComp/mpb/releases/download/v"
+                version "/mpb-" version ".tar.gz"))
               (sha256
                (base32
-                "1mqb2d8jq957nksayjygq58iy8i42vjryzg9iy5fpfay31wzxsix"))))
+                "1jgrb7dd6qs6j6y1gnxmdgrh79l2bvqa6nk60a4pw1annsks4brd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "--with-libctl="
                             (assoc-ref %build-inputs "libctl")
-                            "/share/libctl"))))
+                            "/share/libctl")
+             "--enable-shared")))
     (native-inputs
      `(("fortran" ,gfortran)
        ("pkg-config" ,pkg-config)
