@@ -13140,17 +13140,18 @@ opposed to character-based).")
 (define-public emacs-disk-usage
   (package
     (name "emacs-disk-usage")
-    (version "1.1.0")
-    (home-page "https://gitlab.com/ambrevar/emacs-disk-usage.git")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1c9jmjn8vf0v4776v79pc5w0labfs4v9aysbv2w9423rg4mangbg"))))
+    (version "1.2.0")
+    (home-page "https://gitlab.com/Ambrevar/emacs-disk-usage")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/disk-usage-"
+             version
+             ".el"))
+       (sha256
+        (base32
+         "13n6bsrz8q07fl6sd7wi5zvf01m5xw11hmrpdz7wcn49v6vs3whl"))))
     (build-system emacs-build-system)
     (synopsis "Sort and browse disk usage listings with Emacs")
     (description "Disk Usage is a file system analyzer: it offers a tabulated
