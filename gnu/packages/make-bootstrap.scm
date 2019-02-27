@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,11 +115,26 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
         `(("libc" ,(glibc-for-bootstrap))
           ("libc:static" ,(glibc-for-bootstrap) "static")
           ("gcc" ,(package (inherit gcc)
-                    (outputs '("out")) ; all in one so libgcc_s is easily found
+                    (outputs '("out"))  ;all in one so libgcc_s is easily found
                     (inputs
-                     `(("libc" ,(glibc-for-bootstrap))
+                     `(;; Distinguish the name so we can refer to it below.
+                       ("bootstrap-libc" ,(glibc-for-bootstrap))
                        ("libc:static" ,(glibc-for-bootstrap) "static")
-                       ,@(package-inputs gcc)))))
+                       ,@(package-inputs gcc)))
+                    (arguments
+                     (substitute-keyword-arguments (package-arguments gcc)
+                       ((#:phases phases)
+                        `(modify-phases ,phases
+                           (add-before 'configure 'treat-glibc-as-system-header
+                             (lambda* (#:key inputs #:allow-other-keys)
+                               (let ((libc (assoc-ref inputs "bootstrap-libc")))
+                                 ;; GCCs build processes requires that the libc
+                                 ;; we're building against is on the system header
+                                 ;; search path.
+                                 (for-each (lambda (var)
+                                             (setenv var (string-append libc "/include")))
+                                           '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
+                                 #t)))))))))
           ,@(fold alist-delete (%final-inputs) '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs
