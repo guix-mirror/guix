@@ -4411,7 +4411,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.22.1")
+    (version "0.23.1")
     (source
      (origin
        (method url-fetch)
@@ -4425,7 +4425,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "1qc90wwbxvjzqq66n8kfr0a2ny7sfvv2n84si67jiv2887d0ws6k"))
+         "0c3mx49kpz6i2xvv2dwsaj9s7mm4mif1h2qdkfyi80lv2j1ay51h"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -4437,6 +4437,8 @@ fish.  The whole game is accompanied by quiet, comforting music.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("perl" ,perl)
+       ("python" ,python)
+       ("python-pyyaml" ,python-pyyaml)
        ("pkg-config" ,pkg-config)))
     (arguments
      '(#:make-flags
@@ -4452,16 +4454,19 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                "-Csource"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-python
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "source/util/species-gen.py"
+               (("python") "python3"))
+             #t))
          (delete 'configure)
-         (delete 'check)
-         ;; Test cases require the source to be rebuild with the -DDEBUG define.
-         ;; Do 'check before 'build to avoid a 3rd build on make install.
-         (add-before 'build 'check
+         (replace 'check
            (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
              (setenv "HOME" (getcwd))
              ;; Fake a terminal for the test cases.
              (setenv "TERM" "xterm-256color")
-             (apply invoke "make" "debug" "test"
+             ;; Run the tests that don't require a debug build.
+             (apply invoke "make" "nondebugtest"
                     (format #f "-j~d" (parallel-job-count))
                     ;; Force command line build for test cases.
                     (append make-flags '("GAME=crawl" "TILES="))))))))
