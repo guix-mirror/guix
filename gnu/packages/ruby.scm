@@ -8380,3 +8380,25 @@ uniquely identify it.")
 serves JavaScript, CoffeeScript, CSS, LESS, Sass, and SCSS.")
     (home-page "https://github.com/rails/sprockets")
     (license license:expat)))
+
+(define-public ruby-mustermann
+  (package
+    (name "ruby-mustermann")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mustermann" version))
+       (sha256
+        (base32
+         "0lycgkmnyy0bf29nnd2zql5a6pcf8sp69g9v4xw0gcfcxgpwp7i1"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (synopsis "Library implementing patterns that behave like regular expressions")
+    (description "Given a string pattern, Mustermann will turn it into an
+object that behaves like a regular expression and has comparable performance
+characteristics.")
+    (home-page "https://github.com/sinatra/mustermann")
+    (license license:expat)))
