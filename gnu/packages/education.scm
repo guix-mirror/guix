@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +52,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
 
@@ -304,3 +305,69 @@ science for high school or college students.
 This package provides a @command{snap} executable calling @command{xdg-open}
 to open the application in a web browser, for offline usage.")
     (license license:agpl3+)))
+
+(define-public toutenclic
+  (package
+    (name "toutenclic")
+    (version "6.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.bipede.fr/downloads/logiciels/"
+                           "ToutEnClic-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1369m76fxmi2hgc2bbsq2jchcbh8q0qzml7600pqn8xiqrybvg9g"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/toutenclic"))
+                    (pixmaps (string-append out "/share/pixmaps"))
+                    (bin (string-append out "/bin"))
+                    (executable "toutenclic.py"))
+               ;; Install icon.
+               (install-file "toutenclic.png" pixmaps)
+               ;; Move files into "share/" directory.
+               (mkdir-p share)
+               (copy-recursively "." share)
+               ;; Create executable in "bin/".
+               (mkdir-p bin)
+               (with-directory-excursion bin
+                 (symlink (string-append share "/" executable)
+                          executable)))
+             #t))
+         (add-after 'install 'create-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (applications (string-append out "/share/applications")))
+               (mkdir-p applications)
+               (call-with-output-file
+                   (string-append applications "/toutenclic.desktop")
+                 (lambda (file)
+                   (format file
+                           "[Desktop Entry]~@
+                            Name=ToutEnClic~@
+                            Comment=For schooling without difference~@
+                            Exec=~a/bin/toutenclic.py~@
+                            TryExec=~@*~a/bin/toutenclic.py~@
+                            Terminal=false~@
+                            Icon=toutenclic~@
+                            Type=Application~%"
+                           out)))
+               #t))))))
+    (inputs `(("python-pyqt" ,python-pyqt)))
+    (synopsis "School tools for physically disabled children")
+    (description "ToutEnClic is intended to facilitate the schooling
+of physically disabled children in ordinary schools.  It is both
+a multi-page virtual exercise book and a kit including pencil,
+scissors, glue, ruler, compass, protractor and square.  A virtual
+keyboard is also available if the child does not have any other
+specialized device.")
+    (home-page "https://bipede.fr/contrib/")
+    (license license:gpl3)))
