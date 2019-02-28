@@ -411,7 +411,7 @@ required structures.")
 
 (define-public openssl-next
   (package
-    (inherit openssl/fixed)
+    (inherit openssl)
     (name "openssl")
     (version "1.1.1a")
     (source (origin
