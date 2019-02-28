@@ -252,6 +252,32 @@ It is a drop-in replacement for @code{JSON::Tiny}'s from-json and to-json subs,
 but it offers a few extra features.")
     (license license:artistic2.0)))
 
+(define-public perl6-json-name
+  (package
+    (name "perl6-json-name")
+    (version "0.0.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jonathanstowe/JSON-Name.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "130qwdpbj5qdlsdz05y0rksd79lzbq79scy47n6lnf21b0hz1qjc"))))
+    (build-system rakudo-build-system)
+    (arguments '(#:with-zef? #f))
+    (home-page "https://github.com/jonathanstowe/JSON-Name")
+    (synopsis "Provides a trait to store an alternative JSON Name")
+    (description "This is released as a dependency of @code{JSON::Marshal} and
+@code{JSON::Unmarshal} in order to save duplication, it is intended to store a
+separate JSON name for an attribute where the name of the JSON attribute might be
+changed, either for aesthetic reasons or the name is not a valid Perl identifier.
+It will of course also be needed in classes thar are going to use
+@code{JSON::Marshal} or @code{JSON::Unmarshal} for serialisation/de-serialisation.")
+    (license license:artistic2.0)))
+
 (define-public perl6-tap-harness
   (package
     (name "perl6-tap-harness")
