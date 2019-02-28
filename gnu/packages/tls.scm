@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -271,6 +271,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl/fixed)
    (version "1.0.2p")
    (source (origin
              (method url-fetch)
@@ -399,9 +400,18 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
+(define-public openssl/fixed
+  (hidden-package
+   (package
+     (inherit openssl)
+     (source (origin
+               (inherit (package-source openssl))
+               (patches (append (origin-patches (package-source openssl))
+                                (search-patches "openssl-CVE-2019-1559.patch"))))))))
+
 (define-public openssl-next
   (package
-    (inherit openssl)
+    (inherit openssl/fixed)
     (name "openssl")
     (version "1.1.1a")
     (source (origin
