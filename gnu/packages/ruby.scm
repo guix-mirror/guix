@@ -8456,3 +8456,35 @@ and stability,
 @end itemize\n")
     (home-page "http://code.macournoyer.com/thin/")
     (license license:ruby)))
+
+(define-public ruby-skinny
+  (package
+    (name "ruby-skinny")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "skinny" version))
+       (sha256
+        (base32
+         "1y3yvx88ylgz4d2s1wskjk5rkmrcr15q3ibzp1q88qwzr5y493a9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ; No included tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-gemspec
+           (lambda _
+             (substitute* ".gemspec"
+               (("<eventmachine>.freeze, \\[\\\"~> 1.0.0\"")
+                "<eventmachine>, [\">= 1.0.0\"")
+               (("<thin>.freeze, \\[\\\"< 1.7\", ") "<thin>, ["))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-eventmachine" ,ruby-eventmachine)
+       ("ruby-thin" ,ruby-thin)))
+    (synopsis "Simple, upgradable WebSockets for Ruby Thin")
+    (description "Skinny is a simple, upgradable WebSockets for Ruby, using
+the Thin library.")
+    (home-page "https://github.com/sj26/skinny")
+    (license license:expat)))
