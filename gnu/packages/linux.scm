@@ -4104,7 +4104,14 @@ under OpenGL graphics workloads.")
                           (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'build 'kernel-headers-are-system-headers
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((kernel-headers (assoc-ref inputs "kernel-headers")))
+               ;; Make sure the kernel headers are treated as system headers
+               ;; to suppress a conflict between "util.h" and <linux/fs.h>.
+             (setenv "C_INCLUDE_PATH" (string-append kernel-headers "/include"))
+             #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
