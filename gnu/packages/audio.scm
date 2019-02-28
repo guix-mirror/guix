@@ -2185,7 +2185,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.1")
+    (version "3.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2194,7 +2194,7 @@ background file post-processing.")
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
               (sha256
                (base32
-                "1yszs9j3sjk8hb8xxz30z3nd4j899ymb9mw9y1v26ikd603d1iig"))))
+                "0ynz1ydcpsd5h57h1n4a7avm6p1cif5a8rkmz4qpr46pr8z9p6iq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
@@ -2243,26 +2243,6 @@ background file post-processing.")
                (("add_subdirectory\\(sclang\\)")
                 ""))
              (delete-file "testsuite/sclang/CMakeLists.txt")
-             #t))
-         ;; TODO: Remove after version 3.9.2 is released
-         ;; (see: https://github.com/supercollider/supercollider/pull/3558).
-         (add-after 'disable-broken-tests 'apply-system-yaml-cpp-fix
-           (lambda _
-             ;; cmake: correctly include yaml-cpp (commit f82cec5ae).
-             (substitute* "editors/sc-ide/CMakeLists.txt"
-               (("external_libraries/boost\\)$")
-                "external_libraries/boost)
-include_directories(${YAMLCPP_INCLUDE_DIR})")
-               (("    yaml")
-                "    ${YAMLCPP_LIBRARY}"))
-             ;; set YAMLCPP_LIBRARY and YAMLCPP_INCLUDE_DIR if not using
-             ;; system (commit 031922987).
-             (substitute* "external_libraries/CMakeLists.txt"
-               (("set_property\\( TARGET yaml PROPERTY FOLDER 3rdparty \\)")
-                "set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
-set(YAMLCPP_LIBRARY yaml)
-set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/\
-external_libraries/yaml-cpp/include)"))
              #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
