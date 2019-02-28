@@ -8488,3 +8488,56 @@ and stability,
 the Thin library.")
     (home-page "https://github.com/sj26/skinny")
     (license license:expat)))
+
+(define-public mailcatcher
+  (package
+    (name "mailcatcher")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mailcatcher" version))
+       (sha256
+        (base32
+         "02w1ycyfv7x0sh9799lz7xa65p5qvl5z4pa8a7prb68h2zwkfq0n"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Tests require web/assets which is not included in the output.  We
+     ;; might be able to fix this by adding the Git repository to the GEM_PATH
+     ;; of the tests.  See ruby-mysql2.
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-gemspec
+           (lambda _
+             (substitute* ".gemspec"
+               (("<eventmachine>.freeze, \\[\\\"= 1.0.9.1")
+                "<eventmachine>, [\">= 1.0.9.1")
+               (("<rack>.freeze, \\[\\\"~> 1.5") "<rack>, [\">= 1.5")
+               (("<thin>.freeze, \\[\\\"~> 1.5.0") "<thin>, [\">= 1.5.0")
+               (("<sinatra>.freeze, \\[\\\"~> 1.2") "<sinatra>, [\">= 1.2"))
+             #t))
+         (add-before 'build 'loosen-dependency-contraint
+             (lambda _
+               (substitute* "lib/mail_catcher.rb"
+                 (("\"eventmachine\", \"1.0.9.1\"") "\"eventmachine\", \">= 1.0.9.1\"")
+                 (("\"rack\", \"~> 1.5\"") "\"rack\", \">= 1.5\"")
+                 (("\"thin\", \"~> 1.5.0\"") "\"thin\", \">= 1.5.0\"")
+                 (("\"sinatra\", \"~> 1.2\"") "\"sinatra\", \">= 1.2\""))
+               #t)))))
+    (inputs
+     `(("ruby-eventmachine" ,ruby-eventmachine)
+       ("ruby-mail" ,ruby-mail)
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-sinatra" ,ruby-sinatra)
+       ("ruby-skinny" ,ruby-skinny)
+       ("ruby-sqlite3" ,ruby-sqlite3)
+       ("ruby-thin" ,ruby-thin)))
+    (synopsis "SMTP server which catches messages to display them a browser")
+    (description
+     "MailCatcher runs a super simple SMTP server which catches any message
+sent to it to display in a web interface.  Run mailcatcher, set your favourite
+app to deliver to smtp://127.0.0.1:1025 instead of your default SMTP server,
+then check out http://127.0.0.1:1080 to see the mail.")
+    (home-page "https://mailcatcher.me")
+    (license license:expat)))
