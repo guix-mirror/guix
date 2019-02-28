@@ -296,8 +296,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/lxqt.scm				\
   %D%/packages/m4.scm				\
   %D%/packages/machine-learning.scm		\
-  %D%/packages/man.scm				\
   %D%/packages/magic-wormhole.scm		\
+  %D%/packages/man.scm				\
+  %D%/packages/mastodon.scm			\
   %D%/packages/mail.scm				\
   %D%/packages/make-bootstrap.scm		\
   %D%/packages/markup.scm			\
