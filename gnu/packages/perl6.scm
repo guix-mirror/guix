@@ -278,6 +278,33 @@ It will of course also be needed in classes thar are going to use
 @code{JSON::Marshal} or @code{JSON::Unmarshal} for serialisation/de-serialisation.")
     (license license:artistic2.0)))
 
+(define-public perl6-json-unmarshal
+  ;; Last commit was May 2017
+  (let ((commit "e1b6288c5f3165058f36c0f4e171cdf2dfd640da")
+        (revision "1"))
+    (package
+      (name "perl6-json-unmarshal")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/tadzik/JSON-Unmarshal.git")
+                 (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "14azsmzmwdn8k0gqcpvballharcvzylmlyrx2wmv4kpqfnz29fjc"))))
+      (build-system rakudo-build-system)
+      (propagated-inputs
+       `(("perl6-json-fast" ,perl6-json-fast)
+         ("perl6-json-name" ,perl6-json-name)))
+      (home-page "https://github.com/tadzik/JSON-Unmarshal")
+      (synopsis "Make JSON from an Object")
+      (description "This library provides a single exported subroutine to
+create an object from a JSON representation of an object.")
+      (license license:expat))))
+
 (define-public perl6-tap-harness
   (package
     (name "perl6-tap-harness")
