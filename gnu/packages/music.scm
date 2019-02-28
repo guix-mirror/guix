@@ -290,7 +290,7 @@ score, keyboard, guitar, drum and controller views.")
          ("sqlite" ,sqlite-with-column-metadata)
          ("sparsehash" ,sparsehash)
          ("taglib" ,taglib)))
-      (home-page "http://clementine-player.org")
+      (home-page "https://clementine-player.org")
       (synopsis "Music player and library organizer")
       (description "Clementine is a multiplatform music player.  It is inspired
 by Amarok 1.4, focusing on a fast and easy-to-use interface for searching and
