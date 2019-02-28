@@ -8426,3 +8426,33 @@ characteristics.")
 minimal effort.")
     (home-page "http://sinatrarb.com/")
     (license license:expat)))
+
+(define-public ruby-thin
+  (package
+    (name "ruby-thin")
+    (version "1.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "thin" version))
+       (sha256
+        (base32
+         "0nagbf9pwy1vg09k6j4xqhbjjzrg5dwzvkn4ffvlj76fsn6vv61f"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-daemons" ,ruby-daemons)
+       ("ruby-eventmachine" ,ruby-eventmachine)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Thin and fast web server for Ruby")
+    (description "Thin is a Ruby web server that glues together 3 Ruby libraries:
+@itemize
+@item the Mongrel parser,
+@item Event Machine, a network I/O library with high scalability, performance
+and stability,
+@item Rack, a minimal interface between webservers and Ruby frameworks.
+@end itemize\n")
+    (home-page "http://code.macournoyer.com/thin/")
+    (license license:ruby)))
