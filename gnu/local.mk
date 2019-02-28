@@ -12,7 +12,7 @@
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-# Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+# Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
@@ -1065,6 +1065,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/m4-gnulib-libio.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
+  %D%/packages/patches/netpbm-CVE-2017-2586.patch		\
+  %D%/packages/patches/netpbm-CVE-2017-2587.patch		\
   %D%/packages/patches/netsurf-message-timestamp.patch		\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
