@@ -258,6 +258,30 @@ TAP based test suite and prints a report.  The @command{prove6} command is a
 minimal wrapper around an instance of this module.")
     (license license:artistic2.0)))
 
+(define-public perl6-uri
+  (package
+    (name "perl6-uri")
+    (version "0.1.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/perl6-community-modules/uri.git")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0h318g75jqn2ckw051g35iqyfxz1mps0jyg5z6pd857y3kacbkpl"))))
+    (build-system rakudo-build-system)
+    (arguments '(#:with-zef? #f))
+    (home-page "https://github.com/perl6-community-modules/uri")
+    (synopsis "URI implementation using Perl 6")
+    (description "A URI implementation using Perl 6 grammars to implement RFC
+3986 BNF.  Currently only implements parsing.  Includes @code{URI::Escape} to
+(un?)escape characters that aren't otherwise allowed in a URI with % and a hex
+character numbering.")
+    (license license:artistic2.0)))
+
 (define-public perl6-zef
   (package
     (name "perl6-zef")
