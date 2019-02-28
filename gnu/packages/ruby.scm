@@ -8402,3 +8402,27 @@ object that behaves like a regular expression and has comparable performance
 characteristics.")
     (home-page "https://github.com/sinatra/mustermann")
     (license license:expat)))
+
+(define-public ruby-sinatra
+  (package
+    (name "ruby-sinatra")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sinatra" version))
+       (sha256
+        (base32
+         "1gasgn5f15myv08k10i16p326pchxjsy37pgqfw0xm66kcc5d7ry"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-mustermann" ,ruby-mustermann)
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-rack-protection" ,ruby-rack-protection)
+       ("ruby-tilt" ,ruby-tilt)))
+    (synopsis "DSL for quick web applications creation in Ruby")
+    (description
+     "Sinatra is a DSL for quickly creating web applications in Ruby with
+minimal effort.")
+    (home-page "http://sinatrarb.com/")
+    (license license:expat)))
