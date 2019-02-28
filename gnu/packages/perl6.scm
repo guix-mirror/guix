@@ -252,6 +252,33 @@ It is a drop-in replacement for @code{JSON::Tiny}'s from-json and to-json subs,
 but it offers a few extra features.")
     (license license:artistic2.0)))
 
+(define-public perl6-json-marshal
+  (package
+    (name "perl6-json-marshal")
+    (version "0.0.16")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jonathanstowe/JSON-Marshal.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0qy7j83h6gjzyyv74ncd92cd9h45rv8diaz3vldiv3b6fqwz4c6i"))))
+    (build-system rakudo-build-system)
+    (propagated-inputs
+     `(("perl6-json-fast" ,perl6-json-fast)
+       ("perl6-json-name" ,perl6-json-name)))
+    (native-inputs
+     `(("perl6-json-fast" ,perl6-json-fast)))
+    (home-page "https://github.com/jonathanstowe/JSON-Marshal")
+    (synopsis "Simple serialisation of objects to JSON")
+    (description "This library provides a single exported subroutine to create
+a JSON representation of an object.  It should round trip back into an object
+of the same class using @code{JSON::Unmarshal}.")
+    (license license:artistic2.0)))
+
 (define-public perl6-json-name
   (package
     (name "perl6-json-name")
