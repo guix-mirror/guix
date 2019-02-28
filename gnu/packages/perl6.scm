@@ -228,6 +228,30 @@ regular expression engine for the virtual machine.")
 specification and runs on top of several virtual machines.")
     (license license:artistic2.0)))
 
+(define-public perl6-json-fast
+  (package
+    (name "perl6-json-fast")
+    (version "0.8")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/timo/json_fast.git")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1fif081gdxdnja14vkj523p9dyzdcdj81lmjv9fvfazvpagb6dg2"))))
+    (build-system rakudo-build-system)
+    (arguments '(#:with-zef? #f))
+    (home-page "https://github.com/timo/json_fast")
+    (synopsis "Perl6 json parser")
+    (description "A naive imperative json parser in pure perl6 (but with direct
+access to @code{nqp::} ops), to evaluate performance against @code{JSON::Tiny}.
+It is a drop-in replacement for @code{JSON::Tiny}'s from-json and to-json subs,
+but it offers a few extra features.")
+    (license license:artistic2.0)))
+
 (define-public perl6-tap-harness
   (package
     (name "perl6-tap-harness")
