@@ -4142,7 +4142,12 @@ interface to the variable facility of UEFI boot firmware.")
                           ;; installed (known as OS_VENDOR in the code).
                           ;; GRUB overrides this, as such it's only used if
                           ;; nothing else is specified on the command line.
-                          "EFIDIR=gnu")
+                          "EFIDIR=gnu"
+                          ;; Treat kernel headers as system headers to prevent
+                          ;; warnings about conflicting types.
+                          (string-append "C_INCLUDE_PATH="
+                                         (assoc-ref %build-inputs "kernel-headers")
+                                         "/include"))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
