@@ -5515,7 +5515,8 @@ technologies.")
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "jetty-test-helper")))
+             (chdir "jetty-test-helper")
+             #t))
          (add-before 'build 'fix-paths
            (lambda _
              ;; TODO:
