@@ -13864,3 +13864,27 @@ making it possible to download files over HTTPS across platforms.  The
 @code{RCurl} package provides this functionality (and much more) but has
 external dependencies.  This package has is implemented purely in R.")
     (license license:gpl2)))
+
+(define-public r-rex
+  (package
+    (name "r-rex")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rex" version))
+       (sha256
+        (base32
+         "0alsadgjgass3wr8y5d247j12qqzg454sc84vpskclrkmz778g5x"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)))
+    (home-page "https://github.com/kevinushey/rex")
+    (synopsis "Friendly regular expressions")
+    (description
+     "This package provides a friendly interface for the construction of
+regular expressions.  Regular expressions are a very powerful feature, however
+they are often difficult to interpret.  Rex allows you to build complex
+regular expressions from human readable expressions")
+    (license license:expat)))
