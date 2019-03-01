@@ -768,8 +768,8 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.freedesktop.org/software/" name "/"
-                    name "-" version ".tar.xz"))
+                    "https://www.freedesktop.org/software/libqmi/"
+                    "libqmi-" version ".tar.xz"))
               (sha256
                (base32
                 "05xamy608mhvmw9zbnv9n8w3xpk96n10v5mixnvpnqgih6s9ih91"))))
