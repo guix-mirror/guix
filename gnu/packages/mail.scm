@@ -1967,7 +1967,9 @@ DKIM and/or DomainKeys.")
                      version "/dkimproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "1gc5c7lg2qrlck7b0lvjfqr824ch6jkrzkpsn0gjvlzg7hfmld75"))))
+                "1gc5c7lg2qrlck7b0lvjfqr824ch6jkrzkpsn0gjvlzg7hfmld75"))
+              (patches
+               (search-patches "dkimproxy-add-ipv6-support.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1997,11 +1999,13 @@ DKIM and/or DomainKeys.")
     (inputs
      `(("perl" ,perl)
        ("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
+       ("perl-io-socket-inet6" ,perl-io-socket-inet6)
        ("perl-mailtools" ,perl-mailtools)
        ("perl-mail-authenticationresults" ,perl-mail-authenticationresults)
        ("perl-mail-dkim" ,perl-mail-dkim)
        ("perl-net-dns" ,perl-net-dns)
-       ("perl-net-server" ,perl-net-server)))
+       ("perl-net-server" ,perl-net-server)
+       ("perl-socket6" ,perl-socket6)))
     (home-page "http://dkimproxy.sourceforge.net/")
     (synopsis "SMTP-proxy for DKIM signing and verifying")
     (description "DKIMproxy is an SMTP-proxy that signs and/or verifies emails,
