@@ -1706,6 +1706,8 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
              (substitute* "oberdiek.ins"
                (("ifpdf.ins") "ifpdf.dtx"))
              #t)))))
+    (propagated-inputs
+     `(("texlive-generic-ifxetex" ,texlive-generic-ifxetex)))
     (home-page "https://www.ctan.org/pkg/oberdiek")
     (synopsis "Bundle of packages submitted by Heiko Oberdiek")
     (description
