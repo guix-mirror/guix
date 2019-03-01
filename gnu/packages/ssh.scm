@@ -70,7 +70,7 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.8.6")
+    (version "0.8.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -78,7 +78,7 @@
                      (commit (string-append "libssh-" version))))
               (sha256
                (base32
-                "0rq57gpmdawljx7hqya4ipzsfpcbr31yy60kl5qv66krc9wimqda"))
+                "1iqik1ba0g008k1mb1n85iih1azi7giy0c485jnlmsrjxik4q3j2"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
