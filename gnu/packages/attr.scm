@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,28 +30,18 @@
 (define-public attr
   (package
     (name "attr")
-    (version "2.4.47")
+    (version "2.4.48")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/attr/attr-"
-                                  version ".src.tar.gz"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "0nd8y0m6awc9ahv0ciiwf8gy54c8d3j51pw9xg7f7cn579jjyxr5"))))
+                "1rr4adzwax4bzr2c00f06zcsljv5y6p9wymz1g89ww7cb2rp5bay"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'configure 'patch-makefile-SHELL
-           (lambda _
-             (patch-makefile-SHELL "include/buildmacros")
-             #t))
-         (replace 'install
-           (lambda _
-             (invoke "make"
-                     "install"
-                     "install-lib"
-                     "install-dev")))
          (replace 'check
            (lambda* (#:key target #:allow-other-keys)
              ;; Use the right shell.
@@ -80,4 +71,4 @@
     (synopsis "Library and tools for manipulating extended attributes")
     (description
      "Portable library and tools for manipulating extended attributes.")
-    (license (list gpl2+ lgpl2.1+))))
+    (license lgpl2.1+)))
