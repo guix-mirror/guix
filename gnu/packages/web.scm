@@ -5780,7 +5780,8 @@ or embedded instantiation.  This package provides the JMX management.")))
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "jetty-http"))))))
+             (chdir "jetty-http")
+             #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
        ("servlet" ,java-tomcat)
