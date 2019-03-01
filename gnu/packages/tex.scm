@@ -5331,6 +5331,8 @@ striking out (line through words) and crossing out (/// over words).")
            (sha256
             (base32
              "0xkxw26sjzr5npjpzpr28yygwdbhzpdd0hsk80gjpidhcxmz393i"))))))
+    (propagated-inputs
+     `(("texlive-latex-xcolor" ,texlive-latex-xcolor)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
