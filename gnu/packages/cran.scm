@@ -13920,3 +13920,33 @@ on a negative binomial regression model with regularized parameters.  As part
 of the same regression framework, this package also provides functions for
 batch correction, and data correction.")
     (license license:gpl3)))
+
+(define-public r-styler
+  (package
+    (name "r-styler")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "styler" version))
+       (sha256
+        (base32
+         "1z24mi88snbz1avjw9phq0lzmigddvycc56s83nxzr9w9z85mh05"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)
+       ("r-cli" ,r-cli)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rematch2" ,r-rematch2)
+       ("r-rlang" ,r-rlang)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-tibble" ,r-tibble)
+       ("r-withr" ,r-withr)
+       ("r-xfun" ,r-xfun)))
+    (home-page "https://github.com/r-lib/styler")
+    (synopsis "Non-invasive pretty printing of R code")
+    (description
+     "This is a package for pretty-printing R code without changing the user's
+formatting intent.")
+    (license license:gpl3)))
