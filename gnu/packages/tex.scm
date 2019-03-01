@@ -3642,6 +3642,169 @@ differs from the EC in a number of particulars.")
     (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
 texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
 
+(define-public texlive-fonts-adobe-times
+  (package
+    (name "texlive-fonts-adobe-times")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/urw/times/"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "15vzyr7favkv1mj00qxr03s89kw78nd066fh69by93272g8p5sgd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"        . "fonts/type1/urw/times")
+
+                       ("times-afm"     . "fonts/afm/adobe/times")
+                       ("times-tfm"     . "fonts/tfm/adobe/times")
+                       ("times-vf"      . "fonts/vf/adobe/times")
+
+                       ("urw-afm"       . "fonts/afm/urw/times")
+                       ("urw35vf-tfm"   . "fonts/tfm/urw35vf/times")
+                       ("urw35vf-vf"    . "fonts/vf/urw35vf/times")
+
+                       ("times-tex"     . "tex/latex/times")
+                       ("dvips"         . "dvips/times")
+                       ("fonts-map"     . "fonts/map/dvips/times"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("times-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/adobe/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "1k7h6vihfc6ri2lq9ggnq2g4zq3qcgq1vd0hr486g9cqrdpys6cy"))))
+       ("times-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/adobe/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "1hbgkjnf5xyganbznwpwszvr3iyk4bzb0ys4hd8ybawp60paadrr"))))
+       ("times-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/adobe/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "18rfspnwdw9r81dy18lb4w96d09b6c4g7y80azwylalkhwdf2lfp"))))
+       ("urw-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/urw/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0g0xpsyn6634g0b4rpd420v7i4gkz3zr12vcy2b8csbcscjvwri5"))))
+       ("urw35vf-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/urw35vf/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "0a4idlvpaqd0ypqgy1xw0rpx8q23bvssg8xq757zzn3zikj0w7pr"))))
+       ("urw35vf-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/urw35vf/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "05mppwxd4c5x0yw50gca726f0ylc1rk8jf0jjkrriixq6rnw03di"))))
+       ("times-tex"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/tex/latex/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tex-" version "-checkout"))
+           (sha256
+            (base32
+             "1gmd0x7c3vkvfzgmrsp4866rcdbyimfk3bjr91zaadc41r1i8xrp"))))
+       ("dvips"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/dvips/times/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-dvips-" version "-checkout"))
+           (sha256
+            (base32
+             "1fvqpgqi7bp2q76nf5kmlhsdijxw65arqfy3ax3djwih3yg12mp0"))))
+       ("fonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/times/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-fonts-map-" version "-checkout"))
+           (sha256
+            (base32
+             "12f00gzs2zgllkm59qdhw2xxj7lvg3p256232f1l275z3pldfqqi"))))))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description
+     "This package provides a drop-in replacements for the Times font from
+Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
+
 (define-public texlive-fonts-rsfs
   (package
     (name "texlive-fonts-rsfs")
