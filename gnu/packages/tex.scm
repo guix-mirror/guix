@@ -1667,6 +1667,9 @@ tables.")
                 "1d3rmjgzh0025a1dza55zb6nzzlgd1y9snwx45wq1c1vf42m79h2"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/hyperref"))
+    (propagated-inputs
+     `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek) ; for ltxcmds.sty
+       ("texlive-latex-url" ,texlive-latex-url)))
     (home-page "https://www.ctan.org/pkg/hyperref")
     (synopsis "Extensive support for hypertext in LaTeX")
     (description
