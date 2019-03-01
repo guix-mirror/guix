@@ -1022,6 +1022,77 @@ Knuthian mflogo fonts described in The Metafontbook and to typeset Metafont
 logos in LaTeX documents.")
     (license license:lppl)))
 
+(define-public texlive-fonts-mflogo-font
+  (package
+    (name "texlive-fonts-mflogo-font")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/hoekwater/mflogo-font"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "09fsxfpiyxjljkrb52b197728bjnkcnv3bdwm4hl6hf23mbmqadf"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"    . "fonts/type1/hoekwater/mflogo-font")
+                       ("afm"       . "fonts/afm/hoekwater/mflogo-font")
+                       ("fonts-map" . "fonts/map/dvips/mflogo-font"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/hoekwater/mflogo-font"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0bx1mfhhzsk9gj1pha36q2rk0jd0y285qm62zgvdvzzzlfnk8sdb"))))
+       ("fonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/mflogo-font/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-fonts-map-" version "-checkout"))
+           (sha256
+            (base32
+             "044xrrpl8hnvj55cx2ql1ib1bcyr33nzanx5nkwxpai7fb7pg4y6"))))))
+    (home-page "https://www.ctan.org/pkg/mflogo-font")
+    (synopsis "Metafont logo font")
+    (description
+     "These fonts were created in METAFONT by Knuth, for his own publications.
+At some stage, the letters P and S were added, so that the METAPOST logo could
+also be expressed.  The fonts were originally issued (of course) as METAFONT
+source; they have since been autotraced and reissued in Adobe Type 1 format by
+Taco Hoekwater.")
+    (license license:knuth)))
+
 (define-public texlive-fonts-amsfonts
   (package
     (name "texlive-fonts-amsfonts")
