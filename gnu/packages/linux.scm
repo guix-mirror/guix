@@ -4129,7 +4129,7 @@ interface to the variable facility of UEFI boot firmware.")
                 "0pzn67vxxaf7jna4cd0i4kqm60h04kb21hckksv9z82q9gxra1wm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests.
+     `(#:tests? #f ;no tests
        #:make-flags (list (string-append "prefix=" %output)
                           (string-append "libdir=" %output "/lib")
                           ;; EFIDIR denotes a subdirectory relative to the
@@ -4137,11 +4137,7 @@ interface to the variable facility of UEFI boot firmware.")
                           ;; installed (known as OS_VENDOR in the code).
                           ;; GRUB overrides this, as such it's only used if
                           ;; nothing else is specified on the command line.
-                          "EFIDIR=gnu"
-                          ;; Override CFLAGS to add efivar include directory.
-                          (string-append "CFLAGS=-O2 -g -flto -I"
-                                         (assoc-ref %build-inputs "efivar")
-                                         "/include/efivar"))
+                          "EFIDIR=gnu")
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
