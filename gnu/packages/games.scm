@@ -2098,20 +2098,19 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.5")
+    (version "1.14.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
-                                  (version-major+minor version) "/wesnoth-"
-                                  version "/"
-                                  name "-" version ".tar.bz2"))
+                                  (version-major+minor version)
+                                  "/wesnoth-" version "/"
+                                  "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kgpj2f22nnx4mwd1zis3s5ny2983aasgqsmz7wnqaq7n6a7ac85"))
-              (patches (search-patches "wesnoth-newer-boost.patch"))))
+                "0aw3czw3nq8ffakhw2libhvrhnllj61xc5lxpjqv0ig1419s1lj5"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; no check target
+     `(#:tests? #f))                    ; no check target
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -5225,54 +5224,49 @@ Github or Gitlab.")
 (define-public colobot
   (package
     (name "colobot")
-    (version "0.1.11.1-alpha")
+    (version "0.1.12-alpha")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/colobot/colobot/archive/"
-                           "colobot-gold-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/colobot/colobot.git")
+             (commit (string-append "colobot-gold-" version))
+             (recursive? #t)))          ;for "data/" subdir
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0h6f4icarramhjkxxbzz6siv3v11z5r8ghqisgr1rscw217vhmwf"))))
+         "1c181cclkrnspgs07lvndg2c81cjq3smkv7qim8c470cj88rcrp2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'unpack-data
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((data (assoc-ref inputs "colobot-data")))
-               (invoke "tar" "-xvf" data "-Cdata" "--strip-components=1")
-               #t)))
-         (add-after 'unpack-data 'install-music
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
+         (add-after 'unpack 'fix-directories
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("(\\$\\{CMAKE_INSTALL_PREFIX\\})/games" _ prefix)
+                (string-append prefix "/bin"))
+               (("(\\$\\{CMAKE_INSTALL_PREFIX\\}/share)/games/colobot" _ prefix)
+                (string-append prefix "/colobot")))
+             #t))
+         (add-after 'fix-directories 'install-music
+           ;; Retrieve and install music files.
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Installation process tries to download music files using
-             ;; "wget" if not already present.  Since we are going to install
-             ;; them, skip "wget" command check.
+             ;; "wget" if not already present.  Since we are going another
+             ;; route, skip "wget" command check.
              (substitute* "data/music/CMakeLists.txt"
                (("find_program\\(WGET wget\\)") ""))
-             ;; Effectively install music.
+             ;; Populate "music/" directory.
              (let ((data (assoc-ref inputs "colobot-music")))
-               (invoke "tar" "-xvf" data "-Cdata/music")
-               #t)))
-         (add-after 'install 'fix-install-directory
-           ;; Move binary from "games/" to "bin/".
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (rename-file (string-append out "/games")
-                            (string-append out "/bin"))
-               #t))))))
+               (invoke "tar" "-xvf" data "-Cdata/music"))
+             #t)))))
     (native-inputs
-     `(("colobot-data"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://github.com/colobot/colobot-data/archive/"
-                 "colobot-gold-" version ".tar.gz"))
-           (sha256
-            (base32
-             "0riznycx2jbxmg4m9nn3mcpqws2c0s7cn2m9skz9zj1w39r5qpjy"))))
-       ("colobot-music"
+     `(("colobot-music"
         ,(origin
            (method url-fetch)
            (uri (string-append "https://colobot.info/files/music/"

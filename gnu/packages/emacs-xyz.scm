@@ -42,6 +42,7 @@
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,6 +111,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages speech)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages gettext)
@@ -4448,7 +4450,7 @@ like @code{org-edit-src-code} but for arbitrary regions.")
 (define-public emacs-projectile
   (package
     (name "emacs-projectile")
-    (version "0.14.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/bbatsov"
@@ -4456,7 +4458,7 @@ like @code{org-edit-src-code} but for arbitrary regions.")
               (file-name (string-append "projectile-" version ".el"))
               (sha256
                (base32
-                "1ql1wnzhblbwnv66hf2y0wq45g71hh6s9inc090lmhm1vgylbd1f"))))
+                "149hablms6n9b4wp78dz4pjz1rzyylfw9ayghq5p9d7k661mvyby"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -13139,17 +13141,18 @@ opposed to character-based).")
 (define-public emacs-disk-usage
   (package
     (name "emacs-disk-usage")
-    (version "1.1.0")
-    (home-page "https://gitlab.com/ambrevar/emacs-disk-usage.git")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1c9jmjn8vf0v4776v79pc5w0labfs4v9aysbv2w9423rg4mangbg"))))
+    (version "1.2.0")
+    (home-page "https://gitlab.com/Ambrevar/emacs-disk-usage")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/disk-usage-"
+             version
+             ".el"))
+       (sha256
+        (base32
+         "13n6bsrz8q07fl6sd7wi5zvf01m5xw11hmrpdz7wcn49v6vs3whl"))))
     (build-system emacs-build-system)
     (synopsis "Sort and browse disk usage listings with Emacs")
     (description "Disk Usage is a file system analyzer: it offers a tabulated
@@ -13183,3 +13186,27 @@ used to link to certain Magit buffers.  Use the command
 Later you can insert it into an Org buffer using the command
 @code{org-insert-link}.")
       (license license:gpl3+))))
+
+(define-public emacs-amx
+  (package
+    (name "emacs-amx")
+    (version "3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/DarwinAwardWinner/amx")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0bb8y1dmzyqkrb4mg6zndcsxppby3glridv2aap2pv05gv8kx7mj"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/DarwinAwardWinner/amx")
+    (synopsis "Alternative interface for M-x")
+    (description "Amx is an alternative interface for M-x in Emacs.  It
+provides several enhancements over the ordinary
+@code{execute-extended-command}, such as prioritizing your most-used commands
+in the completion list and showing keyboard shortcuts, and it supports several
+completion systems for selecting commands, such as ido and ivy.")
+    (license license:gpl3+)))

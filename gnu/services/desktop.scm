@@ -306,6 +306,7 @@ used by GNOME.")
                                    (time-critical 300)
                                    (time-action 120)
                                    (critical-power-action 'hybrid-sleep))
+  upower-service-type
   "Return a service that runs @uref{http://upower.freedesktop.org/,
 @command{upowerd}}, a system-wide monitor for power consumption and battery
 levels, with the given configuration settings.  It implements the

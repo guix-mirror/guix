@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
   #:export (%cargo-build-system-modules
+            %cargo-utils-modules
             cargo-build-system
             crate-url
             crate-url?
@@ -49,10 +51,15 @@ to NAME and VERSION."
   (let ((rust (resolve-interface '(gnu packages rust))))
     (module-ref rust 'rust)))
 
+(define %cargo-utils-modules
+  ;; Build-side modules imported by default.
+  `((guix build cargo-utils)
+    ,@%gnu-build-system-modules))
+
 (define %cargo-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build cargo-build-system)
-    ,@%gnu-build-system-modules))
+    ,@%cargo-utils-modules))
 
 (define* (cargo-build store name inputs
                       #:key

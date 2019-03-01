@@ -4,7 +4,7 @@
 ;;; Copyright © 2016-2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -3014,7 +3014,7 @@ types or handled by application specific code.")
               (uri (string-append
                     "mirror://kde/stable/frameworks/"
                     (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
+                    "ktexteditor-" version ".tar.xz"))
               (sha256
                (base32
                 "0b5zqhm5aw7jj7dj600xa674ik11gwyzamhyz5962xhvsg5pyjwx"))))
@@ -3076,7 +3076,8 @@ types or handled by application specific code.")
              (let ((kst5 (string-append (assoc-ref outputs "out")
                                         "/share/kservicetypes5/")))
                (symlink (string-append kst5 "ktexteditorplugin.desktop")
-                        (string-append kst5 "ktexteditor-plugin.desktop"))))))))
+                        (string-append kst5 "ktexteditor-plugin.desktop"))
+               #t))))))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Full text editor component")
     (description "KTextEditor provides a powerful text editor component that you

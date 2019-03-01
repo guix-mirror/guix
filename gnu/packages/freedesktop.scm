@@ -764,15 +764,15 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.22.0")
+    (version "1.22.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.freedesktop.org/software/" name "/"
-                    name "-" version ".tar.xz"))
+                    "https://www.freedesktop.org/software/libqmi/"
+                    "libqmi-" version ".tar.xz"))
               (sha256
                (base32
-                "05xamy608mhvmw9zbnv9n8w3xpk96n10v5mixnvpnqgih6s9ih91"))))
+                "09w20dsgr16bgbqw5ds7r6j2s6ihwyalh9zpbjhcn7cvm0afbwgi"))))
     (build-system gnu-build-system)
     (inputs
      `(("libgudev" ,libgudev)))

@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -866,8 +867,6 @@ from forcing GEXP-PROMISE."
        ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
        #:validate-runpath? #f
 
-       #:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
-
        #:configure-flags `("--enable-default-toolkit=cairo-gtk3"
 
                            "--with-distribution-id=org.gnu"
@@ -939,6 +938,8 @@ from forcing GEXP-PROMISE."
                            ;; "--with-system-png"
                            )
 
+       #:imported-modules ,%cargo-utils-modules ;for `generate-checksums'
+
        #:modules ((ice-9 ftw)
                   (ice-9 rdelim)
                   (ice-9 match)
@@ -978,7 +979,7 @@ from forcing GEXP-PROMISE."
              (invoke "sh" "-c" "autoconf old-configure.in > old-configure")))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda _
-             (use-modules (guix build cargo-build-system))
+             (use-modules (guix build cargo-utils))
              (let ((null-file "/dev/null")
                    (null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
                (substitute* '("Cargo.lock" "servo/Cargo.lock")

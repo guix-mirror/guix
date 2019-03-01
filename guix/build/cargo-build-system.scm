@@ -20,6 +20,7 @@
 (define-module (guix build cargo-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (guix build cargo-utils)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 ftw)
@@ -28,8 +29,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
-            cargo-build
-            generate-checksums))
+            cargo-build))
 
 ;; Commentary:
 ;;
@@ -106,41 +106,6 @@ directory = '" port)
   (if (and tests? (file-exists? "Cargo.lock"))
       (zero? (system* "cargo" "test"))
       #t))
-
-(define (file-sha256 file-name)
-  "Calculate the hexdigest of the sha256 checksum of FILE-NAME and return it."
-  (let ((port (open-pipe* OPEN_READ
-                          "sha256sum"
-                          "--"
-                          file-name)))
-    (let ((result (read-delimited " " port)))
-      (close-pipe port)
-      result)))
-
-(define (generate-checksums dir-name src-name)
-  "Given DIR-NAME, a store directory, checksum all the files in it one
-by one and put the result into the file \".cargo-checksum.json\" in
-the same directory.  Also includes the checksum of an extra file
-SRC-NAME as if it was part of the directory DIR-NAME with name
-\"package\"."
-  (let* ((file-names (find-files dir-name "."))
-         (dir-prefix-name (string-append dir-name "/"))
-         (dir-prefix-name-len (string-length dir-prefix-name))
-         (checksums-file-name (string-append dir-name "/.cargo-checksum.json")))
-    (call-with-output-file checksums-file-name
-      (lambda (port)
-        (display "{\"files\":{" port)
-        (let ((sep ""))
-          (for-each (lambda (file-name)
-            (let ((file-relative-name (string-drop file-name dir-prefix-name-len)))
-                  (display sep port)
-                  (set! sep ",")
-                  (write file-relative-name port)
-                  (display ":" port)
-                  (write (file-sha256 file-name) port))) file-names))
-        (display "},\"package\":" port)
-        (write (file-sha256 src-name) port)
-        (display "}" port)))))
 
 (define (touch file-name)
   (call-with-output-file file-name (const #t)))

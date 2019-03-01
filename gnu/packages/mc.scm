@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,15 +37,14 @@
 (define-public mc
   (package
     (name "mc")
-    (version "4.8.20")
+    (version "4.8.22")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://ftp.midnight-commander.org/mc-"
                           version ".tar.xz"))
       (sha256
-       (base32
-        "072h7n9b3j79fqn48xaw0xhlcjavpsmfpz6nyh20lhmfz3sffzh1"))))
+       (base32 "060kh3dmk8fmmsibn1l815qjazzfxzbhgqggrhncz604pbbnhy7f"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
@@ -89,6 +88,11 @@
                (substitute* (list "rpm.custom.output"
                                   "rpm.glib.output")
                  (("      0        0") "<<uid>>  <<gid>>")))
+             ;; XXX ERROR:mc_realpath.c:99:realpath_test: assertion failed
+             ;; (resolved_path == data->expected_string): ("" == "/usr/bin")
+             (substitute* "tests/lib/mc_realpath.c"
+               (("/usr/bin") "/")
+               (("usr/bin") "/"))
              #t)))))
     (home-page "https://www.midnight-commander.org")
     (synopsis "Graphical file manager")

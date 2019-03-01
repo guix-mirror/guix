@@ -200,15 +200,14 @@ scheme.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.23")
+    (version "1.24")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/ddrescue/ddrescue-"
                           version ".tar.lz"))
       (sha256
-       (base32
-        "13cd6c0x91zq10vdlyl6r5rib47bmsn5sshmkin3igwj8pa2vbm9"))))
+       (base32 "11qh0bbzf00mfb4yq35gnv5m260k4d7q9ixklry6bqvhvvp3ypab"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
@@ -711,7 +710,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
 (define-public libblockdev
   (package
     (name "libblockdev")
-    (version "2.20")
+    (version "2.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/storaged-project/"
@@ -719,7 +718,7 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                                   version "-1/libblockdev-" version ".tar.gz"))
               (sha256
                (base32
-                "092snk5jyv48na4d46v1ckiy859zwpb3r0ivnxv3km5vzsp76y7q"))))
+                "02p13l4194j0vyd2zs7bb9dmyclcpqq8l3qv9289vjfbsvq2awii"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

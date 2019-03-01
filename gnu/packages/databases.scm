@@ -1668,14 +1668,16 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.22")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/LMDB/lmdb/archive/"
-                                  "LMDB_" version ".tar.gz"))
-              (sha256
-               (base32
-                "0a7a8535csrvw71mrgx680m5d17bnxmmhcccij30idifi1cpi4pk"))))
+    (version "0.9.23")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LMDB/lmdb.git")
+             (commit (string-append "LMDB_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ag7l5180ajvm73y59m7sn3p52xm8m972d08cshxhpwgwa4v35k6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1683,8 +1685,7 @@ database.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (chdir (string-append
-               (getenv "PWD") "/lmdb-LMDB_" ,version "/libraries/liblmdb"))
+             (chdir "libraries/liblmdb")
              (substitute* "Makefile"
                (("/usr/local") (assoc-ref outputs "out")))
             #t)))))

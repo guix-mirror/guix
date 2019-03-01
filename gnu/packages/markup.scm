@@ -114,7 +114,7 @@ convert it to structurally valid XHTML (or HTML).")
              (method url-fetch)
              (uri (string-append
                    "http://www.pell.portland.or.us/~orc/Code/"
-                   name "/" name "-" version ".tar.bz2"))
+                   "discount/discount-" version ".tar.bz2"))
              (sha256
               (base32
                "199hwajpspqil0a4y3yxsmhdp2dm73gqkzfk4mrwzsmlq8y1xzbl"))))

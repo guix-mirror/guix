@@ -2027,15 +2027,15 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.36")
+    (version "1.12.44")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gnumeric/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "gnumeric-" version ".tar.xz"))
               (sha256
                (base32
-                "0j28qpbz9a9p80x27kcwxl5n1hf36nn2fa7dxwrbhcdx4rgy5grw"))))
+                "0147962c6ybdsj57rz95nla0rls7g545wc2n7pz59zmzyd5pksk0"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -3544,9 +3544,9 @@ such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/gom/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "gom-" version ".tar.xz"))
        (sha256
         (base32
          "1zaqqwwkyiswib3v1v8wafpbifpbpak0nn2kp13pizzn9bwz1s5w"))))
@@ -4006,15 +4006,15 @@ supports image conversion, rotation, and slideshows.")
   ;; 'XDG_DATA_DIRS' appropriately set.
   (package
     (name "eog-plugins")
-    (version "3.26.2")
+    (version "3.26.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/eog-plugins/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "eog-plugins-" version ".tar.xz"))
               (sha256
                (base32
-                "1w8zw7kwfvlwlyb1k1inqdvbwnzq959sqawlmnwfb8ykn98hbk8y"))))
+                "06fnjs2p18ad5vk07z685cx26sc7d3azywss00w9xvz794b2i1g3"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Apps/EyeOfGnome/Plugins")
     (synopsis "Extensions for the Eye of GNOME image viewer")
@@ -7451,17 +7451,18 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.21")
+    (version "1.10.23")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/rcaelers/workrave.git")
-             (commit (string-map (match-lambda (#\_ #\.) (chr chr)) version))))
+             (commit (string-append "v" (string-map
+                                         (match-lambda (#\. #\_) (chr chr))
+                                         version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "150qca8c552fakjlzkgarsxgp87l1xcwn19svqsa9d0cygqxjgia"))))
+        (base32 "1qhlwfhwk5agv4904d6bsf83k9k89q7bms6agg967vsca4905vcw"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs `(("glib" ,glib)
                          ("gtk+" ,gtk+)
