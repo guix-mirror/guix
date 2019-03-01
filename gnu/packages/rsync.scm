@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,12 +22,15 @@
 
 (define-module (gnu packages rsync)
   #:use-module (gnu packages)
-  #:use-module (gnu packages perl)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages base)
-  #:use-module (guix licenses)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages popt)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 
@@ -51,25 +55,26 @@ to/from another host over any remote shell, or to/from a remote rsync daemon.
 Its delta-transfer algorithm reduces the amount of data sent over the network
 by sending only the differences between the source files and the existing
 files in the destination.")
-   (license gpl3+)
+   (license license:gpl3+)
    (home-page "http://rsync.samba.org/")))
 
 (define-public librsync
   (package
     (name "librsync")
-    (version "0.9.7")
+    (version "2.0.2")
        (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/librsync/librsync/"
-                                version "/librsync-" version ".tar.gz"))
+            (uri (string-append "https://github.com/librsync/librsync/archive/v"
+                                version ".tar.gz"))
             (sha256
              (base32
-              "1mj1pj99mgf1a59q9f2mxjli2fzxpnf55233pc1klxk2arhf8cv6"))))
-   (build-system gnu-build-system)
+              "1waa581pcscc1rnvy06cj584k5dx0dc7jj79wsdj7xw4xqh9ayz6"))))
+   (build-system cmake-build-system)
+   (inputs
+    `(("popt" ,popt)))
    (native-inputs
     `(("which" ,which)
       ("perl" ,perl)))
-   (arguments '(#:configure-flags '("--enable-shared")))
    (home-page "http://librsync.sourceforge.net/")
    (synopsis "Implementation of the rsync remote-delta algorithm")
    (description
@@ -78,4 +83,19 @@ remote-delta algorithm.  This algorithm allows efficient remote updates of a
 file, without requiring the old and new versions to both be present at the
 sending end.  The library uses a \"streaming\" design similar to that of zlib
 with the aim of allowing it to be embedded into many different applications.")
-   (license lgpl2.1+)))
+   (license license:lgpl2.1+)))
+
+(define-public librsync-0.9
+  (package
+    (inherit librsync)
+    (version "0.9.7")
+        (source (origin
+             (method url-fetch)
+            (uri (string-append "mirror://sourceforge/librsync/librsync/"
+                                version "/librsync-" version ".tar.gz"))
+             (sha256
+              (base32
+              "1mj1pj99mgf1a59q9f2mxjli2fzxpnf55233pc1klxk2arhf8cv6"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-shared")))
+    (inputs '())))

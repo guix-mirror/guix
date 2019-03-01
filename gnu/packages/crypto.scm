@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -68,6 +68,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
@@ -927,3 +928,50 @@ Features:
 that allows for importing token seeds, generating token codes, and various
 utility/testing functions.")
     (license license:lgpl2.1+)))
+
+(define-public hpenc
+  (package
+    (name "hpenc")
+    (version "3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/vstakhov/hpenc")
+                     (commit version)))
+              (sha256
+               (base32
+                "1fb5yi3d2k8kd4zm7liiqagpz610y168xrr1cvn7cbq314jm2my1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             ;; Build the program and the docs.
+             "SUBDIRS=src doc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; No ./configure script
+         (add-after 'unpack 'patch-path
+           (lambda _
+             (substitute* '("src/Makefile" "doc/Makefile")
+               (("/usr/bin/install")
+                "install"))))
+         (add-before 'install 'make-output-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man1 (string-append out "/share/man/man1")))
+               (mkdir-p bin)
+               (mkdir-p man1)
+               #t))))))
+    (inputs
+     `(("libsodium" ,libsodium)
+       ("openssl" ,openssl)))
+    (synopsis "High-performance command-line tool for stream encryption")
+    (description "Hpenc is a command-line tool for performing authenticated
+encryption (AES-GCM and ChaCha20-Poly1305) of streaming data.  It does not
+perform an asymmetric key exchange, instead requiring the user to distribute
+pre-shared keys out of band.  It is designed to handle large amounts of data
+quickly by using all your CPU cores and hardware acceleration.")
+    (home-page "https://github.com/vstakhov/hpenc")
+    (license license:bsd-3)))

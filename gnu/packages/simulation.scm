@@ -464,6 +464,10 @@ FFC is part of the FEniCS Project.")
                               "${DOLFIN_SOURCE_DIR} "
                               "${DOLFIN_SOURCE_DIR}/dolfin "
                               "${DOLFIN_BINARY_DIR})\n")))
+            (substitute* "dolfin/nls/PETScSNESSolver.cpp"
+              ;; Remove SNESTEST mapping.  The SNESTEST symbol was removed
+              ;; from PETSc at version 3.10.3.
+              ((".*SNESTEST.*") "" ))
             #t))))
     (build-system cmake-build-system)
     (inputs

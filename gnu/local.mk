@@ -12,7 +12,7 @@
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-# Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+# Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
@@ -296,8 +296,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/lxqt.scm				\
   %D%/packages/m4.scm				\
   %D%/packages/machine-learning.scm		\
-  %D%/packages/man.scm				\
   %D%/packages/magic-wormhole.scm		\
+  %D%/packages/man.scm				\
+  %D%/packages/mastodon.scm			\
   %D%/packages/mail.scm				\
   %D%/packages/make-bootstrap.scm		\
   %D%/packages/markup.scm			\
@@ -1064,11 +1065,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
-  %D%/packages/patches/musescore-fix-use_webengine.patch 	\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/m4-gnulib-libio.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
+  %D%/packages/patches/netpbm-CVE-2017-2586.patch		\
+  %D%/packages/patches/netpbm-CVE-2017-2587.patch		\
   %D%/packages/patches/netsurf-message-timestamp.patch		\
   %D%/packages/patches/netsurf-system-utf8proc.patch		\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
@@ -1100,6 +1102,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
+  %D%/packages/patches/openssl-CVE-2019-1559.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
@@ -1321,7 +1324,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
   %D%/packages/patches/weechat-python.patch			\
-  %D%/packages/patches/wesnoth-newer-boost.patch		\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\
@@ -1332,12 +1334,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
-  %D%/packages/patches/wpa-supplicant-CVE-2017-13082.patch	\
-  %D%/packages/patches/wpa-supplicant-CVE-2018-14526.patch	\
-  %D%/packages/patches/wpa-supplicant-fix-key-reuse.patch	\
-  %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
-  %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
-  %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/x265-arm-flags.patch			\
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\

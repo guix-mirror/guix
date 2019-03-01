@@ -683,7 +683,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.26")
+    (version "2.6.27")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -691,7 +691,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "0amqlmnsijz60s0wwkp7bzix60v5p6khqcdsd6qcwawxq5pdayw0"))))
+                "1zy8a6pp8q9qjjxwsa4s2r9h20vs077xk59ycwy9lrfd8x79zw69"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

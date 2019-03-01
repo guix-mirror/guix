@@ -289,6 +289,8 @@ Haswell, Skylake, Apollolake, etc.  It defines and implements the OpenCL host
 functions required to initialize the device, create the command queues, the
 kernels and the programs, and run them on the GPU.  The code also contains a
 back-end for the LLVM compiler framework.")
+    ;; Beignet only supports Intel processors.
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:lgpl2.1+)))
 
 (define-public pocl

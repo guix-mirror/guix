@@ -48,6 +48,7 @@
   #:use-module (gnu packages firmware)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -796,53 +797,55 @@ Machine Protocol.")
     (license license:gpl3+)))
 
 (define-public lookingglass
-  (package
-   (name "lookingglass")
-   (version "a12")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference (url "https://github.com/gnif/LookingGlass")
-                         (commit version)))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32
-       "0r6bvl9q94039r6ff4f2bg8si95axx9w8bf1h1qr5730d2kv5yxq"))))
-   (build-system cmake-build-system)
-   (inputs `(("fontconfig" ,fontconfig)
-             ("glu" ,glu)
-             ("mesa" ,mesa)
-             ("openssl" ,openssl)
-             ("sdl2" ,sdl2)
-             ("sdl2-ttf" ,sdl2-ttf)
-             ("spice-protocol" ,spice-protocol-0.12.14)))
-   (native-inputs `(("libconfig" ,libconfig)
-                    ("nettle" ,nettle)
-                    ("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:tests? #f ;; No tests are available.
-      #:make-flags '("CC=gcc")
-      #:phases (modify-phases %standard-phases
-                 (add-before 'configure 'chdir-to-client
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (chdir "client")
-                     #t))
-                 (replace 'install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (install-file "looking-glass-client"
-                                   (string-append (assoc-ref outputs "out")
-                                                  "/bin"))
-                     #t))
-                 )))
-   (home-page "https://looking-glass.hostfission.com")
-   (synopsis "KVM Frame Relay (KVMFR) implementation")
-   (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
+  (let ((commit "41f4166aedeba65892f6db4de4de467aec9a2052"))
+    (package
+     (name "lookingglass")
+     (version (string-append "a12-" (string-take commit 7)))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference (url "https://github.com/gnif/LookingGlass")
+                           (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1sjxf4zy7h0zprla3s6dfwsxhmkrwhlhj07svf5bk5ij20bs0dc2"))))
+     (build-system cmake-build-system)
+     (inputs `(("fontconfig" ,fontconfig)
+               ("glu" ,glu)
+               ("mesa" ,mesa)
+               ("openssl" ,openssl)
+               ("sdl2" ,sdl2)
+               ("sdl2-ttf" ,sdl2-ttf)
+               ("spice-protocol" ,spice-protocol)
+               ("wayland" ,wayland)))
+     (native-inputs `(("libconfig" ,libconfig)
+                      ("nettle" ,nettle)
+                      ("pkg-config" ,pkg-config)))
+     (arguments
+      `(#:tests? #f ;; No tests are available.
+        #:make-flags '("CC=gcc")
+        #:phases (modify-phases %standard-phases
+                   (add-before 'configure 'chdir-to-client
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (chdir "client")
+                       #t))
+                   (replace 'install
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (install-file "looking-glass-client"
+                                     (string-append (assoc-ref outputs "out")
+                                                    "/bin"))
+                       #t))
+                   )))
+     (home-page "https://looking-glass.hostfission.com")
+     (synopsis "KVM Frame Relay (KVMFR) implementation")
+     (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
 Machine) configured for VGA PCI Pass-through without an attached physical
 monitor, keyboard or mouse.  It displays the VM's rendered contents on your main
 monitor/GPU.")
-   ;; This package requires SSE instructions.
-   (supported-systems '("i686-linux" "x86_64-linux"))
-   (license license:gpl2+)))
+     ;; This package requires SSE instructions.
+     (supported-systems '("i686-linux" "x86_64-linux"))
+     (license license:gpl2+))))
 
 (define-public runc
   (package

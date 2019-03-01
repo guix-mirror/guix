@@ -2308,6 +2308,23 @@ data and settings.")
      `(#:tests? #f                      ; there are no tests
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-latex-errors
+           (lambda _
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "doc/references.bib"
+                 (("\\{S\\}illanp[^,]+,")
+                  "{S}illanp{\\\"a}{\\\"a},")))
+             ;; XXX: I just can't get pdflatex to not complain about these
+             ;; characters.  They end up in the manual via the generated
+             ;; discrover-cli-help.txt.
+             (substitute* "src/hmm/cli.cpp"
+               (("µ") "mu")
+               (("η") "eta")
+               (("≤") "<="))
+             ;; This seems to be a syntax error.
+             (substitute* "doc/discrover-manual.tex"
+               (("theverbbox\\[t\\]") "theverbbox"))
+             #t))
          (add-after 'unpack 'add-missing-includes
            (lambda _
              (substitute* "src/executioninformation.hpp"
@@ -2316,28 +2333,28 @@ data and settings.")
              (substitute* "src/plasma/fasta.hpp"
                (("#define FASTA_HPP" line)
                 (string-append line "\n#include <random>")))
-             #t)))))
+             #t))
+         ;; FIXME: this is needed because we're using texlive-union, which
+         ;; doesn't handle fonts correctly.  It expects to be able to generate
+         ;; fonts in the home directory.
+         (add-before 'build 'setenv-HOME
+           (lambda _ (setenv "HOME" "/tmp") #t)))))
     (inputs
      `(("boost" ,boost)
-       ("cairo" ,cairo)))
+       ("cairo" ,cairo)
+       ("rmath-standalone" ,rmath-standalone)))
     (native-inputs
-     `(("texlive" ,texlive)
-       ;; TODO: Replace texlive with minimal texlive-union.
-       ;; ("texlive" ,(texlive-union (list texlive-latex-doi
-       ;;                             texlive-latex-hyperref
-       ;;                             texlive-latex-oberdiek
-       ;;                             texlive-generic-ifxetex
-       ;;                             texlive-latex-url
-       ;;                             texlive-latex-pgf
-       ;;                             texlive-latex-examplep
-       ;;                             texlive-latex-natbib
-       ;;                             texlive-latex-verbatimbox
-       ;;                             texlive-latex-ms
-       ;;                             texlive-latex-xcolor
-       ;;                             texlive-fonts-amsfonts
-       ;;                             texlive-latex-amsfonts
-       ;;                             ;; ...
-       ;;                             )))
+     `(("texlive" ,(texlive-union (list texlive-fonts-cm
+                                        texlive-fonts-amsfonts
+
+                                        texlive-latex-doi
+                                        texlive-latex-examplep
+                                        texlive-latex-hyperref
+                                        texlive-latex-ms
+                                        texlive-latex-natbib
+                                        texlive-bibtex         ; style files used by natbib
+                                        texlive-latex-pgf      ; tikz
+                                        texlive-latex-verbatimbox)))
        ("imagemagick" ,imagemagick)))
     (home-page "http://dorina.mdc-berlin.de/public/rajewsky/discrover/")
     (synopsis "Discover discriminative nucleotide sequence motifs")
@@ -2693,6 +2710,11 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-tune-to-CPU
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+               ((" -march=native") ""))
+             #t))
          (replace 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "PATH" (string-append (getcwd) ":" (getenv "PATH")))
@@ -12880,7 +12902,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.20")
+    (version "0.0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12888,7 +12910,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "19a7dclqq0b4kqg3phiz4d4arlwfp34nm3z0rf1gkqdpsy7gghp3"))))
+                "0psgdzlnx5xwhlhpss5yvmnl7yv19y9742l97m04f7awd8w74gxs"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))
@@ -14403,3 +14425,61 @@ datasets.  A popular implementation of t-SNE uses the Barnes-Hut algorithm to
 approximate the gradient at each iteration of gradient descent.  This package
 is a Cython wrapper for FIt-SNE.")
     (license license:bsd-4)))
+
+(define-public velvet
+  (package
+    (name "velvet")
+    (version "1.2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ebi.ac.uk/~zerbino/velvet/"
+                                  "velvet_" version ".tgz"))
+              (sha256
+               (base32
+                "0h3njwy66p6bx14r3ar1byb0ccaxmxka4c65rn4iybyiqa4d8kc8"))
+              ;; Delete bundled libraries
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file "Manual.pdf")
+                  (delete-file-recursively "third-party")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("OPENMP=t")
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-zlib-include
+           (lambda _
+             (substitute* "src/binarySequences.c"
+               (("../third-party/zlib-1.2.3/zlib.h") "zlib.h"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/velvet")))
+               (mkdir-p bin)
+               (mkdir-p doc)
+               (install-file "velveth" bin)
+               (install-file "velvetg" bin)
+               (install-file "Manual.pdf" doc)
+               (install-file "Columbus_manual.pdf" doc)
+               #t))))))
+    (inputs
+     `(("openmpi" ,openmpi)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("texlive" ,(texlive-union (list texlive-latex-graphics
+                                        texlive-latex-hyperref)))))
+    (home-page "https://www.ebi.ac.uk/~zerbino/velvet/")
+    (synopsis "Nucleic acid sequence assembler for very short reads")
+    (description
+     "Velvet is a de novo genomic assembler specially designed for short read
+sequencing technologies, such as Solexa or 454.  Velvet currently takes in
+short read sequences, removes errors then produces high quality unique
+contigs.  It then uses paired read information, if available, to retrieve the
+repeated areas between contigs.")
+    (license license:gpl2+)))

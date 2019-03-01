@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +28,14 @@
 (define-public libunwind
   (package
     (name "libunwind")
-    (version "1.2.1")
+    (version "1.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/libunwind/libunwind-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1jsslwkilwrsj959dc8b479qildawz67r8m4lzxm7glcwa8cngiz"))))
+               "1y0l08k6ak1mqbfj6accf9s5686kljwgsl4vcqpxzk5n74wpm6a3"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: As of glibc 2.25, we get 1 out of 34 test failures (2 are

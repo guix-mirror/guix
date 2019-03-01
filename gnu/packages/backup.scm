@@ -95,7 +95,7 @@
      `(("lockfile" ,python2-lockfile)
        ("urllib3" ,python2-urllib3)))
     (inputs
-     `(("librsync" ,librsync)
+     `(("librsync" ,librsync-0.9)
        ("lftp" ,lftp)
        ("gnupg" ,gnupg)                 ; gpg executable needed
        ("util-linux" ,util-linux)       ; for setsid
@@ -346,7 +346,7 @@ list and implement the backup strategy.")
          "0miklk4bqblpyzh1bni4x6lqn88fa8fjn15x1k1n8bxkx60nlymd"))))
     (build-system gnu-build-system)
     (inputs
-     `(("librsync" ,librsync)))
+     `(("librsync" ,librsync-0.9)))
     (arguments
      `(#:make-flags `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
                       "CC=gcc")
@@ -379,7 +379,7 @@ errors.")
     (build-system python-build-system)
     (inputs
      `(("python" ,python-2)
-       ("librsync" ,librsync)))
+       ("librsync" ,librsync-0.9)))
     (arguments
      `(#:python ,python-2
        #:tests? #f))

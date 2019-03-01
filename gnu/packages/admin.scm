@@ -1070,22 +1070,16 @@ commands and their arguments.")
 (define-public wpa-supplicant-minimal
   (package
     (name "wpa-supplicant-minimal")
-    (version "2.6")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://w1.fi/releases/wpa_supplicant-"
                     version
                     ".tar.gz"))
-              (patches (search-patches "wpa-supplicant-CVE-2017-13082.patch"
-                                       "wpa-supplicant-CVE-2018-14526.patch"
-                                       "wpa-supplicant-fix-key-reuse.patch"
-                                       "wpa-supplicant-fix-zeroed-keys.patch"
-                                       "wpa-supplicant-fix-nonce-reuse.patch"
-                                       "wpa-supplicant-krack-followups.patch"))
               (sha256
                (base32
-                "0l0l5gz3d5j9bqjsbjlfcv4w4jwndllp9fmyai4x9kg6qhs6v4xl"))))
+                "0x1hqyahq44jyla8jl6791nnwrgicrhidadikrnqxsm2nw36pskn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

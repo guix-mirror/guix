@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,8 @@
             (sha256
               (base32
                "1k7as9qi1942wyjxpvbf02wg0h4braw44m3m3vvi8sm9y5z1m967"))
+            (patches (search-patches "netpbm-CVE-2017-2586.patch"
+                                     "netpbm-CVE-2017-2587.patch"))
             (file-name (string-append name "-" version "-checkout"))
             (modules '((guix build utils)))
             (snippet

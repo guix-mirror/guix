@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public libedit
   (package
     (name "libedit")
-    (version "20180525-3.1")
+    (version "20181209-3.1")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +37,7 @@
                           "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "05iicng4kag5hxdc7adbyj1gm3qbmvcc33m9cyx5gys0s67yl6y4"))))
+        "0r0hc4lg71xnn0vrrk2g7is42i0k0dra7cbw3fljq3q01c6df498"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))

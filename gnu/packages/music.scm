@@ -290,7 +290,7 @@ score, keyboard, guitar, drum and controller views.")
          ("sqlite" ,sqlite-with-column-metadata)
          ("sparsehash" ,sparsehash)
          ("taglib" ,taglib)))
-      (home-page "http://clementine-player.org")
+      (home-page "https://clementine-player.org")
       (synopsis "Music player and library organizer")
       (description "Clementine is a multiplatform music player.  It is inspired
 by Amarok 1.4, focusing on a fast and easy-to-use interface for searching and
@@ -1955,14 +1955,14 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "0avwxr6n9ra7narxc5lmkhdqi8ix10gmif8rpd06wp4g9iv46xrn"))))
+                "0kljqyqj7s1i2z52i24x7ail1bywn6dcxxfbad5c59drm8wv94bp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no test target
@@ -3637,7 +3637,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.0.2")
+    (version "3.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3646,7 +3646,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w9il6gg0dh4yi20nbdcibx5z5z4bvzppq8wsqf1l916hnczsj3s"))
+                "1drgmivqs2c5xck7dy5y9xf41wfnnj7n84069h273q96b783cx3f"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3660,17 +3660,14 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
                             '("thirdparty/freetype"
                               "thirdparty/openssl"
                               "thirdparty/portmidi"))
-                  #t))
-              ;; Fix compilation error due to BUILD_WEBENGINE CMake option not
-              ;; properly handled.  Applied upstream already:
-              ;; <https://github.com/musescore/MuseScore/commit/bb0c1a9b4940f3f6b52c0df535289ec8a3bc9e03>
-              (patches (search-patches "musescore-fix-use_webengine.patch"))))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       `("-DUSE_SYSTEM_FREETYPE=ON"
+       `("-DBUILD_CRASH_REPORTER=OFF"
          "-DBUILD_WEBENGINE=OFF"
-         "-DDOWNLOAD_SOUNDFONT=OFF")
+         "-DDOWNLOAD_SOUNDFONT=OFF"
+         "-DUSE_SYSTEM_FREETYPE=ON")
        ;; There are tests, but no simple target to run.  The command used to
        ;; run them is:
        ;;

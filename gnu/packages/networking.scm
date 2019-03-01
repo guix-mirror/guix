@@ -416,14 +416,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.17")
+    (version "4.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
-                                  name "/" name "-" version ".tar.xz"))
+                                  "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "11f5503mgcwjn1q4dvhjiqwnw3zmp2gbhirjvgfr71y72ys1wsy4"))))
+                "1j6hyr809af2m3gqm11hdfwks5kljqy1ikspq3d9rhj29qv6r2mi"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -662,15 +662,14 @@ network frames.")
 (define-public fping
   (package
     (name "fping")
-    (version "4.1")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://fping.org/dist/fping-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0wxbvm480vij8dy4v1pi8f0c7010rx6bidg3qhsvkdf2ijhy4cr7"))))
+        (base32 "0jmnf4vmr43aiwk3h2b5qdsb95gxar8gz1yli8fswnm9nrs9ccvx"))))
     (build-system gnu-build-system)
     (home-page "https://fping.org/")
     (synopsis "Send ICMP ECHO_REQUEST packets to network hosts")
@@ -1997,15 +1996,14 @@ eight bytes) tools
 (define-public asio
   (package
     (name "asio")
-    (version "1.12.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/asio/asio/"
-                           version " (Stable)/" name "-" version ".tar.bz2"))
+                           version " (Stable)/asio-" version ".tar.bz2"))
        (sha256
-        (base32
-         "0nln45662kg799ykvqx5m9z9qcsmadmgg6r5najryls7x16in2d9"))))
+        (base32 "1akray4l3hgahmb92sbvsqg128c7g7s92jrkf1sp1fjnfjrxq9sf"))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)

@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -128,8 +128,9 @@ to statistics about the system on which it's run.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://github.com/lxqt/lxqt-build-tools/releases"
+                           "/download/" version
+                           "/lxqt-build-tools-" version ".tar.xz"))
        (sha256
         (base32 "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
     (build-system cmake-build-system)
@@ -161,8 +162,8 @@ itself as well as other components maintained by the LXQt project.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/lxqt/" name "/releases/download/"
-             version "/" name "-" version ".tar.xz"))
+             "https://github.com/lxqt/libqtxdg/releases/download/"
+             version "/libqtxdg-" version ".tar.xz"))
        (sha256
         (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
     (build-system cmake-build-system)
@@ -1149,8 +1150,8 @@ QTermWidget.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://github.com/lxqt/screengrab/releases/download/"
+                           version "/screengrab-" version ".tar.xz"))
        (sha256
         (base32 "17y8rsx9fixvxv2byq8d6c01vry10nv07f8jy85vz7zp4f0rgzz3"))))
     (build-system cmake-build-system)

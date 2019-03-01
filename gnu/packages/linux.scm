@@ -404,8 +404,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.12")
-(define %linux-libre-hash "16w52g5s7qhvmmz3srai1myl8949nxv6cqybiw3wx3mwcvp95mlh")
+(define %linux-libre-version "4.20.13")
+(define %linux-libre-hash "00rqdsqyz0csdblcmifyhkgzvsmnqsh090i6h30146rsf3707xad")
 
 (define %linux-libre-4.20-patches
   (list %boot-logo-patch
@@ -418,8 +418,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.20-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.25")
-(define %linux-libre-4.19-hash "0kg8gibmyihh4lr7ksp8szrs0jx5sr2g56szm69lff1zmsywpqc6")
+(define %linux-libre-4.19-version "4.19.26")
+(define %linux-libre-4.19-hash "0xp1hqcwimyvzzbci741vymc8mrgk3cycv8l020zas1dfw5wn48c")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -432,8 +432,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.103")
-(define %linux-libre-4.14-hash "05zcb7kaj6cni4v0s0qdywwrqzlr63mkqbhxkbmrjz4blxxxdszg")
+(define %linux-libre-4.14-version "4.14.104")
+(define %linux-libre-4.14-hash "0x7jzazl0yzdc9m1ycwcywjpj6w30mabks4qs9asdy5622282b4v")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -442,8 +442,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.160"
-                    "1j3z3kn4n9vm7fkzb63ddmxba9r2pm623kar1jn7i5xsd1vz4qr9"
+  (make-linux-libre "4.9.161"
+                    "0r35qlc8yj9svryv0v91j134vr35d23sz5aj7f2h8c99iakbm6zw"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -1563,16 +1563,14 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.9")
+    (version "2.10")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://01.org/sites/default/files/downloads/powertop/powertop-v"
-             version ".tar.gz"))
+       (uri (string-append "https://01.org/sites/default/files/downloads/"
+                           "powertop-v" version ".tar.gz"))
        (sha256
-        (base32
-         "0l4jjlf05li2mc6g8nrss3h435wjhmnqd8m7v3kha3x0x7cbfzxa"))))
+        (base32 "0xaazqccyd42v2q532dxx40nqhb9sfsa6cyx8641rl57mfg4bdyk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2021,7 +2019,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "25")
+    (version "26")
     (source (origin
               (method url-fetch)
               (uri
@@ -2029,7 +2027,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "1kgixs4m3jvwk7fb3d18n6j77qhgi9qfv4csj35rs5ancr4ycrbi"))
+                "17dvrls70nr3b3x1wm8pwbqy4r8a5c20m0dhys8mjhsnpg425fsp"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2693,14 +2691,14 @@ isolation or root privileges.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.56")
+    (version "9.58")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/hdparm/hdparm/"
+                                  "hdparm-" version ".tar.gz"))
               (sha256
                (base32
-                "1np42qyhb503khvacnjcl3hb1dqly68gj0a1xip3j5qhbxlyvybg"))))
+                "03z1qm8zbgpxagk3994lvp24yqsshjibkwg05v9p3q1w7y48xrws"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
@@ -4128,15 +4126,15 @@ interface to the variable facility of UEFI boot firmware.")
     (version "16")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/rhinstaller/" name
-                                  "/releases/download/" version "/" name
+              (uri (string-append "https://github.com/rhinstaller/efibootmgr"
+                                  "/releases/download/" version "/efibootmgr"
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
                 "0pzn67vxxaf7jna4cd0i4kqm60h04kb21hckksv9z82q9gxra1wm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests.
+     `(#:tests? #f ;no tests
        #:make-flags (list (string-append "prefix=" %output)
                           (string-append "libdir=" %output "/lib")
                           ;; EFIDIR denotes a subdirectory relative to the
@@ -4144,11 +4142,7 @@ interface to the variable facility of UEFI boot firmware.")
                           ;; installed (known as OS_VENDOR in the code).
                           ;; GRUB overrides this, as such it's only used if
                           ;; nothing else is specified on the command line.
-                          "EFIDIR=gnu"
-                          ;; Override CFLAGS to add efivar include directory.
-                          (string-append "CFLAGS=-O2 -g -flto -I"
-                                         (assoc-ref %build-inputs "efivar")
-                                         "/include/efivar"))
+                          "EFIDIR=gnu")
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

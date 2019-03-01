@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Gábor Boskovit <boskovits@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1999,10 +2000,10 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
   (deprecated-package "livestreamer" streamlink))
 
 (define-public twitchy
-  (let ((commit "0c0f925b9c7ff2aed4a3b0046561cb794143c398")) ;Fixes tests.
+  (let ((commit "9beb36d80b16662414129693e74fa3a2fd97554e")) ; 3.4 has no tag
     (package
       (name "twitchy")
-      (version (git-version "3.2" "1" commit))
+      (version (git-version "3.4" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -2012,11 +2013,18 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "02aizvsr744sh8bdqvwwsmp2qpczlzn8fy76h5dyd3517n9nlcz9"))))
+           "0di03h1j9ipp2bbnxxlxz07v87icyg2hmnsr4s7184z5ql8kpzr7"))))
       (build-system python-build-system)
       (arguments
        '(#:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'patch-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "twitchy/twitchy_play.py"
+                 (("\"streamlink ")
+                  (string-append "\"" (assoc-ref inputs "streamlink")
+                                 "/bin/streamlink ")))
+               #t))
            (add-before 'check 'check-setup
              (lambda _
                (setenv "HOME" (getcwd)) ;Needs to write to ‘$HOME’.

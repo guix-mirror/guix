@@ -199,15 +199,15 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
 (define-public font-lato
   (package
     (name "font-lato")
-    (version "2.010")
+    (version "2.010")                   ; also update description
     (source (origin
               (method url-fetch/zipbomb)
-              (uri (string-append "http://www.latofonts.com/download/Lato2OFL.zip"))
+              (uri (string-append "https://www.latofonts.com/download/Lato2OFL.zip"))
               (sha256
                (base32
                 "1f5540g0ja1nx3ddd3ywn77xc81ssrxpq8n3gyb9sabyq2b4xda2"))))
     (build-system font-build-system)
-    (home-page "http://www.latofonts.com/lato-free-fonts/")
+    (home-page "https://www.latofonts.com/lato-free-fonts/")
     (synopsis "Lato sans-serif typeface")
     (description
      "Lato is a sanserif typeface family.  It covers over 3000 glyphs per style.
@@ -824,7 +824,7 @@ glyph designs, not just an added slant.")
     (synopsis "Typeface designed for source code")
     (description
      "Hack is designed to be a workhorse typeface for code.  It expands upon
-the Bitstream Vera & DejaVu projects, provides 1561 glyphs, and includes
+the Bitstream Vera & DejaVu projects, provides over 1,500 glyphs, and includes
 Powerline support.")
     (license
      ;; See https://github.com/source-foundry/Hack/issues/271 for details.
@@ -971,17 +971,19 @@ correct spacing.")
 (define-public font-awesome
   (package
    (name "font-awesome")
-   (version "5.7.2")
+   ;; XXX The build scripts of version 5 are not freely licensed and
+   ;; so we have to stick with version 4 for now:
+   ;; <https://bugs.gnu.org/32916>
+   (version "4.7.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "https://use.fontawesome.com/releases/v" version "/"
-                  "fontawesome-free-" version "-desktop.zip"))
+            (uri (string-append "http://fontawesome.io/assets/"
+                                name "-" version ".zip"))
             (sha256
              (base32
-              "0v8nfyjkzgi33i5arpjqzs16mgh2hx02sf906b8a9k1k7yfqpbgs"))))
+              "1m1rfwm4sjkv10j3xd2dhwk286a5912b2zgvc692cmxi5gxs68jf"))))
    (build-system font-build-system)
-   (home-page "https://fontawesome.com")
+   (home-page "http://fontawesome.io")
    (synopsis "Font that contains a rich iconset")
    (description
     "Font Awesome is a full suite of pictographic icons for easy scalable

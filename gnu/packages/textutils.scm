@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -794,3 +795,37 @@ Chinese and Simplified Chinese, supporting character-level conversion,
 phrase-level conversion, variant conversion, and regional idioms among
 Mainland China, Taiwan, and Hong-Kong.")
     (license license:asl2.0)))
+
+(define-public nkf
+  (let ((commit "08043eadf4abdddcf277842217e3c77a24740dc2")
+        (revision "1"))
+    (package
+      (name "nkf")
+      ;; The commits corresponding to specific versions are published
+      ;; here:
+      ;; https://ja.osdn.net/projects/nkf/scm/git/nkf/
+      (version "2.1.5")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nurse/nkf.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0anw0knr1iy4p9w3d3b3pbwzh1c43p1i2q4c28kw9zviw8kx2rly"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; test for perl module
+         #:make-flags (list "CC=gcc" "CFLAGS=-O2 -Wall -pedantic"
+                            (string-append "prefix=" %output)
+                            "MKDIR=mkdir -p")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)))) ; No ./configure script
+      (home-page "https://ja.osdn.net/projects/nkf/")
+      (synopsis "Network Kanji Filter")
+      (description "Nkf is yet another kanji code converter among networks,
+hosts and terminals.  It converts input kanji code to designated kanji code
+such as ISO-2022-JP, Shift_JIS, EUC-JP, UTF-8, UTF-16 or UTF-32.")
+      (license license:zlib))))

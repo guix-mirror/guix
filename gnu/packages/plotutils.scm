@@ -188,11 +188,10 @@ colors, styles, options and details.")
        ("texinfo" ,texinfo)             ;For generating documentation
        ;; For the manual and the tests.
        ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
-                                        texlive-generic-ifxetex
                                         texlive-latex-amsfonts
                                         texlive-latex-geometry
                                         texlive-latex-graphics
-                                        texlive-latex-oberdiek
+                                        texlive-latex-oberdiek ; for ifluatex
                                         texlive-latex-parskip
                                         texlive-tex-texinfo)))
        ("emacs" ,emacs-minimal)

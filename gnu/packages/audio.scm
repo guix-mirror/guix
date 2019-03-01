@@ -14,7 +14,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@posteo.net>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
@@ -623,59 +623,6 @@ tools (analyzer, mono/stereo tools, crossovers).")
 guitar amplification and a small range of classic effects, signal processors and
 generators of mostly elementary and occasionally exotic nature.")
     (license license:gpl3+)))
-
-(define-public espeak
-  (package
-    (name "espeak")
-    (version "1.48.04")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/espeak/espeak/"
-                                  "espeak-" (version-major+minor version)
-                                  "/espeak-" version "-source.zip"))
-              (sha256
-               (base32
-                "0n86gwh9pw0jqqpdz7mxggllfr8k0r7pc67ayy7w5z6z79kig6mz"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; remove prebuilt binaries
-               '(begin
-                  (delete-file-recursively "linux_32bit")
-                  #t))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          (string-append "DATADIR="
-                                         (assoc-ref %outputs "out")
-                                         "/share/espeak-data")
-                          (string-append "LDFLAGS=-Wl,-rpath="
-                                         (assoc-ref %outputs "out")
-                                         "/lib")
-                          "AUDIO=pulseaudio")
-       #:tests? #f ; no check target
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (chdir "src")
-             ;; We use version 19 of the PortAudio library, so we must copy the
-             ;; corresponding file to be sure that espeak compiles correctly.
-             (copy-file "portaudio19.h" "portaudio.h")
-             (substitute* "Makefile"
-               (("/bin/ln") "ln"))
-             #t)))))
-       (inputs
-        `(("portaudio" ,portaudio)
-          ("pulseaudio" ,pulseaudio)))
-       (native-inputs `(("unzip" ,unzip)))
-       (home-page "http://espeak.sourceforge.net/")
-       (synopsis "Software speech synthesizer")
-       (description "eSpeak is a software speech synthesizer for English and
-other languages.  eSpeak uses a \"formant synthesis\" method.  This allows many
-languages to be provided in a small size.  The speech is clear, and can be used
-at high speeds, but is not as natural or smooth as larger synthesizers which are
-based on human speech recordings.")
-       (license license:gpl3+)))
 
 (define-public infamous-plugins
   (package
@@ -2135,6 +2082,39 @@ buffers, and audio capture.")
 and ALSA.")
     (license license:gpl3+)))
 
+(define-public pcaudiolib
+  (package
+    (name "pcaudiolib")
+    (version "1.1")
+    (home-page "https://github.com/espeak-ng/pcaudiolib")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0c55hlqqh0m7bcb3nlgv1s4a22s5bgczr1cakjh3767rjb10khi0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "Portable C audio library")
+    (description
+     "The Portable C Audio Library (pcaudiolib) provides a C@tie{}API to
+different audio devices such as ALSA or PulseAudio.")
+    (license (list license:gpl3+
+                   ;; The bundled TPCircularBuffer uses a custom license.
+                   (license:non-copyleft
+                    "file://src/TPCircularBuffer/README.markdown")))))
+
 (define-public qjackctl
   (package
     (name "qjackctl")
@@ -2205,7 +2185,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.1")
+    (version "3.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2214,7 +2194,7 @@ background file post-processing.")
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
               (sha256
                (base32
-                "1yszs9j3sjk8hb8xxz30z3nd4j899ymb9mw9y1v26ikd603d1iig"))))
+                "0ynz1ydcpsd5h57h1n4a7avm6p1cif5a8rkmz4qpr46pr8z9p6iq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
@@ -2263,26 +2243,6 @@ background file post-processing.")
                (("add_subdirectory\\(sclang\\)")
                 ""))
              (delete-file "testsuite/sclang/CMakeLists.txt")
-             #t))
-         ;; TODO: Remove after version 3.9.2 is released
-         ;; (see: https://github.com/supercollider/supercollider/pull/3558).
-         (add-after 'disable-broken-tests 'apply-system-yaml-cpp-fix
-           (lambda _
-             ;; cmake: correctly include yaml-cpp (commit f82cec5ae).
-             (substitute* "editors/sc-ide/CMakeLists.txt"
-               (("external_libraries/boost\\)$")
-                "external_libraries/boost)
-include_directories(${YAMLCPP_INCLUDE_DIR})")
-               (("    yaml")
-                "    ${YAMLCPP_LIBRARY}"))
-             ;; set YAMLCPP_LIBRARY and YAMLCPP_INCLUDE_DIR if not using
-             ;; system (commit 031922987).
-             (substitute* "external_libraries/CMakeLists.txt"
-               (("set_property\\( TARGET yaml PROPERTY FOLDER 3rdparty \\)")
-                "set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
-set(YAMLCPP_LIBRARY yaml)
-set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/\
-external_libraries/yaml-cpp/include)"))
              #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
