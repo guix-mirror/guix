@@ -184,15 +184,15 @@ provers.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "2.6.1")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               ;; Use the ‘Latest version’ link for a stable URI across releases.
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37454/flocq-" version ".tar.gz"))
+                                  "file/37901/flocq-" version ".tar.gz"))
               (sha256
                (base32
-                "06msp1fwpqv6p98a3i1nnkj7ch9rcq3rm916yxq8dxf51lkghrin"))))
+                "02szrgz9m0ac51la1lqpiv6i2g0zbgx9gz5rp0q1g00ajldyna5c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -413,14 +413,14 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 (define-public coq-interval
   (package
     (name "coq-interval")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37077/interval-" version ".tar.gz"))
+                                  "file/37524/interval-" version ".tar.gz"))
               (sha256
                (base32
-                "08fdcf3hbwqphglvwprvqzgkg0qbimpyhnqsgv3gac4y1ap0f903"))))
+                "023j9sd64brqvjdidqkn5m8d7a93zd9r86ggh573z9nkjm2m7vvg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
