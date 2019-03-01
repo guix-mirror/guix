@@ -262,8 +262,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl/fixed)
-   (version "1.0.2q")
+   (version "1.0.2r")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -275,7 +274,7 @@ required structures.")
                                        "/openssl-" version ".tar.gz")))
              (sha256
               (base32
-               "115nisqy7kazbg6br2wrcra9nphyph1l4dgp563b9cf2rv5wyi2p"))
+               "1mnh27zf6r1bhm5d9fxqq9slv2gz0d9z2ij9i679b0wapa5x0ldf"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
@@ -380,15 +379,6 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
-
-(define-public openssl/fixed
-  (hidden-package
-   (package
-     (inherit openssl)
-     (source (origin
-               (inherit (package-source openssl))
-               (patches (append (origin-patches (package-source openssl))
-                                (search-patches "openssl-CVE-2019-1559.patch"))))))))
 
 (define-public openssl-next
   (package
