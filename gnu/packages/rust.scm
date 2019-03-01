@@ -400,7 +400,7 @@ test = { path = \"../libtest\" }
     (inputs
      `(("jemalloc" ,jemalloc-4.5.0)
        ("llvm" ,llvm-3.9.1)
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-1.0)
        ("libssh2" ,libssh2) ; For "cargo"
        ("libcurl" ,curl)))  ; For "cargo"
 

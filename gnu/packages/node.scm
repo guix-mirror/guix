@@ -186,7 +186,7 @@
        ("icu4c" ,icu4c)
        ("libuv" ,libuv-1.19)
        ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-1.0)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime

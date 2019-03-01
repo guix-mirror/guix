@@ -817,7 +817,7 @@ security.")
          ("automake" ,automake)
          ("libtool" ,libtool)))
       (inputs
-       `(("openssl" ,openssl-next)))
+       `(("openssl" ,openssl)))
       (home-page "https://github.com/vstakhov/asignify")
       (synopsis "Cryptographic authentication and encryption tool and library")
       (description "Asignify offers public cryptographic signatures and

@@ -671,7 +671,7 @@ Language.")
        ("zlib" ,zlib)))
     (propagated-inputs
      ;; mariadb.pc says -lssl -lcrypto, so propagate it.
-     `(("openssl" ,openssl)))
+     `(("openssl" ,openssl-1.0)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
