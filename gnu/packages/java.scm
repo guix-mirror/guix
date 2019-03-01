@@ -10622,12 +10622,14 @@ and reporting) project dependencies.  It is characterized by the following:
     (name "java-eclipse-sisu-inject")
     (version "0.3.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/eclipse/sisu.inject/"
-                                  "archive/releases/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse/sisu.inject/")
+                     (commit "releases/0.3.3")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "11rg6yw5nl13i65xsp4jxxgr341qcnnaan48p767h28kb07s0ajn"))))
+                "0gibc9x0bw0f4ls086fx73610fcspz9g2as7kcpcfhvl5znysvg7"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "eclipse-sisu-inject.jar"
