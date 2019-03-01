@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -92,14 +92,12 @@ conversions for values passed between the two languages.")
        (base32 "1x3lrj928dcxx1k8k9gf3s4s3jwvzv8mc3kkyg1g7c3a1sc1f3z9"))
       (patches (search-patches "python-cffi-x87-stack-clean.patch"))))
     (build-system python-build-system)
-    (outputs '("out" "doc"))
     (inputs
      `(("libffi" ,libffi)))
     (propagated-inputs ; required at run-time
      `(("python-pycparser" ,python-pycparser)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx)
        ("python-pytest" ,python-pytest)))
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -134,17 +132,7 @@ conversions for values passed between the two languages.")
            (lambda _
              (substitute* "testing/cffi0/test_ownlib.py"
                (("ret.left") "ownlib.left"))
-             #t))
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs (make-flags '())  #:allow-other-keys)
-             (let* ((doc (string-append (assoc-ref outputs "doc")
-                                        "/share/doc/" ,name "-" ,version))
-                    (html (string-append doc "/html")))
-               (with-directory-excursion "doc"
-                 (apply invoke "make" "html" make-flags)
-                 (mkdir-p html)
-                 (copy-recursively "build/html" html))
-               #t))))))
+             #t)))))
     (home-page "https://cffi.readthedocs.org")
     (synopsis "Foreign function interface for Python")
     (description
@@ -153,6 +141,35 @@ conversions for values passed between the two languages.")
 
 (define-public python2-cffi
   (package-with-python2 python-cffi))
+
+(define-public python-cffi-documentation
+  (package
+    (name "python-cffi-documentation")
+    (version (package-version python-cffi))
+    (source (package-source python-cffi))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _ (chdir "doc") #t))
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda* (#:key (make-flags '()) #:allow-other-keys)
+                      (apply invoke "make" "html" make-flags)))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (copy-recursively "build/html" (string-append out "/html"))
+                        #t))))))
+    (native-inputs
+     `(("sphinx-build" ,python-sphinx)))
+    (home-page (package-home-page python-cffi))
+    (synopsis "Documentation for the Python CFFI interface")
+    (description
+     "This package contains HTML documentation for the @code{python-cffi}
+project.")
+    (license (package-license python-cffi))))
 
 (define-public ruby-ffi
   (package
