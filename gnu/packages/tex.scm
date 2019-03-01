@@ -1001,6 +1001,27 @@ class), line and circle fonts (for use in the picture environment) and LaTeX
 symbol fonts.")
     (license license:lppl1.2+)))
 
+(define-public texlive-latex-mflogo
+  (package
+    (name "texlive-latex-mflogo")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "mflogo"))
+       (sha256
+        (base32
+         "15i2ib6nvhf31g1b92c6njf7n0g29znlq7hbfp9ii7qabhcwwvrj"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/mflogo"))
+    (home-page "http://www.ctan.org/pkg/mflogo")
+    (synopsis "LaTeX support for Metafont logo fonts")
+    (description
+     "This package provides LaTeX and font definition files to access the
+Knuthian mflogo fonts described in The Metafontbook and to typeset Metafont
+logos in LaTeX documents.")
+    (license license:lppl)))
+
 (define-public texlive-fonts-amsfonts
   (package
     (name "texlive-fonts-amsfonts")
