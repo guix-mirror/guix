@@ -5493,13 +5493,12 @@ PDF documents.")
 develop documents with LaTeX, in a single application.")
     (license license:gpl2+)))
 
-
 (define-public teximpatient
   (package
     (name "teximpatient")
     (version "2.4")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/tarbomb)
               (uri (string-append "mirror://gnu/" name "/" name "-"
                                   version ".tar.gz"))
               (sha256
@@ -5507,25 +5506,28 @@ develop documents with LaTeX, in a single application.")
                 "0h56w22d99dh4fgld4ssik8ggnmhmrrbnrn1lnxi1zr0miphn1sd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; there are none
+       #:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         ;; Unfortunately some mistakes have been made in packaging.
-         ;; Work around them here ...
-         (replace 'unpack
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((srcdir "teximpatient-2.4"))
-               (system* "tar" "-xzf" (assoc-ref inputs "source")
-                        (string-append "--one-top-level=" srcdir))
-               (delete-file (string-append srcdir "/book.pdf"))
-               (install-file (car
-                              (find-files
-                               (assoc-ref inputs "automake")
-                               "^install-sh$"))
-                             srcdir)
-               (chdir srcdir)))))))
+         (add-after 'unpack 'fix-packaging-error
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This file should have been part of the tarball.
+             (install-file (car
+                            (find-files
+                             (assoc-ref inputs "automake")
+                             "^install-sh$"))
+                           ".")
+             ;; Remove generated file.
+             (delete-file "book.pdf")
+             #t)))))
     (native-inputs
-     `(("texlive" ,texlive)
+     `(("texlive" ,(texlive-union (list texlive-latex-amsfonts
+                                        texlive-fonts-amsfonts
+                                        texlive-fonts-adobe-palatino
+                                        texlive-fonts-adobe-zapfding
+                                        texlive-fonts-knuth-lib
+                                        texlive-fonts-mflogo-font
+                                        texlive-generic-pdftex)))
        ("automake" ,automake)))
     (home-page "https://www.gnu.org/software/teximpatient/")
     (synopsis "Book on TeX, plain TeX and Eplain")
