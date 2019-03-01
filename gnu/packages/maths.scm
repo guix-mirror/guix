@@ -3668,9 +3668,6 @@ set.")
        ("texlive" ,(texlive-union (list texlive-generic-xypic
                                         texlive-fonts-xypic
                                         texlive-latex-hyperref
-                                        texlive-latex-oberdiek
-                                        texlive-generic-ifxetex
-                                        texlive-latex-url
                                         texlive-bibtex)))
        ("ghostscript" ,ghostscript)))
     (inputs
