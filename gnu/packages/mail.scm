@@ -2124,6 +2124,81 @@ e-mails with other systems speaking the SMTP protocol.")
     (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
                    public-domain isc license:openssl))))
 
+;; OpenSMTPd 6.4 introduced a new and incompatible configuration file format.
+;; Use a different name, for now, to avoid auto-upgrades and broken mail boxes.
+;; OPENSMTP-CONFIGURATION in (gnu services mail) will also need an overhaul.
+(define-public opensmtpd-next
+  (package
+    (name "opensmtpd-next")
+    (version "6.4.1p2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.opensmtpd.org/archives/"
+                           "opensmtpd-" version ".tar.gz"))
+       (sha256
+        (base32 "0cppqlx4fk6l8rbim5symh2fm1kzshf421256g596j6c9f9q96xn"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("libasr" ,libasr)
+       ("libevent" ,libevent)
+       ("libressl" ,libressl)
+       ("linux-pam" ,linux-pam)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("groff" ,groff)))               ; for man pages
+    (arguments
+     `(#:configure-flags
+       (list "--localstatedir=/var"
+             ;; This is the default only if it exists at build time—it doesn't.
+             "--with-path-socket=/var/run"
+             "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt"
+             "--with-user-smtpd=smtpd"
+             "--with-user-queue=smtpq" "--with-group-queue=smtpq"
+             "--with-auth-pam"
+             "--with-table-db")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Fix some incorrectly hard-coded external tool file names.
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda _
+             (substitute* "smtpd/smtpctl.c"
+               ;; ‘gzcat’ is auto-detected at compile time, but ‘cat’ isn't.
+               (("/bin/cat") (which "cat")))
+             (substitute* "smtpd/mda_unpriv.c"
+               (("/bin/sh") (which "sh")))
+             #t))
+         ;; OpenSMTPD provides a single smtpctl utility to control both the
+         ;; daemon and the local submission subsystem.  To accomodate systems
+         ;; that require historical interfaces such as sendmail, newaliases or
+         ;; makemap, smtpctl operates in compatibility mode if called with the
+         ;; historical name.
+         (add-after 'install 'install-compability-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin/")))
+               (for-each (lambda (command)
+                           (symlink "smtpctl" (string-append sbin command)))
+                         (list "mailq" "makemap" "newaliases"
+                               "send-mail" "sendmail")))
+             #t)))))
+    (synopsis "Lightweight SMTP daemon")
+    (description
+     "OpenSMTPD is an implementation of server-side @acronym{SMTP, Simple Mail
+Transfer Protocol}, with some additional standard extensions.  It allows
+ordinary machines to exchange e-mails with other systems speaking the SMTP
+protocol, or to deliver them to local users.
+
+In order to simplify the use of SMTP, OpenSMTPD implements a smaller set of
+functionality than those available in other SMTP daemons.  The objective is to
+provide enough features to satisfy typical usage at the risk of unsuitability
+to esoteric or niche requirements.")
+    (home-page "https://www.opensmtpd.org")
+    (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
+                   public-domain isc license:openssl))))
+
 (define-public opensmtpd-extras
   (package
     (name "opensmtpd-extras")
