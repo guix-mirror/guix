@@ -4121,8 +4121,8 @@ interface to the variable facility of UEFI boot firmware.")
     (version "16")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/rhinstaller/" name
-                                  "/releases/download/" version "/" name
+              (uri (string-append "https://github.com/rhinstaller/efibootmgr"
+                                  "/releases/download/" version "/efibootmgr"
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
