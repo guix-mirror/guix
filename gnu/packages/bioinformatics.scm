@@ -14425,3 +14425,61 @@ datasets.  A popular implementation of t-SNE uses the Barnes-Hut algorithm to
 approximate the gradient at each iteration of gradient descent.  This package
 is a Cython wrapper for FIt-SNE.")
     (license license:bsd-4)))
+
+(define-public velvet
+  (package
+    (name "velvet")
+    (version "1.2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ebi.ac.uk/~zerbino/velvet/"
+                                  "velvet_" version ".tgz"))
+              (sha256
+               (base32
+                "0h3njwy66p6bx14r3ar1byb0ccaxmxka4c65rn4iybyiqa4d8kc8"))
+              ;; Delete bundled libraries
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file "Manual.pdf")
+                  (delete-file-recursively "third-party")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("OPENMP=t")
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-zlib-include
+           (lambda _
+             (substitute* "src/binarySequences.c"
+               (("../third-party/zlib-1.2.3/zlib.h") "zlib.h"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/velvet")))
+               (mkdir-p bin)
+               (mkdir-p doc)
+               (install-file "velveth" bin)
+               (install-file "velvetg" bin)
+               (install-file "Manual.pdf" doc)
+               (install-file "Columbus_manual.pdf" doc)
+               #t))))))
+    (inputs
+     `(("openmpi" ,openmpi)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("texlive" ,(texlive-union (list texlive-latex-graphics
+                                        texlive-latex-hyperref)))))
+    (home-page "https://www.ebi.ac.uk/~zerbino/velvet/")
+    (synopsis "Nucleic acid sequence assembler for very short reads")
+    (description
+     "Velvet is a de novo genomic assembler specially designed for short read
+sequencing technologies, such as Solexa or 454.  Velvet currently takes in
+short read sequences, removes errors then produces high quality unique
+contigs.  It then uses paired read information, if available, to retrieve the
+repeated areas between contigs.")
+    (license license:gpl2+)))
