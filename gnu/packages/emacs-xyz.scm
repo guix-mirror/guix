@@ -25814,3 +25814,26 @@ anymore.  In this way, it's like a lightweight \"workspace\" manager, allowing
 you to easily restore one or more frames, including their windows, the
 windows' layout, and their buffers.")
     (license license:gpl3+)))
+
+(define-public emacs-smart-hungry-delete
+  (let ((commit "7c1d56a92481594e14d40b5fdf6c48657a0108a0"))
+    (package
+      (name "emacs-smart-hungry-delete")
+      (version "0.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hrehfeld/emacs-smart-hungry-delete")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0mxaslx5823s68a8ggbbnmfk1jiswjvip5s4sg7ihfagnci72wni"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/hrehfeld/emacs-smart-hungry-delete")
+      (synopsis "Smart hungry deletion of whitespace")
+      (description "@code{emacs-smart-hungry-delete} hungrily deletes whitespace
+between cursor and next word, parenthesis or delimiter while honoring some
+rules about where space should be left to separate words and parentheses.")
+      (license license:gpl2+))))
