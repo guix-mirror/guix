@@ -892,13 +892,17 @@ Computers & Typesetting series.")
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base")))
              (mkdir "build")
-             (invoke "mf" "-progname=mf"
-                     "-output-directory=build"
-                     (string-append "\\"
-                                    "mode:=ljfour; "
-                                    "mag:=1; "
-                                    "batchmode; "
-                                    "input manfnt"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input " font)))
+                       (find-files "." "(manfnt|logo.+)\\.mf$"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
