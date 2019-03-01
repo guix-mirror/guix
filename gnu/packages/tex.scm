@@ -3901,6 +3901,169 @@ Adobe's basic set.")
     ;; No license version specified.
     (license license:gpl3+)))
 
+(define-public texlive-fonts-adobe-palatino
+  (package
+    (name "texlive-fonts-adobe-palatino")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/urw/palatino/"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "18dw5260c6fy7acxaqwrg3hw04kg63ijq4lkn56q5pa2g6nyylrp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"        . "fonts/type1/urw/palatino")
+
+                       ("palatino-afm"  . "fonts/afm/adobe/palatino")
+                       ("palatino-tfm"  . "fonts/tfm/adobe/palatino")
+                       ("palatino-vf"   . "fonts/vf/adobe/palatino")
+
+                       ("urw-afm"       . "fonts/afm/urw/palatino")
+                       ("urw35vf-tfm"   . "fonts/tfm/urw35vf/palatino")
+                       ("urw35vf-vf"    . "fonts/vf/urw35vf/palatino")
+
+                       ("palatino-tex"  . "tex/latex/palatino")
+                       ("dvips"         . "dvips/palatino")
+                       ("fonts-map"     . "fonts/map/dvips/palatino"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("palatino-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/adobe/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0pxizay730cx7rb9y5bqq9dn1zxx3arc33rmdsn7l29pc51flmmi"))))
+       ("palatino-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/adobe/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "1w1vm0sk9kpsy14yhyf1v1q3c6b97cgbba74g578bcwjlh810mg0"))))
+       ("palatino-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/adobe/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "1maqfis8hpybcn9lmm8r2b1g56620lfpsncg0742c3kkjd6dh97h"))))
+       ("urw-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/urw/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0gk0xwy1fs2si5kb1j3dzgm52c8sagv32gd9dmw88m7sgh5qkd87"))))
+       ("urw35vf-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/urw35vf/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "19aq3xwfg7vkf1qzjdxgcvcdqwpvpavq3l25y64xni72qx0kmppz"))))
+       ("urw35vf-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/urw35vf/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "1lkn4p6zimrs0ah6mxsang4bicp8j7xzl016529a3f168an7mdmj"))))
+       ("palatino-tex"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/tex/latex/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tex-" version "-checkout"))
+           (sha256
+            (base32
+             "0ng9w7i0p1nb51amla32jj86vx6p84m6qc7asam3g4x8w5jf7s27"))))
+       ("dvips"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/dvips/palatino/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-dvips-" version "-checkout"))
+           (sha256
+            (base32
+             "1pdbkfmhx4kk3brh5lg6fyl9ad2kbjmkrhgcx84klnlhq01mfdhb"))))
+       ("fonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/palatino/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-fonts-map-" version "-checkout"))
+           (sha256
+            (base32
+             "0rg13hyp652hp3gnrj5pbyb84zkqmyi1qnm8c6spcyaq8pm06l0d"))))))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description
+     "This package provides a drop-in replacements for the Palatino font from
+Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
+
 (define-public texlive-fonts-rsfs
   (package
     (name "texlive-fonts-rsfs")
