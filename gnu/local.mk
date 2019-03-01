@@ -627,8 +627,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
   %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
-  %D%/packages/patches/acl-fix-perl-regex.patch		\
-  %D%/packages/patches/acl-hurd-path-max.patch			\
   %D%/packages/patches/adb-add-libraries.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
   %D%/packages/patches/aegis-perl-tempdir1.patch           	\

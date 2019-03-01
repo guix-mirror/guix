@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,21 +35,18 @@
 (define-public acl
   (package
     (name "acl")
-    (version "2.2.52")
+    (version "2.2.53")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://savannah/acl/acl-"
-                          version ".src.tar.gz"))
+                          version ".tar.gz"))
       (sha256
        (base32
-        "08qd9s3wfhv0ajswsylnfwr5h0d7j9d4rgip855nrh400nxp940p"))
-      (patches (search-patches "acl-fix-perl-regex.patch"
-                               "acl-hurd-path-max.patch"))))
+        "1ir6my3w74s6nfbgbqgzj6w570sn0qjf3524zx8xh67lqrjrigh6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:test-target "tests"
-       #:modules ((ice-9 ftw)
+     `(#:modules ((ice-9 ftw)
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
@@ -75,13 +73,11 @@
                           (("\\| sed.*'") ""))
              ;; These tests require the existence of a user named "bin", but
              ;; this user does not exist within Guix's build environment.
-             (for-each (lambda (file)
-                         (delete-file (string-append "test/" file)))
-                       '("setfacl-X.test" "cp.test" "misc.test"))
-             #t))
-         (replace 'install
-           (lambda _
-             (invoke "make" "install" "install-lib" "install-dev"))))))
+             (substitute* "Makefile.in"
+               ((".*test/misc\\.test.*") "")
+               ((".*test/cp\\.test.*") "")
+               ((".*test/setfacl-X\\.test.*") ""))
+             #t)))))
     (inputs `(("attr" ,attr)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
