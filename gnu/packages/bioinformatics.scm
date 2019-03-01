@@ -2346,7 +2346,6 @@ data and settings.")
     (native-inputs
      `(("texlive" ,(texlive-union (list texlive-fonts-cm
                                         texlive-fonts-amsfonts
-                                        texlive-generic-ifxetex
 
                                         texlive-latex-doi
                                         texlive-latex-examplep
@@ -2354,12 +2353,8 @@ data and settings.")
                                         texlive-latex-ms
                                         texlive-latex-natbib
                                         texlive-bibtex         ; style files used by natbib
-
-                                        texlive-latex-oberdiek ; ltxcmds
                                         texlive-latex-pgf      ; tikz
-                                        texlive-latex-url
-                                        texlive-latex-verbatimbox
-                                        texlive-latex-xcolor)))
+                                        texlive-latex-verbatimbox)))
        ("imagemagick" ,imagemagick)))
     (home-page "http://dorina.mdc-berlin.de/public/rajewsky/discrover/")
     (synopsis "Discover discriminative nucleotide sequence motifs")
