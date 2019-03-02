@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -5542,7 +5542,8 @@ and Karl Berry.")
     (version "2.3.2-2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/2.3.x/"
+              (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/"
+                                  (version-major+minor version) ".x/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -5561,7 +5562,7 @@ and Karl Berry.")
                            ,(string-append "-DLYX_INSTALL_PREFIX="
                                            (assoc-ref %outputs "out")
                                            ;; Exact name and level is necessary.
-                                           "/lyx2.3"))
+                                           "/lyx" ,(version-major+minor version)))
        #:phases
        (modify-phases %standard-phases
          ;; See ;; https://www.lyx.org/trac/changeset/3a123b90af838b08680471d87170c38e56787df9/lyxgit
@@ -5593,15 +5594,19 @@ and Karl Berry.")
                                                  ,version
                                                  "/src/tests/check_layout.cmake")
                (const #t))
-             (setenv "LYX_DIR_23x" (string-append (getcwd) "/../lyx-"
-                                                  ,version "/lib"))
+             (setenv (string-append "LYX_DIR_"
+                                    (string-join
+                                      (string-split
+                                        ,(version-major+minor version) #\-)) "x")
+                     (string-append (getcwd) "/../lyx-" ,version "/lib"))
              #t))
          (add-after 'install 'install-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/bin"))
-               (symlink "../lyx2.3/bin/lyx2.3"
-                        (string-append out "/bin/lyx2.3"))
+               (symlink (string-append "../lyx" ,(version-major+minor version)
+                                       "/bin/lyx" ,(version-major+minor version))
+                        (string-append out "/bin/lyx" ,(version-major+minor version)))
                #t))))))
     (inputs
      `(("boost" ,boost)
