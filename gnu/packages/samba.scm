@@ -308,14 +308,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.9.37")
+    (version "0.9.39")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1q77vbjic2bb79li2a54ffscnrnwwww55fbpry2kgh7acpnlb0qn"))))
+                "1rnln76ngd2b8lgqvfa9iscy6jizwycj85nfp9zd46b1c760z3gn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -329,7 +329,8 @@ destructors.  It is the core memory allocator used in Samba.")
                        "--bundled-libraries=NONE")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python)
+       ("which" ,which)))
     (propagated-inputs
      `(("talloc" ,talloc))) ; required by tevent.pc
     (synopsis "Event system library")
