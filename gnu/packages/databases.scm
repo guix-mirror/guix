@@ -1030,14 +1030,14 @@ changes.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.16")
+    (version "1.3.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ibcz466xwk1x6xvzlgzd5va4lyrjzm3rnjak29kkwk7cmhw4gva"))))
+                "1drnsdh1w0px35r0y7l7g59yvyr67mvcsdrli4wab0mwi07b8mn1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1054,7 +1054,8 @@ changes.")
        ;; ("docbook-xsl" ,docbook-xsl)
        ;; ("libxml2" ,libxml2)
        ;; ("libxslt" ,libxslt)
-       ("python" ,python-2)))                     ;for the Waf build system
+       ("python" ,python)                         ;for the Waf build system
+       ("which" ,which)))
     (home-page "https://tdb.samba.org/")
     (synopsis "Trivial database")
     (description
