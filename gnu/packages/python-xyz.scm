@@ -2802,14 +2802,14 @@ and is very extensible.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.5")
+    (version "0.29.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1wfb68g115gmf3mv23w0hh972b0ll85gpb92ci28x6h997br0llx"))))
+         "1bp7cn0pp5qy63k9hbp4ka34fm01kvysh478phpkhr68npqk6pbc"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -2841,9 +2841,6 @@ and is very extensible.")
 
          (replace 'check
            (lambda _
-             ;; The "with_outer_raising" test fails with Python 3.7.  See
-             ;; https://github.com/cython/cython/issues/2454
-             (delete-file "tests/run/generators_py.py")
              (invoke "python" "runtests.py" "-vv"))))))
     (home-page "http://cython.org/")
     (synopsis "C extensions for Python")
