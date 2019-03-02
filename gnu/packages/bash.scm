@@ -61,7 +61,8 @@
   ;; This is the current patches series for 5.0, generated using
   ;; 'download-patches' below.
   (patch-series
-    ))
+    (1 "12bjfdy6bg8nhyw27bdgxn7h4paylx8d927skfmi9pxd1wgrxzpj")
+    (2 "01w7yrzmz10mw06ys0546vhl7isv2v402ziyvfd7k67588spvs47")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -106,8 +107,10 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                     "mirror://gnu/bash/bash-" version ".tar.gz"))
               (sha256
                (base32
-                "0kgvfwqdcd90waczf4gx39xnrxzijhjrzyzv7s8v4w31qqm0za5l"))))
-     (version version)
+                "0kgvfwqdcd90waczf4gx39xnrxzijhjrzyzv7s8v4w31qqm0za5l"))
+              (patch-flags '("-p0"))
+              (patches %patch-series-5.0)))
+     (version (string-append version "." (number->string (length %patch-series-5.0))))
      (build-system gnu-build-system)
 
      (outputs '("out"
