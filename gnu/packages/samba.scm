@@ -344,14 +344,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.4.3")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07vacwr941y2x31yl9knsr2rpffz5pqabvqds6sbyngqxy4r785c"))
+                "1kiwlra6nfkb5n870k2db41jrm59bq9lxqmil4v7ignblgsdfdwb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -381,7 +381,8 @@ many event types, including timers, signals, and the classic file descriptor eve
     (native-inputs
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python)
+       ("which" ,which)))
     (propagated-inputs
      ;; ldb.pc refers to all these.
      `(("talloc" ,talloc)
