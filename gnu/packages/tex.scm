@@ -5539,20 +5539,19 @@ and Karl Berry.")
 (define-public lyx
   (package
     (name "lyx")
-    (version "2.2.3")
+    (version "2.3.2-2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/2.2.x/"
-                                 name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0xvaz0i371nn2ndinc0d3ywj76ivb62649a4sdgwbivisiahd2fj"))
-             (patches (search-patches "lyx-2.2.3-fix-test.patch"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                (delete-file-recursively "3rdparty")
-                #t))))
+              (method url-fetch)
+              (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/2.3.x/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vr0qwis6rhind6azfa270hqxci7rj8qb1kk5x6lm80mc34nvrqi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "3rdparty")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags `("-DLYX_USE_QT=QT5"
@@ -5562,56 +5561,64 @@ and Karl Berry.")
                            ,(string-append "-DLYX_INSTALL_PREFIX="
                                            (assoc-ref %outputs "out")
                                            ;; Exact name and level is necessary.
-                                           "/lyx2.2"))
+                                           "/lyx2.3"))
        #:phases
        (modify-phases %standard-phases
+         ;; See ;; https://www.lyx.org/trac/changeset/3a123b90af838b08680471d87170c38e56787df9/lyxgit
+         (add-after 'unpack 'fix-compilation-with-boost-1.69
+           (lambda _
+             (substitute* "src/support/FileName.cpp"
+               (("^template struct boost::detail::crc_table_t.*") ""))
+             #t))
          (add-after 'unpack 'patch-python
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/support/os.cpp")
-              (("\"python ")
-               (string-append "\""
-                              (assoc-ref inputs "python-2")
-                              "/bin/python ")))
-             #t))
-         (add-after 'patch-python 'patch-installer
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-              (("/usr/local/man/man1")
-               (string-append (assoc-ref outputs "out")
-                              "/share/man/man1")))
+               (("\"python ")
+                (string-append "\""
+                               (assoc-ref inputs "python")
+                               "/bin/python ")))
              #t))
          (add-after 'patch-python 'patch-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "lib/lyx.desktop.in"
-              (("Exec=")
-               (string-append "Exec="
-                              (assoc-ref outputs "out")
-                              "/")))
+               (("Exec=")
+                (string-append "Exec="
+                               (assoc-ref outputs "out")
+                               "/")))
              #t))
          (add-before 'check 'setenv-check
            (lambda _
-             (setenv "LYX_DIR_22x" (string-append (getcwd) "/../lyx-"
+             ;; Create missing file that would cause tests to fail.
+             (with-output-to-file (string-append "../lyx-"
+                                                 ,version
+                                                 "/src/tests/check_layout.cmake")
+               (const #t))
+             (setenv "LYX_DIR_23x" (string-append (getcwd) "/../lyx-"
                                                   ,version "/lib"))
              #t))
          (add-after 'install 'install-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/bin"))
-               (symlink "../lyx2.2/bin/lyx2.2"
-                (string-append out "/bin/lyx2.2"))
+               (symlink "../lyx2.3/bin/lyx2.3"
+                        (string-append out "/bin/lyx2.3"))
                #t))))))
     (inputs
      `(("boost" ,boost)
-       ("hunspell" ,hunspell) ; Note: Could also use aspell instead.
+       ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
        ("libx11" ,libx11)
-       ("python-2" ,python-2)
+       ("mythes" ,mythes)
+       ("python" ,python-2)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("texlive" ,texlive))) ; article.cls is in texmf-dist.
+     `(("texlive" ,(texlive-union (list texlive-fonts-ec)))))
+    ;; FIXME: Python 3.7.0 cannot be used because the test infrastructure
+    ;; "requires a bytes-like object, not 'str'".  This may be fixed with
+    ;; upgrades to Python.
     (native-inputs
-     `(("python-2" ,python-2)
+     `(("python" ,python-2)
        ("pkg-config" ,pkg-config)
        ("bc" ,bc)))
     (home-page "https://www.lyx.org/")
