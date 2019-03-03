@@ -368,6 +368,7 @@ integrate Windows applications into your desktop.")
                (base32
                 "1d0gbwc8ll4mfxilw9j4vdzqlnracr6y8iss27nfg1qh0q7vbf9x"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
+              ("faudio" ,faudio)
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)
               ("libva" ,libva)
@@ -406,7 +407,10 @@ integrate Windows applications into your desktop.")
                     (script (string-append (assoc-ref %build-inputs
                             "wine-staging-patchset-data")
                             "/share/wine-staging/patches/patchinstall.sh")))
-               (invoke script (string-append "DESTDIR=" ".") "--all")
+               ;; Exclude specific patches that conflict with FAudio.
+               (invoke script (string-append "DESTDIR=" ".") "--all" "-W"
+                       "xaudio2-revert" "-W" "xaudio2_CommitChanges" "-W"
+                       "xaudio2_7-WMA_support" "-W" "xaudio2_7-CreateFX-FXEcho")
                #t)))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
@@ -482,7 +486,10 @@ integrated into the main branch.")
                     (script (string-append (assoc-ref %build-inputs
                             "wine-staging-patchset-data")
                             "/share/wine-staging/patches/patchinstall.sh")))
-               (invoke script (string-append "DESTDIR=" ".") "--all")
+               ;; Exclude specific patches that conflict with FAudio.
+               (invoke script (string-append "DESTDIR=" ".") "--all" "-W"
+                       "xaudio2-revert" "-W" "xaudio2_CommitChanges" "-W"
+                       "xaudio2_7-WMA_support" "-W" "xaudio2_7-CreateFX-FXEcho")
                #t)))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
