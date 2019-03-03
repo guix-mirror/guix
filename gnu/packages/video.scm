@@ -1764,7 +1764,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.6.12")
+    (version "2.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1772,7 +1772,7 @@ for use with HTML5 video.")
                    name "_" version ".tar.gz"))
              (sha256
               (base32
-               "0nz52yih8sff53inndkh2dba759xjzsh4b8xjww419lcpk0qp6kn"))
+               "15g9h791qbnmycabbbl7s2b3n3xpvygm88qrfk35g2cw6957ik9w"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1810,19 +1810,19 @@ for use with HTML5 video.")
        (add-before 'patch-source-shebangs 'unpack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (invoke "tar" "xf" "ffmpeg-2.7.6.tar.bz2")
-             (delete-file "ffmpeg-2.7.6.tar.bz2"))
+             (invoke "tar" "xf" "ffmpeg-3.3.7.tar.bz2")
+             (delete-file "ffmpeg-3.3.7.tar.bz2"))
            #t))
        (add-after 'patch-source-shebangs 'repack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (substitute* "ffmpeg-2.7.6/configure"
+             (substitute* "ffmpeg-3.3.7/configure"
                (("#! /bin/sh") (string-append "#!" (which "sh"))))
-             (invoke "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
+             (invoke "tar" "cjf" "ffmpeg-3.3.7.tar.bz2" "ffmpeg-3.3.7"
                      ;; avoid non-determinism in the archive
                      "--sort=name" "--mtime=@0"
                      "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-2.7.6"))
+             (delete-file-recursively "ffmpeg-3.3.7"))
            #t))
        (replace 'configure
          (lambda _
