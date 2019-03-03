@@ -1794,9 +1794,8 @@ for use with HTML5 video.")
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
-       ("qt" ,qt) ; FIXME: reenable modular qt after update - requires building
-       ;("qtbase" ,qtbase) with -std=gnu++11.
-       ;("qttools" ,qttools)
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
        ("sdl" ,sdl)
        ("sqlite" ,sqlite)
        ("yasm" ,yasm)
