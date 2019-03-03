@@ -3237,7 +3237,8 @@ create smoother and stable videos.")
        ("imagemagick" ,imagemagick)
        ("jsoncpp" ,jsoncpp)
        ("libopenshot-audio" ,libopenshot-audio)
-       ("qt" ,qt)       ;widgets, core, gui, multimedia, and multimediawidgets
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
        ("zeromq" ,zeromq)))
     (arguments
      `(#:configure-flags
