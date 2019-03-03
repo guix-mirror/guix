@@ -3222,7 +3222,8 @@ create smoother and stable videos.")
                              (string-append set " CACHE PATH "
                                             "\"Python bindings directory\")")))
                           #t))
-              (patches (search-patches "libopenshot-tests-with-system-libs.patch"))))
+              (patches (search-patches "libopenshot-fixup-tests.patch"
+                                       "libopenshot-tests-with-system-libs.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
