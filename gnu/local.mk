@@ -532,6 +532,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/xorg.scm				\
 						\
   %D%/system.scm				\
+  %D%/system/accounts.scm			\
   %D%/system/file-systems.scm			\
   %D%/system/install.scm			\
   %D%/system/linux-container.scm		\
