@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build activation)
+  #:use-module (gnu system accounts)
   #:use-module (gnu build linux-boot)
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
@@ -212,37 +213,42 @@ logged in."
       (apply add-user name group rest)))
 
 (define (activate-users+groups users groups)
-  "Make sure the accounts listed in USERS and the user groups listed in GROUPS
-are all available.
-
-Each item in USERS is a list of all the characteristics of a user account;
-each item in GROUPS is a tuple with the group name, group password or #f, and
-numeric gid or #f."
+  "Make sure USERS (a list of user account records) and GROUPS (a list of user
+group records) are all available."
   (define (touch file)
     (close-port (open-file file "a0b")))
 
   (define activate-user
-    (match-lambda
-     ((name uid group supplementary-groups comment home create-home?
-       shell password system?)
-      (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
-                                        name)))
-        (ensure-user name group
-                     #:uid uid
-                     #:system? system?
-                     #:supplementary-groups supplementary-groups
-                     #:comment comment
-                     #:home home
-                     #:create-home? create-home?
+    (lambda (user)
+      (let ((name         (user-account-name user))
+            (uid          (user-account-uid user))
+            (group        (user-account-group user))
+            (supplementary-groups
+             (user-account-supplementary-groups user))
+            (comment      (user-account-comment user))
+            (home         (user-account-home-directory user))
+            (create-home? (user-account-create-home-directory? user))
+            (shell        (user-account-shell user))
+            (password     (user-account-password user))
+            (system?      (user-account-system? user)))
+        (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
+                                          name)))
+          (ensure-user name group
+                       #:uid uid
+                       #:system? system?
+                       #:supplementary-groups supplementary-groups
+                       #:comment comment
+                       #:home home
+                       #:create-home? create-home?
 
-                     #:shell shell
-                     #:password password)
+                       #:shell shell
+                       #:password password)
 
-        (unless system?
-          ;; Create the profile directory for the new account.
-          (let ((pw (getpwnam name)))
-            (mkdir-p profile-dir)
-            (chown profile-dir (passwd:uid pw) (passwd:gid pw))))))))
+          (unless system?
+            ;; Create the profile directory for the new account.
+            (let ((pw (getpwnam name)))
+              (mkdir-p profile-dir)
+              (chown profile-dir (passwd:uid pw) (passwd:gid pw))))))))
 
   ;; 'groupadd' aborts if the file doesn't already exist.
   (touch "/etc/group")
@@ -251,18 +257,18 @@ numeric gid or #f."
   (mkdir-p "/var/lib")
 
   ;; Create the root account so we can use 'useradd' and 'groupadd'.
-  (activate-user (find (match-lambda
-                        ((name (? zero?) _ ...) #t)
-                        (_ #f))
-                       users))
+  (activate-user (find (compose zero? user-account-uid) users))
 
   ;; Then create the groups.
-  (for-each (match-lambda
-             ((name password gid system?)
-              (unless (false-if-exception (getgrnam name))
-                (add-group name
-                           #:gid gid #:password password
-                           #:system? system?))))
+  (for-each (lambda (group)
+              (let ((name     (user-group-name group))
+                    (password (user-group-password group))
+                    (gid      (user-group-id group))
+                    (system?  (user-group-system? group)))
+                (unless (false-if-exception (getgrnam name))
+                  (add-group name
+                             #:gid gid #:password password
+                             #:system? system?))))
             groups)
 
   ;; Create the other user accounts.
@@ -272,35 +278,33 @@ numeric gid or #f."
   (for-each delete-user
             (lset-difference string=?
                              (map passwd:name (current-users))
-                             (match users
-                               (((names . _) ...)
-                                names))))
+                             (map user-account-name users)))
   (for-each delete-group
             (lset-difference string=?
                              (map group:name (current-groups))
-                             (match groups
-                               (((names . _) ...)
-                                names)))))
+                             (map user-group-name groups))))
 
 (define (activate-user-home users)
   "Create and populate the home directory of USERS, a list of tuples, unless
 they already exist."
   (define ensure-user-home
-    (match-lambda
-      ((name uid group supplementary-groups comment home create-home?
-             shell password system?)
-       ;; The home directories of system accounts are created during
-       ;; activation, not here.
-       (unless (or (not home) (not create-home?) system?
-                   (directory-exists? home))
-         (let* ((pw  (getpwnam name))
-                (uid (passwd:uid pw))
-                (gid (passwd:gid pw)))
-           (mkdir-p home)
-           (chown home uid gid)
-           (chmod home #o700)
-           (copy-account-skeletons home
-                                   #:uid uid #:gid gid))))))
+    (lambda (user)
+      (let ((name         (user-account-name user))
+            (home         (user-account-home-directory user))
+            (create-home? (user-account-create-home-directory? user))
+            (system?      (user-account-system? user)))
+        ;; The home directories of system accounts are created during
+        ;; activation, not here.
+        (unless (or (not home) (not create-home?) system?
+                    (directory-exists? home))
+          (let* ((pw  (getpwnam name))
+                 (uid (passwd:uid pw))
+                 (gid (passwd:gid pw)))
+            (mkdir-p home)
+            (chown home uid gid)
+            (chmod home #o700)
+            (copy-account-skeletons home
+                                    #:uid uid #:gid gid))))))
 
   (for-each ensure-user-home users))
 

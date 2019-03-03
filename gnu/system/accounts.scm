@@ -18,6 +18,7 @@
 
 (define-module (gnu system accounts)
   #:use-module (guix records)
+  #:use-module (ice-9 match)
   #:export (user-account
             user-account?
             user-account-name
@@ -37,6 +38,9 @@
             user-group-password
             user-group-id
             user-group-system?
+
+            sexp->user-account
+            sexp->user-group
 
             default-shell))
 
@@ -79,3 +83,27 @@
   (id             user-group-id (default #f))
   (system?        user-group-system?              ; Boolean
                   (default #f)))
+
+(define (sexp->user-group sexp)
+  "Take SEXP, a tuple as returned by 'user-group->gexp', and turn it into a
+user-group record."
+  (match sexp
+    ((name password id system?)
+     (user-group (name name)
+                 (password password)
+                 (id id)
+                 (system? system?)))))
+
+(define (sexp->user-account sexp)
+  "Take SEXP, a tuple as returned by 'user-account->gexp', and turn it into a
+user-account record."
+  (match sexp
+    ((name uid group supplementary-groups comment home-directory
+           create-home-directory? shell password system?)
+     (user-account (name name) (uid uid) (group group)
+                   (supplementary-groups supplementary-groups)
+                   (comment comment)
+                   (home-directory home-directory)
+                   (create-home-directory? create-home-directory?)
+                   (shell shell) (password password)
+                   (system? system?)))))

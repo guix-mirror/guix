@@ -298,11 +298,14 @@ group."
   (assert-valid-users/groups accounts groups)
 
   ;; Add users and user groups.
-  #~(begin
-      (setenv "PATH"
-              (string-append #$(@ (gnu packages admin) shadow) "/sbin"))
-      (activate-users+groups (list #$@user-specs)
-                             (list #$@group-specs))))
+  (with-imported-modules (source-module-closure '((gnu system accounts)))
+    #~(begin
+        (use-modules (gnu system accounts))
+
+        (setenv "PATH"
+                (string-append #$(@ (gnu packages admin) shadow) "/sbin"))
+        (activate-users+groups (map sexp->user-account (list #$@user-specs))
+                               (map sexp->user-group (list #$@group-specs))))))
 
 (define (account-shepherd-service accounts+groups)
   "Return a Shepherd service that creates the home directories for the user
@@ -322,12 +325,15 @@ accounts among ACCOUNTS+GROUPS."
   (list (shepherd-service
          (requirement '(file-systems))
          (provision '(user-homes))
-         (modules '((gnu build activation)))
+         (modules '((gnu build activation)
+                    (gnu system accounts)))
          (start (with-imported-modules (source-module-closure
-                                        '((gnu build activation)))
+                                        '((gnu build activation)
+                                          (gnu system accounts)))
                   #~(lambda ()
                       (activate-user-home
-                       (list #$@(map user-account->gexp accounts)))
+                       (map sexp->user-account
+                            (list #$@(map user-account->gexp accounts))))
                       #f)))                       ;stop
          (stop #~(const #f))
          (respawn? #f)
