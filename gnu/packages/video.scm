@@ -3221,6 +3221,7 @@ create smoother and stable videos.")
                             (("(SET\\(PYTHON_MODULE_PATH.*)\\)" _ set)
                              (string-append set " CACHE PATH "
                                             "\"Python bindings directory\")")))
+                          (delete-file-recursively "thirdparty")
                           #t))
               (patches (search-patches "libopenshot-fixup-tests.patch"
                                        "libopenshot-tests-with-system-libs.patch"))))
