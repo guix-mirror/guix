@@ -545,6 +545,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
 						\
+  %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
   %D%/build/cross-toolchain.scm			\

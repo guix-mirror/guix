@@ -392,6 +392,7 @@ SCM_TESTS =					\
   tests/file-systems.scm			\
   tests/uuid.scm				\
   tests/system.scm				\
+  tests/accounts.scm				\
   tests/services.scm				\
   tests/scripts-build.scm			\
   tests/containers.scm				\
