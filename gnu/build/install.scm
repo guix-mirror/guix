@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -117,7 +117,6 @@ STORE."
     (directory "/var/tmp" 0 0 #o1777)
     (directory "/var/lock" 0 0 #o1777)
 
-    (directory "/root" 0 0)                       ; an exception
     (directory "/home" 0 0)))
 
 (define (populate-root-file-system system target)

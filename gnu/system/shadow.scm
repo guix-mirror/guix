@@ -302,8 +302,6 @@ group."
     #~(begin
         (use-modules (gnu system accounts))
 
-        (setenv "PATH"
-                (string-append #$(@ (gnu packages admin) shadow) "/sbin"))
         (activate-users+groups (map sexp->user-account (list #$@user-specs))
                                (map sexp->user-group (list #$@group-specs))))))
 
