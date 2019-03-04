@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -5948,7 +5948,24 @@ and contributes the Eclipse default text editor.")
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
-       #:jar-name "eclipse-jdt-core.jar"))
+       #:jar-name "eclipse-jdt-core.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'move-sources
+           (lambda _
+             (with-directory-excursion "src/jdtCompilerAdaptersrc/"
+               (for-each (lambda (file)
+                           (install-file file (string-append "../" (dirname file))))
+                         (find-files "." ".*")))
+             (delete-file-recursively "src/jdtCompilerAdaptersrc/")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (with-directory-excursion "src"
+               (for-each (lambda (file)
+                           (install-file file (string-append "../build/classes/" (dirname file))))
+                         (find-files "." ".*.(props|properties|rsc)")))
+             #t)))))
     (inputs
      `(("java-eclipse-core-contenttype" ,java-eclipse-core-contenttype)
        ("java-eclipse-core-filesystem" ,java-eclipse-core-filesystem)
