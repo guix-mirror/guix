@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Tobias Geerinckx-Rite <me@tobias.gr>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -523,7 +524,7 @@ gets and puts artifacts using the file system.")))
     (inputs
      `(("java-plexus-util" ,java-plexus-utils)
        ("maven-wagon-provider-api" ,maven-wagon-provider-api)
-       ("java-tomcat" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("java-slf4j-api" ,java-slf4j-api)
        ("java-commons-codec" ,java-commons-codec)
        ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
@@ -663,7 +664,7 @@ wagon providers supporting HTTP.")))
        ("java-jdom2" ,java-jdom2)
        ("java-asm" ,java-asm)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
-       ("java-tomcat" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
        ("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
        ("java-eclipse-jetty-http-9.2" ,java-eclipse-jetty-http-9.2)
