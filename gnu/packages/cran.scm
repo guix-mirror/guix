@@ -10681,3 +10681,24 @@ functions are provided.")
 help you to better understand object oriented programming in R, particularly
 using @code{S3}.")
     (license license:gpl3)))
+
+(define-public r-capushe
+  (package
+    (name "r-capushe")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "capushe" version))
+       (sha256
+        (base32
+         "1aa76ir1kp67hiz7dr60azyc71yzslshyc640fjh0fpw0sp5kwbc"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/capushe/index.html")
+    (synopsis "Calibrating penalities using slope heuristics")
+    (description
+     "This package provides tools for the calibration of penalized criteria
+for model selection.  The calibration methods available are based on the slope
+heuristics.")
+    (license license:gpl2+)))
