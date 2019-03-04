@@ -2478,13 +2478,13 @@ reasonable substitute.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "2.10.6")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "03vcgklykny0g0wpvqmy8p6azi2s078317wgb2xjv5m2rs9sjb52"))))
+        (base32 "0m1b88wg1w6xdwg0siky5k86x8sh6smhbr42ixz41ra81lv34jbj"))))
     (build-system python-build-system)
     ;; Tests require a running Redis server
     (arguments '(#:tests? #f))
