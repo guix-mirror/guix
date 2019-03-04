@@ -11237,15 +11237,6 @@ protocols.")
   (package
     (inherit python-attrs)
     (name "python-attrs-bootstrap")
-    ;; Keep this on a fixed version so python-attrs can be updated without
-    ;; triggering a mass-rebuild.  FIXME: Update this in the next rebuild cycle.
-    (version "17.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "attrs" version))
-              (sha256
-               (base32
-                "1jafnn1kzd6qhxgprhx6y6ik1r5m2rilx25syzcmq03azp660y8w"))))
     (native-inputs `())
     (arguments `(#:tests? #f))))
 
