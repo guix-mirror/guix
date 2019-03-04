@@ -94,7 +94,7 @@
 (define-public python-2.7
   (package
     (name "python2")
-    (version "2.7.15")
+    (version "2.7.16")
     (source
      (origin
       (method url-fetch)
@@ -102,14 +102,12 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0x2mvz9dp11wj7p5ccvmk9s0hzjk2fa1m462p395l4r6bfnb3n92"))
+        "1mqfcqp5y8r0bfyr7ppl74n0lig45p9mc4b8adlcpvj74rhfy8pj"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
-                               "python-2.7-adjust-tests.patch"
-                               "python2-CVE-2018-14647.patch"
-                               "python2-CVE-2018-1000802.patch"))
+                               "python-2.7-adjust-tests.patch"))
       (modules '((guix build utils)))
       ;; suboptimal to delete failing tests here, but if we delete them in the
       ;; arguments then we need to make sure to strip out that phase when it
