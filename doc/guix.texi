@@ -10695,6 +10695,7 @@ account.  System accounts are sometimes treated specially; for instance,
 graphical login managers do not list them.
 
 @anchor{user-account-password}
+@cindex password, for user accounts
 @item @code{password} (default: @code{#f})
 You would normally leave this field to @code{#f}, initialize user
 passwords as @code{root} with the @command{passwd} command, and then let
@@ -10702,11 +10703,29 @@ users change it with @command{passwd}.  Passwords set with
 @command{passwd} are of course preserved across reboot and
 reconfiguration.
 
-If you @emph{do} want to have a preset password for an account, then
-this field must contain the encrypted password, as a string.
-@xref{crypt,,, libc, The GNU C Library Reference Manual}, for more information
-on password encryption, and @ref{Encryption,,, guile, GNU Guile Reference
-Manual}, for information on Guile's @code{crypt} procedure.
+If you @emph{do} want to set an initial password for an account, then
+this field must contain the encrypted password, as a string.  You can use the
+@code{crypt} procedure for this purpose:
+
+@example
+(user-account
+  (name "charlie")
+  (home-directory "/home/charlie")
+  (group "users")
+
+  ;; Specify a SHA-512-hashed initial password.
+  (password (crypt "InitialPassword!" "$6$abc")))
+@end example
+
+@quotation Note
+The hash of this initial password will be available in a file in
+@file{/gnu/store}, readable by all the users, so this method must be used with
+care.
+@end quotation
+
+@xref{Passphrase Storage,,, libc, The GNU C Library Reference Manual}, for
+more information on password encryption, and @ref{Encryption,,, guile, GNU
+Guile Reference Manual}, for information on Guile's @code{crypt} procedure.
 
 @end table
 @end deftp
