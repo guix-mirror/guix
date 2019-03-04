@@ -11264,10 +11264,10 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
   (deprecated-package "emacs-evil-ediff" emacs-evil-collection))
 
 (define-public emacs-evil-magit
-  (let ((commit "dbf5a646a7ce1c35c229dfdc423bd5ecd927a3a8"))
+  (let ((commit "e2fec5877994c0c19f0c25fa01f3d22cb0ab38ba"))
     (package
       (name "emacs-evil-magit")
-      (version (git-version "0.4.2" "1" commit))
+      (version (git-version "0.4.2" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -11277,7 +11277,7 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0ya0dkviq4pi92ab69a4j674y5r1hc1x3x7r7hlm97ag3a6zfkav"))))
+           "134v7s03jvbhm70mavwab85r09i68g2a5bvriirh0chz1av2y16v"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
