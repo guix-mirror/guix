@@ -1284,7 +1284,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20180810")
+    (version "20190215")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1292,7 +1292,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "01drf32h0v1s8yd414rgc9bavb52yffrwpnbzfxd9sk1lwssr6v7"))))
+                "1iy2zwi8aicq0b5a0phfacvk1f9z1d89cx43adcf0qh82gb9m4wg"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1856,13 +1856,13 @@ platform-specific methods.")
   (package
     (name "audit")
     (home-page "https://people.redhat.com/sgrubb/audit/")
-    (version "2.8.4")
+    (version "2.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "audit-" version ".tar.gz"))
               (sha256
                (base32
-                "0f4ci6ffznnmgblwgv7ich9mjfk3p6y5l6m6h3chhmzw156nj454"))))
+                "1dzcwb2q78q7x41shcachn7f4aksxbxd470yk38zh03fch1l2p8f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--with-python=no"
@@ -2523,7 +2523,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "1.7.2")
+    (version "1.8")
     (source
      (origin
       (method git-fetch)
@@ -2532,8 +2532,9 @@ make it a perfect utility on modern distros.")
              (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "1cs2pq8xvfnsvrhg2bxawk4kn3z1qmfrnpnhs178pvfbglzh15hc"))))
+       (base32 "1g1l7k8yxj8bl1ysdx8v6anv1s7xk9j072y44gwki70dy48n7j92"))
+      (patches
+       (search-patches "thermald-make-int-max32-visible.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

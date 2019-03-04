@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -901,13 +901,17 @@ Computers & Typesetting series.")
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base")))
              (mkdir "build")
-             (invoke "mf" "-progname=mf"
-                     "-output-directory=build"
-                     (string-append "\\"
-                                    "mode:=ljfour; "
-                                    "mag:=1; "
-                                    "batchmode; "
-                                    "input manfnt"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input " font)))
+                       (find-files "." "(manfnt|logo.+)\\.mf$"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1005,6 +1009,98 @@ packages and classes. It includes invisible fonts (for use with the slides
 class), line and circle fonts (for use in the picture environment) and LaTeX
 symbol fonts.")
     (license license:lppl1.2+)))
+
+(define-public texlive-latex-mflogo
+  (package
+    (name "texlive-latex-mflogo")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "mflogo"))
+       (sha256
+        (base32
+         "15i2ib6nvhf31g1b92c6njf7n0g29znlq7hbfp9ii7qabhcwwvrj"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/mflogo"))
+    (home-page "http://www.ctan.org/pkg/mflogo")
+    (synopsis "LaTeX support for Metafont logo fonts")
+    (description
+     "This package provides LaTeX and font definition files to access the
+Knuthian mflogo fonts described in The Metafontbook and to typeset Metafont
+logos in LaTeX documents.")
+    (license license:lppl)))
+
+(define-public texlive-fonts-mflogo-font
+  (package
+    (name "texlive-fonts-mflogo-font")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/hoekwater/mflogo-font"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "09fsxfpiyxjljkrb52b197728bjnkcnv3bdwm4hl6hf23mbmqadf"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"    . "fonts/type1/hoekwater/mflogo-font")
+                       ("afm"       . "fonts/afm/hoekwater/mflogo-font")
+                       ("fonts-map" . "fonts/map/dvips/mflogo-font"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/hoekwater/mflogo-font"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0bx1mfhhzsk9gj1pha36q2rk0jd0y285qm62zgvdvzzzlfnk8sdb"))))
+       ("fonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/mflogo-font/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-fonts-map-" version "-checkout"))
+           (sha256
+            (base32
+             "044xrrpl8hnvj55cx2ql1ib1bcyr33nzanx5nkwxpai7fb7pg4y6"))))))
+    (home-page "https://www.ctan.org/pkg/mflogo-font")
+    (synopsis "Metafont logo font")
+    (description
+     "These fonts were created in METAFONT by Knuth, for his own publications.
+At some stage, the letters P and S were added, so that the METAPOST logo could
+also be expressed.  The fonts were originally issued (of course) as METAFONT
+source; they have since been autotraced and reissued in Adobe Type 1 format by
+Taco Hoekwater.")
+    (license license:knuth)))
 
 (define-public texlive-fonts-amsfonts
   (package
@@ -3110,6 +3206,8 @@ BibLaTeX, and is considered experimental.")
                 "0yw6bjfgsli3s1dldsgb7mkr7lnk329cgdjbgs8z2xn59pmmdsn4"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/geometry"))
+    (propagated-inputs
+     `(("texlive-latex-oberdiek" ,texlive-latex-oberdiek))) ;for ifpdf
     (home-page "https://www.ctan.org/pkg/geometry")
     (synopsis "Flexible and complete interface to document dimensions")
     (description
@@ -3648,6 +3746,467 @@ set, Latin Modern, is not actually a direct development of the EC set, and
 differs from the EC in a number of particulars.")
     (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
 texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
+
+(define-public texlive-fonts-adobe-times
+  (package
+    (name "texlive-fonts-adobe-times")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/urw/times/"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "15vzyr7favkv1mj00qxr03s89kw78nd066fh69by93272g8p5sgd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"        . "fonts/type1/urw/times")
+
+                       ("times-afm"     . "fonts/afm/adobe/times")
+                       ("times-tfm"     . "fonts/tfm/adobe/times")
+                       ("times-vf"      . "fonts/vf/adobe/times")
+
+                       ("urw-afm"       . "fonts/afm/urw/times")
+                       ("urw35vf-tfm"   . "fonts/tfm/urw35vf/times")
+                       ("urw35vf-vf"    . "fonts/vf/urw35vf/times")
+
+                       ("times-tex"     . "tex/latex/times")
+                       ("dvips"         . "dvips/times")
+                       ("fonts-map"     . "fonts/map/dvips/times"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("times-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/adobe/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "1k7h6vihfc6ri2lq9ggnq2g4zq3qcgq1vd0hr486g9cqrdpys6cy"))))
+       ("times-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/adobe/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "1hbgkjnf5xyganbznwpwszvr3iyk4bzb0ys4hd8ybawp60paadrr"))))
+       ("times-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/adobe/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "18rfspnwdw9r81dy18lb4w96d09b6c4g7y80azwylalkhwdf2lfp"))))
+       ("urw-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/urw/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0g0xpsyn6634g0b4rpd420v7i4gkz3zr12vcy2b8csbcscjvwri5"))))
+       ("urw35vf-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/urw35vf/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "0a4idlvpaqd0ypqgy1xw0rpx8q23bvssg8xq757zzn3zikj0w7pr"))))
+       ("urw35vf-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/urw35vf/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "05mppwxd4c5x0yw50gca726f0ylc1rk8jf0jjkrriixq6rnw03di"))))
+       ("times-tex"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/tex/latex/times"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tex-" version "-checkout"))
+           (sha256
+            (base32
+             "1gmd0x7c3vkvfzgmrsp4866rcdbyimfk3bjr91zaadc41r1i8xrp"))))
+       ("dvips"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/dvips/times/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-dvips-" version "-checkout"))
+           (sha256
+            (base32
+             "1fvqpgqi7bp2q76nf5kmlhsdijxw65arqfy3ax3djwih3yg12mp0"))))
+       ("fonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/times/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-fonts-map-" version "-checkout"))
+           (sha256
+            (base32
+             "12f00gzs2zgllkm59qdhw2xxj7lvg3p256232f1l275z3pldfqqi"))))))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description
+     "This package provides a drop-in replacements for the Times font from
+Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
+
+(define-public texlive-fonts-adobe-palatino
+  (package
+    (name "texlive-fonts-adobe-palatino")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/urw/palatino/"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "18dw5260c6fy7acxaqwrg3hw04kg63ijq4lkn56q5pa2g6nyylrp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"        . "fonts/type1/urw/palatino")
+
+                       ("palatino-afm"  . "fonts/afm/adobe/palatino")
+                       ("palatino-tfm"  . "fonts/tfm/adobe/palatino")
+                       ("palatino-vf"   . "fonts/vf/adobe/palatino")
+
+                       ("urw-afm"       . "fonts/afm/urw/palatino")
+                       ("urw35vf-tfm"   . "fonts/tfm/urw35vf/palatino")
+                       ("urw35vf-vf"    . "fonts/vf/urw35vf/palatino")
+
+                       ("palatino-tex"  . "tex/latex/palatino")
+                       ("dvips"         . "dvips/palatino")
+                       ("fonts-map"     . "fonts/map/dvips/palatino"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("palatino-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/adobe/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0pxizay730cx7rb9y5bqq9dn1zxx3arc33rmdsn7l29pc51flmmi"))))
+       ("palatino-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/adobe/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "1w1vm0sk9kpsy14yhyf1v1q3c6b97cgbba74g578bcwjlh810mg0"))))
+       ("palatino-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/adobe/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "1maqfis8hpybcn9lmm8r2b1g56620lfpsncg0742c3kkjd6dh97h"))))
+       ("urw-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/urw/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0gk0xwy1fs2si5kb1j3dzgm52c8sagv32gd9dmw88m7sgh5qkd87"))))
+       ("urw35vf-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/urw35vf/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "19aq3xwfg7vkf1qzjdxgcvcdqwpvpavq3l25y64xni72qx0kmppz"))))
+       ("urw35vf-vf"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/vf/urw35vf/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-vf-" version "-checkout"))
+           (sha256
+            (base32
+             "1lkn4p6zimrs0ah6mxsang4bicp8j7xzl016529a3f168an7mdmj"))))
+       ("palatino-tex"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/tex/latex/palatino"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tex-" version "-checkout"))
+           (sha256
+            (base32
+             "0ng9w7i0p1nb51amla32jj86vx6p84m6qc7asam3g4x8w5jf7s27"))))
+       ("dvips"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/dvips/palatino/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-dvips-" version "-checkout"))
+           (sha256
+            (base32
+             "1pdbkfmhx4kk3brh5lg6fyl9ad2kbjmkrhgcx84klnlhq01mfdhb"))))
+       ("fonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/palatino/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-fonts-map-" version "-checkout"))
+           (sha256
+            (base32
+             "0rg13hyp652hp3gnrj5pbyb84zkqmyi1qnm8c6spcyaq8pm06l0d"))))))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description
+     "This package provides a drop-in replacements for the Palatino font from
+Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
+
+(define-public texlive-fonts-adobe-zapfding
+  (package
+    (name "texlive-fonts-adobe-zapfding")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/fonts/type1/urw/zapfding/"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1sp3jblg3khp0yj121blvhph6ib09919kyrsk5x2lg258yypqyis"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let ((root (string-append (assoc-ref %outputs "out")
+                                    "/share/texmf-dist/"))
+               (pkgs '(("source"      . "fonts/type1/urw/zapfding")
+                       ("zapf-afm"    . "fonts/afm/adobe/zapfding")
+                       ("zapf-tfm"    . "fonts/tfm/adobe/zapfding")
+                       ("urw-afm"     . "fonts/afm/urw/zapfding")
+                       ("urw35vf-tfm" . "fonts/tfm/urw35vf/zapfding")
+
+                       ("zapf-tex"    . "tex/latex/zapfding")
+                       ("dvips"       . "dvips/zapfding")
+                       ("fonts-map"   . "fonts/map/dvips/zapfding"))))
+           (for-each (match-lambda
+                       ((pkg . dir)
+                        (let ((target (string-append root dir)))
+                          (mkdir-p target)
+                          (copy-recursively (assoc-ref %build-inputs pkg)
+                                            target))))
+                     pkgs)
+           #t))))
+    (native-inputs
+     `(("zapf-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/adobe/zapfding"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0qvl4w1bfcpiakkd8rvkism46qnvzj9w7x4r8z9m0y7mspbkblyr"))))
+       ("zapf-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/adobe/zapfding"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "1i8mh9xsl8l4cgsg3nl4ha9q6m55j122riclaxsvkc5ka83432qm"))))
+       ("urw-afm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/afm/urw/zapfding"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw-afm-" version "-checkout"))
+           (sha256
+            (base32
+             "0m4qndqh7ji723ff82c5c1q8ziqvblbaip7vx05vnl15fqbsnfx1"))))
+       ("urw35vf-tfm"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/tfm/urw35vf/zapfding"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-urw35vf-tfm-" version "-checkout"))
+           (sha256
+            (base32
+             "167g2x6mpjfqh0w1fhjbw14qcx6ridrj2zm1bd8bi0l2d7phj28m"))))
+       ("zapf-tex"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/tex/latex/zapfding"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-tex-" version "-checkout"))
+           (sha256
+            (base32
+             "0hp7i8f6nbrg7irrwc8fd7n1hrzjysa84d6iyivwlc65v9p7lmd0"))))
+       ("dvips"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/dvips/zapfding/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-dvips-" version "-checkout"))
+           (sha256
+            (base32
+             "1f18sc4qwxykd786zhn6szcrycqvpvfhlcim71aamxmwghakd7fa"))))
+       ("fonts-map"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/fonts/map/dvips/zapfding/"))
+                 (revision %texlive-revision)))
+           (file-name (string-append name "-fonts-map-" version "-checkout"))
+           (sha256
+            (base32
+             "17kwxmdrgz2fb072hx57a3pidcrhbgayphx11zyld2hv9149pkyl"))))))
+    (home-page "https://ctan.org/pkg/urw-base35")
+    (synopsis "URW Base 35 font pack for LaTeX")
+    (description
+     "This package provides a drop-in replacements for the Zapfding font from
+Adobe's basic set.")
+    ;; No license version specified.
+    (license license:gpl3+)))
 
 (define-public texlive-fonts-rsfs
   (package
@@ -4943,13 +5502,12 @@ PDF documents.")
 develop documents with LaTeX, in a single application.")
     (license license:gpl2+)))
 
-
 (define-public teximpatient
   (package
     (name "teximpatient")
     (version "2.4")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/tarbomb)
               (uri (string-append "mirror://gnu/" name "/" name "-"
                                   version ".tar.gz"))
               (sha256
@@ -4957,25 +5515,28 @@ develop documents with LaTeX, in a single application.")
                 "0h56w22d99dh4fgld4ssik8ggnmhmrrbnrn1lnxi1zr0miphn1sd"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; there are none
+       #:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         ;; Unfortunately some mistakes have been made in packaging.
-         ;; Work around them here ...
-         (replace 'unpack
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((srcdir "teximpatient-2.4"))
-               (system* "tar" "-xzf" (assoc-ref inputs "source")
-                        (string-append "--one-top-level=" srcdir))
-               (delete-file (string-append srcdir "/book.pdf"))
-               (install-file (car
-                              (find-files
-                               (assoc-ref inputs "automake")
-                               "^install-sh$"))
-                             srcdir)
-               (chdir srcdir)))))))
+         (add-after 'unpack 'fix-packaging-error
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This file should have been part of the tarball.
+             (install-file (car
+                            (find-files
+                             (assoc-ref inputs "automake")
+                             "^install-sh$"))
+                           ".")
+             ;; Remove generated file.
+             (delete-file "book.pdf")
+             #t)))))
     (native-inputs
-     `(("texlive" ,texlive)
+     `(("texlive" ,(texlive-union (list texlive-latex-amsfonts
+                                        texlive-fonts-amsfonts
+                                        texlive-fonts-adobe-palatino
+                                        texlive-fonts-adobe-zapfding
+                                        texlive-fonts-knuth-lib
+                                        texlive-fonts-mflogo-font
+                                        texlive-generic-pdftex)))
        ("automake" ,automake)))
     (home-page "https://www.gnu.org/software/teximpatient/")
     (synopsis "Book on TeX, plain TeX and Eplain")
@@ -4987,20 +5548,20 @@ and Karl Berry.")
 (define-public lyx
   (package
     (name "lyx")
-    (version "2.2.3")
+    (version "2.3.2-2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/2.2.x/"
-                                 name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0xvaz0i371nn2ndinc0d3ywj76ivb62649a4sdgwbivisiahd2fj"))
-             (patches (search-patches "lyx-2.2.3-fix-test.patch"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                (delete-file-recursively "3rdparty")
-                #t))))
+              (method url-fetch)
+              (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/"
+                                  (version-major+minor version) ".x/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vr0qwis6rhind6azfa270hqxci7rj8qb1kk5x6lm80mc34nvrqi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "3rdparty")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags `("-DLYX_USE_QT=QT5"
@@ -5010,56 +5571,68 @@ and Karl Berry.")
                            ,(string-append "-DLYX_INSTALL_PREFIX="
                                            (assoc-ref %outputs "out")
                                            ;; Exact name and level is necessary.
-                                           "/lyx2.2"))
+                                           "/lyx" ,(version-major+minor version)))
        #:phases
        (modify-phases %standard-phases
+         ;; See ;; https://www.lyx.org/trac/changeset/3a123b90af838b08680471d87170c38e56787df9/lyxgit
+         (add-after 'unpack 'fix-compilation-with-boost-1.69
+           (lambda _
+             (substitute* "src/support/FileName.cpp"
+               (("^template struct boost::detail::crc_table_t.*") ""))
+             #t))
          (add-after 'unpack 'patch-python
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* '("src/support/os.cpp")
-              (("\"python ")
-               (string-append "\""
-                              (assoc-ref inputs "python-2")
-                              "/bin/python ")))
-             #t))
-         (add-after 'patch-python 'patch-installer
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-              (("/usr/local/man/man1")
-               (string-append (assoc-ref outputs "out")
-                              "/share/man/man1")))
+               (("\"python ")
+                (string-append "\""
+                               (assoc-ref inputs "python")
+                               "/bin/python ")))
              #t))
          (add-after 'patch-python 'patch-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "lib/lyx.desktop.in"
-              (("Exec=")
-               (string-append "Exec="
-                              (assoc-ref outputs "out")
-                              "/")))
+               (("Exec=")
+                (string-append "Exec="
+                               (assoc-ref outputs "out")
+                               "/")))
              #t))
          (add-before 'check 'setenv-check
            (lambda _
-             (setenv "LYX_DIR_22x" (string-append (getcwd) "/../lyx-"
-                                                  ,version "/lib"))
+             ;; Create missing file that would cause tests to fail.
+             (with-output-to-file (string-append "../lyx-"
+                                                 ,version
+                                                 "/src/tests/check_layout.cmake")
+               (const #t))
+             (setenv (string-append "LYX_DIR_"
+                                    (string-join
+                                      (string-split
+                                        ,(version-major+minor version) #\-)) "x")
+                     (string-append (getcwd) "/../lyx-" ,version "/lib"))
              #t))
          (add-after 'install 'install-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/bin"))
-               (symlink "../lyx2.2/bin/lyx2.2"
-                (string-append out "/bin/lyx2.2"))
+               (symlink (string-append "../lyx" ,(version-major+minor version)
+                                       "/bin/lyx" ,(version-major+minor version))
+                        (string-append out "/bin/lyx" ,(version-major+minor version)))
                #t))))))
     (inputs
      `(("boost" ,boost)
-       ("hunspell" ,hunspell) ; Note: Could also use aspell instead.
+       ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
        ("libx11" ,libx11)
-       ("python-2" ,python-2)
+       ("mythes" ,mythes)
+       ("python" ,python-2)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("texlive" ,texlive))) ; article.cls is in texmf-dist.
+     `(("texlive" ,(texlive-union (list texlive-fonts-ec)))))
+    ;; FIXME: Python 3.7.0 cannot be used because the test infrastructure
+    ;; "requires a bytes-like object, not 'str'".  This may be fixed with
+    ;; upgrades to Python.
     (native-inputs
-     `(("python-2" ,python-2)
+     `(("python" ,python-2)
        ("pkg-config" ,pkg-config)
        ("bc" ,bc)))
     (home-page "https://www.lyx.org/")

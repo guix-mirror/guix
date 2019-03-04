@@ -258,7 +258,7 @@ configuration file."))
            (group zabbix-group)
            (comment "zabbix privilege separation user")
            (home-directory (string-append "/var/run/" zabbix-user))
-           (shell #~(string-append #$shadow "/sbin/nologin"))))))
+           (shell (file-append shadow "/sbin/nologin"))))))
 
 (define (zabbix-server-config-file config)
   "Return the zabbix-server configuration file corresponding to CONFIG."
@@ -387,7 +387,7 @@ configuration file."))
            (group zabbix-group)
            (comment "zabbix privilege separation user")
            (home-directory (string-append "/var/run/" zabbix-user))
-           (shell #~(string-append #$shadow "/sbin/nologin"))))))
+           (shell (file-append shadow "/sbin/nologin"))))))
 
 (define (zabbix-agent-activation config)
   "Return the activation gexp for CONFIG."

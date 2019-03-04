@@ -33,6 +33,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cups)
@@ -240,14 +241,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.14")
+    (version "2.1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kk76dyav41ip7ddbbf04yfydb4jvywzi2ps0z2vla56aqkn11di"))))
+                "1aajda08yf7njgvg6r21ccxlvkarb9bwvf4jqh8yn3871a1zcnqr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -260,8 +261,10 @@ Desktops into Active Directory environments using the winbind daemon.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "./configure"
                        (string-append "--prefix=" out))))))))
+    (native-inputs
+     `(("which" ,which)))
     (inputs
-     `(("python" ,python-2)))
+     `(("python" ,python)))
     (home-page "https://talloc.samba.org")
     (synopsis "Hierarchical, reference counted memory pool system")
     (description
@@ -288,7 +291,8 @@ destructors.  It is the core memory allocator used in Samba.")
            (replace 'build
              (lambda _
                (invoke "gcc" "-c" "-Ibin/default" "-I" "lib/replace"
-                       "-I." "-Wall" "-g" "talloc.c")
+                       "-I." "-Wall" "-g" "-D__STDC_WANT_LIB_EXT1__=1"
+                       "talloc.c")
                (invoke "ar" "rc" "libtalloc.a" "talloc.o")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
@@ -304,14 +308,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.9.37")
+    (version "0.9.39")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1q77vbjic2bb79li2a54ffscnrnwwww55fbpry2kgh7acpnlb0qn"))))
+                "1rnln76ngd2b8lgqvfa9iscy6jizwycj85nfp9zd46b1c760z3gn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -325,7 +329,8 @@ destructors.  It is the core memory allocator used in Samba.")
                        "--bundled-libraries=NONE")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python)
+       ("which" ,which)))
     (propagated-inputs
      `(("talloc" ,talloc))) ; required by tevent.pc
     (synopsis "Event system library")
@@ -339,14 +344,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.4.3")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07vacwr941y2x31yl9knsr2rpffz5pqabvqds6sbyngqxy4r785c"))
+                "1kiwlra6nfkb5n870k2db41jrm59bq9lxqmil4v7ignblgsdfdwb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -376,7 +381,8 @@ many event types, including timers, signals, and the classic file descriptor eve
     (native-inputs
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python)
+       ("which" ,which)))
     (propagated-inputs
      ;; ldb.pc refers to all these.
      `(("talloc" ,talloc)

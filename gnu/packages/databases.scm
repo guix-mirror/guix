@@ -837,7 +837,7 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.15.10")
+    (version "5.18.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -846,7 +846,7 @@ types are supported, as is encryption.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q26frbj9pykarcfa0yxgwncxlvsqhjkby0jrbfs1a8srja688r4"))
+                "1v2slmmr1dsgf8z0qcfg1y9x1al96859rg48b66p9nsawczd5zv9"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1031,14 +1031,14 @@ changes.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.16")
+    (version "1.3.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ibcz466xwk1x6xvzlgzd5va4lyrjzm3rnjak29kkwk7cmhw4gva"))))
+                "1drnsdh1w0px35r0y7l7g59yvyr67mvcsdrli4wab0mwi07b8mn1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1055,7 +1055,8 @@ changes.")
        ;; ("docbook-xsl" ,docbook-xsl)
        ;; ("libxml2" ,libxml2)
        ;; ("libxslt" ,libxslt)
-       ("python" ,python-2)))                     ;for the Waf build system
+       ("python" ,python)                         ;for the Waf build system
+       ("which" ,which)))
     (home-page "https://tdb.samba.org/")
     (synopsis "Trivial database")
     (description
@@ -2478,13 +2479,13 @@ reasonable substitute.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "2.10.6")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "03vcgklykny0g0wpvqmy8p6azi2s078317wgb2xjv5m2rs9sjb52"))))
+        (base32 "0m1b88wg1w6xdwg0siky5k86x8sh6smhbr42ixz41ra81lv34jbj"))))
     (build-system python-build-system)
     ;; Tests require a running Redis server
     (arguments '(#:tests? #f))
@@ -2503,13 +2504,13 @@ reasonable substitute.")
 (define-public python-rq
   (package
     (name "python-rq")
-    (version "0.12.0")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rq" version))
        (sha256
-        (base32 "16d8kni57xlnah2hawy4xgw21xrv3f64j5q5shyp3zxx4yd9iibs"))))
+        (base32 "0xvapd2bxnyq480i48bdkddzlqmv2axbsq85rlfy8k3al8zxxxrf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)

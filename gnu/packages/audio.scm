@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,6 +88,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
@@ -1739,14 +1741,14 @@ essential distortions.")
 (define-public liblo
   (package
     (name "liblo")
-    (version "0.29")
+    (version "0.30")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/liblo/liblo/" version
                                  "/liblo-" version ".tar.gz"))
              (sha256
               (base32
-               "0sn0ckc1d0845mhsaa62wf7f9v0c0ykiq796a30ja5096kib9qdc"))))
+               "06wdjzxjdshr6hyl4c94yvg3jixiylap8yjs8brdfpm297gck9rh"))))
     (build-system gnu-build-system)
     (arguments
      `(;; liblo test FAILED
@@ -3673,3 +3675,29 @@ surround).")
 high-quality editing and playback of audio, and is based on the JUCE
 library.")
     (license license:lgpl3+)))
+
+(define-public faudio
+  (package
+    (name "faudio")
+    (version "19.03")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FNA-XNA/FAudio.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "0v5l67ixr5kd9jz5sza8xgzxamqnlgn3gs1q8gg6ir60g0jvzbd4"))))
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:configure-flags '("-DFFMPEG=ON")))
+    (build-system cmake-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("ffmpeg" ,ffmpeg)
+              ("sdl2" ,sdl2)))
+    (home-page "https://github.com/FNA-XNA/FAudio")
+    (synopsis "XAudio reimplementation")
+    (description "FAudio is an XAudio reimplementation that focuses solely on
+developing fully accurate DirectX Audio runtime libraries.")
+    (license license:zlib)))

@@ -2706,7 +2706,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.18.7")
+    (version "0.18.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2715,7 +2715,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11ylmcfx6ff7xd1gpi58i2nbma83lz2xg0g2dq23w6snqhgzwrhd"))))
+                "058x64689k55wxfkdp4svhnwvv8jmqm7z5mrynybl38f4sfqiyiv"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4214,15 +4214,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.45")
+    (version "0.9.52")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/020f3f686e2b938731752a1d9f5bfa7e/"
+                                  "uploads/d95bf72958276c80dfaca8cce0e4e92c/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "0371p7g13r0b7zjc48fdcil43ddwpmyvkd2a4vv6ifsqmny6kl42"))))
+                "1s3b0rkm8sxmhzzi624snzqvz61i1rja5wxyzw6jg2kcdjcylwln"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

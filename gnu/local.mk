@@ -65,6 +65,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/antivirus.scm			\
   %D%/packages/apl.scm				\
   %D%/packages/apr.scm				\
+  %D%/packages/arcan.scm			\
   %D%/packages/aspell.scm			\
   %D%/packages/assembly.scm			\
   %D%/packages/astronomy.scm			\
@@ -250,6 +251,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/iso-codes.scm			\
   %D%/packages/java.scm				\
   %D%/packages/java-compression.scm		\
+  %D%/packages/java-maths.scm			\
   %D%/packages/javascript.scm			\
   %D%/packages/jemalloc.scm			\
   %D%/packages/jrnl.scm				\
@@ -978,6 +980,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
+  %D%/packages/patches/libopenshot-fixup-tests.patch		\
   %D%/packages/patches/libopenshot-tests-with-system-libs.patch	\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
@@ -1030,7 +1033,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
-  %D%/packages/patches/lyx-2.2.3-fix-test.patch			\
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
@@ -1278,6 +1280,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
   %D%/packages/patches/thefuck-test-environ.patch		\
+  %D%/packages/patches/thermald-make-int-max32-visible.patch	\
   %D%/packages/patches/tidy-CVE-2015-5522+5523.patch		\
   %D%/packages/patches/tinyxml-use-stl.patch			\
   %D%/packages/patches/tipp10-fix-compiling.patch		\

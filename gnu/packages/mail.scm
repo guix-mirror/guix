@@ -2017,7 +2017,7 @@ transfer protocols.")
        (modify-phases %standard-phases
          ;; Fix some incorrectly hard-coded external tool file names.
          (add-after 'unpack 'patch-FHS-file-names
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda _
              (substitute* "smtpd/smtpctl.c"
                (("/bin/cat") (which "cat"))
                (("/bin/sh") (which "sh")))

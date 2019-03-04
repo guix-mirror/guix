@@ -2802,14 +2802,14 @@ and is very extensible.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.5")
+    (version "0.29.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1wfb68g115gmf3mv23w0hh972b0ll85gpb92ci28x6h997br0llx"))))
+         "1bp7cn0pp5qy63k9hbp4ka34fm01kvysh478phpkhr68npqk6pbc"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -2841,9 +2841,6 @@ and is very extensible.")
 
          (replace 'check
            (lambda _
-             ;; The "with_outer_raising" test fails with Python 3.7.  See
-             ;; https://github.com/cython/cython/issues/2454
-             (delete-file "tests/run/generators_py.py")
              (invoke "python" "runtests.py" "-vv"))))))
     (home-page "http://cython.org/")
     (synopsis "C extensions for Python")
@@ -3262,13 +3259,13 @@ library, libgit2 implements Git plumbing.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.2.1")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32 "06dgd0iilvf8m0ssmfpcbh8l6jf0zkp8adbb84llksg17crfx4zl"))))
+        (base32 "0yk6xl885b91dmlhlsap7x78hk2rdr879fln9anbq6k4ca42djb6"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3537,9 +3534,24 @@ toolkits.")
        ("python-sphinx-gallery" ,python-sphinx-gallery)
        ("python-numpydoc" ,python-numpydoc)
        ("python-ipython" ,python-ipython)
+       ("python-ipykernel" ,python-ipykernel)
        ("python-mock" ,python-mock)
        ("graphviz" ,graphviz)
-       ("texlive" ,texlive)
+       ("texlive" ,(texlive-union (list texlive-latex-amsfonts
+                                        texlive-latex-amsmath
+                                        texlive-latex-enumitem
+                                        texlive-latex-expdlist
+                                        texlive-latex-geometry
+                                        texlive-latex-preview
+                                        texlive-latex-type1cm
+                                        texlive-latex-ucs
+
+                                        texlive-generic-pdftex
+
+                                        texlive-fonts-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-fonts-adobe-times
+                                        texlive-fonts-txfonts)))
        ("texinfo" ,texinfo)
        ,@(package-native-inputs python-matplotlib)))
     (arguments
@@ -3549,15 +3561,24 @@ toolkits.")
          (replace 'build
            (lambda _
              (chdir "doc")
-             ;; Produce pdf in 'A4' format.
+             (setenv "PYTHONPATH"
+                     (string-append (getenv "PYTHONPATH")
+                                    ":" (getcwd) "/../examples/units"))
              (substitute* "conf.py"
-               (("latex_paper_size = 'letter'") "")
-               ;; latex_paper_size is deprecated -> set paper size using
-               ;; latex_elements
-               (("latex_elements\\['pointsize'\\] = '11pt'" match)
-                ;; insert at a point where latex_elements{} is defined:
-                (string-append match "\nlatex_elements['papersize'] = 'a4paper'")))
-             (invoke "make" "SPHINXBUILD=sphinx-build" "html" "latex" "texinfo")))
+               ;; Don't use git.
+               (("^SHA = check_output.*")
+                (string-append "SHA = \"" ,version "\"\n"))
+               ;; Don't fetch intersphinx files from the Internet
+               (("^explicit_order_folders" m)
+                (string-append "intersphinx_mapping = {}\n" m))
+               (("'sphinx.ext.intersphinx',") "")
+               ;; Disable URL embedding which requires internet access.
+               (("'https://docs.scipy.org/doc/numpy'") "None")
+               (("'https://docs.scipy.org/doc/scipy/reference'") "None"))
+             (invoke "make"
+                     "SPHINXBUILD=sphinx-build"
+                     "SPHINXOPTS=" ; don't abort on warnings
+                     "html" "texinfo")))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "out") "/share"))
@@ -3575,12 +3596,9 @@ toolkits.")
                     (string-append "@image{matplotlib-figures/" file)))
                  (symlink (string-append html "/_images")
                           "./matplotlib-figures")
-                 (system* "makeinfo" "--no-split"
-                          "-o" "matplotlib.info" "matplotlib.texi"))
-               (copy-file "build/texinfo/matplotlib.info"
-                          (string-append info "/matplotlib.info"))
-               (copy-file "build/latex/Matplotlib.pdf"
-                          (string-append doc "/Matplotlib.pdf")))
+                 (invoke "makeinfo" "--no-split"
+                         "-o" "matplotlib.info" "matplotlib.texi"))
+               (install-file "build/texinfo/matplotlib.info" info))
              #t)))))
     (home-page (package-home-page python-matplotlib))
     (synopsis "Documentation for the python-matplotlib package")
@@ -14643,14 +14661,14 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.0.0")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
         (base32
-         "1xwz8h020ipwav2p5gcq9pskya1cvzd6hjyvd06dvr3w5lxlmym1"))))
+         "03ykmq46q2hh7mn68vcxkgylybjaj3r0kfspaiymdmqmjzpjivr5"))))
     (build-system python-build-system)
     ;; A single test out of 5000+ fails.  This test is marked as xfail when
     ;; pytest-xdist is used.

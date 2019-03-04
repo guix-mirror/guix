@@ -49,13 +49,13 @@ test -x `sed -r 's/^export PATH="(.*)"/\1/' "$tmpdir/a"`/guile
 
 cmp "$tmpdir/a" "$tmpdir/b"
 
-# Check '--inherit'.
+# Check '--preserve'.
 GUIX_TEST_ABC=1
 GUIX_TEST_DEF=2
 GUIX_TEST_XYZ=3
 export GUIX_TEST_ABC GUIX_TEST_DEF GUIX_TEST_XYZ
 guix environment --bootstrap --ad-hoc guile-bootstrap --pure	\
-     --inherit='^GUIX_TEST_A' --inherit='^GUIX_TEST_D'		\
+     --preserve='^GUIX_TEST_A' --preserve='^GUIX_TEST_D'	\
      -- "$SHELL" -c set > "$tmpdir/a"
 grep '^PATH=' "$tmpdir/a"
 grep '^GUIX_TEST_ABC=' "$tmpdir/a"
@@ -116,16 +116,6 @@ case "`uname -m`" in
 	echo "nothing to do" >&2
 	;;
 esac
-
-
-# Same as above, but with deprecated -E flag.
-if guix environment --bootstrap --ad-hoc guile-bootstrap --pure \
-        -E "guile -c '(exit 42)'"
-then
-    false
-else
-    test $? = 42
-fi
 
 # Make sure we can build the environment of 'guix'.  There may be collisions
 # in its profile (e.g., for 'gzip'), but we have to accept them.

@@ -88,7 +88,7 @@
            (comment "rsyncd privilege separation user")
            (home-directory (string-append "/var/run/"
                                           rsync-user))
-           (shell #~(string-append #$shadow "/sbin/nologin"))))))
+           (shell (file-append shadow "/sbin/nologin"))))))
 
 (define (rsync-activation config)
   "Return the activation GEXP for CONFIG."

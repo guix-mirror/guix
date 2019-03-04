@@ -600,7 +600,9 @@ for clients and servers.")
     (build-system python-build-system)
     (arguments
      ;; Python 3 support is in `python3-openid`, a separate package.
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       ;; Tests aren't initialized correctly.
+       #:tests? #f))
     (home-page "https://github.com/openid/python-openid")
     (synopsis "OpenID support for servers and consumers")
     (description "This library provides OpenID authentication for Python, both

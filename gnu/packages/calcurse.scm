@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,15 +30,14 @@
 (define-public calcurse
   (package
     (name "calcurse")
-    (version "4.3.0")
+    (version "4.4.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://calcurse.org/files/calcurse-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "16jzg0nasnxdlz23i121x41pq5kbxmjzk52c5d863rg117fc7v1i"))))
+       (method url-fetch)
+       (uri (string-append "https://calcurse.org/files/calcurse-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0vw2xi6a2lrhrb8n55zq9lv4mzxhby4xdf3hmi1vlfpyrpdwkjzd"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (native-inputs `(("tzdata" ,tzdata-for-tests)))
@@ -46,15 +45,25 @@
      ;; The ical tests all want to create a ".calcurse" directory, and may
      ;; fail with "cannot create directory '.calcurse': File exists" if run
      ;; concurently.
-     `(#:parallel-tests? #f
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version))
+       #:parallel-tests? #f
        ;; Since this tzdata is only used for tests and not referenced by the
        ;; built package, used the "fixed" obsolete version of tzdata and ensure
        ;; it does not sneak in to the closure.
        #:disallowed-references (,tzdata-for-tests)
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'respect-docdir
+                    ;; doc/Makefile disregards ./configure's --docdir option.
+                    (lambda _
+                      (substitute* "doc/Makefile.in"
+                        (("(docdir =) .*" _ match)
+                         (format "~a @docdir@\n" match)))
+                      #t))
                   (add-before 'check 'check-setup
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (setenv "TZDIR"   ;for test/ical-007.sh
+                      (setenv "TZDIR"   ; for test/ical-007.sh
                               (string-append (assoc-ref inputs "tzdata")
                                              "/share/zoneinfo")))))))
     (home-page "https://www.calcurse.org")
