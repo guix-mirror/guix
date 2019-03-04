@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,14 +31,14 @@
 (define-public libgc
   (package
    (name "libgc")
-   (version "7.6.8")
+   (version "7.6.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/ivmai/bdwgc/releases"
                                 "/download/v" version "/gc-" version ".tar.gz"))
             (sha256
              (base32
-              "0n720a0i584ghcwmdsjiq6bl9ig0p9mrja29rp4cgsqvpz6wa2h4"))))
+              "10jhhi79d5brwlsyhwgpnrmc8nhlf7aan2lk9xhgihk5jc6srbvc"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
@@ -53,7 +54,19 @@
        ,@(if (hurd-triplet? (or (%current-system)
                                 (%current-target-system)))
              '("--disable-gcj-support")
-             '()))))
+             '()))
+      #:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'adjust-pc-file
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((libatomic-ops (assoc-ref inputs "libatomic-ops")))
+                       ;; GC 7.6.10 and later includes -latomic_ops in the
+                       ;; pkg-config file.  To avoid propagation, insert an
+                       ;; absolute reference so dependent programs can find it.
+                       (substitute* "bdw-gc.pc.in"
+                         (("@ATOMIC_OPS_LIBS@" match)
+                          (string-append "-L" libatomic-ops "/lib "
+                                         match)))
+                       #t))))))
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs `(("libatomic-ops" ,libatomic-ops)))
    (outputs '("out" "debug"))
