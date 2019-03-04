@@ -937,7 +937,7 @@ Sans Pro family.")
 (define-public font-fira-code
   (package
     (name "font-fira-code")
-    (version "1.205")
+    (version "1.206")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
@@ -945,7 +945,7 @@ Sans Pro family.")
                                   "/FiraCode_" version ".zip"))
               (sha256
                (base32
-                "13bxgf59g6fw5191xclcjzn22hj8jk9k5jjwf7vz07mpjbgadcl5"))))
+                "02r1lcp0c9135ps71v66wdvbsrcxwirrp0blqsa1xbjkkq2rwgj3"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Monospaced font with programming ligatures")
