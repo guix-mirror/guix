@@ -596,13 +596,13 @@ Heros, Pagella, Schola, Termes.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.marksimonson.com/assets/content/fonts/"
+                    "https://www.marksimonson.com/assets/content/fonts/"
                     "AnonymousPro-" version ".zip"))
               (sha256
                (base32
                 "1asj6lykvxh46czbal7ymy2k861zlcdqpz8x3s5bbpqwlm3mhrl6"))))
     (build-system font-build-system)
-    (home-page "http://www.marksimonson.com/fonts/view/anonymous-pro")
+    (home-page "https://www.marksimonson.com/fonts/view/anonymous-pro")
     (synopsis "Fixed-width fonts designed with coding in mind")
     (description "Anonymous Pro is a family of four fixed-width fonts designed
 with coding in mind.  Anonymous Pro features an international, Unicode-based
