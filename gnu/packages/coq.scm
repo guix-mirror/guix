@@ -327,14 +327,14 @@ part of the distribution.")
 (define-public coq-coquelicot
   (package
     (name "coq-coquelicot")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37045/coquelicot-" version ".tar.gz"))
+                                  "file/37523/coquelicot-" version ".tar.gz"))
               (sha256
                (base32
-                "0hsyhsy2lwqxxx2r8xgi5csmirss42lp9bkb9yy35mnya0w78c8r"))))
+                "1biia7nfqf7vaqq5gmykl4rwjyvrcwss6r2jdf0in5pvp2rnrj2w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -348,12 +348,6 @@ part of the distribution.")
                             "/lib/coq/user-contrib/Coquelicot"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-coq8.8
-           (lambda _
-             ; appcontext has been removed from coq 8.8
-             (substitute* "theories/AutoDerive.v"
-               (("appcontext") "context"))
-             #t))
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
