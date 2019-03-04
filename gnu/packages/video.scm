@@ -316,7 +316,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "13.0.0")
+    (version "31.0.0")
     (source
      (origin
        (method url-fetch)
@@ -324,7 +324,7 @@ H.264 (MPEG-4 AVC) video streams.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0hknnnnx9661igm1r73dc7aqxnnrl5a8yvyvr1nhd9ymn2klwpl5"))
+         "0d8va2iamzc7y3wi71z8mk2vnqvnkgwb2p7casdfp37400x8r2pr"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -368,16 +368,15 @@ H.264 (MPEG-4 AVC) video streams.")
                             (assoc-ref %build-inputs "docbook-xsl")
                             "/xml/xsl/docbook-xsl-"
                             ,(package-version docbook-xsl))
-             (string-append "--with-extra-includes="
-                            (assoc-ref %build-inputs "nlohmann-json-cpp")
-                            "/include/nlohmann"))
+             "--enable-update-check=no"
+             "--enable-precompiled-headers=no")
         #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'add-googletest
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (symlink
-              (string-append (assoc-ref %build-inputs "googletest")
-                             "/include/gtest") "lib/gtest")
+               (string-append (assoc-ref inputs "googletest")
+                              "/include/gtest") "lib/gtest")
              #t))
          (replace 'build
            (lambda _
