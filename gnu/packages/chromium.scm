@@ -224,7 +224,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "72.0.3626.119")
+(define %chromium-version "72.0.3626.121")
 (define %ungoogled-revision "a80839c418de8843dfcd6c13a557f12d26a0a17a")
 (define package-revision "0")
 
@@ -245,7 +245,7 @@ from forcing GEXP-PROMISE."
                                 %chromium-version ".tar.xz"))
             (sha256
              (base32
-              "0ylig933xzn6c0018nxq95xhl0wkxcm95fdiy2c7s4a4h3hkr5dk"))))
+              "07xwmlvmzfga61nrimqmzl7s29jb4kc94nkzwwlb7sh6nr55a7jc"))))
          (ungoogled-source
           (origin
             (method git-fetch)

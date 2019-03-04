@@ -1199,3 +1199,32 @@ sequencing data.")
 algorithm to segment DNA copy number data and identify genomic regions with
 abnormal copy number.")
     (license license:gpl2+)))
+
+;; This is a CRAN package, but it uncharacteristically depends on a
+;; Bioconductor package.
+(define-public r-htscluster
+  (package
+    (name "r-htscluster")
+    (version "2.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "HTSCluster" version))
+       (sha256
+        (base32
+         "0wnbfh6hdx8692jilgmv8sys1zm6fqc6mim7vvjhyqlmpm8gm0kg"))))
+    (properties `((upstream-name . "HTSCluster")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-capushe" ,r-capushe)
+       ("r-edger" ,r-edger)
+       ("r-plotrix" ,r-plotrix)))
+    (home-page "https://cran.r-project.org/web/packages/HTSCluster")
+    (synopsis "Clustering high-throughput transcriptome sequencing (HTS) data")
+    (description
+     "This package provides a Poisson mixture model is implemented to cluster
+genes from high-throughput transcriptome sequencing (RNA-seq) data.  Parameter
+estimation is performed using either the EM or CEM algorithm, and the slope
+heuristics are used for model selection (i.e., to choose the number of
+clusters).")
+    (license license:gpl3+)))

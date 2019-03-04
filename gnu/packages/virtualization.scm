@@ -796,10 +796,10 @@ incremental backups of running QEMU virtual machines via QMP, the QEMU
 Machine Protocol.")
     (license license:gpl3+)))
 
-(define-public lookingglass
-  (let ((commit "41f4166aedeba65892f6db4de4de467aec9a2052"))
+(define-public looking-glass-client
+  (let ((commit "182c4752d57690da7f99d5e788de9b8baea33895"))
     (package
-     (name "lookingglass")
+     (name "looking-glass-client")
      (version (string-append "a12-" (string-take commit 7)))
      (source
       (origin
@@ -809,7 +809,7 @@ Machine Protocol.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1sjxf4zy7h0zprla3s6dfwsxhmkrwhlhj07svf5bk5ij20bs0dc2"))))
+         "02bq46ndmzq9cihazzn7xq1x7q5nzm7iw4l9lqzihxcxp9famkhw"))))
      (build-system cmake-build-system)
      (inputs `(("fontconfig" ,fontconfig)
                ("glu" ,glu)
@@ -846,6 +846,9 @@ monitor/GPU.")
      ;; This package requires SSE instructions.
      (supported-systems '("i686-linux" "x86_64-linux"))
      (license license:gpl2+))))
+
+(define-public lookingglass
+  (deprecated-package "lookingglass" looking-glass-client))
 
 (define-public runc
   (package

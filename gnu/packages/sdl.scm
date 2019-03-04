@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2017 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
@@ -117,7 +117,8 @@ joystick, and graphics hardware.")
     (arguments
      (substitute-keyword-arguments (package-arguments sdl)
        ((#:configure-flags flags)
-        `(append '("--disable-wayland-shared")
+        `(append '("--disable-wayland-shared" "--enable-video-kmsdrm"
+                   "--disable-kmsdrm-shared")
                  ,flags))))
     (inputs
      ;; SDL2 needs to be built with ibus support otherwise some systems

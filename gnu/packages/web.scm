@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
@@ -1248,57 +1249,88 @@ minimum to provide high performance operation.")
     ;; bundled CuTest framework uses a different non-copyleft license.
     (license (list l:asl2.0 (l:non-copyleft "file://test/CuTest-README.txt")))))
 
+(define-public libsass
+  (package
+    (name "libsass")
+    (version "3.5.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sass/libsass.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0830pjcvhzxh6yixj82x5k5r1xnadjqzi16kp53213icbly0r9ma"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'set-LIBSASS_VERSION
+           (lambda _
+             (setenv "LIBSASS_VERSION" ,version)
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://sass-lang.com/libsass")
+    (synopsis "SASS Compiler, implemented as a C/C++ library")
+    (description
+     "LibSass is a @acronym{SASS,Syntactically awesome style sheets} compiler
+library designed for portability and efficiency.  To actually compile SASS
+stylesheets, you'll need to use another program that uses this library,
+@var{sassc} for example.")
+    (license l:expat)))
+
 (define-public sassc
-  ;; libsass must be statically linked and it isn't included in the sassc
-  ;; release tarballs, hence this odd package recipe.
-  (let* ((version "3.4.5")
-         (libsass
-          (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/sass/libsass/archive/"
-                  version ".tar.gz"))
-            (file-name (string-append "libsass-" version ".tar.gz"))
-            (sha256
-             (base32
-              "1j22138l5ymqjfj5zan9d2hipa3ahjmifgpjahqy1smlg5sb837x")))))
-    (package
-      (name "sassc")
-      (version version)
-      (source (origin
-                (method url-fetch)
-                (uri (string-append "https://github.com/sass/sassc/archive/"
-                                    version ".tar.gz"))
-                (file-name (string-append "sassc-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1xk4kmmvziz9sal3swpqa10q0s289xjpcz8aggmly8mvxvmngsi9"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags
-         (list "CC=gcc"
-               (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:test-target "test"
-         ;; FIXME: "make test" rebuilds the application and gets lost in a
-         ;; non-existing directory.
-         #:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'bootstrap)
-           (delete 'configure)
-           (add-after 'unpack 'unpack-libsass-and-set-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
-               (setenv "SASS_LIBSASS_PATH"
-                       (string-append (getcwd) "/libsass-" ,version))
-               #t)))))
-      (inputs
-       `(("libsass" ,libsass)))
-      (synopsis "CSS pre-processor")
-      (description "SassC is a compiler written in C for the CSS pre-processor
+  (package
+    (name "sassc")
+    (version "3.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sass/sassc.git")
+                    (commit  version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jsfz1zg4gwk0dq8i92ll12axs3s70wsdsmdyi71zx8zmvib5nl6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ;; I don't believe sassc contains any tests
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("build-shared: \\$\\(RESOURCES\\) \\$\\(OBJECTS\\) \\$\\(LIB_SHARED\\)")
+                "build-shared: $(RESOURCES) $(OBJECTS)")
+               (("\\$\\(SASSC_EXE\\): libsass build")
+                "$(SASSC_EXE): build")
+               (("install: libsass-install-\\$\\(BUILD\\) \\\\")
+                "install: \\"))
+             #t))
+         ;; This phase fails for some reason
+         (delete 'bootstrap)
+         ;; There is no configure script
+         (delete 'configure)
+         (add-before 'build 'setup-environment
+           (lambda _
+             (setenv "BUILD" "shared")
+             (setenv "SASSC_VERSION" ,version)
+             #t)))))
+    (inputs
+     `(("libsass" ,libsass)))
+    (synopsis "CSS pre-processor")
+    (description "SassC is a compiler written in C for the CSS pre-processor
 language known as SASS.")
-      (home-page "http://sass-lang.com/libsass")
-      (license l:expat))))
+    (home-page "http://sass-lang.com/libsass")
+    (license l:expat)))
 
 
 (define-public perl-apache-logformat-compiler
@@ -5432,14 +5464,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
 (define-public java-tomcat
   (package
     (name "java-tomcat")
-    (version "8.5.32")
+    (version "8.5.38")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1qjsr6zmkdciakya4jqz0ssnsk02qlmmd898c05rasfwcrpj0xi6"))
+                "13pbsyk39g1qph82nngp54mqycmg60rxlxwy4yszsssahrqnggb2"))
               (modules '((guix build utils)))
               ;; Delete bundled jars.
               (snippet
@@ -5515,7 +5547,8 @@ technologies.")
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "jetty-test-helper")))
+             (chdir "jetty-test-helper")
+             #t))
          (add-before 'build 'fix-paths
            (lambda _
              ;; TODO:
@@ -5779,7 +5812,8 @@ or embedded instantiation.  This package provides the JMX management.")))
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "jetty-http"))))))
+             (chdir "jetty-http")
+             #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
        ("servlet" ,java-tomcat)

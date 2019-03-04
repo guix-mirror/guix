@@ -112,6 +112,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -119,6 +120,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -316,7 +318,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "13.0.0")
+    (version "31.0.0")
     (source
      (origin
        (method url-fetch)
@@ -324,12 +326,13 @@ H.264 (MPEG-4 AVC) video streams.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0hknnnnx9661igm1r73dc7aqxnnrl5a8yvyvr1nhd9ymn2klwpl5"))
+         "0d8va2iamzc7y3wi71z8mk2vnqvnkgwb2p7casdfp37400x8r2pr"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
                    (for-each delete-file-recursively
-                             '("lib/libebml"
+                             '("lib/fmt"
+                               "lib/libebml"
                                "lib/libmatroska"
                                "lib/nlohmann-json"
                                "lib/pugixml"
@@ -339,15 +342,18 @@ H.264 (MPEG-4 AVC) video streams.")
     (inputs
      `(("boost" ,boost)
        ("bzip2" ,bzip2)
+       ("cmark" ,cmark)
        ("libebml" ,libebml)
-       ("flac" ,flac)
        ("file" ,file)
+       ("flac" ,flac)
+       ("fmt" ,fmt)
        ("libmatroska" ,libmatroska)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
        ("lzo" ,lzo)
        ("pugixml" ,pugixml)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
        ("utfcpp" ,utfcpp)
        ("zlib" ,zlib)))
     (native-inputs
@@ -359,6 +365,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("po4a" ,po4a)
+       ("qttools" ,qttools)
        ("ruby" ,ruby)))
     (arguments
      `(#:configure-flags
@@ -368,16 +375,15 @@ H.264 (MPEG-4 AVC) video streams.")
                             (assoc-ref %build-inputs "docbook-xsl")
                             "/xml/xsl/docbook-xsl-"
                             ,(package-version docbook-xsl))
-             (string-append "--with-extra-includes="
-                            (assoc-ref %build-inputs "nlohmann-json-cpp")
-                            "/include/nlohmann"))
+             "--enable-update-check=no"
+             "--enable-precompiled-headers=no")
         #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'add-googletest
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (symlink
-              (string-append (assoc-ref %build-inputs "googletest")
-                             "/include/gtest") "lib/gtest")
+               (string-append (assoc-ref inputs "googletest")
+                              "/include/gtest") "lib/gtest")
              #t))
          (replace 'build
            (lambda _
@@ -1764,7 +1770,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.6.12")
+    (version "2.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1772,7 +1778,7 @@ for use with HTML5 video.")
                    name "_" version ".tar.gz"))
              (sha256
               (base32
-               "0nz52yih8sff53inndkh2dba759xjzsh4b8xjww419lcpk0qp6kn"))
+               "15g9h791qbnmycabbbl7s2b3n3xpvygm88qrfk35g2cw6957ik9w"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1794,9 +1800,8 @@ for use with HTML5 video.")
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
-       ("qt" ,qt) ; FIXME: reenable modular qt after update - requires building
-       ;("qtbase" ,qtbase) with -std=gnu++11.
-       ;("qttools" ,qttools)
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
        ("sdl" ,sdl)
        ("sqlite" ,sqlite)
        ("yasm" ,yasm)
@@ -1810,19 +1815,19 @@ for use with HTML5 video.")
        (add-before 'patch-source-shebangs 'unpack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (invoke "tar" "xf" "ffmpeg-2.7.6.tar.bz2")
-             (delete-file "ffmpeg-2.7.6.tar.bz2"))
+             (invoke "tar" "xf" "ffmpeg-3.3.7.tar.bz2")
+             (delete-file "ffmpeg-3.3.7.tar.bz2"))
            #t))
        (add-after 'patch-source-shebangs 'repack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (substitute* "ffmpeg-2.7.6/configure"
+             (substitute* "ffmpeg-3.3.7/configure"
                (("#! /bin/sh") (string-append "#!" (which "sh"))))
-             (invoke "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
+             (invoke "tar" "cjf" "ffmpeg-3.3.7.tar.bz2" "ffmpeg-3.3.7"
                      ;; avoid non-determinism in the archive
                      "--sort=name" "--mtime=@0"
                      "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-2.7.6"))
+             (delete-file-recursively "ffmpeg-3.3.7"))
            #t))
        (replace 'configure
          (lambda _
@@ -3221,8 +3226,10 @@ create smoother and stable videos.")
                             (("(SET\\(PYTHON_MODULE_PATH.*)\\)" _ set)
                              (string-append set " CACHE PATH "
                                             "\"Python bindings directory\")")))
+                          (delete-file-recursively "thirdparty")
                           #t))
-              (patches (search-patches "libopenshot-tests-with-system-libs.patch"))))
+              (patches (search-patches "libopenshot-fixup-tests.patch"
+                                       "libopenshot-tests-with-system-libs.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -3235,7 +3242,8 @@ create smoother and stable videos.")
        ("imagemagick" ,imagemagick)
        ("jsoncpp" ,jsoncpp)
        ("libopenshot-audio" ,libopenshot-audio)
-       ("qt" ,qt)       ;widgets, core, gui, multimedia, and multimediawidgets
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
        ("zeromq" ,zeromq)))
     (arguments
      `(#:configure-flags

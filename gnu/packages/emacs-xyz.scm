@@ -43,6 +43,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
+;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,16 +254,16 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public emacs-magit
   (package
     (name "emacs-magit")
-    (version "2.13.1")
+    (version "2.90.1")
     (source (origin
              (method git-fetch)
              (uri (git-reference
                     (url "https://github.com/magit/magit")
-                    (commit version)))
+                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1kmjjcvhcb21qi6kmrlhf92ync8va5l41n9ban8kj25h7dbqyiym"))))
+               "1kw94sdczswsyzn1zlk5s5aplpdv4qd7qcqc5zfxsmsfwm3jacl4"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -11131,6 +11132,29 @@ my_thing reload} all the time.  It offers a consistent UI over different init
 systems.")
     (license license:gpl3+)))
 
+(define-public emacs-isearch+
+  (let ((commit "95e49af9dbf0254e095a11f115e101b52659520a")
+        (revision "1"))
+    (package
+      (name "emacs-isearch+")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/isearch-plus.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xhd9zgknf4lvzyf4apirpd7spb1hbpzkvys00a7pkmd0vvahk0v"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/isearch+.el")
+      (synopsis "Extensions to @code{isearch.el}")
+      (description "This package extends @code{isearch} with advice, dynamic
+filters, highlighting of regexp group levels, and more.")
+      (license license:gpl2+))))
+
 (define-public emacs-esh-autosuggest
   (package
     (name "emacs-esh-autosuggest")
@@ -11161,29 +11185,30 @@ autosuggestions with:
     (license license:gpl3+)))
 
 (define-public emacs-desktop-environment
-  (package
-    (name "emacs-desktop-environment")
-    (version "0.2.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/DamienCassou/desktop-environment.git")
-             (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
-       (sha256
-        (base32
-         "1fal3yfmqg10cb53qsf5gsq2gvyz9w16wmlpnpjwjzwnjfn6l73r"))))
-    (build-system emacs-build-system)
-    (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
-    (synopsis "Control your GNU/Linux desktop environment from Emacs")
-    (description
-     "This package helps you control your GNU/Linux desktop from Emacs.
+  (let ((commit "a9eba14f2b5b8070f78dca839ca8259736e346a6"))
+    (package
+      (name "emacs-desktop-environment")
+      (version (git-version "0.2.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.petton.fr/DamienCassou/desktop-environment")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0x73x5hy7w55jrzy3xvqhk90rrsznmxjqvsvwhh21qznv5w269xz"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
+      (synopsis "Control your GNU/Linux desktop environment from Emacs")
+      (description
+       "This package helps you control your GNU/Linux desktop from Emacs.
 With @code{desktop-environment}, you can control the brightness and volume as
 well as take screenshots and lock your screen.  The package depends on the
 availability of shell commands to do the hard work for us.  These commands can
 be changed by customizing the appropriate variables.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-org-caldav
   (package
@@ -11239,10 +11264,10 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
   (deprecated-package "emacs-evil-ediff" emacs-evil-collection))
 
 (define-public emacs-evil-magit
-  (let ((commit "dbf5a646a7ce1c35c229dfdc423bd5ecd927a3a8"))
+  (let ((commit "e2fec5877994c0c19f0c25fa01f3d22cb0ab38ba"))
     (package
       (name "emacs-evil-magit")
-      (version (git-version "0.4.2" "1" commit))
+      (version (git-version "0.4.2" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -11252,7 +11277,7 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0ya0dkviq4pi92ab69a4j674y5r1hc1x3x7r7hlm97ag3a6zfkav"))))
+           "134v7s03jvbhm70mavwab85r09i68g2a5bvriirh0chz1av2y16v"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -11508,10 +11533,10 @@ you searched for and execute it, or view its documentation.")
     (license license:gpl3+))))
 
 (define-public emacs-helm-emms
-  (let ((commit "d3f9bdef8ff0d093eaf6e26af50ea905ab53fdec"))
+  (let ((commit "b785cb845a98a643eba9d5d53c9c0b4e6810a3cd"))
     (package
       (name "emacs-helm-emms")
-      (version (git-version "1.3" "1" commit))
+      (version (git-version "1.3" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -11521,7 +11546,7 @@ you searched for and execute it, or view its documentation.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0bdb8xp0yp3gijpa9i2rc17gfzjhzlm92vdzw93i10qpd1xhj4aa"))))
+           "1595r09y3rmwd46nnhvjja3hb8j2ila295ijxv61cg52ws4wginh"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
@@ -12125,7 +12150,7 @@ buffers – other modes on the TODO list).
 (define-public emacs-magit-todos
   (package
     (name "emacs-magit-todos")
-    (version "1.1")
+    (version "1.1.7")
     (source
      (origin
        (method git-fetch)
@@ -12135,7 +12160,7 @@ buffers – other modes on the TODO list).
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mvzbxshr6zjdim3jd368ar1hy5l7n22i03cpvzdmrw83kkwdyhd"))))
+         "0qagdxpik64n4rw9scy451ws5sw00v64ri9g2dcw7b66bx2c6c6w"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -13161,10 +13186,10 @@ recursively.  The results are cached for speed.")
     (license license:gpl3+)))
 
 (define-public emacs-orgit
-  (let ((commit "ddb830c38cb71e5cf86db7fa62d6ee88ab3962d5"))
+  (let ((commit "2456436a7e64d26bcf455b3890a586acaa3e7f93"))
     (package
       (name "emacs-orgit")
-      (version (git-version "1.5.1" "1" commit))
+      (version (git-version "1.5.1" "2" commit))
       (home-page "https://github.com/magit/orgit")
       (source (origin
                 (method git-fetch)
@@ -13174,7 +13199,7 @@ recursively.  The results are cached for speed.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0fy4n71yskfkjl6w9mzrw3pfd5lp8f48g2c9bxiwg7mwzsmsb9nb"))))
+                  "1i52dq2ynddb1irgigr5mdwfbfd3bvm1f29jnzd7nlc0nk186nvh"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)

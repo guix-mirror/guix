@@ -1,0 +1,148 @@
+From 691536f2f8a9ed7322fedb24d489db08c70705b9 Mon Sep 17 00:00:00 2001
+From: "Dr. Tobias Quathamer" <toddy@debian.org>
+Date: Sat, 18 Nov 2017 13:54:22 +0100
+Subject: [PATCH] This the combination of two patches:
+ https://sources.debian.org/data/main/libo/libopenshot/0.2.2+dfsg1-1/debian/patches/0003-Fix-failing-tests-by-using-a-fault-tolerance.patch
+ https://sources.debian.org/data/main/libo/libopenshot/0.2.2+dfsg1-1/debian/patches/0004-Add-some-more-fault-tolerance-for-arm64.patch
+
+Together they should fix the test suite on all architectures
+---
+ tests/FFmpegReader_Tests.cpp |  9 ++++-----
+ tests/ImageWriter_Tests.cpp  |  8 ++++----
+ tests/Timeline_Tests.cpp     | 28 ++++++++++++++--------------
+ 3 files changed, 22 insertions(+), 23 deletions(-)
+
+diff --git a/tests/FFmpegReader_Tests.cpp b/tests/FFmpegReader_Tests.cpp
+index 53563ca..07fc41e 100644
+--- a/tests/FFmpegReader_Tests.cpp
++++ b/tests/FFmpegReader_Tests.cpp
+@@ -95,8 +95,8 @@ TEST(FFmpegReader_Check_Video_File)
+ 	int pixel_index = 112 * 4; // pixel 112 (4 bytes per pixel)
+ 
+ 	// Check image properties on scanline 10, pixel 112
+-	CHECK_EQUAL(21, (int)pixels[pixel_index]);
+-	CHECK_EQUAL(191, (int)pixels[pixel_index + 1]);
++	CHECK_CLOSE(21, (int)pixels[pixel_index], 1);
++	CHECK_CLOSE(191, (int)pixels[pixel_index + 1], 2);
+ 	CHECK_EQUAL(0, (int)pixels[pixel_index + 2]);
+ 	CHECK_EQUAL(255, (int)pixels[pixel_index + 3]);
+ 
+@@ -109,8 +109,8 @@ TEST(FFmpegReader_Check_Video_File)
+ 
+ 	// Check image properties on scanline 10, pixel 112
+ 	CHECK_EQUAL(0, (int)pixels[pixel_index]);
+-	CHECK_EQUAL(96, (int)pixels[pixel_index + 1]);
+-	CHECK_EQUAL(188, (int)pixels[pixel_index + 2]);
++	CHECK_CLOSE(96, (int)pixels[pixel_index + 1], 1);
++	CHECK_CLOSE(188, (int)pixels[pixel_index + 2], 1);
+ 	CHECK_EQUAL(255, (int)pixels[pixel_index + 3]);
+ 
+ 	// Close reader
+@@ -209,4 +209,3 @@ TEST(FFmpegReader_Multiple_Open_and_Close)
+ 	// Close reader
+ 	r.Close();
+ }
+-
+diff --git a/tests/ImageWriter_Tests.cpp b/tests/ImageWriter_Tests.cpp
+index 107ee39..d10c8bd 100644
+--- a/tests/ImageWriter_Tests.cpp
++++ b/tests/ImageWriter_Tests.cpp
+@@ -73,9 +73,9 @@ TEST(ImageWriter_Test_Gif)
+ 	int pixel_index = 230 * 4; // pixel 230 (4 bytes per pixel)
+ 
+ 	// Check image properties
+-	CHECK_EQUAL(20, (int)pixels[pixel_index]);
+-	CHECK_EQUAL(18, (int)pixels[pixel_index + 1]);
+-	CHECK_EQUAL(11, (int)pixels[pixel_index + 2]);
++	CHECK_CLOSE(20, (int)pixels[pixel_index], 5);
++	CHECK_CLOSE(18, (int)pixels[pixel_index + 1], 2);
++	CHECK_CLOSE(11, (int)pixels[pixel_index + 2], 2);
+ 	CHECK_EQUAL(255, (int)pixels[pixel_index + 3]);
+ }
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/tests/Timeline_Tests.cpp b/tests/Timeline_Tests.cpp
+index 8c81579..4d861a6 100644
+--- a/tests/Timeline_Tests.cpp
++++ b/tests/Timeline_Tests.cpp
+@@ -119,8 +119,8 @@ TEST(Timeline_Check_Two_Track_Video)
+ 	int pixel_index = 230 * 4; // pixel 230 (4 bytes per pixel)
+ 
+ 	// Check image properties
+-	CHECK_EQUAL(21, (int)f->GetPixels(pixel_row)[pixel_index]);
+-	CHECK_EQUAL(191, (int)f->GetPixels(pixel_row)[pixel_index + 1]);
++	CHECK_CLOSE(21, (int)f->GetPixels(pixel_row)[pixel_index], 2);
++	CHECK_CLOSE(191, (int)f->GetPixels(pixel_row)[pixel_index + 1], 2);
+ 	CHECK_EQUAL(0, (int)f->GetPixels(pixel_row)[pixel_index + 2]);
+ 	CHECK_EQUAL(255, (int)f->GetPixels(pixel_row)[pixel_index + 3]);
+ 
+@@ -128,17 +128,17 @@ TEST(Timeline_Check_Two_Track_Video)
+ 	f = t.GetFrame(2);
+ 
+ 	// Check image properties
+-	CHECK_EQUAL(176, (int)f->GetPixels(pixel_row)[pixel_index]);
++	CHECK_CLOSE(176, (int)f->GetPixels(pixel_row)[pixel_index], 1);
+ 	CHECK_EQUAL(0, (int)f->GetPixels(pixel_row)[pixel_index + 1]);
+-	CHECK_EQUAL(186, (int)f->GetPixels(pixel_row)[pixel_index + 2]);
++	CHECK_CLOSE(186, (int)f->GetPixels(pixel_row)[pixel_index + 2], 1);
+ 	CHECK_EQUAL(255, (int)f->GetPixels(pixel_row)[pixel_index + 3]);
+ 
+ 	// Get frame
+ 	f = t.GetFrame(3);
+ 
+ 	// Check image properties
+-	CHECK_EQUAL(23, (int)f->GetPixels(pixel_row)[pixel_index]);
+-	CHECK_EQUAL(190, (int)f->GetPixels(pixel_row)[pixel_index + 1]);
++	CHECK_CLOSE(23, (int)f->GetPixels(pixel_row)[pixel_index], 1);
++	CHECK_CLOSE(190, (int)f->GetPixels(pixel_row)[pixel_index + 1], 2);
+ 	CHECK_EQUAL(0, (int)f->GetPixels(pixel_row)[pixel_index + 2]);
+ 	CHECK_EQUAL(255, (int)f->GetPixels(pixel_row)[pixel_index + 3]);
+ 
+@@ -146,8 +146,8 @@ TEST(Timeline_Check_Two_Track_Video)
+ 	f = t.GetFrame(24);
+ 
+ 	// Check image properties
+-	CHECK_EQUAL(186, (int)f->GetPixels(pixel_row)[pixel_index]);
+-	CHECK_EQUAL(106, (int)f->GetPixels(pixel_row)[pixel_index + 1]);
++	CHECK_CLOSE(186, (int)f->GetPixels(pixel_row)[pixel_index], 1);
++	CHECK_CLOSE(106, (int)f->GetPixels(pixel_row)[pixel_index + 1], 1);
+ 	CHECK_EQUAL(0, (int)f->GetPixels(pixel_row)[pixel_index + 2]);
+ 	CHECK_EQUAL(255, (int)f->GetPixels(pixel_row)[pixel_index + 3]);
+ 
+@@ -155,8 +155,8 @@ TEST(Timeline_Check_Two_Track_Video)
+ 	f = t.GetFrame(5);
+ 
+ 	// Check image properties
+-	CHECK_EQUAL(23, (int)f->GetPixels(pixel_row)[pixel_index]);
+-	CHECK_EQUAL(190, (int)f->GetPixels(pixel_row)[pixel_index + 1]);
++	CHECK_CLOSE(23, (int)f->GetPixels(pixel_row)[pixel_index], 1);
++	CHECK_CLOSE(190, (int)f->GetPixels(pixel_row)[pixel_index + 1], 2);
+ 	CHECK_EQUAL(0, (int)f->GetPixels(pixel_row)[pixel_index + 2]);
+ 	CHECK_EQUAL(255, (int)f->GetPixels(pixel_row)[pixel_index + 3]);
+ 
+@@ -165,17 +165,17 @@ TEST(Timeline_Check_Two_Track_Video)
+ 
+ 	// Check image properties
+ 	CHECK_EQUAL(0, (int)f->GetPixels(pixel_row)[pixel_index]);
+-	CHECK_EQUAL(94, (int)f->GetPixels(pixel_row)[pixel_index + 1]);
+-	CHECK_EQUAL(186, (int)f->GetPixels(pixel_row)[pixel_index + 2]);
++	CHECK_CLOSE(94, (int)f->GetPixels(pixel_row)[pixel_index + 1], 1);
++	CHECK_CLOSE(186, (int)f->GetPixels(pixel_row)[pixel_index + 2], 1);
+ 	CHECK_EQUAL(255, (int)f->GetPixels(pixel_row)[pixel_index + 3]);
+ 
+ 	// Get frame
+ 	f = t.GetFrame(4);
+ 
+ 	// Check image properties
+-	CHECK_EQUAL(176, (int)f->GetPixels(pixel_row)[pixel_index]);
++	CHECK_CLOSE(176, (int)f->GetPixels(pixel_row)[pixel_index], 1);
+ 	CHECK_EQUAL(0, (int)f->GetPixels(pixel_row)[pixel_index + 1]);
+-	CHECK_EQUAL(186, (int)f->GetPixels(pixel_row)[pixel_index + 2]);
++	CHECK_CLOSE(186, (int)f->GetPixels(pixel_row)[pixel_index + 2], 1);
+ 	CHECK_EQUAL(255, (int)f->GetPixels(pixel_row)[pixel_index + 3]);
+ 
+ 	// Close reader
+-- 
+2.21.0
+

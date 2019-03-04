@@ -397,7 +397,7 @@ info --version")
                                 (use-modules (srfi srfi-34) (guix store))
 
                                 (let ((system (readlink "/run/current-system")))
-                                  (guard (c ((nix-protocol-error? c)
+                                  (guard (c ((store-protocol-error? c)
                                              (and (file-exists? system)
                                                   'success!)))
                                     (with-store store

@@ -184,15 +184,15 @@ provers.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "2.6.1")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               ;; Use the ‘Latest version’ link for a stable URI across releases.
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37454/flocq-" version ".tar.gz"))
+                                  "file/37901/flocq-" version ".tar.gz"))
               (sha256
                (base32
-                "06msp1fwpqv6p98a3i1nnkj7ch9rcq3rm916yxq8dxf51lkghrin"))))
+                "02szrgz9m0ac51la1lqpiv6i2g0zbgx9gz5rp0q1g00ajldyna5c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -327,14 +327,14 @@ part of the distribution.")
 (define-public coq-coquelicot
   (package
     (name "coq-coquelicot")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37045/coquelicot-" version ".tar.gz"))
+                                  "file/37523/coquelicot-" version ".tar.gz"))
               (sha256
                (base32
-                "0hsyhsy2lwqxxx2r8xgi5csmirss42lp9bkb9yy35mnya0w78c8r"))))
+                "1biia7nfqf7vaqq5gmykl4rwjyvrcwss6r2jdf0in5pvp2rnrj2w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -348,12 +348,6 @@ part of the distribution.")
                             "/lib/coq/user-contrib/Coquelicot"))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'fix-coq8.8
-           (lambda _
-             ; appcontext has been removed from coq 8.8
-             (substitute* "theories/AutoDerive.v"
-               (("appcontext") "context"))
-             #t))
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
@@ -413,14 +407,14 @@ provides BigN, BigZ, BigQ that used to be part of Coq standard library.")
 (define-public coq-interval
   (package
     (name "coq-interval")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "file/37077/interval-" version ".tar.gz"))
+                                  "file/37524/interval-" version ".tar.gz"))
               (sha256
                (base32
-                "08fdcf3hbwqphglvwprvqzgkg0qbimpyhnqsgv3gac4y1ap0f903"))))
+                "023j9sd64brqvjdidqkn5m8d7a93zd9r86ggh573z9nkjm2m7vvg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)

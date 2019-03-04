@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -136,7 +136,7 @@
            (system? #t)
            (comment "Cuirass privilege separation user")
            (home-directory (string-append "/var/lib/" cuirass-user))
-           (shell #~(string-append #$shadow "/sbin/nologin"))))))
+           (shell (file-append shadow "/sbin/nologin"))))))
 
 (define (cuirass-activation config)
   "Return the activation code for CONFIG."
