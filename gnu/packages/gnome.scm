@@ -6685,7 +6685,7 @@ the Moka icon theme.")
 (define-public folks
   (package
     (name "folks")
-    (version "0.11.2")
+    (version "0.11.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6694,7 +6694,7 @@ the Moka icon theme.")
                     "folks-" version ".tar.xz"))
               (sha256
                (base32
-                "1f51albxgfqxbax57i3pcgv2fx7i419xaapzdvldas6gw100ma1m"))))
+                "16hqh2gxlbx0b0hgq216hndr1m72vj54jvryzii9zqkk0g9kxc57"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("bdb" ,bdb)
