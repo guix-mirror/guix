@@ -4456,17 +4456,18 @@ that will be added to the environment directly.
 
 @item --pure
 Unset existing environment variables when building the new environment, except
-those specified with @option{--inherit} (see below.)  This has the effect of
+those specified with @option{--preserve} (see below.)  This has the effect of
 creating an environment in which search paths only contain package inputs.
 
-@item --inherit=@var{regexp}
-When used alongside @option{--pure}, inherit all the environment variables
+@item --preserve=@var{regexp}
+@itemx -E @var{regexp}
+When used alongside @option{--pure}, preserve the environment variables
 matching @var{regexp}---in other words, put them on a ``white list'' of
 environment variables that must be preserved.  This option can be repeated
 several times.
 
 @example
-guix environment --pure --inherit=^SLURM --ad-hoc openmpi @dots{} \
+guix environment --pure --preserve=^SLURM --ad-hoc openmpi @dots{} \
   -- mpirun @dots{}
 @end example
 

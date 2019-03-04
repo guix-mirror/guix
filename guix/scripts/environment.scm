@@ -141,7 +141,7 @@ COMMAND or an interactive shell in that environment.\n"))
   (display (G_ "
       --pure             unset existing environment variables"))
   (display (G_ "
-      --inherit=REGEXP   inherit environment variables that match REGEXP"))
+  -E, --preserve=REGEXP  preserve environment variables that match REGEXP"))
   (display (G_ "
       --search-paths     display needed environment variable definitions"))
   (display (G_ "
@@ -215,8 +215,15 @@ COMMAND or an interactive shell in that environment.\n"))
          (option '("pure") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'pure #t result)))
-         (option '("inherit") #t #f
+         (option '(#\E "preserve") #t #f
                  (lambda (opt name arg result)
+                   (alist-cons 'inherit-regexp
+                               (make-regexp* arg)
+                               result)))
+         (option '("inherit") #t #f               ;deprecated
+                 (lambda (opt name arg result)
+                   (warning (G_ "'--inherit' is deprecated, \
+use '--preserve' instead~%"))
                    (alist-cons 'inherit-regexp
                                (make-regexp* arg)
                                result)))
