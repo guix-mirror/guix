@@ -298,9 +298,9 @@ they already exist."
                 (gid (passwd:gid pw)))
            (mkdir-p home)
            (chown home uid gid)
-           (unless system?
-             (copy-account-skeletons home
-                                     #:uid uid #:gid gid)))))))
+           (chmod home #o700)
+           (copy-account-skeletons home
+                                   #:uid uid #:gid gid))))))
 
   (for-each ensure-user-home users))
 
