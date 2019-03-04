@@ -1741,14 +1741,14 @@ essential distortions.")
 (define-public liblo
   (package
     (name "liblo")
-    (version "0.29")
+    (version "0.30")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/liblo/liblo/" version
                                  "/liblo-" version ".tar.gz"))
              (sha256
               (base32
-               "0sn0ckc1d0845mhsaa62wf7f9v0c0ykiq796a30ja5096kib9qdc"))))
+               "06wdjzxjdshr6hyl4c94yvg3jixiylap8yjs8brdfpm297gck9rh"))))
     (build-system gnu-build-system)
     (arguments
      `(;; liblo test FAILED
