@@ -344,33 +344,23 @@ Biolinum is available in both Regular and Bold weights.")
 (define-public font-terminus
   (package
     (name "font-terminus")
-    (version "4.40")
+    (version "4.47")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://sourceforge/terminus-font/terminus-font-"
-               version
-               "/terminus-font-"
-               version
-               ".tar.gz"))
-        (sha256
-         (base32
-          "0487cyx5h1f0crbny5sg73a22gmym5vk1i7646gy7hgiscj2rxb4"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/terminus-font/terminus-font-"
+                           version "/terminus-font-" version ".tar.gz"))
+       (sha256
+        (base32 "15qjcpalcxjiwsjgjg5k88vkwp56cs2nnx4ghya6mqp4i1c206qg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)
-       ("bdftopcf" ,bdftopcf)
+     `(("bdftopcf" ,bdftopcf)
        ("font-util" ,font-util)
-       ("mkfontdir" ,mkfontdir)))
+       ("mkfontdir" ,mkfontdir)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (arguments
-     `(#:configure-flags (list
-                          ;; install fonts into subdirectory of package output
-                          ;; instead of font-util-?.?.?/share/fonts/X11
-                          (string-append "--with-fontrootdir="
-                                         %output "/share/fonts/X11"))
-       #:tests? #f)) ;; No test target in tarball
+     `(#:tests? #f))                    ; no test target in tarball
     (home-page "http://terminus-font.sourceforge.net/")
     (synopsis "Simple bitmap programming font")
     (description "Terminus Font is a clean, fixed-width bitmap font, designed
