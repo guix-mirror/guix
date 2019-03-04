@@ -92,14 +92,14 @@ to a file.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2018.5")
+    (version "2018.9")
     (source
      (origin
       (method url-fetch)
-      (uri (pypi-uri "pytz" version ".tar.gz"))
+      (uri (pypi-uri "pytz" version))
       (sha256
        (base32
-        "0xzj5gkpdn2da8m6j47chlp6zrzcypv9m0fjv4236q3jw4fyzfgz"))))
+        "0k1pqnq3c4gvcspjxf3fschdjn71fk89i4wz801rxqh7f145xw6m"))))
     (build-system python-build-system)
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
