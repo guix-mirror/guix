@@ -307,6 +307,7 @@ AUX_FILES =						\
 
 # Templates, examples.
 EXAMPLES =					\
+  gnu/system/examples/asus-c201.tmpl		\
   gnu/system/examples/bare-bones.tmpl		\
   gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\

@@ -1,0 +1,60 @@
+;; This is an operating system configuration template
+;; for a "bare bones" setup for an ASUS C201PA.
+
+(use-modules (gnu) (gnu bootloader depthcharge))
+(use-service-modules networking ssh)
+(use-package-modules linux screen)
+
+(operating-system
+  (host-name "komputilo")
+  (timezone "Europe/Berlin")
+  (locale "en_US.utf8")
+
+  ;; Assuming /dev/mmcblk0p1 is the kernel partition, and
+  ;; "my-root" is the label of the target root file system.
+  (bootloader (bootloader-configuration
+                (bootloader depthcharge-bootloader)
+                (target "/dev/mmcblk0p1")))
+
+  ;; The ASUS C201PA requires a very particular kernel to boot,
+  ;; as well as the following arguments.
+  (kernel linux-libre-arm-veyron)
+  (kernel-arguments '("console=tty1"))
+
+  ;; We do not need any special modules for initrd, and the
+  ;; PrawnOS kernel does not include many of the normal ones.
+  (initrd-modules '())
+
+  (file-systems (cons (file-system
+                        (device (file-system-label "my-root"))
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems))
+
+  ;; This is where user accounts are specified.  The "root"
+  ;; account is implicit, and is initially created with the
+  ;; empty password.
+  (users (cons (user-account
+                (name "alice")
+                (comment "Bob's sister")
+                (group "users")
+
+                ;; Adding the account to the "wheel" group
+                ;; makes it a sudoer.  Adding it to "audio"
+                ;; and "video" allows the user to play sound
+                ;; and access the webcam.
+                (supplementary-groups '("wheel"
+                                        "audio" "video"))
+                (home-directory "/home/alice"))
+               %base-user-accounts))
+
+  ;; Globally-installed packages.
+  (packages (cons screen %base-packages))
+
+  ;; Add services to the baseline: a DHCP client and
+  ;; an SSH server.
+  (services (append (list (service dhcp-client-service-type)
+                          (service openssh-service-type
+                                   (openssh-configuration
+                                    (port-number 2222))))
+                    %base-services)))
