@@ -895,14 +895,14 @@ dispatching systems can be built.")
 (define-public python-zope-interface
   (package
     (name "python-zope-interface")
-    (version "4.1.3")
+    (version "4.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
-         "0ks8h73b2g4bkad821qbv0wzjppdrwys33i7ka45ik3wxjg1l8if"))))
+         "1rgh2x3rcl9r0v0499kf78xy86rnmanajf4ywmqb943wpk50sg8v"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-zope-event" ,python-zope-event)))
