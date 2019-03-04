@@ -2955,7 +2955,25 @@ API and version 2.1 of the Java ServerPages API.")
      `(#:jar-name "javax-servletapi.jar"
        ;; no tests
        #:tests? #f
-       #:source-dir "src/main/java"))
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/javax/servlet/http")
+             (let ((from-prefix "src/main/java/javax/servlet/")
+                   (to-prefix "build/classes/javax/servlet/"))
+               (for-each (lambda (f)
+                           (copy-file (string-append from-prefix f)
+                                      (string-append to-prefix f)))
+                         (list "LocalStrings_ja.properties"
+                               "LocalStrings.properties"
+                               "LocalStrings_fr.properties"
+                               "http/LocalStrings_es.properties"
+                               "http/LocalStrings_ja.properties"
+                               "http/LocalStrings.properties"
+                               "http/LocalStrings_fr.properties")))
+               #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://javaee.github.io/servlet-spec/")
