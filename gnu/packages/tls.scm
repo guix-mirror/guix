@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -929,14 +929,13 @@ extensions.")
     (name "dehydrated")
     (version "0.6.2")
     (source (origin
-              (method url-fetch/tarbomb)
+              (method url-fetch)
               (uri (string-append
-                    "https://github.com/lukas2511/dehydrated/archive/v"
-                    version ".tar.gz"))
+                    "https://github.com/lukas2511/dehydrated/releases/download/"
+                    "v" version "/dehydrated-" version ".tar.gz"))
               (sha256
                (base32
-                "03p80yj6bnzjc6dkp5hb9wpplmlrla8n5src71cnzw4rj53q8cqn"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "03p80yj6bnzjc6dkp5hb9wpplmlrla8n5src71cnzw4rj53q8cqn"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -944,15 +943,20 @@ extensions.")
        (begin
          (use-modules (guix build utils))
          (let* ((source (assoc-ref %build-inputs "source"))
+                (tar (assoc-ref %build-inputs "tar"))
+                (gz  (assoc-ref %build-inputs "gzip"))
                 (out (assoc-ref %outputs "out"))
                 (bin (string-append out "/bin"))
+                (doc (string-append out "/share/doc/"))
                 (bash (in-vicinity (assoc-ref %build-inputs "bash") "bin")))
-           (mkdir-p bin)
+
+           (setenv "PATH" (string-append gz "/bin"))
+           (invoke (string-append tar "/bin/tar") "xvf" source)
+           (chdir (string-append ,name "-" ,version))
+
+           (install-file "dehydrated" bin)
+           (install-file "LICENSE" (string-append doc ,name "-" ,version))
            (with-directory-excursion bin
-             (copy-file
-              (in-vicinity source (string-append "/dehydrated-" ,version
-                                                 "/dehydrated"))
-              (in-vicinity bin "dehydrated"))
              (patch-shebang "dehydrated" (list bash))
 
              ;; Do not try to write in the store.
@@ -983,6 +987,9 @@ extensions.")
        ("grep" ,grep)
        ("openssl" ,openssl)
        ("sed" ,sed)))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
     (home-page "https://dehydrated.io/")
     (synopsis "Let's Encrypt/ACME client implemented as a shell script")
     (description "Dehydrated is a client for signing certificates with an
