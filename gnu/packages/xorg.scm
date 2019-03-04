@@ -5093,7 +5093,7 @@ over Xlib, including:
         (method url-fetch)
         (uri (string-append
               "mirror://xorg/individual/xserver/"
-              name "-" version ".tar.bz2"))
+              "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
           "1ph1j8gy5cazsq05krq9kppjx5v1sl75pbdka8ibxb1cq5kf8g0v"))
