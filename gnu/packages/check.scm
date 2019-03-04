@@ -774,14 +774,14 @@ supports coverage of subprocesses.")
 (define-public python-pytest-runner
   (package
     (name "python-pytest-runner")
-    (version "4.2")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-runner" version))
        (sha256
         (base32
-         "1gkpyphawxz38ni1gdq1fmwyqcg02m7ypzqvv46z06crwdxi2gyj"))))
+         "1x0d9n40lsiphblbs61rdc0d5r31f6vh0vcahqdv0mffakbnrb80"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest-bootstrap)
