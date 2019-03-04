@@ -505,7 +505,6 @@ variants.")
                     "mirror://sourceforge/wqy/wqy-zenhei/" version
                     "%20%28Fighting-state%20RC1%29/wqy-zenhei-"
                     version ".tar.gz"))
-              (file-name (string-append "wqy-zenhei-" version ".tar.gz"))
               (sha256
                (base32
                 "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
