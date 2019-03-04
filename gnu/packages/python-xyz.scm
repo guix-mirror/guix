@@ -5751,13 +5751,13 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "3.6.0")
+    (version "3.7.7")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flake8" version))
               (sha256
                (base32
-                "0w0nprx22rbvrrkbfx9v5jc5gskbm08g219l7r8wai8zfswgadba"))))
+                "0qg6zggqigrd4k3gv88shd1a27d0cwgfql8vfiq2c7rl7w3rd6c5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5770,6 +5770,7 @@ complexity of Python source code.")
              #t)))))
     (propagated-inputs
      `(("python-pycodestyle" ,python-pycodestyle)
+       ("python-entrypoints" ,python-entrypoints)
        ("python-pyflakes" ,python-pyflakes)
        ("python-mccabe" ,python-mccabe)))
     (native-inputs
@@ -5790,6 +5791,7 @@ complexity of Python source code.")
       (propagated-inputs
        `(("python2-configparser" ,python2-configparser)
          ("python2-enum34" ,python2-enum34)
+         ("python2-typing" ,python2-typing)
           ,@(package-propagated-inputs base))))))
 
 ;; python-hacking requires flake8 <2.6.0.
