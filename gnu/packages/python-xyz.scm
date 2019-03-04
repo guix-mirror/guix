@@ -872,14 +872,14 @@ from the Python interpreter, or as a small part of a larger application.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.11.0")
+    (version "1.12.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "six" version))
       (sha256
        (base32
-        "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h"))))
+        "0wxs1q74v07ssjywbbm7x6h5v9qx209ld2yfsif4060sxi0h2sni"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
