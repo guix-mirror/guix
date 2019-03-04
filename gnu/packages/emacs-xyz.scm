@@ -11533,10 +11533,10 @@ you searched for and execute it, or view its documentation.")
     (license license:gpl3+))))
 
 (define-public emacs-helm-emms
-  (let ((commit "d3f9bdef8ff0d093eaf6e26af50ea905ab53fdec"))
+  (let ((commit "b785cb845a98a643eba9d5d53c9c0b4e6810a3cd"))
     (package
       (name "emacs-helm-emms")
-      (version (git-version "1.3" "1" commit))
+      (version (git-version "1.3" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -11546,7 +11546,7 @@ you searched for and execute it, or view its documentation.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0bdb8xp0yp3gijpa9i2rc17gfzjhzlm92vdzw93i10qpd1xhj4aa"))))
+           "1595r09y3rmwd46nnhvjja3hb8j2ila295ijxv61cg52ws4wginh"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
