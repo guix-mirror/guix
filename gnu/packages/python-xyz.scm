@@ -5652,14 +5652,14 @@ PEP 8.")
 (define-public python-pyflakes
   (package
     (name "python-pyflakes")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyflakes" version))
         (sha256
           (base32
-            "0jba28czyvimdc72llms3f17swp3i8jdcabf5w0j00adfbn64xls"))))
+            "18pq95a1xj2dgdd0m85gyfsn40jajj4xc3lp8wfv7igqhrc86xnr"))))
     (build-system python-build-system)
     (home-page
       "https://github.com/pyflakes/pyflakes")
