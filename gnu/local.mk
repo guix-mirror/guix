@@ -46,6 +46,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/grub.scm                       \
   %D%/bootloader/extlinux.scm                   \
   %D%/bootloader/u-boot.scm                     \
+  %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
