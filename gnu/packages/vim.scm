@@ -55,6 +55,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages text-editors)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
@@ -641,6 +642,59 @@ can be done on demand, or automatically as files are saved.  If syntax errors
 are detected, the user is notified.")
     (home-page "https://github.com/vim-syntastic/syntastic")
     (license license:wtfpl2)))
+
+(define-public editorconfig-vim
+  (package
+    (name "editorconfig-vim")
+    (version "0.3.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/editorconfig/editorconfig-vim.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0vssfl1wjq0mv0p30c3dszwrh4yy90vwxmmdgqaxf5rykik7bdfd"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file-recursively "plugin/editorconfig-core-py") #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; tests require ruby and plugin-test repository
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-after 'unpack 'patch-editorconfig-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((editorconfig (assoc-ref inputs "editorconfig-core")))
+               (substitute* "plugin/editorconfig.vim"
+                 (("/opt") editorconfig))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (doc (string-append vimfiles "/doc"))
+                    (plugin (string-append vimfiles "/plugin"))
+                    (autoload (string-append vimfiles "/autoload")))
+               (copy-recursively "doc" doc)
+               (copy-recursively "autoload" autoload)
+               (copy-recursively "plugin" plugin)
+               #t))))))
+    (inputs
+     `(("editorconfig-core" ,editorconfig-core-c)))
+    (home-page "https://editorconfig.org/")
+    (synopsis "EditorConfig plugin for Vim")
+    (description "EditorConfig makes it easy to maintain the correct coding
+style when switching between different text editors and between different
+projects.  The EditorConfig project maintains a file format and plugins for
+various text editors which allow this file format to be read and used by those
+editors.")
+    (license license:bsd-2)))
 
 (define-public neovim-syntastic
   (package
