@@ -790,14 +790,14 @@ static files.")
 (define-public pootle
   (package
     (name "pootle")
-    (version "2.8.0rc5")
+    (version "2.8.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Pootle" version ".tar.bz2"))
         (sha256
          (base32
-          "0m6qcpkcy22dk3ad5y2k8851kqg2w6vrkywgy4vabwbacd7r1mvn"))))
+          "1ng8igq0alsqzasgxdh3fb23581anyzp121h9041pwdzzv98kn4m"))))
     (build-system python-build-system)
     (arguments
      `(; pootle supports only python2.
