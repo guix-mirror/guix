@@ -510,7 +510,7 @@ variants.")
                (base32
                 "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
     (build-system font-build-system)
-    (home-page "http://wenq.org/wqy2/")
+    (home-page "https://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
      "WenQuanYi Zen Hei is a Hei-Ti style (sans-serif type) Chinese outline
@@ -522,7 +522,7 @@ this font is over 35,000, including over 21,000 Chinese Hanzi.  This font has
 full coverage of the GBK (CP936) charset, CJK Unified Ideographs, as well as
 the code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
 ko (Korean) locales for @code{fontconfig}.")
-    ;; GPLv2 with font embedding exception
+    ;; GPLv2 with font embedding exception.
     (license license:gpl2)))
 
 (define-public font-wqy-microhei
