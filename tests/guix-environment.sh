@@ -117,16 +117,6 @@ case "`uname -m`" in
 	;;
 esac
 
-
-# Same as above, but with deprecated -E flag.
-if guix environment --bootstrap --ad-hoc guile-bootstrap --pure \
-        -E "guile -c '(exit 42)'"
-then
-    false
-else
-    test $? = 42
-fi
-
 # Make sure we can build the environment of 'guix'.  There may be collisions
 # in its profile (e.g., for 'gzip'), but we have to accept them.
 guix environment guix --bootstrap -n

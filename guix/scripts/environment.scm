@@ -220,9 +220,6 @@ COMMAND or an interactive shell in that environment.\n"))
                    (alist-cons 'inherit-regexp
                                (make-regexp* arg)
                                result)))
-         (option '(#\E "exec") #t #f ; deprecated
-                 (lambda (opt name arg result)
-                   (alist-cons 'exec (list %default-shell "-c" arg) result)))
          (option '("search-paths") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'search-paths #t result)))
