@@ -11376,6 +11376,29 @@ Org-mode.  It features:
 @end itemize\n")
       (license license:gpl3+))))
 
+(define-public emacs-debpaste
+  (package
+    (name "emacs-debpaste")
+    (version "0.1.5")
+    (home-page "https://github.com/alezost/debpaste.el")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wi70r56pd5z0x4dp4m58p9asq03j74kdm4fi9vai83vsl2z9amq"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-xml-rpc" ,emacs-xml-rpc)))
+    (synopsis "Manipulate pastes from the Debian Pastezone")
+    (description "Debpaste is an Emacs interface for the Debian Pastezone,
+allowing you to receive, post, and delete pastes.  It communicates with the
+server using XML-RPC.")
+    (license license:gpl3+)))
+
 (define-public emacs-xml-rpc
   (let ((commit "8f624f8b964e9145acb504e4457c9510e87dd93c")
         (revision "1"))
