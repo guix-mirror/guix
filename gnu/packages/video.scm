@@ -352,7 +352,8 @@ H.264 (MPEG-4 AVC) video streams.")
        ("libvorbis" ,libvorbis)
        ("lzo" ,lzo)
        ("pugixml" ,pugixml)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
        ("utfcpp" ,utfcpp)
        ("zlib" ,zlib)))
     (native-inputs
@@ -364,6 +365,7 @@ H.264 (MPEG-4 AVC) video streams.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("po4a" ,po4a)
+       ("qttools" ,qttools)
        ("ruby" ,ruby)))
     (arguments
      `(#:configure-flags
