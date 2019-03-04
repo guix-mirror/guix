@@ -836,7 +836,7 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.15.10")
+    (version "5.18.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -845,7 +845,7 @@ types are supported, as is encryption.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q26frbj9pykarcfa0yxgwncxlvsqhjkby0jrbfs1a8srja688r4"))
+                "1v2slmmr1dsgf8z0qcfg1y9x1al96859rg48b66p9nsawczd5zv9"))
               (modules '((guix build utils)))
               (snippet
                '(begin
