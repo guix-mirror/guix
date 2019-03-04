@@ -6021,13 +6021,13 @@ add functionality and customization to your projects with their own plugins.")
 (define-public python-fonttools
   (package
     (name "python-fonttools")
-    (version "3.37.3")
+    (version "3.38.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "fonttools" version ".zip"))
               (sha256
                (base32
-                "0k90g0q1h4var3kq6xn6zs3j1ghff97hwyn1gdqfdywsldas9668"))))
+                "12ripk3s7skgxr1bs9r8n13r94ym3s8iir7ivfixls9fa4dabmlh"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)
