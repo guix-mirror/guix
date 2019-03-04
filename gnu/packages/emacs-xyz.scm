@@ -13186,10 +13186,10 @@ recursively.  The results are cached for speed.")
     (license license:gpl3+)))
 
 (define-public emacs-orgit
-  (let ((commit "ddb830c38cb71e5cf86db7fa62d6ee88ab3962d5"))
+  (let ((commit "2456436a7e64d26bcf455b3890a586acaa3e7f93"))
     (package
       (name "emacs-orgit")
-      (version (git-version "1.5.1" "1" commit))
+      (version (git-version "1.5.1" "2" commit))
       (home-page "https://github.com/magit/orgit")
       (source (origin
                 (method git-fetch)
@@ -13199,7 +13199,7 @@ recursively.  The results are cached for speed.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0fy4n71yskfkjl6w9mzrw3pfd5lp8f48g2c9bxiwg7mwzsmsb9nb"))))
+                  "1i52dq2ynddb1irgigr5mdwfbfd3bvm1f29jnzd7nlc0nk186nvh"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
