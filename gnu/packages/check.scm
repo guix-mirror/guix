@@ -660,31 +660,35 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.8.0")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
+       (patches (search-patches "python-pytest-pluggy-compat.patch"))
        (sha256
         (base32
-         "17grcfvd6ggvvqmprwv5y8g319nayam70hr43ssjwj40ws27z858"))))
+         "077gzimi9xiiyzpc3xjpb5yfgz038xkldg91mmbdvzr7z15isyh6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-invalid-tests
+         (replace 'check
            (lambda _
-             ;; Some tests involves the /usr directory, and fails.
-             (substitute* "testing/test_argcomplete.py"
-               (("def test_remove_dir_prefix\\(self\\):")
-                "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):"))
-             (substitute* "testing/test_argcomplete.py"
-               (("def test_remove_dir_prefix" line)
-                (string-append "@pytest.mark.skip"
-                               "(reason=\"Assumes that /usr exists.\")\n    "
-                               line)))
-             #t))
-         (replace 'check (lambda _ (invoke "pytest" "-vv"))))))
+             (invoke "pytest" "-vv" "-k"
+                     (string-append
+                      ;; These tests involve the /usr directory, and fails.
+                      "not test_remove_dir_prefix"
+                      " and not test_argcomplete"
+                      ;; This test tries to override PYTHONPATH, and
+                      ;; subsequently fails to locate the test libraries.
+                      " and not test_collection"
+                      ;; These tests fail when run in verbose mode:
+                      ;; <https://github.com/pytest-dev/pytest/issues/4879>.
+                      " and not test_dont_rewrite_if_hasattr_fails"
+                      " and not test_len"
+                      " and not test_custom_repr"
+                      " and not test_name")))))))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-attrs" ,python-attrs-bootstrap)
