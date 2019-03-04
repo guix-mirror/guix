@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -349,7 +349,7 @@ The other options should be self-descriptive."
           (system? #t)
           (comment "sshd privilege separation user")
           (home-directory "/var/run/sshd")
-          (shell #~(string-append #$shadow "/sbin/nologin")))))
+          (shell (file-append shadow "/sbin/nologin")))))
 
 (define (openssh-activation config)
   "Return the activation GEXP for CONFIG."
