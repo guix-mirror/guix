@@ -872,14 +872,14 @@ object to help create WSGI responses.")
 (define-public python-zope-event
   (package
     (name "python-zope-event")
-    (version "4.1.0")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.event" version))
        (sha256
         (base32
-         "11p75zpfz3ffhz21nzx9wb23xs993ck5s6hkjcvhswwizni5jynw"))))
+         "1ksbc726av9xacml6jhcfyn828hlhb9xlddpx6fcvnlvmpmpvhk9"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/zope.event")
     (synopsis "Event publishing system for Python")
