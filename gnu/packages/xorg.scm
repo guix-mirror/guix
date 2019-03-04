@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -5087,7 +5087,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.3")
+    (version "1.20.4")
     (source
       (origin
         (method url-fetch)
@@ -5096,7 +5096,7 @@ over Xlib, including:
               "xorg-server-" version ".tar.bz2"))
         (sha256
          (base32
-          "1ph1j8gy5cazsq05krq9kppjx5v1sl75pbdka8ibxb1cq5kf8g0v"))
+          "1vk6j7hmigfill9x8m7a6vvgb3s50ji2yf6yprbgqfz9xf9x83zy"))
         (patches
          (list
           ;; See:
@@ -5218,7 +5218,16 @@ draggable titlebars and borders.")
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server))))
+     (inherit xorg-server)
+     (version "1.20.3")
+     (source (origin
+               (inherit (package-source xorg-server))
+               (uri (string-append
+                     "mirror://xorg/individual/xserver/"
+                     "xorg-server-" version ".tar.bz2"))
+               (sha256
+                (base32
+                 "1ph1j8gy5cazsq05krq9kppjx5v1sl75pbdka8ibxb1cq5kf8g0v")))))))
 
 (define-public xorg-server-xwayland
   (package
