@@ -6689,9 +6689,9 @@ the Moka icon theme.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/"
+                    "mirror://gnome/sources/folks/"
                     (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
+                    "folks-" version ".tar.xz"))
               (sha256
                (base32
                 "1f51albxgfqxbax57i3pcgv2fx7i419xaapzdvldas6gw100ma1m"))))
