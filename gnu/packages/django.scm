@@ -638,22 +638,22 @@ support, and optional data-URI image and font embedding.")
 (define-public python-django-redis
   (package
     (name "python-django-redis")
-    (version "4.7.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-redis" version))
               (sha256
                (base32
-                "0yyyxv8n9l9dhs893jsqwg2cxqkkc79g719n9dzzzqgkzialv1c1"))))
+                "1rxcwnv9ik0swkwvfqdi9i9baw6n8if5pj6q63fjh4p9chw3j2xg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (and (zero? (system* "redis-server" "--daemonize" "yes"))
-                  (with-directory-excursion "tests"
-                    (zero? (system* "python" "runtests.py")))))))))
+             (invoke "redis-server" "--daemonize" "yes")
+             (with-directory-excursion "tests"
+               (invoke "python" "runtests.py")))))))
     (native-inputs
      `(("python-fakeredis" ,python-fakeredis)
        ("python-hiredis" ,python-hiredis)
