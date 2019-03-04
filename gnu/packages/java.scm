@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2940,14 +2941,15 @@ API and version 2.1 of the Java ServerPages API.")
   (package
     (name "java-javaee-servletapi")
     (version "3.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javaee/servlet-spec/"
-                                  "archive/" version ".zip"))
-              (file-name (string-append name "-" version ".zip"))
-              (sha256
-               (base32
-                "0m6p13vgfb1ihich1jp5j6fqlhkjsrkn32c86bsbkryp38ipwg8w"))))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/javaee/servlet-spec.git")
+                      (commit version)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0s03lj8w5an70lkqbjycgfrfk0kc07vbfav91jzk87gh3awf9ksl"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "javax-servletapi.jar"
