@@ -116,9 +116,19 @@ cryptography.")
     (build-system gnu-build-system)
     (arguments
      '(;; This is required since we patch some of the build scripts.
-       ;; Remove for the next Shishi release after 1.0.2 or when
-       ;; removing 'shishi-fix-libgcrypt-detection.patch'.
-       #:configure-flags '("ac_cv_libgcrypt=yes" "--disable-static")))
+       ;; Remove first two items for the next Shishi release after 1.0.2 or
+       ;; when removing 'shishi-fix-libgcrypt-detection.patch'.
+       #:configure-flags
+       '("ac_cv_libgcrypt=yes" "--disable-static"
+         "--with-key-dir=/etc/shishi" "--with-db-dir=/var/shishi")
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'configure 'disable-automatic-key-generation
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "Makefile"
+             (("^install-data-hook:")
+              "install-data-hook:\nx:\n"))
+            #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
@@ -132,7 +142,10 @@ cryptography.")
     (description
      "GNU Shishi is a free implementation of the Kerberos 5 network security
 system.  It is used to allow non-secure network nodes to communicate in a
-secure manner through client-server mutual authentication via tickets.")
+secure manner through client-server mutual authentication via tickets.
+
+After installation, the system administrator should generate keys using
+@code{shisa -a /etc/shishi/shishi.keys}.")
     (license license:gpl3+)))
 
 (define-public heimdal
