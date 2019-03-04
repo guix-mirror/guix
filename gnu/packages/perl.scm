@@ -1751,6 +1751,27 @@ their argument and produces a string as its result.  The string contains Perl
 code that, when \"eval\"ed, produces a deep copy of the original arguments.")
     (license (package-license perl))))
 
+(define-public perl-data-dumper
+  (package
+    (name "perl-data-dumper")
+    (version "2.173")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+                           "Data-Dumper-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yknbp86md6mjlhbs1lzz6mals3iyizndgiij58qx61hjfrhhxk9"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Data-Dumper")
+    (synopsis "Convert data structures to strings")
+    (description "Given a list of scalars or reference variables,
+@code{Data::Dumper} writes out their contents in Perl syntax.  The references
+can also be objects.  The content of each variable is output in a single Perl
+statement.  It handles self-referential structures correctly.")
+    (license perl-license)))
+
 (define-public perl-data-dumper-concise
   (package
     (name "perl-data-dumper-concise")
