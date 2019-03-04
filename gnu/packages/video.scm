@@ -112,6 +112,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages markup)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -119,6 +120,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -329,7 +331,8 @@ H.264 (MPEG-4 AVC) video streams.")
        (snippet '(begin
                    ;; Delete bundled libraries.
                    (for-each delete-file-recursively
-                             '("lib/libebml"
+                             '("lib/fmt"
+                               "lib/libebml"
                                "lib/libmatroska"
                                "lib/nlohmann-json"
                                "lib/pugixml"
@@ -339,9 +342,11 @@ H.264 (MPEG-4 AVC) video streams.")
     (inputs
      `(("boost" ,boost)
        ("bzip2" ,bzip2)
+       ("cmark" ,cmark)
        ("libebml" ,libebml)
-       ("flac" ,flac)
        ("file" ,file)
+       ("flac" ,flac)
+       ("fmt" ,fmt)
        ("libmatroska" ,libmatroska)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
