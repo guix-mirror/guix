@@ -5015,7 +5015,7 @@ management tools in userspace.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "4.19.0")
+    (version "4.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5023,10 +5023,10 @@ management tools in userspace.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0gs39yiyamjw516jbak3nj4dy4h2a2g48c1mmv4wbppsccvwmwh5"))))
+                "0ss0r6jlxxinf9fhpc0fgf7b89n9mzirpa85xxjmi1ix9l6cls6x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; Kernel/user integration tests are in package "xfstests"
+     `(#:tests? #f)) ; kernel/user integration tests are in package "xfstests"
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("util-linux" ,util-linux)))
