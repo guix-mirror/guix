@@ -3395,7 +3395,7 @@ from the btrfs-progs package.  It is meant to be used in initrds.")
               (method url-fetch)
               (uri (string-append
                     "https://git.kernel.org/cgit/linux/kernel/git/jaegeuk"
-                    "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
+                    "/f2fs-tools.git/snapshot/f2fs-tools-" version ".tar.gz"))
               (sha256
                (base32
                 "1m6bn1ibq0p53m0n97il91xqgjgn2pzlz74lb5bfzassx7159m1k"))))
@@ -3438,7 +3438,7 @@ disks and SD cards.  This package provides the userland utilities.")
               (method url-fetch)
               (uri (string-append
                     "https://git.kernel.org/cgit/linux/kernel/git/jaegeuk"
-                    "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
+                    "/f2fs-tools.git/snapshot/f2fs-tools-" version ".tar.gz"))
               (sha256
                (base32
                 "1qvr3hcic1vzfmyl7c0gnjxfsw8zjaadm66y337h49chv9yaq5mr"))))
