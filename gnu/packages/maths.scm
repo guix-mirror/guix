@@ -1397,7 +1397,7 @@ can solve two kinds of problems:
 (define-public octave-cli
   (package
     (name "octave-cli")
-    (version "4.4.1")
+    (version "5.1.0")
     (source
      (origin
       (method url-fetch)
@@ -1405,7 +1405,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "0jsdgizlv02an2ppfjwk5qf209zpwi3317yb7jvlsjzxnir3lvhy"))))
+        "11wwxpy2q1bhxs2v41bqn05i2sb0905cj1xil6mg8l4k2kka4cq6"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
