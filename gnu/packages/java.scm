@@ -5759,7 +5759,7 @@ the module @code{org.eclipse.ant.core}.")
 (define-public java-eclipse-core-resources
   (package
     (name "java-eclipse-core-resources")
-    (version "3.11.1")
+    (version "3.13.200")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5768,7 +5768,7 @@ the module @code{org.eclipse.ant.core}.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "1hrfxrll6cpcagfksk2na1ypvkcnsp0fk6n3vcsrn97qayf9mx9l"))))
+                "1sn3b6ky72hkvxcgf9b2jkpbdh3y8lbhi9xxwv1dsiddpkkq91hs"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
