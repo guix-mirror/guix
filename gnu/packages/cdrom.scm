@@ -863,3 +863,32 @@ Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
 blanking CD-RW media, creating ISO-9660 file system images, extracting audio
 CD data, and more.  It's mostly compatible with @code{cdrtools}.")
     (license gpl2+)))
+
+(define-public libmirage
+  (package
+    (name "libmirage")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.sourceforge.net/cdemu/libmirage-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ydph33sfxplp4872dp8ghp574jk5d4qr8hqz61qnznq1b11cnbr"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("glib" ,glib)))
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "CD-ROM image access library")
+    (description "libMirage is a CD-ROM image access library.  It supports the
+following formats: B6T, C2D, CCD, CDI, CIF, CUE, ISO, MDS, MDX, NRG, TOC.  It
+is written in C and based on GLib.  Its aim is to provide uniform access to
+the data stored in various image formats.")
+    (license gpl2+)))
