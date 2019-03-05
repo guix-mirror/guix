@@ -98,6 +98,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages storage)
   #:use-module (gnu packages texinfo)
@@ -3483,29 +3484,26 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
 (define-public thinkfan
   (package
     (name "thinkfan")
-    (version "0.9.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/thinkfan/"
-                                  "/thinkfan-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0nz4c48f0i0dljpk5y33c188dnnwg8gz82s4grfl8l64jr4n675n"))
-              (modules '((guix build utils)))
-              ;; Fix erroneous man page location in Makefile leading to
-              ;; a compilation failure.
-              (snippet '(begin
-                          (substitute* "CMakeLists.txt"
-                            (("thinkfan\\.1") "src/thinkfan.1"))
-                          #t))))
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vmatare/thinkfan.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "107vw0962hrwva3wra9n3hxlbfzg82ldc10qssv3dspja88g8psr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:tests? #f                      ;no test target
+       #:tests? #f                      ; no test target
        #:configure-flags
        ;; Enable reading temperatures from hard disks via S.M.A.R.T.
+       ;; Upstream ‘defaults to OFF because libatasmart seems to be horribly
+       ;; inefficient’.
        `("-DUSE_ATASMART:BOOL=ON")
        #:phases
        (modify-phases %standard-phases
@@ -3514,9 +3512,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
          (add-after 'install 'install-rc-scripts
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (files (find-files
-                           (string-append "../thinkfan-" ,version "/rcscripts")
-                           ".*")))
+                   (files (find-files "../source/rcscripts" ".*")))
                (substitute* files
                  (("/usr/sbin/(\\$NAME|thinkfan)" _ name)
                   (string-append out "/sbin/" name)))
@@ -3524,8 +3520,11 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
                                (string-append out "/share/thinkfan"))
                          files))
              #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libatasmart" ,libatasmart)))
+     `(("libatasmart" ,libatasmart)
+       ("yaml-cpp" ,yaml-cpp)))
     (home-page "http://thinkfan.sourceforge.net/")
     (synopsis "Simple fan control program")
     (description
