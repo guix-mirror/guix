@@ -372,9 +372,11 @@ all common programming languages.  Vala bindings are also provided.")
        ("libseccomp" ,libseccomp)
        ("libselinux" ,libselinux)))
     (arguments
-     '(#:configure-flags
-       '("--sysconfdir=/etc"
-         "--localstatedir=/var")
+     `(#:configure-flags
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version)
+             "--sysconfdir=/etc"
+             "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
          (replace 'install
