@@ -5611,7 +5611,7 @@ the module @code{org.eclipse.equinox.preferences}.")
 (define-public java-eclipse-core-runtime
   (package
     (name "java-eclipse-core-runtime")
-    (version "3.12.0")
+    (version "3.15.100")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5620,7 +5620,7 @@ the module @code{org.eclipse.equinox.preferences}.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "16mkf8jgj35pgzms7w1gyfq0gfm4ixw6c5xbbxzdj1la56c758ya"))))
+                "0l8xayacsbjvz5hypx2fv47vpw2n4dspamcfb3hx30x9hj8vmg7r"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
