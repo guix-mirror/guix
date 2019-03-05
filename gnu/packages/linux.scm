@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
@@ -2656,7 +2656,14 @@ thanks to the use of namespaces.")
                                   "/singularity-" version ".tar.gz"))
               (sha256
                (base32
-                "1whx0hqqi1326scgdxxxa1d94vn95mnq0drid6s8wdp84ni4d3gk"))))
+                "1whx0hqqi1326scgdxxxa1d94vn95mnq0drid6s8wdp84ni4d3gk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Do not create directories in /var.
+                  (substitute* "Makefile.in"
+                    (("\\$\\(MAKE\\) .*install-data-hook") ""))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2664,12 +2671,6 @@ thanks to the use of namespaces.")
              "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         ;; Do not create directories in /var.
-         (add-after 'unpack 'disable-install-hook
-           (lambda _
-             (substitute* "Makefile.in"
-               (("\\$\\(MAKE\\) .*install-data-hook") ""))
-             #t))
          (add-after 'unpack 'patch-reference-to-squashfs-tools
            (lambda _
              (substitute* "libexec/cli/build.exec"
