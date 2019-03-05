@@ -241,7 +241,7 @@ automatically.")
 (define-public scdoc
   (package
    (name "scdoc")
-   (version "1.8.1")
+   (version "1.9.4")
    (source
     (origin
      (method url-fetch)
@@ -250,7 +250,7 @@ automatically.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "1f3qrnbjr9ikbdvpsyx726nyiz4f7ka38rimy9fvbl7kmi62w1v7"))))
+       "00zc3rzj97gscby31djlqyczvqpyhrl66i44czwzmmn7rc5j03m1"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags '("CC=gcc")
