@@ -4380,15 +4380,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://netfilter.org/libnftnl/"
-                            "libnftnl-" version ".tar.bz2"))
-        (sha256
-         (base32
-          "1wmgjfcb35mscb2srzia5931srygywrs1aznxmg67v177x0nasjx"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://netfilter.org/libnftnl/"
+                           "libnftnl-" version ".tar.bz2"))
+       (sha256
+        (base32 "0pffmsv41alsn5ac7mwnb9fh3qpwzqk13jrzn6c5i71wq6kbgix5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
