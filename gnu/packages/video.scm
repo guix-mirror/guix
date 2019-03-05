@@ -745,6 +745,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("opus" ,opus)
        ("ladspa" ,ladspa)
        ("lame" ,lame)
+       ("libaom" ,libaom)
        ("libass" ,libass)
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
@@ -831,6 +832,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-fontconfig"
          "--enable-gnutls"
          "--enable-ladspa"
+         "--enable-libaom"
          "--enable-libass"
          "--enable-libbluray"
          "--enable-libcaca"
@@ -913,7 +915,13 @@ audio/video codec library.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
+               "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ffmpeg)
+       ((#:configure-flags flags)
+        `(delete "--enable-libaom" ,flags))))
+    (inputs (alist-delete "libaom"
+                          (package-inputs ffmpeg)))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
