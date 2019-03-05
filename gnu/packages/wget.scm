@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -111,48 +111,60 @@ online pastebin services.")
 (define-public wget2
   (package
    (name "wget2")
-   (version "1.0.0")
+   (version "1.99.1")
    (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://gitlab.com/gnuwget/wget2.git")
-           (commit "b45709d3d21714135ce79df6abbdcb704684063d")
-           (recursive? #t))) ;; Needed for 'gnulib' git submodule.
-     (file-name (string-append name "-" version "-checkout"))
-     (sha256
-      (base32
-       "0ww84wwzmpyylkz8rnb6nk6f7x040132z81x52w7rjhk68p9mm24"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://gitlab.com/gnuwget/wget2.git")
+              (commit (string-append name "-" version))
+              (recursive? #t))) ;; Needed for 'gnulib' git submodule.
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "15wxsnjhc6bzk7f60i1djmsarh1w31gwi5h2gh9k19ncwypfj5dm"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:phases (modify-phases %standard-phases
-      (replace 'bootstrap
-        (lambda _
-          ;; Make sure all the files are writable so that ./bootstrap
-          ;; can proceed.
-          (for-each (lambda (file)
-                      (chmod file #o755))
-                      (find-files "."))
-          (substitute* "./gnulib/gnulib-tool.py"
-                       (("/usr/bin/python") (which "python3")))
-          (invoke "sh" "./bootstrap"
-                          "--gnulib-srcdir=gnulib"
-                          "--no-git"))))))
-   (inputs `(("autoconf" ,autoconf)
-             ("automake" ,automake)
-             ("doxygen" ,doxygen)
-             ("flex" ,flex)
-             ("gettext" ,gettext-minimal)
-             ("gnutls" ,gnutls/dane)
-             ("libiconv" ,libiconv)
-             ("libidn2" ,libidn2)
-             ("libmicrohttpd" ,libmicrohttpd)
-             ("libpsl" ,libpsl)
-             ("libtool" ,libtool)
-             ("pcre2" ,pcre2)
-             ("python" ,python)))
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'skip-network-test
+          (lambda _
+            (substitute* "tests/Makefile.am"
+              (("test-auth-digest\\$\\(EXEEXT)") ""))
+            #t))
+        (replace 'bootstrap
+          (lambda _
+            ;; Make sure all the files are writable so that ./bootstrap
+            ;; can proceed.
+            (for-each (lambda (file)
+                        (chmod file #o755))
+                        (find-files "."))
+            (patch-shebang "./gnulib/gnulib-tool.py")
+            ;; Remove unnecessary inputs from bootstrap.conf
+            (substitute* "bootstrap.conf"
+              (("flex.*") "")
+              (("makeinfo.*") "")
+              (("lzip.*") "")
+              (("rsync.*") ""))
+            (invoke "sh" "./bootstrap"
+                    "--gnulib-srcdir=gnulib"
+                    "--no-git"))))))
+   (inputs
+    `(("gnutls" ,gnutls/dane)
+      ("libiconv" ,libiconv)
+      ("libidn2" ,libidn2)
+      ("libmicrohttpd" ,libmicrohttpd)
+      ("libpsl" ,libpsl)
+      ("pcre2" ,pcre2)))
    ;; TODO: Add libbrotlidec, libnghttp2.
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs
+    `(("autoconf" ,autoconf)
+      ("automake" ,automake)
+      ("flex" ,flex)
+      ("gettext" ,gettext-minimal)
+      ("libtool" ,libtool)
+      ("pkg-config" ,pkg-config)
+      ("python" ,python-2)))
    (home-page "https://gitlab.com/gnuwget/wget2")
    (synopsis "Successor of GNU Wget")
    (description "GNU Wget2 is the successor of GNU Wget, a file and recursive
