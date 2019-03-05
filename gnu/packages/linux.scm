@@ -414,10 +414,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.13")
-(define %linux-libre-hash "00rqdsqyz0csdblcmifyhkgzvsmnqsh090i6h30146rsf3707xad")
+(define %linux-libre-version "5.0")
+(define %linux-libre-hash "18gs0kl5xvbmh725m7crg6iyqw3p8qq421aql7z0nlk035fh5xbx")
 
-(define %linux-libre-4.20-patches
+(define %linux-libre-5.0-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
@@ -425,7 +425,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
 (define %linux-libre-4.19-version "4.19.27")
@@ -467,7 +467,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -490,7 +490,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
