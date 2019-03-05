@@ -892,3 +892,32 @@ following formats: B6T, C2D, CCD, CDI, CIF, CUE, ISO, MDS, MDX, NRG, TOC.  It
 is written in C and based on GLib.  Its aim is to provide uniform access to
 the data stored in various image formats.")
     (license gpl2+)))
+
+(define-public cdemu-daemon
+  (package
+    (name "cdemu-daemon")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/cdemu-daemon-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "171qqcziqgf6dd9n8xs9hc71krhjiyx9qr767s8znidyjj88hbc4"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libmirage" ,libmirage)
+       ("glib" ,glib)
+       ("ao" ,ao)))
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "CD/DVD-ROM device emulator")
+    (description "CDemu is a software suite designed to emulate an optical
+drive and disc (including CD-ROMs and DVD-ROMs).")
+    (license gpl2+)))
