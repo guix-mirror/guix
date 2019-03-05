@@ -5935,7 +5935,7 @@ and contributes the Eclipse default text editor.")
 (define-public java-eclipse-jdt-core
   (package
     (name "java-eclipse-jdt-core")
-    (version "3.12.3")
+    (version "3.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5944,7 +5944,7 @@ and contributes the Eclipse default text editor.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "191xw4lc7mjjkprh4ji5vnpjvr5r4zvbpwkriy4bvsjqrz35vh1j"))))
+                "1g560yr9v2kzv34gc2m3ifpgnj7krcdd6h4gd4z83pwqacwkfz0k"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
