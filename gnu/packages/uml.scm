@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,17 +30,17 @@
 (define-public plantuml
   (package
     (name "plantuml")
-    (version "1.2019.0")
+    (version "1.2019.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/plantuml/"
                                   version "/plantuml-" version ".tar.gz"))
               (sha256
                (base32
-                "0mws7g0w3fn0wxizccg2iqisq9ljkn95i5qf8ma07lbw3nj0h48n"))))
+                "0hqj2crf6yg40naiwlnnym4c6r0wbz5vr8729z0daggnyg8vqniz"))))
     (build-system ant-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:build-target "dist"
        #:phases
        (modify-phases %standard-phases
