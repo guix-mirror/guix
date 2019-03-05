@@ -921,3 +921,50 @@ the data stored in various image formats.")
     (description "CDemu is a software suite designed to emulate an optical
 drive and disc (including CD-ROMs and DVD-ROMs).")
     (license gpl2+)))
+
+(define-public cdemu-client
+  (package
+    (name "cdemu-client")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.sourceforge.net/cdemu/cdemu-client-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1zwz987pb2pakfk9kz8a6xa9hq1ip48cn4ryl9z85dik8k2sizm9"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("cdemu-daemon" ,cdemu-daemon)))
+    (arguments
+     ;; No tests.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-shebang
+           (lambda* (#:key outputs #:allow-other-keys)
+             (patch-shebang (string-append (assoc-ref outputs "out")
+                                           "/bin/cdemu"))
+             #t))
+         (add-after 'patch-shebang 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/cdemu")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Command-line client for controlling cdemu-daemon")
+    (description "CDEmu client is a simple command-line client for controlling
+CDEmu daemon.
+
+It provides a way to perform the key tasks related to controlling the CDEmu
+daemon, such as loading and unloading devices, displaying devices' status and
+retrieving/setting devices' debug masks.")
+    (license gpl2+)))
