@@ -5452,7 +5452,7 @@ specification.")
 (define-public java-eclipse-equinox-common
   (package
     (name "java-eclipse-equinox-common")
-    (version "3.8.0")
+    (version "3.10.200")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5461,7 +5461,7 @@ specification.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "12aazpkgw46r1qj0pr421jzwhbmsizd97r37krd7njnbrdgfzksc"))))
+                "1yn8ij6xsljlf35sr2l7wvyvc0ss4n1rv0ry5zkgb49dj4hyrqrj"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
