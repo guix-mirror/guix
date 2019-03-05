@@ -2663,6 +2663,14 @@ thanks to the use of namespaces.")
                   ;; Do not create directories in /var.
                   (substitute* "Makefile.in"
                     (("\\$\\(MAKE\\) .*install-data-hook") ""))
+
+                  ;; The original source overrides PATH so that it points to
+                  ;; /bin, /usr/local/bin, etc., which obviously doesn't work
+                  ;; on Guix System.  Leave PATH unchanged so we refer to the
+                  ;; installed Coreutils, grep, etc.
+                  (substitute* "bin/singularity.in"
+                    (("^PATH=.*" all)
+                     (string-append "#" all "\n")))
                   #t))))
     (build-system gnu-build-system)
     (arguments
