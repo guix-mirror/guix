@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -44,6 +44,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -60,6 +61,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -1015,3 +1018,50 @@ arbitrary programs of your choice.  This is useful for browsing the history
 comfortably in a pager or editor.
 @end itemize")
     (license license:gpl3+)))
+
+(define-public eternalterminal
+  (package
+    (name "eternalterminal")
+    (version "5.1.9")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/MisterTea/EternalTerminal.git")
+               (commit (string-append "et-v" version))))
+        (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07ynkcnk3z6wafdlnzdxcd308cw1rzabxyq47ybj79lyji3wsgk7"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_TEST=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'insert-googletests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tests (assoc-ref inputs "googletest")))
+               (invoke "tar" "xvf" tests "-C" "external/googletest"
+                       "--strip-components=1"))))
+         (add-after 'install 'dont-provide-gtest-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively (string-append out "/include"))
+               (delete-file-recursively (string-append out "/lib")))
+             #t)))))
+    (inputs
+     `(("gflags" ,gflags)
+       ("libsodium" ,libsodium)
+       ("protobuf" ,protobuf)))
+    (native-inputs
+     `(("googletest" ,(package-source googletest))))
+    (home-page "https://mistertea.github.io/EternalTerminal/")
+    (synopsis "Remote shell that reconnects without interrupting the session")
+    (description "@dfn{Eternal Terminal} (ET) is a remote shell that
+automatically reconnects without interrupting the session.  ET uses SSH to
+initialize a secure connection.  Unlike SSH sessions, which must be killed and
+reconnected after a network outage an ET session will survive network outages
+and IP roaming.  ET provides the same core functionality as @command{mosh},
+while also supporting native scrolling and @command{tmux} control mode
+(@code{tmux -CC}).")
+    (license license:asl2.0)))
