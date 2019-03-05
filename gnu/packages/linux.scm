@@ -3507,19 +3507,23 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
        `("-DUSE_ATASMART:BOOL=ON")
        #:phases
        (modify-phases %standard-phases
-         ;; Install scripts for various foreign init systems. Also fix
-         ;; hard-coded path for daemon.
-         (add-after 'install 'install-rc-scripts
+         (add-after 'unpack 'create-init-scripts
+           ;; CMakeLists.txt relies on build-time symptoms of OpenRC and
+           ;; systemd to patch and install their service files.  Fake their
+           ;; presence rather than duplicating the build system below.  Leave
+           ;; things like ‘/bin/kill’ because they're not worth a dependency.
+           ;; The sysvinit needs manual patching, but since upstream doesn't
+           ;; even provide the option to install it: don't.
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (files (find-files "../source/rcscripts" ".*")))
-               (substitute* files
-                 (("/usr/sbin/(\\$NAME|thinkfan)" _ name)
-                  (string-append out "/sbin/" name)))
-               (for-each (cute install-file <>
-                               (string-append out "/share/thinkfan"))
-                         files))
-             #t)))))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share/" ,name)))
+               (substitute* "CMakeLists.txt"
+                 (("pkg_check_modules\\((OPENRC|SYSTEMD) .*" _ package)
+                  (format "option(~a_FOUND \"Faked\" ON)\n" package))
+                 ;; That was easy!  Now we just need to fix the destinations.
+                 (("/etc" directory)
+                  (string-append out directory)))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
