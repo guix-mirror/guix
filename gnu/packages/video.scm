@@ -3319,15 +3319,20 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://downloads.videolan.org/pub/videolan/"
-                            "dav1d/" version "/dav1d-" version ".tar.xz"))
+        (uri (list ;; The canonical download site
+                   (string-append "https://downloads.videolan.org/pub/videolan/"
+                                  "dav1d/" version "/dav1d-" version ".tar.xz")
+
+                   ;; Auto-generated tarballs from the Git repo?
+                   (string-append "https://code.videolan.org/videolan/dav1d/-/"
+                                  "archive/" version "/dav1d-" version ".tar.bz2")))
         (sha256
          (base32
-          "0dw0liday8cbyrirhm6bgzhxg4cdy66nspfkdlq338gdsfqcvrsc"))))
+          "0q0dbbl91syjnkygz268gh4b7mdcgl6hldj300a4cbqidsadpl5p"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")
