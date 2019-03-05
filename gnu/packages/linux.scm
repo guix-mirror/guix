@@ -2479,14 +2479,14 @@ It works with most newer systems.")
 (define-public iucode-tool
   (package
     (name "iucode-tool")
-    (version "2.2")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/iucode-tool/releases"
                                   "/raw/latest/iucode-tool_" version ".tar.xz"))
               (sha256
                (base32
-                "0w99k1aq1xw148ffk1xykqf60rdbphb1jknw98jcmadq4pwxl44q"))))
+                "159gvf6ljgg3g4vlhyy6pyr0wz11rcyhp985vc4az58d9px8xf0j"))))
     (build-system gnu-build-system)
     (home-page "https://gitlab.com/iucode-tool/iucode-tool/wikis/home")
     (synopsis "Manipulate Intel microcode bundles")
