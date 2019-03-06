@@ -1647,9 +1647,8 @@ It returns to the previous working directory when the object is destroyed.")
           (lambda* (#:key outputs #:allow-other-keys)
             (copy-recursively "."
                               (string-append (assoc-ref outputs "out")
-                                             "/plib/perl5/site_perl/"
-                                             ,(package-version perl)
-                                             "/czplib/"))
+                                             "/lib/perl5/site_perl/"
+                                             ,(package-version perl)))
             #t)))))
     (home-page "https://sourceforge.net/projects/czplib/")
     (synopsis "Library for genomic analysis")
