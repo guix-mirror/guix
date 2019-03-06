@@ -100,6 +100,37 @@ RepeatMasker (RM mask), and (4) the mask of repeats from Tandem Repeats
 Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-hsapiens-1000genomes-hs37d5
+  (package
+    (name "r-bsgenome-hsapiens-1000genomes-hs37d5")
+    (version "0.99.1")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.1000genomes.hs37d5_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1cg0g5fqmsvwyw2p9hp2yy4ilk21jkbbrnpgqvb5c36ihjwvc7sr"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.1000genomes.hs37d5")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Hsapiens.1000genomes.hs37d5/")
+    (synopsis "Full genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens from
+1000genomes phase2 reference genome sequence (hs37d5), based on NCBI GRCh37.")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-hsapiens-ucsc-hg19-masked
   (package
     (name "r-bsgenome-hsapiens-ucsc-hg19-masked")
