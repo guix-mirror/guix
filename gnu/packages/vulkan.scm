@@ -32,6 +32,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages pkg-config)
@@ -83,39 +84,42 @@ and for the GLSL.std.450 extended instruction set.
                                commit "/LICENSE"))))))
 
 (define-public spirv-tools
-  ;; Keep updated in accordance with
-  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "fe2fbee294a8ad4434f828a8b4d99eafe9aac88c")
-        (revision "2"))
-    (package
-     (name "spirv-tools")
-     (version (string-append "0.0-" revision "." (string-take commit 9)))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/KhronosGroup/SPIRV-Tools")
-             (commit commit)))
-       (sha256
-        (base32
-         "03rq4ypwqnz34n8ip85n95a3b9rxb34j26azzm3b3invaqchv19x"))
-       (file-name (string-append name "-" version "-checkout"))))
-     (build-system cmake-build-system)
-     (arguments
-      `(#:tests? #f ; FIXME: Tests fail.
-        #:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
-                                               (assoc-ref %build-inputs
-                                                          "spirv-headers")))))
-     (inputs `(("spirv-headers" ,spirv-headers)))
-     (native-inputs `(("pkg-config" ,pkg-config)
-                      ("python" ,python)))
-     (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
-     (synopsis "API and commands for processing SPIR-V modules")
-     (description
-      "The SPIR-V Tools project provides an API and commands for processing
-SPIR-V modules.  The project includes an assembler, binary module parser,
-disassembler, validator, and optimizer for SPIR-V.")
-     (license license:asl2.0))))
+  (package
+    (name "spirv-tools")
+    (version "2019.1")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/KhronosGroup/SPIRV-Tools")
+            (commit (string-append "v" version))))
+      (sha256
+       (base32
+        "0vddjzhkrhrm3l3i57nxmq2smv3r1s0ka5ff2kziaahr4hqb479r"))
+      (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; FIXME: Tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fixgcc7
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
+             #t)))
+       #:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
+                               (assoc-ref %build-inputs "spirv-headers")))))
+    (inputs `(("spirv-headers" ,spirv-headers)))
+    (native-inputs `(("gcc" ,gcc-7)
+                     ("pkg-config" ,pkg-config)
+                     ("python" ,python)))
+    (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
+    (synopsis "API and commands for processing SPIR-V modules")
+    (description
+     "The SPIR-V Tools project provides an API and commands for processing
+SPIR-V modules.  The project includes an assembler, binary module
+parser,disassembler, validator, and optimizer for SPIR-V.")
+    (license license:asl2.0)))
 
 (define-public glslang
   (package
