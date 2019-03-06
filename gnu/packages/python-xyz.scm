@@ -8035,7 +8035,7 @@ python-xdo for newer bindings.)")
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
-    (home-page "http://www.makotemplates.org/")
+    (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
 templates into Python modules.")
