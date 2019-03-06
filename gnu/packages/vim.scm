@@ -693,6 +693,12 @@ are detected, the user is notified.")))
        #:configure-flags '("-DPREFER_LUA:BOOL=YES")
        #:phases
        (modify-phases %standard-phases
+         ;; TODO: remove 'patch-tic on update
+         ;; see: https://github.com/neovim/neovim/issues/9687
+         (add-after 'unpack 'patch-tic
+           (lambda _
+             (substitute* "src/nvim/tui/tui.c"
+               (("value != NULL") "value != NULL && value != (char *)-1"))))
          (add-after 'unpack 'set-lua-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((lua-version "5.2")
