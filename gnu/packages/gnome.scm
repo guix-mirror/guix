@@ -1313,7 +1313,8 @@ dealing with different structured file formats.")
                 "1h3qnqhr0l7pd2bxg69ki6ckl4srdwgr471dpp4jq9i4784hp0v6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags '("CC=gcc")
+     `(#:configure-flags '("--disable-static")
+       #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
          ;; Don't patch anything in vendor/ to avoid having to recompute
