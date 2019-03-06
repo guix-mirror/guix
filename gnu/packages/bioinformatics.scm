@@ -84,6 +84,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
@@ -11673,7 +11674,7 @@ Browser.")
 (define-public bismark
   (package
     (name "bismark")
-    (version "0.19.1")
+    (version "0.20.1")
     (source
      (origin
        (method git-fetch)
@@ -11683,18 +11684,25 @@ Browser.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0yb5l36slwg02fp4b1jdlplgljcsxgqfzvzihzdnphd87dghcc84"))
-       (snippet
-        '(begin
-           ;; highcharts.js is non-free software.  The code is available under
-           ;; CC-BY-NC or proprietary licenses only.
-           (delete-file "bismark_sitrep/highcharts.js")
-           #t))))
+         "0xchm3rgilj6vfjnyzfzzymfd7djr64sbrmrvs3njbwi66jqbzw9"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
+       #:modules ((guix build utils)
+                  (ice-9 popen)
+                  (srfi srfi-26)
+                  (guix build perl-build-system))
        #:phases
        (modify-phases %standard-phases
+         ;; The bundled plotly.js is minified.
+         (add-after 'unpack 'replace-plotly.js
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((file (assoc-ref inputs "plotly.js"))
+                    (installed "plotly/plotly.js"))
+               (let ((minified (open-pipe* OPEN_READ "uglify-js" file)))
+                 (call-with-output-file installed
+                   (cut dump-port minified <>))))
+             #t))
          (delete 'configure)
          (delete 'build)
          (replace 'install
@@ -11713,10 +11721,11 @@ Browser.")
                                "deduplicate_bismark"
                                "filter_non_conversion"
                                "bam2nuc"
-                               "bismark2summary")))
+                               "bismark2summary"
+                               "NOMe_filtering")))
                (substitute* "bismark2report"
-                 (("\\$RealBin/bismark_sitrep")
-                  (string-append share "/bismark_sitrep")))
+                 (("\\$RealBin/plotly")
+                  (string-append share "/plotly")))
                (mkdir-p share)
                (mkdir-p docdir)
                (mkdir-p bin)
@@ -11725,8 +11734,8 @@ Browser.")
                (for-each (lambda (file) (install-file file docdir))
                          docs)
                (copy-recursively "Docs/Images" (string-append docdir "/Images"))
-               (copy-recursively "bismark_sitrep"
-                                 (string-append share "/bismark_sitrep"))
+               (copy-recursively "plotly"
+                                 (string-append share "/plotly"))
 
                ;; Fix references to gunzip
                (substitute* (map (lambda (file)
@@ -11737,7 +11746,18 @@ Browser.")
                                  "/bin/gunzip -c")))
                #t))))))
     (inputs
-     `(("gzip" ,gzip)))
+     `(("gzip" ,gzip)
+       ("perl-carp" ,perl-carp)
+       ("perl-getopt-long" ,perl-getopt-long)))
+    (native-inputs
+     `(("plotly.js"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/plotly/plotly.js/"
+                               "v1.39.4/dist/plotly.js"))
+           (sha256
+            (base32 "138mwsr4nf5qif4mrxx286mpnagxd1xwl6k8aidrjgknaqg88zyr"))))
+       ("uglify-js" ,uglify-js)))
     (home-page "http://www.bioinformatics.babraham.ac.uk/projects/bismark/")
     (synopsis "Map bisulfite treated sequence reads and analyze methylation")
     (description "Bismark is a program to map bisulfite treated sequencing
