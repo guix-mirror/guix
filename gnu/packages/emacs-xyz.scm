@@ -746,6 +746,36 @@ can be referred to during the expression.  This technique can improve clarity
 in certain cases.  It also enables recursion for anonymous functions.")
     (license license:public-domain)))
 
+(define-public emacs-xr
+  (package
+    (name "emacs-xr")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/xr-" version ".tar"))
+       (sha256
+        (base32
+         "099r88s2giv95nkwiim1cx8fy7cvv1pg1701733p4ami82ldsdw0"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/xr.html")
+    (synopsis "Convert string regexp to rx notation")
+    (description
+     "This is an inverse companion to the @code{rx} package for translating
+regexps in string form to the @code{rx} notation.  Its chief uses are:
+
+@itemize
+@item Migrating existing code to @code{rx} form, for better readability and
+maintainability
+@item Understanding complex regexp strings and finding errors in them
+@end itemize
+
+In addition to Emacs regexps, this package can also parse and troubleshoot
+skip set strings, which are arguments to @code{skip-chars-forward} and
+@code{skip-chars-backward}.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Web browsing.
