@@ -521,25 +521,23 @@ database in Go.")
       (license bsd-2))))
 
 (define-public go-github-com-thejerf-suture
-  (let ((commit "bf6ee6a0b047ebbe9ae07d847f750dd18c6a9276")
-        (revision "0"))
-    (package
-      (name "go-github-com-thejerf-suture")
-      (version (git-version "3.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/thejerf/suture")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0rzx9k408vaglwnnpgpcs6y7ff7p65915nbg33rvbaz13hxwkz3y"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/thejerf/suture"))
-      (synopsis "Supervisor trees for Go")
-      (description "Suture provides Erlang-ish supervisor trees for Go.
+  (package
+    (name "go-github-com-thejerf-suture")
+    (version "3.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/thejerf/suture")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "03bdrl78jfwk0kw40lj63ga9cxhgccgss8yi9lp5j0m0ml7921gh"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/thejerf/suture"))
+    (synopsis "Supervisor trees for Go")
+    (description "Suture provides Erlang-ish supervisor trees for Go.
 \"Supervisor trees\" -> \"sutree\" -> \"suture\" -> holds your code together
 when it's trying to die.
 
@@ -548,8 +546,8 @@ with supervision trees (such as burning all your CPU time endlessly restarting
 dead services), while also making no unnecessary demands on the \"service\"
 code, and providing hooks to perform adequate logging with in a production
 environment")
-      (home-page "https://github.com/thejerf/suture")
-      (license expat))))
+    (home-page "https://github.com/thejerf/suture")
+    (license expat)))
 
 (define-public go-github-com-vitrun-qart-coding
   (let ((commit "bf64b92db6b05651d6c25a3dabf2d543b360c0aa")
