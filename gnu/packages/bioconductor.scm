@@ -227,6 +227,37 @@ default."  )
 based on mapping using Entrez Gene identifiers.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-hsapiens-ucsc-hg19
+  (package
+    (name "r-bsgenome-hsapiens-ucsc-hg19")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.UCSC.hg19_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1y0nqpk8cw5a34sd9hmin3z4v7iqm6hf6l22cl81vlbxqbjibxc8"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg19/")
+    (synopsis "Full genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens as provided
+by UCSC (hg19, February 2009) and stored in Biostrings objects.")
+    (license license:artistic2.0)))
+
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
