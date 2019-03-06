@@ -7160,6 +7160,8 @@ simulation, statistical modeling, machine learning and much more.")
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (build-system python-build-system)
+    ;; XXX: Incompatible with Pytest 4: <https://github.com/chardet/chardet/issues/173>.
+    (arguments `(#:tests? #f))
     (home-page "https://github.com/chardet/chardet")
     (synopsis "Universal encoding detector for Python 2 and 3")
     (description
