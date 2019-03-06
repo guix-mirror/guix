@@ -6280,6 +6280,48 @@ sequence.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
+(define-public r-scde
+  (package
+    (name "r-scde")
+    (version "1.99.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hms-dbmi/scde.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10na2gyka24mszdxf92wz9h2c13hdf1ww30c68gfsw53lvvhhhxb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-mgcv" ,r-mgcv)
+       ("r-rook" ,r-rook)
+       ("r-rjson" ,r-rjson)
+       ("r-cairo" ,r-cairo)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-edger" ,r-edger)
+       ("r-quantreg" ,r-quantreg)
+       ("r-nnet" ,r-nnet)
+       ("r-rmtstat" ,r-rmtstat)
+       ("r-extremes" ,r-extremes)
+       ("r-pcamethods" ,r-pcamethods)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-flexmix" ,r-flexmix)))
+    (home-page "https://hms-dbmi.github.io/scde/")
+    (synopsis "R package for analyzing single-cell RNA-seq data")
+    (description "The SCDE package implements a set of statistical methods for
+analyzing single-cell RNA-seq data.  SCDE fits individual error models for
+single-cell RNA-seq measurements.  These models can then be used for
+assessment of differential expression between groups of cells, as well as
+other types of analysis.  The SCDE package also contains the pagoda framework
+which applies pathway and gene set overdispersion analysis to identify aspects
+of transcriptional heterogeneity among single cells.")
+    ;; See https://github.com/hms-dbmi/scde/issues/38
+    (license license:gpl2)))
+
 (define-public r-centipede
   (package
     (name "r-centipede")
