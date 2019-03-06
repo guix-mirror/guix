@@ -42,8 +42,8 @@
 (define-public spirv-headers
   ;; Keep updated in accordance with
   ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "3ce3e49d73b8abbf2ffe33f829f941fb2a40f552")
-        (revision "3"))
+  (let ((commit "8bea0a266ac9b718aa0818d9e3a47c0b77c2cb23")
+        (revision "4"))
     (package
       (name "spirv-headers")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -55,7 +55,7 @@
                (commit commit)))
          (sha256
           (base32
-           "0yk4bzqifdqpmdxkhvrxbdqhf5ngkga0ig1yyz7khr7rklqfz7wp"))
+           "01qyjghjz42hmyw9111zz20a1paf37ps39p4xbj8abjba65d8lqx"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments
