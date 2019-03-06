@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,12 +56,28 @@
    ;; from 'inputs'.
 
    (inputs `(("ghostscript" ,ghostscript)))
-   (native-inputs `(("bison" ,bison)
+
+   ;; When cross-compiling, this package depends upon a native install of
+   ;; itself.
+   (native-inputs `(,@(if (%current-target-system)
+                          `(("self" ,this-package))
+                          '())
+                    ("bison" ,bison)
                     ("perl" ,perl)
                     ("psutils" ,psutils)
                     ("texinfo" ,texinfo)))
    (arguments
     `(#:parallel-build? #f   ; parallel build fails
+      ,@(if (%current-target-system)
+            `(#:make-flags
+              ;; In groff-minimal package, that inherits from this package,
+              ;; we'll need to locate "groff" instead of "self".
+              (let ((groff (or (assoc-ref %build-host-inputs "groff")
+                               (assoc-ref %build-host-inputs "self"))))
+                (list
+                 (string-append "GROFF_BIN_PATH=" groff)
+                 (string-append "GROFFBIN=" groff "/bin/groff"))))
+            '())
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'disable-relocatability
@@ -115,7 +132,8 @@ is usually the formatter of \"man\" documentation pages.")
     ;; Omit the DVI, PS, PDF, and HTML backends.
     (inputs '())
     (native-inputs `(("bison" ,bison)
-                     ("perl" ,perl)))
+                     ("perl" ,perl)
+                     ("groff" ,groff)))
 
     (arguments
      `(#:disallowed-references (,perl)
