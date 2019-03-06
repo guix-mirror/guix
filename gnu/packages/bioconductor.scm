@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -347,6 +347,31 @@ the Human Protein Atlas project.")
     (description "This package offers a statistical framework based on
 customizable permutation tests to assess the association between genomic
 region sets and other genomic features.")
+    (license license:artistic2.0)))
+
+(define-public r-geneplotter
+  (package
+    (name "r-geneplotter")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "geneplotter" version))
+       (sha256
+        (base32
+         "10khr0pznxf3m0f5gzck9ymljrwcv3vamfmpskd51yjh36lhllqz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-lattice" ,r-lattice)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://bioconductor.org/packages/geneplotter")
+    (synopsis "Graphics functions for genomic data")
+    (description
+     "This package provides functions for plotting genomic data.")
     (license license:artistic2.0)))
 
 (define-public r-diffbind

@@ -6347,31 +6347,6 @@ between two different types of motif instances using as much relevant
 information as possible.")
     (license (list license:gpl2+ license:gpl3+))))
 
-(define-public r-geneplotter
-  (package
-    (name "r-geneplotter")
-    (version "1.60.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "geneplotter" version))
-       (sha256
-        (base32
-         "10khr0pznxf3m0f5gzck9ymljrwcv3vamfmpskd51yjh36lhllqz"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotate" ,r-annotate)
-       ("r-annotationdbi" ,r-annotationdbi)
-       ("r-biobase" ,r-biobase)
-       ("r-biocgenerics" ,r-biocgenerics)
-       ("r-lattice" ,r-lattice)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)))
-    (home-page "https://bioconductor.org/packages/geneplotter")
-    (synopsis "Graphics functions for genomic data")
-    (description
-     "This package provides functions for plotting genomic data.")
-    (license license:artistic2.0)))
-
 (define-public r-genefilter
   (package
     (name "r-genefilter")
