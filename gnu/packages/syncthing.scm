@@ -667,11 +667,11 @@ virtual connections from a single physical connection.")
       (license expat))))
 
 (define-public go-github-com-chmduquesne-rollinghash-adler32
-  (let ((commit "abb8cbaf9915e48ee20cae94bcd94221b61707a2")
-        (revision "2"))
+  (let ((commit "a60f8e7142b536ea61bb5d84014171189eeaaa81")
+        (revision "0"))
     (package
       (name "go-github-com-chmduquesne-rollinghash-adler32")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "4.0.0" revision commit))
       (source
         (origin
           (method git-fetch)
@@ -681,7 +681,7 @@ virtual connections from a single physical connection.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0ylqb9r60q77qw0d6g9cg4yzadxzwcw74lfd25cw9yglyq0wgd3l"))))
+            "0fpaqq4zb0wikgbhn7vwqqj1h865f5xy195vkhivsp922p7qwsjr"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/chmduquesne/rollinghash/adler32"
