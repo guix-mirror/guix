@@ -2436,8 +2436,8 @@ needing to use secp256k1 elliptic curve cryptography.")
       (license license:isc))))
 
 (define-public go-github-com-minio-sha256-simd
-  (let ((commit "51976451ce1942acbb55707a983ed232fa027110")
-        (revision "2"))
+  (let ((commit "cc1980cb03383b1d46f518232672584432d7532d")
+        (revision "3"))
     (package
       (name "go-github-com-minio-sha256-simd")
       (version (git-version "0.0.0" revision commit))
@@ -2450,7 +2450,7 @@ needing to use secp256k1 elliptic curve cryptography.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0kaxvpidf6ygkkb06vi95pirll31jnmywhyalfjvf7djhim2wr8f"))))
+           "04fp98nal0wsb26zwhw82spn5camxslc68g3xp8g4af9w6k9g31j"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/minio/sha256-simd"))
