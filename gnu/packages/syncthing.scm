@@ -217,28 +217,26 @@ reflection.")
       (license expat))))
 
 (define-public go-github-com-d4l3k-messagediff
-  (let ((commit "29f32d820d112dbd66e58492a6ffb7cc3106312b")
-        (revision "0"))
-    (package
-      (name "go-github-com-d4l3k-messagediff")
-      (version (git-version "1.1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/d4l3k/messagediff")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "104hl8x57ciaz7mzafg1vp9qggxcyfm8hsv9bmlihbz9ml3nyr8v"))))
-      (build-system go-build-system)
-      (arguments
-        `(#:import-path "github.com/d4l3k/messagediff"))
-      (synopsis "Diff arbitrary Go structs")
-      (description "Messagediff is a library for calculating diffs of arbitrary
+  (package
+    (name "go-github-com-d4l3k-messagediff")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/d4l3k/messagediff")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "104hl8x57ciaz7mzafg1vp9qggxcyfm8hsv9bmlihbz9ml3nyr8v"))))
+    (build-system go-build-system)
+    (arguments
+      `(#:import-path "github.com/d4l3k/messagediff"))
+    (synopsis "Diff arbitrary Go structs")
+    (description "Messagediff is a library for calculating diffs of arbitrary
 structs in the Go programming language.")
-      (home-page "https://github.com/d4l3k/messagediff")
-      (license expat))))
+    (home-page "https://github.com/d4l3k/messagediff")
+    (license expat)))
 
 (define-public go-github-com-gobwas-glob
   (let ((commit "51eb1ee00b6d931c66d229ceeb7c31b985563420")
