@@ -8140,38 +8140,6 @@ the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
 based on the knownGene track.")
     (license license:artistic2.0)))
 
-(define-public r-bsgenome-celegans-ucsc-ce6
-  (package
-    (name "r-bsgenome-celegans-ucsc-ce6")
-    (version "1.4.0")
-    (source (origin
-              (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Celegans.UCSC.ce6_"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0mqzb353xv2c3m3vkb315dkmnxkgczp7ndnknyhpgjlybyf715v9"))))
-    (properties
-     `((upstream-name . "BSgenome.Celegans.UCSC.ce6")))
-    (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
-    (propagated-inputs
-     `(("r-bsgenome" ,r-bsgenome)))
-    (home-page
-     "https://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce6/")
-    (synopsis "Full genome sequences for Worm")
-    (description
-     "This package provides full genome sequences for Caenorhabditis
-elegans (Worm) as provided by UCSC (ce6, May 2008) and stored in Biostrings
-objects.")
-    (license license:artistic2.0)))
-
 (define-public r-bsgenome-celegans-ucsc-ce10
   (package
     (name "r-bsgenome-celegans-ucsc-ce10")
