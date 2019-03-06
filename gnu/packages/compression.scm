@@ -949,13 +949,13 @@ smaller than those produced by @code{Xdelta}.")
  (package
    (name "cabextract")
    (home-page "https://cabextract.org.uk/")
-   (version "1.9")
+   (version "1.9.1")
    (source (origin
               (method url-fetch)
               (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hf4zhjxfdgq9x172r5zfdnafma9q0zf7372syn8hcn7hcypkg0v"))
+                "19qwhl2r8ip95q4vxzxg2kp4p125hjmc9762sns1dwwf7ikm7hmg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
