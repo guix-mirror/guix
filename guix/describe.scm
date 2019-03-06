@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,11 +19,16 @@
 (define-module (guix describe)
   #:use-module (guix memoization)
   #:use-module (guix profiles)
+  #:use-module (guix packages)
+  #:use-module ((guix utils) #:select (location-file))
+  #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (current-profile
             current-profile-entries
-            package-path-entries))
+            package-path-entries
+
+            package-provenance))
 
 ;;; Commentary:
 ;;;
@@ -73,3 +78,37 @@ process lives in, when applicable."
                                       "/share/guile/site/"
                                       (effective-version))))
                 (current-profile-entries))))
+
+(define (package-provenance package)
+  "Return the provenance of PACKAGE as an sexp for use as the 'provenance'
+property of manifest entries, or #f if it could not be determined."
+  (define (entry-source entry)
+    (match (assq 'source
+                 (manifest-entry-properties entry))
+      (('source value) value)
+      (_ #f)))
+
+  (match (and=> (package-location package) location-file)
+    (#f #f)
+    (file
+     (let ((file (if (string-prefix? "/" file)
+                     file
+                     (search-path %load-path file))))
+       (and file
+            (string-prefix? (%store-prefix) file)
+
+            ;; Always store information about the 'guix' channel and
+            ;; optionally about the specific channel FILE comes from.
+            (or (let ((main  (and=> (find (lambda (entry)
+                                            (string=? "guix"
+                                                      (manifest-entry-name entry)))
+                                          (current-profile-entries))
+                                    entry-source))
+                      (extra (any (lambda (entry)
+                                    (let ((item (manifest-entry-item entry)))
+                                      (and (string-prefix? item file)
+                                           (entry-source entry))))
+                                  (current-profile-entries))))
+                  (and main
+                       `(,main
+                         ,@(if extra (list extra) '()))))))))))
