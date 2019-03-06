@@ -7127,28 +7127,6 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 that accept short and long options.")
     (license license:gpl2+)))
 
-(define-public r-dnacopy
-  (package
-    (name "r-dnacopy")
-    (version "1.56.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "DNAcopy" version))
-              (sha256
-               (base32
-                "04cqdqxhva66xwh1s2vffi56b9fcrqd4slcrvqasj5lp2rkjli82"))))
-    (properties
-     `((upstream-name . "DNAcopy")))
-    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
-    (home-page "https://bioconductor.org/packages/DNAcopy")
-    (synopsis "Implementation of a circular binary segmentation algorithm")
-    (description "This package implements the circular binary segmentation (CBS)
-algorithm to segment DNA copy number data and identify genomic regions with
-abnormal copy number.")
-    (license license:gpl2+)))
-
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
