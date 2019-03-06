@@ -7980,32 +7980,6 @@ genomation package.  Included are Chip Seq, Methylation and Cage data,
 downloaded from Encode.")
     (license license:gpl3+)))
 
-(define-public r-org-mm-eg-db
-  (package
-    (name "r-org-mm-eg-db")
-    (version "3.7.0")
-    (source (origin
-              (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "org.Mm.eg.db_" version ".tar.gz"))
-              (sha256
-               (base32
-                "1i3nvrd3wjigf1rmgxq1p5xxc3p8v02h5gwi62s30rkrsyjjfjxx"))))
-    (properties
-     `((upstream-name . "org.Mm.eg.db")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)))
-    (home-page "https://www.bioconductor.org/packages/org.Mm.eg.db/")
-    (synopsis "Genome wide annotation for Mouse")
-    (description
-     "This package provides mappings from Entrez gene identifiers to various
-annotations for the genome of the model mouse Mus musculus.")
-    (license license:artistic2.0)))
-
 (define-public r-seqlogo
   (package
     (name "r-seqlogo")
