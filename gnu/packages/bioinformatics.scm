@@ -6347,29 +6347,6 @@ between two different types of motif instances using as much relevant
 information as possible.")
     (license (list license:gpl2+ license:gpl3+))))
 
-(define-public r-copynumber
-  (package
-    (name "r-copynumber")
-    (version "1.22.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "copynumber" version))
-              (sha256
-               (base32
-                "0ipwj9i5p1bwhg5d80jdjagm02krpj2v0j47qdgw41h8wncdyal3"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-s4vectors" ,r-s4vectors)
-       ("r-iranges" ,r-iranges)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-biocgenerics" ,r-biocgenerics)))
-    (home-page "https://bioconductor.org/packages/copynumber")
-    (synopsis "Segmentation of single- and multi-track copy number data")
-    (description
-     "This package segments single- and multi-track copy number data by a
-penalized least squares regression method.")
-    (license license:artistic2.0)))
-
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
