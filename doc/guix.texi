@@ -4777,6 +4777,23 @@ symlink target.
 For instance, @code{-S /opt/gnu/bin=bin} creates a @file{/opt/gnu/bin}
 symlink pointing to the @file{bin} sub-directory of the profile.
 
+@item --save-provenance
+Save provenance information for the packages passed on the command line.
+Provenance information includes the URL and commit of the channels in use
+(@pxref{Channels}).
+
+Provenance information is saved in the
+@file{/gnu/store/@dots{}-profile/manifest} file in the pack, along with the
+usual package metadata---the name and version of each package, their
+propagated inputs, and so on.  It is useful information to the recipient of
+the pack, who then knows how the pack was (supposedly) obtained.
+
+This option is not enabled by default because, like timestamps, provenance
+information contributes nothing to the build process.  In other words, there
+is an infinity of channel URLs and commit IDs that can lead to the same pack.
+Recording such ``silent'' metadata in the output thus potentially breaks the
+source-to-binary bitwise reproducibility property.
+
 @item --localstatedir
 @itemx --profile-name=@var{name}
 Include the ``local state directory'', @file{/var/guix}, in the resulting

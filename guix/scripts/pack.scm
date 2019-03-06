@@ -32,6 +32,7 @@
   #:use-module (guix modules)
   #:use-module (guix packages)
   #:use-module (guix profiles)
+  #:use-module (guix describe)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
   #:use-module (guix build-system gnu)
@@ -678,6 +679,9 @@ please email '~a'~%")
                      (x
                       (leave (G_ "~a: invalid symlink specification~%")
                              arg)))))
+         (option '("save-provenance") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'save-provenance? #t result)))
          (option '("localstatedir") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'localstatedir? #t result)))
@@ -726,6 +730,8 @@ Create a bundle of PACKAGE.\n"))
   (display (G_ "
   -m, --manifest=FILE    create a pack with the manifest from FILE"))
   (display (G_ "
+      --save-provenance  save provenance information"))
+  (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
   (display (G_ "
       --profile-name=NAME
@@ -772,13 +778,32 @@ Create a bundle of PACKAGE.\n"))
                                   (list (transform store package) "out")))
                                (filter-map maybe-package-argument opts)))
            (manifest-file (assoc-ref opts 'manifest)))
+      (define properties
+        (if (assoc-ref opts 'save-provenance?)
+            (lambda (package)
+              (match (package-provenance package)
+                (#f
+                 (warning (G_ "could not determine provenance of package ~a~%")
+                          (package-full-name package))
+                 '())
+                (sexp
+                 `((provenance . ,sexp)))))
+            (const '())))
+
       (cond
        ((and manifest-file (not (null? packages)))
         (leave (G_ "both a manifest and a package list were given~%")))
        (manifest-file
         (let ((user-module (make-user-module '((guix profiles) (gnu)))))
           (load* manifest-file user-module)))
-       (else (packages->manifest packages)))))
+       (else
+        (manifest
+         (map (match-lambda
+                ((package output)
+                 (package->manifest-entry package output
+                                          #:properties
+                                          (properties package))))
+              packages))))))
 
   (with-error-handling
     (with-store store
