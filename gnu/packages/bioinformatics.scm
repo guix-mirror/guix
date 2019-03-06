@@ -84,6 +84,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
@@ -1383,6 +1384,46 @@ genome, its memory footprint is typically around 3.2 GB.  Bowtie 2 supports
 gapped, local, and paired-end alignment modes.")
     (supported-systems '("x86_64-linux"))
     (license license:gpl3+)))
+
+(define-public bowtie1
+  (package
+    (name "bowtie1")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bowtie-bio/bowtie/"
+                                  version "/bowtie-" version "-src.zip"))
+              (sha256
+               (base32
+                "1jl2cj9bz8lwz8dwnxbycn8yp8g4kky62fkcxifyf1ri0y6n2vc0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+                  (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list "all"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("tbb" ,tbb)
+       ("zlib" ,zlib)))
+    (supported-systems '("x86_64-linux"))
+    (home-page "http://bowtie-bio.sourceforge.net/index.shtml")
+    (synopsis "Fast aligner for short nucleotide sequence reads")
+    (description
+     "Bowtie is a fast, memory-efficient short read aligner.  It aligns short
+DNA sequences (reads) to the human genome at a rate of over 25 million 35-bp
+reads per hour.  Bowtie indexes the genome with a Burrows-Wheeler index to
+keep its memory footprint small: typically about 2.2 GB for the human
+genome (2.9 GB for paired-end).")
+    (license license:artistic2.0)))
 
 (define-public tophat
   (package
@@ -6240,6 +6281,48 @@ sequence.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:bsd-3)))
 
+(define-public r-scde
+  (package
+    (name "r-scde")
+    (version "1.99.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hms-dbmi/scde.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10na2gyka24mszdxf92wz9h2c13hdf1ww30c68gfsw53lvvhhhxb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-mgcv" ,r-mgcv)
+       ("r-rook" ,r-rook)
+       ("r-rjson" ,r-rjson)
+       ("r-cairo" ,r-cairo)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-edger" ,r-edger)
+       ("r-quantreg" ,r-quantreg)
+       ("r-nnet" ,r-nnet)
+       ("r-rmtstat" ,r-rmtstat)
+       ("r-extremes" ,r-extremes)
+       ("r-pcamethods" ,r-pcamethods)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-flexmix" ,r-flexmix)))
+    (home-page "https://hms-dbmi.github.io/scde/")
+    (synopsis "R package for analyzing single-cell RNA-seq data")
+    (description "The SCDE package implements a set of statistical methods for
+analyzing single-cell RNA-seq data.  SCDE fits individual error models for
+single-cell RNA-seq measurements.  These models can then be used for
+assessment of differential expression between groups of cells, as well as
+other types of analysis.  The SCDE package also contains the pagoda framework
+which applies pathway and gene set overdispersion analysis to identify aspects
+of transcriptional heterogeneity among single cells.")
+    ;; See https://github.com/hms-dbmi/scde/issues/38
+    (license license:gpl2)))
+
 (define-public r-centipede
   (package
     (name "r-centipede")
@@ -7125,28 +7208,6 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
      "This package provides a command line parser inspired by Python's
 @code{optparse} library to be used with Rscript to write shebang scripts
 that accept short and long options.")
-    (license license:gpl2+)))
-
-(define-public r-dnacopy
-  (package
-    (name "r-dnacopy")
-    (version "1.56.0")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "DNAcopy" version))
-              (sha256
-               (base32
-                "04cqdqxhva66xwh1s2vffi56b9fcrqd4slcrvqasj5lp2rkjli82"))))
-    (properties
-     `((upstream-name . "DNAcopy")))
-    (build-system r-build-system)
-    (inputs
-     `(("gfortran" ,gfortran)))
-    (home-page "https://bioconductor.org/packages/DNAcopy")
-    (synopsis "Implementation of a circular binary segmentation algorithm")
-    (description "This package implements the circular binary segmentation (CBS)
-algorithm to segment DNA copy number data and identify genomic regions with
-abnormal copy number.")
     (license license:gpl2+)))
 
 (define-public r-s4vectors
@@ -11613,7 +11674,7 @@ Browser.")
 (define-public bismark
   (package
     (name "bismark")
-    (version "0.19.1")
+    (version "0.20.1")
     (source
      (origin
        (method git-fetch)
@@ -11623,18 +11684,25 @@ Browser.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0yb5l36slwg02fp4b1jdlplgljcsxgqfzvzihzdnphd87dghcc84"))
-       (snippet
-        '(begin
-           ;; highcharts.js is non-free software.  The code is available under
-           ;; CC-BY-NC or proprietary licenses only.
-           (delete-file "bismark_sitrep/highcharts.js")
-           #t))))
+         "0xchm3rgilj6vfjnyzfzzymfd7djr64sbrmrvs3njbwi66jqbzw9"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
+       #:modules ((guix build utils)
+                  (ice-9 popen)
+                  (srfi srfi-26)
+                  (guix build perl-build-system))
        #:phases
        (modify-phases %standard-phases
+         ;; The bundled plotly.js is minified.
+         (add-after 'unpack 'replace-plotly.js
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((file (assoc-ref inputs "plotly.js"))
+                    (installed "plotly/plotly.js"))
+               (let ((minified (open-pipe* OPEN_READ "uglify-js" file)))
+                 (call-with-output-file installed
+                   (cut dump-port minified <>))))
+             #t))
          (delete 'configure)
          (delete 'build)
          (replace 'install
@@ -11653,10 +11721,11 @@ Browser.")
                                "deduplicate_bismark"
                                "filter_non_conversion"
                                "bam2nuc"
-                               "bismark2summary")))
+                               "bismark2summary"
+                               "NOMe_filtering")))
                (substitute* "bismark2report"
-                 (("\\$RealBin/bismark_sitrep")
-                  (string-append share "/bismark_sitrep")))
+                 (("\\$RealBin/plotly")
+                  (string-append share "/plotly")))
                (mkdir-p share)
                (mkdir-p docdir)
                (mkdir-p bin)
@@ -11665,8 +11734,8 @@ Browser.")
                (for-each (lambda (file) (install-file file docdir))
                          docs)
                (copy-recursively "Docs/Images" (string-append docdir "/Images"))
-               (copy-recursively "bismark_sitrep"
-                                 (string-append share "/bismark_sitrep"))
+               (copy-recursively "plotly"
+                                 (string-append share "/plotly"))
 
                ;; Fix references to gunzip
                (substitute* (map (lambda (file)
@@ -11677,7 +11746,18 @@ Browser.")
                                  "/bin/gunzip -c")))
                #t))))))
     (inputs
-     `(("gzip" ,gzip)))
+     `(("gzip" ,gzip)
+       ("perl-carp" ,perl-carp)
+       ("perl-getopt-long" ,perl-getopt-long)))
+    (native-inputs
+     `(("plotly.js"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://raw.githubusercontent.com/plotly/plotly.js/"
+                               "v1.39.4/dist/plotly.js"))
+           (sha256
+            (base32 "138mwsr4nf5qif4mrxx286mpnagxd1xwl6k8aidrjgknaqg88zyr"))))
+       ("uglify-js" ,uglify-js)))
     (home-page "http://www.bioinformatics.babraham.ac.uk/projects/bismark/")
     (synopsis "Map bisulfite treated sequence reads and analyze methylation")
     (description "Bismark is a program to map bisulfite treated sequencing
@@ -13134,6 +13214,38 @@ All pipelines are easily configured with a simple sample sheet and a
 descriptive settings file.  The result is a set of comprehensive, interactive
 HTML reports with interesting findings about your samples.")
     (license license:gpl3+)))
+
+(define-public genrich
+  (package
+    (name "genrich")
+    (version "0.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jsh58/Genrich.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0x0q6z0208n3cxzqjla4rgjqpyqgwpmz27852lcvzkzaigymq4zp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "Genrich" (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/jsh58/Genrich")
+    (synopsis "Detecting sites of genomic enrichment")
+    (description "Genrich is a peak-caller for genomic enrichment
+assays (e.g. ChIP-seq, ATAC-seq).  It analyzes alignment files generated
+following the assay and produces a file detailing peaks of significant
+enrichment.")
+    (license license:expat)))
 
 (define-public mantis
   (let ((commit "4ffd171632c2cb0056a86d709dfd2bf21bc69b84")

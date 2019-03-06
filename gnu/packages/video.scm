@@ -33,6 +33,7 @@
 ;;; Copyright © 2018 Gábor Boskovit <boskovits@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Timo Eisenmann <eisenmann@fn.de>
+;;; Copyright © 2019 Arne Babenhauserheide <arne_bab@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -239,6 +240,43 @@ old-fashioned output methods with powerful ascii-art renderer.")
 A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
     (license license:gpl2+)))
+
+(define-public libaom
+  ;; The 1.0.0-errata1 release installs a broken pkg-config .pc file.  This
+  ;; is fixed in libaom commit 0ddc150, but we use an even later commit.
+  (let ((commit "22b150bf040608028a56d8bf39e72f771383d836")
+        (revision "0"))
+    (package
+      (name "libaom")
+      (version (git-version "1.0.0-errata1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://aomedia.googlesource.com/aom/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1pdd5h3n42607n6qmggz4yv8izhjr2kl6knb3kh7gh4v0vy47h1r"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("perl" ,perl)
+         ("pkg-config" ,pkg-config)
+         ("python" ,python))) ; to detect the version
+      (arguments
+       `(#:tests? #f  ;no check target
+         #:configure-flags
+           ;; build dynamic library
+         (list "-DBUILD_SHARED_LIBS=YES"
+               "-DENABLE_PIC=TRUE"
+               "-DAOM_TARGET_CPU=generic"
+               (string-append "-DCMAKE_INSTALL_PREFIX="
+                                (assoc-ref %outputs "out")))))
+      (home-page "https://aomedia.googlesource.com/aom/")
+      (synopsis "AV1 video codec")
+      (description "Libaom is the reference implementation of AV1.  It includes
+a shared library and encoder and decoder command-line executables.")
+      (license license:bsd-2))))
 
 (define-public libmpeg2
   (package
@@ -707,6 +745,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("opus" ,opus)
        ("ladspa" ,ladspa)
        ("lame" ,lame)
+       ("libaom" ,libaom)
        ("libass" ,libass)
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
@@ -793,6 +832,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-fontconfig"
          "--enable-gnutls"
          "--enable-ladspa"
+         "--enable-libaom"
          "--enable-libass"
          "--enable-libbluray"
          "--enable-libcaca"
@@ -875,7 +915,13 @@ audio/video codec library.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))))
+               "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ffmpeg)
+       ((#:configure-flags flags)
+        `(delete "--enable-libaom" ,flags))))
+    (inputs (alist-delete "libaom"
+                          (package-inputs ffmpeg)))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
@@ -1366,7 +1412,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.02.18")
+    (version "2019.03.01")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1374,7 +1420,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1sr0f6ixpaqyp3cf29zswx84y3nfabwnk3sljcgvgnmjp73zzfv1"))))
+                "0bxk6adyppdv50jnp5cika8wc6wfgd6d8zbg1njgmcs1pxskllmf"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1485,7 +1531,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1210")
+    (version "0.4.1256")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1494,7 +1540,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1plw518hzpzzcr38phlnsbpq7aqnps8iwrgr68f6d41rppl1qb25"))))
+                "1hzr7ha1jvbc0v2bwl7s08ymwdmvb0f2jz4xp1fi6agq5y3ca1iv"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -3319,15 +3365,20 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://downloads.videolan.org/pub/videolan/"
-                            "dav1d/" version "/dav1d-" version ".tar.xz"))
+        (uri (list ;; The canonical download site
+                   (string-append "https://downloads.videolan.org/pub/videolan/"
+                                  "dav1d/" version "/dav1d-" version ".tar.xz")
+
+                   ;; Auto-generated tarballs from the Git repo?
+                   (string-append "https://code.videolan.org/videolan/dav1d/-/"
+                                  "archive/" version "/dav1d-" version ".tar.bz2")))
         (sha256
          (base32
-          "0dw0liday8cbyrirhm6bgzhxg4cdy66nspfkdlq338gdsfqcvrsc"))))
+          "0q0dbbl91syjnkygz268gh4b7mdcgl6hldj300a4cbqidsadpl5p"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

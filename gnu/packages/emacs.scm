@@ -251,8 +251,10 @@ editor (without an X toolkit)" )
     (build-system gnu-build-system)
     (inputs (append `(("inotify-tools" ,inotify-tools))
                     (alist-delete "gtk+" (package-inputs emacs))))
-    (arguments (append '(#:configure-flags '("--with-x-toolkit=no"))
-                       (package-arguments emacs)))))
+    (arguments
+     `(,@(substitute-keyword-arguments (package-arguments emacs)
+           ((#:configure-flags cf)
+            `(cons "--with-x-toolkit=no" ,cf)))))))
 
 (define-public guile-emacs
   (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")

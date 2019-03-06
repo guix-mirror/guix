@@ -25,6 +25,7 @@
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
@@ -105,7 +106,8 @@ contains module names, not actual file names."
   (char-set-complement (char-set #\space #\tab)))
 
 (define (module-soft-dependencies file)
-  "Return a list of (cons section soft-dependency) of module FILE."
+  "Return the list of modules that can be preloaded, and then the list of
+modules that can be postloaded, of the soft dependencies of module FILE."
   ;; TEXT: "pre: baz blubb foo post: bax bar"
   (define (parse-softdep text)
     (let loop ((value '())
@@ -120,13 +122,24 @@ contains module names, not actual file names."
         value))))
 
   ;; Note: Multiple 'softdep sections are allowed.
-  (let ((info (modinfo-section-contents file)))
-    (concatenate
-     (filter-map (match-lambda
-                  (('softdep . value)
-                   (parse-softdep value))
-                  (_ #f))
-                 (modinfo-section-contents file)))))
+  (let* ((info (modinfo-section-contents file))
+         (entries (concatenate
+                   (filter-map (match-lambda
+                                (('softdep . value)
+                                 (parse-softdep value))
+                                (_ #f))
+                               (modinfo-section-contents file)))))
+    (let-values (((pres posts)
+                  (partition (match-lambda
+                              (("pre" . _) #t)
+                              (("post" . _) #f))
+                             entries)))
+      (values (map (match-lambda
+                    ((_ . value) value))
+                   pres)
+              (map (match-lambda
+                    ((_ . value) value))
+                   posts)))))
 
 (define (module-aliases file)
   "Return the list of aliases of module FILE."

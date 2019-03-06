@@ -2631,14 +2631,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.23.2")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1h83x5widj9p630ha9yv39cpp3djxppll3iww9nc8i3hdmyrbnnh"))))
+         "05zmv6jr7qbgnkz0lqh5pr7kr4lm12i8ljm2k5h5kz3q9m8d4mm0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -8032,7 +8032,7 @@ python-xdo for newer bindings.)")
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
-    (home-page "http://www.makotemplates.org/")
+    (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
 templates into Python modules.")

@@ -35,13 +35,15 @@
     (version "3.13.0")
     (source (origin
               (method url-fetch)
-             (uri (string-append "ftp://sourceware.org/pub/valgrind/valgrind-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "0fqc3684grrbxwsic1rc5ryxzxmigzjx9p5vf3lxa37h0gpq0rnp"))
-             (patches (search-patches "valgrind-enable-arm.patch"
-                                      "valgrind-glibc-compat.patch"))))
+              (uri (list (string-append "http://www.valgrind.org/downloads"
+                                        "/valgrind-" version ".tar.bz2")
+                         (string-append "ftp://sourceware.org/pub/valgrind"
+                                        "/valgrind-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "0fqc3684grrbxwsic1rc5ryxzxmigzjx9p5vf3lxa37h0gpq0rnp"))
+              (patches (search-patches "valgrind-enable-arm.patch"
+                                       "valgrind-glibc-compat.patch"))))
     (build-system gnu-build-system)
     (outputs '("doc"                              ;16 MB
                "out"))

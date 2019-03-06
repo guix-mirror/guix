@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -718,7 +718,7 @@ mixed vector/bitmap output.")
 (define-public virtualgl
   (package
     (name "virtualgl")
-    (version "2.6")
+    (version "2.6.1")
     (source
      (origin
        (method git-fetch)
@@ -727,8 +727,7 @@ mixed vector/bitmap output.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0di2igj2bhwb153fndgxks7y57pyhp0gj31n47j93gb7lxc9qcck"))))
+        (base32 "04fdwm6mz76lw4iwd5m7yxjfhpa0rpxd357bv5smk5lclnlbz1bv"))))
     (arguments
      `(#:tests? #f                      ; no tests are available
        #:configure-flags (list

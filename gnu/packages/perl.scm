@@ -1647,9 +1647,8 @@ It returns to the previous working directory when the object is destroyed.")
           (lambda* (#:key outputs #:allow-other-keys)
             (copy-recursively "."
                               (string-append (assoc-ref outputs "out")
-                                             "/plib/perl5/site_perl/"
-                                             ,(package-version perl)
-                                             "/czplib/"))
+                                             "/lib/perl5/site_perl/"
+                                             ,(package-version perl)))
             #t)))))
     (home-page "https://sourceforge.net/projects/czplib/")
     (synopsis "Library for genomic analysis")
@@ -1750,6 +1749,27 @@ short and handy (e.g. to use it as part of a URL).")
 their argument and produces a string as its result.  The string contains Perl
 code that, when \"eval\"ed, produces a deep copy of the original arguments.")
     (license (package-license perl))))
+
+(define-public perl-data-dumper
+  (package
+    (name "perl-data-dumper")
+    (version "2.173")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XS/XSAWYERX/"
+                           "Data-Dumper-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yknbp86md6mjlhbs1lzz6mals3iyizndgiij58qx61hjfrhhxk9"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Data-Dumper")
+    (synopsis "Convert data structures to strings")
+    (description "Given a list of scalars or reference variables,
+@code{Data::Dumper} writes out their contents in Perl syntax.  The references
+can also be objects.  The content of each variable is output in a single Perl
+statement.  It handles self-referential structures correctly.")
+    (license perl-license)))
 
 (define-public perl-data-dumper-concise
   (package

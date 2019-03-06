@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -5452,7 +5452,7 @@ specification.")
 (define-public java-eclipse-equinox-common
   (package
     (name "java-eclipse-equinox-common")
-    (version "3.8.0")
+    (version "3.10.200")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5461,7 +5461,7 @@ specification.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "12aazpkgw46r1qj0pr421jzwhbmsizd97r37krd7njnbrdgfzksc"))))
+                "1yn8ij6xsljlf35sr2l7wvyvc0ss4n1rv0ry5zkgb49dj4hyrqrj"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
@@ -5611,7 +5611,7 @@ the module @code{org.eclipse.equinox.preferences}.")
 (define-public java-eclipse-core-runtime
   (package
     (name "java-eclipse-core-runtime")
-    (version "3.12.0")
+    (version "3.15.100")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5620,7 +5620,7 @@ the module @code{org.eclipse.equinox.preferences}.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "16mkf8jgj35pgzms7w1gyfq0gfm4ixw6c5xbbxzdj1la56c758ya"))))
+                "0l8xayacsbjvz5hypx2fv47vpw2n4dspamcfb3hx30x9hj8vmg7r"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
@@ -5759,7 +5759,7 @@ the module @code{org.eclipse.ant.core}.")
 (define-public java-eclipse-core-resources
   (package
     (name "java-eclipse-core-resources")
-    (version "3.11.1")
+    (version "3.13.200")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5768,7 +5768,7 @@ the module @code{org.eclipse.ant.core}.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "1hrfxrll6cpcagfksk2na1ypvkcnsp0fk6n3vcsrn97qayf9mx9l"))))
+                "1sn3b6ky72hkvxcgf9b2jkpbdh3y8lbhi9xxwv1dsiddpkkq91hs"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
@@ -5935,7 +5935,7 @@ and contributes the Eclipse default text editor.")
 (define-public java-eclipse-jdt-core
   (package
     (name "java-eclipse-jdt-core")
-    (version "3.12.3")
+    (version "3.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://repo1.maven.org/maven2/"
@@ -5944,11 +5944,28 @@ and contributes the Eclipse default text editor.")
                                   version "-sources.jar"))
               (sha256
                (base32
-                "191xw4lc7mjjkprh4ji5vnpjvr5r4zvbpwkriy4bvsjqrz35vh1j"))))
+                "1g560yr9v2kzv34gc2m3ifpgnj7krcdd6h4gd4z83pwqacwkfz0k"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
-       #:jar-name "eclipse-jdt-core.jar"))
+       #:jar-name "eclipse-jdt-core.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'move-sources
+           (lambda _
+             (with-directory-excursion "src/jdtCompilerAdaptersrc/"
+               (for-each (lambda (file)
+                           (install-file file (string-append "../" (dirname file))))
+                         (find-files "." ".*")))
+             (delete-file-recursively "src/jdtCompilerAdaptersrc/")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (with-directory-excursion "src"
+               (for-each (lambda (file)
+                           (install-file file (string-append "../build/classes/" (dirname file))))
+                         (find-files "." ".*.(props|properties|rsc)")))
+             #t)))))
     (inputs
      `(("java-eclipse-core-contenttype" ,java-eclipse-core-contenttype)
        ("java-eclipse-core-filesystem" ,java-eclipse-core-filesystem)

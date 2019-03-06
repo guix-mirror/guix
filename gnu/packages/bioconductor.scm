@@ -170,6 +170,32 @@ Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
 default."  )
     (license license:artistic2.0)))
 
+(define-public r-org-dr-eg-db
+  (package
+    (name "r-org-dr-eg-db")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Dr.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xs5wsbcpy0iwbjyiv7fax57djqc529ai5fk1qfsdcvlja3cpglx"))))
+    (properties
+     `((upstream-name . "org.Dr.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/org.Dr.eg.db/")
+    (synopsis "Annotation for Zebrafish")
+    (description
+     "This package provides genome wide annotations for Zebrafish, primarily
+based on mapping using Entrez Gene identifiers.")
+    (license license:artistic2.0)))
+
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
