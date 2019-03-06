@@ -65,6 +65,38 @@ elegans (Worm) as provided by UCSC (ce6, May 2008) and stored in Biostrings
 objects.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-celegans-ucsc-ce10
+  (package
+    (name "r-bsgenome-celegans-ucsc-ce10")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Celegans.UCSC.ce10_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1zaym97jk4npxk14ifvwz2rvhm4zx9xgs33r9vvx9rlynp0gydrk"))))
+    (properties
+     `((upstream-name . "BSgenome.Celegans.UCSC.ce10")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce10/")
+    (synopsis "Full genome sequences for Worm")
+    (description
+     "This package provides full genome sequences for Caenorhabditis
+elegans (Worm) as provided by UCSC (ce10, Oct 2010) and stored in Biostrings
+objects.")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-dmelanogaster-ucsc-dm6
   (package
     (name "r-bsgenome-dmelanogaster-ucsc-dm6")
