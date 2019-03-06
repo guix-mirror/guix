@@ -38,14 +38,14 @@
 (define-public nasm
   (package
     (name "nasm")
-    (version "2.13.03")
+    (version "2.14.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.nasm.us/pub/nasm/releasebuilds/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wr58pb2wnyihcl6635hlx98fnscx5yirxm8m84x8nxwvjqcybl1"))))
+                "1xg8dfr49py15vbwk1rzcjc3zpqydmr49ahlijm56wlgj8zdwjp2"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)  ;for doc and test target
                      ("texinfo" ,texinfo)))
