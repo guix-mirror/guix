@@ -118,47 +118,43 @@ disassembler, validator, and optimizer for SPIR-V.")
      (license license:asl2.0))))
 
 (define-public glslang
-  ;; Keep updated in accordance with
-  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "32d3ec319909fcad0b2b308fe1635198773e8316")
-        (revision "3"))
-    (package
-      (name "glslang")
-      (version (string-append "3.0-" revision "." (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/KhronosGroup/glslang")
-               (commit commit)))
-         (sha256
-          (base32
-           "1kmgjv5kbrjy6azpgwnjcn3cj8vg5i8hnyk3m969sc0gq2j1rbjj"))
-         (file-name (string-append name "-" version "-checkout"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:tests? #f ;; No tests
-         ;; glslang tries to set CMAKE_INSTALL_PREFIX manually. Remove the
-         ;; offending line.
-         #:phases (modify-phases %standard-phases
-                    (add-after 'patch-source-shebangs 'fix-cmakelists
-                      (lambda _
-                        (substitute* "CMakeLists.txt"
-                          (("set.*CMAKE_INSTALL_PREFIX.*") ""))
-                        #t)))))
-      (native-inputs `(("bison" ,bison)
-                       ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/KhronosGroup/glslang")
-      (synopsis "OpenGL and OpenGL ES shader front end and validator")
-      (description
-       "Glslang is the official reference compiler front end for the
+  (package
+    (name "glslang")
+    (version "7.11.3113")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/glslang")
+             (commit version)))
+       (sha256
+        (base32
+         "1kzv2b4q1fddxd7c0hc754nd6rw6y9vijb9fsi13xzzq9dficgb6"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;; No tests
+       ;; glslang tries to set CMAKE_INSTALL_PREFIX manually. Remove the
+       ;; offending line.
+       #:phases (modify-phases %standard-phases
+                  (add-after 'patch-source-shebangs 'fix-cmakelists
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        (("set.*CMAKE_INSTALL_PREFIX.*") ""))
+                      #t)))))
+    (native-inputs `(("bison" ,bison)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/KhronosGroup/glslang")
+    (synopsis "OpenGL and OpenGL ES shader front end and validator")
+    (description
+     "Glslang is the official reference compiler front end for the
 OpenGL@tie{}ES and OpenGL shading languages.  It implements a strict
 interpretation of the specifications for these languages.")
-      ;; Modified BSD license. See "copyright" section of
-      ;; https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
-      (license (list license:bsd-3
-                     ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
-                     license:asl2.0)))))
+    ;; Modified BSD license. See "copyright" section of
+    ;; https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
+    (license (list license:bsd-3
+                   ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
+                   license:asl2.0))))
 
 (define-public vulkan-headers
   (package
