@@ -797,8 +797,8 @@ using sh's word-splitting rules.")
       (license expat))))
 
 (define-public go-github-com-syncthing-notify
-  (let ((commit "116c45bb5ad48777321e4984d1320d56889b6097")
-        (revision "3"))
+  (let ((commit "4e389ea6c0d84e6195eb585ffaf62c8c143306ae")
+        (revision "4"))
     (package
       (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
@@ -810,7 +810,7 @@ using sh's word-splitting rules.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "14bh95pkhwmnc65bnv08p3y4flj1j7f6xxr2cgmlwrphnlp9yhl9"))))
+                  "19gvl14s1l9m82f8c2xsjcr8lmbqrvw1mxkayvfcpimvxfz0j61i"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/syncthing/notify"))
