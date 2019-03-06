@@ -8105,37 +8105,6 @@ plots the corresponding sequence logo as introduced by Schneider and
 Stephens (1990).")
     (license license:lgpl2.0+)))
 
-(define-public r-bsgenome-mmusculus-ucsc-mm9
-  (package
-    (name "r-bsgenome-mmusculus-ucsc-mm9")
-    (version "1.4.0")
-    (source (origin
-              (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Mmusculus.UCSC.mm9_"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1birqw30g2azimxpnjfzmkphan7x131yy8b9h85lfz5fjdg7841i"))))
-    (properties
-     `((upstream-name . "BSgenome.Mmusculus.UCSC.mm9")))
-    (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
-    (propagated-inputs
-     `(("r-bsgenome" ,r-bsgenome)))
-    (home-page
-     "https://www.bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9/")
-    (synopsis "Full genome sequences for Mouse")
-    (description
-     "This package provides full genome sequences for Mus musculus (Mouse) as
-provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
-    (license license:artistic2.0)))
-
 (define-public r-bsgenome-mmusculus-ucsc-mm10
   (package
     (name "r-bsgenome-mmusculus-ucsc-mm10")
