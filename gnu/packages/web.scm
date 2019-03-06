@@ -5718,14 +5718,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
               (snippet
                '(begin
                   (for-each delete-file (find-files "." "\\.jar$"))
+                  (for-each delete-file (find-files "." "\\.bat$"))
                   #t))))
     (build-system ant-build-system)
     (inputs
-     `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
-    (native-inputs
-     `(("java-junit" ,java-junit)))
+     `(("java-commons-daemon" ,java-commons-daemon)
+       ("java-ecj" ,java-ecj)))
     (arguments
-     `(#:build-target "package"
+     `(#:build-target "deploy"
        #:tests? #f; requires downloading some files.
        #:phases
        (modify-phases %standard-phases
@@ -5748,6 +5748,34 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                (("<filter token=\"VERSION_BUILT\" value=.*")
                 "<filter token=\"VERSION_BUILT\" value=\"Jan 1 1970 00:00:00 UTC\"/>"))
              #t))
+         (add-after 'unpack 'modify-deploy
+           (lambda _
+             ;; The Tomcat build downloads and copies these files to the
+             ;; bin and lib directory.
+             ;; We instead symlink to the input (see below).
+             (substitute* "build.xml"
+               (("<copy tofile=\"\\$\\{tomcat.build\\}/bin/commons-daemon.jar.*") "")
+               (("<copy file=\"\\$\\{jdt.jar\\}\" todir=\"\\$\\{tomcat.build\\}/lib\"/>")
+                ""))
+             #t))
+         (add-after 'install 'symlink-commons-daemon
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((commons-daemon (assoc-ref inputs "java-commons-daemon"))
+                    (files (find-files commons-daemon "commons-daemon-.*\\.jar"))
+                    (daemon-jar (car files))
+                    (out-bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (target (string-append out-bin "/commons-daemon.jar")))
+               (symlink daemon-jar target)
+               #t)))
+         (add-after 'install 'symlink-java-ecj
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((java-ecj (assoc-ref inputs "java-ecj"))
+                    (files (find-files java-ecj "ecj.*\\.jar"))
+                    (java-ecj-jar (car files))
+                    (out-lib (string-append (assoc-ref outputs "out") "/lib"))
+                    (target (string-append out-lib "/java-ecj.jar")))
+               (symlink java-ecj-jar target)
+               #t)))
          (add-after 'unpack 'generate-properties
            (lambda _
              ;; This could have been passed to make-flags, but getcwd returns
@@ -5758,7 +5786,10 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                    (string-append "base.path=" (getcwd) "/downloads\n"))))
              #t))
          (replace 'install
-           (install-jars "output/build/lib")))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "output/build" out))
+             #t)))))
     (home-page "https://tomcat.apache.org")
     (synopsis "Java Servlet, JavaServer Pages, Java Expression Language and Java
 WebSocket")
