@@ -507,6 +507,41 @@ is derived from the UCSC mm9 genome and based on the \"knownGene\" track.  The
 database is exposed as a @code{TxDb} object.")
     (license license:artistic2.0)))
 
+(define-public r-txdb-mmusculus-ucsc-mm10-knowngene
+  (package
+    (name "r-txdb-mmusculus-ucsc-mm10-knowngene")
+    (version "3.4.4")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "TxDb.Mmusculus.UCSC.mm10.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "01lgxc1fx5nhlpbwjd5zqghkkbmh6axd98ikx4b0spv0jdg6gf39"))))
+    (properties
+     `((upstream-name . "TxDb.Mmusculus.UCSC.mm10.knownGene")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-annotationdbi" ,r-annotationdbi)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Mmusculus.UCSC.mm10.knownGene/")
+    (synopsis "Annotation package for TxDb knownGene object(s) for Mouse")
+    (description
+     "This package loads a TxDb object, which is an R interface to
+prefabricated databases contained in this package.  This package provides
+the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
+based on the knownGene track.")
+    (license license:artistic2.0)))
+
 
 (define-public r-biocgenerics
   (package
