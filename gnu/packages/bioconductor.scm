@@ -129,6 +129,38 @@ melanogaster (Fly) as provided by UCSC (dm6) and stored in Biostrings
 objects.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-dmelanogaster-ucsc-dm3
+  (package
+    (name "r-bsgenome-dmelanogaster-ucsc-dm3")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Dmelanogaster.UCSC.dm3_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19bm3lkhhkag3gnwp419211fh0cnr0x6fa0r1lr0ycwrikxdxsv8"))))
+    (properties
+     `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm3")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Dmelanogaster.UCSC.dm3/")
+    (synopsis "Full genome sequences for Fly")
+    (description
+     "This package provides full genome sequences for Drosophila
+melanogaster (Fly) as provided by UCSC (dm3, April 2006) and stored in
+Biostrings objects.")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-dmelanogaster-ucsc-dm3-masked
   (package
     (name "r-bsgenome-dmelanogaster-ucsc-dm3-masked")
