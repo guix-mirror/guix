@@ -469,30 +469,28 @@ Metrics library.")
       (license bsd-2))))
 
 (define-public go-github-com-sasha-s-go-deadlock
-  (let ((commit "03d40e5dbd5488667a13b3c2600b2f7c2886f02f")
-        (revision "1"))
-    (package
-      (name "go-github-com-sasha-s-go-deadlock")
-      (version (git-version "0.1.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/sasha-s/go-deadlock")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "13p7b7pakd9k1c2k0fs1hfim3c8mivz679977ai6zb01s4aw7gyg"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/sasha-s/go-deadlock"))
-      (propagated-inputs
-       `(("go-github-com-petermattis-goid" ,go-github-com-petermattis-goid)))
-      (synopsis "Deadlock detection in go")
-      (description "This package provides tools for detecting deadlocks at
+  (package
+    (name "go-github-com-sasha-s-go-deadlock")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/sasha-s/go-deadlock")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13p7b7pakd9k1c2k0fs1hfim3c8mivz679977ai6zb01s4aw7gyg"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/sasha-s/go-deadlock"))
+    (propagated-inputs
+     `(("go-github-com-petermattis-goid" ,go-github-com-petermattis-goid)))
+    (synopsis "Deadlock detection in go")
+    (description "This package provides tools for detecting deadlocks at
 run-time in Go.")
-      (home-page "https://github.com/sasha-s/go-deadlock")
-      (license asl2.0))))
+    (home-page "https://github.com/sasha-s/go-deadlock")
+    (license asl2.0)))
 
 (define-public go-github-com-syndtr-goleveldb
   (let ((commit "34011bf325bce385408353a30b101fe5e923eb6e")
