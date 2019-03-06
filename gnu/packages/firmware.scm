@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +60,7 @@
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (chdir "target_firmware")
 
              ;; 'configure' is a simple script that runs 'cmake' with
@@ -67,7 +68,7 @@
              (substitute* "configure"
                (("^TOOLCHAIN=.*$")
                 (string-append "TOOLCHAIN="
-                               (assoc-ref inputs "cross-gcc")
+                               (assoc-ref (or native-inputs inputs) "cross-gcc")
                                "\n")))
              #t))
          (replace 'install
