@@ -6709,38 +6709,6 @@ annotation infrastructure.")
      "This package provides a pipeline for the analysis of GRO-seq data.")
     (license license:gpl3+)))
 
-(define-public r-txdb-hsapiens-ucsc-hg19-knowngene
-  (package
-    (name "r-txdb-hsapiens-ucsc-hg19-knowngene")
-    (version "3.2.2")
-    (source (origin
-              (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib"
-                                  "/TxDb.Hsapiens.UCSC.hg19.knownGene_"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1sajhcqqwazgz2lqbik7rd935i7kpnh08zxbp2ra10j72yqy4g86"))))
-    (properties
-     `((upstream-name . "TxDb.Hsapiens.UCSC.hg19.knownGene")))
-    (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
-    (propagated-inputs
-     `(("r-genomicfeatures" ,r-genomicfeatures)))
-    (home-page
-     "https://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg19.knownGene/")
-    (synopsis "Annotation package for human genome in TxDb format")
-    (description
-     "This package provides an annotation database of Homo sapiens genome
-data.  It is derived from the UCSC hg19 genome and based on the \"knownGene\"
-track.  The database is exposed as a @code{TxDb} object.")
-    (license license:artistic2.0)))
-
 (define-public r-sparql
   (package
   (name "r-sparql")
