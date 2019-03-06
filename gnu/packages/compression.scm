@@ -952,7 +952,7 @@ smaller than those produced by @code{Xdelta}.")
    (version "1.9.1")
    (source (origin
               (method url-fetch)
-              (uri (string-append home-page name "-" version ".tar.gz"))
+              (uri (string-append home-page "cabextract-" version ".tar.gz"))
               (sha256
                (base32
                 "19qwhl2r8ip95q4vxzxg2kp4p125hjmc9762sns1dwwf7ikm7hmg"))
