@@ -3273,7 +3273,7 @@ write access to exFAT devices.")
        ("glib" ,glib)
        ("zlib" ,zlib)))
     (home-page "https://sourceforge.net/projects/fuseiso/")
-    (synopsis "Mount ISO file system imsages")
+    (synopsis "Mount ISO file system images")
     (description
      "FuseISO is a FUSE module to mount ISO filesystem images (.iso, .nrg,
 .bin, .mdf and .img files).  It currently support plain ISO9660 Level 1 and 2,
