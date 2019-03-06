@@ -691,28 +691,26 @@ rolling hash.")
       (license expat))))
 
 (define-public go-github-com-pkg-errors
-  (let ((commit "e881fd58d78e04cf6d0de1217f8707c8cc2249bc")
-        (revision "1"))
-    (package
-      (name "go-github-com-pkg-errors")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/pkg/errors.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0vfhj598jp6dzy4pbyjdrqxzb5kppw8ggvfh78g80nz11r34xnzs"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/pkg/errors"))
-      (synopsis "Go error handling primitives")
-      (description "This packages provides @code{error}, which offers simple
+  (package
+    (name "go-github-com-pkg-errors")
+    (version "0.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pkg/errors.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0g5qcb4d4fd96midz0zdk8b9kz8xkzwfa8kr1cliqbg8sxsy5vd1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/pkg/errors"))
+    (synopsis "Go error handling primitives")
+    (description "This packages provides @code{error}, which offers simple
 error handling primitives in Go.")
-      (home-page "https://github.com/pkg/errors")
-      (license bsd-2))))
+    (home-page "https://github.com/pkg/errors")
+    (license bsd-2)))
 
 (define-public go-github-com-petermattis-goid
   (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
