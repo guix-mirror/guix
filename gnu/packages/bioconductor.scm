@@ -438,6 +438,32 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
 based on mapping using Entrez Gene identifiers.")
     (license license:artistic2.0)))
 
+(define-public r-org-hs-eg-db
+  (package
+    (name "r-org-hs-eg-db")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Hs.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qxz9l80yg3qdqszs6dsscp7lrpfi1bgd0pxh9j7q34vprzwhdim"))))
+    (properties
+     `((upstream-name . "org.Hs.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/org.Hs.eg.db/")
+    (synopsis "Genome wide annotation for Human")
+    (description
+     "This package contains genome-wide annotations for Human, primarily based
+on mapping using Entrez Gene identifiers.")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-hsapiens-ucsc-hg19
   (package
     (name "r-bsgenome-hsapiens-ucsc-hg19")
