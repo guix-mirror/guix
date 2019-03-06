@@ -38,7 +38,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -150,6 +150,13 @@
              "INSTALL=install -c"
              "MKDIR_P=mkdir -p"
 
+             ;; Disable runtime check failing if cross-compiling, see:
+             ;; https://lists.yoctoproject.org/pipermail/poky/2013-June/008997.html
+             ,@(if (%current-target-system)
+                   '("ac_cv_buggy_getaddrinfo=no"
+                     "ac_cv_file__dev_ptmx=no"
+                     "ac_cv_file__dev_ptc=no")
+                   '())
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
        ;; With no -j argument tests use all available cpus, so provide one.
@@ -292,7 +299,12 @@
        ("tcl" ,tcl)
        ("tk" ,tk)))                               ; for tkinter
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ;; When cross-compiling, a native version of Python itself is needed.
+       ,@(if (%current-target-system)
+             `(("self" ,this-package)
+               ("which" ,which))
+             '())))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
@@ -388,13 +400,16 @@ data types.")
                             (if (null? opt) "none" (car opt)))
                     (for-each (lambda (file)
                                 (apply invoke
-                                       `(,(string-append out "/bin/python3")
-                                         ,@opt
-                                         "-m" "compileall"
-                                         "-f" ; force rebuild
-                                         ;; Don't build lib2to3, because it's Python 2 code.
-                                         "-x" "lib2to3/.*"
-                                         ,file)))
+                                       `(,,(if (%current-target-system)
+                                               "python3"
+                                               '(string-append out
+                                                               "/bin/python3"))
+                                          ,@opt
+                                          "-m" "compileall"
+                                          "-f" ; force rebuild
+                                          ;; Don't build lib2to3, because it's Python 2 code.
+                                          "-x" "lib2to3/.*"
+                                          ,file)))
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
                  #t)))))))
