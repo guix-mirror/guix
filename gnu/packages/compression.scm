@@ -722,7 +722,7 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.8.1.2")
+    (version "1.8.3")
     (source
      (origin
        (method git-fetch)
@@ -730,16 +730,23 @@ decompression of some loosely related file formats used by Microsoft.")
                            (commit (string-append "v" version))))
        (sha256
         (base32
-         "1jggv4lvfav53advnj0pwqgxzn868lrj8dc9zp73iwvqlj82mhmx"))
+         "0lq00yi7alr9aip6dw0flykzi8yv7z43aay177n86spn9qms7s3g"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
-    (native-inputs `(("valgrind" ,valgrind)))   ; for tests
+    (native-inputs `(("valgrind" ,valgrind)))    ;for tests
     (arguments
      `(#:test-target "test"
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))        ; no configure script
+                  (delete 'configure)            ;no configure script
+                  (add-before 'check 'disable-broken-test
+                    (lambda _
+                      ;; XXX: test_install.sh fails when prefix is a subdirectory.
+                      (substitute* "tests/Makefile"
+                        (("^test: (.*) test-install" _ targets)
+                         (string-append "test: " targets)))
+                      #t)))))
     (home-page "https://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
