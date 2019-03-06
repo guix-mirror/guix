@@ -163,7 +163,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.101")
+    (version "1.1.102")
     (source
      (origin
        (method git-fetch)
@@ -173,7 +173,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hb1lg56i2685nz7i4hbsv3sz1iym2wimjz4bfa175xh5jyvr0km"))))
+         "1dkjg48l7dfpq16bq1w9c3y9dwpj2hhv7b3njvj52lpgpa14s0f9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -197,7 +197,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02xkjaack3zmbsnh95jbkkdarf7ccfpfjby12kikajwr0kr4d4df"))))
+         "0ccpklv251jcz2lxvd5ix5i3cg4wb7qq5xi6cwvniy1rw52z7h00"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -244,7 +244,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.1.100")
+    (version "1.1.101")
     (source
      (origin
        (method git-fetch)
@@ -254,7 +254,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1b9c8yimn34b77nbrkra4qj71gcw8zr0cgdp85ghxampm7gzx0xi"))))
+         "0qms8xjl0i9ajrckxkcq7rj28zjby4gbr1vz8xxkmgfbani8mai4"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
@@ -267,7 +267,10 @@ and the ICD.")
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
     (arguments
-     `(#:tests? #f))                    ; No tests.
+     `(#:tests? #f                      ; No tests.
+       #:configure-flags (list "-DBUILD_ICD=off" ; FIXME: Doesn't build.
+                               (string-append "-DGLSLANG_INSTALL_DIR="
+                               (assoc-ref %build-inputs "glslang")))))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Tools")
     (synopsis "Tools and utilities for Vulkan")
