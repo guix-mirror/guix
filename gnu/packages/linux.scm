@@ -3254,6 +3254,32 @@ is flexible, efficient and uses a modular implementation.")
 write access to exFAT devices.")
     (license license:gpl2+)))
 
+(define-public fuseiso
+  (package
+    (name "fuseiso")
+    (version "20070708")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fuseiso/fuseiso/"
+                                  version "/fuseiso-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "127xql52dcdhmh7s5m9xc6q39jdlj3zhbjar1j821kb6gl3jw94b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)
+       ("glib" ,glib)
+       ("zlib" ,zlib)))
+    (home-page "https://sourceforge.net/projects/fuseiso/")
+    (synopsis "Mount ISO file system imsages")
+    (description
+     "FuseISO is a FUSE module to mount ISO filesystem images (.iso, .nrg,
+.bin, .mdf and .img files).  It currently support plain ISO9660 Level 1 and 2,
+Rock Ridge, Joliet, and zisofs.")
+    (license license:gpl2)))
+
 (define-public gpm
   (package
     (name "gpm")
