@@ -13113,6 +13113,38 @@ descriptive settings file.  The result is a set of comprehensive, interactive
 HTML reports with interesting findings about your samples.")
     (license license:gpl3+)))
 
+(define-public genrich
+  (package
+    (name "genrich")
+    (version "0.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jsh58/Genrich.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0x0q6z0208n3cxzqjla4rgjqpyqgwpmz27852lcvzkzaigymq4zp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "Genrich" (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/jsh58/Genrich")
+    (synopsis "Detecting sites of genomic enrichment")
+    (description "Genrich is a peak-caller for genomic enrichment
+assays (e.g. ChIP-seq, ATAC-seq).  It analyzes alignment files generated
+following the assay and produces a file detailing peaks of significant
+enrichment.")
+    (license license:expat)))
+
 (define-public mantis
   (let ((commit "4ffd171632c2cb0056a86d709dfd2bf21bc69b84")
         (revision "1"))
