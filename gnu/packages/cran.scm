@@ -7543,18 +7543,19 @@ Hothorn, Westfall, 2010, CRC Press).")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "0mg6y007hfmr601cq4jgxl5ncwbx79kkh7xs2i504m0rinxj8bf5"))))
+         "1hpal1vq6gryzvgfvv9f328idg0mgjvlfnhaj069dhb7zqfwhzlk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-estimability" ,r-estimability)
        ("r-mvtnorm" ,r-mvtnorm)
+       ("r-numderiv" ,r-numderiv)
        ("r-plyr" ,r-plyr)
        ("r-xtable" ,r-xtable)))
     (home-page "https://github.com/rvlenth/emmeans")
