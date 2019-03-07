@@ -1288,7 +1288,7 @@ facilities for checking incoming mail.")
        (method url-fetch)
        (uri (string-append "https://www.dovecot.org/releases/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.gz"))
+                           "dovecot-" version ".tar.gz"))
        (sha256
         (base32
          "01xa8d08c0j51w5kmqb3vnzrvh17hkzx5a5p7fb5hgn3wln3x1xq"))))
