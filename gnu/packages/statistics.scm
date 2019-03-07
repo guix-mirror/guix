@@ -1047,13 +1047,13 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
 (define-public r-stringr
   (package
     (name "r-stringr")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringr" version))
        (sha256
-        (base32 "0hq3ybz7clnifi5wdm2s6p2i0kzljdkv26blg6yphng472h8x2vs"))))
+        (base32 "1p9ip7p87gbbg4s6d3d392svvzz2b5dqdq2c8ilgvn4s78nlsq47"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-glue" ,r-glue)
