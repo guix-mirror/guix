@@ -110,14 +110,14 @@ are not used.")
 (define-public r-sys
   (package
     (name "r-sys")
-    (version "2.1")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sys" version))
        (sha256
         (base32
-         "10ml2492bdllh6cz2zl192ip0fdgjkkgayggd3ghswsj5gjv5hrh"))))
+         "1g0q1f56qmp3x5gja19qrmgk3j4d89yp16z1ziv1jn5p4dlmfpxh"))))
     (build-system r-build-system)
     (home-page "https://github.com/jeroen/sys")
     (synopsis "Powerful and reliable tools for running system commands in R")
