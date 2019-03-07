@@ -2413,18 +2413,16 @@ dimensioned arrays.")
 (define-public r-rmysql
   (package
     (name "r-rmysql")
-    (version "0.10.16")
+    (version "0.10.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RMySQL" version))
        (sha256
         (base32
-         "1gh4b730g2v78jg5iln8fkz808ri2vhnhnw43wzkkjpy53jh48sp"))))
+         "1xamf99ih44dvaxg5x4ivj0hkqssmabgqd7gh8b8q1srw7yg8kbm"))))
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mariadb" ,mariadb)
        ("zlib" ,zlib)))
