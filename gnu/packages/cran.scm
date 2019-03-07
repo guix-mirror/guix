@@ -995,28 +995,33 @@ applications.  That is, compute distances and related measures for angular
 (define-public r-ggmap
   (package
     (name "r-ggmap")
-    (version "2.6.2")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggmap" version))
        (sha256
         (base32
-         "144x6ycb2c3fvy5c68ww53m6gzi6kfvas7cpbn071z08n4xgb72f"))))
+         "13dmzl6z62pzjiffilarkji46vy0sacxa8a7mhrhc3biq3ylzhln"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)
-       ("r-geosphere" ,r-geosphere)
+     `(("r-bitops" ,r-bitops)
+       ("r-digest" ,r-digest)
+       ("r-dplyr" ,r-dplyr)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-glue" ,r-glue)
+       ("r-httr" ,r-httr)
        ("r-jpeg" ,r-jpeg)
-       ("r-mapproj" ,r-mapproj)
+       ("r-magrittr" ,r-magrittr)
        ("r-plyr" ,r-plyr)
        ("r-png" ,r-png)
-       ("r-proto" ,r-proto)
-       ("r-reshape2" ,r-reshape2)
+       ("r-purrr" ,r-purrr)
        ("r-rgooglemaps" ,r-rgooglemaps)
        ("r-rjson" ,r-rjson)
-       ("r-scales" ,r-scales)))
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
     (home-page "https://github.com/dkahle/ggmap")
     (synopsis "Spatial visualization with ggplot2")
     (description "This package provides a collection of functions to visualize
