@@ -8108,23 +8108,27 @@ ways.")
 (define-public r-summarytools
   (package
     (name "r-summarytools")
-    (version "0.8.8")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "summarytools" version))
        (sha256
         (base32
-         "0z836m6ib9bznwcawn6xf8gck05ydxwi3bx4jbrbyqql4kci8zwb"))))
+         "1q83kii6prqf9z5v8cxj1q2944kx9x7dcxyqix3m883a94dmgivy"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-htmltools" ,r-htmltools)
+     `(("r-checkmate" ,r-checkmate)
+       ("r-dplyr" ,r-dplyr)
+       ("r-htmltools" ,r-htmltools)
        ("r-lubridate" ,r-lubridate)
+       ("r-magick" ,r-magick)
        ("r-matrixstats" ,r-matrixstats)
        ("r-pander" ,r-pander)
        ("r-pryr" ,r-pryr)
        ("r-rapportools" ,r-rapportools)
-       ("r-rcurl" ,r-rcurl)))
+       ("r-rcurl" ,r-rcurl)
+       ("r-tidyr" ,r-tidyr)))
     (home-page "https://github.com/dcomtois/summarytools")
     (synopsis "Tools to quickly and neatly summarize data")
     (description
