@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -4442,7 +4442,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -4450,8 +4450,10 @@ used by nftables.")
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
-         "1i1gfy8l7qyhc5vlrpp63s0n5kybmc9pi4dywiq8rmkhrrnddsla"))))
+         "14bygs6vg2v448cw5r4pxqi8an29hw0m9vab8hpmgjmrzjsq30dd"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags
+                 '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
     (inputs `(("bison" ,bison)
               ("flex" ,flex)
               ("gmp" ,gmp)
