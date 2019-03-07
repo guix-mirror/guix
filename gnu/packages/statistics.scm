@@ -2318,14 +2318,14 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "0ypa41qr58jgipzkqn3wjqdsjyi7qk57i46s5wy88xy3j8jl9jkv"))))
+         "0jfkna9zzhy2m5qd8501ija5jnpxzjn8wi3wjw0kr2fm4sl7qynz"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
