@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -55,7 +55,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libusb-compat" ,libusb-compat)))
+     `(("libusb" ,libusb)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -63,19 +63,27 @@
            (lambda _
              (setenv "BACKENDS" " ")
              #t))
-         ;; Disable unmaintained tests that that fail with errors resembling:
-         ;;
-         ;; < # by sane-desc 3.5 from sane-backends 1.0.24git on Jul 31 2013
-         ;; ---
-         ;; > # by sane-desc 3.5 from sane-backends 1.0.27 on 1970-01-01#
-         ;; FAIL: sane-desc -m usermap -s ./data
-         (add-before 'configure 'disable-failing-tests
+         (add-after 'unpack 'disable-failing-tests
            (lambda _
+             ;; Disable unmaintained tests that that fail with errors resembling:
+             ;;
+             ;; < # by sane-desc 3.5 from sane-backends 1.0.24git on Jul 31 2013
+             ;; ---
+             ;; > # by sane-desc 3.5 from sane-backends 1.0.27 on 1970-01-01#
+             ;; FAIL: sane-desc -m usermap -s ./data
              (for-each
               (lambda (pattern)
                 (substitute* "testsuite/tools/Makefile.in"
                   (((string-append " " pattern " ")) " ")))
               (list "usermap" "db" "udev" "udev\\+acl" "udev\\+hwdb" "hwdb"))
+
+             ;; Disable tests that try to connect to actual USB hardware & fail
+             ;; with the following error when no USB access is allowed at all:
+             ;;
+             ;; sanei_usb_test: sanei_usb_test.c:849: main: Assertion
+             ;; `test_init (1)' failed.
+             (substitute* "testsuite/sanei/Makefile.in"
+               (("sanei_usb_test\\$\\(EXEEXT\\) ") ""))
              #t))
          (add-after 'install 'install-udev-rules
            (lambda* (#:key outputs #:allow-other-keys)
