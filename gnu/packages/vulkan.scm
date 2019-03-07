@@ -244,7 +244,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.1.101")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method git-fetch)
@@ -254,7 +254,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qms8xjl0i9ajrckxkcq7rj28zjby4gbr1vz8xxkmgfbani8mai4"))))
+         "0a8vmgyn7an21bb9vxba9laf9ghvk905vn7rm8frdl8qr2b7vyw3"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
@@ -268,8 +268,7 @@ and the ICD.")
        ("python" ,python)))
     (arguments
      `(#:tests? #f                      ; No tests.
-       #:configure-flags (list "-DBUILD_ICD=off" ; FIXME: Doesn't build.
-                               (string-append "-DGLSLANG_INSTALL_DIR="
+       #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
                                (assoc-ref %build-inputs "glslang")))))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Tools")
