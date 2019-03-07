@@ -51,6 +51,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages machine-learning)
@@ -7131,6 +7132,39 @@ benchmark evaluates each of the expressions in the specified environment,
 replicating the evaluation as many times as specified, and returning the results
 conveniently wrapped into a data frame.")
     (license license:gpl2+)))
+
+(define-public r-magick
+  (package
+    (name "r-magick")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "magick" version))
+       (sha256
+        (base32
+         "18y465325mhf48x2jn3jz9khwq1z2aj13wfbdkv8k3hln1sd572m"))))
+    (build-system r-build-system)
+    (inputs
+     `(("imagemagick" ,imagemagick)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/ropensci/magick")
+    (synopsis "Advanced graphics and image-processing in R")
+    (description
+     "This package provides bindings to ImageMagick, a comprehensive image
+processing library.  It supports many common formats (PNG, JPEG, TIFF, PDF,
+etc.)  and manipulations (rotate, scale, crop, trim, flip, blur, etc).  All
+operations are vectorized via the Magick++ STL meaning they operate either on
+a single frame or a series of frames for working with layers, collages, or
+animation.  In RStudio, images are automatically previewed when printed to the
+console, resulting in an interactive editing environment.")
+    (license license:expat)))
 
 (define-public r-dvmisc
   (package
