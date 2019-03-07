@@ -9654,17 +9654,18 @@ and manipulating sets of ontological terms.")
 (define-public r-bigrquery
   (package
     (name "r-bigrquery")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bigrquery" version))
        (sha256
         (base32
-         "0z7wsqxla1pg2454l35kkfaz2s9hppwvpz1pds286ddldbbmyzis"))))
+         "0h2nzyn1w0padpl61l467j7vlkc2wair7sh6p26p94z4zfsnv0i1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
+       ("r-bit64" ,r-bit64)
        ("r-curl" ,r-curl)
        ("r-dbi" ,r-dbi)
        ("r-glue" ,r-glue)
