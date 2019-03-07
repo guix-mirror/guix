@@ -1028,14 +1028,14 @@ including functions for geolocation and routing.")
 (define-public r-haven
   (package
     (name "r-haven")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "12qh8nba1dxlsmcihrx126wmjyj8n511k17vqj10lfgvpwq2sydy"))))
+         "0x5fwc4q2gdxwwp5sxdd6q17jhpisd769y9kv0xgnjcm0cdwz8f0"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
