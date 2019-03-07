@@ -5621,14 +5621,14 @@ references and Rd files.")
 (define-public r-officer
   (package
     (name "r-officer")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "officer" version))
        (sha256
         (base32
-         "14b6ii9h3fi5g8ja929mfhxps9r7x78flqjdy437y9aygkhmiz2i"))))
+         "1ggdp8pbspn24sjshx1h48klivrx401vwk2df49j4wpwxh6dx26y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
@@ -5637,6 +5637,7 @@ references and Rd files.")
        ("r-magrittr" ,r-magrittr)
        ("r-r6" ,r-r6)
        ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
        ("r-uuid" ,r-uuid)
        ("r-xml2" ,r-xml2)
        ("r-zip" ,r-zip)))
