@@ -3876,14 +3876,14 @@ provides some missing S-PLUS functionality in R.")
 (define-public r-ifultools
   (package
     (name "r-ifultools")
-    (version "2.0-4")
+    (version "2.0-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ifultools" version))
        (sha256
         (base32
-         "0pv2msaa1rmj8csxdclzi2jwg9pfdvh87blj9j3xa3myisglq092"))))
+         "040kvbczcmmbaiaz0k0pdq9af541pjj6iwzh1a3w4szh9w6b5a3j"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
