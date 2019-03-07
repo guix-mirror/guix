@@ -1330,13 +1330,13 @@ adapted for other output formats, such as HTML or LaTeX.")
 (define-public r-formatr
   (package
     (name "r-formatr")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "formatR" version))
               (sha256
                (base32
-                "19sd23vgs4ac0fwlw40j3676k6mramb0ajlq8hdw23kjwdx1jk47"))))
+                "0a9229rg3s9qga5v2fwfdqr0z3bk2yycv8kijrcm3jh66l68zjgm"))))
     (build-system r-build-system)
     (home-page "http://yihui.name/formatR")
     (synopsis "Format R code automatically")
