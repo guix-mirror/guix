@@ -6814,6 +6814,32 @@ not found in either TASSEL or @code{r-qtl} in addition to visualization of
 genotypes as \"graphical genotypes\".")
     (license license:gpl3)))
 
+(define-public r-furrr
+  (package
+    (name "r-furrr")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "furrr" version))
+       (sha256
+        (base32
+         "1ld9aa9hydna94hgm6p91zjbfv1dz1vsgchjlpknkg6irbvkfafx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-future" ,r-future)
+       ("r-globals" ,r-globals)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://github.com/DavisVaughan/furrr")
+    (synopsis "Apply mapping functions in parallel using futures")
+    (description
+     "This package provides implementations of the family of @code{map()}
+functions from the @code{purrr} package that can be resolved using any
+@code{future}-supported backend, e.g. parallel on the local machine or
+distributed on a compute cluster.")
+    (license license:lgpl2.1+)))
+
 (define-public r-abjutils
   (package
     (name "r-abjutils")
