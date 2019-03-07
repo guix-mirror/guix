@@ -1709,7 +1709,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.17")
+    (version "5.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1718,7 +1718,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g8iw2pya32ifljbdx6z6rpcinmzm81i9minhi2bi1d500ailn7s"))))
+                "186i1pna2f3fwa2001y8mw5131h0sndhfdxzfqq2gnr1m83sjm0w"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -1743,7 +1743,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.17.1")
+    (version "5.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1752,7 +1752,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19sfblgh9mchkgw32n7gdvm7a8a9jxsl9cdlgmxn9bk9m939a2sg"))
+                "1b8n8nzlvmld1hl3zgs1xg4jbc1nsf1m2bn7fi794vdr06s6n911"))
               (modules '((guix build utils)))
               (snippet
                 '(begin
