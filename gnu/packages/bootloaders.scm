@@ -391,7 +391,6 @@ tree binary files.  These are board description files used by Linux and BSD.")
        ("dtc" ,dtc)
        ("flex" ,flex)
        ("lz4" ,lz4)
-       ("openssl" ,openssl)
        ("python-2" ,python-2)
        ("python2-coverage" ,python2-coverage)
        ("python2-pytest" ,python2-pytest)
@@ -440,9 +439,14 @@ also initializes the boards (RAM etc).")
               (("def test_ctrl_c")
                "@pytest.mark.skip(reason='Guix has problems with SIGINT')
 def test_ctrl_c"))
-             ;; This test requires a sound system, which is un-used in u-boot-tools.
              (for-each (lambda (file)
                               (substitute* file
+                                  ;; Disable signatures, due to GPL/Openssl
+                                  ;; license incompatibilities.  See
+                                  ;; https://bugs.gnu.org/34717 for details.
+                                  (("CONFIG_FIT_SIGNATURE=y") "CONFIG_FIT_SIGNATURE=n")
+                                  ;; This test requires a sound system, which is un-used
+                                  ;; in u-boot-tools.
                                   (("CONFIG_SOUND=y") "CONFIG_SOUND=n")))
                               (find-files "configs" "sandbox_.*defconfig$"))
              #t))
