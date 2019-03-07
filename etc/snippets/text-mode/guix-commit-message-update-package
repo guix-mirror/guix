@@ -3,7 +3,24 @@
 # key: update
 # condition: git-commit-mode
 # --
-gnu: $1: Update to $2.
+
+gnu: ${1:`(with-temp-buffer
+           (magit-git-wash #'magit-diff-wash-diffs
+             "diff" "--staged")
+           (beginning-of-buffer)
+           (when (search-forward "(define-public " nil 'noerror)
+             (thing-at-point 'sexp 'no-properties)))`}: Update to ${2:`(with-temp-buffer
+    (magit-git-wash #'magit-diff-wash-diffs
+      "diff" "--staged")
+    (beginning-of-buffer)
+    (search-forward "name" nil 'noerror)
+    (search-forward "+" nil 'noerror)   ; first change
+    (when (and (search-forward "version " nil 'noerror)
+               (looking-at-p "\""))
+      (let ((end (save-excursion (search-forward "\")" nil 'noerror))))
+        (when end
+          (forward-char)
+          (buffer-substring-no-properties (point) (- end 2))))))`}.
 
 * `(car (magit-staged-files))` ($1): Update to $2.$0
 `(mapconcat (lambda (file) (concat "* " file)) (cdr (magit-staged-files)) "\n")`
