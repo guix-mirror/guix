@@ -6844,23 +6844,26 @@ distributed on a compute cluster.")
 (define-public r-abjutils
   (package
     (name "r-abjutils")
-    (version "0.2.1")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abjutils" version))
        (sha256
-        (base32 "0qrsc4if7aif73qp95lw6b5986c2r0jn7m39123zij8k15vc935b"))))
+        (base32 "0n4zps65y3zg0gfzlv97w91si52a9izkncirskbkj5x9hk0nhxcv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-devtools" ,r-devtools)
        ("r-dplyr" ,r-dplyr)
+       ("r-furrr" ,r-furrr)
+       ("r-future" ,r-future)
        ("r-glue" ,r-glue)
        ("r-httr" ,r-httr)
        ("r-magrittr" ,r-magrittr)
-       ("r-plyr" ,r-plyr)
        ("r-progress" ,r-progress)
        ("r-purrr" ,r-purrr)
+       ("r-readr" ,r-readr)
+       ("r-rlang" ,r-rlang)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-scales" ,r-scales)
        ("r-stringi" ,r-stringi)
