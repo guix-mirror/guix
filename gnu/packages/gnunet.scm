@@ -163,8 +163,6 @@ tool to extract metadata from a file and print the results.")
       ("libgcrypt" ,libgcrypt)
       ("openssl" ,openssl)
       ("zlib" ,zlib)))
-   (arguments
-    `(#:parallel-tests? #f))
    (synopsis "C library implementing an HTTP 1.1 server")
    (description
     "GNU libmicrohttpd is a small, embeddable HTTP server implemented as a
