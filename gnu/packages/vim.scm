@@ -698,7 +698,8 @@ are detected, the user is notified.")))
          (add-after 'unpack 'patch-tic
            (lambda _
              (substitute* "src/nvim/tui/tui.c"
-               (("value != NULL") "value != NULL && value != (char *)-1"))))
+               (("value != NULL") "value != NULL && value != (char *)-1"))
+             #t))
          (add-after 'unpack 'set-lua-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((lua-version "5.2")
