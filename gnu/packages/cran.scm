@@ -639,7 +639,7 @@ and vice-versa.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method git-fetch)
@@ -649,7 +649,7 @@ and vice-versa.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "041q2gzvzs13syfhbirmkik96asdji8dxnnbs63j7v1ks97hrvvz"))))
+         "1kl3dh68h4cnrm3rqn9pddk5n6bsmr5x0626bkfv0qqi0q92zin4"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -700,8 +700,6 @@ and vice-versa.")
                               (minify source #:target target)))
                            '(("jqueryui/jquery-ui.js" .
                               "jqueryui/jquery-ui.min.js")
-                             ("showdown/src/showdown.js" .
-                              "showdown/compressed/showdown.js")
                              ("datepicker/js/bootstrap-datepicker.js" .
                               "datepicker/js/bootstrap-datepicker.min.js")
                              ("ionrangeslider/js/ion.rangeSlider.js" .
