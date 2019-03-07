@@ -3715,14 +3715,14 @@ automatically.")
 (define-public r-metap
   (package
     (name "r-metap")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "metap" version))
        (sha256
         (base32
-         "18rzvqfzyk8fn54gjvy2qd21nk9w69j7ihww477ma3f3ab6i982h"))))
+         "10kv7z8pik5iy374h399vws0ldf41y2nczlwh8axqf9dcwl084i0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
