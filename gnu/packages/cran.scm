@@ -7166,6 +7166,39 @@ animation.  In RStudio, images are automatically previewed when printed to the
 console, resulting in an interactive editing environment.")
     (license license:expat)))
 
+(define-public r-survey
+  (package
+    (name "r-survey")
+    (version "3.35-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "survey" version))
+       (sha256
+        (base32
+         "1nv4sdfmidvyjgvp3zvn5iw35bb8w0v7095is2pdy8cckkgdvr8i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-matrix" ,r-matrix)
+       ("r-minqa" ,r-minqa)
+       ("r-numderiv" ,r-numderiv)
+       ("r-survival" ,r-survival)))
+    (home-page "http://r-survey.r-forge.r-project.org/survey/")
+    (synopsis "Analysis of complex survey samples")
+    (description
+     "This package provides tools for the analysis of complex survey samples.
+The provided features include: summary statistics, two-sample tests, rank
+tests, generalised linear models, cumulative link models, Cox models,
+loglinear models, and general maximum pseudolikelihood estimation for
+multistage stratified, cluster-sampled, unequally weighted survey samples;
+variances by Taylor series linearisation or replicate weights;
+post-stratification, calibration, and raking; two-phase subsampling designs;
+graphics; PPS sampling without replacement; principal components, and factor
+analysis.")
+    ;; Either version of the GPL.
+    (license (list license:gpl2 license:gpl3))))
+
 (define-public r-dvmisc
   (package
     (name "r-dvmisc")
