@@ -410,7 +410,7 @@ has no notion of what's interesing, but it's very good at that notifying part.")
 (define-public unibilium
   (package
     (name "unibilium")
-    (version "1.2.1")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -420,7 +420,7 @@ has no notion of what's interesing, but it's very good at that notifying part.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "11mbfijdrvbmdlmxs8j4vij78ki0vna89yg3r9n9g1i6j45hiq2r"))))
+         "1wa9a32wzqnxqh1jh554afj13dzjr6mw2wzqzw8d08nza9pg2ra2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -433,7 +433,8 @@ has no notion of what's interesing, but it's very good at that notifying part.")
        (modify-phases %standard-phases
          (delete 'configure))))
     (native-inputs
-     `(("libtool" ,libtool)))
+     `(("libtool" ,libtool)
+       ("perl" ,perl)))
     (home-page "https://github.com/mauke/unibilium")
     (synopsis "Terminfo parsing library")
     (description "Unibilium is a basic C terminfo library.  It doesn't depend
