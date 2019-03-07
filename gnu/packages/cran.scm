@@ -7229,18 +7229,26 @@ analysis.")
 (define-public r-dvmisc
   (package
     (name "r-dvmisc")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dvmisc" version))
        (sha256
-        (base32 "1dy0yykskwhkql19bhzmbwsgv028afc8jh9yqwbczj6f3vpv31zh"))))
+        (base32 "0x391pxg5mqgp5xxc8qwhwxky8ds7d9gr9iwmsb12c92kxfk00bv"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)
+     `(("r-cubature" ,r-cubature)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-mass" ,r-mass)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-pracma" ,r-pracma)
+       ("r-purrr" ,r-purrr)
        ("r-rbenchmark" ,r-rbenchmark)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-survey" ,r-survey)))
     (home-page "https://cran.r-project.org/web/packages/dvmisc/")
     (synopsis "Faster computation of common statistics and miscellaneous functions")
     (description
