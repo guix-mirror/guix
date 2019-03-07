@@ -156,14 +156,14 @@ read a protected key.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.5-3")
+    (version "2.5-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "023xznh0iy0496icpchadmp7a3rk3nj9s48fvwlvp3dssw58yp3c"))))
+         "1q4khii0xbjwmkida0b35q8rmwhg325qizjwz6slkjhz250a85ji"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
