@@ -148,14 +148,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.62")
+   (version "0.9.63")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0jfvi1fb4im3a3m8qishbmzx3zch993c0mhvl2k92l1zf1yhjgmx"))))
+              "173lj66crwvhzwp1r812sc5h1hda7g6lb9l1y5zf7w3pw4dnzhrp"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -164,17 +164,7 @@ tool to extract metadata from a file and print the results.")
       ("openssl" ,openssl)
       ("zlib" ,zlib)))
    (arguments
-    `(#:parallel-tests? #f
-      #:phases (modify-phases %standard-phases
-                 (add-before 'check 'add-missing-LDFLAGS
-                   (lambda _
-                     ;; The two test_upgrade* programs depend on GnuTLS
-                     ;; directly but lack -lgnutls; add it.
-                     (substitute* "src/microhttpd/Makefile"
-                       (("^test_upgrade(.*)LDFLAGS = (.*)$" _ first rest)
-                        (string-append "test_upgrade" first
-                                       "LDFLAGS = -lgnutls " rest)))
-                     #t)))))
+    `(#:parallel-tests? #f))
    (synopsis "C library implementing an HTTP 1.1 server")
    (description
     "GNU libmicrohttpd is a small, embeddable HTTP server implemented as a
