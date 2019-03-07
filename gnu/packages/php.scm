@@ -58,7 +58,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.3.1")
+    (version "7.3.3")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -66,7 +66,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qikydmjg8k68l56azq4vg3gkynqwlpzayd5qi9wsl03pr03xsfg"))
+                "1cxrpaz5cvx1qq9klwgvcyvcly865sxpn4bdk82wpl43l5wkxc3b"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -234,6 +234,13 @@
                          "ext/gd/tests/xpm2gd.phpt"
                          "ext/gd/tests/xpm2jpg.phpt"
                          "ext/gd/tests/xpm2png.phpt"
+                         ;; Whitespace difference, probably caused by a very
+                         ;; long store path
+                         "ext/gd/tests/bug77479.phpt"
+                         ;; Slightly different result (NULL instead of false),
+                         ;; but the bug report suggests the issue was in
+                         ;; the bundled gd, not upstream.
+                         "ext/gd/tests/bug77272.phpt"
 
                          ;; XXX: These iconv tests have the expected outcome,
                          ;; but with different error messages.
