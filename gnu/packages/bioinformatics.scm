@@ -1770,7 +1770,9 @@ high-throughput sequencing data – with an emphasis on simplicity.")
      `(#:tests? #f ; there are no tests
        #:make-flags
        ;; Executables are copied directly to the PREFIX.
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out") "/bin"))
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out") "/bin")
+             ;; Support longer sequences (e.g. Pacbio sequences)
+             "MAX_SEQ=60000000")
        #:phases
        (modify-phases %standard-phases
          ;; No "configure" script
