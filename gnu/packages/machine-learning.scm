@@ -885,7 +885,8 @@ interactive learning.")
          "1q8c34rpmwkfy3r4d5172pzdkpfryj561897z9r3x22gq7813x1m"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2)) ; only Python 2.7 is supported
+     `(#:tests? #f ; some test files are missing
+       #:python ,python-2)) ; only Python 2.7 is supported
     (propagated-inputs
      `(("python2-numpy" ,python2-numpy)
        ("python2-scipy" ,python2-scipy)
