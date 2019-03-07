@@ -4420,14 +4420,14 @@ environment within Shiny.")
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
-    (version "0.9.7")
+    (version "0.9.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "radiant.data" version))
        (sha256
         (base32
-         "1f98ahki0kyb27gl55a859zb0lsvk9gddd9f54y767xfs6h89cgk"))
+         "17mgm0sggh4f7ihqmj9m3996p3pqc7h2cwx6ll1ha3kg5mx0znyn"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4463,7 +4463,7 @@ environment within Shiny.")
        ("r-shiny" ,r-shiny)
        ("r-shinyfiles" ,r-shinyfiles)
        ("r-shinyace" ,r-shinyace)
-       ("r-summarytools" ,r-summarytools)
+       ("r-stringi" ,r-stringi)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
        ("r-writexl" ,r-writexl)))
