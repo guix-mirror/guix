@@ -6095,14 +6095,14 @@ and automatically generate usage notices.")
 (define-public r-hash
   (package
     (name "r-hash")
-    (version "2.2.6")
+    (version "2.2.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hash" version))
        (sha256
         (base32
-         "0mkx59bmni3b283znvbndnkbar85fzavzdfgmwrhskidsqcz34yz"))))
+         "0b3fl0rvgwb992knl81vm99lsldg5clvaqjh6mamm6zqmb6dz056"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/hash/")
     (synopsis "Implementation of hash/associated arrays/dictionaries")
