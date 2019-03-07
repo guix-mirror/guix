@@ -1679,28 +1679,26 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.7.8")
+    (version "0.8.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "06p59nhli8c1sarghzxq0y4pk6lyyz3xwkarp55b252dfg2rly9p"))))
+                "0p6dbjrgqyklc67g53v1a5xdp9x2jpcsdcs6v3djf9d366fqh244"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
-       ("r-r6" ,r-r6)
-       ("r-magrittr" ,r-magrittr)
-       ("r-rlang" ,r-rlang)
-       ("r-plogr" ,r-plogr)
+       ("r-bh" ,r-bh)
        ("r-glue" ,r-glue)
+       ("r-magrittr" ,r-magrittr)
        ("r-pkgconfig" ,r-pkgconfig)
-       ("r-bindrcpp" ,r-bindrcpp)
+       ("r-plogr" ,r-plogr)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
        ("r-tidyselect" ,r-tidyselect)))
-    (native-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("r-bh" ,r-bh)))
     (home-page "https://github.com/hadley/dplyr")
     (synopsis "Tools for working with data frames in R")
     (description
