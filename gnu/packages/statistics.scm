@@ -3276,14 +3276,14 @@ options and registries, vignette, unit test and bibtex related utilities.")
  (define-public r-registry
    (package
      (name "r-registry")
-     (version "0.5")
+     (version "0.5-1")
      (source
       (origin
         (method url-fetch)
         (uri (cran-uri "registry" version))
         (sha256
          (base32
-          "1yqfl1g6vsl28zn8brzc39659k8lqsmfms7900j7p64ilydyb2sx"))))
+          "1k3j6dx350awamr0dwwgkhfs46vsnj4nf08iw5byq0x7n3nkdsnz"))))
      (build-system r-build-system)
      (home-page "https://cran.r-project.org/web/packages/registry")
      (synopsis "Infrastructure for R package registries")
