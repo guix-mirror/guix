@@ -10560,20 +10560,21 @@ regression coefficients can be conducted via jackknifing.")
 (define-public r-huge
   (package
     (name "r-huge")
-    (version "1.2.7")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "huge" version))
        (sha256
         (base32
-         "134d951x42vy9dcmf155fbvik2934nh6qm2w5jlx3x2c6cf7faq4"))))
+         "18psr7arynax38hcc5y9dxskhsg4a5zjw3hjbgf96zy59wdib5ch"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-igraph" ,r-igraph)
-       ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
-       ("r-matrix" ,r-matrix)))
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)))
     (home-page "https://cran.r-project.org/web/packages/huge")
     (synopsis "High-dimensional undirected graph estimation")
     (description
