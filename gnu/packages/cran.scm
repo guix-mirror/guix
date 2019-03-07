@@ -3742,15 +3742,18 @@ published results; and a routine for graphical display.")
 (define-public r-network
   (package
     (name "r-network")
-    (version "1.13.0.1")
+    (version "1.14-377")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "network" version))
        (sha256
         (base32
-         "1bbkbqkqf1d7irfwh08c13c2pfypir1ssvlqrln83irqns1ikdv0"))))
+         "0iiy5n17kysrdfs20zr7qald4lwkvws0axi1qkr8f7vzv7w04g01"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-tibble" ,r-tibble)))
     (home-page "https://statnet.org/")
     (synopsis "Classes for relational data")
     (description
