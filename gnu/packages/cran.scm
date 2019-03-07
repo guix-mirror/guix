@@ -84,6 +84,28 @@
 the system clipboards.")
     (license license:gpl3)))
 
+(define-public r-ellipsis
+  (package
+    (name "r-ellipsis")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ellipsis" version))
+       (sha256
+        (base32
+         "0pw94qpg81xmsdsagpqxddv7m2cmdszmyyq99dk3caqqj01z7wg6"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/hadley/ellipsis")
+    (synopsis "Tools for working with additional arguments")
+    (description
+     "In S3 generics, it's useful to take @code{...} so that methods can have
+additional arguments.  But this flexibility comes at a cost: misspelled
+arguments will be silently ignored.  The @code{ellipsis} package is an
+experiment that allows a generic to warn if any arguments passed in @code{...}
+are not used.")
+    (license license:gpl3)))
+
 (define-public r-sys
   (package
     (name "r-sys")
