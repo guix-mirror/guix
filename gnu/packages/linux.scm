@@ -3276,8 +3276,8 @@ write access to exFAT devices.")
     (synopsis "Mount ISO file system images")
     (description
      "FuseISO is a FUSE module to mount ISO filesystem images (.iso, .nrg,
-.bin, .mdf and .img files).  It currently support plain ISO9660 Level 1 and 2,
-Rock Ridge, Joliet, and zisofs.")
+.bin, .mdf and .img files).  It supports plain ISO9660 Level 1 and 2, Rock
+Ridge, Joliet, and zisofs.")
     (license license:gpl2)))
 
 (define-public gpm
