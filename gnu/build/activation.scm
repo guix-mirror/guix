@@ -24,6 +24,7 @@
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -90,6 +91,21 @@ owner-writable in HOME."
                     (make-file-writable target))))
               files)))
 
+(define (duplicates lst)
+  "Return elements from LST present more than once in LST."
+  (let loop ((lst lst)
+             (seen vlist-null)
+             (result '()))
+    (match lst
+      (()
+       (reverse result))
+      ((head . tail)
+       (loop tail
+             (vhash-cons head #t seen)
+             (if (vhash-assoc head seen)
+                 (cons head result)
+                 result))))))
+
 (define (activate-users+groups users groups)
   "Make sure USERS (a list of user account records) and GROUPS (a list of user
 group records) are all available."
@@ -97,8 +113,18 @@ group records) are all available."
     (let ((home (user-account-home-directory user))
           (pwd  (getpwnam (user-account-name user))))
       (mkdir-p home)
+
+      ;; Always set ownership and permissions for home directories of system
+      ;; accounts.  If a service needs looser permissions on its home
+      ;; directories, it can always chmod it in an activation snippet.
       (chown home (passwd:uid pwd) (passwd:gid pwd))
       (chmod home #o700)))
+
+  (define system-accounts
+    (filter (lambda (user)
+              (and (user-account-system? user)
+                   (user-account-create-home-directory? user)))
+            users))
 
   ;; Allow home directories to be created under /var/lib.
   (mkdir-p "/var/lib")
@@ -111,11 +137,14 @@ group records) are all available."
 
     ;; Home directories of non-system accounts are created by
     ;; 'activate-user-home'.
-    (for-each make-home-directory
-              (filter (lambda (user)
-                        (and (user-account-system? user)
-                             (user-account-create-home-directory? user)))
-                      users))))
+    (for-each make-home-directory system-accounts)
+
+    ;; Turn shared home directories, such as /var/empty, into root-owned,
+    ;; read-only places.
+    (for-each (lambda (directory)
+                (chown directory 0 0)
+                (chmod directory #o555))
+              (duplicates (map user-account-home-directory system-accounts)))))
 
 (define (activate-user-home users)
   "Create and populate the home directory of USERS, a list of tuples, unless
