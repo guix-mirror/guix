@@ -50,6 +50,7 @@
             cpl1.0
             edl1.0
             epl1.0
+            epl2.0
             expat
             freetype
             freebsd-doc
@@ -273,6 +274,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "EPL 1.0"
            "http://directory.fsf.org/wiki/License:EPLv1.0"
            "https://www.gnu.org/licenses/license-list#EPL"))
+
+(define epl2.0
+  (license "EPL 2.0"
+           "https://www.eclipse.org/legal/epl-2.0/"
+           "https://www.gnu.org/licenses/license-list#EPL2"))
 
 (define expat
   (license "Expat"
