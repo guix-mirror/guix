@@ -42,6 +42,12 @@
                 (default "~/Music"))
   (playlist-dir mpd-configuration-playlist-dir
                 (default "~/.mpd/playlists"))
+  (db-file      mpd-configuration-db-file
+                (default "~/.mpd/tag_cache"))
+  (state-file   mpd-configuration-state-file
+                (default "~/.mpd/state"))
+  (sticker-file mpd-configuration-sticker-file
+                (default "~/.mpd/sticker.sql"))
   (port         mpd-configuration-port
                 (default "6600"))
   (address      mpd-configuration-address
@@ -61,6 +67,9 @@
         `(("user" ,mpd-configuration-user)
           ("music_directory" ,mpd-configuration-music-dir)
           ("playlist_directory" ,mpd-configuration-playlist-dir)
+          ("db_file" ,mpd-configuration-db-file)
+          ("state_file" ,mpd-configuration-state-file)
+          ("sticker_file" ,mpd-configuration-sticker-file)
           ("port" ,mpd-configuration-port)
           ("bind_to_address" ,mpd-configuration-address)))))
 

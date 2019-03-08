@@ -20324,6 +20324,15 @@ The directory to scan for music files.
 @item @code{playlist-dir} (default: @code{"~/.mpd/playlists"})
 The directory to store playlists.
 
+@item @code{db-file} (default: @code{"~/.mpd/tag_cache"})
+The location of the music database.
+
+@item @code{state-file} (default: @code{"~/.mpd/state"})
+The location of the file that stores current MPD's state.
+
+@item @code{sticker-file} (default: @code{"~/.mpd/sticker.sql"})
+The location of the sticker database.
+
 @item @code{port} (default: @code{"6600"})
 The port to run mpd on.
 
