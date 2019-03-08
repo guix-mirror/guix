@@ -3277,6 +3277,36 @@ slow gear audio effect to produce volume swells."))))
       (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
 a simulation of an analog Wah pedal with switchless activation."))))
 
+(define-public rkrlv2
+  (let ((commit "d8c17d3c976107e5c012970276d7cf0aa059f15b")
+        (revision "1"))
+    (package
+      (name "rkrlv2")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ssj71/rkrlv2.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "035z068rlafb7ibgqf34ck2lm4fab8yzlx41qh061x2xi4hxkvp0"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments '(#:tests? #f)) ; there are no tests
+      (inputs
+       `(("fftw" ,fftw)
+         ("libsamplerate" ,libsamplerate)
+         ("lv2" ,lv2)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/ssj71/rkrlv2")
+      (synopsis "Rakarrack effects ported to LV2 plugins")
+      (description "This package provides the Rakarrack effects as LV2
+plugins.  The ports are done such that hopefully when Rakarrack gets an active
+maintainer these will get merged into the original project.")
+      (license license:gpl2))))
+
 (define-public mod-utilities
   (let ((commit "80ea3ea9f52fab7f191671f4810bf90fc955a046")
         (revision "2"))
