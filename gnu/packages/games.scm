@@ -4437,7 +4437,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("perl" ,perl)
-       ("python" ,python)
+       ("python" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
        ("pkg-config" ,pkg-config)))
     (arguments
@@ -4454,11 +4454,6 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                "-Csource"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-python
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "source/util/species-gen.py"
-               (("python") "python3"))
-             #t))
          (delete 'configure)
          (replace 'check
            (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
