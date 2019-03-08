@@ -1092,7 +1092,7 @@ package provides command line tools using the Bio++ library.")
 (define-public blast+
   (package
     (name "blast+")
-    (version "2.6.0")
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1100,8 +1100,7 @@ package provides command line tools using the Bio++ library.")
                     version "/ncbi-blast-" version "+-src.tar.gz"))
               (sha256
                (base32
-                "15n937pw5aqmyfjb6l387d18grqbb96l63d5xj4l7yyh0zbf2405"))
-              (patches (search-patches "blast+-fix-makefile.patch"))
+                "1jlq0afxxgczpp35k6mxh8mn4jzq7vqcnaixk166sfj10wq8v9qh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1209,6 +1208,7 @@ package provides command line tools using the Bio++ library.")
                "include")) ;  33 MB
     (inputs
      `(("bzip2" ,bzip2)
+       ("lmdb" ,lmdb)
        ("zlib" ,zlib)
        ("pcre" ,pcre)
        ("perl" ,perl)
