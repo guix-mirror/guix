@@ -4454,6 +4454,11 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                "-Csource"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-flags
+           (lambda _
+             (substitute* "source/Makefile"
+               (("-mfpmath=sse -msse2") ""))
+             #t))
          (delete 'configure)
          (replace 'check
            (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
