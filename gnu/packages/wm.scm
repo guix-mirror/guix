@@ -392,16 +392,16 @@ prompt.")
     (version "2.11-c")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/PandorasFox/i3lock-color/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PandorasFox/i3lock-color.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0zh7il2y6dmzym3w6r9xii5dma8pjjjlq4dm5iby7m3gvplj4q9p"))))
+        (base32 "1myq9fazkwd776agrnj27bm5nwskvss9v9a5qb77n037dv8d0rdw"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f))                              ;no tests included
+     `(#:tests? #f))                    ; no tests included
     (inputs
      `(("cairo" ,cairo)
        ("libev" ,libev)
