@@ -1303,32 +1303,29 @@ facilities for checking incoming mail.")
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var")
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'pre-configure
-                   (lambda _
-                     ;; Simple hack to avoid installing in /etc.
-                     (substitute* '("doc/Makefile.in"
-                                    "doc/example-config/Makefile.in")
-                       (("pkgsysconfdir = .*")
-                        "pkgsysconfdir = /tmp/etc"))
-                     #t))
-                  (add-after
-                   'unpack 'patch-file-names
-                   (lambda _
-                     (substitute*
-                         "src/lib-program-client/test-program-client-local.c"
-                       (("(/bin/| )cat") (which "cat"))
-                       (("/bin/echo") (which "echo"))
-                       (("/bin/false") (which "false"))
-                       (("/bin/sh") (which "bash"))
-                       (("head") (which "head"))
-                       (("sleep") (which "sleep")))
-                     (substitute*
-                         (list "src/lib-smtp/test-bin/sendmail-exit-1.sh"
-                               "src/lib-smtp/test-bin/sendmail-success.sh")
-                       (("cat") (which "cat")))
-                     #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             ;; Simple hack to avoid installing in /etc.
+             (substitute* '("doc/Makefile.in"
+                            "doc/example-config/Makefile.in")
+               (("pkgsysconfdir = .*")
+                "pkgsysconfdir = /tmp/etc"))
+             #t))
+         (add-after 'unpack 'patch-file-names
+           (lambda _
+             (substitute* "src/lib-program-client/test-program-client-local.c"
+               (("(/bin/| )cat") (which "cat"))
+               (("/bin/echo") (which "echo"))
+               (("/bin/false") (which "false"))
+               (("/bin/sh") (which "bash"))
+               (("head") (which "head"))
+               (("sleep") (which "sleep")))
+             (substitute* (list "src/lib-smtp/test-bin/sendmail-exit-1.sh"
+                                "src/lib-smtp/test-bin/sendmail-success.sh")
+               (("cat") (which "cat")))
+             #t)))))
     (home-page "https://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
     (description
