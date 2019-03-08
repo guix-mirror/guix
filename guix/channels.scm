@@ -477,6 +477,12 @@ be used as a profile hook."
 
     (gexp->derivation-in-inferior "guix-package-cache" build
                                   profile
+
+                                  ;; If the Guix in PROFILE is too old and
+                                  ;; lacks 'guix repl', don't build the cache
+                                  ;; instead of failing.
+                                  #:silent-failure? #t
+
                                   #:properties '((type . profile-hook)
                                                  (hook . package-cache))
                                   #:local-build? #t)))
