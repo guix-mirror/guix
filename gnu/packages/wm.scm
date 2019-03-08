@@ -434,16 +434,16 @@ Features include:
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/meskarune/i3lock-fancy/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/meskarune/i3lock-fancy.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "020m7mnfq5cvir7p9v3hkb7cvb4cai33wppxl2zdwscwwjnchc5y"))))
+        (base32 "11g2kkim33ra38d1m897sq1ifajw17iyw9mr7sg1q8i2ibl4lfsi"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;No tests included
+     `(#:tests? #f                      ; no tests included
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
