@@ -4459,6 +4459,11 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (substitute* "source/Makefile"
                (("-mfpmath=sse -msse2") ""))
              #t))
+         (add-after 'unpack 'find-SDL-image
+           (lambda _
+             (substitute* "source/windowmanager-sdl.cc"
+               (("SDL_image.h") "SDL2/SDL_image.h"))
+             #t))
          (delete 'configure)
          (replace 'check
            (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
