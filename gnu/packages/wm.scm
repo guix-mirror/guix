@@ -389,7 +389,7 @@ prompt.")
 (define-public i3lock-color
   (package
     (name "i3lock-color")
-    (version "2.11-c")
+    (version "2.12.c")
     (source
      (origin
        (method git-fetch)
@@ -398,7 +398,7 @@ prompt.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1myq9fazkwd776agrnj27bm5nwskvss9v9a5qb77n037dv8d0rdw"))))
+        (base32 "08fhnchf187b73h52xgzb86g6byzxz085zs9galsvl687g5zxk34"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests included
@@ -410,7 +410,8 @@ prompt.")
        ("libxkbcommon" ,libxkbcommon)
        ("linux-pam" ,linux-pam)
        ("xcb-util" ,xcb-util)
-       ("xcb-util-image" ,xcb-util-image)))
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-xrm" ,xcb-util-xrm)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
