@@ -1305,14 +1305,6 @@ facilities for checking incoming mail.")
                            "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
-           (lambda _
-             ;; Simple hack to avoid installing in /etc.
-             (substitute* '("doc/Makefile.in"
-                            "doc/example-config/Makefile.in")
-               (("pkgsysconfdir = .*")
-                "pkgsysconfdir = /tmp/etc"))
-             #t))
          (add-after 'unpack 'patch-file-names
            (lambda _
              (substitute* "src/lib-program-client/test-program-client-local.c"
@@ -1325,7 +1317,12 @@ facilities for checking incoming mail.")
              (substitute* (list "src/lib-smtp/test-bin/sendmail-exit-1.sh"
                                 "src/lib-smtp/test-bin/sendmail-success.sh")
                (("cat") (which "cat")))
-             #t)))))
+             #t))
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             ;; Simple hack to avoid installing a trivial README in /etc.
+             (apply invoke "make" "install" "sysconfdir=/tmp/bogus"
+                    make-flags))))))
     (home-page "https://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
     (description
