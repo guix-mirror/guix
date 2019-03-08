@@ -6238,8 +6238,11 @@ The outputs of the derivation---derivations produce at least one file or
 directory in the store, but may produce more.
 
 @item
-The inputs of the derivations, which may be other derivations or plain
-files in the store (patches, build scripts, etc.)
+@cindex build-time dependencies
+@cindex dependencies, build-time
+The inputs of the derivations---i.e., its build-time dependencies---which may
+be other derivations or plain files in the store (patches, build scripts,
+etc.)
 
 @item
 The system type targeted by the derivation---e.g., @code{x86_64-linux}.
@@ -6269,6 +6272,16 @@ which the expected content hash is known in advance are modeled as
 of a fixed-output derivation are independent of its inputs---e.g., a
 source code download produces the same result regardless of the download
 method and tools being used.
+
+@cindex references
+@cindex run-time dependencies
+@cindex dependencies, run-time
+The outputs of derivations---i.e., the build results---have a set of
+@dfn{references}, as reported by the @code{references} RPC or the
+@command{guix gc --references} command (@pxref{Invoking guix gc}).  References
+are the set of run-time dependencies of the build results.  References are a
+subset of the inputs of the derivation; this subset is automatically computed
+by the build daemon by scanning all the files in the outputs.
 
 The @code{(guix derivations)} module provides a representation of
 derivations as Scheme objects, along with procedures to create and
