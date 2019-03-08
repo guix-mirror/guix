@@ -524,7 +524,7 @@ by UCSC (hg19, February 2009) and stored in Biostrings objects.")
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
@@ -535,7 +535,7 @@ by UCSC (hg19, February 2009) and stored in Biostrings objects.")
                            "/geneLenDataBase_" version ".tar.gz"))
        (sha256
         (base32
-         "07mmmn53kb7v14msc13dsbm8ghssbvwcrhifrk15hn37bw2p4ja5"))))
+         "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
     (properties
      `((upstream-name . "geneLenDataBase")))
     (build-system r-build-system)
