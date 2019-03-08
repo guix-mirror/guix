@@ -103,6 +103,7 @@ MODULES =					\
   guix/cve.scm					\
   guix/workers.scm				\
   guix/zlib.scm					\
+  guix/lzlib.scm				\
   guix/build-system.scm				\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
@@ -404,6 +405,7 @@ SCM_TESTS =					\
   tests/cve.scm					\
   tests/workers.scm				\
   tests/zlib.scm				\
+  tests/lzlib.scm				\
   tests/file-systems.scm			\
   tests/uuid.scm				\
   tests/system.scm				\

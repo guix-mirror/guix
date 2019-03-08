@@ -925,6 +925,7 @@ Info manual."
                                %store-database-directory
                                %config-directory
                                %libz
+                               ;; TODO: %liblz
                                %gzip
                                %bzip2
                                %xz))

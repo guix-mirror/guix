@@ -34,6 +34,7 @@
 
             %system
             %libz
+            %liblz
             %gzip
             %bzip2
             %xz))
@@ -89,6 +90,9 @@
 
 (define %libz
   "@LIBZ@")
+
+(define %liblz
+  "@LIBLZ@")
 
 (define %gzip
   "@GZIP@")
