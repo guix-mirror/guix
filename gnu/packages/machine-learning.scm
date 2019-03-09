@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -370,6 +370,24 @@ learning method.  Most interesting features are variable selection, missing
 value imputation, classifier creation, generalization error estimation and
 sample proximities between pairs of cases.")
     (license license:gpl3+)))
+
+(define-public openfst
+  (package
+    (name "openfst")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.openfst.org/twiki/pub/FST/"
+                                  "FstDownload/openfst-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0x9wfcqd8hq4h349s7j77sr60h8xjdfshqw1m3a2n6z5bdr9qkm1"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.openfst.org")
+    (synopsis "Library for weighted finite-state transducers")
+    (description "OpenFst is a library for constructing, combining,
+optimizing, and searching weighted finite-state transducers (FSTs).")
+    (license license:asl2.0)))
 
 (define-public shogun
   (package
