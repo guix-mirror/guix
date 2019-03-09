@@ -363,6 +363,40 @@ It will of course also be needed in classes thar are going to use
 create an object from a JSON representation of an object.")
       (license license:expat))))
 
+(define-public perl6-meta6
+  (package
+    (name "perl6-meta6")
+    (version "0.0.23")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jonathanstowe/META6.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1xnlaamfbdlfb2zidim3bbc4mawsrg6qxhxi6gbld46z1cyry1cw"))))
+    (build-system rakudo-build-system)
+    (propagated-inputs
+     `(("perl6-json-class" ,perl6-json-class)))
+    (native-inputs
+     `(("perl6-json-fast" ,perl6-json-fast)))
+    (home-page "https://github.com/jonathanstowe/META6")
+    (synopsis "Do things with Perl 6 [META files]")
+    (description "This provides a representation of the Perl 6 META files
+specification - the META file data can be read, created, parsed and written in a
+manner that is conformant with the specification.
+
+Where they are known about it also makes allowance for @quot{customary} usage in
+existing software (such as installers and so forth.)
+
+The intent of this is allow the generation and testing of META files for module
+authors, so it can provide meta-information whether the attributes are mandatory
+as per the spec and where known the places that @quot{customary} attributes are
+used.")
+    (license license:artistic2.0)))
+
 (define-public perl6-tap-harness
   (package
     (name "perl6-tap-harness")
