@@ -112,6 +112,7 @@ package contains the library, but no drivers.")
     (name "sane-backends")
     (inputs
      `(("hplip" ,(@ (gnu packages cups) hplip-minimal))
+       ("libpng" ,libpng)               ; support ‘scanimage --format=png’
        ,@(package-inputs sane-backends-minimal)))
     (arguments
      (substitute-keyword-arguments (package-arguments sane-backends-minimal)
