@@ -8993,14 +8993,14 @@ to occurrences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "3.7")
+    (version "3.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
         (base32
-         "0shxcfz4wcczj0mhwp4w0dvwd2fdd9bgprq8slim1519iiqzgwhq"))))
+         "1xrfph277bgjln3jbpzpgkhxad04fjvj7s3xfil42q1sxi4s3q3g"))))
     (build-system python-build-system)
     (inputs
      `(("file" ,file)))
