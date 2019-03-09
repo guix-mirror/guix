@@ -735,8 +735,29 @@ which cannot be found~%"
 
 (define* (install-license-files #:key outputs
                                 (license-file-regexp %license-file-regexp)
+                                out-of-source?
                                 #:allow-other-keys)
   "Install license files matching LICENSE-FILE-REGEXP to 'share/doc'."
+  (define (find-source-directory package)
+    ;; For an out-of-source build, guess the source directory location
+    ;; relative to the current directory.  Return #f on failure.
+    (match (scandir ".."
+                    (lambda (file)
+                      (and (not (member file '("." ".." "build")))
+                           (file-is-directory?
+                            (string-append "../" file)))))
+      (()                                         ;hmm, no source
+       #f)
+      ((source)                                   ;only one other file
+       (string-append "../" source))
+      ((directories ...)                          ;pick the most likely one
+       ;; This happens for example with libstdc++, which lives within the GCC
+       ;; source tree.
+       (any (lambda (directory)
+              (and (string-prefix? package directory)
+                   (string-append "../" directory)))
+            directories))))
+
   (let* ((regexp    (make-regexp license-file-regexp))
          (out       (or (assoc-ref outputs "out")
                         (match outputs
@@ -744,14 +765,25 @@ which cannot be found~%"
                            output))))
          (package   (strip-store-file-name out))
          (directory (string-append out "/share/doc/" package))
-         (files     (scandir "." (lambda (file)
-                                   (regexp-exec regexp file)))))
-    (format #t "installing ~a license files~%" (length files))
-    (for-each (lambda (file)
-                (if (file-is-directory? file)
-                    (copy-recursively file directory)
-                    (install-file file directory)))
-              files)
+         (source    (if out-of-source?
+                        (find-source-directory
+                         (package-name->name+version package))
+                        "."))
+         (files     (and source
+                         (scandir source
+                                  (lambda (file)
+                                    (regexp-exec regexp file))))))
+    (if files
+        (begin
+          (format #t "installing ~a license files from '~a'~%"
+                  (length files) source)
+          (for-each (lambda (file)
+                      (if (file-is-directory? file)
+                          (copy-recursively file directory)
+                          (install-file file directory)))
+                    (map (cut string-append source "/" <>) files)))
+        (format (current-error-port)
+                "failed to find license files~%"))
     #t))
 
 (define %standard-phases
