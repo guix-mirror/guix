@@ -228,6 +228,37 @@ regular expression engine for the virtual machine.")
 specification and runs on top of several virtual machines.")
     (license license:artistic2.0)))
 
+(define-public perl6-json-class
+  (package
+    (name "perl6-json-class")
+    (version "0.0.12")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jonathanstowe/JSON-Class.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1zyzajc57j3m8q0nr72h9pw4w2nx92rafywlvysgphc5q9sb8np2"))))
+    (build-system rakudo-build-system)
+    (propagated-inputs
+     `(("perl6-json-marshal" ,perl6-json-marshal)
+       ("perl6-json-unmarshal" ,perl6-json-unmarshal)))
+    (native-inputs
+     `(("perl6-json-fast" ,perl6-json-fast)))
+    (home-page "https://github.com/jonathanstowe/JSON-Class")
+    (synopsis "Provide simple serialisation/deserialisation of objects to/from JSON")
+    (description "This is a simple role that provides methods to instantiate a
+class from a JSON string that (hopefully,) represents it, and to serialise an
+object of the class to a JSON string.  The JSON created from an instance should
+round trip to a new instance with the same values for the @quot{public
+attributes}.  @quot{Private} attributes (that is ones without accessors,) will
+be ignored for both serialisation and de-serialisation.  The exact behaviour
+depends on that of @code{JSON::Marshal} and @code{JSON::Unmarshal} respectively.")
+    (license license:artistic2.0)))
+
 (define-public perl6-json-fast
   (package
     (name "perl6-json-fast")
