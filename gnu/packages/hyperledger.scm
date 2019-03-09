@@ -65,7 +65,9 @@
          (replace 'build
            (lambda _
              ;; Only linux-amd64 and linux-ppc64le seem to be supported at the moment.
-             (invoke "make" "-C" "src/github.com/hyperledger/fabric"
+             (invoke "make"
+                     "-j" (number->string (parallel-job-count))
+                     "-C" "src/github.com/hyperledger/fabric"
                      "release/linux-amd64")))
          (add-after 'install 'install-commands
            (lambda* (#:key outputs #:allow-other-keys)
@@ -82,8 +84,10 @@
                  (copy-recursively "sampleconfig"
                                    (string-append out "/etc/hyperledger/fabric"))))
              #t)))))
+    (supported-systems '("x86_64-linux"))
     (synopsis "Platform for distributed ledger solutions")
-    (description "A platform for distributed ledger solutions, underpinned by
-a modular architecture delivering high degrees of confidentiality, resiliency,
-flexibility and scalability.")
+    (description "Hyperledger Fabric is a platform for distributed ledger
+solutions, underpinned by a modular architecture focusing on confidentiality
+and resiliency.  It is designed to support pluggable implementations of
+different components.")
     (license asl2.0)))
