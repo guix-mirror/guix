@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017, 2018 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -7032,7 +7032,19 @@ running a customisable handler command (@code{ignore} by default). ")
        ("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
-       #:test-command '("ert-runner")))
+       #:test-command '("ert-runner")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'delete-json-objects-order-test
+           (lambda _
+             (emacs-batch-edit-file "test/json-reformat-test.el"
+               `(progn (progn (goto-char (point-min))
+                              (re-search-forward
+                               "ert-deftest json-reformat-test:json-reformat-region")
+                              (beginning-of-line)
+                              (kill-sexp))
+                       (basic-save-buffer)))
+             #t)))))
     (home-page "https://github.com/gongo/json-reformat")
     (synopsis "Reformatting tool for JSON")
     (description "@code{json-reformat} provides a reformatting tool for
