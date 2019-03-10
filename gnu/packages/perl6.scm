@@ -228,6 +228,35 @@ regular expression engine for the virtual machine.")
 specification and runs on top of several virtual machines.")
     (license license:artistic2.0)))
 
+(define-public perl6-grammar-debugger
+  ;; Last commit was September 2017
+  (let ((commit "0375008027c8caa216bd869476ce59ae09b2a702")
+        (revision "1"))
+    (package
+      (name "perl6-grammar-debugger")
+      (version (git-version "1.0.1" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/jnthn/grammar-debugger")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0y826z3m276n7ia810hgcb3div67nxmx125m2fzlc16994zd5vm5"))))
+      (build-system rakudo-build-system)
+      (propagated-inputs
+       `(("perl6-terminal-ansicolor" ,perl6-terminal-ansicolor)))
+      (home-page "https://github.com/jnthn/grammar-debugger")
+      (synopsis "Simple tracing and debugging support for Perl 6 grammars")
+      (description "This module provides a simple debugger for grammars.  Just
+@code{use} it: use @code{Grammar::Debugger;} and any grammar in the lexical
+scope of the use statement will automatically have debugging enabled. The
+debugger will break execution when you first enter the grammar, and provide a
+prompt.")
+      (license license:artistic2.0))))
+
 (define-public perl6-grammar-profiler-simple
   ;; Last commit was June 2017
   (let ((commit "c0aca5fab323b2974821dabd6b89330c609e0b7d")
