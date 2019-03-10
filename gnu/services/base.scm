@@ -1481,16 +1481,14 @@ pam-limits-entry specified in LIMITS via pam_limits.so."
 
 (define* (guix-build-accounts count #:key
                               (group "guixbuild")
-                              (first-uid 30001)
                               (shadow shadow))
-  "Return a list of COUNT user accounts for Guix build users, with UIDs
-starting at FIRST-UID, and under GID."
+  "Return a list of COUNT user accounts for Guix build users with the given
+GID."
   (unfold (cut > <> count)
           (lambda (n)
             (user-account
              (name (format #f "guixbuilder~2,'0d" n))
              (system? #t)
-             (uid (+ first-uid n -1))
              (group group)
 
              ;; guix-daemon expects GROUP to be listed as a
