@@ -363,6 +363,31 @@ It will of course also be needed in classes thar are going to use
 create an object from a JSON representation of an object.")
       (license license:expat))))
 
+(define-public perl6-license-spdx
+  (package
+    (name "perl6-license-spdx")
+    (version "3.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jonathanstowe/License-SPDX")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0dl263c3fbxk001gm5fisrzqz1dx182ipaa0x2qva2gxvl075xm8"))))
+    (build-system rakudo-build-system)
+    (propagated-inputs
+     `(("perl6-json-class" ,perl6-json-class)))
+    (home-page "https://github.com/jonathanstowe/License-SPDX")
+    (synopsis "Abstraction over the SPDX License List")
+    (description "This provides an abstraction over the SPDX License List as
+provided in JSON format.  Its primary raison d'être is to help the licence
+checking of @code{Test::META} and to allow for the warning about deprecated
+licences therein.")
+    (license license:artistic2.0)))
+
 (define-public perl6-meta6
   (package
     (name "perl6-meta6")
