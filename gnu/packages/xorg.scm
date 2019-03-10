@@ -4025,7 +4025,7 @@ Font Description (XLFD) full name for a font.")
 (define-public xfd
   (package
     (name "xfd")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4033,7 +4033,7 @@ Font Description (XLFD) full name for a font.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0n97iqqap9wyxjan2n520vh4rrf5bc0apsw2k9py94dqzci258y1"))))
+                "0n6r1v8sm0z0ycqch035xpm46nv5v4mav3kxh36883l3ln5r6bqr"))))
     (build-system gnu-build-system)
     (arguments
        `(#:configure-flags
