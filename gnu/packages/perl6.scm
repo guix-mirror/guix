@@ -228,6 +228,33 @@ regular expression engine for the virtual machine.")
 specification and runs on top of several virtual machines.")
     (license license:artistic2.0)))
 
+(define-public perl6-grammar-profiler-simple
+  ;; Last commit was June 2017
+  (let ((commit "c0aca5fab323b2974821dabd6b89330c609e0b7d")
+        (revision "1"))
+    (package
+      (name "perl6-grammar-profiler-simple")
+      (version (git-version "0.02" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/perlpilot/Grammar-Profiler-Simple.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1qcsa4lmcilp3vp0jng0hrgzyzxin9ayg2wjvkcd0k6h7djx9dff"))))
+      (build-system rakudo-build-system)
+      (arguments '(#:with-zef? #f))
+      (home-page "https://github.com/perlpilot/Grammar-Profiler-Simple")
+      (synopsis "Simple rule profiling for Perl 6 grammars")
+      (description "This module provides a simple profiler for Perl 6 grammars.
+To enable profiling simply add use @code{Grammar::Profiler::Simple;} to your
+code.  Any grammar in the lexical scope of the use statement will automatically
+have profiling information collected when the grammar is used.")
+      (license license:artistic2.0))))
+
 (define-public perl6-json-class
   (package
     (name "perl6-json-class")
