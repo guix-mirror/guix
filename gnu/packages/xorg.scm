@@ -2691,17 +2691,14 @@ X server.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "18.0.1")
+    (version "19.0.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-ati-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "180l2yw8c63cbcs3zk729vx439aig1d7yicpyxj0nmfl4y0kpskj"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/driver/"
+                           "xf86-video-ati-" version ".tar.bz2"))
+       (sha256
+        (base32 "0mzl7yp3qkvankh22758sgpaw9mg6jxsfbg6wy0nxfw4i0qpv46x"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
