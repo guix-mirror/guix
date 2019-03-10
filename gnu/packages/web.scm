@@ -194,16 +194,18 @@ Interface} specification.")
 (define-public nginx
   (package
     (name "nginx")
-    ;; Consider updating the nginx-documentation package if the nginx package is
-    ;; updated.
-    (version "1.14.2")
+    ;; Track the ‘mainline’ branch.  Upstream considers it more reliable than
+    ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
+    ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
+    ;; Consider updating the nginx-documentation package together with this one.
+    (version "1.15.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15wppq12qmq8acjs35xfj61czhf9cdc0drnl5mm8hcg3aihryb80"))))
+                "0hxfsz1117r91b9fb5hjddyrf1czvb36lh1z7zalqqdskfcbmkz4"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
