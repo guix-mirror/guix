@@ -452,6 +452,30 @@ TAP based test suite and prints a report.  The @command{prove6} command is a
 minimal wrapper around an instance of this module.")
     (license license:artistic2.0)))
 
+(define-public perl6-test-meta
+  (package
+    (name "perl6-test-meta")
+    (version "0.0.14")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jonathanstowe/Test-META")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1mzrglb7lbiy5h9dlc7dyhvv9gppxmdmpmrv6nzbd695jzr38bri"))))
+    (build-system rakudo-build-system)
+    (propagated-inputs
+     `(("perl6-meta6" ,perl6-meta6)
+       ("perl6-uri" ,perl6-uri)))
+    (home-page "https://github.com/jonathanstowe/Test-META")
+    (synopsis "Test a distributions META file")
+    (description "This provides a simple mechanism for module authors to have
+some confidence that they have a working distribution META description file.")
+    (license license:artistic2.0)))
+
 (define-public perl6-uri
   (package
     (name "perl6-uri")
