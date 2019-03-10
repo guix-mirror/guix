@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,9 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages ncurses))
 
@@ -133,4 +136,51 @@ continue running in the background, then later reattached.")
 @code{layout} files, which are simple shell scripts where you use the tmux
 command and helper commands provided by tmuxifier to manage Tmux sessions and
 windows.")
+    (license expat)))
+
+(define-public tmux-xpanes
+  (package
+    (name "tmux-xpanes")
+    (version "4.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/greymd/tmux-xpanes.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0px164ikhnzfls6dld4xhiyd9j5jp2rbmwfg11b1pxzm9mp7qk6r"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("bash" ,bash)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (setenv "PATH" (string-append (assoc-ref %build-inputs "bash") "/bin"))
+         (copy-recursively (assoc-ref %build-inputs "source") ".")
+         (substitute* "bin/xpanes"
+           (("/bin/bash") (which "bash")))
+         (install-file "bin/xpanes" (string-append %output "/bin"))
+         (install-file "man/xpanes.1" (string-append %output "/man/man1"))
+         #t)))
+    (home-page "https://github.com/greymd/tmux-xpanes")
+    (synopsis "Tmux based terminal divider")
+    (description "This package provides tmux-based terminal divider.
+
+@code{xpanes} or @code{tmux-xpanes} (alias of @code{xpanes}) commands have
+following features:
+
+@itemize
+@item Split tmux window into multiple panes.
+@item Build command lines & execute them on the panes.
+@item Runnable from outside of tmux session.
+@item Runnable from inside of tmux session.
+@item Record operation log.
+@item Flexible layout arrangement for panes.
+@item Display pane title on each pane.
+@item Generate command lines from standard input (Pipe mode).
+@end itemize")
     (license expat)))
