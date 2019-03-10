@@ -507,6 +507,28 @@ TAP based test suite and prints a report.  The @command{prove6} command is a
 minimal wrapper around an instance of this module.")
     (license license:artistic2.0)))
 
+(define-public perl6-terminal-ansicolor
+  (package
+    (name "perl6-terminal-ansicolor")
+    (version "0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/tadzik/Terminal-ANSIColor.git")
+               ;; The commit where 0.5 was "tagged"
+               (commit "edded4a7116ce11cbc9fb5a83669c7ba119d0212")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1apm999azkyg5s35gid12wq019aqnvzrkz7qjmipd74mdxgr00x7"))))
+    (build-system rakudo-build-system)
+    (arguments '(#:with-zef? #f))
+    (home-page "https://github.com/tadzik/Terminal-ANSIColor")
+    (synopsis "Colorize terminal output")
+    (description "This is a @code{Terminal::ANSIColor} module for Perl 6.")
+    (license license:expat)))
+
 (define-public perl6-test-meta
   (package
     (name "perl6-test-meta")
