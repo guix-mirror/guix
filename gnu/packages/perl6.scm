@@ -422,6 +422,32 @@ as per the spec and where known the places that @quot{customary} attributes are
 used.")
     (license license:artistic2.0)))
 
+(define-public perl6-oo-monitors
+  (package
+    (name "perl6-oo-monitors")
+    (version "1.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jnthn/oo-monitors")
+               ;; The commit where 1.1 was "tagged"
+               (commit "494db3a3852854f30a80c9bd1489a7d5e429e7c5")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1sbw2x54wwjjanghjnc7ipmplaw1srvbrphsdv4ym6cipnbmbj9x"))))
+    (build-system rakudo-build-system)
+    (arguments '(#:with-zef? #f))
+    (home-page "https://github.com/jnthn/oo-monitors")
+    (synopsis "Monitors with condition variables for Perl 6")
+    (description "A monitor provides per-instance mutual exclusion for objects.
+This means that for a given object instance, only one thread can ever be inside
+its methods at a time.  This is achieved by a lock being associated with each
+object.  The lock is acquired automatically at the entry to each method in the
+monitor.  Condition variables are also supported.")
+    (license license:artistic2.0)))
+
 (define-public perl6-svg
   ;; Latest commit, basically unchanged since August 2015
   (let ((commit "07190c0602aa276e5319f06aa0012452dbff3582")
