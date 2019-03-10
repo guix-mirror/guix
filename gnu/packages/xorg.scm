@@ -4153,7 +4153,7 @@ it for output on various types of printers.")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
       (origin
         (method url-fetch)
@@ -4163,7 +4163,7 @@ it for output on various types of printers.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06sjgahjiz85v0k0pmv5x05chc591xynl5ah1bqzz1bdr0lgnanj"))))
+            "0lzp7kyhpwd5hm83j2zm6j3w3z1z5i4ykgg2nwr01ij6dq4znxwc"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
