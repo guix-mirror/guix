@@ -329,13 +329,13 @@ documentation.")
       (license l:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx@1.13.11.
-  (let ((revision 2131)
-        (changeset "dbaf3950f8e9"))
+  ;; This documentation should be relevant for nginx@1.15.9.
+  (let ((revision 2345)
+        (changeset "7ef11708457e"))
     (package
       (name "nginx-documentation")
       (version
-       (simple-format #f "2018-04-04-~A-~A" revision changeset))
+       (simple-format #f "2019-03-01-~A-~A" revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -344,7 +344,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "0acdjsdaqixzh9g9s6db552v4pan4nqrllyqapay9ns9yzh1hrp7"))))
+                 "15975jvh53mnsgi4hhgrwdwy3by23v4kxnhy2vnkziq8v7wkmy4y"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -362,8 +362,7 @@ documentation.")
                  ;; banner.
                  (substitute* "xslt/style.xslt"
                    (("#banner           \\{ background:     black;")
-                    "#banner           { background:     black;
-                            display:     none;"))
+                    "#banner           { display:        none;"))
                  (invoke "make")
                  #t)))
            (replace 'install
