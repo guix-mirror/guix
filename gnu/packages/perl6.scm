@@ -579,6 +579,33 @@ minimal wrapper around an instance of this module.")
 some confidence that they have a working distribution META description file.")
     (license license:artistic2.0)))
 
+(define-public perl6-test-mock
+  (package
+    (name "perl6-test-mock")
+    (version "1.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/jnthn/test-mock")
+               ;; The commit where 1.5 was "tagged"
+               (commit "6eddb42f73f40b9ac29c14badb41ce4a04d876f2")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "07yr3qimc8fl29p23562ayj2j9h53madcnf9sgqvgf2kcprh0zd2"))))
+    (build-system rakudo-build-system)
+    (propagated-inputs
+     `(("perl6-oo-monitors" ,perl6-oo-monitors)))
+    (home-page "https://github.com/jnthn/test-mock")
+    (synopsis "Module for simply generating and checking mock objects")
+    (description "@code{Test::Mock} is a module that works alongside the
+standard Test module to help you write tests when you want to verify what
+methods are called on an object, while still having calls to undefined methods
+die.  You get started just as normal with the test file, but also add a use
+statement for @code{Test::Mock}.")
+    (license license:artistic2.0)))
+
 (define-public perl6-uri
   (package
     (name "perl6-uri")
