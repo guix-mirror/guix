@@ -1355,7 +1355,7 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "3.0.3")
+    (version "3.0.4")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -1364,7 +1364,7 @@ existing ones.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1xizkjgrvydkjhpv7i5rx0mdkp3618sis7jsckjh57nxcynlk5dc"))))
+               "1xy8jrwz87y589ihcld4hv7wn122sjbz914xn8h50ww77wbhk8hn"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f                ; still relies on distutils
@@ -1376,6 +1376,9 @@ existing ones.")
              (substitute* "src/engine/SCons/compat/__init__.py"
                (("sys.modules\\[new\\] = imp.load_module\\(old, \\*imp.find_module\\(old\\)\\)")
                 "sys.modules[new] = __import__(old)"))
+             (substitute* "src/engine/SCons/Platform/__init__.py"
+               (("mod = imp.load_module\\(full_name, file, path, desc\\)")
+                "mod = __import__(full_name)"))
              (invoke "python" "bootstrap.py" "build/scons" "DEVELOPER=guix")
              (chdir "build/scons")
              #t)))))
