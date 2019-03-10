@@ -645,7 +645,9 @@ specifies modules in scope when evaluating SNIPPET."
                         #:graft? #f
                         #:system system
                         #:deprecation-warnings #t ;to avoid a rebuild
-                        #:guile-for-build guile-for-build))))
+                        #:guile-for-build guile-for-build
+                        #:properties `((type . origin)
+                                       (patches . ,(length patches)))))))
 
 (define (transitive-inputs inputs)
   "Return the closure of INPUTS when considering the 'propagated-inputs'
