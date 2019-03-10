@@ -8000,6 +8000,14 @@ python-xdo for newer bindings.)")
         (base32
          "1bi5gnr8r8dva06qpyx4kgjc6spm2k1y908183nbbaylggjzs0jf"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-setup.cfg
+                    (lambda _
+                      ;; Adjust setup.cfg for compatibility with Pytest 4.
+                      (substitute* "setup.cfg"
+                        (("\\[pytest\\]") "[tool:pytest]"))
+                      #t)))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (native-inputs
