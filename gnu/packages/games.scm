@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
@@ -6118,6 +6118,90 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
     (home-page "https://www.stepmania.com")
     (license license:expat)))
 
+(define-public btanks
+  (package
+    (name "btanks")
+    (version "0.9.8083")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/btanks/btanks-source/"
+                           "btanks-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0ha35kxc8xlbg74wsrbapfgxvcrwy6psjkqi7c6adxs55dmcxliz"))))
+    (build-system scons-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are none
+       #:scons ,scons-python2
+       #:scons-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-removed-scons-syntax
+           (lambda _
+             (substitute* "SConstruct"
+               (("Options") "Variables")
+               (("opts.Add\\(BoolOption.*") "opts.Add('gcc_visibility', 'gcc visibility', 'true')")
+               (("opts.Add\\(EnumOption.*") "opts.Add('mode', 'build mode', 'release')"))
+             #t))
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL"))
+             #t))
+         (add-after 'unpack 'fix-compilation-errors
+           (lambda _
+             (substitute* "mrt/base_file.h"
+               (("#include <string>" m)
+                (string-append m "\n#include <sys/types.h>")))
+             (substitute* '("engine/sl08/sl08.h"
+                            "engine/sl08/sl08.py")
+               (("signal = NULL") "signal = 0")
+               (("object\\(NULL\\)") "object(0)")
+               (("func\\(NULL\\)") "func(0)")
+               ((" connect\\(signal_ref\\)")
+                " this->connect(signal_ref)"))
+             (substitute* "math/range_list.h"
+               ((" lower_bound\\(value\\)")
+                " this->lower_bound(value)")
+               (("	erase\\(i\\)")
+                "	this->erase(i)"))
+             (substitute* "clunk/source.cpp"
+               (("using namespace clunk" m)
+                (string-append "# define pow10f(x) exp10f(x)\n" m)))
+             #t))
+         (add-after 'unpack 'find-lua
+           (lambda _
+             (substitute* "engine/SConscript"
+               (("lua5.1") "lua-5.1")
+               (("bt_libs.append\\(lua\\)")
+                "bt_libs.append(\"lua\")"))
+             #t)))))
+    (inputs
+     `(("expat" ,expat)
+       ("glu" ,glu)
+       ("libsmpeg" ,libsmpeg-with-sdl1)
+       ("libvorbis" ,libvorbis)
+       ("lua51" ,lua-5.1)
+       ("sdl" ,(sdl-union (list sdl
+                                sdl-mixer
+                                sdl-image
+                                sdl-ttf)))
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("zip" ,zip)))
+    (home-page "http://btanks.sourceforge.net")
+    (synopsis "Multiplayer tank battle game")
+    (description "Battle Tanks is a funny battle game, where you can choose
+one of three vehicles and eliminate your enemy using the whole arsenal of
+weapons.  It has original cartoon-like graphics and cool music, it’s fun and
+dynamic, it has several network modes for deathmatch and cooperative.")
+    ;; Some parts (e.g. mrt/b64.cpp) are LGPLv2.1+, but the whole package is
+    ;; released under GPLv2 or later.  It comes with extra exceptions for the
+    ;; developers.
+    (license (list license:gpl2+ license:lgpl2.1+))))
 
 (define-public slingshot
   (package
