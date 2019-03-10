@@ -161,20 +161,17 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "4.16")
-    (source (origin
-              (method url-fetch)
-              (uri
-                (list
-                  (string-append
-                    "mirror://kernel.org/linux/docs/man-pages/man-pages-"
-                    version ".tar.xz")
-                  (string-append
-                    "mirror://kernel.org/linux/docs/man-pages/Archive/"
-                    "man-pages-" version ".tar.xz")))
-              (sha256
-               (base32
-                "1d2d6llazg3inwjiz22cn46mbm5ydpbyh9qb55z4j3nm4w6wrzs7"))))
+    (version "5.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (list (string-append "mirror://kernel.org/linux/docs/man-pages/"
+                             "man-pages-" version ".tar.xz")
+              (string-append "mirror://kernel.org/linux/docs/man-pages/Archive/"
+                             "man-pages-" version ".tar.xz")))
+       (sha256
+        (base32 "006rcqhs4ay9q8wip2kbgk3065gwvfbzrqgv2dsydwvcnwv50bss"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -241,7 +238,7 @@ automatically.")
 (define-public scdoc
   (package
    (name "scdoc")
-   (version "1.8.1")
+   (version "1.9.4")
    (source
     (origin
      (method url-fetch)
@@ -250,7 +247,7 @@ automatically.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "1f3qrnbjr9ikbdvpsyx726nyiz4f7ka38rimy9fvbl7kmi62w1v7"))))
+       "00zc3rzj97gscby31djlqyczvqpyhrl66i44czwzmmn7rc5j03m1"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags '("CC=gcc")

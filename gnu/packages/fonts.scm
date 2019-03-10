@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -344,33 +344,23 @@ Biolinum is available in both Regular and Bold weights.")
 (define-public font-terminus
   (package
     (name "font-terminus")
-    (version "4.40")
+    (version "4.47")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://sourceforge/terminus-font/terminus-font-"
-               version
-               "/terminus-font-"
-               version
-               ".tar.gz"))
-        (sha256
-         (base32
-          "0487cyx5h1f0crbny5sg73a22gmym5vk1i7646gy7hgiscj2rxb4"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/terminus-font/terminus-font-"
+                           version "/terminus-font-" version ".tar.gz"))
+       (sha256
+        (base32 "15qjcpalcxjiwsjgjg5k88vkwp56cs2nnx4ghya6mqp4i1c206qg"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("perl" ,perl)
-       ("bdftopcf" ,bdftopcf)
+     `(("bdftopcf" ,bdftopcf)
        ("font-util" ,font-util)
-       ("mkfontdir" ,mkfontdir)))
+       ("mkfontdir" ,mkfontdir)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (arguments
-     `(#:configure-flags (list
-                          ;; install fonts into subdirectory of package output
-                          ;; instead of font-util-?.?.?/share/fonts/X11
-                          (string-append "--with-fontrootdir="
-                                         %output "/share/fonts/X11"))
-       #:tests? #f)) ;; No test target in tarball
+     `(#:tests? #f))                    ; no test target in tarball
     (home-page "http://terminus-font.sourceforge.net/")
     (synopsis "Simple bitmap programming font")
     (description "Terminus Font is a clean, fixed-width bitmap font, designed
@@ -505,12 +495,11 @@ variants.")
                     "mirror://sourceforge/wqy/wqy-zenhei/" version
                     "%20%28Fighting-state%20RC1%29/wqy-zenhei-"
                     version ".tar.gz"))
-              (file-name (string-append "wqy-zenhei-" version ".tar.gz"))
               (sha256
                (base32
                 "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
     (build-system font-build-system)
-    (home-page "http://wenq.org/wqy2/")
+    (home-page "https://wenq.org/wqy2/")
     (synopsis "CJK font")
     (description
      "WenQuanYi Zen Hei is a Hei-Ti style (sans-serif type) Chinese outline
@@ -522,7 +511,7 @@ this font is over 35,000, including over 21,000 Chinese Hanzi.  This font has
 full coverage of the GBK (CP936) charset, CJK Unified Ideographs, as well as
 the code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
 ko (Korean) locales for @code{fontconfig}.")
-    ;; GPLv2 with font embedding exception
+    ;; GPLv2 with font embedding exception.
     (license license:gpl2)))
 
 (define-public font-wqy-microhei
@@ -607,13 +596,13 @@ Heros, Pagella, Schola, Termes.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.marksimonson.com/assets/content/fonts/"
+                    "https://www.marksimonson.com/assets/content/fonts/"
                     "AnonymousPro-" version ".zip"))
               (sha256
                (base32
                 "1asj6lykvxh46czbal7ymy2k861zlcdqpz8x3s5bbpqwlm3mhrl6"))))
     (build-system font-build-system)
-    (home-page "http://www.marksimonson.com/fonts/view/anonymous-pro")
+    (home-page "https://www.marksimonson.com/fonts/view/anonymous-pro")
     (synopsis "Fixed-width fonts designed with coding in mind")
     (description "Anonymous Pro is a family of four fixed-width fonts designed
 with coding in mind.  Anonymous Pro features an international, Unicode-based
@@ -624,7 +613,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "11.0.03")
+    (version "12.0.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -632,7 +621,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "171zhm52c4rzpn19qcq4n9nyfbcjl38v50zslhvgpjdcmc5jvhav"))))
+                "059j82z6z4wqyy3261ns0zg2b2vh2wvxxfbsa9hra9xasism49vb"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -948,7 +937,7 @@ Sans Pro family.")
 (define-public font-fira-code
   (package
     (name "font-fira-code")
-    (version "1.205")
+    (version "1.206")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append "https://github.com/tonsky/FiraCode/releases/"
@@ -956,7 +945,7 @@ Sans Pro family.")
                                   "/FiraCode_" version ".zip"))
               (sha256
                (base32
-                "13bxgf59g6fw5191xclcjzn22hj8jk9k5jjwf7vz07mpjbgadcl5"))))
+                "02r1lcp0c9135ps71v66wdvbsrcxwirrp0blqsa1xbjkkq2rwgj3"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Monospaced font with programming ligatures")

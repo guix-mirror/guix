@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -148,19 +148,19 @@ beginners.")
 (define-public c-graph
   (package
    (name "c-graph")
-   (version "2.0")
+   (version "2.0.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/c-graph/c-graph-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1hlvpzrh7hzzf533diyfiabzskddi8zx92av9hwkjw3l46z7qv01"))))
+                     "092412jzxy6wdvpk96pfj499hpmaww8xllavbvlqspfpr7ips9id"))))
    (build-system gnu-build-system)
    (inputs
-     `(("fortran" ,gfortran)))
+    `(("fortran" ,gfortran)))
    (synopsis "Visualizing and demonstrating convolution")
    (description
-     "GNU C-Graph is a tool for demonstrating the theory of convolution.
+    "GNU C-Graph is a tool for demonstrating the theory of convolution.
 Thus, it can serve as an excellent aid to students of signal and systems
 theory in visualizing the convolution process.  Rather than forcing the
 student to write code, the program offers an intuitive interface with
@@ -324,15 +324,16 @@ enough to be used effectively as a scientific calculator.")
 (define-public double-conversion
   (package
     (name "double-conversion")
-    (version "3.1.0")
+    (version "3.1.3")
     (home-page "https://github.com/google/double-conversion")
     (source (origin
               (method git-fetch)
-              (uri (git-reference (url home-page) (commit version)))
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "123rb2p4snqagrybw66vnapchqdwn2rfpr1wcq0ya9gwbyl7xccx"))))
+                "082w15xq8f4c422a71phvcahgc8vmqrig97av9g9628q5n2ybbgg"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
@@ -1397,7 +1398,7 @@ can solve two kinds of problems:
 (define-public octave-cli
   (package
     (name "octave-cli")
-    (version "4.4.1")
+    (version "5.1.0")
     (source
      (origin
       (method url-fetch)
@@ -1405,7 +1406,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "0jsdgizlv02an2ppfjwk5qf209zpwi3317yb7jvlsjzxnir3lvhy"))))
+        "11wwxpy2q1bhxs2v41bqn05i2sb0905cj1xil6mg8l4k2kka4cq6"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)

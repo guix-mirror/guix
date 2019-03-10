@@ -1355,7 +1355,7 @@ existing ones.")
 (define-public scons
   (package
     (name "scons")
-    (version "3.0.3")
+    (version "3.0.4")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -1364,7 +1364,7 @@ existing ones.")
              (file-name (git-file-name name version))
              (sha256
               (base32
-               "1xizkjgrvydkjhpv7i5rx0mdkp3618sis7jsckjh57nxcynlk5dc"))))
+               "1xy8jrwz87y589ihcld4hv7wn122sjbz914xn8h50ww77wbhk8hn"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f                ; still relies on distutils
@@ -1376,6 +1376,9 @@ existing ones.")
              (substitute* "src/engine/SCons/compat/__init__.py"
                (("sys.modules\\[new\\] = imp.load_module\\(old, \\*imp.find_module\\(old\\)\\)")
                 "sys.modules[new] = __import__(old)"))
+             (substitute* "src/engine/SCons/Platform/__init__.py"
+               (("mod = imp.load_module\\(full_name, file, path, desc\\)")
+                "mod = __import__(full_name)"))
              (invoke "python" "bootstrap.py" "build/scons" "DEVELOPER=guix")
              (chdir "build/scons")
              #t)))))
@@ -2631,14 +2634,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.23.2")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1h83x5widj9p630ha9yv39cpp3djxppll3iww9nc8i3hdmyrbnnh"))))
+         "05zmv6jr7qbgnkz0lqh5pr7kr4lm12i8ljm2k5h5kz3q9m8d4mm0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -7994,7 +7997,7 @@ python-xdo for newer bindings.)")
      `(("python-mock" ,python-mock)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
-    (home-page "http://www.makotemplates.org/")
+    (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")
     (description "Mako is a templating language for Python that compiles
 templates into Python modules.")
@@ -14661,14 +14664,14 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
         (base32
-         "03ykmq46q2hh7mn68vcxkgylybjaj3r0kfspaiymdmqmjzpjivr5"))))
+         "1hrnfz4pzawikz9b622vjz2500n7hs25nz9msy1k8l4g7l2kr6ky"))))
     (build-system python-build-system)
     ;; A single test out of 5000+ fails.  This test is marked as xfail when
     ;; pytest-xdist is used.

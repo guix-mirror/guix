@@ -236,6 +236,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
   %D%/packages/hurd.scm				\
+  %D%/packages/hyperledger.scm			\
   %D%/packages/ibus.scm				\
   %D%/packages/icu4c.scm			\
   %D%/packages/idris.scm			\
@@ -532,6 +533,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/xorg.scm				\
 						\
   %D%/system.scm				\
+  %D%/system/accounts.scm			\
   %D%/system/file-systems.scm			\
   %D%/system/install.scm			\
   %D%/system/linux-container.scm		\
@@ -544,6 +546,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
 						\
+  %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
   %D%/build/cross-toolchain.scm			\
@@ -668,7 +671,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
-  %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
@@ -795,8 +797,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
-  %D%/packages/patches/gcr-disable-failing-tests.patch		\
-  %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
   %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-CVE-2018-1000222.patch		\
   %D%/packages/patches/gd-CVE-2019-6977.patch			\
@@ -845,7 +845,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
-  %D%/packages/patches/gnome-todo-libical-compat.patch		\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-fix-test-transaction-failure.patch \
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
@@ -1228,6 +1227,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
+  %D%/packages/patches/rust-1.30-gdb-llvm.patch			\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\
@@ -1309,7 +1309,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
-  %D%/packages/patches/valgrind-glibc-compat.patch		\
   %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
   %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\
   %D%/packages/patches/vboot-utils-skip-test-workbuf.patch	\

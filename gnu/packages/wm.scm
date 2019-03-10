@@ -389,19 +389,19 @@ prompt.")
 (define-public i3lock-color
   (package
     (name "i3lock-color")
-    (version "2.11-c")
+    (version "2.12.c")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/PandorasFox/i3lock-color/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PandorasFox/i3lock-color.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0zh7il2y6dmzym3w6r9xii5dma8pjjjlq4dm5iby7m3gvplj4q9p"))))
+        (base32 "08fhnchf187b73h52xgzb86g6byzxz085zs9galsvl687g5zxk34"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f))                              ;no tests included
+     `(#:tests? #f))                    ; no tests included
     (inputs
      `(("cairo" ,cairo)
        ("libev" ,libev)
@@ -410,7 +410,8 @@ prompt.")
        ("libxkbcommon" ,libxkbcommon)
        ("linux-pam" ,linux-pam)
        ("xcb-util" ,xcb-util)
-       ("xcb-util-image" ,xcb-util-image)))
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-xrm" ,xcb-util-xrm)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -434,16 +435,16 @@ Features include:
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/meskarune/i3lock-fancy/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/meskarune/i3lock-fancy.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "020m7mnfq5cvir7p9v3hkb7cvb4cai33wppxl2zdwscwwjnchc5y"))))
+        (base32 "11g2kkim33ra38d1m897sq1ifajw17iyw9mr7sg1q8i2ibl4lfsi"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;No tests included
+     `(#:tests? #f                      ; no tests included
        #:phases
        (modify-phases %standard-phases
          (replace 'configure

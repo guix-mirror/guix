@@ -336,7 +336,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.3.3")
+    (version "3.3.4")
     (source
      (origin
        (method url-fetch)
@@ -345,7 +345,7 @@ do so.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0z2zfhyawrbzs0w1426a2w0d4wsajl34ymj77qmpm41138g2ysf2"))
+         "0h128wklz5qwx5zqzbd48x46kxjxs12wcna9lhak70y5pj2hw8rg"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -391,7 +391,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3.5")
+    (version "3.3.6")
     (source
      (origin
        (method url-fetch)
@@ -402,7 +402,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "185z3c5j9nvl31ga80hvahx7ghvkgmqgfjrrzw1fbs6p9jxy007w"))
+         "110apc376wm4yd9ghpffiipwdn8rzyr3z7ncpp2516wbz4mmyhxc"))
        (modules '((guix build utils)))
        (snippet
         '(begin

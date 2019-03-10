@@ -4777,6 +4777,23 @@ symlink target.
 For instance, @code{-S /opt/gnu/bin=bin} creates a @file{/opt/gnu/bin}
 symlink pointing to the @file{bin} sub-directory of the profile.
 
+@item --save-provenance
+Save provenance information for the packages passed on the command line.
+Provenance information includes the URL and commit of the channels in use
+(@pxref{Channels}).
+
+Provenance information is saved in the
+@file{/gnu/store/@dots{}-profile/manifest} file in the pack, along with the
+usual package metadata---the name and version of each package, their
+propagated inputs, and so on.  It is useful information to the recipient of
+the pack, who then knows how the pack was (supposedly) obtained.
+
+This option is not enabled by default because, like timestamps, provenance
+information contributes nothing to the build process.  In other words, there
+is an infinity of channel URLs and commit IDs that can lead to the same pack.
+Recording such ``silent'' metadata in the output thus potentially breaks the
+source-to-binary bitwise reproducibility property.
+
 @item --localstatedir
 @itemx --profile-name=@var{name}
 Include the ``local state directory'', @file{/var/guix}, in the resulting
@@ -6221,8 +6238,11 @@ The outputs of the derivation---derivations produce at least one file or
 directory in the store, but may produce more.
 
 @item
-The inputs of the derivations, which may be other derivations or plain
-files in the store (patches, build scripts, etc.)
+@cindex build-time dependencies
+@cindex dependencies, build-time
+The inputs of the derivations---i.e., its build-time dependencies---which may
+be other derivations or plain files in the store (patches, build scripts,
+etc.)
 
 @item
 The system type targeted by the derivation---e.g., @code{x86_64-linux}.
@@ -6252,6 +6272,16 @@ which the expected content hash is known in advance are modeled as
 of a fixed-output derivation are independent of its inputs---e.g., a
 source code download produces the same result regardless of the download
 method and tools being used.
+
+@cindex references
+@cindex run-time dependencies
+@cindex dependencies, run-time
+The outputs of derivations---i.e., the build results---have a set of
+@dfn{references}, as reported by the @code{references} RPC or the
+@command{guix gc --references} command (@pxref{Invoking guix gc}).  References
+are the set of run-time dependencies of the build results.  References are a
+subset of the inputs of the derivation; this subset is automatically computed
+by the build daemon by scanning all the files in the outputs.
 
 The @code{(guix derivations)} module provides a representation of
 derivations as Scheme objects, along with procedures to create and

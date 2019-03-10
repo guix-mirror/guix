@@ -49,9 +49,11 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
@@ -2000,3 +2002,98 @@ format is also supported.")
        "This package provides a simple SVG-based picture language for Guile.
 The picture values can directly be displayed in Geiser.")
       (license license:lgpl3+))))
+
+(define-public guile-studio
+  (let ((commit "e2da64f014942a73996286c4abe3c3b1f8bd220c")
+        (revision "1"))
+    (package
+      (name "guile-studio")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.elephly.net/software/guile-studio.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "10v3kw41bzd8c2a6vxgrwbvl216d0k8f5s9h6pm8hahpd03jl7lm"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                      ; there are none
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda* (#:key source inputs outputs #:allow-other-keys)
+               (let* ((out   (assoc-ref outputs "out"))
+                      (bin   (string-append out "/bin/"))
+                      (share (string-append out "/share/")))
+                 (mkdir-p share)
+                 (mkdir-p bin)
+                 (apply invoke "guile" "-s" "guile-studio-configure.scm"
+                        out
+                        (assoc-ref inputs "emacs")
+                        (assoc-ref inputs "guile-picture-language")
+                        (string-append (assoc-ref inputs "adwaita-icon-theme")
+                                       "/share/icons/Adwaita/")
+                        (map cdr inputs))
+                 #t)))
+           (delete 'install))))
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-picture-language" ,guile-picture-language)
+         ("emacs" ,emacs)
+         ("emacs-geiser" ,emacs-geiser)
+         ("emacs-company" ,emacs-company)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-smart-mode-line" ,emacs-smart-mode-line)
+         ("emacs-paren-face" ,emacs-paren-face)
+         ("adwaita-icon-theme" ,adwaita-icon-theme)))
+      (home-page "https://gnu.org/software/guile")
+      (synopsis "IDE for Guile")
+      (description
+       "This is Emacs with a few settings that make working with Guile easier
+for people new to Emacs.  Features include: CUA mode, Geiser, tool bar icons
+to evaluate Guile buffers, support for Guile's very own picture language, code
+completion, a simple mode line, etc.")
+      (license license:gpl3+))))
+
+(define-public guile-stis-parser
+  (let ((commit "6e85d37ffc333b722f4413a6c648263701eb75bd")
+        (revision "1"))
+    (package
+      (name "guile-stis-parser")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/tampe/stis-parser")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0v4hvq7rlpbra1ni73lf8k6sdmjlflr50yi3p1f24g85h77pc7c0"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:parallel-build? #f ; not supported
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "modules") #t))
+           (add-after 'chdir 'delete-broken-symlink
+             (lambda _
+               (delete-file "parser/stis-parser/lang/.#calc.scm")
+               #t)))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://gitlab.com/tampe/stis-parser")
+      (synopsis "Parser combinator framework")
+      (description
+       "This package provides a functional parser combinator library that
+supports backtracking and a small logical framework. The idea is to build up
+chunks that are memoized and there is no clear scanner/parser separation,
+chunks can be expressions as well as simple tokens.")
+      (license license:lgpl2.0+))))

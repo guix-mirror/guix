@@ -1147,8 +1147,7 @@ sockets in Perl.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("dbus" ,dbus)
-       ("zlib" ,zlib)
-       ("network-manager" ,network-manager)))
+       ("zlib" ,zlib)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

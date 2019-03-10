@@ -46,6 +46,7 @@
 
 (define-module (gnu packages mail)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
@@ -224,6 +225,87 @@ software.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
+
+(define-public nullmailer
+  (package
+    (name "nullmailer")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "https://untroubled.org/nullmailer/"
+                            "nullmailer-" version ".tar.gz")
+             ;; Previous releases are moved to this subdirectory.
+             (string-append "https://untroubled.org/nullmailer/archive/"
+                            "nullmailer-" version ".tar.gz")))
+       (sha256
+        (base32 "0md8cf90fl2yf3zh9njjy42a673v4j4ygyq95xg7fzkygdigm1lq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-tls"
+             "--localstatedir=/var"
+             "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'patch-test-FHS-file-names
+           (lambda _
+             (with-directory-excursion "test"
+               (substitute* (list "functions.in"
+                                  "tests/send")
+                 ;; Fix some shebangs later generated on the fly.
+                 (("/bin/sh") (which "bash"))))
+             #t))
+         (add-before 'check 'pass-PATH-to-tests
+           ;; ‘runtest’ launches each test through ‘env -’, clearing $PATH. The
+           ;; tests then source ‘functions’, which first demands a working $PATH
+           ;; only to clobber it later.  Pass our $PATH to the test environment
+           ;; and don't touch it after that.
+           (lambda _
+             (with-directory-excursion "test"
+               (substitute* "runtests"
+                 (("env - bash")
+                  (string-append "env - PATH=\"" (getenv "PATH") "\" bash")))
+               (substitute* "functions.in"
+                 (("export PATH=.*") "")))
+             #t))
+         (add-before 'check 'delete-failing-tests
+           (lambda _
+             (with-directory-excursion "test/tests"
+               (for-each delete-file
+                         (list
+                          ;; XXX ‘nullmailer-inject: nullmailer-queue failed: 15’
+                          "inject/queue"
+                          ;; XXX These require the not-yet-packaged tcpserver.
+                          "protocols" "smtp-auth")))
+             #t))
+         (add-before 'install 'skip-install-data-local
+           ;; Don't attempt to install run-time files outside of the store.
+           (lambda _
+             (substitute* "Makefile"
+               ((" install-data-local") ""))
+             #t)))))
+    (native-inputs
+     ;; For tests.
+     `(("daemontools" ,daemontools)))   ; for svc
+    (inputs
+     `(("gnutls" ,gnutls)))
+    (home-page "https://untroubled.org/nullmailer/")
+    (synopsis "Simple relay-only mail transfer agent")
+    (description
+     "Nullmailer is a simple replacement @acronym{MTA, Mail Transfer Agent} for
+hosts that receive no local mail and only relay mail to a fixed set of smart
+relays.  It's useful for systems such as Web servers that must be able to send
+email notifications, without having to run a full-blown MTA such as sendmail
+or qmail.
+
+Nullmailer is designed to be simple to configure, easy to extend, and secure.
+It requires little ongoing administration.  The included @command{sendmail}
+emulator front-end should allow most (if not all) sendmail-compatible programs
+to run without any changes.")
+    (license (list lgpl2.1+         ; lib/cli++/ (but some files lack headers)
+                   gpl2+))))        ; everything else
 
 (define-public fetchmail
   (package
@@ -757,14 +839,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.28.2")
+    (version "0.28.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cg9ff7h7mklgbqqknxigxxx1j3p3s2a9cxvrs5ih7j56f04k9l5"))))
+                "1v0ff6qqwj42p3n6qw30czzqi52nvgf3dn05vd7a03g39a5js8af"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1200,16 +1282,15 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.4.1")
+    (version "2.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.dovecot.org/releases/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.gz"))
+                           "dovecot-" version ".tar.gz"))
        (sha256
-        (base32
-         "01xa8d08c0j51w5kmqb3vnzrvh17hkzx5a5p7fb5hgn3wln3x1xq"))))
+        (base32 "1zxa9banams9nmk99sf1rqahr11cdqxhwi7hyz3ddxqidpn15qdz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1222,28 +1303,26 @@ facilities for checking incoming mail.")
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var")
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'pre-configure
-                   (lambda _
-                     ;; Simple hack to avoid installing in /etc.
-                     (substitute* '("doc/Makefile.in"
-                                    "doc/example-config/Makefile.in")
-                       (("pkgsysconfdir = .*")
-                        "pkgsysconfdir = /tmp/etc"))
-                     #t))
-                  (add-after
-                   'unpack 'patch-other-file-names
-                   (lambda _
-                     (substitute*
-                         "src/lib-program-client/test-program-client-local.c"
-                       (("(/bin/| )cat") (which "cat"))
-                       (("/bin/echo") (which "echo"))
-                       (("/bin/false") (which "false"))
-                       (("/bin/sh") (which "bash"))
-                       (("head") (which "head"))
-                       (("sleep") (which "sleep")))
-                     #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-names
+           (lambda _
+             (substitute* "src/lib-program-client/test-program-client-local.c"
+               (("(/bin/| )cat") (which "cat"))
+               (("/bin/echo") (which "echo"))
+               (("/bin/false") (which "false"))
+               (("/bin/sh") (which "bash"))
+               (("head") (which "head"))
+               (("sleep") (which "sleep")))
+             (substitute* (list "src/lib-smtp/test-bin/sendmail-exit-1.sh"
+                                "src/lib-smtp/test-bin/sendmail-success.sh")
+               (("cat") (which "cat")))
+             #t))
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             ;; Simple hack to avoid installing a trivial README in /etc.
+             (apply invoke "make" "install" "sysconfdir=/tmp/bogus"
+                    make-flags))))))
     (home-page "https://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
     (description
@@ -2041,6 +2120,81 @@ transfer protocols.")
      "OpenSMTPD is an implementation of the server-side SMTP protocol, with
 some additional standard extensions.  It allows ordinary machines to exchange
 e-mails with other systems speaking the SMTP protocol.")
+    (home-page "https://www.opensmtpd.org")
+    (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
+                   public-domain isc license:openssl))))
+
+;; OpenSMTPd 6.4 introduced a new and incompatible configuration file format.
+;; Use a different name, for now, to avoid auto-upgrades and broken mail boxes.
+;; OPENSMTP-CONFIGURATION in (gnu services mail) will also need an overhaul.
+(define-public opensmtpd-next
+  (package
+    (name "opensmtpd-next")
+    (version "6.4.1p2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.opensmtpd.org/archives/"
+                           "opensmtpd-" version ".tar.gz"))
+       (sha256
+        (base32 "0cppqlx4fk6l8rbim5symh2fm1kzshf421256g596j6c9f9q96xn"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("libasr" ,libasr)
+       ("libevent" ,libevent)
+       ("libressl" ,libressl)
+       ("linux-pam" ,linux-pam)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("groff" ,groff)))               ; for man pages
+    (arguments
+     `(#:configure-flags
+       (list "--localstatedir=/var"
+             ;; This is the default only if it exists at build time—it doesn't.
+             "--with-path-socket=/var/run"
+             "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt"
+             "--with-user-smtpd=smtpd"
+             "--with-user-queue=smtpq" "--with-group-queue=smtpq"
+             "--with-auth-pam"
+             "--with-table-db")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Fix some incorrectly hard-coded external tool file names.
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda _
+             (substitute* "smtpd/smtpctl.c"
+               ;; ‘gzcat’ is auto-detected at compile time, but ‘cat’ isn't.
+               (("/bin/cat") (which "cat")))
+             (substitute* "smtpd/mda_unpriv.c"
+               (("/bin/sh") (which "sh")))
+             #t))
+         ;; OpenSMTPD provides a single smtpctl utility to control both the
+         ;; daemon and the local submission subsystem.  To accomodate systems
+         ;; that require historical interfaces such as sendmail, newaliases or
+         ;; makemap, smtpctl operates in compatibility mode if called with the
+         ;; historical name.
+         (add-after 'install 'install-compability-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin/")))
+               (for-each (lambda (command)
+                           (symlink "smtpctl" (string-append sbin command)))
+                         (list "mailq" "makemap" "newaliases"
+                               "send-mail" "sendmail")))
+             #t)))))
+    (synopsis "Lightweight SMTP daemon")
+    (description
+     "OpenSMTPD is an implementation of server-side @acronym{SMTP, Simple Mail
+Transfer Protocol}, with some additional standard extensions.  It allows
+ordinary machines to exchange e-mails with other systems speaking the SMTP
+protocol, or to deliver them to local users.
+
+In order to simplify the use of SMTP, OpenSMTPD implements a smaller set of
+functionality than those available in other SMTP daemons.  The objective is to
+provide enough features to satisfy typical usage at the risk of unsuitability
+to esoteric or niche requirements.")
     (home-page "https://www.opensmtpd.org")
     (license (list bsd-2 bsd-3 bsd-4 (non-copyleft "file://COPYING")
                    public-domain isc license:openssl))))

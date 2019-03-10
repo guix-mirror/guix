@@ -668,7 +668,7 @@ termination.")
 (define-public go-github.com-jtolds-gls
   (package
     (name "go-github.com-jtolds-gls")
-    (version "4.2.1")
+    (version "4.20")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -677,7 +677,7 @@ termination.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vm37pvn0k4r6d3m620swwgama63laz8hhj3pyisdhxwam4m2g1h"))))
+                "1k7xd2q2ysv2xsh373qs801v6f359240kx0vrl0ydh7731lngvk6"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/jtolds/gls"))

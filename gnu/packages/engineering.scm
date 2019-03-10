@@ -37,6 +37,7 @@
   #:use-module (guix utils)
   #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -631,6 +632,52 @@ you load several files on top of each other, do measurements on the displayed
 image, etc.  Besides viewing Gerbers, you may also view Excellon drill files
 as well as pick-place files.")
     (license license:gpl2+)))
+
+(define-public translate2geda
+  ;; There has been no formal release yet.
+  (let ((commit "4c19e7eefa338cea8f1ee999ea8b37f8d0698169")
+        (revision "1"))
+    (package
+      (name "translate2geda")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/erichVK5/translate2geda.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1h062bbpw8nk0jamkya1k4lsgaia796jyviiz2gkdi6k1bxhwgpa"))))
+      (build-system ant-build-system)
+      (arguments
+       `(#:tests? #f ; there are no tests
+         #:jar-name "translate2geda.jar"
+         #:source-dir "."
+         #:main-class "translate2geda"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-bin
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (wrapper (string-append bin "/translate2geda")))
+                 (mkdir-p bin)
+                 (with-output-to-file wrapper
+                   (lambda _
+                     (format #t "#!/bin/sh~%exec ~a -jar ~a/share/java/translate2geda.jar"
+                             (which "java") out)))
+                 (chmod wrapper #o555))
+               #t)))))
+      (home-page "https://github.com/erichVK5/translate2geda")
+      (synopsis "Utility for converting symbol and footprint formats to gEDA")
+      (description
+       "This package provides a utility for converting Kicad (@file{.mod},
+@file{.lib}), Eagle (@file{.lbr}), gerber (@file{.gbr}, etc..),
+BXL (@file{.bxl}), IBIS (@file{.ibs}), symdef, LT-Spice (@file{.asc}),
+QUCS (@file{.sch}), and BSDL (@file{.bsd}) symbols and footprints and EggBot
+fonts to gEDA.")
+      (license license:gpl2+))))
 
 (define-public libfive
   (let ((commit "9d857d1923abecb0e5935b9287d22661f6efaac5")

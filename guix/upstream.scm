@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -23,7 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix discovery)
   #:use-module ((guix download)
-                #:select (download-to-store))
+                #:select (download-to-store url-fetch))
   #:use-module (guix gnupg)
   #:use-module (guix packages)
   #:use-module (guix ui)
@@ -37,6 +37,8 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:export (upstream-source
@@ -340,17 +342,13 @@ values: the item from LST1 and the item from LST2 that match PRED."
       (()
        (values #f #f)))))
 
-(define* (package-update store package updaters
-                         #:key (key-download 'interactive))
-  "Return the new version, the file name of the new version tarball, and input
-changes for PACKAGE; return #f (three values) when PACKAGE is up-to-date.
-KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
-values: 'always', 'never', and 'interactive' (default)."
-  (match (package-latest-release* package updaters)
+(define* (package-update/url-fetch store package source
+                                   #:key key-download)
+  "Return the version, tarball, and input changes needed to update PACKAGE to
+SOURCE, an <upstream-source>."
+  (match source
     (($ <upstream-source> _ version urls signature-urls changes)
-     (let*-values (((name)
-                    (package-name package))
-                   ((archive-type)
+     (let*-values (((archive-type)
                     (match (and=> (package-source package) origin-uri)
                       ((? string? uri)
                        (let ((type (file-extension (basename uri))))
@@ -373,7 +371,36 @@ values: 'always', 'never', and 'interactive' (default)."
                            (or signature-urls (circular-list #f)))))
        (let ((tarball (download-tarball store url signature-url
                                         #:key-download key-download)))
-         (values version tarball changes))))
+         (values version tarball changes))))))
+
+(define %method-updates
+  ;; Mapping of origin methods to source update procedures.
+  `((,url-fetch . ,package-update/url-fetch)))
+
+(define* (package-update store package updaters
+                         #:key (key-download 'interactive))
+  "Return the new version, the file name of the new version tarball, and input
+changes for PACKAGE; return #f (three values) when PACKAGE is up-to-date.
+KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
+values: 'always', 'never', and 'interactive' (default)."
+  (match (package-latest-release* package updaters)
+    ((? upstream-source? source)
+     (let ((method (match (package-source package)
+                     ((? origin? origin)
+                      (origin-method origin))
+                     (_
+                      #f))))
+       (match (assq method %method-updates)
+         (#f
+          (raise (condition (&message
+                             (message (format #f (G_ "cannot download for \
+this method: ~s")
+                                              method)))
+                            (&error-location
+                             (location (package-location package))))))
+         ((_ . update)
+          (update store package source
+                  #:key-download key-download)))))
     (#f
      (values #f #f #f))))
 

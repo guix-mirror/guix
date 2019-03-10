@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -150,7 +150,11 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
 
       (let ((user (getpwnam "messagebus")))
         (chown "/var/run/dbus"
-               (passwd:uid user) (passwd:gid user)))
+               (passwd:uid user) (passwd:gid user))
+
+        ;; This directory contains the daemon's socket so it must be
+        ;; world-readable.
+        (chmod "/var/run/dbus" #o755))
 
       (unless (file-exists? "/etc/machine-id")
         (format #t "creating /etc/machine-id...~%")

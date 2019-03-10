@@ -4037,7 +4037,7 @@ Font Description (XLFD) full name for a font.")
 (define-public xfd
   (package
     (name "xfd")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4045,7 +4045,7 @@ Font Description (XLFD) full name for a font.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0n97iqqap9wyxjan2n520vh4rrf5bc0apsw2k9py94dqzci258y1"))))
+                "0n6r1v8sm0z0ycqch035xpm46nv5v4mav3kxh36883l3ln5r6bqr"))))
     (build-system gnu-build-system)
     (arguments
        `(#:configure-flags
@@ -4165,7 +4165,7 @@ it for output on various types of printers.")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.3")
+    (version "1.2.4")
     (source
       (origin
         (method url-fetch)
@@ -4175,7 +4175,7 @@ it for output on various types of printers.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06sjgahjiz85v0k0pmv5x05chc591xynl5ah1bqzz1bdr0lgnanj"))))
+            "0lzp7kyhpwd5hm83j2zm6j3w3z1z5i4ykgg2nwr01ij6dq4znxwc"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
@@ -5675,14 +5675,14 @@ The XCB util-wm module provides the following libraries:
 (define-public xinit
   (package
     (name "xinit")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/app/xinit-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1vw2wlg74ig52naw0cha3pgzcwwk25l834j42cg8m5zmybp3a213"))))
+                "1fdbakx59vyh474skjydj1bbglpby3y03nl7mxn0z9v8gdhqz6yy"))))
     (build-system gnu-build-system)
     (inputs
      `(("xorgproto" ,xorgproto)

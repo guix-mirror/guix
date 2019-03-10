@@ -13,6 +13,7 @@
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -158,6 +160,66 @@ a focus on simplicity and productivity.")
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
+
+(define-public mruby
+  (package
+    (name "mruby")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mruby/mruby.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1r6w1asjshff43ymdwa6xmrkggza99mi2kw88k7ic6ag2j81hcj5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'enable-verbose-tests
+           (lambda _
+             (substitute* "Makefile"
+               (("ruby ./minirake" m)
+                (string-append m " --verbose")))
+             #t))
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             (substitute* "mrbgems/mruby-io/test/io.rb"
+               (("assert\\('IO.popen.+$" m)
+                (string-append m "skip \"Hangs in the Guix build environment\"\n"))
+               (("assert\\('IO#isatty.+$" m)
+                (string-append m "skip \"Disable for Guix; there is no /dev/tty\"\n"))
+               ;; This one is really weird.  The *expected* output is all wrong.
+               (("assert\\('`cmd`.*" m)
+                (string-append m "skip \"Disable for Guix\"\n"))
+               (("echo foo")
+                (string-append (which "echo") " foo")))
+             #t))
+         ;; There is no install target
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib")))
+               (mkdir-p bin)
+               (copy-recursively "build/host/bin" bin)
+               (mkdir-p lib)
+               (copy-recursively "build/host/lib" lib))
+             #t)))))
+    (native-inputs
+     `(("ruby" ,ruby)
+       ("bison" ,bison)))
+    (home-page "https://github.com/mruby/mruby")
+    (synopsis "Lightweight Ruby")
+    (description "mruby is the lightweight implementation of the Ruby
+language.  Its syntax is Ruby 1.9 compatible.  mruby can be linked and
+embedded within your application.")
+    (license license:expat)))
 
 (define-public ruby-commander
   (package
@@ -4982,14 +5044,14 @@ testing libraries to build on.")
 (define-public ruby-rack-protection
   (package
     (name "ruby-rack-protection")
-    (version "2.0.3")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rack-protection" version))
        (sha256
         (base32
-         "1z5598qipilmnf45428jnxi63ykrgvnyywa5ckpr52zv2vpd8jdp"))))
+         "15167q25rmxipqwi6hjqj3i1byi9iwl3xq9b7mdar7qiz39pmjsk"))))
     (build-system ruby-build-system)
     (arguments
      '(;; Tests missing from the gem.
@@ -8378,4 +8440,165 @@ uniquely identify it.")
      "Sprockets is a Rack-based asset packaging system that concatenates and
 serves JavaScript, CoffeeScript, CSS, LESS, Sass, and SCSS.")
     (home-page "https://github.com/rails/sprockets")
+    (license license:expat)))
+
+(define-public ruby-mustermann
+  (package
+    (name "ruby-mustermann")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mustermann" version))
+       (sha256
+        (base32
+         "0lycgkmnyy0bf29nnd2zql5a6pcf8sp69g9v4xw0gcfcxgpwp7i1"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (synopsis "Library implementing patterns that behave like regular expressions")
+    (description "Given a string pattern, Mustermann will turn it into an
+object that behaves like a regular expression and has comparable performance
+characteristics.")
+    (home-page "https://github.com/sinatra/mustermann")
+    (license license:expat)))
+
+(define-public ruby-sinatra
+  (package
+    (name "ruby-sinatra")
+    (version "2.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sinatra" version))
+       (sha256
+        (base32
+         "1gasgn5f15myv08k10i16p326pchxjsy37pgqfw0xm66kcc5d7ry"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-mustermann" ,ruby-mustermann)
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-rack-protection" ,ruby-rack-protection)
+       ("ruby-tilt" ,ruby-tilt)))
+    (synopsis "DSL for quick web applications creation in Ruby")
+    (description
+     "Sinatra is a DSL for quickly creating web applications in Ruby with
+minimal effort.")
+    (home-page "http://sinatrarb.com/")
+    (license license:expat)))
+
+(define-public ruby-thin
+  (package
+    (name "ruby-thin")
+    (version "1.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "thin" version))
+       (sha256
+        (base32
+         "0nagbf9pwy1vg09k6j4xqhbjjzrg5dwzvkn4ffvlj76fsn6vv61f"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-daemons" ,ruby-daemons)
+       ("ruby-eventmachine" ,ruby-eventmachine)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Thin and fast web server for Ruby")
+    (description "Thin is a Ruby web server that glues together 3 Ruby libraries:
+@itemize
+@item the Mongrel parser,
+@item Event Machine, a network I/O library with high scalability, performance
+and stability,
+@item Rack, a minimal interface between webservers and Ruby frameworks.
+@end itemize\n")
+    (home-page "http://code.macournoyer.com/thin/")
+    (license license:ruby)))
+
+(define-public ruby-skinny
+  (package
+    (name "ruby-skinny")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "skinny" version))
+       (sha256
+        (base32
+         "1y3yvx88ylgz4d2s1wskjk5rkmrcr15q3ibzp1q88qwzr5y493a9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ; No included tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-gemspec
+           (lambda _
+             (substitute* ".gemspec"
+               (("<eventmachine>.freeze, \\[\\\"~> 1.0.0\"")
+                "<eventmachine>, [\">= 1.0.0\"")
+               (("<thin>.freeze, \\[\\\"< 1.7\", ") "<thin>, ["))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-eventmachine" ,ruby-eventmachine)
+       ("ruby-thin" ,ruby-thin)))
+    (synopsis "Simple, upgradable WebSockets for Ruby Thin")
+    (description "Skinny is a simple, upgradable WebSockets for Ruby, using
+the Thin library.")
+    (home-page "https://github.com/sj26/skinny")
+    (license license:expat)))
+
+(define-public mailcatcher
+  (package
+    (name "mailcatcher")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mailcatcher" version))
+       (sha256
+        (base32
+         "02w1ycyfv7x0sh9799lz7xa65p5qvl5z4pa8a7prb68h2zwkfq0n"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Tests require web/assets which is not included in the output.  We
+     ;; might be able to fix this by adding the Git repository to the GEM_PATH
+     ;; of the tests.  See ruby-mysql2.
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-gemspec
+           (lambda _
+             (substitute* ".gemspec"
+               (("<eventmachine>.freeze, \\[\\\"= 1.0.9.1")
+                "<eventmachine>, [\">= 1.0.9.1")
+               (("<rack>.freeze, \\[\\\"~> 1.5") "<rack>, [\">= 1.5")
+               (("<thin>.freeze, \\[\\\"~> 1.5.0") "<thin>, [\">= 1.5.0")
+               (("<sinatra>.freeze, \\[\\\"~> 1.2") "<sinatra>, [\">= 1.2"))
+             #t))
+         (add-before 'build 'loosen-dependency-contraint
+             (lambda _
+               (substitute* "lib/mail_catcher.rb"
+                 (("\"eventmachine\", \"1.0.9.1\"") "\"eventmachine\", \">= 1.0.9.1\"")
+                 (("\"rack\", \"~> 1.5\"") "\"rack\", \">= 1.5\"")
+                 (("\"thin\", \"~> 1.5.0\"") "\"thin\", \">= 1.5.0\"")
+                 (("\"sinatra\", \"~> 1.2\"") "\"sinatra\", \">= 1.2\""))
+               #t)))))
+    (inputs
+     `(("ruby-eventmachine" ,ruby-eventmachine)
+       ("ruby-mail" ,ruby-mail)
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-sinatra" ,ruby-sinatra)
+       ("ruby-skinny" ,ruby-skinny)
+       ("ruby-sqlite3" ,ruby-sqlite3)
+       ("ruby-thin" ,ruby-thin)))
+    (synopsis "SMTP server which catches messages to display them a browser")
+    (description
+     "MailCatcher runs a super simple SMTP server which catches any message
+sent to it to display in a web interface.  Run mailcatcher, set your favourite
+app to deliver to smtp://127.0.0.1:1025 instead of your default SMTP server,
+then check out http://127.0.0.1:1080 to see the mail.")
+    (home-page "https://mailcatcher.me")
     (license license:expat)))

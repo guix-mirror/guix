@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +33,70 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+(define-public r-bsgenome-celegans-ucsc-ce6
+  (package
+    (name "r-bsgenome-celegans-ucsc-ce6")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Celegans.UCSC.ce6_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0mqzb353xv2c3m3vkb315dkmnxkgczp7ndnknyhpgjlybyf715v9"))))
+    (properties
+     `((upstream-name . "BSgenome.Celegans.UCSC.ce6")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce6/")
+    (synopsis "Full genome sequences for Worm")
+    (description
+     "This package provides full genome sequences for Caenorhabditis
+elegans (Worm) as provided by UCSC (ce6, May 2008) and stored in Biostrings
+objects.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-celegans-ucsc-ce10
+  (package
+    (name "r-bsgenome-celegans-ucsc-ce10")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Celegans.UCSC.ce10_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1zaym97jk4npxk14ifvwz2rvhm4zx9xgs33r9vvx9rlynp0gydrk"))))
+    (properties
+     `((upstream-name . "BSgenome.Celegans.UCSC.ce10")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Celegans.UCSC.ce10/")
+    (synopsis "Full genome sequences for Worm")
+    (description
+     "This package provides full genome sequences for Caenorhabditis
+elegans (Worm) as provided by UCSC (ce10, Oct 2010) and stored in Biostrings
+objects.")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-dmelanogaster-ucsc-dm6
   (package
     (name "r-bsgenome-dmelanogaster-ucsc-dm6")
@@ -63,6 +127,38 @@
      "This package provides full genome sequences for Drosophila
 melanogaster (Fly) as provided by UCSC (dm6) and stored in Biostrings
 objects.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-dmelanogaster-ucsc-dm3
+  (package
+    (name "r-bsgenome-dmelanogaster-ucsc-dm3")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Dmelanogaster.UCSC.dm3_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19bm3lkhhkag3gnwp419211fh0cnr0x6fa0r1lr0ycwrikxdxsv8"))))
+    (properties
+     `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm3")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Dmelanogaster.UCSC.dm3/")
+    (synopsis "Full genome sequences for Fly")
+    (description
+     "This package provides full genome sequences for Drosophila
+melanogaster (Fly) as provided by UCSC (dm3, April 2006) and stored in
+Biostrings objects.")
     (license license:artistic2.0)))
 
 (define-public r-bsgenome-dmelanogaster-ucsc-dm3-masked
@@ -100,6 +196,37 @@ RepeatMasker (RM mask), and (4) the mask of repeats from Tandem Repeats
 Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-hsapiens-1000genomes-hs37d5
+  (package
+    (name "r-bsgenome-hsapiens-1000genomes-hs37d5")
+    (version "0.99.1")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.1000genomes.hs37d5_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1cg0g5fqmsvwyw2p9hp2yy4ilk21jkbbrnpgqvb5c36ihjwvc7sr"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.1000genomes.hs37d5")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Hsapiens.1000genomes.hs37d5/")
+    (synopsis "Full genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens from
+1000genomes phase2 reference genome sequence (hs37d5), based on NCBI GRCh37.")
+    (license license:artistic2.0)))
+
 (define-public r-bsgenome-hsapiens-ucsc-hg19-masked
   (package
     (name "r-bsgenome-hsapiens-ucsc-hg19-masked")
@@ -133,6 +260,37 @@ mask), (2) the mask of intra-contig ambiguities (AMB mask), (3) the mask of
 repeats from RepeatMasker (RM mask), and (4) the mask of repeats from Tandem
 Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
 default.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-mmusculus-ucsc-mm9
+  (package
+    (name "r-bsgenome-mmusculus-ucsc-mm9")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Mmusculus.UCSC.mm9_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1birqw30g2azimxpnjfzmkphan7x131yy8b9h85lfz5fjdg7841i"))))
+    (properties
+     `((upstream-name . "BSgenome.Mmusculus.UCSC.mm9")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9/")
+    (synopsis "Full genome sequences for Mouse")
+    (description
+     "This package provides full genome sequences for Mus musculus (Mouse) as
+provided by UCSC (mm9, July 2007) and stored in Biostrings objects.")
     (license license:artistic2.0)))
 
 (define-public r-bsgenome-mmusculus-ucsc-mm9-masked
@@ -170,10 +328,203 @@ Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
 default."  )
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-mmusculus-ucsc-mm10
+  (package
+    (name "r-bsgenome-mmusculus-ucsc-mm10")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Mmusculus.UCSC.mm10_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "12s0nm2na9brjad4rn9l7d3db2aj8qa1xvz0y1k7gk08wayb6bkf"))))
+    (properties
+     `((upstream-name . "BSgenome.Mmusculus.UCSC.mm10")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm10/")
+    (synopsis "Full genome sequences for Mouse")
+    (description
+     "This package provides full genome sequences for Mus
+musculus (Mouse) as provided by UCSC (mm10, December 2011) and stored
+in Biostrings objects.")
+    (license license:artistic2.0)))
+
+(define-public r-org-ce-eg-db
+  (package
+    (name "r-org-ce-eg-db")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Ce.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w5br1ss4ha8wv4v2saj7cmbjc2jw0dyj2f2y269l078z31wcnaz"))))
+    (properties
+     `((upstream-name . "org.Ce.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/org.Ce.eg.db/")
+    (synopsis "Genome wide annotation for Worm")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model worm Caenorhabditis elegans.")
+    (license license:artistic2.0)))
+
+(define-public r-org-dm-eg-db
+  (package
+    (name "r-org-dm-eg-db")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Dm.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pqjrzlyg72bjpy8zsxvaglc7jsv176bnyi87xdajmkvsgxpm7b3"))))
+    (properties
+     `((upstream-name . "org.Dm.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/org.Dm.eg.db/")
+    (synopsis "Genome wide annotation for Fly")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model fruit fly Drosophila melanogaster.")
+    (license license:artistic2.0)))
+
+(define-public r-org-dr-eg-db
+  (package
+    (name "r-org-dr-eg-db")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Dr.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xs5wsbcpy0iwbjyiv7fax57djqc529ai5fk1qfsdcvlja3cpglx"))))
+    (properties
+     `((upstream-name . "org.Dr.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/org.Dr.eg.db/")
+    (synopsis "Annotation for Zebrafish")
+    (description
+     "This package provides genome wide annotations for Zebrafish, primarily
+based on mapping using Entrez Gene identifiers.")
+    (license license:artistic2.0)))
+
+(define-public r-org-hs-eg-db
+  (package
+    (name "r-org-hs-eg-db")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Hs.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qxz9l80yg3qdqszs6dsscp7lrpfi1bgd0pxh9j7q34vprzwhdim"))))
+    (properties
+     `((upstream-name . "org.Hs.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/org.Hs.eg.db/")
+    (synopsis "Genome wide annotation for Human")
+    (description
+     "This package contains genome-wide annotations for Human, primarily based
+on mapping using Entrez Gene identifiers.")
+    (license license:artistic2.0)))
+
+(define-public r-org-mm-eg-db
+  (package
+    (name "r-org-mm-eg-db")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Mm.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i3nvrd3wjigf1rmgxq1p5xxc3p8v02h5gwi62s30rkrsyjjfjxx"))))
+    (properties
+     `((upstream-name . "org.Mm.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/org.Mm.eg.db/")
+    (synopsis "Genome wide annotation for Mouse")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model mouse Mus musculus.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-hsapiens-ucsc-hg19
+  (package
+    (name "r-bsgenome-hsapiens-ucsc-hg19")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.UCSC.hg19_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1y0nqpk8cw5a34sd9hmin3z4v7iqm6hf6l22cl81vlbxqbjibxc8"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg19/")
+    (synopsis "Full genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens as provided
+by UCSC (hg19, February 2009) and stored in Biostrings objects.")
+    (license license:artistic2.0)))
+
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
@@ -184,7 +535,7 @@ default."  )
                            "/geneLenDataBase_" version ".tar.gz"))
        (sha256
         (base32
-         "07mmmn53kb7v14msc13dsbm8ghssbvwcrhifrk15hn37bw2p4ja5"))))
+         "03gm4pvsfascx7kjg0jycpf4f572mja68wwmwigs390vbmawyb4a"))))
     (properties
      `((upstream-name . "geneLenDataBase")))
     (build-system r-build-system)
@@ -197,6 +548,38 @@ default."  )
      "This package provides the lengths of mRNA transcripts for a number of
 genomes and gene ID formats, largely based on the UCSC table browser.")
     (license license:lgpl2.0+)))
+
+(define-public r-txdb-hsapiens-ucsc-hg19-knowngene
+  (package
+    (name "r-txdb-hsapiens-ucsc-hg19-knowngene")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib"
+                                  "/TxDb.Hsapiens.UCSC.hg19.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1sajhcqqwazgz2lqbik7rd935i7kpnh08zxbp2ra10j72yqy4g86"))))
+    (properties
+     `((upstream-name . "TxDb.Hsapiens.UCSC.hg19.knownGene")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg19.knownGene/")
+    (synopsis "Annotation package for human genome in TxDb format")
+    (description
+     "This package provides an annotation database of Homo sapiens genome
+data.  It is derived from the UCSC hg19 genome and based on the \"knownGene\"
+track.  The database is exposed as a @code{TxDb} object.")
+    (license license:artistic2.0)))
 
 (define-public r-txdb-mmusculus-ucsc-mm9-knowngene
   (package
@@ -226,6 +609,41 @@ genomes and gene ID formats, largely based on the UCSC table browser.")
      "This package provides an annotation database of Mouse genome data.  It
 is derived from the UCSC mm9 genome and based on the \"knownGene\" track.  The
 database is exposed as a @code{TxDb} object.")
+    (license license:artistic2.0)))
+
+(define-public r-txdb-mmusculus-ucsc-mm10-knowngene
+  (package
+    (name "r-txdb-mmusculus-ucsc-mm10-knowngene")
+    (version "3.4.4")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "TxDb.Mmusculus.UCSC.mm10.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "01lgxc1fx5nhlpbwjd5zqghkkbmh6axd98ikx4b0spv0jdg6gf39"))))
+    (properties
+     `((upstream-name . "TxDb.Mmusculus.UCSC.mm10.knownGene")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-annotationdbi" ,r-annotationdbi)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Mmusculus.UCSC.mm10.knownGene/")
+    (synopsis "Annotation package for TxDb knownGene object(s) for Mouse")
+    (description
+     "This package loads a TxDb object, which is an R interface to
+prefabricated databases contained in this package.  This package provides
+the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
+based on the knownGene track.")
     (license license:artistic2.0)))
 
 
@@ -321,6 +739,31 @@ the Human Protein Atlas project.")
     (description "This package offers a statistical framework based on
 customizable permutation tests to assess the association between genomic
 region sets and other genomic features.")
+    (license license:artistic2.0)))
+
+(define-public r-geneplotter
+  (package
+    (name "r-geneplotter")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "geneplotter" version))
+       (sha256
+        (base32
+         "10khr0pznxf3m0f5gzck9ymljrwcv3vamfmpskd51yjh36lhllqz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-lattice" ,r-lattice)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://bioconductor.org/packages/geneplotter")
+    (synopsis "Graphics functions for genomic data")
+    (description
+     "This package provides functions for plotting genomic data.")
     (license license:artistic2.0)))
 
 (define-public r-diffbind
@@ -1177,6 +1620,29 @@ Viewer (SAV) files, access data, and generate QC plots.")
      "This package provides a quality control pipeline for ChIP-exo/nexus
 sequencing data.")
     (license license:gpl2+)))
+
+(define-public r-copynumber
+  (package
+    (name "r-copynumber")
+    (version "1.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "copynumber" version))
+              (sha256
+               (base32
+                "0ipwj9i5p1bwhg5d80jdjagm02krpj2v0j47qdgw41h8wncdyal3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-s4vectors" ,r-s4vectors)
+       ("r-iranges" ,r-iranges)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "https://bioconductor.org/packages/copynumber")
+    (synopsis "Segmentation of single- and multi-track copy number data")
+    (description
+     "This package segments single- and multi-track copy number data by a
+penalized least squares regression method.")
+    (license license:artistic2.0)))
 
 (define-public r-dnacopy
   (package

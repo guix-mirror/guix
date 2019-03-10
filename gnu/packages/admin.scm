@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
@@ -1143,7 +1143,9 @@ WLAN driver.
 This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
 
     ;; In practice, this is linked against Readline, which makes it GPLv3+.
-    (license license:bsd-3)))
+    (license license:bsd-3)
+
+    (properties `((cpe-name . "wpa_supplicant")))))
 
 (define-public wpa-supplicant
   (package (inherit wpa-supplicant-minimal)
@@ -2917,7 +2919,7 @@ Logitech Unifying Receiver.")
 (define-public lynis
   (package
     (name "lynis")
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method git-fetch)
@@ -2926,8 +2928,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1nv2dqd2k2n8mcdr6xl5g713xxkgvja6487by1wn4k0b416jij9i"))
+        (base32 "0dbbfk47dpxx7zpb98n4w3ls3z5di57qnr2nsgxjvp49gk9j3f6k"))
        (modules '((guix build utils)))
        (snippet
         '(begin

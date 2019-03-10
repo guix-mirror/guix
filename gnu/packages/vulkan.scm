@@ -32,6 +32,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages pkg-config)
@@ -42,8 +43,8 @@
 (define-public spirv-headers
   ;; Keep updated in accordance with
   ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "3ce3e49d73b8abbf2ffe33f829f941fb2a40f552")
-        (revision "3"))
+  (let ((commit "8bea0a266ac9b718aa0818d9e3a47c0b77c2cb23")
+        (revision "4"))
     (package
       (name "spirv-headers")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -55,7 +56,7 @@
                (commit commit)))
          (sha256
           (base32
-           "0yk4bzqifdqpmdxkhvrxbdqhf5ngkga0ig1yyz7khr7rklqfz7wp"))
+           "01qyjghjz42hmyw9111zz20a1paf37ps39p4xbj8abjba65d8lqx"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments
@@ -83,87 +84,86 @@ and for the GLSL.std.450 extended instruction set.
                                commit "/LICENSE"))))))
 
 (define-public spirv-tools
-  ;; Keep updated in accordance with
-  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "fe2fbee294a8ad4434f828a8b4d99eafe9aac88c")
-        (revision "2"))
-    (package
-     (name "spirv-tools")
-     (version (string-append "0.0-" revision "." (string-take commit 9)))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/KhronosGroup/SPIRV-Tools")
-             (commit commit)))
-       (sha256
-        (base32
-         "03rq4ypwqnz34n8ip85n95a3b9rxb34j26azzm3b3invaqchv19x"))
-       (file-name (string-append name "-" version "-checkout"))))
-     (build-system cmake-build-system)
-     (arguments
-      `(#:tests? #f ; FIXME: Tests fail.
-        #:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
-                                               (assoc-ref %build-inputs
-                                                          "spirv-headers")))))
-     (inputs `(("spirv-headers" ,spirv-headers)))
-     (native-inputs `(("pkg-config" ,pkg-config)
-                      ("python" ,python)))
-     (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
-     (synopsis "API and commands for processing SPIR-V modules")
-     (description
-      "The SPIR-V Tools project provides an API and commands for processing
-SPIR-V modules.  The project includes an assembler, binary module parser,
-disassembler, validator, and optimizer for SPIR-V.")
-     (license license:asl2.0))))
+  (package
+    (name "spirv-tools")
+    (version "2019.1")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/KhronosGroup/SPIRV-Tools")
+            (commit (string-append "v" version))))
+      (sha256
+       (base32
+        "0vddjzhkrhrm3l3i57nxmq2smv3r1s0ka5ff2kziaahr4hqb479r"))
+      (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; FIXME: Tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fixgcc7
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
+             #t)))
+       #:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
+                               (assoc-ref %build-inputs "spirv-headers")))))
+    (inputs `(("spirv-headers" ,spirv-headers)))
+    (native-inputs `(("gcc" ,gcc-7)
+                     ("pkg-config" ,pkg-config)
+                     ("python" ,python)))
+    (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
+    (synopsis "API and commands for processing SPIR-V modules")
+    (description
+     "The SPIR-V Tools project provides an API and commands for processing
+SPIR-V modules.  The project includes an assembler, binary module
+parser,disassembler, validator, and optimizer for SPIR-V.")
+    (license license:asl2.0)))
 
 (define-public glslang
-  ;; Keep updated in accordance with
-  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "32d3ec319909fcad0b2b308fe1635198773e8316")
-        (revision "3"))
-    (package
-      (name "glslang")
-      (version (string-append "3.0-" revision "." (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/KhronosGroup/glslang")
-               (commit commit)))
-         (sha256
-          (base32
-           "1kmgjv5kbrjy6azpgwnjcn3cj8vg5i8hnyk3m969sc0gq2j1rbjj"))
-         (file-name (string-append name "-" version "-checkout"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:tests? #f ;; No tests
-         ;; glslang tries to set CMAKE_INSTALL_PREFIX manually. Remove the
-         ;; offending line.
-         #:phases (modify-phases %standard-phases
-                    (add-after 'patch-source-shebangs 'fix-cmakelists
-                      (lambda _
-                        (substitute* "CMakeLists.txt"
-                          (("set.*CMAKE_INSTALL_PREFIX.*") ""))
-                        #t)))))
-      (native-inputs `(("bison" ,bison)
-                       ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/KhronosGroup/glslang")
-      (synopsis "OpenGL and OpenGL ES shader front end and validator")
-      (description
-       "Glslang is the official reference compiler front end for the
+  (package
+    (name "glslang")
+    (version "7.11.3113")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/glslang")
+             (commit version)))
+       (sha256
+        (base32
+         "1kzv2b4q1fddxd7c0hc754nd6rw6y9vijb9fsi13xzzq9dficgb6"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;; No tests
+       ;; glslang tries to set CMAKE_INSTALL_PREFIX manually. Remove the
+       ;; offending line.
+       #:phases (modify-phases %standard-phases
+                  (add-after 'patch-source-shebangs 'fix-cmakelists
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        (("set.*CMAKE_INSTALL_PREFIX.*") ""))
+                      #t)))))
+    (native-inputs `(("bison" ,bison)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/KhronosGroup/glslang")
+    (synopsis "OpenGL and OpenGL ES shader front end and validator")
+    (description
+     "Glslang is the official reference compiler front end for the
 OpenGL@tie{}ES and OpenGL shading languages.  It implements a strict
 interpretation of the specifications for these languages.")
-      ;; Modified BSD license. See "copyright" section of
-      ;; https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
-      (license (list license:bsd-3
-                     ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
-                     license:asl2.0)))))
+    ;; Modified BSD license. See "copyright" section of
+    ;; https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
+    (license (list license:bsd-3
+                   ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
+                   license:asl2.0))))
 
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.101")
+    (version "1.1.102")
     (source
      (origin
        (method git-fetch)
@@ -173,7 +173,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hb1lg56i2685nz7i4hbsv3sz1iym2wimjz4bfa175xh5jyvr0km"))))
+         "1dkjg48l7dfpq16bq1w9c3y9dwpj2hhv7b3njvj52lpgpa14s0f9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -197,7 +197,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02xkjaack3zmbsnh95jbkkdarf7ccfpfjby12kikajwr0kr4d4df"))))
+         "0ccpklv251jcz2lxvd5ix5i3cg4wb7qq5xi6cwvniy1rw52z7h00"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -244,7 +244,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.1.100")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method git-fetch)
@@ -254,7 +254,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1b9c8yimn34b77nbrkra4qj71gcw8zr0cgdp85ghxampm7gzx0xi"))))
+         "0a8vmgyn7an21bb9vxba9laf9ghvk905vn7rm8frdl8qr2b7vyw3"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
@@ -267,7 +267,9 @@ and the ICD.")
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
     (arguments
-     `(#:tests? #f))                    ; No tests.
+     `(#:tests? #f                      ; No tests.
+       #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
+                               (assoc-ref %build-inputs "glslang")))))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Tools")
     (synopsis "Tools and utilities for Vulkan")
@@ -278,75 +280,73 @@ API.")
     (license (list license:asl2.0)))) ;LICENSE.txt
 
 (define-public shaderc
-  (let ((commit "be8e0879750303a1de09385465d6b20ecb8b380d")
-        (revision "2"))
-    (package
-      (name "shaderc")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/google/shaderc")
-               (commit commit)))
-         (file-name (string-append name "-" version ".tar.gz"))
-         (sha256
-          (base32
-           "16p25ry2i4zrj00zihfpf210f8xd7g398ffbw25igvi9mbn4nbfd"))))
-      (build-system meson-build-system)
-      (arguments
-       `(#:tests? #f ; FIXME: Tests fail.
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 ;; Remove various lines and touch build-version.inc or
-                 ;; configuring won't work.
-                 (invoke "touch" "glslc/src/build-version.inc")
-                 (substitute* "CMakeLists.txt" (("..PYTHON_EXE..*") ""))
-                 (substitute* "CMakeLists.txt"
-                   ((".*update_build_version.py..*") ""))
-                 (substitute* "CMakeLists.txt"
-                   ((".*add_custom_target.build-version.*") ""))
-                 (substitute* "CMakeLists.txt"
-                   ((".*spirv-tools_SOURCE_DIR.*glslang_SOURCE_DIR.*")
-                    ""))
-                 (substitute* "CMakeLists.txt"
-                   ((".*Update build-version.inc.*") ""))
-                 (substitute* "CMakeLists.txt" ((".*--check.*") ""))
-                 (substitute* "glslc/src/main.cc" ((".*build-version.inc.*")
-                                                   "\"1\""))
-                 (invoke "cmake" "-GNinja" "-DCMAKE_BUILD_TYPE=Release"
-                         "-DSHADERC_SKIP_TESTS=ON"
-                         "-DCMAKE_INSTALL_LIBDIR=lib"
-                         (string-append "-DCMAKE_INSTALL_PREFIX="
-                                        out)))))
-           (add-after 'unpack 'unpack-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((spirv-tools-source (assoc-ref inputs "spirv-tools-source"))
-                     (spirv-headers-source (assoc-ref inputs "spirv-headers-source"))
-                     (glslang-source (assoc-ref inputs "glslang-source")))
-                 (copy-recursively spirv-tools-source "third_party/spirv-tools")
-                 (copy-recursively spirv-headers-source
-                                   (string-append "third_party/spirv-tools"
-                                                  "/external/spirv-headers"))
-                 (copy-recursively glslang-source "third_party/glslang")
-                 #t))))))
-      (inputs
-       `(("googletest" ,googletest)
-         ("python" ,python)))
-      (native-inputs
-       `(("cmake" ,cmake)
-         ("glslang-source" ,(package-source glslang))
-         ("pkg-config" ,pkg-config)
-         ("spirv-headers-source" ,(package-source spirv-headers))
-         ("spirv-tools-source" ,(package-source spirv-tools))))
-      (home-page "https://github.com/google/shaderc")
-      (synopsis "Tools for shader compilation")
-      (description "Shaderc is a collection of tools, libraries, and tests for
+  (package
+    (name "shaderc")
+    (version "2018.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/shaderc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0qigmj0riw43pgjn5f6kpvk72fajssz1lc2aiqib5qvmj9rqq3hl"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:tests? #f ; FIXME: Tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Remove various lines and touch build-version.inc or
+               ;; configuring won't work.
+               (invoke "touch" "glslc/src/build-version.inc")
+               (substitute* "CMakeLists.txt" (("..PYTHON_EXE..*") ""))
+               (substitute* "CMakeLists.txt"
+                 ((".*update_build_version.py..*") ""))
+               (substitute* "CMakeLists.txt"
+                 ((".*add_custom_target.build-version.*") ""))
+               (substitute* "CMakeLists.txt"
+                 ((".*spirv-tools_SOURCE_DIR.*glslang_SOURCE_DIR.*")
+                  ""))
+               (substitute* "CMakeLists.txt"
+                 ((".*Update build-version.inc.*") ""))
+               (substitute* "CMakeLists.txt" ((".*--check.*") ""))
+               (substitute* "glslc/src/main.cc" ((".*build-version.inc.*")
+                                                 "\"1\""))
+               (invoke "cmake" "-GNinja" "-DCMAKE_BUILD_TYPE=Release"
+                       "-DSHADERC_SKIP_TESTS=ON"
+                       "-DCMAKE_INSTALL_LIBDIR=lib"
+                       (string-append "-DCMAKE_INSTALL_PREFIX="
+                                      out)))))
+         (add-after 'unpack 'unpack-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((spirv-tools-source (assoc-ref inputs "spirv-tools-source"))
+                   (spirv-headers-source (assoc-ref inputs "spirv-headers-source"))
+                   (glslang-source (assoc-ref inputs "glslang-source")))
+               (copy-recursively spirv-tools-source "third_party/spirv-tools")
+               (copy-recursively spirv-headers-source
+                                 (string-append "third_party/spirv-tools"
+                                                "/external/spirv-headers"))
+               (copy-recursively glslang-source "third_party/glslang")
+               #t))))))
+    (inputs
+     `(("googletest" ,googletest)
+       ("python" ,python)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("glslang-source" ,(package-source glslang))
+       ("pkg-config" ,pkg-config)
+       ("spirv-headers-source" ,(package-source spirv-headers))
+       ("spirv-tools-source" ,(package-source spirv-tools))))
+    (home-page "https://github.com/google/shaderc")
+    (synopsis "Tools for shader compilation")
+    (description "Shaderc is a collection of tools, libraries, and tests for
 shader compilation.")
-      (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public vkd3d
   (let ((commit "ecda316ef54d70bf1b3e860755241bb75873e53f")) ; Release 1.1.

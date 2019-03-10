@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
@@ -1709,7 +1709,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.17")
+    (version "5.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1718,7 +1718,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g8iw2pya32ifljbdx6z6rpcinmzm81i9minhi2bi1d500ailn7s"))))
+                "186i1pna2f3fwa2001y8mw5131h0sndhfdxzfqq2gnr1m83sjm0w"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -1743,7 +1743,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.17.1")
+    (version "5.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1752,7 +1752,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19sfblgh9mchkgw32n7gdvm7a8a9jxsl9cdlgmxn9bk9m939a2sg"))
+                "1b8n8nzlvmld1hl3zgs1xg4jbc1nsf1m2bn7fi794vdr06s6n911"))
               (modules '((guix build utils)))
               (snippet
                 '(begin
@@ -4407,7 +4407,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.22.1")
+    (version "0.23.1")
     (source
      (origin
        (method url-fetch)
@@ -4421,7 +4421,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                             version "-nodeps.tar.xz")))
        (sha256
         (base32
-         "1qc90wwbxvjzqq66n8kfr0a2ny7sfvv2n84si67jiv2887d0ws6k"))
+         "0c3mx49kpz6i2xvv2dwsaj9s7mm4mif1h2qdkfyi80lv2j1ay51h"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -4433,6 +4433,8 @@ fish.  The whole game is accompanied by quiet, comforting music.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("perl" ,perl)
+       ("python" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)
        ("pkg-config" ,pkg-config)))
     (arguments
      '(#:make-flags
@@ -4448,16 +4450,24 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                "-Csource"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-flags
+           (lambda _
+             (substitute* "source/Makefile"
+               (("-mfpmath=sse -msse2") ""))
+             #t))
+         (add-after 'unpack 'find-SDL-image
+           (lambda _
+             (substitute* "source/windowmanager-sdl.cc"
+               (("SDL_image.h") "SDL2/SDL_image.h"))
+             #t))
          (delete 'configure)
-         (delete 'check)
-         ;; Test cases require the source to be rebuild with the -DDEBUG define.
-         ;; Do 'check before 'build to avoid a 3rd build on make install.
-         (add-before 'build 'check
+         (replace 'check
            (lambda* (#:key inputs outputs make-flags #:allow-other-keys)
              (setenv "HOME" (getcwd))
              ;; Fake a terminal for the test cases.
              (setenv "TERM" "xterm-256color")
-             (apply invoke "make" "debug" "test"
+             ;; Run the tests that don't require a debug build.
+             (apply invoke "make" "nondebugtest"
                     (format #f "-j~d" (parallel-job-count))
                     ;; Force command line build for test cases.
                     (append make-flags '("GAME=crawl" "TILES="))))))))
@@ -6103,4 +6113,162 @@ This package provides the core application, but no song is shipped.  You need
 to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
     (home-page "https://www.stepmania.com")
     (license license:expat)))
+
+(define-public btanks
+  (package
+    (name "btanks")
+    (version "0.9.8083")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/btanks/btanks-source/"
+                           "btanks-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0ha35kxc8xlbg74wsrbapfgxvcrwy6psjkqi7c6adxs55dmcxliz"))))
+    (build-system scons-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are none
+       #:scons ,scons-python2
+       #:scons-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-removed-scons-syntax
+           (lambda _
+             (substitute* "SConstruct"
+               (("Options") "Variables")
+               (("opts.Add\\(BoolOption.*") "opts.Add('gcc_visibility', 'gcc visibility', 'true')")
+               (("opts.Add\\(EnumOption.*") "opts.Add('mode', 'build mode', 'release')"))
+             #t))
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL"))
+             #t))
+         (add-after 'unpack 'fix-compilation-errors
+           (lambda _
+             (substitute* "mrt/base_file.h"
+               (("#include <string>" m)
+                (string-append m "\n#include <sys/types.h>")))
+             (substitute* '("engine/sl08/sl08.h"
+                            "engine/sl08/sl08.py")
+               (("signal = NULL") "signal = 0")
+               (("object\\(NULL\\)") "object(0)")
+               (("func\\(NULL\\)") "func(0)")
+               ((" connect\\(signal_ref\\)")
+                " this->connect(signal_ref)"))
+             (substitute* "math/range_list.h"
+               ((" lower_bound\\(value\\)")
+                " this->lower_bound(value)")
+               (("	erase\\(i\\)")
+                "	this->erase(i)"))
+             (substitute* "clunk/source.cpp"
+               (("using namespace clunk" m)
+                (string-append "# define pow10f(x) exp10f(x)\n" m)))
+             #t))
+         (add-after 'unpack 'find-lua
+           (lambda _
+             (substitute* "engine/SConscript"
+               (("lua5.1") "lua-5.1")
+               (("bt_libs.append\\(lua\\)")
+                "bt_libs.append(\"lua\")"))
+             #t)))))
+    (inputs
+     `(("expat" ,expat)
+       ("glu" ,glu)
+       ("libsmpeg" ,libsmpeg-with-sdl1)
+       ("libvorbis" ,libvorbis)
+       ("lua51" ,lua-5.1)
+       ("sdl" ,(sdl-union (list sdl
+                                sdl-mixer
+                                sdl-image
+                                sdl-ttf)))
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("zip" ,zip)))
+    (home-page "http://btanks.sourceforge.net")
+    (synopsis "Multiplayer tank battle game")
+    (description "Battle Tanks is a funny battle game, where you can choose
+one of three vehicles and eliminate your enemy using the whole arsenal of
+weapons.  It has original cartoon-like graphics and cool music, it’s fun and
+dynamic, it has several network modes for deathmatch and cooperative.")
+    ;; Some parts (e.g. mrt/b64.cpp) are LGPLv2.1+, but the whole package is
+    ;; released under GPLv2 or later.  It comes with extra exceptions for the
+    ;; developers.
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public slingshot
+  (package
+    (name "slingshot")
+    (version "0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ryanakca/slingshot.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "19m8b6nsi786bc6gmkp185mwri3r5y249gjmqd5qsc23nnfhgrs1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (inputs
+     `(("python-pygame" ,python2-pygame)))
+    (home-page "https://github.com/ryanakca/slingshot")
+    (synopsis "Simple 2D shooting strategy game set in space")
+    (description "Slingshot is a two-dimensional strategy game where two
+players attempt to shoot one another through a section of space populated by
+planets.  The main feature of the game is that the shots, once fired, are
+affected by the gravity of the planets.")
+    (license license:gpl2+)))
+
+(define-public 4dtris
+  (package
+    (name "4dtris")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/4dtris/"
+                           (version-major+minor version)
+                           "/" version "/+download/4dtris_"
+                           version ".orig.tar.gz"))
+       (sha256
+        (base32
+         "1nfkhcm0l89jyw8yr65na97g4l385zhjf7whkyg47c3v5sdqq2g7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile.in"
+                 (("bindir = /usr/games")
+                  (string-append "bindir = " out "/bin"))
+                 (("/usr/share/applications")
+                  (string-append out "/share/applications"))
+                 (("/usr/share/games/4dtris")
+                  (string-append out "/share/4dtris"))))
+             #t))
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl")
+                                    "/include/SDL"))
+             #t)))))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freeglut" ,freeglut)
+       ("sdl" ,(sdl-union (list sdl sdl-ttf)))))
+    (home-page "https://launchpad.net/4dtris/")
+    (synopsis "4D Tetris")
+    (description "4D-TRIS is an alteration of the well-known Tetris game.  The
+game field is extended to 4D space, which has to filled up by the gamer with
+4D hyper cubes.")
+    (license license:gpl3)))
 

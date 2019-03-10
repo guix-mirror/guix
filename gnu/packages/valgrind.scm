@@ -32,16 +32,17 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.13.0")
+    (version "3.14.0")
     (source (origin
               (method url-fetch)
-             (uri (string-append "ftp://sourceware.org/pub/valgrind/valgrind-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "0fqc3684grrbxwsic1rc5ryxzxmigzjx9p5vf3lxa37h0gpq0rnp"))
-             (patches (search-patches "valgrind-enable-arm.patch"
-                                      "valgrind-glibc-compat.patch"))))
+              (uri (list (string-append "http://www.valgrind.org/downloads"
+                                        "/valgrind-" version ".tar.bz2")
+                         (string-append "ftp://sourceware.org/pub/valgrind"
+                                        "/valgrind-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "19ds42jwd89zrsjb94g7gizkkzipn8xik3xykrpcqxylxyzi2z03"))
+              (patches (search-patches "valgrind-enable-arm.patch"))))
     (build-system gnu-build-system)
     (outputs '("doc"                              ;16 MB
                "out"))
@@ -77,8 +78,4 @@
 tools.  There are Valgrind tools that can automatically detect many memory
 management and threading bugs, and profile your programs in detail.  You can
 also use Valgrind to build new tools.")
-    (license gpl2+)
-
-    ;; Building VEX on mips64el-linux fails with "opcode not supported on this
-    ;; processor: mips3".
-    (supported-systems (delete "mips64el-linux" %supported-systems))))
+    (license gpl2+)))

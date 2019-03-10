@@ -783,7 +783,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              ;; The thinlto test should pass with llvm 6.
              (delete 'disable-thinlto-test))))))))
 
-(define-public rust
+(define-public rust-1.29
   (let ((base-rust
          (rust-bootstrapped-package rust-1.28 "1.29.2"
                                     "1jb787080z754caa2w3w1amsygs4qlzj9rs1vy64firfmabfg22h"
@@ -792,3 +792,84 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                       "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust))))
+
+(define-public rust-1.30
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.29 "1.30.1"
+                                    "0aavdc1lqv0cjzbqwl5n59yd0bqdlhn0zas61ljf38yrvc18k8rn"
+                                    #:patches
+                                    '("rust-1.25-accept-more-detailed-gdb-lines.patch"
+                                      "rust-1.30-gdb-llvm.patch"
+                                      "rust-reproducible-builds.patch"))))
+    (package
+      (inherit base-rust)
+      (inputs
+       ;; Use LLVM 7.0
+       (alist-replace "llvm" (list llvm)
+                      (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'patch-cargo-tests 'patch-cargo-env-shebang
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((coreutils (assoc-ref inputs "coreutils")))
+                   (substitute* "src/tools/cargo/tests/testsuite/fix.rs"
+                     ;; Cargo has a test which explicitly sets a
+                     ;; RUSTC_WRAPPER environment variable which points
+                     ;; to /usr/bin/env. Since it's not a shebang, it
+                     ;; needs to be manually patched
+                     (("\"/usr/bin/env\"")
+                      (string-append "\"" coreutils "/bin/env\"")))
+                   #t)))
+             (add-after 'patch-cargo-env-shebang 'ignore-cargo-package-tests
+               (lambda* _
+                 (substitute* "src/tools/cargo/tests/testsuite/package.rs"
+                   ;; These tests largely check that cargo outputs warning/error
+                   ;; messages as expected. It seems that cargo outputs an
+                   ;; absolute path to something in the store instead of the
+                   ;; expected relative path (e.g. `[..]`) so we'll ignore
+                   ;; these for now
+                   (("fn include") "#[ignore]\nfn include")
+                   (("fn exclude") "#[ignore]\nfn exclude"))
+                   #t))
+             ;; Appears that this test isn't currently running and has been
+             ;; moved elsewhere, so the patch doesn't apply.
+             (delete 'disable-amd64-avx-test))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.30 "1.31.1"
+                                    "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli"
+                                    #:patches
+                                    '("rust-1.25-accept-more-detailed-gdb-lines.patch"
+                                      "rust-1.30-gdb-llvm.patch"
+                                      "rust-reproducible-builds.patch"))))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'patch-tests 'patch-command-exec-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((coreutils (assoc-ref inputs "coreutils")))
+                   (substitute* "src/test/run-pass/command-exec.rs"
+                     ;; This test suite includes some tests that the stdlib's
+                     ;; `Command` execution properly handles situations where
+                     ;; the environment or PATH variable are empty, but this
+                     ;; fails since we don't have `echo` available in the usual
+                     ;; Linux directories.
+                     ;; NB: the leading space is so we don't fail a tidy check
+                     ;; for trailing whitespace, and the newlines are to ensure
+                     ;; we don't exceed the 100 chars tidy check as well
+                     ((" Command::new\\(\"echo\"\\)")
+                      (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
+                   #t)))
+             (add-after 'patch-tests 'patch-process-docs-rev-cmd
+               (lambda* _
+                 ;; Disable some doc tests which depend on the "rev" command
+                 ;; https://github.com/rust-lang/rust/pull/58746
+                 (substitute* "src/libstd/process.rs"
+                   (("```rust") "```rust,no_run"))
+                 #t)))))))))

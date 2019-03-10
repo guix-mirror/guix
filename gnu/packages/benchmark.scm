@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -168,3 +168,28 @@ Efficiency of the MPI implementation.
     (license license:cpl1.0)))
 
 (define-public imb-openmpi (imb openmpi))
+
+(define-public multitime
+  (package
+    (name "multitime")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://tratt.net/laurie/src/"
+                                  "multitime/releases/"
+                                  "multitime-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0iyfsdrbyqa7a4ifrh19l9a48hgv7ld6m0d8yf9bkl12q0qw91fx"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f)) ; there are no tests
+    (home-page "https://tratt.net/laurie/src/multitime/")
+    (synopsis "Time command execution over multiple executions")
+    (description
+     "The @code{time} utility is a simple and often effective way of measuring
+how long a command takes to run (wall time).  Unfortunately, running a command
+once can give misleading timings.  @code{multitime} is, in essence, a simple
+extension to @code{time} which runs a command multiple times and prints the
+timing means, standard deviations, mins, medians, and maxes having done so.
+This can give a much better understanding of the command's performance.")
+    (license license:expat)))

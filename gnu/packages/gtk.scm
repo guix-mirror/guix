@@ -399,7 +399,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.24.8")
+   (version "4.0.2")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -407,7 +407,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1zinqid62zjcsq7vy1y4mq1qh3hzd3zj7p8np7g0bdqd37zvi6qy"))))
+               "1b2z9c0skxrgw2vh08hv6qxky8jbvamc4rgww82j0kpp533rz0hm"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -443,6 +443,19 @@ printing and other features typical of a source code editor.")
 GTK+ text widget GtkTextView.  It improves GtkTextView by implementing syntax
 highlighting and other features typical of a source code editor.")
    (license license:lgpl2.1+)))
+
+(define-public gtksourceview-3
+ (package (inherit gtksourceview)
+   (name "gtksourceview")
+   (version "3.24.7")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1rp8zspwyw3mmdgccsas3pa6v7s0hqjaaglg6n4kcls7ccx0vhm5"))))))
 
 (define-public gdk-pixbuf
   (package
@@ -547,7 +560,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.26.2")
+   (version "2.28.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -555,22 +568,45 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0596ghkamkxgv08r4a1pdhm06qd5zzgcfqsv64038w9xbvghq3n8"))))
-   (build-system gnu-build-system)
+              "11qwdxxx4jm0zj04xydlwah41axiz276dckkiql3rr0wn5x4i8j2"))))
+   (build-system meson-build-system)
    (outputs '("out" "doc"))
    (arguments
     '(#:configure-flags
-      (list (string-append "--with-html-dir="
-                           (assoc-ref %outputs "doc")
-                           "/share/gtk-doc/html"))
+      (list "-Denable_docs=true")
       #:phases
       (modify-phases %standard-phases
-        (replace 'check
-                 ;; Run test-suite under a dbus session.
-                 (lambda _
-                   ;; Don't fail on missing  '/etc/machine-id'.
-                   (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (invoke "dbus-launch" "make" "check"))))))
+        (add-after 'unpack 'set-documentation-path
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Ensure that the cross-references point to the "doc" output.
+            (substitute* "doc/libatspi/meson.build"
+              (("docpath =.*")
+               (string-append "docpath = '" (assoc-ref outputs "doc") "/share/gtk-doc/html'\n")))
+            #t))
+        (add-before 'install 'prepare-doc-directory
+          (lambda* (#:key outputs #:allow-other-keys)
+            (mkdir-p (string-append (assoc-ref outputs "doc") "/share"))
+            #t))
+        (add-after 'install 'move-documentation
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
+              (copy-recursively
+               (string-append out "/share/gtk-doc")
+               (string-append doc "/share/gtk-doc"))
+              (delete-file-recursively
+               (string-append out "/share/gtk-doc")))
+            #t))
+        (add-after 'install 'check
+          (lambda _
+            (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
+            ;; Run test-suite under a dbus session.
+            (setenv "XDG_DATA_DIRS"     ; for finding org.xfce.Xfconf.service
+                    (string-append %output "/share"))
+            ;; Don't fail on missing  '/etc/machine-id'.
+            (setenv "DBUS_FATAL_WARNINGS" "0") ;
+            (invoke "dbus-launch" "ninja" "test")))
+         (delete 'check))))
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
     `(("dbus" ,dbus)
@@ -580,6 +616,8 @@ in the GNOME project.")
       ("libxtst" ,libxtst)))
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("glib" ,glib "bin")
       ("intltool" ,intltool)
       ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, core components")
@@ -1407,7 +1445,7 @@ information.")
 (define-public gtk-doc
   (package
     (name "gtk-doc")
-    (version "1.27")
+    (version "1.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1415,7 +1453,7 @@ information.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vwsdl61nvnmqswlz5j9m4hg7qirhazwcikcnqf9nx0c13vx6sz2"))))
+                "05apmwibkmn1icx05l8aw241lhymcx01zvk5i499cb150bijj7li"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f

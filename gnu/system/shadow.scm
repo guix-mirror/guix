@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,6 +24,7 @@
   #:use-module (guix modules)
   #:use-module (guix sets)
   #:use-module (guix ui)
+  #:use-module (gnu system accounts)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module ((gnu system file-systems)
@@ -36,27 +37,29 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:export (user-account
-            user-account?
-            user-account-name
-            user-account-password
-            user-account-uid
-            user-account-group
-            user-account-supplementary-groups
-            user-account-comment
-            user-account-home-directory
-            user-account-create-home-directory?
-            user-account-shell
-            user-account-system?
 
-            user-group
-            user-group?
-            user-group-name
-            user-group-password
-            user-group-id
-            user-group-system?
+  ;; Re-export these bindings for backward compatibility.
+  #:re-export (user-account
+               user-account?
+               user-account-name
+               user-account-password
+               user-account-uid
+               user-account-group
+               user-account-supplementary-groups
+               user-account-comment
+               user-account-home-directory
+               user-account-create-home-directory?
+               user-account-shell
+               user-account-system?
 
-            default-skeletons
+               user-group
+               user-group?
+               user-group-name
+               user-group-password
+               user-group-id
+               user-group-system?)
+
+  #:export (default-skeletons
             skeleton-directory
             %base-groups
             %base-user-accounts
@@ -70,33 +73,8 @@
 ;;;
 ;;; Code:
 
-(define-record-type* <user-account>
-  user-account make-user-account
-  user-account?
-  (name           user-account-name)
-  (password       user-account-password (default #f))
-  (uid            user-account-uid (default #f))
-  (group          user-account-group)             ; number | string
-  (supplementary-groups user-account-supplementary-groups
-                        (default '()))            ; list of strings
-  (comment        user-account-comment (default ""))
-  (home-directory user-account-home-directory)
-  (create-home-directory? user-account-create-home-directory? ;Boolean
-                          (default #t))
-  (shell          user-account-shell              ; gexp
-                  (default (file-append bash "/bin/bash")))
-  (system?        user-account-system?            ; Boolean
-                  (default #f)))
-
-(define-record-type* <user-group>
-  user-group make-user-group
-  user-group?
-  (name           user-group-name)
-  (password       user-group-password (default #f))
-  (id             user-group-id (default #f))
-  (system?        user-group-system?              ; Boolean
-                  (default #f)))
-
+;; Change the default shell used by new <user-account> records.
+(default-shell (file-append bash "/bin/bash"))
 
 (define %base-groups
   ;; Default set of groups.
@@ -320,11 +298,12 @@ group."
   (assert-valid-users/groups accounts groups)
 
   ;; Add users and user groups.
-  #~(begin
-      (setenv "PATH"
-              (string-append #$(@ (gnu packages admin) shadow) "/sbin"))
-      (activate-users+groups (list #$@user-specs)
-                             (list #$@group-specs))))
+  (with-imported-modules (source-module-closure '((gnu system accounts)))
+    #~(begin
+        (use-modules (gnu system accounts))
+
+        (activate-users+groups (map sexp->user-account (list #$@user-specs))
+                               (map sexp->user-group (list #$@group-specs))))))
 
 (define (account-shepherd-service accounts+groups)
   "Return a Shepherd service that creates the home directories for the user
@@ -344,12 +323,15 @@ accounts among ACCOUNTS+GROUPS."
   (list (shepherd-service
          (requirement '(file-systems))
          (provision '(user-homes))
-         (modules '((gnu build activation)))
+         (modules '((gnu build activation)
+                    (gnu system accounts)))
          (start (with-imported-modules (source-module-closure
-                                        '((gnu build activation)))
+                                        '((gnu build activation)
+                                          (gnu system accounts)))
                   #~(lambda ()
                       (activate-user-home
-                       (list #$@(map user-account->gexp accounts)))
+                       (map sexp->user-account
+                            (list #$@(map user-account->gexp accounts))))
                       #f)))                       ;stop
          (stop #~(const #f))
          (respawn? #f)

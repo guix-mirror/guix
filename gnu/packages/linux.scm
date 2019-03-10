@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -98,6 +98,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages storage)
   #:use-module (gnu packages texinfo)
@@ -404,10 +405,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.13")
-(define %linux-libre-hash "00rqdsqyz0csdblcmifyhkgzvsmnqsh090i6h30146rsf3707xad")
+(define %linux-libre-version "5.0")
+(define %linux-libre-hash "18gs0kl5xvbmh725m7crg6iyqw3p8qq421aql7z0nlk035fh5xbx")
 
-(define %linux-libre-4.20-patches
+(define %linux-libre-5.0-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
@@ -415,11 +416,11 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.26")
-(define %linux-libre-4.19-hash "0xp1hqcwimyvzzbci741vymc8mrgk3cycv8l020zas1dfw5wn48c")
+(define %linux-libre-4.19-version "4.19.27")
+(define %linux-libre-4.19-hash "055n4s4yrkcrwkdsxbf1q1zyxmpabf7kba8d0phpfadian3wr4s0")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -432,8 +433,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.104")
-(define %linux-libre-4.14-hash "0x7jzazl0yzdc9m1ycwcywjpj6w30mabks4qs9asdy5622282b4v")
+(define %linux-libre-4.14-version "4.14.105")
+(define %linux-libre-4.14-hash "06pp13d2g0j2v8jy8fh20b4ismzg9wn3i7bnx2hpyvslz256rrgg")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -442,8 +443,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.161"
-                    "0r35qlc8yj9svryv0v91j134vr35d23sz5aj7f2h8c99iakbm6zw"
+  (make-linux-libre "4.9.162"
+                    "07swv6xvjsl5nv5y3sc2nfdnmqdz9gjy8hgrjvi0bljwzf1fbxmy"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -457,7 +458,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -480,7 +481,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -2477,14 +2478,14 @@ It works with most newer systems.")
 (define-public iucode-tool
   (package
     (name "iucode-tool")
-    (version "2.2")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.com/iucode-tool/releases"
                                   "/raw/latest/iucode-tool_" version ".tar.xz"))
               (sha256
                (base32
-                "0w99k1aq1xw148ffk1xykqf60rdbphb1jknw98jcmadq4pwxl44q"))))
+                "159gvf6ljgg3g4vlhyy6pyr0wz11rcyhp985vc4az58d9px8xf0j"))))
     (build-system gnu-build-system)
     (home-page "https://gitlab.com/iucode-tool/iucode-tool/wikis/home")
     (synopsis "Manipulate Intel microcode bundles")
@@ -2653,7 +2654,22 @@ thanks to the use of namespaces.")
                                   "/singularity-" version ".tar.gz"))
               (sha256
                (base32
-                "1whx0hqqi1326scgdxxxa1d94vn95mnq0drid6s8wdp84ni4d3gk"))))
+                "1whx0hqqi1326scgdxxxa1d94vn95mnq0drid6s8wdp84ni4d3gk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Do not create directories in /var.
+                  (substitute* "Makefile.in"
+                    (("\\$\\(MAKE\\) .*install-data-hook") ""))
+
+                  ;; The original source overrides PATH so that it points to
+                  ;; /bin, /usr/local/bin, etc., which obviously doesn't work
+                  ;; on Guix System.  Leave PATH unchanged so we refer to the
+                  ;; installed Coreutils, grep, etc.
+                  (substitute* "bin/singularity.in"
+                    (("^PATH=.*" all)
+                     (string-append "#" all "\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2661,12 +2677,6 @@ thanks to the use of namespaces.")
              "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         ;; Do not create directories in /var.
-         (add-after 'unpack 'disable-install-hook
-           (lambda _
-             (substitute* "Makefile.in"
-               (("\\$\\(MAKE\\) .*install-data-hook") ""))
-             #t))
          (add-after 'unpack 'patch-reference-to-squashfs-tools
            (lambda _
              (substitute* "libexec/cli/build.exec"
@@ -3242,6 +3252,32 @@ is flexible, efficient and uses a modular implementation.")
 write access to exFAT devices.")
     (license license:gpl2+)))
 
+(define-public fuseiso
+  (package
+    (name "fuseiso")
+    (version "20070708")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fuseiso/fuseiso/"
+                                  version "/fuseiso-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "127xql52dcdhmh7s5m9xc6q39jdlj3zhbjar1j821kb6gl3jw94b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)
+       ("glib" ,glib)
+       ("zlib" ,zlib)))
+    (home-page "https://sourceforge.net/projects/fuseiso/")
+    (synopsis "Mount ISO file system images")
+    (description
+     "FuseISO is a FUSE module to mount ISO filesystem images (.iso, .nrg,
+.bin, .mdf and .img files).  It supports plain ISO9660 Level 1 and 2, Rock
+Ridge, Joliet, and zisofs.")
+    (license license:gpl2)))
+
 (define-public gpm
   (package
     (name "gpm")
@@ -3290,7 +3326,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.17.1")
+    (version "4.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3298,7 +3334,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0x6d53fbrcmzvhv461575fzsv3373427p4srz646w2wcagqk82xz"))))
+                "0z0fm3j4ajzsf445381ra8r3zzciyyvfh8vvbjmbyarg2rz8n3w9"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3393,7 +3429,7 @@ from the btrfs-progs package.  It is meant to be used in initrds.")
               (method url-fetch)
               (uri (string-append
                     "https://git.kernel.org/cgit/linux/kernel/git/jaegeuk"
-                    "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
+                    "/f2fs-tools.git/snapshot/f2fs-tools-" version ".tar.gz"))
               (sha256
                (base32
                 "1m6bn1ibq0p53m0n97il91xqgjgn2pzlz74lb5bfzassx7159m1k"))))
@@ -3431,15 +3467,15 @@ disks and SD cards.  This package provides the userland utilities.")
   (package
     (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://git.kernel.org/cgit/linux/kernel/git/jaegeuk"
-                    "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
+                    "/f2fs-tools.git/snapshot/f2fs-tools-" version ".tar.gz"))
               (sha256
                (base32
-                "1qvr3hcic1vzfmyl7c0gnjxfsw8zjaadm66y337h49chv9yaq5mr"))))
+                "15pn2fm9knn7p1vzfzy6msnrdl14p6y1gn4m2ka6ba5bzx6lw4p2"))))
     (inputs
      `(("libuuid" ,util-linux)))))
 
@@ -3481,49 +3517,51 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
 (define-public thinkfan
   (package
     (name "thinkfan")
-    (version "0.9.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/thinkfan/"
-                                  "/thinkfan-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0nz4c48f0i0dljpk5y33c188dnnwg8gz82s4grfl8l64jr4n675n"))
-              (modules '((guix build utils)))
-              ;; Fix erroneous man page location in Makefile leading to
-              ;; a compilation failure.
-              (snippet '(begin
-                          (substitute* "CMakeLists.txt"
-                            (("thinkfan\\.1") "src/thinkfan.1"))
-                          #t))))
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vmatare/thinkfan.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "107vw0962hrwva3wra9n3hxlbfzg82ldc10qssv3dspja88g8psr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:tests? #f                      ;no test target
+       #:tests? #f                      ; no test target
        #:configure-flags
        ;; Enable reading temperatures from hard disks via S.M.A.R.T.
+       ;; Upstream ‘defaults to OFF because libatasmart seems to be horribly
+       ;; inefficient’.
        `("-DUSE_ATASMART:BOOL=ON")
        #:phases
        (modify-phases %standard-phases
-         ;; Install scripts for various foreign init systems. Also fix
-         ;; hard-coded path for daemon.
-         (add-after 'install 'install-rc-scripts
+         (add-after 'unpack 'create-init-scripts
+           ;; CMakeLists.txt relies on build-time symptoms of OpenRC and
+           ;; systemd to patch and install their service files.  Fake their
+           ;; presence rather than duplicating the build system below.  Leave
+           ;; things like ‘/bin/kill’ because they're not worth a dependency.
+           ;; The sysvinit needs manual patching, but since upstream doesn't
+           ;; even provide the option to install it: don't.
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (files (find-files
-                           (string-append "../thinkfan-" ,version "/rcscripts")
-                           ".*")))
-               (substitute* files
-                 (("/usr/sbin/(\\$NAME|thinkfan)" _ name)
-                  (string-append out "/sbin/" name)))
-               (for-each (cute install-file <>
-                               (string-append out "/share/thinkfan"))
-                         files))
-             #t)))))
+             (let* ((out   (assoc-ref outputs "out"))
+                    (share (string-append out "/share/" ,name)))
+               (substitute* "CMakeLists.txt"
+                 (("pkg_check_modules\\((OPENRC|SYSTEMD) .*" _ package)
+                  (format "option(~a_FOUND \"Faked\" ON)\n" package))
+                 ;; That was easy!  Now we just need to fix the destinations.
+                 (("/etc" directory)
+                  (string-append out directory)))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libatasmart" ,libatasmart)))
+     `(("libatasmart" ,libatasmart)
+       ("yaml-cpp" ,yaml-cpp)))
     (home-page "http://thinkfan.sourceforge.net/")
     (synopsis "Simple fan control program")
     (description
@@ -4390,15 +4428,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://netfilter.org/libnftnl/"
-                            "libnftnl-" version ".tar.bz2"))
-        (sha256
-         (base32
-          "1wmgjfcb35mscb2srzia5931srygywrs1aznxmg67v177x0nasjx"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://netfilter.org/libnftnl/"
+                           "libnftnl-" version ".tar.bz2"))
+       (sha256
+        (base32 "0pffmsv41alsn5ac7mwnb9fh3qpwzqk13jrzn6c5i71wq6kbgix5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -4415,7 +4452,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -4423,8 +4460,10 @@ used by nftables.")
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
-         "1i1gfy8l7qyhc5vlrpp63s0n5kybmc9pi4dywiq8rmkhrrnddsla"))))
+         "14bygs6vg2v448cw5r4pxqi8an29hw0m9vab8hpmgjmrzjsq30dd"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags
+                 '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
     (inputs `(("bison" ,bison)
               ("flex" ,flex)
               ("gmp" ,gmp)
@@ -5026,7 +5065,7 @@ management tools in userspace.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "4.19.0")
+    (version "4.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5034,10 +5073,10 @@ management tools in userspace.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0gs39yiyamjw516jbak3nj4dy4h2a2g48c1mmv4wbppsccvwmwh5"))))
+                "0ss0r6jlxxinf9fhpc0fgf7b89n9mzirpa85xxjmi1ix9l6cls6x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; Kernel/user integration tests are in package "xfstests"
+     `(#:tests? #f)) ; kernel/user integration tests are in package "xfstests"
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("util-linux" ,util-linux)))
@@ -5052,17 +5091,34 @@ file systems.")
 (define-public genext2fs
   (package
     (name "genext2fs")
-    (version "1.4.1")
+    (version "1.4.1-4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/jeremie-koenig/genext2fs.git")
-                    (commit (string-append "genext2fs-" version))))
+                    ;; 1.4.1-3 had a VCS tag but 1.4.1-4 doesn't.
+                    (commit "9ee43894634998b0b2b309d636f25c64314c9421")))
               (file-name (git-file-name name version))
               (sha256
-               (base32
-                "1r0n74pyypv63qfqqpvx75dwijcsvcrvqrlv8sldbhv0nwr1gk53"))))
+               (base32 "0ib5icn78ciz00zhc1bgdlrwaxvsdz7wnplwblng0jirwi9ml7sq"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'apply-debian-patches
+           ;; Debian changes (the revision after ‘-’ in VERSION) are
+           ;; maintained as separate patches.  Apply those relevant to us.
+           (lambda _
+             (for-each
+              (lambda (file-name)
+                (invoke "patch" "-p1" "-i"
+                        (string-append "debian/patches/" file-name)))
+              (list "blocksize+creator.diff" ; add -B/-o options
+                    "byteswap_fix.diff"))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
     (home-page "https://github.com/jeremie-koenig/genext2fs")
     (synopsis "Generate ext2 filesystem as a normal user")
     (description "This package provides a program to general an ext2

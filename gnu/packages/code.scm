@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -371,14 +371,14 @@ stack traces.")
 (define-public lcov
   (package
     (name "lcov")
-    (version "1.13")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ltp/Coverage%20Analysis"
                                   "/LCOV-" version "/lcov-" version ".tar.gz"))
               (sha256
                (base32
-                "08wabnb0gcjqk0qc65a6cgbbmz6b8lvam3p7byh0dk42hj3jr5s4"))))
+                "06h7ixyznf6vz1qvksjgy5f3q2nw9akf6zx59npf0h3l32cmd68l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
