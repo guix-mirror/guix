@@ -758,13 +758,23 @@ which cannot be found~%"
                    (string-append "../" directory)))
             directories))))
 
+  (define (copy-to-directories directories sub-directory)
+    (lambda (file)
+      (for-each (if (file-is-directory? file)
+                    (cut copy-recursively file <>)
+                    (cut install-file file <>))
+                (map (cut string-append <> "/" sub-directory)
+                     directories))))
+
   (let* ((regexp    (make-regexp license-file-regexp))
          (out       (or (assoc-ref outputs "out")
                         (match outputs
                           (((_ . output) _ ...)
                            output))))
          (package   (strip-store-file-name out))
-         (directory (string-append out "/share/doc/" package))
+         (outputs   (match outputs
+                      (((_ . outputs) ...)
+                       outputs)))
          (source    (if out-of-source?
                         (find-source-directory
                          (package-name->name+version package))
@@ -777,10 +787,9 @@ which cannot be found~%"
         (begin
           (format #t "installing ~a license files from '~a'~%"
                   (length files) source)
-          (for-each (lambda (file)
-                      (if (file-is-directory? file)
-                          (copy-recursively file directory)
-                          (install-file file directory)))
+          (for-each (copy-to-directories outputs
+                                         (string-append "share/doc/"
+                                                        package))
                     (map (cut string-append source "/" <>) files)))
         (format (current-error-port)
                 "failed to find license files~%"))
