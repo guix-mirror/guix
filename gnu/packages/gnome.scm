@@ -5695,10 +5695,9 @@ properties, screen resolution, and other GNOME parameters.")
                    (copy-file #$(file-append %artwork-repository
                                              "/slim/0.x/background.png")
                               "data/theme/guix-background.png")
-                   (invoke #+(file-append inkscape "/bin/inkscape")
-                           "--export-png=data/theme/guix-logo.png"
-                           #$(file-append %artwork-repository
-                                          "/logo/Guix-horizontal-white.svg"))
+                   (copy-file #$(file-append %artwork-repository
+                                             "/logo/Guix-horizontal-white.svg")
+                              "data/theme/guix-logo.svg")
                    #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -5711,6 +5710,11 @@ properties, screen resolution, and other GNOME parameters.")
              (invoke "make" "-C" "data"
                      "theme/gnome-shell.css"
                      "theme/gnome-shell-high-contrast.css")))
+         (add-before 'build 'convert-logo-to-png
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Convert the logo from SVG to PNG.
+             (invoke "inkscape" "--export-png=data/theme/guix-logo.png"
+                     "data/theme/guix-logo.svg")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
@@ -5741,7 +5745,8 @@ properties, screen resolution, and other GNOME parameters.")
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("xsltproc" ,libxslt)
-       ("ruby-sass" ,ruby-sass)))
+       ("ruby-sass" ,ruby-sass)
+       ("inkscape" ,inkscape)))
     (inputs
      `(("accountsservice" ,accountsservice)
        ("caribou" ,caribou)
