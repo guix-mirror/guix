@@ -236,6 +236,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
   %D%/packages/hurd.scm				\
+  %D%/packages/hyperledger.scm			\
   %D%/packages/ibus.scm				\
   %D%/packages/icu4c.scm			\
   %D%/packages/idris.scm			\
@@ -532,6 +533,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/xorg.scm				\
 						\
   %D%/system.scm				\
+  %D%/system/accounts.scm			\
   %D%/system/file-systems.scm			\
   %D%/system/install.scm			\
   %D%/system/linux-container.scm		\
@@ -544,6 +546,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
 						\
+  %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
   %D%/build/cross-toolchain.scm			\
@@ -668,7 +671,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
-  %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\

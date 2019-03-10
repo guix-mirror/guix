@@ -2057,3 +2057,43 @@ for people new to Emacs.  Features include: CUA mode, Geiser, tool bar icons
 to evaluate Guile buffers, support for Guile's very own picture language, code
 completion, a simple mode line, etc.")
       (license license:gpl3+))))
+
+(define-public guile-stis-parser
+  (let ((commit "6e85d37ffc333b722f4413a6c648263701eb75bd")
+        (revision "1"))
+    (package
+      (name "guile-stis-parser")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/tampe/stis-parser")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0v4hvq7rlpbra1ni73lf8k6sdmjlflr50yi3p1f24g85h77pc7c0"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:parallel-build? #f ; not supported
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "modules") #t))
+           (add-after 'chdir 'delete-broken-symlink
+             (lambda _
+               (delete-file "parser/stis-parser/lang/.#calc.scm")
+               #t)))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://gitlab.com/tampe/stis-parser")
+      (synopsis "Parser combinator framework")
+      (description
+       "This package provides a functional parser combinator library that
+supports backtracking and a small logical framework. The idea is to build up
+chunks that are memoized and there is no clear scanner/parser separation,
+chunks can be expressions as well as simple tokens.")
+      (license license:lgpl2.0+))))

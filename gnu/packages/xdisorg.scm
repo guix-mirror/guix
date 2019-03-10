@@ -23,7 +23,7 @@
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -69,6 +69,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
@@ -131,6 +132,60 @@ shown graphically and can be changed in a drag-and-drop way.  Configurations
 are saved as executable shell scripts which can be loaded without using this
 program.")
     (license license:gpl3+)))
+
+(define-public autorandr
+  ;; Use latest commit since 1.7 lacks many new features such as the
+  ;; autorandr_launcher.
+  (let ((commit "b484c0ea9c9a4838278bbd661a7cc384333c1df8"))
+    (package
+      (name "autorandr")
+      (version (git-version "1.7" "1" commit))
+      (home-page "https://github.com/phillipberndt/autorandr")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0da17kzsisjv3s993j5idkk1n2d2cvjdn7pngs2b0ic1r2h5z02h"))))
+      (build-system python-build-system)
+      (native-inputs
+       `(("man-db" ,man-db)))
+      (inputs
+       `(("xrandr" ,xrandr)
+         ("libxcb" ,libxcb)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "autorandr.py"
+                 (("popen\\(\"xrandr") (string-append "popen(\""
+                                                      (assoc-ref inputs "xrandr")
+                                                      "/bin/xrandr"))
+                 (("\\[\"xrandr") (string-append "[\""
+                                                 (assoc-ref inputs "xrandr")
+                                                 "/bin/xrandr")))
+               #t))
+           (add-after 'install 'install-contrib
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make"
+                       (string-append "DESTDIR=" (assoc-ref outputs "out"))
+                       "PREFIX="
+                       "BASH_COMPLETIONS_DIR=etc/bash_completiond.d"
+                       "install_manpage"
+                       "install_bash_completion"
+                       "install_launcher"))))))
+      (synopsis "Auto-detect connected displays and load appropiate setup")
+      (description "Autorandr wraps around xrandr to help with X11
+multi-screen configuration management.  It allows the user to create profiles
+for various multi-screen setups.  Autorandr automatically detects the profiles
+that can be activated based on the connected hardware.  Hook scripts can be
+used to further tweak the behaviour of the different profiles.")
+      (license license:gpl3+))))
 
 (define-public xclip
   (package

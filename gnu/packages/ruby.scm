@@ -34,6 +34,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -159,6 +160,66 @@ a focus on simplicity and productivity.")
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
+
+(define-public mruby
+  (package
+    (name "mruby")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mruby/mruby.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1r6w1asjshff43ymdwa6xmrkggza99mi2kw88k7ic6ag2j81hcj5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'enable-verbose-tests
+           (lambda _
+             (substitute* "Makefile"
+               (("ruby ./minirake" m)
+                (string-append m " --verbose")))
+             #t))
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             (substitute* "mrbgems/mruby-io/test/io.rb"
+               (("assert\\('IO.popen.+$" m)
+                (string-append m "skip \"Hangs in the Guix build environment\"\n"))
+               (("assert\\('IO#isatty.+$" m)
+                (string-append m "skip \"Disable for Guix; there is no /dev/tty\"\n"))
+               ;; This one is really weird.  The *expected* output is all wrong.
+               (("assert\\('`cmd`.*" m)
+                (string-append m "skip \"Disable for Guix\"\n"))
+               (("echo foo")
+                (string-append (which "echo") " foo")))
+             #t))
+         ;; There is no install target
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib")))
+               (mkdir-p bin)
+               (copy-recursively "build/host/bin" bin)
+               (mkdir-p lib)
+               (copy-recursively "build/host/lib" lib))
+             #t)))))
+    (native-inputs
+     `(("ruby" ,ruby)
+       ("bison" ,bison)))
+    (home-page "https://github.com/mruby/mruby")
+    (synopsis "Lightweight Ruby")
+    (description "mruby is the lightweight implementation of the Ruby
+language.  Its syntax is Ruby 1.9 compatible.  mruby can be linked and
+embedded within your application.")
+    (license license:expat)))
 
 (define-public ruby-commander
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -100,14 +100,14 @@ more.")
 (define-public r-igraph
   (package
     (name "r-igraph")
-    (version "1.2.2")
+    (version "1.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "igraph" version))
        (sha256
         (base32
-         "1bggm7b8v3bh7q2589w26qvd7sgs69m4qiij7d0rbm0ykkgxm8lx"))))
+         "1jwjjl0l4054w05bik17p2d6rj3lx68iv716phajhnbbmckfnj0h"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))

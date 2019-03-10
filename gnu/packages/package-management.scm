@@ -548,13 +548,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "112")
+    (version "113")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "00ry8iczfv85qyfxmarxpgdq2h5jfj41z8sl9005brk937a7p2fk"))))
+                "10wjri6vsqxf2nb7jjhsq38qlpf407b4qrdczrk696aa1v71i44w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1034,6 +1034,10 @@ the bootloader configuration.")
                     ("gobject-introspection" ,gobject-introspection)
                     ("libcap" ,libcap)
                     ("pkg-config" ,pkg-config)))
+   (propagated-inputs `(("glib-networking" ,glib-networking)
+                        ("gnupg" ,gnupg)
+                        ("gsettings-desktop-schemas"
+                         ,gsettings-desktop-schemas)))
    (inputs `(("appstream-glib" ,appstream-glib)
              ("bubblewrap" ,bubblewrap)
              ("dconf" ,dconf)

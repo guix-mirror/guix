@@ -513,10 +513,15 @@ PACKAGE must be live."
   (inferior-package->derivation package system #:target target))
 
 (define* (gexp->derivation-in-inferior name exp guix
+                                       #:key silent-failure?
+                                       #:allow-other-keys
                                        #:rest rest)
   "Return a derivation that evaluates EXP with GUIX, an instance of Guix as
 returned for example by 'channel-instances->derivation'.  Other arguments are
-passed as-is to 'gexp->derivation'."
+passed as-is to 'gexp->derivation'.
+
+When SILENT-FAILURE? is true, create an empty output directory instead of
+failing when GUIX is too old and lacks the 'guix repl' command."
   (define script
     ;; EXP wrapped with a proper (set! %load-path …) prologue.
     (scheme-file "inferior-script.scm" exp))
@@ -539,9 +544,23 @@ passed as-is to 'gexp->derivation'."
           (write `(primitive-load #$script) pipe)
 
           (unless (zero? (close-pipe pipe))
-            (error "inferior failed" #+guix)))))
+            (if #$silent-failure?
+                (mkdir #$output)
+                (error "inferior failed" #+guix))))))
 
-  (apply gexp->derivation name trampoline rest))
+  (define (drop-extra-keyword lst)
+    (let loop ((lst lst)
+               (result '()))
+      (match lst
+        (()
+         (reverse result))
+        ((#:silent-failure? _ . rest)
+         (loop rest result))
+        ((kw value . tail)
+         (loop tail (cons* value kw result))))))
+
+  (apply gexp->derivation name trampoline
+         (drop-extra-keyword rest)))
 
 
 ;;;

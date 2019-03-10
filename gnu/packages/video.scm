@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -1570,7 +1570,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.5.2")
+    (version "3.5.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1579,7 +1579,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0sx0f7jgc41a4anflw02zqk5yivydn02nn78kxkn3fik6xdmv3yd"))))
+                "1j782m9rximybamd0qsc43hi7hgk333x9gy3ypzb61s0sifs0i6m"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -2398,7 +2398,7 @@ Other features include a live preview and live streaming.")
 (define-public libsmpeg
   (package
     (name "libsmpeg")
-    (version "0.4.5")
+    (version "0.4.5-401")
     (source (origin
               (method svn-fetch)
               (uri (svn-reference
@@ -2432,6 +2432,23 @@ and MPEG system streams.")
                    license:lgpl2.1
                    license:lgpl2.1+
                    license:gpl2))))
+
+;; for btanks
+(define-public libsmpeg-with-sdl1
+  (package (inherit libsmpeg)
+    (name "libsmpeg")
+    (version "0.4.5-399")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "svn://svn.icculus.org/smpeg/trunk/")
+                    (revision 399))) ; tagged release 0.4.5
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0jfi085rf3fa5xsn0vd3nqf32my8ph9c6a9445y7a8lrlz4dms64"))))
+    (inputs
+     `(("sdl" ,sdl)))))
 
 (define-public libbdplus
   (package

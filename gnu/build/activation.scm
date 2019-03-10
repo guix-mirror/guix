@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -18,11 +18,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build activation)
+  #:use-module (gnu system accounts)
+  #:use-module (gnu build accounts)
   #:use-module (gnu build linux-boot)
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:export (activate-users+groups
             activate-user-home
@@ -41,35 +45,6 @@
 ;;; 'operating-system' configuration becomes active.
 ;;;
 ;;; Code:
-
-(define (enumerate thunk)
-  "Return the list of values returned by THUNK until it returned #f."
-  (let loop ((entry  (thunk))
-             (result '()))
-    (if (not entry)
-        (reverse result)
-        (loop (thunk) (cons entry result)))))
-
-(define (current-users)
-  "Return the passwd entries for all the currently defined user accounts."
-  (setpw)
-  (enumerate getpwent))
-
-(define (current-groups)
-  "Return the group entries for all the currently defined user groups."
-  (setgr)
-  (enumerate getgrent))
-
-(define* (add-group name #:key gid password system?
-                    (log-port (current-error-port)))
-  "Add NAME as a user group, with the given numeric GID if specified."
-  ;; Use 'groupadd' from the Shadow package.
-  (format log-port "adding group '~a'...~%" name)
-  (let ((args `(,@(if gid `("-g" ,(number->string gid)) '())
-                ,@(if password `("-p" ,password) '())
-                ,@(if system? `("--system") '())
-                ,name)))
-    (zero? (apply system* "groupadd" args))))
 
 (define %skeleton-directory
   ;; Directory containing skeleton files for new accounts.
@@ -116,191 +91,82 @@ owner-writable in HOME."
                     (make-file-writable target))))
               files)))
 
-(define* (add-user name group
-                   #:key uid comment home create-home?
-                   shell password system?
-                   (supplementary-groups '())
-                   (log-port (current-error-port)))
-  "Create an account for user NAME part of GROUP, with the specified
-properties.  Return #t on success."
-  (format log-port "adding user '~a'...~%" name)
-
-  (if (and uid (zero? uid))
-
-      ;; 'useradd' fails with "Cannot determine your user name" if the root
-      ;; account doesn't exist.  Thus, for bootstrapping purposes, create that
-      ;; one manually.
-      (let ((home (or home "/root")))
-        (call-with-output-file "/etc/shadow"
-          (cut format <> "~a::::::::~%" name))
-        (call-with-output-file "/etc/passwd"
-          (cut format <> "~a:x:~a:~a:~a:~a:~a~%"
-               name "0" "0" comment home shell))
-        (chmod "/etc/shadow" #o600)
-        (copy-account-skeletons home)
-        (chmod home #o700)
-        #t)
-
-      ;; Use 'useradd' from the Shadow package.
-      (let ((args `(,@(if uid `("-u" ,(number->string uid)) '())
-                    "-g" ,(if (number? group) (number->string group) group)
-                    ,@(if (pair? supplementary-groups)
-                          `("-G" ,(string-join supplementary-groups ","))
-                          '())
-                    ,@(if comment `("-c" ,comment) '())
-                    ,@(if home `("-d" ,home) '())
-
-                    ;; Home directories of non-system accounts are created by
-                    ;; 'activate-user-home'.
-                    ,@(if (and home create-home? system?
-                               (not (file-exists? home)))
-                          '("--create-home")
-                          '())
-
-                    ,@(if shell `("-s" ,shell) '())
-                    ,@(if password `("-p" ,password) '())
-                    ,@(if system? '("--system") '())
-                    ,name)))
-        (and (zero? (apply system* "useradd" args))
-             (begin
-               ;; Since /etc/skel is a link to a directory in the store where
-               ;; all files have the writable bit cleared, and since 'useradd'
-               ;; preserves permissions when it copies them, explicitly make
-               ;; them writable.
-               (make-skeletons-writable home)
-               #t)))))
-
-(define* (modify-user name group
-                      #:key uid comment home create-home?
-                      shell password system?
-                      (supplementary-groups '())
-                      (log-port (current-error-port)))
-  "Modify user account NAME to have all the given settings."
-  ;; Use 'usermod' from the Shadow package.
-  (let ((args `(,@(if uid `("-u" ,(number->string uid)) '())
-                "-g" ,(if (number? group) (number->string group) group)
-                ,@(if (pair? supplementary-groups)
-                      `("-G" ,(string-join supplementary-groups ","))
-                      '())
-                ,@(if comment `("-c" ,comment) '())
-                ;; Don't use '--move-home'.
-                ,@(if home `("-d" ,home) '())
-                ,@(if shell `("-s" ,shell) '())
-                ,name)))
-    (zero? (apply system* "usermod" args))))
-
-(define* (delete-user name #:key (log-port (current-error-port)))
-  "Remove user account NAME.  Return #t on success.  This may fail if NAME is
-logged in."
-  (format log-port "deleting user '~a'...~%" name)
-  (zero? (system* "userdel" name)))
-
-(define* (delete-group name #:key (log-port (current-error-port)))
-  "Remove group NAME.  Return #t on success."
-  (format log-port "deleting group '~a'...~%" name)
-  (zero? (system* "groupdel" name)))
-
-(define* (ensure-user name group
-                      #:key uid comment home create-home?
-                      shell password system?
-                      (supplementary-groups '())
-                      (log-port (current-error-port))
-                      #:rest rest)
-  "Make sure user NAME exists and has the relevant settings."
-  (if (false-if-exception (getpwnam name))
-      (apply modify-user name group rest)
-      (apply add-user name group rest)))
+(define (duplicates lst)
+  "Return elements from LST present more than once in LST."
+  (let loop ((lst lst)
+             (seen vlist-null)
+             (result '()))
+    (match lst
+      (()
+       (reverse result))
+      ((head . tail)
+       (loop tail
+             (vhash-cons head #t seen)
+             (if (vhash-assoc head seen)
+                 (cons head result)
+                 result))))))
 
 (define (activate-users+groups users groups)
-  "Make sure the accounts listed in USERS and the user groups listed in GROUPS
-are all available.
+  "Make sure USERS (a list of user account records) and GROUPS (a list of user
+group records) are all available."
+  (define (make-home-directory user)
+    (let ((home (user-account-home-directory user))
+          (pwd  (getpwnam (user-account-name user))))
+      (mkdir-p home)
 
-Each item in USERS is a list of all the characteristics of a user account;
-each item in GROUPS is a tuple with the group name, group password or #f, and
-numeric gid or #f."
-  (define (touch file)
-    (close-port (open-file file "a0b")))
+      ;; Always set ownership and permissions for home directories of system
+      ;; accounts.  If a service needs looser permissions on its home
+      ;; directories, it can always chmod it in an activation snippet.
+      (chown home (passwd:uid pwd) (passwd:gid pwd))
+      (chmod home #o700)))
 
-  (define activate-user
-    (match-lambda
-     ((name uid group supplementary-groups comment home create-home?
-       shell password system?)
-      (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
-                                        name)))
-        (ensure-user name group
-                     #:uid uid
-                     #:system? system?
-                     #:supplementary-groups supplementary-groups
-                     #:comment comment
-                     #:home home
-                     #:create-home? create-home?
-
-                     #:shell shell
-                     #:password password)
-
-        (unless system?
-          ;; Create the profile directory for the new account.
-          (let ((pw (getpwnam name)))
-            (mkdir-p profile-dir)
-            (chown profile-dir (passwd:uid pw) (passwd:gid pw))))))))
-
-  ;; 'groupadd' aborts if the file doesn't already exist.
-  (touch "/etc/group")
+  (define system-accounts
+    (filter (lambda (user)
+              (and (user-account-system? user)
+                   (user-account-create-home-directory? user)))
+            users))
 
   ;; Allow home directories to be created under /var/lib.
   (mkdir-p "/var/lib")
 
-  ;; Create the root account so we can use 'useradd' and 'groupadd'.
-  (activate-user (find (match-lambda
-                        ((name (? zero?) _ ...) #t)
-                        (_ #f))
-                       users))
+  (let-values (((groups passwd shadow)
+                (user+group-databases users groups)))
+    (write-group groups)
+    (write-passwd passwd)
+    (write-shadow shadow)
 
-  ;; Then create the groups.
-  (for-each (match-lambda
-             ((name password gid system?)
-              (unless (false-if-exception (getgrnam name))
-                (add-group name
-                           #:gid gid #:password password
-                           #:system? system?))))
-            groups)
+    ;; Home directories of non-system accounts are created by
+    ;; 'activate-user-home'.
+    (for-each make-home-directory system-accounts)
 
-  ;; Create the other user accounts.
-  (for-each activate-user users)
-
-  ;; Finally, delete extra user accounts and groups.
-  (for-each delete-user
-            (lset-difference string=?
-                             (map passwd:name (current-users))
-                             (match users
-                               (((names . _) ...)
-                                names))))
-  (for-each delete-group
-            (lset-difference string=?
-                             (map group:name (current-groups))
-                             (match groups
-                               (((names . _) ...)
-                                names)))))
+    ;; Turn shared home directories, such as /var/empty, into root-owned,
+    ;; read-only places.
+    (for-each (lambda (directory)
+                (chown directory 0 0)
+                (chmod directory #o555))
+              (duplicates (map user-account-home-directory system-accounts)))))
 
 (define (activate-user-home users)
   "Create and populate the home directory of USERS, a list of tuples, unless
 they already exist."
   (define ensure-user-home
-    (match-lambda
-      ((name uid group supplementary-groups comment home create-home?
-             shell password system?)
-       ;; The home directories of system accounts are created during
-       ;; activation, not here.
-       (unless (or (not home) (not create-home?) system?
-                   (directory-exists? home))
-         (let* ((pw  (getpwnam name))
-                (uid (passwd:uid pw))
-                (gid (passwd:gid pw)))
-           (mkdir-p home)
-           (chown home uid gid)
-           (chmod home #o700)
-           (copy-account-skeletons home
-                                   #:uid uid #:gid gid))))))
+    (lambda (user)
+      (let ((name         (user-account-name user))
+            (home         (user-account-home-directory user))
+            (create-home? (user-account-create-home-directory? user))
+            (system?      (user-account-system? user)))
+        ;; The home directories of system accounts are created during
+        ;; activation, not here.
+        (unless (or (not home) (not create-home?) system?
+                    (directory-exists? home))
+          (let* ((pw  (getpwnam name))
+                 (uid (passwd:uid pw))
+                 (gid (passwd:gid pw)))
+            (mkdir-p home)
+            (chown home uid gid)
+            (chmod home #o700)
+            (copy-account-skeletons home
+                                    #:uid uid #:gid gid))))))
 
   (for-each ensure-user-home users))
 

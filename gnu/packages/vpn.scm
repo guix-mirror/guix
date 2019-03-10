@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -454,19 +455,20 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
 (define-public wireguard
   (package
     (name "wireguard")
-    (version "0.0.20190123")
+    (version "0.0.20190227")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.zx2c4.com/WireGuard/snapshot/"
                                   "WireGuard-" version ".tar.xz"))
               (sha256
                (base32
-                "16yzzy4i0z2zslmyr3kppkvkrxryzwdil6v270w9w5mg65v3rlgd"))))
+                "0ybzycpjjidyiz88kkh67abvp3y30f34252dwpgf3ncj4vyjdnzw"))))
     (build-system gnu-build-system)
     (outputs '("out" ; The WireGuard userspace tools
                "kernel-patch")) ; A patch to build Linux with WireGuard support
     (arguments
-     `(#:make-flags
+     `(#:tests? #f ; No tests available.
+       #:make-flags
        (list "CC=gcc"
              "WITH_BASHCOMPLETION=yes"
              ;; Build and install the helper script wg-quick(8).

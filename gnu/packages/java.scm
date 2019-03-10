@@ -5984,6 +5984,33 @@ and contributes the Eclipse default text editor.")
 development tools.")
     (license license:epl1.0)))
 
+(define-public java-eclipse-jdt-compiler-apt
+  (package
+    (name "java-eclipse-jdt-compiler-apt")
+    (version "1.3.400")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/jdt/org.eclipse.jdt.compiler.apt/"
+                                  version "/org.eclipse.jdt.compiler.apt-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "1s285k9p2ixdqrknb40jbbvw682n9a7l5lqpn583a8pvlzg2l6r8"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jar-name "eclipse-jdt-compiler-apt.jar"
+       #:jdk ,openjdk11))
+    (inputs
+     `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
+    (home-page "https://www.eclipse.org/jdt/apt/")
+    (synopsis "Annotation processing tool")
+    (description "APT stands for Annotation Processing Tool.  APT provides a
+means for generating files and compiling new Java classes based on annotations
+found in your source code.")
+    (license license:epl2.0)))
+
 (define-public java-javax-mail
   (package
     (name "java-javax-mail")

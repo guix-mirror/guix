@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Caleb Ristvedt <caleb.ristvedt@cune.org>
+;;; Copyright © 2017, 2019 Caleb Ristvedt <caleb.ristvedt@cune.org>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -96,6 +96,31 @@ create it and initialize it as a new database."
                   (lambda ()
                     (sqlite-close db)))))
 
+;; XXX: missing in guile-sqlite3@0.1.0
+(define SQLITE_BUSY 5)
+
+(define (call-with-transaction db proc)
+  "Start a transaction with DB (make as many attempts as necessary) and run
+PROC.  If PROC exits abnormally, abort the transaction, otherwise commit the
+transaction after it finishes."
+  (catch 'sqlite-error
+    (lambda ()
+      ;; We use begin immediate here so that if we need to retry, we
+      ;; figure that out immediately rather than because some SQLITE_BUSY
+      ;; exception gets thrown partway through PROC - in which case the
+      ;; part already executed (which may contain side-effects!) would be
+      ;; executed again for every retry.
+      (sqlite-exec db "begin immediate;")
+      (let ((result (proc)))
+        (sqlite-exec db "commit;")
+        result))
+    (lambda (key who error description)
+      (if (= error SQLITE_BUSY)
+          (call-with-transaction db proc)
+          (begin
+            (sqlite-exec db "rollback;")
+            (throw 'sqlite-error who error description))))))
+
 (define %default-database-file
   ;; Default location of the store database.
   (string-append %store-database-directory "/db.sqlite"))
@@ -172,9 +197,9 @@ ids of items referred to."
                 (sqlite-bind-arguments stmt #:referrer referrer
                                        #:reference reference)
                 (sqlite-fold cons '() stmt)       ;execute it
-                (sqlite-finalize stmt)
                 (last-insert-row-id db))
-              references)))
+              references)
+    (sqlite-finalize stmt)))
 
 (define* (sqlite-register db #:key path (references '())
                           deriver hash nar-size time)
@@ -305,6 +330,7 @@ Write a progress report to LOG-PORT."
     (define real-file-name
       (string-append store-dir "/" (basename (store-info-item item))))
 
+
     ;; When TO-REGISTER is already registered, skip it.  This makes a
     ;; significant differences when 'register-closures' is called
     ;; consecutively for overlapping closures such as 'system' and 'bootcfg'.
@@ -325,12 +351,14 @@ Write a progress report to LOG-PORT."
   (mkdir-p db-dir)
   (parameterize ((sql-schema schema))
     (with-database (string-append db-dir "/db.sqlite") db
-      (let* ((prefix   (format #f "registering ~a items" (length items)))
-             (progress (progress-reporter/bar (length items)
-                                              prefix log-port)))
-        (call-with-progress-reporter progress
-          (lambda (report)
-            (for-each (lambda (item)
-                        (register db item)
-                        (report))
-                      items)))))))
+      (call-with-transaction db
+          (lambda ()
+            (let* ((prefix   (format #f "registering ~a items" (length items)))
+                   (progress (progress-reporter/bar (length items)
+                                                    prefix log-port)))
+              (call-with-progress-reporter progress
+                (lambda (report)
+                  (for-each (lambda (item)
+                              (register db item)
+                              (report))
+                            items)))))))))

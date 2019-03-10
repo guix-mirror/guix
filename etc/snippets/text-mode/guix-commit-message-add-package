@@ -3,6 +3,11 @@
 # key: add
 # condition: git-commit-mode
 # --
-gnu: Add $1.
+gnu: Add ${1:`(with-temp-buffer
+                (magit-git-wash #'magit-diff-wash-diffs
+                  "diff" "--staged")
+                (beginning-of-buffer)
+                (when (search-forward "(define-public " nil 'noerror)
+                  (thing-at-point 'sexp 'no-properties)))`}.
 
 * `(car (magit-staged-files))` ($1): New variable.

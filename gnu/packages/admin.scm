@@ -2919,7 +2919,7 @@ Logitech Unifying Receiver.")
 (define-public lynis
   (package
     (name "lynis")
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method git-fetch)
@@ -2928,8 +2928,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1nv2dqd2k2n8mcdr6xl5g713xxkgvja6487by1wn4k0b416jij9i"))
+        (base32 "0dbbfk47dpxx7zpb98n4w3ls3z5di57qnr2nsgxjvp49gk9j3f6k"))
        (modules '((guix build utils)))
        (snippet
         '(begin

@@ -258,6 +258,12 @@ info --version")
                                     (operating-system-user-accounts os))))
               (stat:perms (marionette-eval `(stat ,root-home) marionette))))
 
+          (test-equal "ownership and permissions of /var/empty"
+            '(0 0 #o555)
+            (let ((st (marionette-eval `(stat "/var/empty") marionette)))
+              (list (stat:uid st) (stat:gid st)
+                    (stat:perms st))))
+
           (test-equal "no extra home directories"
             '()
 

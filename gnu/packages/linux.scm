@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -414,10 +414,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "4.20.13")
-(define %linux-libre-hash "00rqdsqyz0csdblcmifyhkgzvsmnqsh090i6h30146rsf3707xad")
+(define %linux-libre-version "5.0")
+(define %linux-libre-hash "18gs0kl5xvbmh725m7crg6iyqw3p8qq421aql7z0nlk035fh5xbx")
 
-(define %linux-libre-4.20-patches
+(define %linux-libre-5.0-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
@@ -425,11 +425,11 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.26")
-(define %linux-libre-4.19-hash "0xp1hqcwimyvzzbci741vymc8mrgk3cycv8l020zas1dfw5wn48c")
+(define %linux-libre-4.19-version "4.19.27")
+(define %linux-libre-4.19-hash "055n4s4yrkcrwkdsxbf1q1zyxmpabf7kba8d0phpfadian3wr4s0")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -442,8 +442,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.104")
-(define %linux-libre-4.14-hash "0x7jzazl0yzdc9m1ycwcywjpj6w30mabks4qs9asdy5622282b4v")
+(define %linux-libre-4.14-version "4.14.105")
+(define %linux-libre-4.14-hash "06pp13d2g0j2v8jy8fh20b4ismzg9wn3i7bnx2hpyvslz256rrgg")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -452,8 +452,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.161"
-                    "0r35qlc8yj9svryv0v91j134vr35d23sz5aj7f2h8c99iakbm6zw"
+  (make-linux-libre "4.9.162"
+                    "07swv6xvjsl5nv5y3sc2nfdnmqdz9gjy8hgrjvi0bljwzf1fbxmy"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -467,7 +467,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -490,7 +490,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-4.20-patches
+                    #:patches %linux-libre-5.0-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -3283,8 +3283,8 @@ write access to exFAT devices.")
     (synopsis "Mount ISO file system images")
     (description
      "FuseISO is a FUSE module to mount ISO filesystem images (.iso, .nrg,
-.bin, .mdf and .img files).  It currently support plain ISO9660 Level 1 and 2,
-Rock Ridge, Joliet, and zisofs.")
+.bin, .mdf and .img files).  It supports plain ISO9660 Level 1 and 2, Rock
+Ridge, Joliet, and zisofs.")
     (license license:gpl2)))
 
 (define-public gpm
@@ -4449,7 +4449,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -4457,8 +4457,10 @@ used by nftables.")
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
-         "1i1gfy8l7qyhc5vlrpp63s0n5kybmc9pi4dywiq8rmkhrrnddsla"))))
+         "14bygs6vg2v448cw5r4pxqi8an29hw0m9vab8hpmgjmrzjsq30dd"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags
+                 '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
     (inputs `(("bison" ,bison)
               ("flex" ,flex)
               ("gmp" ,gmp)

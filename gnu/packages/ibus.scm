@@ -144,18 +144,20 @@
     (native-inputs
      `(("glib" ,glib "bin") ; for glib-genmarshal
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
+
+       ;; XXX TODO: Move Unicode data to its own (versioned) package.
        ("unicode-nameslist"
         ,(origin
            (method url-fetch)
-           (uri "https://www.unicode.org/Public/UNIDATA/NamesList.txt")
+           (uri "https://www.unicode.org/Public/12.0.0/ucd/NamesList.txt")
            (sha256
-            (base32 "0yr2h0nfqhirfi3bxl33z6cc94qqshlpgi06c25xh9754irqsgv8"))))
+            (base32 "0vsq8gx7hws8mvxy3nlglpwxw7ky57q0fs09d7w9xgb2ylk7fz61"))))
        ("unicode-blocks"
         ,(origin
            (method url-fetch)
-           (uri "https://www.unicode.org/Public/UNIDATA/Blocks.txt")
+           (uri "https://www.unicode.org/Public/12.0.0/ucd/Blocks.txt")
            (sha256
-            (base32 "0lnh9iazikpr548bd7nkaq9r3vfljfvz0rg2462prac8qxk7ni8b"))))
+            (base32 "041sk54v6rjzb23b9x7yjdwzdp2wc7gvfz7ybavgg4gbh51wm8x1"))))
        ("vala" ,vala)
        ("pkg-config" ,pkg-config)))
     (native-search-paths

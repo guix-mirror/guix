@@ -6460,3 +6460,77 @@ effects, varying slide transitions and animations.")
     ;; Code is dual licensed under GPLv2+ or LPPL1.3c+; documentation is
     ;; dual-licensed under either FDLv1.3+ or LPPL1.3c+.
     (license (list license:lppl1.3c+ license:gpl2+ license:fdl1.3+))))
+
+(define-public texlive-latex-xmpincl
+  (package
+    (name "texlive-latex-xmpincl")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "xmpincl"))
+       (sha256
+        (base32
+         "0lq3dfb4fsw955gjwllnk7cg00ciq5mva64mlpbva6g2jz117734"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/xmpincl"))
+    (home-page "http://www.ctan.org/pkg/xmpincl")
+    (synopsis "Include eXtensible Metadata Platform data in pdfLaTeX")
+    (description
+     "The XMP (eXtensible Metadata platform) is a framework to add metadata to
+digital material to enhance the workflow in publication.  The essence is that
+the metadata is stored in an XML file, and this XML stream is then embedded in
+the file to which it applies.")
+    (license license:gpl3+)))
+
+(define-public texlive-latex-pdfx
+  (package
+    (name "texlive-latex-pdfx")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "pdfx"))
+       (sha256
+        (base32
+         "0ikxg8yzq78hy5b9x13d4nah46d0yvmwlqmdri06pygbx116dcac"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/pdfx"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-encoding
+           (lambda _
+             (substitute* "pdfx.dtx"
+               (("    .+umaczy") "umaczy"))
+             #t))
+         (add-before 'install 'install-tex-files
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/share/texmf-dist/tex/latex/pdfx")))
+               (mkdir-p target)
+               (copy-recursively (assoc-ref inputs "texlive-tex-pdfx") target)
+               ;; Install the generated version in the "install" phase.
+               (delete-file (string-append target "/pdfx.sty"))
+               #t))))))
+    (propagated-inputs
+     `(("texlive-generic-pdftex" ,texlive-generic-pdftex)))
+    (native-inputs
+     `(("texlive-tex-pdfx"
+        ,(origin
+           (method svn-fetch)
+           (uri (svn-reference
+                 (url (string-append "svn://www.tug.org/texlive/tags/"
+                                     %texlive-tag "/Master/texmf-dist/"
+                                     "/tex/latex/pdfx"))
+                 (revision %texlive-revision)))
+           (file-name (string-append "texlive-tex-latex-pdfx-" version "-checkout"))
+           (sha256
+            (base32
+             "14j1zsvqc59ims3sk34v6km8db6cimks28y5fcxcr5mi2ykvj4vf"))))))
+    (home-page "https://www.ctan.org/pkg/pdfx")
+    (synopsis "PDF/X and PDF/A support for pdfTeX, LuaTeX and XeTeX")
+    (description
+     "This package helps LaTeX users to create PDF/X, PFD/A and other
+standards-compliant PDF documents with pdfTeX, LuaTeX and XeTeX.")
+    (license license:lppl1.2+)))

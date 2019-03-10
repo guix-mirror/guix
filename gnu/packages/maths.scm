@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -148,19 +148,19 @@ beginners.")
 (define-public c-graph
   (package
    (name "c-graph")
-   (version "2.0")
+   (version "2.0.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/c-graph/c-graph-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1hlvpzrh7hzzf533diyfiabzskddi8zx92av9hwkjw3l46z7qv01"))))
+                     "092412jzxy6wdvpk96pfj499hpmaww8xllavbvlqspfpr7ips9id"))))
    (build-system gnu-build-system)
    (inputs
-     `(("fortran" ,gfortran)))
+    `(("fortran" ,gfortran)))
    (synopsis "Visualizing and demonstrating convolution")
    (description
-     "GNU C-Graph is a tool for demonstrating the theory of convolution.
+    "GNU C-Graph is a tool for demonstrating the theory of convolution.
 Thus, it can serve as an excellent aid to students of signal and systems
 theory in visualizing the convolution process.  Rather than forcing the
 student to write code, the program offers an intuitive interface with

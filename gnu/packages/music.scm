@@ -1306,7 +1306,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.2")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1314,7 +1314,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1r60l286n8y4a4rrlnbc3h7xk4s2pvqykvskls89prxg0lkpz7kl"))))
+                "1b9w4cml3cmcg09kh852cahas6l9ks8wl3gzp1az8rzxz4229yg1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1340,7 +1340,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.2")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1348,7 +1348,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1z9l43z91d01b9rzam2cj9qmmg6s5y65fjvb83ms4iaa1p0mnwrn"))))
+                "1azzwqgrrr4zr509sib2jvigfvz5bkwnx82chdadxdwfarai8586"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1375,7 +1375,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.2")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1383,7 +1383,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0rfcp4v971qfhw1hb43hw12wlxmg2q13l0m1h93pyfi5l4mfjkds"))))
+                "0402rdr46za21w34m7ajzbwiiqcd1h0da3b0ldsr2z5g2mrkzxv8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1410,7 +1410,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.2")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -1418,7 +1418,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1alfl0l5qdll0w5lwhrwzj5dina1big1zmjg5imi9h06dzhz51xl"))))
+                "0cd1jfb3ynfrsbz8jwfsbvs5liyddxg4zghrvz931qkkqi117hbh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2047,7 +2047,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.10")
+    (version "1.5.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2055,7 +2055,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0mazzn5pc4xnjci3yy1yfsx9l05gkxqzkmscaq1h75jpa7qfsial"))))
+                "1rr99qkq80s8l2iv3x4ccxan07m15dvmd5s9b10386bfjbwbya01"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -3276,6 +3276,36 @@ slow gear audio effect to produce volume swells."))))
       (synopsis "Wah emulation with switchless activation")
       (description "This package provides the LV2 plugin \"GxSwitchlessWah\",
 a simulation of an analog Wah pedal with switchless activation."))))
+
+(define-public rkrlv2
+  (let ((commit "d8c17d3c976107e5c012970276d7cf0aa059f15b")
+        (revision "1"))
+    (package
+      (name "rkrlv2")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ssj71/rkrlv2.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "035z068rlafb7ibgqf34ck2lm4fab8yzlx41qh061x2xi4hxkvp0"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments '(#:tests? #f)) ; there are no tests
+      (inputs
+       `(("fftw" ,fftw)
+         ("libsamplerate" ,libsamplerate)
+         ("lv2" ,lv2)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/ssj71/rkrlv2")
+      (synopsis "Rakarrack effects ported to LV2 plugins")
+      (description "This package provides the Rakarrack effects as LV2
+plugins.  The ports are done such that hopefully when Rakarrack gets an active
+maintainer these will get merged into the original project.")
+      (license license:gpl2))))
 
 (define-public mod-utilities
   (let ((commit "80ea3ea9f52fab7f191671f4810bf90fc955a046")
