@@ -450,6 +450,33 @@ around @code{XML::Writer}, adding only the xmlns attributes that identifies an
 XML file as SVG.")
       (license license:artistic2.0))))
 
+(define-public perl6-svg-plot
+  ;; Latest commit
+  (let ((commit "062570a78fd38c3c6baba29dfe2fbb8ca014f4de")
+        (revision "1"))
+    (package
+      (name "perl6-svg-plot")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/moritz/svg-plot")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "095ga5hbg92jnmczxvhk1hjz14yr334zyf8cph4w5w5frcza44my"))))
+      (build-system rakudo-build-system)
+      (propagated-inputs
+       `(("perl6-svg" ,perl6-svg)))
+      (home-page "https://github.com/moritz/svg-plot")
+      (synopsis "Perl 6 charting and plotting library that produces SVG output")
+      (description "@code{SVG::Plot} is a simple 2D chart plotter for Perl 6.
+It currently supports bars, stacked bars, lines and points (both equally spaced
+with optional labels, or xy plots).")
+      (license license:artistic2.0))))
+
 (define-public perl6-tap-harness
   (package
     (name "perl6-tap-harness")
