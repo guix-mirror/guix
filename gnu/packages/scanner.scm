@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
   #:use-module ((guix licenses)
                 #:prefix licence:))
