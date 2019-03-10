@@ -861,14 +861,16 @@ the form of functions.")
       (method url-fetch)
       (uri (string-append "https://github.com/zeux/pugixml/releases/download/v"
                           version "/pugixml-" version ".tar.gz"))
+      (patches (search-patches "pugixml-versioned-libdir.patch"))
       (sha256
        (base32
         "19nv3zhik3djp4blc4vrjwrl8dfhzmal8b21sq7y907nhddx6mni"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DCMAKE_CXX_FLAGS=-shared -fPIC"
-                           "-DCMAKE_C_FLAGS=-shared -fPIC")
-       #:tests? #f))                    ; no tests
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+       #:tests? #f))                     ;no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://pugixml.org")
     (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
     (description
