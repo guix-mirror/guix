@@ -224,7 +224,6 @@ output.
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
-       ("pugixml" ,pugixml)
        ("xdg-utils" ,xdg-utils)))
     (inputs
      `(("dbus" ,dbus)
@@ -233,6 +232,7 @@ output.
        ("libfilezilla" ,libfilezilla)
        ("libidn" ,libidn)
        ("nettle" ,nettle)
+       ("pugixml" ,pugixml)
        ("sqlite" ,sqlite)
        ("wxwidgets" ,wxwidgets)))
     (home-page "https://filezilla-project.org")
