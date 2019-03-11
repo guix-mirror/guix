@@ -81,6 +81,8 @@
   #:use-module (gnu packages mpd)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages man)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -1151,3 +1153,48 @@ Wayland compositor")
     (description "wlroots is a set of pluggable, composable, unopinionated
 modules for building a Wayland compositor.")
     (license license:expat)))  ; MIT license
+
+(define-public sway
+  (package
+    (name "sway")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/sway.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09cndc2nl39d3l7g5634xp0pxcz60pvc5277mfw89r22mh0j78rx"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("scdoc.get_pkgconfig_variable..scdoc..")
+                (string-append "'" (assoc-ref inputs "scdoc")
+                               "/bin/scdoc'")))
+             #t)))))
+    (inputs `(("cairo" ,cairo)
+              ("elogind" ,elogind)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("json-c" ,json-c)
+              ("libinput" ,libinput)
+              ("libxkbcommon" ,libxkbcommon)
+              ("pango" ,pango)
+              ("wayland" ,wayland)
+              ("wlroots" ,wlroots)))
+    (native-inputs `(("git" ,git)
+                     ("libcap" ,libcap)
+                     ("linux-pam" ,linux-pam)
+                     ("mesa" ,mesa)
+                     ("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Wayland compositor compatible with i3")
+    (description "Sway is a i3-compatible Wayland compositor.")
+    (license license:expat)))       ; MIT license
