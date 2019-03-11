@@ -741,7 +741,7 @@ language.")
          (file-name (string-append name "-" version ".tar.xz"))
          (uri (string-append
                 "https://launchpad.net/kicad/" (version-major+minor version)
-                "/" version "/+download/" name "-" version ".tar.xz"))
+                "/" version "/+download/kicad-" version ".tar.xz"))
          (sha256
           (base32 "10605rr10x0353n6yk2z095ydnkd1i6j1ncbq64pfxdn5vkhcd1g"))))
       (build-system cmake-build-system)
