@@ -4441,12 +4441,17 @@ fish.  The whole game is accompanied by quiet, comforting music.")
        ("python-pyyaml" ,python-pyyaml)
        ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:make-flags
+     `(#:make-flags
        (let* ((sqlite (assoc-ref %build-inputs "sqlite"))
               (out (assoc-ref %outputs "out")))
          (list (string-append "SQLITE_INCLUDE_DIR=" sqlite "/include")
                (string-append "prefix=" out)
                "SAVEDIR=~/.crawl"
+               ;; Don't compile with SSE on systems which don't use it
+               ,@(match (%current-system)
+                   ((or "i686-linux" "x86_64-linux")
+                    '())
+                   (_ '("NOSSE=TRUE")))
                ;; don't build any bundled dependencies
                "BUILD_LUA="
                "BUILD_SQLITE="
@@ -4454,11 +4459,6 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                "-Csource"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-flags
-           (lambda _
-             (substitute* "source/Makefile"
-               (("-mfpmath=sse -msse2") ""))
-             #t))
          (add-after 'unpack 'find-SDL-image
            (lambda _
              (substitute* "source/windowmanager-sdl.cc"
