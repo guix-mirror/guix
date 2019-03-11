@@ -13247,3 +13247,25 @@ provides several enhancements over the ordinary
 in the completion list and showing keyboard shortcuts, and it supports several
 completion systems for selecting commands, such as ido and ivy.")
     (license license:gpl3+)))
+
+(define-public emacs-lorem-ipsum
+  (let ((commit "4b39f6fed455d67f635b3837cf5668bf74d0f6cd"))
+    (package
+      (name "emacs-lorem-ipsum")
+      (version (git-version "0.2" "1" commit))
+      (home-page "https://github.com/jschaf/emacs-lorem-ipsum/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0a3b18p3vdjci89prsgdzjnfxsl8p67vjhf8ai4qdng7zvh50lir"))))
+      (build-system emacs-build-system)
+      (synopsis "Insert dummy pseudo Latin text in Emacs")
+      (description "This package provides convenience functions to insert
+dummy Latin text into a buffer.  This can be useful if you need to produce
+paragraphs or pages of text for testing purposes.")
+      (license license:gpl3+))))
