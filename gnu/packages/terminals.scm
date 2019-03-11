@@ -341,7 +341,7 @@ combining, and so on, with a simple interface.")
 (define-public picocom
   (package
     (name "picocom")
-    (version "2.2")
+    (version "3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -350,15 +350,16 @@ combining, and so on, with a simple interface.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06b2ic34dnxc73cprc5imi3iamlhsv623sbg9vj5h5rvs586dwjx"))))
+                "1vvjydqf0ax47nvdyyl67jafw5b3sfsav00xid6qpgia1gs2r72n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc")
-       #:tests? #f ; No tests
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (replace 'install
+           ;; The Makefile lacks an ‘install’ target.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
