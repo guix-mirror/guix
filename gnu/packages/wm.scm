@@ -1221,3 +1221,33 @@ modules for building a Wayland compositor.")
     (synopsis "Idle management daemon for Wayland compositors")
     (description "Swayidle is a idle management daemon for Wayland compositors.")
     (license license:expat))) ; MIT license
+
+(define-public swaylock
+  (package
+    (name "swaylock")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/swaylock.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "093nv1y9wyg48rfxhd36qdljjry57v1vkzrlc38mkf6zvsq8j7wb"))))
+    (build-system meson-build-system)
+    (inputs `(("cairo" ,cairo)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("libxkbcommon" ,libxkbcommon)
+              ;("linux-pam" ,linux-pam) ; FIXME: Doesn't work.
+              ("wayland" ,wayland)))
+    (native-inputs `(
+                     ("git" ,git)
+                     ("pango" ,pango)
+                     ("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Screen locking utility for Wayland compositors")
+    (description "Swaylock is a screen locking utility for Wayland compositors.")
+    (license license:expat))) ; MIT license
