@@ -367,11 +367,12 @@ combining, and so on, with a simple interface.")
                (install-file "picocom" bin)
                (install-file "picocom.1" man)))))))
     (home-page "https://github.com/npat-efault/picocom")
-    (synopsis "Minimal dumb-terminal emulation program")
-    (description "It was designed to serve as a simple, manual, modem
-configuration, testing, and debugging tool.  It has also serves well
-as a low-tech serial communications program to allow access to all
-types of devices that provide serial consoles.")
+    (synopsis "Minimal dumb-terminal emulator")
+    (description
+     "Picocom is a minimal dumb-terminal emulation program.  It was designed to
+serve as a simple and manual modem configuration, testing, and debugging tool.
+It also serves well as a low-tech serial communications program to allow access
+to all types of devices that provide serial consoles.")
     (license license:gpl2+)))
 
 (define-public beep
