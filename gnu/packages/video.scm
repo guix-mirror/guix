@@ -1857,73 +1857,74 @@ for use with HTML5 video.")
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
-       (modify-phases %standard-phases
-       (add-before 'patch-source-shebangs 'unpack-ffmpeg
-         (lambda _
-           (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (invoke "tar" "xf" "ffmpeg-3.3.7.tar.bz2")
-             (delete-file "ffmpeg-3.3.7.tar.bz2"))
-           #t))
-       (add-after 'patch-source-shebangs 'repack-ffmpeg
-         (lambda _
-           (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (substitute* "ffmpeg-3.3.7/configure"
-               (("#! /bin/sh") (string-append "#!" (which "sh"))))
-             (invoke "tar" "cjf" "ffmpeg-3.3.7.tar.bz2" "ffmpeg-3.3.7"
-                     ;; avoid non-determinism in the archive
-                     "--sort=name" "--mtime=@0"
-                     "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-3.3.7"))
-           #t))
-       (replace 'configure
-         (lambda _
-           ;; Copy-paste settings from the cmake build system.
-           (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-           (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
-           #t))
-       (replace 'build
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (lib (string-append out "/lib"))
-                  (top (getcwd))
-                  (sdl (assoc-ref inputs "sdl"))
-                  (build_component
-                   (lambda* (component srcdir #:optional (args '()))
-                     (let ((builddir (string-append "build_" component)))
-                       (mkdir builddir)
-                       (with-directory-excursion builddir
-                         (apply invoke "cmake"
-                                "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
-                                (string-append "-DCMAKE_INSTALL_PREFIX=" out)
-                                (string-append "-DCMAKE_INSTALL_RPATH=" lib)
-                                (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
-                                               "\"-Wl,-rpath=" lib "\"")
-                                (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
-                                (string-append "-DSDL_INCLUDE_DIR="
-                                               sdl "/include/SDL")
-                                (string-append "../" srcdir)
-                                "-DENABLE_QT5=True"
-                                args)
-                         (invoke "make" "-j"
-                                 (number->string (parallel-job-count)))
-                         (invoke "make" "install"))))))
-             (mkdir out)
-             (build_component "core" "avidemux_core")
-             (build_component "cli" "avidemux/cli")
-             (build_component "qt4" "avidemux/qt4")
-             (build_component "plugins_common" "avidemux_plugins"
-                              '("-DPLUGIN_UI=COMMON"))
-             (build_component "plugins_cli" "avidemux_plugins"
-                              '("-DPLUGIN_UI=CLI"))
-             (build_component "plugins_qt4" "avidemux_plugins"
-                              '("-DPLUGIN_UI=QT4"))
-             (build_component "plugins_settings" "avidemux_plugins"
-                              '("-DPLUGIN_UI=SETTINGS"))
-             ;; Remove .exe and .dll file.
-             (delete-file-recursively
-              (string-append out "/share/ADM6_addons"))
-             #t)))
-       (delete 'install))))
+       (let ((ffmpeg "ffmpeg-3.3.7"))
+         (modify-phases %standard-phases
+           (add-before 'patch-source-shebangs 'unpack-ffmpeg
+             (lambda _
+               (with-directory-excursion "avidemux_core/ffmpeg_package"
+                 (invoke "tar" "xf" (string-append ffmpeg ".tar.bz2"))
+                 (delete-file (string-append ffmpeg ".tar.bz2")))
+               #t))
+           (add-after 'patch-source-shebangs 'repack-ffmpeg
+             (lambda _
+               (with-directory-excursion "avidemux_core/ffmpeg_package"
+                 (substitute* (string-append ffmpeg "/configure")
+                   (("#! /bin/sh") (string-append "#!" (which "sh"))))
+                 (invoke "tar" "cjf" (string-append ffmpeg ".tar.bz2") ffmpeg
+                         ;; avoid non-determinism in the archive
+                         "--sort=name" "--mtime=@0"
+                         "--owner=root:0" "--group=root:0")
+                 (delete-file-recursively ffmpeg))
+               #t))
+           (replace 'configure
+             (lambda _
+               ;; Copy-paste settings from the cmake build system.
+               (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+               (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+               #t))
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib"))
+                      (top (getcwd))
+                      (sdl (assoc-ref inputs "sdl"))
+                      (build_component
+                       (lambda* (component srcdir #:optional (args '()))
+                         (let ((builddir (string-append "build_" component)))
+                           (mkdir builddir)
+                           (with-directory-excursion builddir
+                             (apply invoke "cmake"
+                                    "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                                    (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                                    (string-append "-DCMAKE_INSTALL_RPATH=" lib)
+                                    (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                                                   "\"-Wl,-rpath=" lib "\"")
+                                    (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
+                                    (string-append "-DSDL_INCLUDE_DIR="
+                                                   sdl "/include/SDL")
+                                    (string-append "../" srcdir)
+                                    "-DENABLE_QT5=True"
+                                    args)
+                             (invoke "make" "-j"
+                                     (number->string (parallel-job-count)))
+                             (invoke "make" "install"))))))
+                 (mkdir out)
+                 (build_component "core" "avidemux_core")
+                 (build_component "cli" "avidemux/cli")
+                 (build_component "qt4" "avidemux/qt4")
+                 (build_component "plugins_common" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=COMMON"))
+                 (build_component "plugins_cli" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=CLI"))
+                 (build_component "plugins_qt4" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=QT4"))
+                 (build_component "plugins_settings" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=SETTINGS"))
+                 ;; Remove .exe and .dll file.
+                 (delete-file-recursively
+                  (string-append out "/share/ADM6_addons"))
+                 #t)))
+           (delete 'install)))))
     (home-page "http://fixounet.free.fr/avidemux/")
     (synopsis "Video editor")
     (description "Avidemux is a video editor designed for simple cutting,
