@@ -323,7 +323,7 @@ all the details.")))
 (define-public s6-linux-utils
   (package
    (name "s6-linux-utils")
-   (version "2.5.0.0")
+   (version "2.5.0.1")
    (source
     (origin
      (method url-fetch)
@@ -331,8 +331,7 @@ all the details.")))
            "http://skarnet.org/software/s6-linux-utils/s6-linux-utils-"
            version ".tar.gz"))
      (sha256
-      (base32
-       "04q2z71dkzahd2ppga2zikclz2qk014c23gm7rigqxjc8rs1amvq"))))
+      (base32 "0bpcaah3rbz4i013bkarr7wxmfvisjyxg0z78xg5zfbgajpgjxx1"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
