@@ -1241,8 +1241,7 @@ modules for building a Wayland compositor.")
               ("libxkbcommon" ,libxkbcommon)
               ;("linux-pam" ,linux-pam) ; FIXME: Doesn't work.
               ("wayland" ,wayland)))
-    (native-inputs `(
-                     ("git" ,git)
+    (native-inputs `(("git" ,git)
                      ("pango" ,pango)
                      ("pkg-config" ,pkg-config)
                      ("scdoc" ,scdoc)
