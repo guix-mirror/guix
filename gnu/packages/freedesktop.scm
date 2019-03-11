@@ -152,7 +152,7 @@ freedesktop.org project.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
-                                  name "-" version ".tar.xz"))
+                                  "libinput-" version ".tar.xz"))
               (sha256
                (base32
                 "0mg2zqbjcgj0aq7d9nwawvyhx43vakilahrc83hrfyif3a3gyrpj"))))
