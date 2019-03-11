@@ -1271,7 +1271,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxcomposite
   (package
     (name "libxcomposite")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
       (origin
         (method url-fetch)
@@ -1281,7 +1281,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0y21nfpa5s8qmx0srdlilyndas3sgl0c6rc26d5fx2vx436m1qpd"))))
+            "13sfcglvz87vl58hd9rszwr73z0z4nwga3c12rfh7f5s2ln8l8dk"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xcomposite.pc refers to all these.
