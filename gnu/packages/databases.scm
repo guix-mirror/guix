@@ -2108,7 +2108,7 @@ Database API 2.0T.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _ (invoke "py.test"))))))
-    (home-page "http://www.sqlalchemy.org")
+    (home-page "https://www.sqlalchemy.org")
     (synopsis "Database abstraction library")
     (description
      "SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that
