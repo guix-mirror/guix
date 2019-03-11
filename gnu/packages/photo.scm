@@ -208,14 +208,17 @@ MTP, and much more.")
   (package
     (name "perl-image-exiftool")
     (version "11.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://cpan/authors/id/E/EX/EXIFTOOL/Image-ExifTool-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1szg1k82nz88pp5n7lg71ja7q3hh5i5f9bcbb7m482dwrmsywkp6"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "mirror://cpan/authors/id/E/EX/EXIFTOOL/"
+                            "Image-ExifTool-" version ".tar.gz")
+             ;; New releases may take a while to hit CPAN.
+             (string-append "https://www.sno.phy.queensu.ca/~phil/exiftool/"
+                            "Image-ExifTool-" version ".tar.gz")))
+       (sha256
+        (base32 "1szg1k82nz88pp5n7lg71ja7q3hh5i5f9bcbb7m482dwrmsywkp6"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
