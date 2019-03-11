@@ -888,7 +888,7 @@ render model libraries.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.0.1")
+    (version "5.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -897,7 +897,7 @@ render model libraries.")
               (file-name (string-append "kicad-symbols-" version "-checkout"))
               (sha256
                (base32
-                "18z5vpdq7hy2mpvm5vz1dz3ra3a5iybavvlzi8q2bmmdb6gsvf64"))))
+                "1rjh2pjcrc3bhcgyyskj5pssm7vffrjk0ymwr70fb7sjpmk96yjk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist
