@@ -278,7 +278,12 @@ on stdout instead of using a socket as the Emacsclient does.")
        ("magit-popup" ,emacs-magit-popup)
        ("with-editor" ,emacs-with-editor)))
     (arguments
-     `(#:test-target "test"
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:test-target "test"
        #:tests? #f               ; tests are not included in the release
 
        #:make-flags
@@ -317,8 +322,9 @@ on stdout instead of using a socket as the Emacsclient does.")
           'build 'patch-exec-paths
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((perl (assoc-ref inputs "perl")))
-              (substitute* "lisp/magit-sequence.el"
-                (("perl") (string-append perl "/bin/perl")))
+              (make-file-writable "lisp/magit-sequence.el")
+              (emacs-substitute-variables "lisp/magit-sequence.el"
+                ("magit-perl-executable" (string-append perl "/bin/perl")))
               #t))))))
     (home-page "https://magit.vc/")
     (synopsis "Emacs interface for the Git version control system")
