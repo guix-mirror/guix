@@ -13373,3 +13373,24 @@ paragraphs or pages of text for testing purposes.")
 is created (bound, for example, by let) as well as quoted and backquoted
 constant expressions.")
       (license license:gpl3+))))
+
+(define-public emacs-docker-tramp
+  (package
+    (name "emacs-docker-tramp")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-pe/docker-tramp.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0lxvzmfg52fhxrhbvp92zwp7cv4i1rlxnkyyzgngj3sjm7y60yvg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacs-pe/docker-tramp.el")
+    (synopsis "TRAMP integration for docker containers")
+    (description
+     "This package provides a TRAMP method for Docker containers.")
+    (license license:gpl3+)))
