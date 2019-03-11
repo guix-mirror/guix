@@ -300,14 +300,14 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.30")
+   (version "8.31")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0mxhw43d4wpqmvg0l4znk1vm10fy92biyh90lzdnqjcic2lb6cg8"))))
+              "1zg9m79x1i2nifj4kb0waf9x3i5h6ydkypkjnbsb9rnwis8rqypz"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
@@ -349,13 +349,7 @@ used to apply commands with arbitrarily long arguments.")
                      ;; environments with long prefixes (/tmp/guix-build-...).
                      (substitute* "Makefile"
                        (("^.*tests/misc/env-S.pl.*$") ""))
-                     #t)))
-
-      ;; Work around a cross-compilation bug whereby libcoreutils.a would
-      ;; provide '__mktime_internal', which conflicts with the one in libc.a.
-      ,@(if (%current-target-system)
-            `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
-            '())))
+                     #t)))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are
