@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,6 +41,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
@@ -116,16 +117,15 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "0.95")
+    (version "0.96")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://gcompris.net/download/qt/src/gcompris-qt-"
-               version ".tar.xz"))
-        (sha256
-         (base32
-          "1aaijjx2b7k1cyx59jhs64hlp1sppw1faa81qxl5lxc79vifrlrl"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://gcompris.net/download/qt/src/gcompris-qt-"
+             version ".tar.xz"))
+       (sha256
+        (base32 "06483il59l46ny2w771sg45dgzjwv1ph7vidzzbj0wb8wbk2rg52"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -162,7 +162,8 @@ of categories with some of the activities available in that category.
        ("qttools" ,qttools)
        ("xorg-server" ,xorg-server)))
     (inputs
-     `(("python-2" ,python-2)
+     `(("openssl" ,openssl)
+       ("python-2" ,python-2)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
