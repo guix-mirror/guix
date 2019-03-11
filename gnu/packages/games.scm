@@ -5864,7 +5864,7 @@ when packaged in Blorb container files or optionally from individual files.")
 (define-public libmanette
   (package
     (name "libmanette")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5872,7 +5872,7 @@ when packaged in Blorb container files or optionally from individual files.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14vqz30p4693yy3yxs0gj858x25sl2kawib1g9lj8g5frgl0hd82"))))
+                "1lpprk2qz1lsqf9xj6kj2ciyc1zmjhj5lwd584qkh7jgz2x9y6wb"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-compile-resources
