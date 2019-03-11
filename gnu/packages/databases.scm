@@ -1335,15 +1335,14 @@ module, and nothing else.")
 (define-public perl-sql-abstract
   (package
     (name "perl-sql-abstract")
-    (version "1.85")
+    (version "1.86")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "SQL-Abstract-" version ".tar.gz"))
        (sha256
-        (base32
-         "1aycggrvppy2zgkwwn85jkdz93n5gsx4dambrjk67k5067hayi4z"))))
+        (base32 "1pwcm8hwxcgidyyrak37lx69d85q728jxsb0b14jz93gbvdgg9z7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
