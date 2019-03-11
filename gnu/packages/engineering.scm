@@ -734,7 +734,7 @@ language.")
 (define-public kicad
     (package
       (name "kicad")
-      (version "5.0.0")
+      (version "5.0.2")
       (source
        (origin
          (method url-fetch)
@@ -743,7 +743,7 @@ language.")
                 "https://launchpad.net/kicad/" (version-major+minor version)
                 "/" version "/+download/" name "-" version ".tar.xz"))
          (sha256
-          (base32 "17nqjszyvd25wi6550j981whlnb1wxzmlanljdjihiki53j84x9p"))))
+          (base32 "10605rr10x0353n6yk2z095ydnkd1i6j1ncbq64pfxdn5vkhcd1g"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
