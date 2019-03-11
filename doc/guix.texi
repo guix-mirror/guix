@@ -14165,7 +14165,7 @@ field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
 Additionally, the @code{gnome-desktop-service},
-@code{xfce-desktop-service}, @code{mate-desktop-service} and
+@code{xfce-desktop-service}, @code{mate-desktop-service-type} and
 @code{enlightenment-desktop-service-type} procedures can add GNOME, XFCE, MATE
 and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
 services like the backlight adjustment helpers and the power management
@@ -14181,8 +14181,8 @@ administrator's password via the standard polkit graphical interface.
 To ``add MATE'' means that @code{polkit} and @code{dbus} are extended
 appropriately, allowing MATE to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
-adding a service made by @code{mate-desktop-service} adds the MATE
-metapackage to the system profile.  ``Adding ENLIGHTENMENT'' means that
+adding a service of type @code{mate-desktop-service-type} adds the MATE
+metapackage to the system profile.  ``Adding Enlightenment'' means that
 @code{dbus} is extended appropriately, and several of Enlightenment's binaries
 are set as setuid, allowing Enlightenment's screen locker and other
 functionality to work as expetected.
@@ -14209,13 +14209,26 @@ file system as root from within a user session, after the user has
 authenticated with the administrator's password.
 @end deffn
 
-@deffn {Scheme Procedure} mate-desktop-service
-Return a service that adds the @code{mate} package to the system
+@deffn {Scheme Variable} mate-desktop-service-type
+This is the type of the service that runs the @uref{https://mate-desktop.org/,
+MATE desktop environment}.  Its value is a @code{mate-desktop-configuration}
+object (see below.)
+
+This service adds the @code{mate} package to the system
 profile, and extends polkit with the actions from
 @code{mate-settings-daemon}.
 @end deffn
 
-@deffn {Scheme Procedure} enlightenment-desktop-service-type
+@deftp {Data Type} mate-desktop-configuration
+Configuration record for the MATE desktop environment.
+
+@table @asis
+@item @code{mate} (default @code{mate})
+The MATE package to use.
+@end table
+@end deftp
+
+@deffn {Scheme Variable} enlightenment-desktop-service-type
 Return a service that adds the @code{enlightenment} package to the system
 profile, and extends dbus with actions from @code{efl}.
 @end deffn
