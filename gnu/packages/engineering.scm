@@ -894,7 +894,7 @@ render model libraries.")
               (uri (git-reference
                     (url "https://github.com/KiCad/kicad-symbols.git")
                     (commit version)))
-              (file-name (string-append "kicad-symbols-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1rjh2pjcrc3bhcgyyskj5pssm7vffrjk0ymwr70fb7sjpmk96yjk"))))
