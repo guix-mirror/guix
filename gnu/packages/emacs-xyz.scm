@@ -13426,3 +13426,29 @@ constant expressions.")
     (synopsis "Manage docker from Emacs")
     (description "This package provides an Emacs interface for Docker.")
     (license license:gpl3+)))
+
+(define-public emacs-dockerfile-mode
+  ;; Latest upstream release is too old.
+  (let ((commit "7223d92718f78fa3ab15667cdb2ed90cfeb579e7"))
+    (package
+      (name "emacs-dockerfile-mode")
+      (version (git-version "1.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/spotify/dockerfile-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0hmipgl4rk6aih11i8mnspwdijjiwk2y0wns6lzs8bgkvy3c064r"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/spotify/dockerfile-mode")
+      (synopsis "Major mode for editing Dockerfile")
+      (description
+       "This package provides a major mode @code{dockerfile-mode} for use with
+the standard @code{Dockerfile} file format.")
+      (license license:asl2.0))))
