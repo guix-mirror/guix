@@ -5279,7 +5279,7 @@ draggable titlebars and borders.")
 (define-public libxcursor
   (package
     (name "libxcursor")
-    (version "1.1.15")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -5289,7 +5289,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0syzlfvh29037p0vnlc8f3jxz8nl55k65blswsakklkwsc6nfki9"))))
+            "10l7c9fm0jmpkm9ab9dz8r6m1pr87vvgqjnbx1psz50h4pwfklrs"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libx11" ,libx11)
