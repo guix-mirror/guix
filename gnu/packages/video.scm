@@ -1820,8 +1820,8 @@ for use with HTML5 video.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://sourceforge/" name "/" name "/" version "/"
-                   name "_" version ".tar.gz"))
+                   "mirror://sourceforge/avidemux/avidemux/" version "/"
+                   "avidemux_" version ".tar.gz"))
              (sha256
               (base32
                "15g9h791qbnmycabbbl7s2b3n3xpvygm88qrfk35g2cw6957ik9w"))
