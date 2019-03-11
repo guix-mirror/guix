@@ -18,6 +18,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages haskell)
@@ -77,6 +79,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages mpd)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages video)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -1102,3 +1106,48 @@ its size
 customizable status bars for their desktop environment.  It has built-in
 functionality to display information about the most commonly used services.")
     (license license:expat)))
+
+(define-public wlroots
+  (package
+    (name "wlroots")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/wlroots.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1phiidyddzgaxy4gbqwmykxn0y8za6y5mp66l9dpd9i6fml153yq"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-Dlogind-provider=elogind")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xwayland/xwayland.c"
+               (("Xwayland") (string-append (assoc-ref inputs
+                                                       "xorg-server-xwayland")
+                                            "/bin/Xwayland")))
+             #t)))))
+    (inputs `(("elogind" ,elogind)
+              ("eudev" ,eudev)
+              ("libinput" ,libinput)
+              ("libxkbcommon" ,libxkbcommon)
+              ("mesa" ,mesa)
+              ("pixman" ,pixman)
+              ("wayland" ,wayland)
+              ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (native-inputs `(("ffmpeg" ,ffmpeg)
+                     ("libcap" ,libcap)
+                     ("libpng" ,libpng)
+                     ("pkg-config" ,pkg-config)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/wlroots")
+    (synopsis "Pluggable, composable, unopinionated modules for building a
+Wayland compositor")
+    (description "wlroots is a set of pluggable, composable, unopinionated
+modules for building a Wayland compositor.")
+    (license license:expat)))  ; MIT license
