@@ -13394,3 +13394,35 @@ constant expressions.")
     (description
      "This package provides a TRAMP method for Docker containers.")
     (license license:gpl3+)))
+
+(define-public emacs-docker
+  (package
+    (name "emacs-docker")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Silex/docker.el")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15kd86kaq1x6giz855q9w6zvnyc742j309j0pmm86rwx398g4rq1"))))
+    (inputs
+     `(("emacs-undercover" ,emacs-undercover)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-docker-tramp" ,emacs-docker-tramp)
+       ("emacs-magit-popup" ,emacs-magit-popup)
+       ("emacs-s" ,emacs-s)
+       ("emacs-tablist" ,emacs-tablist)
+       ("emacs-json-mode" ,emacs-json-mode)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)))) ;no tests
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Silex/docker.el")
+    (synopsis "Manage docker from Emacs")
+    (description "This package provides an Emacs interface for Docker.")
+    (license license:gpl3+)))
