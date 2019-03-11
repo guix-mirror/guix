@@ -2332,14 +2332,13 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.7.5")
+    (version "2.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
-        (base32
-         "17klx964gw8z0znl0raz3by8vdc7cq5gxj4pdcrfcina84nrdkzc"))))
+        (base32 "0zjbabb4qjx9dm07imhf8y5a9rpa06d5zah80myiimgdi83nslpl"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
