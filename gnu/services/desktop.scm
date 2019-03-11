@@ -906,6 +906,7 @@ and extends polkit with the actions from @code{gnome-settings-daemon}."
           (service-extension profile-service-type
                              (compose list
                                       mate-package))))
+   (default-value (mate-desktop-configuration))
    (description "Run the MATE desktop environment.")))
 
 (define* (mate-desktop-service #:key (config (mate-desktop-configuration)))
