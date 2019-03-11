@@ -170,15 +170,14 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
 (define-public s6-networking
   (package
    (name "s6-networking")
-   (version "2.3.0.3")
+   (version "2.3.0.4")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://skarnet.org/software/s6-networking/s6-networking-"
                          version ".tar.gz"))
      (sha256
-      (base32
-       "1kfjl7da6wkmyq1mvq9irkbzk2wbi0axjfbcw5cym5y11mqswsjs"))))
+      (base32 "00kqp0mcp8c7f0z5s4399rd1haxasxkqgd6ds0j0607hvi56mqqa"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
