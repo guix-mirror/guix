@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -5457,14 +5457,14 @@ PDF documents.")
 (define-public texmaker
   (package
     (name "texmaker")
-    (version "5.0.2")
+    (version "5.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.xm1math.net/texmaker/texmaker-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0y81mjm89b99pr9svcwpaf4iz2q9pc9hjas5kiwd1pbgl5vqskm9"))))
+                "0vrj9w5lk3vf6138n5bz8phmy3xp5kv4dq1rgirghcf4hbxdyx30"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
