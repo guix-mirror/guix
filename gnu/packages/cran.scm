@@ -10868,3 +10868,30 @@ convert standard @code{%dopar%} loops into fully reproducible loops,
 independently of the number of workers, the task scheduling strategy, or the
 chosen parallel environment and associated foreach backend.")
     (license license:gpl2+)))
+
+(define-public r-blockmodeling
+  (package
+    (name "r-blockmodeling")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "blockmodeling" version))
+       (sha256
+        (base32
+         "11v9903y9dwlzaqp8sx0fsibcg82phvappddy37r8lnxd4vchsd2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-doparallel" ,r-doparallel)
+       ("r-dorng" ,r-dorng)
+       ("r-foreach" ,r-foreach)
+       ("r-matrix" ,r-matrix)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/blockmodeling")
+    (synopsis "Generalized and classical blockmodeling of valued networks")
+    (description
+     "This package is primarily meant as an implementation of generalized
+blockmodeling for valued networks.  In addition, measures of similarity or
+dissimilarity based on structural equivalence and regular equivalence (REGE
+algorithms) can be computed and partitioned matrices can be plotted.")
+    (license license:gpl2+)))
