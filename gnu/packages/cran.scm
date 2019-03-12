@@ -11208,3 +11208,28 @@ mixture modeling of inverse regression.")
      "This package provides a vectorized R function for calculating
 probabilities from a standard bivariate normal CDF.")
     (license license:gpl2+)))
+
+(define-public r-lavaan
+  (package
+    (name "r-lavaan")
+    (version "0.6-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lavaan" version))
+       (sha256
+        (base32
+         "0hw856kv11zqn6nd4216rh19i6xbnc1rh044r7jvvxkhzgbqkyxz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-mnormt" ,r-mnormt)
+       ("r-numderiv" ,r-numderiv)
+       ("r-pbivnorm" ,r-pbivnorm)))
+    (home-page "http://lavaan.ugent.be")
+    (synopsis "Latent variable analysis")
+    (description
+     "This package provides tools to fit a variety of latent variable models,
+including confirmatory factor analysis, structural equation modeling and
+latent growth curve models.")
+    (license license:gpl2+)))
