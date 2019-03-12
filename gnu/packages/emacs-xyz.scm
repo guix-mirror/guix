@@ -11176,6 +11176,29 @@ visiting the bookmark, a new @code{eshell} session will be opened in the
 appropriate directory if no @code{eshell} session is active.")
     (license license:gpl3+)))
 
+(define-public emacs-eshell-z
+  (package
+    (name "emacs-eshell-z")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xuchunyang/eshell-z")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aac4m814jgxwpz7lbyx5r4z5dmawp4sk7pwbx0zqpnbcsaq5wwc"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/xuchunyang/eshell-z")
+    (synopsis "Quick navigation to frequently visited directories")
+    (description
+     "This package is a port of @code{z}, and keeps track of visited directories
+and commands invoked within them in order to enable navigation via input of
+matching regexps.")
+    (license license:gpl3+)))
+
 (define-public emacs-esh-autosuggest
   (package
     (name "emacs-esh-autosuggest")
