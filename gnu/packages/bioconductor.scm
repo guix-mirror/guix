@@ -1764,3 +1764,28 @@ estimation is performed using either the EM or CEM algorithm, and the slope
 heuristics are used for model selection (i.e., to choose the number of
 clusters).")
     (license license:gpl3+)))
+
+(define-public r-deds
+  (package
+    (name "r-deds")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DEDS" version))
+       (sha256
+        (base32
+         "1zfgaar3bpss49zhs81mwlfzkx5lv92j8a64xd12ig88is24cw2c"))))
+    (properties `((upstream-name . "DEDS")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/DEDS/")
+    (synopsis "Differential expression via distance summary for microarray data")
+    (description
+     "This library contains functions that calculate various statistics of
+differential expression for microarray data, including t statistics, fold
+change, F statistics, SAM, moderated t and F statistics and B statistics.  It
+also implements a new methodology called DEDS (Differential Expression via
+Distance Summary), which selects differentially expressed genes by integrating
+and summarizing a set of statistics using a weighted distance approach.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
