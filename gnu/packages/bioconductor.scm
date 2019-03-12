@@ -807,6 +807,35 @@ region sets and other genomic features.")
      "This package provides functions for plotting genomic data.")
     (license license:artistic2.0)))
 
+(define-public r-qvalue
+  (package
+    (name "r-qvalue")
+    (version "2.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "qvalue" version))
+       (sha256
+        (base32
+         "0kxavzm1j2mk26qicmjm90nxx4w5h3dxighzks7wzihay3k8cysc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "http://github.com/jdstorey/qvalue")
+    (synopsis "Q-value estimation for false discovery rate control")
+    (description
+     "This package takes a list of p-values resulting from the simultaneous
+testing of many hypotheses and estimates their q-values and local @dfn{false
+discovery rate} (FDR) values.  The q-value of a test measures the proportion
+of false positives incurred when that particular test is called significant.
+The local FDR measures the posterior probability the null hypothesis is true
+given the test's p-value.  Various plots are automatically generated, allowing
+one to make sensible significance cut-offs.  The software can be applied to
+problems in genomics, brain imaging, astrophysics, and data mining.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
+
 (define-public r-diffbind
   (package
     (name "r-diffbind")
