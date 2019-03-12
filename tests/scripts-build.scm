@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix git)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages busybox)
@@ -163,5 +164,26 @@
                      (match (package-native-inputs dep2)
                        ((("x" dep))
                         (eq? (package-replacement dep) findutils)))))))))))
+
+(test-equal "options->transformation, with-git-url"
+  (let ((source (git-checkout (url "https://example.org")
+                              (recursive? #t))))
+    (list source source))
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (native-inputs `(("x" ,grep)))))))))
+         (t (options->transformation '((with-git-url . "grep=https://example.org")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-full-name dep1)
+                               (package-full-name grep))
+                     (string=? (package-name dep2) "chbouib")
+                     (match (package-native-inputs dep2)
+                       ((("x" dep3))
+                        (map package-source (list dep1 dep3))))))))))))
 
 (test-end)

@@ -272,16 +272,16 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
           (rewrite obj)
           obj))))
 
+(define %not-equal
+  (char-set-complement (char-set #\=)))
+
 (define (evaluate-git-replacement-specs specs proc)
   "Parse SPECS, a list of strings like \"guile=stable-2.2\", and return a list
 of package pairs, where (PROC PACKAGE URL BRANCH-OR-COMMIT) returns the
 replacement package.  Raise an error if an element of SPECS uses invalid
 syntax, or if a package it refers to could not be found."
-  (define not-equal
-    (char-set-complement (char-set #\=)))
-
   (map (lambda (spec)
-         (match (string-tokenize spec not-equal)
+         (match (string-tokenize spec %not-equal)
            ((name branch-or-commit)
             (let* ((old    (specification->package name))
                    (source (package-source old))
@@ -341,6 +341,33 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
           (rewrite obj)
           obj))))
 
+(define (transform-package-source-git-url replacement-specs)
+  "Return a procedure that, when passed a package, replaces its dependencies
+according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of strings like
+\"guile-json=https://gitthing.com/…\" meaning that packages are built using
+a checkout of the Git repository at the given URL."
+  ;; FIXME: Currently this cannot be combined with '--with-branch' or
+  ;; '--with-commit' because they all transform "from scratch".
+  (define replacements
+    (map (lambda (spec)
+           (match (string-tokenize spec %not-equal)
+             ((name url)
+              (let* ((old (specification->package name))
+                     (new (package
+                            (inherit old)
+                            (source (git-checkout (url url)
+                                                  (recursive? #t))))))
+                (cons old new)))))
+         replacement-specs))
+
+  (define rewrite
+    (package-input-rewriting replacements))
+
+  (lambda (store obj)
+    (if (package? obj)
+        (rewrite obj)
+        obj)))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
@@ -350,7 +377,8 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
     (with-input  . ,transform-package-inputs)
     (with-graft  . ,transform-package-inputs/graft)
     (with-branch . ,transform-package-source-branch)
-    (with-commit . ,transform-package-source-commit)))
+    (with-commit . ,transform-package-source-commit)
+    (with-git-url . ,transform-package-source-git-url)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -368,7 +396,9 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
           (option '("with-branch") #t #f
                   (parser 'with-branch))
           (option '("with-commit") #t #f
-                  (parser 'with-commit)))))
+                  (parser 'with-commit))
+          (option '("with-git-url") #t #f
+                  (parser 'with-git-url)))))
 
 (define (show-transformation-options-help)
   (display (G_ "
@@ -385,7 +415,10 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
                          build PACKAGE from the latest commit of BRANCH"))
   (display (G_ "
       --with-commit=PACKAGE=COMMIT
-                         build PACKAGE from COMMIT")))
+                         build PACKAGE from COMMIT"))
+  (display (G_ "
+      --with-git-url=PACKAGE=URL
+                         build PACKAGE from the repository at URL")))
 
 
 (define (options->transformation opts)
