@@ -11166,3 +11166,25 @@ for lower and upper parameter bounds.  The implementation can be used via
 kurtosis, Geary's kurtosis and skewness; it also includes tests related to
 them (Anscombe-Glynn, D'Agostino, Bonett-Seier).")
     (license license:gpl2+)))
+
+(define-public r-msir
+  (package
+    (name "r-msir")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "msir" version))
+       (sha256
+        (base32
+         "1ipzgdffsqly3dp91pw7yp3h5cwn08l9qsj7cdmrykd42jc98950"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mclust" ,r-mclust)
+       ("r-rgl" ,r-rgl)))
+    (home-page "https://cran.r-project.org/web/packages/msir")
+    (synopsis "Model-based sliced inverse regression")
+    (description
+     "This is an R package for dimension reduction based on finite Gaussian
+mixture modeling of inverse regression.")
+    (license license:gpl2+)))
