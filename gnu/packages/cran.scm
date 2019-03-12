@@ -10999,3 +10999,27 @@ abstraction.  It includes Einstein and Riemann summing conventions, dragging,
 co- and contravariate indices, and parallel computations on sequences of
 tensors.")
     (license license:gpl2+)))
+
+(define-public r-rarpack
+  (package
+    (name "r-rarpack")
+    (version "0.11-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rARPACK" version))
+       (sha256
+        (base32
+         "12h2y46xcfldhjdmm960swgn9b23zvkj5vg2bi42s9qxwgi02d63"))))
+    (properties `((upstream-name . "rARPACK")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rspectra" ,r-rspectra)))
+    (home-page "https://github.com/yixuan/rARPACK")
+    (synopsis "Solvers for large scale eigenvalue and SVD problems")
+    (description
+     "This package was previously an R wrapper of the ARPACK library, and now
+a shell of the R package RSpectra, an R interface to the Spectra library for
+solving large scale eigenvalue/vector problems.  The current version of
+rARPACK simply imports and exports the functions provided by RSpectra.  New
+users of rARPACK are advised to switch to the RSpectra package.")
+    (license license:bsd-3)))
