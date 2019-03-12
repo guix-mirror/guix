@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,11 +197,25 @@ dictionaries, including personal ones.")
                       "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))
 
 (define-public aspell-dict-it
-  (aspell-dictionary "it" "Italian"
-                     #:version "2.2_20050523-0"
-                     #:sha256
-                     (base32
-                      "1gdf7bc1a0kmxsmphdqq8pl01h667mjsj6hihy6kqy14k5qdq69v")))
+  (let ((version "2.4-20070901-0")
+        (sha256
+         (base32 "0d6ypii3jblprpibazb6ypady536jz62rwxlss1x1raq07rhvvqn")))
+    (package
+      (inherit (aspell-dictionary "it" "Italian"
+                                  #:version version
+                                  #:sha256 sha256))
+
+      ;; The version hosted at <https://ftp.gnu.org/gnu/aspell/dict> is even
+      ;; more out of date.
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://sourceforge/linguistico/"
+                             "Dizionario%20italiano%20per%20Aspell/" version "/"
+                             "aspell6-it-" version ".tar.bz2"))
+         (sha256 sha256)))
+       (home-page
+        "http://linguistico.sourceforge.net/pages/dizionario_italiano.html"))))
 
 (define-public aspell-dict-nl
   (aspell-dictionary "nl" "Dutch"
