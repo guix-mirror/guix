@@ -2120,17 +2120,17 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.5")
+    (version "0.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1rzzqa39a6llr52vjkjr0a86nc776kmr5xs52qqga8ms9697psz5"))))
+                "0wlmbb9m7cf3wr7c2h2hji18592x2b119m7mx85wksjs6rjaq2mj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; no check target
+     '(#:tests? #f                      ; no check target
        ;; Disable xunique to prevent X hanging when starting qjackctl in
        ;; tiling window managers such as StumpWM or i3
        ;; (see https://github.com/rncbc/qjackctl/issues/13).
