@@ -47,9 +47,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1)
-  #:export (go-github-com-gogo-protobuf-union)
-  #:export (go-golang-org-x-crypto-union))
+  #:use-module (srfi srfi-1))
 
 ;; According to https://golang.org/doc/install/gccgo, gccgo-4.8.2 includes a
 ;; complete go-1.1.2 implementation, gccgo-4.9 includes a complete go-1.2
@@ -620,18 +618,7 @@ expressing configuration which is easy for both humans and machines to read.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/bcrypt"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Bcrypt in Go")
       (description "This package provides a Go implementation of the bcrypt
 password hashing function.")
@@ -657,18 +644,7 @@ password hashing function.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/blowfish"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Blowfish in Go")
       (description "This package provides a Go implementation of the Blowfish
 symmetric-key block cipher.")
@@ -694,18 +670,7 @@ symmetric-key block cipher.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/pbkdf2"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "PBKDF2 in Go")
       (description "This package provides a Go implementation of the PBKDF2 key
 derivation function.")
@@ -731,18 +696,7 @@ derivation function.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/tea"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Tiny Encryption Algorithm (TEA) in Go")
       (description "This packages a Go implementation of the Tiny Encryption
 Algorithm (TEA) block cipher.")
@@ -768,18 +722,7 @@ Algorithm (TEA) block cipher.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/salsa20"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Salsa20 in Go")
       (description "This packages provides a Go implementation of the Salsa20
 stream cipher.")
@@ -805,18 +748,7 @@ stream cipher.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/cast5"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Cast5 in Go")
       (description "This packages provides a Go implementation of the Cast5
 symmetric-key block cipher.")
@@ -842,18 +774,7 @@ symmetric-key block cipher.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/twofish"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Twofish in Go")
       (description "This packages provides a Go implementation of the Twofish
 symmetric-key block cipher.")
@@ -879,18 +800,7 @@ symmetric-key block cipher.")
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/xtea"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "eXtended Tiny Encryption Algorithm (XTEA) in Go")
       (description "This package provides a Go implementation of the eXtended
 Tiny Encryption Algorithm (XTEA) block cipher.")
@@ -902,9 +812,19 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
     (inherit go-golang-org-x-crypto-bcrypt)
     (name "go-golang-org-x-crypto-ed25519")
     (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/ed25519")))
+     `(#:import-path "golang.org/x/crypto/ed25519"
+       #:unpack-path "golang.org/x/crypto"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (map (lambda (file)
+                    (make-file-writable file))
+                  (find-files
+                    (string-append (assoc-ref outputs "out")
+                                   "/src/golang.org/x/crypto/ed25519/testdata")
+                    ".*\\.gz$"))
+             #t)))))
     (synopsis "ED25519 in Go")
     (description "This package provides a Go implementation of the ED25519
 signature algorithm.")))
@@ -945,48 +865,6 @@ hash algorithm.")))
     (description "This package provides a Go implementation of the SHA-3
 fixed-output-length hash functions and the SHAKE variable-output-length hash
 functions defined by FIPS-202.")))
-
-;; Go searches for library modules by looking in the GOPATH environment
-;; variable.  This variable is a list of paths.  However, Go does not
-;; keep searching on GOPATH if it tries and fails to import a module.
-;; So, we use a union for packages sharing a namespace.
-(define* (go-golang-org-x-crypto-union #:optional
-                                    (packages (list go-golang-org-x-crypto-blowfish
-                                                    go-golang-org-x-crypto-bcrypt
-                                                    go-golang-org-x-crypto-tea
-                                                    go-golang-org-x-crypto-xtea
-                                                    go-golang-org-x-crypto-pbkdf2
-                                                    go-golang-org-x-crypto-twofish
-                                                    go-golang-org-x-crypto-cast5
-                                                    go-golang-org-x-crypto-salsa20
-                                                    go-golang-org-x-crypto-ed25519
-                                                    go-golang-org-x-crypto-ripemd160
-                                                    go-golang-org-x-crypto-blake2s
-                                                    go-golang-org-x-crypto-sha3)))
-  (package
-    (name "go-golang-org-x-crypto")
-    (version (package-version go-golang-org-x-crypto-bcrypt))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of the Go x crypto libraries")
-    (description "A union of the Golang cryptographic libraries.  A
-union is required because `go build` assumes that all of the headers and
-libraries are in the same directory.")
-    (home-page (package-home-page go-golang-org-x-crypto-bcrypt))
-    (license (package-license go-golang-org-x-crypto-bcrypt))))
 
 (define-public go-golang-org-x-net-ipv4
   (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
@@ -1279,18 +1157,7 @@ limiting in Go.")
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (arguments
        `(#:import-path "golang.org/x/crypto/ssh/terminal"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Terminal functions for Go")
       (description "This package provides @{terminal}, which implements
 support functions for dealing with terminals, as commonly found on UNIX
@@ -2340,32 +2207,6 @@ and lookup requests.  Browse requests are not supported yet.")
       (description "Go wrapper for taglib")
       (license license:unlicense))))
 
-(define* (go-github-com-gogo-protobuf-union
-           #:optional (packages (list go-github-com-gogo-protobuf
-                                      go-github-com-gogo-protobuf-protoc-gen-gogo)))
-  (package
-    (name "go-github-com-gogo-protobuf-union")
-    (version (package-version go-github-com-gogo-protobuf))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of Go protobuf libraries")
-    (description "This is a union of Go protobuf libraries")
-    (home-page (package-home-page go-github-com-gogo-protobuf))
-    (license (package-license go-github-com-gogo-protobuf))))
-
 (define-public go-github-com-gogo-protobuf
   (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
         (revision "2"))
@@ -2798,7 +2639,8 @@ required by Go's standard Hash interface.")
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
       (home-page "https://github.com/multiformats/go-multihash")
       (synopsis "Multihash implementation in Go")
       (description "Multihash implementation in Go.")
@@ -2833,7 +2675,9 @@ required by Go's standard Hash interface.")
          ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
          ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
+         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
       (home-page "https://github.com/libp2p/go-libp2p-peer")
       (synopsis "PKI based identities for use in go-libp2p")
       (description "PKI based identities for use in @command{go-libp2p}.")
@@ -2896,7 +2740,9 @@ required by Go's standard Hash interface.")
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
+         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
       (home-page "https://github.com/libp2p/go-libp2p-metrics")
       (synopsis "Connection wrapper for go-libp2p that provides bandwidth metrics")
       (description "A connection wrapper for @command{go-libp2p} that provides bandwidth
@@ -2969,7 +2815,8 @@ cross-compilation.")
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
       (home-page "https://github.com/multiformats/go-multiaddr")
       (synopsis "Composable and future-proof network addresses")
       (description "Multiaddr is a standard way to represent addresses that
@@ -3013,7 +2860,8 @@ does the following:
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
       (home-page "https://github.com/multiformats/go-multiaddr-net")
       (synopsis "Multiaddress net tools")
       (description "This package provides Multiaddr specific versions of

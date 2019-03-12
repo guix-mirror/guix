@@ -555,33 +555,6 @@ environment")
       (home-page "https://github.com/thejerf/suture")
       (license expat))))
 
-(define* (go-github-com-vitrun-qart-union
-           #:optional (packages (list go-github-com-vitrun-qart-coding
-                                      go-github-com-vitrun-qart-gf256
-                                      go-github-com-vitrun-qart-qr)))
-  (package
-    (name "go-github-com-vitrun-qart")
-    (version (package-version go-github-com-vitrun-qart-qr))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of qart libraries")
-    (description "This is a union of qart libraries.")
-    (home-page (package-home-page go-github-com-vitrun-qart-qr))
-    (license (package-license go-github-com-vitrun-qart-qr))))
-
 (define-public go-github-com-vitrun-qart-coding
   (let ((commit "bf64b92db6b05651d6c25a3dabf2d543b360c0aa")
         (revision "0"))
@@ -667,61 +640,6 @@ inherent errors.  This @code{qart} component, @code{qr}, provides QR code
 generation.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
-
-(define* (go-golang-org-x-net-union #:optional
-                                 (packages (list go-golang-org-x-net-ipv4
-                                                 go-golang-org-x-net-bpf
-                                                 go-golang-org-x-net-ipv6
-                                                 go-golang-org-x-net-proxy
-                                                 go-golang-org-x-net-internal-iana)))
-  (package
-    (name "go-golang-org-x-net")
-    (version (package-version go-golang-org-x-net-ipv4))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of the Go net libraries")
-    (description "A union of the Golang net libraries.")
-    (home-page (package-home-page go-golang-org-x-net-ipv4))
-    (license (package-license go-golang-org-x-net-ipv4))))
-
-(define* (go-golang-org-x-text-union #:optional
-                                  (packages (list go-golang-org-x-text-transform
-                                                  go-golang-org-x-text-unicode-norm)))
-  (package
-    (name "go-golang-org-x-text")
-    (version (package-version go-golang-org-x-text-transform))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of the Go text libraries")
-    (description "A union of the Golang text libraries.")
-    (home-page (package-home-page go-golang-org-x-text-transform))
-    (license (package-license go-golang-org-x-text-transform))))
 
 (define-public go-github-com-audriusbutkevicius-pfilter
   (let ((commit "9dca34a5b530bfc9843fa8aa2ff08ff9821032cb")
