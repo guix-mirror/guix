@@ -11288,3 +11288,31 @@ are linear, logistic and Poisson regression and the Cox Proportional Hazards
 model.  Cross-validation routines allow optimization of the tuning
 parameters.")
     (license license:gpl2+)))
+
+(define-public r-zim
+  (package
+    (name "r-zim")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ZIM" version))
+       (sha256
+        (base32
+         "0scyfjn4ilsvha3x41c3b8bcfi31hlhwm77wn2a8hj5dsvnnmzig"))))
+    (properties `((upstream-name . "ZIM")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page "https://github.com/biostatstudio/ZIM")
+    (synopsis "Zero-inflated models (ZIM) for count time series with excess zeros")
+    (description
+     "Analyze count time series with excess zeros.  Two types of statistical
+models are supported: Markov regression and state-space models.  They are also
+known as observation-driven and parameter-driven models respectively in the
+time series literature.  The functions used for Markov regression or
+observation-driven models can also be used to fit ordinary regression models
+with independent data under the zero-inflated Poisson (ZIP) or zero-inflated
+negative binomial (ZINB) assumption.  The package also contains miscellaneous
+functions to compute density, distribution, quantile, and generate random
+numbers from ZIP and ZINB distributions.")
+    (license license:gpl3)))
