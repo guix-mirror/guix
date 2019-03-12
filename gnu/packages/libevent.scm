@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -170,14 +170,14 @@ resolution, asynchronous file system operations, and threading primitives.")
 (define-public perl-anyevent
   (package
     (name "perl-anyevent")
-    (version "7.14")
+    (version "7.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
                                   "AnyEvent-" version ".tar.gz"))
               (sha256
                (base32
-                "0akxr9y0q9yjkl614x4clbiiayvh5a67y8gmci54plxs4p95i4sk"))))
+                "0m73r67ah9xmcwzxs50jxf8ncd8h71mi4wf2mvnqkxvibhrv478i"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-canary-stability" ,perl-canary-stability)))
