@@ -13328,3 +13328,25 @@ completion systems for selecting commands, such as ido and ivy.")
 dummy Latin text into a buffer.  This can be useful if you need to produce
 paragraphs or pages of text for testing purposes.")
       (license license:gpl3+))))
+
+(define-public emacs-lisp-extra-font-lock
+  (let ((commit "4605eccbe1a7fcbd3cacf5b71249435413b4db4f"))
+    (package
+      (name "emacs-lisp-extra-font-lock")
+      (version (git-version "0.0.6" "1" commit))
+      (home-page "https://github.com/Lindydancer/lisp-extra-font-lock")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "152vcp3mdlv33jf5va4rinl1d0k960gnfhbrqqrafazgx9j3ya8w"))))
+      (build-system emacs-build-system)
+      (synopsis "Highlight bound variables and quoted expressions in Emacs")
+      (description "This package highlight the location where local variables
+is created (bound, for example, by let) as well as quoted and backquoted
+constant expressions.")
+      (license license:gpl3+))))
