@@ -11146,3 +11146,23 @@ problems by a modification of the Levenberg-Marquardt algorithm, with support
 for lower and upper parameter bounds.  The implementation can be used via
 @rode{nls}-like calls using the @code{nlsLM} function.")
     (license license:gpl3)))
+
+(define-public r-moments
+  (package
+    (name "r-moments")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "moments" version))
+       (sha256
+        (base32
+         "0f9y58w1hxcz4bqivirx25ywlmc80gbi6dfx5cnhkpdg1pk82fra"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/moments")
+    (synopsis "Moments, cumulants, skewness, kurtosis and related tests")
+    (description
+     "This package provides functions to calculate: moments, Pearson's
+kurtosis, Geary's kurtosis and skewness; it also includes tests related to
+them (Anscombe-Glynn, D'Agostino, Bonett-Seier).")
+    (license license:gpl2+)))
