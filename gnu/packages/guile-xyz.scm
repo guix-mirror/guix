@@ -2098,3 +2098,54 @@ supports backtracking and a small logical framework. The idea is to build up
 chunks that are memoized and there is no clear scanner/parser separation,
 chunks can be expressions as well as simple tokens.")
       (license license:lgpl2.0+))))
+
+(define-public guile-persist
+  (let ((commit "b14927b0368af51c024560aee5f55724aee35233")
+        (revision "1"))
+    (package
+      (name "guile-persist")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/tampe/guile-persist")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0z5nf377wh8yj6n3sx2ddn4bdx1qrqnw899dlqjhg0q69qzil522"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-prefix
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "src/Makefile.am"
+                 (("/usr/local/lib/guile")
+                  (string-append (assoc-ref outputs "out") "/lib/guile"))
+                 (("/usr/local/include/guile")
+                  (string-append (assoc-ref inputs "guile") "/include/guile"))
+                 (("-L/usr/local/lib")
+                  (string-append "-L" (assoc-ref inputs "guile") "/lib")))
+               #t))
+           (add-after 'unpack 'patch-library-reference
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "persist/persistance.scm"
+                   (("\"libguile-persist\"")
+                    (format #f "\"~a/lib/guile/2.2/extensions/libguile-persist\"" out)))
+                 #t))))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://gitlab.com/tampe/guile-persist")
+      (synopsis "Persistance programming framework for Guile")
+      (description
+       "This is a serialization library for serializing objects like classes
+and objects, closures and structs.  This currently does not support
+serializing continuations or delimited continuations.")
+      (license license:lgpl2.0+))))
