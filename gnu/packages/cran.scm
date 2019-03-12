@@ -11023,3 +11023,28 @@ solving large scale eigenvalue/vector problems.  The current version of
 rARPACK simply imports and exports the functions provided by RSpectra.  New
 users of rARPACK are advised to switch to the RSpectra package.")
     (license license:bsd-3)))
+
+(define-public r-compositions
+  (package
+    (name "r-compositions")
+    (version "1.40-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "compositions" version))
+       (sha256
+        (base32
+         "12mp05yi7jkdqg9iwh6bc9sx6sdxagcnrirznxy9hq8502p7238i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayesm" ,r-bayesm)
+       ("r-energy" ,r-energy)
+       ("r-robustbase" ,r-robustbase)
+       ("r-tensora" ,r-tensora)))
+    (home-page "http://www.stat.boogaart.de/compositions")
+    (synopsis "Compositional data analysis")
+    (description
+     "This package provides functions for the consistent analysis of
+compositional data (e.g. portions of substances) and positive
+numbers (e.g. concentrations).")
+    (license license:gpl2+)))
