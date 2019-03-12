@@ -11176,6 +11176,29 @@ systems.")
 filters, highlighting of regexp group levels, and more.")
       (license license:gpl2+))))
 
+(define-public emacs-eshell-bookmark
+  (package
+    (name "emacs-eshell-bookmark")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fuco1/eshell-bookmark")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14dmsnixf9vqdhsixw693sml0fn80zcf0b37z049fb40cmppqxdw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fuco1/eshell-bookmark")
+    (synopsis "Provide @file{bookmark.el} integration for @code{eshell}")
+    (description
+     "This package allows for bookmarking @code{eshell} buffers.  Upon
+visiting the bookmark, a new @code{eshell} session will be opened in the
+appropriate directory if no @code{eshell} session is active.")
+    (license license:gpl3+)))
+
 (define-public emacs-esh-autosuggest
   (package
     (name "emacs-esh-autosuggest")
