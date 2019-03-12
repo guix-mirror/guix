@@ -605,14 +605,15 @@ using Guile's foreign function interface.")
   (package
     (name "guile-colorized")
     (version "0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/NalaGinrut/guile-colorized/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "16xhc3an6aglnca8xl3mvgi8hsqzqn68vsl5ga4bz8bvbap5fn4p"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NalaGinrut/guile-colorized.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10mv8c63159r3qvwwdvsgnsvdg7nc2ghak85zapwqpv4ywrqp9zc"))))
     (build-system guile-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
