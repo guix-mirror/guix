@@ -33,6 +33,9 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
+
+;;; Annotations
+
 (define-public r-bsgenome-celegans-ucsc-ce6
   (package
     (name "r-bsgenome-celegans-ucsc-ce6")
@@ -647,6 +650,44 @@ based on the knownGene track.")
     (license license:artistic2.0)))
 
 
+;;; Experiment data
+
+(define-public r-hsmmsinglecell
+  (package
+    (name "r-hsmmsinglecell")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/experiment/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "HSMMSingleCell_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vxnr8gr6md85g39csy7g2sqqajiqgyvznys2qa9yixd2b01yph9"))))
+    (properties
+     `((upstream-name . "HSMMSingleCell")))
+    (build-system r-build-system)
+    (home-page "https://www.bioconductor.org/packages/HSMMSingleCell/")
+    (synopsis "Single-cell RNA-Seq for differentiating human skeletal muscle myoblasts (HSMM)")
+    (description
+     "Skeletal myoblasts undergo a well-characterized sequence of
+morphological and transcriptional changes during differentiation.  In this
+experiment, primary @dfn{human skeletal muscle myoblasts} (HSMM) were expanded
+under high mitogen conditions (GM) and then differentiated by switching to
+low-mitogen media (DM).  RNA-Seq libraries were sequenced from each of several
+hundred cells taken over a time-course of serum-induced differentiation.
+Between 49 and 77 cells were captured at each of four time points (0, 24, 48,
+72 hours) following serum switch using the Fluidigm C1 microfluidic system.
+RNA from each cell was isolated and used to construct mRNA-Seq libraries,
+which were then sequenced to a depth of ~4 million reads per library,
+resulting in a complete gene expression profile for each cell.")
+    (license license:artistic2.0)))
+
+
+;;; Packages
+
 (define-public r-biocgenerics
   (package
     (name "r-biocgenerics")
