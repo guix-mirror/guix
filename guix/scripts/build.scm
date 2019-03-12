@@ -275,6 +275,19 @@ current 'gnutls' package, after which version 3.5.4 is grafted onto them."
 (define %not-equal
   (char-set-complement (char-set #\=)))
 
+(define (package-git-url package)
+  "Return the URL of the Git repository for package, or raise an error if
+the source of PACKAGE is not fetched from a Git repository."
+  (let ((source (package-source package)))
+    (cond ((and (origin? source)
+                (git-reference? (origin-uri source)))
+           (git-reference-url (origin-uri source)))
+          ((git-checkout? source)
+           (git-checkout-url source))
+          (else
+           (leave (G_ "the source of ~a is not a Git reference~%")
+                  (package-full-name package))))))
+
 (define (evaluate-git-replacement-specs specs proc)
   "Parse SPECS, a list of strings like \"guile=stable-2.2\", and return a list
 of package pairs, where (PROC PACKAGE URL BRANCH-OR-COMMIT) returns the
@@ -285,15 +298,7 @@ syntax, or if a package it refers to could not be found."
            ((name branch-or-commit)
             (let* ((old    (specification->package name))
                    (source (package-source old))
-                   (url    (cond ((and (origin? source)
-                                       (git-reference? (origin-uri source)))
-                                  (git-reference-url (origin-uri source)))
-                                 ((git-checkout? source)
-                                  (git-checkout-url source))
-                                 (else
-                                  (leave (G_ "the source of ~a is not a Git \
-reference~%")
-                                         (package-full-name old))))))
+                   (url    (package-git-url old)))
               (cons old (proc old url branch-or-commit))))
            (x
             (leave (G_ "invalid replacement specification: ~s~%") spec))))
