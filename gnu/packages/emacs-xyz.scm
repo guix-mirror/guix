@@ -4957,7 +4957,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.0")
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4966,7 +4966,7 @@ ack, ag, helm and pt.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k2r0ccppaqfjvyszaxa16vf7g2qzj1clhfr6v646ncsy17laciw"))))
+                "0ymykcsbcgq2kskqc0ddigg0kfznxx3j02mkd5r3c3n8gn3kgz84"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
