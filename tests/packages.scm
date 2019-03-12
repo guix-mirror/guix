@@ -981,6 +981,57 @@
                    ((("x" dep))
                     (eq? dep findutils)))))))))
 
+(test-assert "package-input-rewriting/spec"
+  (let* ((dep     (dummy-package "chbouib"
+                    (native-inputs `(("x" ,grep)))))
+         (p0      (dummy-package "example"
+                    (inputs `(("foo" ,coreutils)
+                              ("bar" ,grep)
+                              ("baz" ,dep)))))
+         (rewrite (package-input-rewriting/spec
+                   `(("coreutils" . ,(const sed))
+                     ("grep" . ,(const findutils)))))
+         (p1      (rewrite p0))
+         (p2      (rewrite p0)))
+    (and (not (eq? p1 p0))
+         (eq? p1 p2)                              ;memoization
+         (string=? "example" (package-name p1))
+         (match (package-inputs p1)
+           ((("foo" dep1) ("bar" dep2) ("baz" dep3))
+            (and (string=? (package-full-name dep1)
+                           (package-full-name sed))
+                 (string=? (package-full-name dep2)
+                           (package-full-name findutils))
+                 (string=? (package-name dep3) "chbouib")
+                 (eq? dep3 (rewrite dep))         ;memoization
+                 (match (package-native-inputs dep3)
+                   ((("x" dep))
+                    (string=? (package-full-name dep)
+                              (package-full-name findutils))))))))))
+
+(test-assert "package-input-rewriting/spec, partial match"
+  (let* ((dep     (dummy-package "chbouib"
+                    (version "1")
+                    (native-inputs `(("x" ,grep)))))
+         (p0      (dummy-package "example"
+                    (inputs `(("foo" ,coreutils)
+                              ("bar" ,dep)))))
+         (rewrite (package-input-rewriting/spec
+                   `(("chbouib@123" . ,(const sed)) ;not matched
+                     ("grep" . ,(const findutils)))))
+         (p1      (rewrite p0)))
+    (and (not (eq? p1 p0))
+         (string=? "example" (package-name p1))
+         (match (package-inputs p1)
+           ((("foo" dep1) ("bar" dep2))
+            (and (string=? (package-full-name dep1)
+                           (package-full-name coreutils))
+                 (eq? dep2 (rewrite dep))         ;memoization
+                 (match (package-native-inputs dep2)
+                   ((("x" dep))
+                    (string=? (package-full-name dep)
+                              (package-full-name findutils))))))))))
+
 (test-equal "package-patched-vulnerabilities"
   '(("CVE-2015-1234")
     ("CVE-2016-1234" "CVE-2018-4567")

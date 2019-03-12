@@ -5241,6 +5241,29 @@ with @var{libressl}.  Then we use it to define a @dfn{variant} of the
 This is exactly what the @option{--with-input} command-line option does
 (@pxref{Package Transformation Options, @option{--with-input}}).
 
+The following variant of @code{package-input-rewriting} can match packages to
+be replaced by name rather than by identity.
+
+@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements}
+Return a procedure that, given a package, applies the given @var{replacements} to
+all the package graph (excluding implicit inputs).  @var{replacements} is a list of
+spec/procedures pair; each spec is a package specification such as @code{"gcc"} or
+@code{"guile@@2"}, and each procedure takes a matching package and returns a
+replacement for that package.
+@end deffn
+
+The example above could be rewritten this way:
+
+@example
+(define libressl-instead-of-openssl
+  ;; Replace all the packages called "openssl" with LibreSSL.
+  (package-input-rewriting/spec `(("openssl" . ,(const libressl)))))
+@end example
+
+The key difference here is that, this time, packages are matched by spec and
+not by identity.  In other words, any package in the graph that is called
+@code{openssl} will be replaced.
+
 A more generic procedure to rewrite a package dependency graph is
 @code{package-mapping}: it supports arbitrary changes to nodes in the
 graph.
