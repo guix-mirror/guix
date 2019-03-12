@@ -10941,3 +10941,38 @@ several common set, element and attribute related tasks.")
      "This package provides a collection of some tests commonly used for
 identifying outliers.")
     (license license:gpl2+)))
+
+(define-public r-bayesm
+  (package
+    (name "r-bayesm")
+    (version "3.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bayesm" version))
+       (sha256
+        (base32
+         "0y30cza92s6kgvmxjpr6f5g0qbcck7hslqp89ncprarhxiym2m28"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "http://www.perossi.org/home/bsm-1")
+    (synopsis "Bayesian inference for marketing/micro-econometrics")
+    (description
+     "This package covers many important models used in marketing and
+micro-econometrics applications, including Bayes Regression (univariate or
+multivariate dep var), Bayes Seemingly Unrelated Regression (SUR), Binary and
+Ordinal Probit, Multinomial Logit (MNL) and Multinomial Probit (MNP),
+Multivariate Probit, Negative Binomial (Poisson) Regression, Multivariate
+Mixtures of Normals (including clustering), Dirichlet Process Prior Density
+Estimation with normal base, Hierarchical Linear Models with normal prior and
+covariates, Hierarchical Linear Models with a mixture of normals prior and
+covariates, Hierarchical Multinomial Logits with a mixture of normals prior
+and covariates, Hierarchical Multinomial Logits with a Dirichlet Process prior
+and covariates, Hierarchical Negative Binomial Regression Models, Bayesian
+analysis of choice-based conjoint data, Bayesian treatment of linear
+instrumental variables models, Analysis of Multivariate Ordinal survey data
+with scale usage heterogeneity, and Bayesian Analysis of Aggregate Random
+Coefficient Logit Models.")
+    (license license:gpl2+)))
