@@ -11260,3 +11260,31 @@ nested and non-nested models.  The package also includes functionality to
 obtain confidence intervals associated with AIC and BIC.")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-penalized
+  (package
+    (name "r-penalized")
+    (version "0.9-51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "penalized" version))
+       (sha256
+        (base32
+         "1zcrwa93mc27qj3g4ayc2k895r6g8q0g6qb2azmvj7wqk750va7a"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/penalized/")
+    (synopsis "Penalized estimation in GLMs and in the Cox model")
+    (description
+     "This package provides tools for fitting possibly high dimensional
+penalized regression models.  The penalty structure can be any combination of
+an L1 penalty (lasso and fused lasso), an L2 penalty (ridge) and a positivity
+constraint on the regression coefficients.  The supported regression models
+are linear, logistic and Poisson regression and the Cox Proportional Hazards
+model.  Cross-validation routines allow optimization of the tuning
+parameters.")
+    (license license:gpl2+)))
