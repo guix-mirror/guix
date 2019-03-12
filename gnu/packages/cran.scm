@@ -11122,3 +11122,27 @@ ranges 0 to infinity or 0 to 1, by using a @code{log} or a @code{logit}
 transformation, respectively.")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
+
+(define-public r-minpack-lm
+  (package
+    (name "r-minpack-lm")
+    (version "1.2-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "minpack.lm" version))
+       (sha256
+        (base32
+         "18ym2pdql5vzngc7q5gn66d153hrfrnd8ilv8yh6vd7j7sx7vjql"))))
+    (properties `((upstream-name . "minpack.lm")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/minpack.lm")
+    (synopsis "Levenberg-Marquardt Nonlinear Least-Squares algorithm")
+    (description
+     "The @code{nls.lm} function provides an R interface to @code{lmder} and
+@code{lmdif} from the MINPACK library, for solving nonlinear least-squares
+problems by a modification of the Levenberg-Marquardt algorithm, with support
+for lower and upper parameter bounds.  The implementation can be used via
+@rode{nls}-like calls using the @code{nlsLM} function.")
+    (license license:gpl3)))
