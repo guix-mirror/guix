@@ -10922,3 +10922,22 @@ diagrams for visualizing intersecting sets.  Create visualizations of
 intersecting sets using a novel matrix design, along with visualizations of
 several common set, element and attribute related tasks.")
     (license license:expat)))
+
+(define-public r-outliers
+  (package
+    (name "r-outliers")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "outliers" version))
+       (sha256
+        (base32
+         "0vcqfqmmv4yblyp3s6bd25r49pxb7hjzipiic5a82924nqfqzkmn"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/outliers/index.html")
+    (synopsis "Tests for outliers")
+    (description
+     "This package provides a collection of some tests commonly used for
+identifying outliers.")
+    (license license:gpl2+)))
