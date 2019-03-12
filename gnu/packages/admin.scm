@@ -114,13 +114,13 @@
   (package
     (name "aide")
     (version "0.16")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/aide/aide/"
-                                  version "/aide-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ibkv4z2gk14fn014kq13rp2ysiq6nn2cflv2q5i7zf466hm6758"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/aide/aide/releases/download/v"
+                           version "/aide-" version ".tar.gz"))
+       (sha256
+        (base32 "0ibkv4z2gk14fn014kq13rp2ysiq6nn2cflv2q5i7zf466hm6758"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -141,7 +141,7 @@ that it finds from its configuration files.  Once this database is initialized
 it can be used to verify the integrity of the files.  It has several message
 digest algorithms that are used to check the integrity of files.  All of the
 usual file attributes can be checked for inconsistencies.")
-    (home-page "http://aide.sourceforge.net/")
+    (home-page "https://aide.github.io/")
     (license license:gpl2+)))
 
 (define-public progress
