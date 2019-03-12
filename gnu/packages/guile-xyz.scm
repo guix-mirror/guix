@@ -609,7 +609,7 @@ using Guile's foreign function interface.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/NalaGinrut/guile-colorized.git")
+             (url "https://gitlab.com/NalaGinrut/guile-colorized.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -617,7 +617,7 @@ using Guile's foreign function interface.")
     (build-system guile-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
-    (home-page "https://github.com/NalaGinrut/guile-colorized")
+    (home-page "https://gitlab.com/NalaGinrut/guile-colorized")
     (synopsis "Colorized REPL for Guile")
     (description
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
