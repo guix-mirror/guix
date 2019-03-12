@@ -156,17 +156,17 @@ Filter) modules follow the convention of 1V / Octave.")
 (define-public aubio
   (package
     (name "aubio")
-    (version "0.4.6")
+    (version "0.4.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://aubio.org/pub/aubio-" version ".tar.bz2"))
              (sha256
               (base32
-               "1yvwskahx1bf3x2fvi6cwah1ay11iarh79fjlqz8s887y3hkpixx"))))
+               "1npks71ljc48w6858l9bq30kaf5nph8z0v61jkfb70xb9np850nl"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags
        (list
         (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out") "/lib")
