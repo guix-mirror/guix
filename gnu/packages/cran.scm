@@ -11070,3 +11070,28 @@ numbers (e.g. concentrations).")
      "This package provides qualitatively constrained (regression) smoothing
 splines via linear programming and sparse matrices.")
     (license license:gpl2+)))
+
+(define-public r-drimpute
+  (package
+    (name "r-drimpute")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DrImpute" version))
+       (sha256
+        (base32
+         "1adzarrwqb282pqgx2yqswp9rpwd1naxsmar54kddr6qyd6b923b"))))
+    (properties `((upstream-name . "DrImpute")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://github.com/ikwak2/DrImpute")
+    (synopsis "Imputing dropout events in single-cell RNA-Seq data")
+    (description
+     "This is an R package for imputing dropout events.  Many statistical
+methods in cell type identification, visualization and lineage reconstruction
+do not account for dropout events.  DrImpute can improve the performance of
+such software by imputing dropout events.")
+    (license license:gpl3)))
