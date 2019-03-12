@@ -391,20 +391,20 @@ rasterisation.")
          (base32
           "08yimlp6jir1rs5ajgdx74xa5qdzcqahpdzdk0rmkmhh7vdcrl3p"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
              ("armhf-linux"
-              '("--enable-exynos-experimental-api"
-                "--enable-omap-experimental-api"
-                "--enable-etnaviv-experimental-api"
-                "--enable-tegra-experimental-api"
-                "--enable-freedreno-kgsl"))
-             ("aarch64-linux"
-              '("--enable-tegra-experimental-api"
-                "--enable-etnaviv-experimental-api"
-                "--enable-freedreno-kgsl"))
+              '("-Dexynos-experimental-api=true"
+                "-Domap-experimental-api=true"
+                "-Detnaviv-experimental-api=true"
+                "-Dtegra-experimental-api=true"
+                "-Dfreedreno-kgsl=true"))
+             ("aarch64-linux=true"
+              '("-Dtegra-experimental-api=true"
+                "-Detnaviv-experimental-api=true"
+                "-Dfreedreno-kgsl=true"))
              (_ '())))))
     (inputs
      `(("libpciaccess" ,libpciaccess)))
