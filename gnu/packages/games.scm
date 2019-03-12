@@ -1403,14 +1403,14 @@ interface or via an external visual interface such as GNU XBoard.")
 (define freedink-engine
   (package
     (name "freedink-engine")
-    (version "109.4")
+    (version "109.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "0iaagwnyfgm3mqzkj550q60hrsjr13gykg5vfn2nz2ia520bb52g"))))
+                "00hhk1bjdrc1np2qz44sa5n1mb62qzwxbvsnws3vpms6iyn3a2sy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-embedded-resources")
