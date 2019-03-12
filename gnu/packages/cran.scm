@@ -11233,3 +11233,30 @@ probabilities from a standard bivariate normal CDF.")
 including confirmatory factor analysis, structural equation modeling and
 latent growth curve models.")
     (license license:gpl2+)))
+
+(define-public r-nonnest2
+  (package
+    (name "r-nonnest2")
+    (version "0.5-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nonnest2" version))
+       (sha256
+        (base32
+         "1bq44qqmm59j91m0sny4xnqmxqlga4cm48qdsw8xfs3x19xwmxk6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-compquadform" ,r-compquadform)
+       ("r-lavaan" ,r-lavaan)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-sandwich" ,r-sandwich)))
+    (home-page "https://cran.r-project.org/web/packages/nonnest2/")
+    (synopsis "Tests of non-nested models")
+    (description
+     "This package allows for testing of non-nested models.  It includes tests
+of model distinguishability and of model fit that can be applied to both
+nested and non-nested models.  The package also includes functionality to
+obtain confidence intervals associated with AIC and BIC.")
+    ;; Either version of the GPL.
+    (license (list license:gpl2 license:gpl3))))
