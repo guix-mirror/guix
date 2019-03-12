@@ -2070,6 +2070,7 @@ completion, a simple mode line, etc.")
                 (uri (git-reference
                       (url "https://gitlab.com/tampe/stis-parser")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0v4hvq7rlpbra1ni73lf8k6sdmjlflr50yi3p1f24g85h77pc7c0"))))
