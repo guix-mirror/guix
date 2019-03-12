@@ -3220,26 +3220,19 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.27.3")
+    (version "0.27.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
         (base32
-         "046ahvsb7a20sgvscqfm3cb32sp3sii4gim9vz7zzrkf7yz16xlv"))))
+         "15c1mhwwjc7nr8hn5gm21hcfhw61jmwb0vngpjhlm3y5565wg2pz"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     '(#:tests? #f; tests don't run correctly in our environment
+       #:phases
        (modify-phases %standard-phases
-         ;; Remove after the next update. See:
-         ;; https://github.com/libgit2/pygit2/pull/851
-         (add-after 'unpack 'compile-with-cffi
-           (lambda _
-             (substitute* "setup.py"
-               (("install_requires")
-                "setup_requires=['cffi'],\n      install_requires"))
-             #t))
          (add-after 'unpack 'fix-dependency-versioning
            (lambda _
              (substitute* "setup.py"
