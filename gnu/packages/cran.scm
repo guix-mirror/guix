@@ -11095,3 +11095,30 @@ methods in cell type identification, visualization and lineage reconstruction
 do not account for dropout events.  DrImpute can improve the performance of
 such software by imputing dropout events.")
     (license license:gpl3)))
+
+(define-public r-gamlss-dist
+  (package
+    (name "r-gamlss-dist")
+    (version "5.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gamlss.dist" version))
+       (sha256
+        (base32
+         "1cd0vl9klcb849i8xwyjm8ihb1da92631j1rxdbnflgffkzrkya4"))))
+    (properties `((upstream-name . "gamlss.dist")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page "http://www.gamlss.org/")
+    (synopsis "Distributions for Generalized Additive Models for location scale and shape")
+    (description
+     "This package provides a set of distributions which can be used for
+modelling the response variables in Generalized Additive Models for Location
+Scale and Shape.  The distributions can be continuous, discrete or mixed
+distributions.  Extra distributions can be created, by transforming, any
+continuous distribution defined on the real line, to a distribution defined on
+ranges 0 to infinity or 0 to 1, by using a @code{log} or a @code{logit}
+transformation, respectively.")
+    ;; Either version of the GPL.
+    (license (list license:gpl2 license:gpl3))))
