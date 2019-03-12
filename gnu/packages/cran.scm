@@ -10895,3 +10895,30 @@ blockmodeling for valued networks.  In addition, measures of similarity or
 dissimilarity based on structural equivalence and regular equivalence (REGE
 algorithms) can be computed and partitioned matrices can be plotted.")
     (license license:gpl2+)))
+
+(define-public r-upsetr
+  (package
+    (name "r-upsetr")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "UpSetR" version))
+       (sha256
+        (base32
+         "08vj7l92b8fpqyqwxshll2mhk3yhgyr74axvr2lf29z78bapymhz"))))
+    (properties `((upstream-name . "UpSetR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-plyr" ,r-plyr)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/hms-dbmi/UpSetR")
+    (synopsis "Visualize intersecting sets")
+    (description
+     "This package provides a more scalable alternative to Venn and Euler
+diagrams for visualizing intersecting sets.  Create visualizations of
+intersecting sets using a novel matrix design, along with visualizations of
+several common set, element and attribute related tasks.")
+    (license license:expat)))
