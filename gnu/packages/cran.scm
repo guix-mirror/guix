@@ -11048,3 +11048,25 @@ users of rARPACK are advised to switch to the RSpectra package.")
 compositional data (e.g. portions of substances) and positive
 numbers (e.g. concentrations).")
     (license license:gpl2+)))
+
+(define-public r-cobs
+  (package
+    (name "r-cobs")
+    (version "1.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "cobs" version))
+       (sha256
+        (base32
+         "1pqvz7czcchri4x79g78hbwyagb3bqzdqb047zkbdinyz067c7kb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-quantreg" ,r-quantreg)
+       ("r-sparsem" ,r-sparsem)))
+    (home-page "https://cran.r-project.org/web/packages/cobs")
+    (synopsis "Constrained B-Splines (sparse matrix based)")
+    (description
+     "This package provides qualitatively constrained (regression) smoothing
+splines via linear programming and sparse matrices.")
+    (license license:gpl2+)))
