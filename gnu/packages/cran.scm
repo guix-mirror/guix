@@ -11188,3 +11188,23 @@ them (Anscombe-Glynn, D'Agostino, Bonett-Seier).")
      "This is an R package for dimension reduction based on finite Gaussian
 mixture modeling of inverse regression.")
     (license license:gpl2+)))
+
+(define-public r-pbivnorm
+  (package
+    (name "r-pbivnorm")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pbivnorm" version))
+       (sha256
+        (base32
+         "05jzrjqxzbcf6z245hlk7sjxiszv9paadaaimvcx5y5qgi87vhq7"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/brentonk/pbivnorm")
+    (synopsis "Vectorized bivariate normal CDF")
+    (description
+     "This package provides a vectorized R function for calculating
+probabilities from a standard bivariate normal CDF.")
+    (license license:gpl2+)))
