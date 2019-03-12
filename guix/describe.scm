@@ -86,7 +86,7 @@ when applicable."
                        (string-append (manifest-entry-item entry)
                                       "/lib/guile/" (effective-version)
                                       "/site-ccache")))
-               (current-profile-entries))))
+               (current-channel-entries))))
 
 (define (package-provenance package)
   "Return the provenance of PACKAGE as an sexp for use as the 'provenance'
