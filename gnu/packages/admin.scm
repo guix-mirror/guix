@@ -2706,6 +2706,7 @@ Python loading in HPC environments.")
          (uri (git-reference
                (url "https://github.com/smxi/inxi")
                (commit version)))
+         (file-name (git-file-name real-name version))
          (sha256
           (base32 "1br392s3xc2nwqmfx4nwb3i97wjwasvkq8ayr8jq72mi5qzsgizn"))))
       (build-system trivial-build-system)
