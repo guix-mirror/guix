@@ -2017,14 +2017,13 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-freezegun
   (package
     (name "python-freezegun")
-    (version "0.3.10")
+    (version "0.3.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "freezegun" version))
        (sha256
-        (base32
-         "08m6b42yxb9hk5lv747v9n2qsxyadmkb0k6yg0gxdanwap0slg3h"))))
+        (base32 "1nh0fzqjwg88n57k3qa8mxnmiwrr7lqyd5xvc96qn5g8zcxv8fg8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
