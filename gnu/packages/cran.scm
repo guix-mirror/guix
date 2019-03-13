@@ -11663,3 +11663,28 @@ network.")
     (description
      "This package provides various R programming tools for model fitting.")
     (license license:gpl2)))
+
+(define-public r-apcluster
+  (package
+    (name "r-apcluster")
+    (version "1.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "apcluster" version))
+       (sha256
+        (base32
+         "188hdfmwjjx3aic599nwmkzjqm9j9jighi5bly6qd43c1vj6ih2s"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/apcluster/")
+    (synopsis "Affinity propagation clustering")
+    (description
+     "This package implements affinity propagation clustering introduced by
+Frey and Dueck (2007).  The package further provides leveraged affinity
+propagation and an algorithm for exemplar-based agglomerative clustering that
+can also be used to join clusters obtained from affinity propagation.  Various
+plotting functions are available for analyzing clustering results.")
+    (license license:gpl2+)))
