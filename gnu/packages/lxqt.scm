@@ -304,14 +304,14 @@ LXQt and the system it's running on.")
 (define-public lxqt-admin
   (package
     (name "lxqt-admin")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0qvpv668ja83ydbdrlal1596xhag3xlkbd6qlh9xwdpb7nysvns1"))))
+        (base32 "0f0skkxqyhpidpd5phliax869v4n2whvglg8rahzia2zhw4ylzry"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -325,9 +325,6 @@ LXQt and the system it's running on.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -335,6 +332,14 @@ LXQt and the system it's running on.")
              (substitute* "lxqt-admin-user/CMakeLists.txt"
                (("DESTINATION \"\\$\\{POLKITQT-1_POLICY_FILES_INSTALL_DIR\\}")
                 "DESTINATION \"share/polkit-1/actions"))
+             #t))
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("lxqt-admin-time/CMakeLists.txt"
+                            "lxqt-admin-user/CMakeLists.txt")
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
              #t)))))
     (home-page "https://lxqt.org")
     (synopsis "LXQt system administration tool")
