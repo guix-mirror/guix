@@ -14209,3 +14209,34 @@ short read sequences, removes errors then produces high quality unique
 contigs.  It then uses paired read information, if available, to retrieve the
 repeated areas between contigs.")
     (license license:gpl2+)))
+
+(define-public python-velocyto
+  (package
+    (name "python-velocyto")
+    (version "0.17.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "velocyto" version))
+       (sha256
+        (base32
+         "0fgygyzqgrq32dv6a00biq1p1cwi6kbl5iqblxq1kklj6b2mzmhs"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-cython" ,python-cython)
+       ("python-h5py" ,python-h5py)
+       ("python-loompy" ,python-loompy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numba" ,python-numba)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/velocyto-team/velocyto.py")
+    (synopsis "RNA velocity analysis for single cell RNA-seq data")
+    (description
+     "Velocyto is a library for the analysis of RNA velocity.  Velocyto
+includes a command line tool and an analysis pipeline.")
+    (license license:bsd-2)))
