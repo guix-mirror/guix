@@ -921,20 +921,17 @@ for LXQt.")
 (define-public libfm-qt
   (package
     (name "libfm-qt")
-    (version "0.13.1")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0p0lbz7dh5c38zq3yp1v1mm99ymg7mqr3h7yzniif2hipmgvxsv9"))))
+        (base32 "06p3wqpc574v9f94wkq9hqmbbvb9q8phfpq301z55c5r939f4hrp"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO : prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+     '(#:tests? #f))                    ; no tests
     (inputs
      `(("glib" ,glib)
        ("libexif" ,libexif)
