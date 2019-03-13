@@ -2132,7 +2132,9 @@ chunks can be expressions as well as simple tokens.")
                  (("/usr/local/include/guile")
                   (string-append (assoc-ref inputs "guile") "/include/guile"))
                  (("-L/usr/local/lib")
-                  (string-append "-L" (assoc-ref inputs "guile") "/lib")))
+                  (string-append "-L" (assoc-ref inputs "guile") "/lib"))
+                 ;; Use canonical directory for go files.
+                 (("/ccache") "/site-ccache"))
                #t))
            (add-after 'unpack 'patch-library-reference
              (lambda* (#:key outputs #:allow-other-keys)
