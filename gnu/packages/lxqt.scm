@@ -157,7 +157,7 @@ itself as well as other components maintained by the LXQt project.")
 (define-public libqtxdg
   (package
     (name "libqtxdg")
-    (version "3.2.0")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
@@ -165,7 +165,7 @@ itself as well as other components maintained by the LXQt project.")
              "https://github.com/lxqt/libqtxdg/releases/download/"
              version "/libqtxdg-" version ".tar.xz"))
        (sha256
-        (base32 "0lq548pa69hfvnbj2ypba5ygm8n6v6g7bqqm8p5g538l1l3394cl"))))
+        (base32 "1mnnq8vbf5xjlrzajzfkay0yzzxri0zz0xi8x8rmxpw38xmglq8h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -182,6 +182,8 @@ itself as well as other components maintained by the LXQt project.")
      ;; required by Qt5XdgIconLoader.pc
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("lxqt-build-tools" ,lxqt-build-tools)))
     (home-page "https://github.com/lxqt/libqtxdg")
     (synopsis "Qt implementation of freedesktop.org xdg specifications")
     (description "Libqtxdg implements the freedesktop.org xdg specifications
