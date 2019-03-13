@@ -1995,14 +1995,13 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-nose-timer
   (package
     (name "python-nose-timer")
-    (version "0.7.3")
+    (version "0.7.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "nose-timer" version))
         (sha256
-          (base32
-            "0hfz5aqnhf493i9kyb6prm4zm8vx7wmfsyg3nvsnh24lzh2kwx44"))))
+          (base32 "04inck7l1sgkjbiinhifxk45wk2b3czbwh1x2a390hi183fq1q12"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-nose" ,python-nose)
