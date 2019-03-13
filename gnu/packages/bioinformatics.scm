@@ -1752,6 +1752,72 @@ high-throughput sequencing data – with an emphasis on simplicity.")
 (define-public python2-plastid
   (package-with-python2 python-plastid))
 
+(define-public tetoolkit
+  (package
+    (name "tetoolkit")
+    (version "2.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mhammell-laboratory/tetoolkit.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yzi0kfpzip8zpjb82x1ik6h22yzfyjiz2dv85v6as2awwqvk807"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2               ; not guaranteed to work with Python 3
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
+         (add-after 'unpack 'patch-invocations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("bin/TEtranscripts"
+                            "bin/TEcount")
+               (("'sort ")
+                (string-append "'" (which "sort") " "))
+               (("'rm -f ")
+                (string-append "'" (which "rm") " -f "))
+               (("'Rscript'") (string-append "'" (which "Rscript") "'")))
+             (substitute* "TEToolkit/IO/ReadInputs.py"
+               (("BamToBED") (which "bamToBed")))
+             (substitute* "TEToolkit/Normalization.py"
+               (("\"Rscript\"")
+                (string-append "\"" (which "Rscript") "\"")))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure the executables find R packages.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (script)
+                  (wrap-program (string-append out "/bin/" script)
+                    `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))))
+                '("TEtranscripts"
+                  "TEcount")))
+             #t)))))
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("bedtools" ,bedtools)
+       ("python-argparse" ,python2-argparse)
+       ("python-pysam" ,python2-pysam)
+       ("r-minimal" ,r-minimal)
+       ("r-deseq2" ,r-deseq2)))
+    (home-page "https://github.com/mhammell-laboratory/tetoolkit")
+    (synopsis "Transposable elements in differential enrichment analysis")
+    (description
+     "This is package for including transposable elements in differential
+enrichment analysis of sequencing datasets.  TEtranscripts and TEcount take
+RNA-seq (and similar data) and annotates reads to both genes and transposable
+elements.  TEtranscripts then performs differential analysis using DESeq2.
+Note that TEtranscripts and TEcount rely on specially curated GTF files, which
+are not included due to their size.")
+    (license license:gpl3+)))
+
 (define-public cd-hit
   (package
     (name "cd-hit")
