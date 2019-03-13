@@ -2248,29 +2248,24 @@ and lookup requests.  Browse requests are not supported yet.")
       (license license:unlicense))))
 
 (define-public go-github-com-gogo-protobuf
-  (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
-        (revision "2"))
-    (package
-      (name "go-github-com-gogo-protobuf")
-      (version (git-version "0.5" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0hxq28sgxym04rv0q40gpwkh4ni359q21hq3g78wwxwx4qfd4zwm"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/proto"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (propagated-inputs
-       `(("go-github-com-gogo-protobuf-protoc-gen-gogo"
-          ,go-github-com-gogo-protobuf-protoc-gen-gogo)))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
+  (package
+    (name "go-github-com-gogo-protobuf")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gogo/protobuf")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/gogo/protobuf/proto"
+       #:unpack-path "github.com/gogo/protobuf"))
+    (synopsis "Protocol Buffers for Go with Gadgets")
+    (description "Gogoprotobuf is a fork of golang/protobuf with extra code
 generation features.  This code generation is used to achieve:
 @itemize
 @item fast marshalling and unmarshalling
@@ -2280,30 +2275,29 @@ generation features.  This code generation is used to achieve:
 @item peace of mind by optionally generating test and benchmark code
 @item other serialization formats
 @end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license license:bsd-3))))
+    (home-page "https://github.com/gogo/protobuf")
+    (license license:bsd-3)))
 
 (define-public go-github-com-gogo-protobuf-protoc-gen-gogo
-  (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
-        (revision "0"))
-    (package
-      (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
-      (version (git-version "0.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "09kfa3aqmhh7p0rc6wd4fw5cjccidsk9vgcy13albv0g8vnbmmgw"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
+  (package
+    (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gogo/protobuf")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
+       #:unpack-path "github.com/gogo/protobuf"
+       #:tests? #f)) ; Requires the unpackaged 'protoc-min-version'
+    (synopsis "Protocol Buffers for Go with Gadgets")
+    (description "Gogoprotobuf is a fork of golang/protobuf with extra code
 generation features.  This code generation is used to achieve:
 @itemize
 @item fast marshalling and unmarshalling
@@ -2313,8 +2307,8 @@ generation features.  This code generation is used to achieve:
 @item peace of mind by optionally generating test and benchmark code
 @item other serialization formats
 @end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license license:bsd-3))))
+    (home-page "https://github.com/gogo/protobuf")
+    (license license:bsd-3)))
 
 (define-public go-github-com-gogo-protobuf-gogoproto
   (package
@@ -2341,31 +2335,28 @@ implementation.")
     (license license:bsd-3)))
 
 (define-public go-github-com-gogo-protobuf-proto
-  (let ((commit
-          "fd322a3c49630fe6d05737e2b7d9426e6680e28d")
-        (revision "0"))
-    (package
-      (name "go-github-com-gogo-protobuf-proto")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/gogo/protobuf.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-            (base32
-              "1zi85584dy91hyrwpanygz1pppi0chn3hzzv128i83i6j45a5fp9"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:unpack-path "github.com/gogo/protobuf"
-         #:import-path "github.com/gogo/protobuf/proto"))
-      (native-inputs `())
-      (home-page "https://github.com/gogo/protobuf")
-      (synopsis "XXX")
-      (description "XXX")
-      (license license:expat))))
+  (package
+    (name "go-github-com-gogo-protobuf-proto")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/gogo/protobuf.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/gogo/protobuf"
+       #:import-path "github.com/gogo/protobuf/proto"))
+    (home-page "https://github.com/gogo/protobuf")
+    (synopsis "Protocol buffers component")
+    (description "This is a component of the Gogo protocol buffers
+implementation.")
+    (license license:bsd-3)))
 
 (define-public go-github-com-libp2p-go-flow-metrics
   (let ((commit "7e5a55af485341567f98d6847a373eb5ddcdcd43")
