@@ -1028,14 +1028,14 @@ manager Compton.")
 (define-public lximage-qt
   (package
     (name "lximage-qt")
-    (version "0.7.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1mwjh6lrjayr9snsmabkl5qs4xm6d27mfz8k3jxfm5dk3pjj1b0w"))))
+        (base32 "0iiq55rm4z2jp19q1pbd2whifwvxg052q324vrwp4p7nz0wh04za"))))
     (build-system cmake-build-system)
     (inputs
      `(("libexif" ,libexif)
@@ -1048,10 +1048,7 @@ manager Compton.")
        ("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+     '(#:tests? #f))                    ; no tests
     (home-page "https://lxqt.org/")
     (synopsis "The image viewer and screenshot tool for lxqt")
     (description "LXImage-Qt is the Qt port of LXImage, a simple and fast
