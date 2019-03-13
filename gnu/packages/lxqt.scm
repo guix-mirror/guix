@@ -703,14 +703,14 @@ when laptop batteries are low on power.")
 (define-public lxqt-qtplugin
   (package
     (name "lxqt-qtplugin")
-    (version "0.13.0")
+    (version "0.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0nnwbc99njpsyqb0cy3x0srcgwa7qrnq0qwcyx7fbvwsq1l8cz56"))))
+        (base32 "18y7xfxwyismcycg70q6r8zrcygz1pdcvg6lqc6ba7azqb9806ds"))))
     (build-system cmake-build-system)
     (inputs
      `(("libdbusmenu-qt" ,libdbusmenu-qt)
