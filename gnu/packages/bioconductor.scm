@@ -2175,3 +2175,28 @@ the bridge between GEO and BioConductor.")
      "This package provides tools for parsing Illumina's microarray output
 files, including IDAT.")
     (license license:gpl2)))
+
+(define-public r-siggenes
+  (package
+    (name "r-siggenes")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "siggenes" version))
+       (sha256
+        (base32
+         "0cjlb5r04x15xkhk00i3wvpx21kj0k29pn0mj3whwqk31zznnk1b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-multtest" ,r-multtest)))
+    (home-page "https://bioconductor.org/packages/siggenes/")
+    (synopsis
+     "Multiple testing using SAM and Efron's empirical Bayes approaches")
+    (description
+     "This package provides tools for the identification of differentially
+expressed genes and estimation of the @dfn{False Discovery Rate} (FDR) using
+both the Significance Analysis of Microarrays (SAM) and the @dfn{Empirical
+Bayes Analyses of Microarrays} (EBAM).")
+    (license license:lgpl2.0+)))
