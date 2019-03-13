@@ -658,11 +658,14 @@ generation.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
 
-(define-public go-github-com-chmduquesne-rollinghash-adler32
+;; XXX Syncthing actually imports 'github.com/chmduquesne/rollinghash/adler32'.
+;; Normally we'd package this module indpendenctly but the adler32 module itself
+;; imports 'github.com/chmduquesne/rollinghash/', so this is the easy way out.
+(define-public go-github-com-chmduquesne-rollinghash
   (let ((commit "a60f8e7142b536ea61bb5d84014171189eeaaa81")
         (revision "0"))
     (package
-      (name "go-github-com-chmduquesne-rollinghash-adler32")
+      (name "go-github-com-chmduquesne-rollinghash")
       (version (git-version "4.0.0" revision commit))
       (source
         (origin
@@ -676,11 +679,10 @@ generation.")
             "0fpaqq4zb0wikgbhn7vwqqj1h865f5xy195vkhivsp922p7qwsjr"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/chmduquesne/rollinghash/adler32"
-         #:unpack-path "github.com/chmduquesne/rollinghash"))
-      (synopsis "Adler-32 rolling hash in Go")
-      (description "This package provides a Go implementation of the Adler-32
-rolling hash.")
+       '(#:import-path "github.com/chmduquesne/rollinghash/"))
+      (synopsis "Rolling hashes in Go")
+      (description "This package provides a Go implementation of several rolling
+hashes.")
       (home-page "https://github.com/chmduquesne/rollinghash")
       (license expat))))
 
