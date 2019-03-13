@@ -1789,3 +1789,27 @@ Distance Summary), which selects differentially expressed genes by integrating
 and summarizing a set of statistics using a weighted distance approach.")
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
+
+;; This is a CRAN package, but since it depends on a Bioconductor package we
+;; put it here.
+(define-public r-nbpseq
+  (package
+    (name "r-nbpseq")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NBPSeq" version))
+       (sha256
+        (base32
+         "0l4ylxhs2k9ww21jjqs67fygk92avdchhx2y1ixzl7yr2yh1y9by"))))
+    (properties `((upstream-name . "NBPSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-qvalue" ,r-qvalue)))
+    (home-page "https://cran.r-project.org/web/packages/NBPSeq")
+    (synopsis "Negative binomial models for RNA-Seq data")
+    (description
+     "This package provides negative binomial models for two-group comparisons
+and regression inferences from RNA-sequencing data.")
+    (license license:gpl2)))
