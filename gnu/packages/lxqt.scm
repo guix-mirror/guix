@@ -993,14 +993,14 @@ LXDE.")
 (define-public compton-conf
   (package
     (name "compton-conf")
-    (version "0.4.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0q3yx2a6wf8yahrwgvhmv9sd7gmrhid528vrqy04dg8m5cx1bjci"))))
+        (base32 "11n8k59jd0q2x66cispc9dpk139mp6j99hq1yjccxvh21vhc7mbc"))))
     (build-system cmake-build-system)
     (inputs
      `(("libconfig" ,libconfig)
@@ -1011,9 +1011,6 @@ LXDE.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
