@@ -1000,6 +1000,31 @@ Prometheus metrics.")
       (home-page "https://github.com/prometheus/common")
       (license asl2.0))))
 
+(define-public go-github-com-prometheus-common-model
+  (let ((commit "2e54d0b93cba2fd133edc32211dcc32c06ef72ca")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-common-model")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/common.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "14kn5w7imcxxlfdqxl21fsnlf1ms7200g3ldy29hwamldv8qlm7j"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/common/model"
+         #:unpack-path "github.com/prometheus/common"))
+      (synopsis "Prometheus component")
+      (description "This package provides a component of the Go Prometheus
+implementation.")
+      (home-page "https://github.com/prometheus/common")
+      (license asl2.0))))
+
 (define-public go-github-com-prometheus-procfs
   (let ((commit "b15cd069a83443be3154b719d0cc9fe8117f09fb")
         (revision "0"))
