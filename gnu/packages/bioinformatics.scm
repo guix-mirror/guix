@@ -40,6 +40,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -476,6 +477,62 @@ BED, GFF/GTF, VCF.")
               (sha256
                (base32
                 "0jhavwifnf7lmkb11h9y7dynr8d699h0rd2l52j1pfgircr2zwv5"))))))
+
+(define-public pbbam
+  (package
+    (name "pbbam")
+    (version "0.23.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PacificBiosciences/pbbam.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h9gkrpf2lrxklxp72xfl5bi3h5zcm5hprrya9gf0hr3xwlbpp0x"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; It doesn't find gtest_main because there's no pkg-config file
+             ;; for it.  Find it another way.
+             (substitute* "tests/meson.build"
+               (("pbbam_gtest_dep = dependency\\('gtest_main'.*")
+                (format #f "cpp = meson.get_compiler('cpp')
+pbbam_gtest_dep = cpp.find_library('gtest_main', dirs : '~a')\n"
+                        (assoc-ref inputs "googletest"))))
+             #t)))
+       ;; TODO: tests/pbbam_test cannot be linked
+       ;; ld: tests/59830eb@@pbbam_test@exe/src_test_Accuracy.cpp.o:
+       ;;   undefined reference to symbol '_ZTIN7testing4TestE'
+       ;; ld: /gnu/store/...-googletest-1.8.0/lib/libgtest.so:
+       ;;   error adding symbols: DSO missing from command line
+       #:tests? #f
+       #:configure-flags '("-Dtests=false")))
+    ;; These libraries are listed as "Required" in the pkg-config file.
+    (propagated-inputs
+     `(("htslib" ,htslib)
+       ("zlib" ,zlib)))
+    (inputs
+     `(("boost" ,boost)
+       ("samtools" ,samtools)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper))) ; for tests
+    (home-page "https://github.com/PacificBiosciences/pbbam")
+    (synopsis "Work with PacBio BAM files")
+    (description
+     "The pbbam software package provides components to create, query, and
+edit PacBio BAM files and associated indices.  These components include a core
+C++ library, bindings for additional languages, and command-line utilities.
+This library is not intended to be used as a general-purpose BAM utility - all
+input and output BAMs must adhere to the PacBio BAM format specification.
+Non-PacBio BAMs will cause exceptions to be thrown.")
+    (license license:bsd-3)))
 
 (define-public ribotaper
   (package
