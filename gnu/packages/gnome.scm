@@ -2561,7 +2561,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.64.2")
+    (version "2.66.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2569,38 +2569,23 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1il6lyrmfi0hfh3ysw8w1qzc1rdz0igkb7dv6d8g5mmilnac3pbm"))))
-    (build-system gnu-build-system)
+                "08c9kkdhzy504gv23pfdm4sq3dd3j20sikwz6gv0qrwcdjnw5bai"))))
+    (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:modules ((guix build utils)
-                  (guix build gnu-build-system)
+                  (guix build meson-build-system)
                   (ice-9 popen))
 
-       #:configure-flags
-       (list (string-append "--with-html-dir="
-                            (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html")
-             (string-append "--with-apache-module-dir="
-                            (assoc-ref %build-inputs "httpd")
-                            "/modules"))
+       #:configure-flags '("-Ddoc=true")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'disable-unconnected-socket-test
-           ;; This test fails due to missing /etc/nsswitch.conf
-           ;; in the build environment.
+         (add-after 'unpack 'adjust-tests
            (lambda _
+             ;; This test fails due to missing /etc/nsswitch.conf
+             ;; in the build environment.
              (substitute* "tests/socket-test.c"
                ((".*/sockets/unconnected.*") ""))
-             #t))
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; The 'check-local' target runs 'env LANG=C sort -u',
-             ;; unset 'LC_ALL' to make 'LANG' working.
-             (unsetenv "LC_ALL")
-             ;; HTTPD in Guix uses mod_event and does not build prefork.
-             (substitute* "tests/httpd.conf"
-               (("^LoadModule mpm_prefork_module.*$") "\n"))
 
              ;; Generate a self-signed certificate that has "localhost" as its
              ;; 'dnsName'.  Failing to do that, and starting with GnuTLS
@@ -2646,16 +2631,19 @@ libxml to ease remote use of the RESTful API.")
                            ))
                (close-pipe pipe))
              #t))
-         (replace 'install
-           (lambda _
-             (invoke "make"
-                     ;; Install vala bindings into $out.
-                     (string-append "vapidir=" %output
-                                    "/share/vala/vapi")
-                     "install"))))))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (copy-recursively (string-append out "/share/gtk-doc")
+                                 (string-append doc "/share/gtk-doc"))
+               (delete-file-recursively (string-append out "/share/gtk-doc"))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")                   ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
@@ -2668,11 +2656,12 @@ libxml to ease remote use of the RESTful API.")
     (propagated-inputs
      ;; libsoup-2.4.pc refers to all these.
      `(("glib" ,glib)
-       ("libxml2" ,libxml2)))
+       ("libpsl" ,libpsl)
+       ("libxml2" ,libxml2)
+       ("sqlite" ,sqlite)))
     (inputs
      `(("glib-networking" ,glib-networking)
-       ("libpsl" ,libpsl)
-       ("sqlite" ,sqlite)))
+       ("mit-krb5" ,mit-krb5)))
     (home-page "https://live.gnome.org/LibSoup/")
     (synopsis "GLib-based HTTP Library")
     (description
