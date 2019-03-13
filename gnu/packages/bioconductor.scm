@@ -682,6 +682,32 @@ probes.  It contains the compiled HumanMethylation27 and HumanMethylation450
 annotations.")
     (license license:artistic2.0)))
 
+(define-public r-illuminahumanmethylationepicmanifest
+  (package
+    (name "r-illuminahumanmethylationepicmanifest")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "IlluminaHumanMethylationEPICmanifest_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0alhjda5g186z8b1nsmnpfswrlj7prdz8mkwx60wkkl6hkcnk6p3"))))
+    (properties
+     `((upstream-name . "IlluminaHumanMethylationEPICmanifest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-minfi" ,r-minfi)))
+    (home-page "https://bioconductor.org/packages/IlluminaHumanMethylationEPICmanifest/")
+    (synopsis "Manifest for Illumina's EPIC methylation arrays")
+    (description
+     "This is a manifest package for Illumina's EPIC methylation arrays.")
+    (license license:artistic2.0)))
+
 
 ;;; Experiment data
 
