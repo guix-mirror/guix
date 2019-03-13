@@ -2359,3 +2359,42 @@ HumanMethylation27 and HumanMethylation450 microarrays.  Normalization,
 background correction, and quality control features for GoldenGate, Infinium,
 and Infinium HD arrays are also included.")
     (license license:gpl2)))
+
+(define-public r-lumi
+  (package
+    (name "r-lumi")
+    (version "2.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "lumi" version))
+       (sha256
+        (base32
+         "1fpmjpgcy5n0hx9whn9m3jhjmciqq0l59nvy5addbq0a4wnjhx8q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-dbi" ,r-dbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-methylumi" ,r-methylumi)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nleqslv" ,r-nleqslv)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://bioconductor.org/packages/lumi")
+    (synopsis "BeadArray-specific methods for Illumina methylation and expression microarrays")
+    (description
+     "The lumi package provides an integrated solution for the Illumina
+microarray data analysis.  It includes functions of Illumina
+BeadStudio (GenomeStudio) data input, quality control, BeadArray-specific
+variance stabilization, normalization and gene annotation at the probe level.
+It also includes the functions of processing Illumina methylation microarrays,
+especially Illumina Infinium methylation microarrays.")
+    (license license:lgpl2.0+)))
