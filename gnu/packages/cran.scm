@@ -11144,7 +11144,7 @@ transformation, respectively.")
 @code{lmdif} from the MINPACK library, for solving nonlinear least-squares
 problems by a modification of the Levenberg-Marquardt algorithm, with support
 for lower and upper parameter bounds.  The implementation can be used via
-@rode{nls}-like calls using the @code{nlsLM} function.")
+@code{nls}-like calls using the @code{nlsLM} function.")
     (license license:gpl3)))
 
 (define-public r-moments
