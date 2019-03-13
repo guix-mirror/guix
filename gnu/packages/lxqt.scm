@@ -841,14 +841,14 @@ for the LXQt desktop environment.")
 (define-public lxqt-sudo
   (package
     (name "lxqt-sudo")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1j28wlw4rkzvr85yl78fqkvz7sv7dykm9ghm63xdkskfjbsas1cf"))))
+        (base32 "0mbygp2kkppwk7sxvpnwavdwrx88mh7ldcg6xm3zw1ndp29danay"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -864,9 +864,15 @@ for the LXQt desktop environment.")
        ("lxqt-build-tools" ,lxqt-build-tools)))
     (arguments
      '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
+             #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "GUI frontend for sudo/su")
     (description "lxqt-sudo is a graphical front-end of commands sudo and su
