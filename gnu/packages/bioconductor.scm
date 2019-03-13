@@ -2020,3 +2020,30 @@ differential expression analysis, clustering, visualization, and other useful
 tasks on single cell expression data.  It is designed to work with RNA-Seq and
 qPCR data, but could be used with other types as well.")
     (license license:artistic2.0)))
+
+(define-public r-noiseq
+  (package
+    (name "r-noiseq")
+    (version "2.26.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "NOISeq" version))
+       (sha256
+        (base32
+         "1wyhhi9ydlbjlz427093mdp5ppby77n37w5c2iyxlpsdk2m2nqsn"))))
+    (properties `((upstream-name . "NOISeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://bioconductor.org/packages/NOISeq")
+    (synopsis "Exploratory analysis and differential expression for RNA-seq data")
+    (description
+     "This package provides tools to support the analysis of RNA-seq
+expression data or other similar kind of data.  It provides exploratory plots
+to evaluate saturation, count distribution, expression per chromosome, type of
+detected features, features length, etc.  It also supports the analysis of
+differential expression between two experimental conditions with no parametric
+assumptions.")
+    (license license:artistic2.0)))
