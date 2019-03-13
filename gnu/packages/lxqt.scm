@@ -1174,14 +1174,14 @@ processes currently in existence, much like code{top} or code{ps}.")
 (define-public qterminal
   (package
     (name "qterminal")
-    (version "0.9.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1vlza75br1ys62lgkdz26md729bfpbnasfzswp7hakmgaq1rhms1"))))
+        (base32 "0cgyaskyqginmm85d11inbi0mmxrsrnvgyx6g4l4l4iqpphfq670"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -1191,10 +1191,7 @@ processes currently in existence, much like code{top} or code{ps}.")
      `(("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+     '(#:tests? #f))                      ; no tests
     (home-page "https://lxqt.org/")
     (synopsis "Lightweight Qt-based terminal emulator")
     (description "QTerminal is a lightweight Qt terminal emulator based on
