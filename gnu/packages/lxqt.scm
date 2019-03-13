@@ -954,14 +954,14 @@ components to build desktop file managers which belongs to LXDE.")
 (define-public pcmanfm-qt
   (package
     (name "pcmanfm-qt")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "08jprkkk62pk34q9lxa207bh27xi86fj8jxfd5z3w2m5j5nim5mz"))))
+        (base32 "0x3c25inlxll965xszx37mnl5gp3smm2h7x04f67z0qlh3vsbrjq"))))
     (build-system cmake-build-system)
     (inputs
      `(("libfm-qt" ,libfm-qt)
@@ -973,9 +973,6 @@ components to build desktop file managers which belongs to LXDE.")
        ("lxqt-build-tools" ,lxqt-build-tools)))
     (arguments
      '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
