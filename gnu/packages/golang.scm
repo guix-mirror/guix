@@ -2316,6 +2316,30 @@ generation features.  This code generation is used to achieve:
       (home-page "https://github.com/gogo/protobuf")
       (license license:bsd-3))))
 
+(define-public go-github-com-gogo-protobuf-gogoproto
+  (package
+    (name "go-github-com-gogo-protobuf-gogoproto")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/gogo/protobuf.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/gogo/protobuf"
+       #:import-path "github.com/gogo/protobuf/gogoproto"))
+    (home-page "https://github.com/gogo/protobuf")
+    (synopsis "Extensions to protocol buffers")
+    (description "This package provides extensions to the Gogo protocol buffers
+implementation.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-gogo-protobuf-proto
   (let ((commit
           "fd322a3c49630fe6d05737e2b7d9426e6680e28d")
