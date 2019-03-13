@@ -11688,3 +11688,32 @@ propagation and an algorithm for exemplar-based agglomerative clustering that
 can also be used to join clusters obtained from affinity propagation.  Various
 plotting functions are available for analyzing clustering results.")
     (license license:gpl2+)))
+
+(define-public r-valr
+  (package
+    (name "r-valr")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "valr" version))
+       (sha256
+        (base32
+         "14jhrwkiwmha3vlmm7b50n2xxyizj6ddmy89gb20mpzq7qhz1ika"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-rcpp" ,r-rcpp)
+       ("r-readr" ,r-readr)
+       ("r-rlang" ,r-rlang)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)))
+    (home-page "http://github.com/rnabioco/valr")
+    (synopsis "Genome interval arithmetic in R")
+    (description
+     "This package enables you to read and manipulate genome intervals and
+signals.  It provides functionality similar to command-line tool suites within
+R, enabling interactive analysis and visualization of genome-scale data.")
+    (license license:expat)))
