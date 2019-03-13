@@ -1813,3 +1813,27 @@ and summarizing a set of statistics using a weighted distance approach.")
      "This package provides negative binomial models for two-group comparisons
 and regression inferences from RNA-sequencing data.")
     (license license:gpl2)))
+
+(define-public r-ebseq
+  (package
+    (name "r-ebseq")
+    (version "1.22.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EBSeq" version))
+       (sha256
+        (base32
+         "1gzbk1hbwdan0j131ah88yryfvsiq0wqjnb09qbr4qaczpgvbad0"))))
+    (properties `((upstream-name . "EBSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-blockmodeling" ,r-blockmodeling)
+       ("r-gplots" ,r-gplots)
+       ("r-testthat" ,r-testthat)))
+    (home-page "https://bioconductor.org/packages/EBSeq")
+    (synopsis "Differential expression analysis of RNA-seq data")
+    (description
+     "This package provides tools for differential expression analysis at both
+gene and isoform level using RNA-seq data")
+    (license license:artistic2.0)))
