@@ -2834,7 +2834,26 @@ portions of LAME.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (arguments '(#:tests? #f))                    ;no 'check' target
+    (arguments
+     '(#:tests? #f                    ;no 'check' target
+       #:configure-flags '("--with-pic")
+       #:phases
+       (modify-phases %standard-phases
+         ;; This is needed for linking the static libraries
+         (add-after 'unpack 'build-only-position-independent-code
+           (lambda _
+             (substitute* "configure.in"
+               (("AC_PROG_LIBTOOL" m)
+                (string-append m "\nAM_PROG_AR\nLT_INIT([pic-only])")))
+             (delete-file "configure")
+             #t))
+         ;; Some headers are not installed by default, but are needed by
+         ;; packages like Kaldi.
+         (add-after 'install 'install-missing-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "src/common/pa_ringbuffer.h"
+                           (string-append (assoc-ref outputs "out") "/include"))
+             #t)))))
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
     (description
