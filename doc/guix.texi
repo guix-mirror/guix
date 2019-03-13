@@ -7807,15 +7807,19 @@ care!
 @cindex Git, using the latest commit
 @cindex latest commit, building
 Build @var{package} from the latest commit of the @code{master} branch of the
-Git repository at @var{url}.
+Git repository at @var{url}.  Git sub-modules of the repository are fetched,
+recursively.
 
-For example, the following commands builds the GNU C Library (glibc) straight
-from its Git repository instead of building the currently-packaged release:
+For example, the following command builds the NumPy Python library against the
+latest commit of the master branch of Python itself:
 
 @example
-guix build glibc \
-  --with-git-url=glibc=git://sourceware.org/git/glibc.git
+guix build python-numpy \
+  --with-git-url=python=https://github.com/python/cpython
 @end example
+
+This option can also be combined with @code{--with-branch} or
+@code{--with-commit} (see below).
 
 @cindex continuous integration
 Obviously, since it uses the latest commit of the given branch, the result of
@@ -7829,11 +7833,11 @@ consecutive accesses to the same repository.  You may want to clean it up once
 in a while to save disk space.
 
 @item --with-branch=@var{package}=@var{branch}
-Build @var{package} from the latest commit of @var{branch}.  The @code{source}
-field of @var{package} must be an origin with the @code{git-fetch} method
-(@pxref{origin Reference}) or a @code{git-checkout} object; the repository URL
-is taken from that @code{source}.  Git sub-modules of the repository are
-fetched, recursively.
+Build @var{package} from the latest commit of @var{branch}.  If the
+@code{source} field of @var{package} is an origin with the @code{git-fetch}
+method (@pxref{origin Reference}) or a @code{git-checkout} object, the
+repository URL is taken from that @code{source}.  Otherwise you have to use
+@code{--with-git-url} to specify the URL of the Git repository.
 
 For instance, the following command builds @code{guile-sqlite3} from the
 latest commit of its @code{master} branch, and then builds @code{guix} (which
