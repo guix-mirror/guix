@@ -11649,6 +11649,27 @@ applications in seconds while maintaining all the flexibility.")
 (define-public python2-mando
   (package-with-python2 python-mando))
 
+(define-public python2-argparse
+  (package
+    (name "python2-argparse")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "argparse" version))
+       (sha256
+        (base32
+         "1r6nznp64j68ih1k537wms7h57nvppq0szmwsaf99n71bfjqkc32"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/ThomasWaldmann/argparse/")
+    (synopsis "Python command-line parsing library")
+    (description
+     "This package is mostly for people who want to have @code{argparse} on
+older Pythons because it was not part of the standard library back then.")
+    (license license:psfl)))
+
 (define-public python-fudge
   (package
     (name "python-fudge")
