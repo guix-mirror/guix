@@ -11259,6 +11259,35 @@ plots.  A more generic color picker RStudio Addin is also provided to let you
 select colors to use in your R code.")
     (license license:expat)))
 
+(define-public r-ggextra
+  (package
+    (name "r-ggextra")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggExtra" version))
+       (sha256
+        (base32
+         "1m5zpn3l3p1y3d2692gyz50m63d58m2a3b7zb595kvcffdx2qr5b"))))
+    (properties `((upstream-name . "ggExtra")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colourpicker" ,r-colourpicker)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gtable" ,r-gtable)
+       ("r-miniui" ,r-miniui)
+       ("r-scales" ,r-scales)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)))
+    (home-page "https://github.com/daattali/ggExtra")
+    (synopsis "Marginal histograms for ggplot2 and other enhancements")
+    (description
+     "This package is a collection of functions and layers to enhance ggplot2.
+The flagship function is @code{ggMarginal()}, which can be used to add
+marginal histograms/boxplots/density plots to ggplot2 scatterplots.")
+    (license license:expat)))
+
 (define-public r-minpack-lm
   (package
     (name "r-minpack-lm")
