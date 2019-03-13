@@ -11642,3 +11642,24 @@ running IRkernel session.")
 front-end (Jupyter Notebook or other front-ends) submits to the kernel via the
 network.")
     (license license:expat)))
+
+(define-public r-gmodels
+  (package
+    (name "r-gmodels")
+    (version "2.18.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gmodels" version))
+       (sha256
+        (base32
+         "0s8kd8krqk4kwv2zqxpsfy3w8qdwf5naf4b5l383vidq9sil0qb2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gdata" ,r-gdata)
+       ("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/gmodels/")
+    (synopsis "Various R programming tools for model fitting")
+    (description
+     "This package provides various R programming tools for model fitting.")
+    (license license:gpl2)))
