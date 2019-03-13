@@ -1230,3 +1230,25 @@ language.")
 quoting, commenting, and escaping.")
       (home-page "https://github.com/flynn-archive/go-shlex")
       (license asl2.0))))
+
+(define-public go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg
+  (package
+    (name "go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/prometheus/common.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "02kym6lcfnlq23qbv277jr0q1n7jj0r14gqg93c7wn7gc44jv3vp"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg"
+       #:unpack-path "github.com/prometheus/common"))
+    (synopsis "Internal Prometheus component")
+    (description "This package is an internal component of Prometheus.")
+    (home-page "https://github.com/prometheus/common")
+    (license asl2.0)))
