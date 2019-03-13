@@ -2083,3 +2083,43 @@ of differences between two conditions.  The package also includes functions
 for simulating data with these patterns from negative binomial
 distributions.")
     (license license:gpl2)))
+
+(define-public r-scone
+  (package
+    (name "r-scone")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scone" version))
+       (sha256
+        (base32
+         "0l1x4cjnfjbpx6k55sjqx03555daa6v63rq0rg6b7jpz8xxzwa7p"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-aroma-light" ,r-aroma-light)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-boot" ,r-boot)
+       ("r-class" ,r-class)
+       ("r-cluster" ,r-cluster)
+       ("r-compositions" ,r-compositions)
+       ("r-diptest" ,r-diptest)
+       ("r-edger" ,r-edger)
+       ("r-fpc" ,r-fpc)
+       ("r-gplots" ,r-gplots)
+       ("r-hexbin" ,r-hexbin)
+       ("r-limma" ,r-limma)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-mixtools" ,r-mixtools)
+       ("r-rarpack" ,r-rarpack)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-ruvseq" ,r-ruvseq)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/scone")
+    (synopsis "Single cell overview of normalized expression data")
+    (description
+     "SCONE is an R package for comparing and ranking the performance of
+different normalization schemes for single-cell RNA-seq and other
+high-throughput analyses.")
+    (license license:artistic2.0)))
