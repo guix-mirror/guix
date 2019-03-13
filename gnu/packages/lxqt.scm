@@ -1093,14 +1093,14 @@ window manager OpenBox.")
 (define-public pavucontrol-qt
   (package
     (name "pavucontrol-qt")
-    (version "0.4.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0pqvhhgw7d00wqw5v3ghm4l8250zy7bqpvhff6l7y1lw0z2fvcp6"))))
+        (base32 "18mw5r8grfrf95vxjbqrr790kl5l59qdqcmlxmwa6rwbfgywj1fq"))))
     (build-system cmake-build-system)
     (inputs
      `(("glib" ,glib)
@@ -1113,10 +1113,7 @@ window manager OpenBox.")
        ("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+     '(#:tests? #f))                    ; no tests
     (home-page "https://lxqt.org/")
     (synopsis "Pulseaudio mixer in Qt")
     (description "@code{pavucontrol-qt} is the Qt port of volume control
