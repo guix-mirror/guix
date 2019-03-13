@@ -2123,3 +2123,34 @@ distributions.")
 different normalization schemes for single-cell RNA-seq and other
 high-throughput analyses.")
     (license license:artistic2.0)))
+
+(define-public r-geoquery
+  (package
+    (name "r-geoquery")
+    (version "2.50.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GEOquery" version))
+       (sha256
+        (base32
+         "074dl00c8yi1ihpjkw7vl9vy2hggvipib0jn0hli0wrw7x1h9hg6"))))
+    (properties `((upstream-name . "GEOquery")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
+       ("r-readr" ,r-readr)
+       ("r-tidyr" ,r-tidyr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/seandavi/GEOquery/")
+    (synopsis "Get data from NCBI Gene Expression Omnibus (GEO)")
+    (description
+     "The NCBI Gene Expression Omnibus (GEO) is a public repository of
+microarray data.  Given the rich and varied nature of this resource, it is
+only natural to want to apply BioConductor tools to these data.  GEOquery is
+the bridge between GEO and BioConductor.")
+    (license license:gpl2)))
