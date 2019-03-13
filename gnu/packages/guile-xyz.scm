@@ -2081,6 +2081,11 @@ completion, a simple mode line, etc.")
          (modify-phases %standard-phases
            (add-after 'unpack 'chdir
              (lambda _ (chdir "modules") #t))
+           (add-after 'chdir 'use-canonical-directory-for-go-files
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("/ccache") "/site-ccache"))
+               #t))
            (add-after 'chdir 'delete-broken-symlink
              (lambda _
                (delete-file "parser/stis-parser/lang/.#calc.scm")
