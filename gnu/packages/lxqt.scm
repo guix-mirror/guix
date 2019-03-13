@@ -1150,14 +1150,14 @@ processes currently in existence, much like code{top} or code{ps}.")
 (define-public qtermwidget
   (package
     (name "qtermwidget")
-    (version "0.9.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1c1qzbysxjbikp4bpgphphw4dgpl10gz8m06ccs2c48qxhpyd773"))))
+        (base32 "0v1vvi8vf9y8nv8y0gzffaqji53s75ab5jypksih0ndcws8ryww4"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)))
@@ -1165,10 +1165,7 @@ processes currently in existence, much like code{top} or code{ps}.")
      `(("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+     '(#:tests? #f))                    ; no tests
     (home-page "https://lxqt.org/")
     (synopsis "The terminal widget for QTerminal")
     (description "QTermWidget is a terminal emulator widget for Qt 5.")
