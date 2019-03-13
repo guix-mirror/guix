@@ -11150,6 +11150,36 @@ transformation, respectively.")
     ;; Either version of the GPL.
     (license (list license:gpl2 license:gpl3))))
 
+;; This package includes JavaScript files, which are not minified.  When
+;; upgrading please check that there are no new minified JavaScript files.
+(define-public r-shinyjs
+  (package
+    (name "r-shinyjs")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyjs" version))
+       (sha256
+        (base32
+         "113zpijri0l80rlgrvqn6bxk0sdqgl79h7yhja2p76f9dc9i2sr8"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://deanattali.com/shinyjs")
+    (synopsis "Improve the user experience of your Shiny apps")
+    (description
+     "Perform common useful JavaScript operations in Shiny apps that will
+greatly improve your apps without having to know any JavaScript.  Examples
+include: hiding an element, disabling an input, resetting an input back to its
+original value, delaying code execution by a few seconds, and many more useful
+functions for both the end user and the developer.  Shinyjs can also be used
+to easily call your own custom JavaScript functions from R.")
+    (license license:agpl3+)))
+
 (define-public r-minpack-lm
   (package
     (name "r-minpack-lm")
