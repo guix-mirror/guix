@@ -165,9 +165,16 @@ System Installation
 * Hardware Considerations::     Supported hardware.
 * USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
-* Proceeding with the Installation::  The real thing.
+* Guided Graphical Installation::  Easy graphical installation.
+* Manual Installation::         Manual installation for wizards.
+* After System Installation::   When installation succeeded.
 * Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
+
+Manual Installation
+
+* Keyboard Layout and Networking and Partitioning:: Initial setup.
+* Proceeding with the Installation::  Installing.
 
 Package Management
 
@@ -1777,7 +1784,9 @@ available.
 * Hardware Considerations::     Supported hardware.
 * USB Stick and DVD Installation::  Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
-* Proceeding with the Installation::  The real thing.
+* Guided Graphical Installation::  Easy graphical installation.
+* Manual Installation::         Manual installation for wizards.
+* After System Installation::   When installation succeeded.
 * Installing Guix in a VM::     Guix System playground.
 * Building the Installation Image::  How this comes to be.
 @end menu
@@ -1963,21 +1972,19 @@ Guix System in a virtual machine (VM).
 @node Preparing for Installation
 @section Preparing for Installation
 
-Once you have successfully booted your computer using the installation medium,
-you should end up with the welcome page of the graphical installer.  The
-graphical installer is a text-based user interface built upon the newt
-library.  It shall guide you through all the different steps needed to install
-GNU@tie{}Guix System.  However, as the graphical installer is still under heavy
-development, you might want to fallback to the original, shell based install
-process, by switching to TTYs 3 to 6 with the shortcuts CTRL-ALT-F[3-6]. The
-following sections describe the installation procedure assuming you're using
-one of those TTYs. They are configured and can be used to run commands as
-root.
+Once you have booted, you can use the guided graphical installer, which makes
+it easy to get started (@pxref{Guided Graphical Installation}).  Alternately,
+if you are already familiar with GNU/Linux and if you want more control than
+what the graphical installer provides, you can choose the ``manual''
+installation process (@pxref{Manual Installation}).
 
-TTY2 shows this documentation, browsable using the Info reader commands
-(@pxref{Top,,, info-stnd, Stand-alone GNU Info}).  The installation system
-runs the GPM mouse daemon, which allows you to select text with the left mouse
-button and to paste it with the middle button.
+The graphical installer is available on TTY1.  You can obtain root shells on
+TTYs 3 to 6 by hitting @kbd{ctrl-alt-f3}, @kbd{ctrl-alt-f4}, etc.  TTY2 shows
+this documentation and you can reach it with @kbd{ctrl-alt-f2}.  Documentation
+is browsable using the Info reader commands (@pxref{Top,,, info-stnd,
+Stand-alone GNU Info}).  The installation system runs the GPM mouse daemon,
+which allows you to select text with the left mouse button and to paste it
+with the middle button.
 
 @quotation Note
 Installation requires access to the Internet so that any missing
@@ -1985,12 +1992,65 @@ dependencies of your system configuration can be downloaded.  See the
 ``Networking'' section below.
 @end quotation
 
-The installation system includes many common tools needed for this task.
-But it is also a full-blown Guix System, which means that you can
-install additional packages, should you need it, using @command{guix
-package} (@pxref{Invoking guix package}).
+@node Guided Graphical Installation
+@section Guided Graphical Installation
 
-@subsection Keyboard Layout
+The graphical installer is a text-based user interface.  It will guide you,
+with dialog boxes, through the steps needed to install GNU@tie{}Guix System.
+
+The first dialog boxes allow you to set up the system as you use it during the
+installation: you can choose the language, keyboard layout, and set up
+networking, which will be used during the installation.  The image below shows
+the networking dialog.
+
+@image{images/installer-network,5in,, networking setup with the graphical installer}
+
+Later steps allow you to partition your hard disk, as shown in the image
+below, to choose whether or not to use encrypted file systems, to enter the
+host name and root password, and to create an additional account, among other
+things.
+
+@image{images/installer-partitions,5in,, partitioning with the graphical installer}
+
+Note that, at any time, the installer allows you to exit the current
+installation step and resume at a previous step, as show in the image below.
+
+@image{images/installer-resume,5in,, resuming the installation process}
+
+Once you're done, the installer produces an operating system configuration and
+displays it (@pxref{Using the Configuration System}).  At that point you can
+hit ``OK'' and installation will proceed.  On success, you can reboot into the
+new system and enjoy.  @xref{After System Installation}, for what's next!
+
+
+@node Manual Installation
+@section Manual Installation
+
+This section describes how you would ``manually'' install GNU@tie{}Guix System
+on your machine.  This option requires familiarity with GNU/Linux, with the
+shell, and with common administration tools.  If you think this is not for
+you, consider using the guided graphical installer (@pxref{Guided Graphical
+Installation}).
+
+The installation system provides root shells on TTYs 3 to 6; press
+@kbd{ctrl-alt-f3}, @kbd{ctrl-alt-f4}, and so on to reach them.  It includes
+many common tools needed to install the system.  But it is also a full-blown
+Guix System, which means that you can install additional packages, should you
+need it, using @command{guix package} (@pxref{Invoking guix package}).
+
+@menu
+* Keyboard Layout and Networking and Partitioning:: Initial setup.
+* Proceeding with the Installation::  Installing.
+@end menu
+
+@node Keyboard Layout and Networking and Partitioning
+@subsection Keyboard Layout, Networking, and Partitioning
+
+Before you can install the system, you may want to adjust the keyboard layout,
+set up networking, and partition your target hard disk.  This section will
+guide you through this.
+
+@subsubsection Keyboard Layout
 
 @cindex keyboard layout
 The installation image uses the US qwerty keyboard layout.  If you want
@@ -2005,7 +2065,7 @@ See the files under @file{/run/current-system/profile/share/keymaps} for
 a list of available keyboard layouts.  Run @command{man loadkeys} for
 more information.
 
-@subsection Networking
+@subsubsection Networking
 
 Run the following command to see what your network interfaces are called:
 
@@ -2098,7 +2158,7 @@ herd start ssh-daemon
 Make sure to either set a password with @command{passwd}, or configure
 OpenSSH public key authentication before logging in.
 
-@subsection Disk Partitioning
+@subsubsection Disk Partitioning
 
 Unless this has already been done, the next step is to partition, and
 then format the target partition(s).
@@ -2219,7 +2279,7 @@ file in its file system as described above, then the encryption also
 protects the swap file, just like any other file in that file system.
 
 @node Proceeding with the Installation
-@section Proceeding with the Installation
+@subsection Proceeding with the Installation
 
 With the target partitions ready and the target root mounted on
 @file{/mnt}, we're ready to go.  First, run:
@@ -2303,9 +2363,14 @@ in the new system is initially empty; other users' passwords need to be
 initialized by running the @command{passwd} command as @code{root},
 unless your configuration specifies otherwise
 (@pxref{user-account-password, user account passwords}).
+@xref{After System Installation}, for what's next!
 
-@cindex upgrading Guix System
-From then on, you can update the system whenever you want by running, say:
+
+@node After System Installation
+@section After System Installation
+
+Success, you've now booted into Guix System!  From then on, you can update the
+system whenever you want by running, say:
 
 @example
 guix pull
@@ -2326,8 +2391,8 @@ explicitly run root's @command{guix}, type @command{sudo -i guix @dots{}}.
 @end quotation
 
 Join us on @code{#guix} on the Freenode IRC network or on
-@email{guix-devel@@gnu.org} to share your experience---good or not so
-good.
+@email{guix-devel@@gnu.org} to share your experience!
+
 
 @node Installing Guix in a VM
 @section Installing Guix in a Virtual Machine

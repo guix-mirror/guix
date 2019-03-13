@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -111,7 +111,10 @@ $(srcdir)/%D%/contributing.%.texi: po/doc/guix-manual.%.po
 infoimagedir = $(infodir)/images
 dist_infoimage_DATA =				\
   $(DOT_FILES:%.dot=%.png)			\
-  %D%/images/coreutils-size-map.png
+  %D%/images/coreutils-size-map.png		\
+  %D%/images/installer-network.png		\
+  %D%/images/installer-partitions.png		\
+  %D%/images/installer-resume.png
 
 # Try hard to obtain an image size and aspect that's reasonable for inclusion
 # in an Info or PDF document.
