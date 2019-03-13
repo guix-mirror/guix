@@ -504,14 +504,14 @@ according to the Desktop Notifications Specification.")
 (define-public lxqt-openssh-askpass
   (package
     (name "lxqt-openssh-askpass")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0l2272gya8jgv71bvg2hz37lnhiznv4ng3j0p6j79f99hwb5ygpk"))))
+        (base32 "1fvbgjidpifn420avh8n1gym49vcz6zgayz7xygg1x93s4awy1cs"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -525,9 +525,15 @@ according to the Desktop Notifications Specification.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
+             #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "GUI to query passwords on behalf of SSH agents")
     (description "lxqt-openssh-askpass is a GUI to query credentials on behalf
