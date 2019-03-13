@@ -2047,3 +2047,39 @@ detected features, features length, etc.  It also supports the analysis of
 differential expression between two experimental conditions with no parametric
 assumptions.")
     (license license:artistic2.0)))
+
+(define-public r-scdd
+  (package
+    (name "r-scdd")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scDD" version))
+       (sha256
+        (base32
+         "0dp2awajd5281dwpbs0wb8ij2pq9l60p0b80xhxrb41m5qybcri8"))))
+    (properties `((upstream-name . "scDD")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-arm" ,r-arm)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-ebseq" ,r-ebseq)
+       ("r-fields" ,r-fields)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-mclust" ,r-mclust)
+       ("r-outliers" ,r-outliers)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scran" ,r-scran)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://github.com/kdkorthauer/scDD")
+    (synopsis "Mixture modeling of single-cell RNA-seq data")
+    (description
+     "This package implements a method to analyze single-cell RNA-seq data
+utilizing flexible Dirichlet Process mixture models.  Genes with differential
+distributions of expression are classified into several interesting patterns
+of differences between two conditions.  The package also includes functions
+for simulating data with these patterns from negative binomial
+distributions.")
+    (license license:gpl2)))
