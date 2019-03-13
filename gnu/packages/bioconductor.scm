@@ -2234,3 +2234,52 @@ Bayes Analyses of Microarrays} (EBAM).")
 to identify differentially methylated regions in epigenetic epidemiology
 studies.")
     (license license:artistic2.0)))
+
+(define-public r-minfi
+  (package
+    (name "r-minfi")
+    (version "1.28.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "minfi" version))
+       (sha256
+        (base32
+         "1sjwwqb0syngvj75saaky9y06hbxsawhhcmfvavzkhicxipafv7r"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beanplot" ,r-beanplot)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bumphunter" ,r-bumphunter)
+       ("r-data-table" ,r-data-table)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-genefilter" ,r-genefilter)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-geoquery" ,r-geoquery)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-illuminaio" ,r-illuminaio)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-mclust" ,r-mclust)
+       ("r-nlme" ,r-nlme)
+       ("r-nor1mix" ,r-nor1mix)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-quadprog" ,r-quadprog)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape" ,r-reshape)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-siggenes" ,r-siggenes)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://github.com/hansenlab/minfi")
+    (synopsis "Analyze Illumina Infinium DNA methylation arrays")
+    (description
+     "This package provides tools to analyze and visualize Illumina Infinium
+methylation arrays.")
+    (license license:artistic2.0)))
