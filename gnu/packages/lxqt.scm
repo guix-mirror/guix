@@ -1058,14 +1058,14 @@ image viewer.")
 (define-public obconf-qt
   (package
     (name "obconf-qt")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1fbzn1p2mdvn8dcbavmd1imrvkph2jfssrlw8l26qz6qk8qlmhnf"))))
+        (base32 "1kzb7364150b60qd3wcgnw78b9ia5k3b16kq8w3p1y7pg6pddy8m"))))
     (build-system cmake-build-system)
     (inputs
      `(("imlib2" ,imlib2)
@@ -1083,10 +1083,7 @@ image viewer.")
        ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")))
+     '(#:tests? #f))                    ; no tests
     (home-page "https://lxqt.org/")
     (synopsis "Openbox configuration tool")
     (description "ObConf-Qt is a Qt port of ObConf, a configuration editor for
