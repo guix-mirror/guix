@@ -605,14 +605,14 @@ of other programs.")
 (define-public lxqt-policykit
   (package
     (name "lxqt-policykit")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1d97fys6625nk4q6irp0jhsbk30xi7idnii1f3vrrrdcl2cahagp"))))
+        (base32 "127rqb0nprybkc41lk0yq0r0dk5pbbw22gvrm4pwag71qh8wpk5i"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -630,8 +630,6 @@ of other programs.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f                      ; no test target
-       #:configure-flags
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -639,6 +637,13 @@ of other programs.")
              (substitute* '("autostart/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
+             #t))
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
              #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "The LXQt PolicyKit agent")
