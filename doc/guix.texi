@@ -48,7 +48,7 @@ Copyright @copyright{} 2017 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
-Copyright @copyright{} 2017, 2018 Arun Isaac@*
+Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
@@ -8841,6 +8841,8 @@ the updater for @uref{https://hackage.haskell.org, Hackage} packages.
 the updater for @uref{https://www.stackage.org, Stackage} packages.
 @item crate
 the updater for @uref{https://crates.io, Crates} packages.
+@item launchpad
+the updater for @uref{https://launchpad.net, Launchpad} packages.
 @end table
 
 For instance, the following command only checks for updates of Emacs

@@ -202,6 +202,7 @@ MODULES =					\
   guix/import/gnu.scm				\
   guix/import/hackage.scm			\
   guix/import/json.scm				\
+  guix/import/launchpad.scm   			\
   guix/import/opam.scm				\
   guix/import/print.scm				\
   guix/import/pypi.scm				\
