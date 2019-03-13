@@ -4235,7 +4235,7 @@ work and the interface is well tested.")
        ("libsecret" ,libsecret)
        ("gtkspell3" ,gtkspell3)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk-2.22)))
+       ("webkitgtk" ,webkitgtk-2.24)))
     (home-page "https://wiki.gnome.org/Apps/Eolie")
     (synopsis "Web browser for GNOME")
     (description
@@ -4294,7 +4294,7 @@ a secret password store, an adblocker, and a modern UI.")
        ("libxslt" ,libxslt)
        ("nettle" ,nettle) ; for hogweed
        ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk-2.22)))
+       ("webkitgtk" ,webkitgtk-2.24)))
     (home-page "https://wiki.gnome.org/Apps/Web")
     (synopsis "GNOME web browser")
     (description
