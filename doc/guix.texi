@@ -1866,7 +1866,7 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
+@indicateurl{https://alpha.gnu.org/gnu/guix/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
 where @var{system} is one of:
 
 @table @code
@@ -1882,8 +1882,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
-$ gpg --verify guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget https://alpha.gnu.org/gnu/guix/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ gpg --verify guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -1910,7 +1910,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
 @end example
 
 @item
@@ -1919,7 +1919,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guixsd-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
+dd if=guix-system-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
 sync
 @end example
 
@@ -1935,7 +1935,7 @@ To copy the image to a DVD, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guixsd-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
 @end example
 
 @item
@@ -1944,7 +1944,7 @@ its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
 
 @example
-growisofs -dvd-compat -Z /dev/srX=guixsd-install-@value{VERSION}.@var{system}.iso
+growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.@var{system}.iso
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
@@ -2364,7 +2364,7 @@ Boot the USB installation image in an VM:
 @example
 qemu-system-x86_64 -m 1024 -smp 1 \
   -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guixsd-install-@value{VERSION}.@var{system}.iso \
+  -drive file=guix-system-install-@value{VERSION}.@var{system}.iso \
   -drive file=guixsd.img
 @end example
 
@@ -23360,7 +23360,7 @@ system configuration file.  You can then load the image and launch a
 Docker container using commands like the following:
 
 @example
-image_id="$(docker load < guixsd-docker-image.tar.gz)"
+image_id="$(docker load < guix-system-docker-image.tar.gz)"
 docker run -e GUIX_NEW_SYSTEM=/var/guix/profiles/system \\
     --entrypoint /var/guix/profiles/system/profile/bin/guile \\
     $image_id /var/guix/profiles/system/boot
@@ -23546,7 +23546,7 @@ example graph.
 @cindex virtual machine
 To run Guix in a virtual machine (VM), one can either use the
 pre-built Guix VM image distributed at
-@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-vm-image-@value{VERSION}.@var{system}.xz}
+@indicateurl{https://alpha.gnu.org/gnu/guix/guix-system-vm-image-@value{VERSION}.@var{system}.xz}
 , or build their own virtual machine image using @command{guix system
 vm-image} (@pxref{Invoking guix system}).  The returned image is in
 qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
