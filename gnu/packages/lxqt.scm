@@ -193,7 +193,7 @@ in Qt.")
 (define-public liblxqt
   (package
     (name "liblxqt")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
@@ -201,13 +201,10 @@ in Qt.")
              "https://github.com/lxqt/" name "/releases/download/"
              version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0fba0nq5b9fvvmklcikcd4nwhzlp5d6k1q1f80r34kncdzfvj7dl"))))
+        (base32 "1gb922npf6nw4w3nkvh4czk8xmdzzqkzq3zgl1h303fjaib359qs"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -215,6 +212,13 @@ in Qt.")
              (substitute* "CMakeLists.txt"
                (("DESTINATION \"\\$\\{POLKITQT-1_POLICY_FILES_INSTALL_DIR\\}")
                 "DESTINATION \"share/polkit-1/actions"))
+             #t))
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
              #t)))))
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
