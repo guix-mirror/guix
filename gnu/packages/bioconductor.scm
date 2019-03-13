@@ -2200,3 +2200,37 @@ expressed genes and estimation of the @dfn{False Discovery Rate} (FDR) using
 both the Significance Analysis of Microarrays (SAM) and the @dfn{Empirical
 Bayes Analyses of Microarrays} (EBAM).")
     (license license:lgpl2.0+)))
+
+(define-public r-bumphunter
+  (package
+    (name "r-bumphunter")
+    (version "1.24.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bumphunter" version))
+       (sha256
+        (base32
+         "1f9vk3srffbx8jpza40nd18a4y0p0z8q40mx55dlcnddkwrqi19b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dorng" ,r-dorng)
+       ("r-foreach" ,r-foreach)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-iterators" ,r-iterators)
+       ("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/ririzarr/bumphunter")
+    (synopsis "Find bumps in genomic data")
+    (description
+     "This package provides tools for finding bumps in genomic data in order
+to identify differentially methylated regions in epigenetic epidemiology
+studies.")
+    (license license:artistic2.0)))
