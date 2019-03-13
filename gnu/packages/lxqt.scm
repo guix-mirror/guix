@@ -350,25 +350,28 @@ the operating system LXQt is running on.")
 (define-public lxqt-config
   (package
     (name "lxqt-config")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "0rizhl2v41kpgp57a61r6nmwcdw8nh9hprrrf33nfrdw8hpwxb95"))))
+        (base32 "16k36knv6d72gg8hp7423l3ic43y3l3zbaf3spqn2a354y30myrg"))))
     (build-system cmake-build-system)
     (inputs
-     `(("kwindowsystem" ,kwindowsystem)
+     `(("eudev" ,eudev)
+       ("kwindowsystem" ,kwindowsystem)
        ("libkscreen" ,libkscreen)
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
        ("libxcursor" ,libxcursor)
+       ("libxi" ,libxi)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
        ("solid" ,solid)
+       ("xf86-input-libinput" ,xf86-input-libinput)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -376,9 +379,6 @@ the operating system LXQt is running on.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -386,6 +386,20 @@ the operating system LXQt is running on.")
              (substitute* '("src/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
+             #t))
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("lxqt-config-file-associations/CMakeLists.txt"
+                            "lxqt-config-brightness/CMakeLists.txt"
+                            "lxqt-config-appearance/CMakeLists.txt"
+                            "lxqt-config-locale/CMakeLists.txt"
+                            "lxqt-config-monitor/CMakeLists.txt"
+                            "lxqt-config-input/CMakeLists.txt"
+                            "liblxqt-config-cursor/CMakeLists.txt"
+                            "src/CMakeLists.txt")
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
              #t)))))
     (home-page "https://lxqt.org")
     (synopsis "Tools to configure LXQt and the underlying operating system")
