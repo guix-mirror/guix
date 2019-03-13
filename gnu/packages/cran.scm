@@ -11574,3 +11574,26 @@ compatible with @code{rzmq} are also provided.")
      "This package provides string and binary representations of objects for
 several formats and MIME types.")
     (license license:gpl3)))
+
+(define-public r-irdisplay
+  (package
+    (name "r-irdisplay")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "IRdisplay" version))
+       (sha256
+        (base32
+         "12chk53nf4zckgc4yl7gbvd7m5dvli52inp5b3f0zvcjvfncksli"))))
+    (properties `((upstream-name . "IRdisplay")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-repr" ,r-repr)))
+    (home-page "https://cran.r-project.org/web/packages/IRdisplay/")
+    (synopsis "Jupyter display machinery")
+    (description
+     "This package provides an interface to the rich display capabilities of
+Jupyter front-ends (e.g. Jupyter Notebook).  It is designed to be used from a
+running IRkernel session.")
+    (license license:expat)))
