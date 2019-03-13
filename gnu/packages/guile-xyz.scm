@@ -2157,3 +2157,50 @@ chunks can be expressions as well as simple tokens.")
 and objects, closures and structs.  This currently does not support
 serializing continuations or delimited continuations.")
       (license license:lgpl2.0+))))
+
+(define-public python-on-guile
+  (let ((commit "0cb7c2b2fff4338ca6153473f3f5c409a818f293")
+        (revision "1"))
+    (package
+      (name "python-on-guile")
+      (version (git-version "0.1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/python-on-guile/python-on-guile.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0kpz08rrp5mwcf5ksc4flgrw992syham9x49dn9wq9w31bpcpnby"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:parallel-build? #f ; not supported
+         #:make-flags
+         '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "modules") #t))
+           (add-after 'chdir 'use-canonical-directory-for-go-files
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("/ccache") "/site-ccache"))
+               #t)))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("guile-persist" ,guile-persist)
+         ("guile-readline" ,guile-readline)
+         ("guile-stis-parser" ,guile-stis-parser)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://gitlab.com/python-on-guile/python-on-guile/")
+      (synopsis "Python implementation in Guile")
+      (description
+       "This package allows you to compile a Guile Python file to any target
+from @code{tree-il}.")
+      (license license:lgpl2.0+))))
