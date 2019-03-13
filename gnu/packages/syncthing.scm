@@ -39,23 +39,77 @@
               (sha256
                (base32
                 "1iks1a3149gj89yqmqa5iry2ik2sj9sjhlhc6nfh7xq4swqgsrb5"))
-              ;; Since the update to Go 1.11, Go programs have been keeping
-              ;; spurious references to all their dependencies:
-              ;; <https://bugs.gnu.org/33620>.
-              ;; For Syncthing, this increases the size of the 'out' closure
-              ;; from 87.6 MiB to 253.5 MiB.  So, we use the bundled
-              ;; dependencies until the bug is resolved.
-;              (modules '((guix build utils)))
-;              ;; Delete bundled ("vendored") free software source code.
-;              (snippet '(begin
-;                          (delete-file-recursively "vendor")
-;                          #t))
-              ))
+              (modules '((guix build utils)))
+              ;; Delete bundled ("vendored") free software source code.
+              (snippet '(begin
+                          (delete-file-recursively "vendor")
+                          #t))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
     ;; of "out" by ~80 MiB.
     (outputs '("out" "utils"))
+    ;; When updating Syncthing, check 'go.mod' in the source distribution to
+    ;; ensure we are using the correct versions of these dependencies.
+    (inputs
+     `(("go-github-com-audriusbutkevicius-go-nat-pmp"
+        ,go-github-com-audriusbutkevicius-go-nat-pmp)
+       ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
+       ("go-github-com-calmh-du" ,go-github-com-calmh-du)
+       ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
+       ("go-github-com-chmduquesne-rollinghash"
+        ,go-github-com-chmduquesne-rollinghash)
+       ("go-github-com-gobwas-glob" ,go-github-com-gobwas-glob)
+       ("go-github-com-golang-groupcache-lru"
+        ,go-github-com-golang-groupcache-lru)
+       ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
+       ("go-github-com-kballard-go-shellquote"
+        ,go-github-com-kballard-go-shellquote)
+       ("go-github-com-lib-pq" ,go-github-com-lib-pq)
+       ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
+       ("go-github-com-oschwald-geoip2-golang"
+        ,go-github-com-oschwald-geoip2-golang)
+       ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)
+       ("go-github-com-rcrowley-go-metrics" ,go-github-com-rcrowley-go-metrics)
+       ("go-github-com-sasha-s-go-deadlock" ,go-github-com-sasha-s-go-deadlock)
+       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
+       ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
+       ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
+       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
+       ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
+       ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
+       ("go-github-com-gogo-protobuf-gogoproto"
+        ,go-github-com-gogo-protobuf-gogoproto)
+       ("go-github-com-gogo-protobuf-protoc-gen-gogo"
+        ,go-github-com-gogo-protobuf-protoc-gen-gogo)
+       ("go-github-com-prometheus-client-golang-prometheus"
+        ,go-github-com-prometheus-client-golang-prometheus)
+       ("go-golang-org-x-net-bpf" ,go-golang-org-x-net-bpf)
+       ("go-golang-org-x-net-internal-iana" ,go-golang-org-x-net-internal-iana)
+       ("go-golang-org-x-net-internal-socket"
+        ,go-golang-org-x-net-internal-socket)
+       ("go-golang-org-x-net-internal-socks"
+        ,go-golang-org-x-net-internal-socks)
+       ("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
+       ("go-golang-org-x-net-ipv6" ,go-golang-org-x-net-ipv6)
+       ("go-golang-org-x-net-proxy" ,go-golang-org-x-net-proxy)
+       ("go-golang-org-x-text-unicode-norm" ,go-golang-org-x-text-unicode-norm)
+       ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)
+       ("go-github-com-audriusbutkevicius-recli"
+        ,go-github-com-audriusbutkevicius-recli)
+       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
+       ("go-github-com-vitrun-qart-qr" ,go-github-com-vitrun-qart-qr)
+       ("go-github-com-vitrun-qart-coding" ,go-github-com-vitrun-qart-coding)
+       ("go-github-com-vitrun-qart-gf256" ,go-github-com-vitrun-qart-gf256)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+       ("go-golang-org-x-crypto-bcrypt" ,go-golang-org-x-crypto-bcrypt)
+       ("go-golang-org-x-crypto-blowfish" ,go-golang-org-x-crypto-blowfish)
+       ("go-github-com-flynn-archive-go-shlex"
+        ,go-github-com-flynn-archive-go-shlex)
+
+       ;; For tests
+       ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
+
     (arguments
      `(#:import-path "github.com/syncthing/syncthing"
        #:unpack-path "github.com/syncthing"
