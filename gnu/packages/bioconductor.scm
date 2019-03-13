@@ -1965,3 +1965,58 @@ interactive exploration of results.")
      "This package provides methods and models for handling zero-inflated
 single cell assay data.")
     (license license:gpl2+)))
+
+(define-public r-monocle
+  (package
+    (name "r-monocle")
+    (version "2.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "monocle" version))
+       (sha256
+        (base32
+         "0shwkgqs93j2l5h36yyvb1lf724107cfjrmzp5fxfj1lqc0y61lf"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocviews" ,r-biocviews)
+       ("r-cluster" ,r-cluster)
+       ("r-combinat" ,r-combinat)
+       ("r-ddrtree" ,r-ddrtree)
+       ("r-densityclust" ,r-densityclust)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fastica" ,r-fastica)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hsmmsinglecell" ,r-hsmmsinglecell)
+       ("r-igraph" ,r-igraph)
+       ("r-irlba" ,r-irlba)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-plyr" ,r-plyr)
+       ("r-proxy" ,r-proxy)
+       ("r-qlcmatrix" ,r-qlcmatrix)
+       ("r-rann" ,r-rann)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rtsne" ,r-rtsne)
+       ("r-slam" ,r-slam)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-vgam" ,r-vgam)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://bioconductor.org/packages/monocle")
+    (synopsis "Clustering, differential expression, and trajectory analysis for single-cell RNA-Seq")
+    (description
+     "Monocle performs differential expression and time-series analysis for
+single-cell expression experiments.  It orders individual cells according to
+progress through a biological process, without knowing ahead of time which
+genes define progress through that process.  Monocle also performs
+differential expression analysis, clustering, visualization, and other useful
+tasks on single cell expression data.  It is designed to work with RNA-Seq and
+qPCR data, but could be used with other types as well.")
+    (license license:artistic2.0)))
