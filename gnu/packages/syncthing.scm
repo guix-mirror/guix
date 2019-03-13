@@ -733,39 +733,6 @@ the current goroutine's ID.")
       (home-page "https://github.com/petermattis/goid")
       (license asl2.0))))
 
-(define-public go-github-com-audriusbutkevicius-cli
-  (let ((commit "7f561c78b5a4aad858d9fd550c92b5da6d55efbb")
-        (revision "0"))
-    (package
-      (name "go-github-com-audriusbutkevicius-cli")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/AudriusButkevicius/cli.git")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0bg26pfg25vr16jmczig2m493mja2nxjxyswz3hha7avxw20rpi5"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/AudriusButkevicius/cli"
-         ;; Tests don't pass "vet" on go-1.11.  See
-         ;; https://github.com/AudriusButkevicius/cli/pull/1.
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'check
-             (lambda* (#:key import-path #:allow-other-keys)
-               (invoke "go" "test"
-                       "-vet=off"
-                       import-path))))))
-      (synopsis "Library for building command-line interfaces in Go")
-      (description "This package provides a library for building command-line
-interfaces in Go.")
-      (home-page "https://github.com/AudriusButkevicius/cli")
-      (license expat))))
-
 (define-public go-github-com-kballard-go-shellquote
   (let ((commit "cd60e84ee657ff3dc51de0b4f55dd299a3e136f2")
         (revision "0"))
