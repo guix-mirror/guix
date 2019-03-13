@@ -20,6 +20,7 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix utils)
@@ -167,6 +168,54 @@
                      (match (package-native-inputs dep2)
                        ((("x" dep))
                         (eq? (package-replacement dep) findutils)))))))))))
+
+(test-equal "options->transformation, with-branch"
+  (git-checkout (url "https://example.org")
+                (branch "devel")
+                (recursive? #t))
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (source (origin
+                                            (method git-fetch)
+                                            (uri (git-reference
+                                                  (url "https://example.org")
+                                                  (commit "cabba9e")))
+                                            (sha256 #f)))))))))
+         (t (options->transformation '((with-branch . "chbouib=devel")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-full-name dep1)
+                               (package-full-name grep))
+                     (string=? (package-name dep2) "chbouib")
+                     (package-source dep2)))))))))
+
+(test-equal "options->transformation, with-commit"
+  (git-checkout (url "https://example.org")
+                (commit "abcdef")
+                (recursive? #t))
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (source (origin
+                                            (method git-fetch)
+                                            (uri (git-reference
+                                                  (url "https://example.org")
+                                                  (commit "cabba9e")))
+                                            (sha256 #f)))))))))
+         (t (options->transformation '((with-commit . "chbouib=abcdef")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-full-name dep1)
+                               (package-full-name grep))
+                     (string=? (package-name dep2) "chbouib")
+                     (package-source dep2)))))))))
 
 (test-equal "options->transformation, with-git-url"
   (let ((source (git-checkout (url "https://example.org")

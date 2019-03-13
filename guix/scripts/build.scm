@@ -342,7 +342,8 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
                               (if (< (string-length commit) 7)
                                   commit
                                   (string-take commit 7))))
-      (source (git-checkout (url url) (commit commit)))))
+      (source (git-checkout (url url) (commit commit)
+                            (recursive? #t)))))
 
   (let* ((replacements (evaluate-git-replacement-specs replacement-specs
                                                        replace))
