@@ -2424,3 +2424,62 @@ variance stabilization, normalization and gene annotation at the probe level.
 It also includes the functions of processing Illumina methylation microarrays,
 especially Illumina Infinium methylation microarrays.")
     (license license:lgpl2.0+)))
+
+(define-public r-linnorm
+  (package
+    (name "r-linnorm")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Linnorm" version))
+       (sha256
+        (base32
+         "1qgk8m5kc409flqxs3vnf228v3z0112q8py9hgfgyiwvi6yzdbp6"))))
+    (properties `((upstream-name . "Linnorm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-amap" ,r-amap)
+       ("r-apcluster" ,r-apcluster)
+       ("r-ellipse" ,r-ellipse)
+       ("r-fastcluster" ,r-fastcluster)
+       ("r-fpc" ,r-fpc)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gmodels" ,r-gmodels)
+       ("r-igraph" ,r-igraph)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-mclust" ,r-mclust)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rtsne" ,r-rtsne)
+       ("r-statmod" ,r-statmod)
+       ("r-vegan" ,r-vegan)
+       ("r-zoo" ,r-zoo)))
+    (home-page "http://www.jjwanglab.org/Linnorm/")
+    (synopsis "Linear model and normality based transformation method")
+    (description
+     "Linnorm is an R package for the analysis of RNA-seq, scRNA-seq, ChIP-seq
+count data or any large scale count data.  It transforms such datasets for
+parametric tests.  In addition to the transformtion function (@code{Linnorm}),
+the following pipelines are implemented:
+
+@enumerate
+@item Library size/batch effect normalization (@code{Linnorm.Norm})
+@item Cell subpopluation analysis and visualization using t-SNE or PCA K-means
+  clustering or hierarchical clustering (@code{Linnorm.tSNE},
+  @code{Linnorm.PCA}, @code{Linnorm.HClust})
+@item Differential expression analysis or differential peak detection using
+  limma (@code{Linnorm.limma})
+@item Highly variable gene discovery and visualization (@code{Linnorm.HVar})
+@item Gene correlation network analysis and visualization (@code{Linnorm.Cor})
+@item Stable gene selection for scRNA-seq data; for users without or who do
+  not want to rely on spike-in genes (@code{Linnorm.SGenes})
+@item Data imputation (@code{Linnorm.DataImput}).
+@end enumerate
+
+Linnorm can work with raw count, CPM, RPKM, FPKM and TPM.  Additionally, the
+@code{RnaXSim} function is included for simulating RNA-seq data for the
+evaluation of DEG analysis methods.")
+    (license license:expat)))
