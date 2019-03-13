@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -120,7 +120,7 @@
 DEVICE must be a \"/dev\" file name."
   (define aliases
     ;; Attempt to load 'modules.alias' from the current kernel, assuming we're
-    ;; on GuixSD, and assuming that corresponds to the kernel we'll be
+    ;; on Guix System, and assuming that corresponds to the kernel we'll be
     ;; installing.  Skip the whole thing if that file cannot be read.
     (catch 'system-error
       (lambda ()

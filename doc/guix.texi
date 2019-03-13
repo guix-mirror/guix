@@ -16484,7 +16484,7 @@ Defaults to @samp{"internal_plain"}.
 
 @deftypevr {@code{prosody-configuration} parameter} maybe-string log
 Set logging options.  Advanced logging configuration is not yet supported
-by the Guix Prosody Service.  See @url{https://prosody.im/doc/logging}.
+by the Prosody service.  See @url{https://prosody.im/doc/logging}.
 Defaults to @samp{"*syslog"}.
 @end deftypevr
 

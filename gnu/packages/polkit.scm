@@ -73,7 +73,7 @@
                  (substitute* "src/polkitbackend/polkitbackendjsauthority.cpp"
                    (("systemd") "elogind"))
 
-                 ;; GuixSD's polkit service stores actions under
+                 ;; Guix System's polkit service stores actions under
                  ;; /etc/polkit-1/actions.
                  (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
                    (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")

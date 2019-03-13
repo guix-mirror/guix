@@ -148,7 +148,7 @@
             (use-modules (ice-9 match))
             (substitute* "src/runtime_ccall.cpp"
               ;; Patch out invocations of '/sbin/ldconfig' to avoid getting
-              ;; error messages about missing '/sbin/ldconfig' on GuixSD.
+              ;; error messages about missing '/sbin/ldconfig' on Guix System.
               (("popen\\(.*ldconfig.*\\);")
                "NULL;\n")
 

@@ -331,7 +331,7 @@ seconds after @code{SIGTERM} has been sent are terminated with
   `(("fstab" ,(plain-file "fstab"
                           (string-append
                            "\
-# This file was generated from your GuixSD configuration.  Any changes
+# This file was generated from your Guix configuration.  Any changes
 # will be lost upon reboot or reconfiguration.\n\n"
                            (string-join (map file-system->fstab-entry
                                              file-systems)

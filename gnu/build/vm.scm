@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -422,7 +422,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
             (string-append "boot/grub/grub.cfg=" config-file))))
 
 (define* (make-iso9660-image grub config-file os-drv target
-                             #:key (volume-id "GuixSD_image") (volume-uuid #f)
+                             #:key (volume-id "Guix_image") (volume-uuid #f)
                              register-closures? (closures '()))
   "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
 GRUB configuration and OS-DRV as the stuff in it."
@@ -550,7 +550,7 @@ passing it a directory name where it is mounted."
           (lambda (port)
             (format port
                     "insmod part_msdos~@
-                    search --set=root --label GuixSD_image~@
+                    search --set=root --label Guix_image~@
                     configfile /boot/grub/grub.cfg~%")))
 
         (display "creating EFI firmware image...")

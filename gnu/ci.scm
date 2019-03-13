@@ -235,7 +235,7 @@ system.")
             (system-test-value test))))
 
       `((derivation . ,(derivation-file-name drv))
-        (description . ,(format #f "GuixSD '~a' system test"
+        (description . ,(format #f "Guix '~a' system test"
                                 (system-test-name test)))
         (long-description . ,(system-test-description test))
         (license . ,(license-name gpl3+))
@@ -270,7 +270,7 @@ system.")
     `((derivation . ,(derivation-file-name drv))
       (description . "Stand-alone binary Guix tarball")
       (long-description . "This is a tarball containing binaries of Guix and
-all its dependencies, and ready to be installed on non-GuixSD distributions.")
+all its dependencies, and ready to be installed on \"foreign\" distributions.")
       (license . ,(license-name gpl3+))
       (home-page . ,%guix-home-page-url)
       (maintainers . ("bug-guix@gnu.org"))))

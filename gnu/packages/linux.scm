@@ -1112,7 +1112,7 @@ MIDI functionality to the Linux-based operating system.")
     (outputs '("out" "pulseaudio" "jack"))
     (arguments
      `(#:configure-flags '(;; Do not install a "local" configuration targeted
-                           ;; for /etc/alsa.  On GuixSD plugins are loaded from
+                           ;; for /etc/alsa.  On Guix System plugins are loaded from
                            ;; the ALSA service, and other distributions likely
                            ;; won't use these files.
                            "--with-alsalconfdir=/tmp/noop")
@@ -1579,7 +1579,7 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
      '(#:phases
        (modify-phases %standard-phases
          ;; TODO: Patch some hardcoded "wlan0" in calibrate/calibrate.cpp to
-         ;; allow calibrating the network interface in GuixSD.
+         ;; allow calibrating the network interface in Guix System.
          (add-after 'unpack 'patch-absolute-file-names
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((kmod (assoc-ref inputs "kmod")))
@@ -2379,7 +2379,7 @@ compliance.")
        #:tests? #f                                ;no tests
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
-                            (string-append "LSB_ID=GuixSD")
+                            (string-append "LSB_ID=Guix")
                             (string-append "DISTRO_PUBKEY=/dev/null")
                             (string-append "DISTRO_PRIVKEY=/dev/null")
                             (string-append "REGDB_PUBKEY=/dev/null")

@@ -353,7 +353,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
      ;; the appropriate one.
      (cons* (file-system
               (mount-point "/")
-              (device (file-system-label "GuixSD_image"))
+              (device (file-system-label "Guix_image"))
               (type "ext4"))
 
             ;; Make /tmp a tmpfs instead of keeping the overlayfs.  This

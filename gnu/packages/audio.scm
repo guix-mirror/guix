@@ -2270,7 +2270,7 @@ for experimenting with sound synthesis and algorithmic composition.
 SuperCollider requires jackd to be installed in your user profile and your
 user must be allowed to access the realtime features of the kernel.  Search
 for \"realtime\" in the index of the Guix manual to learn how to achieve this
-using GuixSD.")
+using Guix System.")
     (license license:gpl2+)))
 
 (define-public raul

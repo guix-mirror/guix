@@ -1485,7 +1485,7 @@ greyed out, instead of only later giving \"not selectable\" popup error.
         (define* (create-self-signed-certificate-if-absent
                   #:key private-key public-key (owner (getpwnam "root"))
                   (common-name (gethostname))
-                  (organization-name "GuixSD")
+                  (organization-name "Guix")
                   (organization-unit-name "Default Self-Signed Certificate")
                   (subject-parameters `(("CN" . ,common-name)
                                         ("O" . ,organization-name)

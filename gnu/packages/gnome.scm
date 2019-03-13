@@ -5161,7 +5161,7 @@ users.")
              (doc      (assoc-ref %outputs "doc"))
              (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
                                       "/sbin/dhclient")))
-         (list "--with-systemd-logind=yes" ;In GuixSD, this is provided by elogind.
+         (list "--with-systemd-logind=yes" ;In Guix System, this is provided by elogind.
                "--with-consolekit=no"
                "--with-crypto=gnutls"
                "--disable-config-plugin-ibft"
