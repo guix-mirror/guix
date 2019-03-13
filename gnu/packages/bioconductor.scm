@@ -1898,3 +1898,37 @@ any continuous-valued or categorical variable that is thought to be
 informative on the statistical properties of each hypothesis test, while it is
 independent of the p-value under the null hypothesis.")
     (license license:artistic2.0)))
+
+(define-public r-icobra
+  (package
+    (name "r-icobra")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "iCOBRA" version))
+       (sha256
+        (base32
+         "0i1swrm31g0zffi5pm48bfvdfqpd32d0zdchkbyipz96al46jnld"))))
+    (properties `((upstream-name . "iCOBRA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-dt" ,r-dt)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-limma" ,r-limma)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rocr" ,r-rocr)
+       ("r-scales" ,r-scales)
+       ("r-shiny" ,r-shiny)
+       ("r-shinybs" ,r-shinybs)
+       ("r-shinydashboard" ,r-shinydashboard)
+       ("r-upsetr" ,r-upsetr)))
+    (home-page "https://bioconductor.org/packages/iCOBRA")
+    (synopsis "Comparison and visualization of ranking and assignment methods")
+    (description
+     "This package provides functions for calculation and visualization of
+performance metrics for evaluation of ranking and binary
+classification (assignment) methods.  It also contains a Shiny application for
+interactive exploration of results.")
+    (license license:gpl2+)))
