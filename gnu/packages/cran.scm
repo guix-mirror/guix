@@ -62,6 +62,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -11596,4 +11597,48 @@ several formats and MIME types.")
      "This package provides an interface to the rich display capabilities of
 Jupyter front-ends (e.g. Jupyter Notebook).  It is designed to be used from a
 running IRkernel session.")
+    (license license:expat)))
+
+(define-public r-irkernel
+  (package
+    (name "r-irkernel")
+    (version "0.8.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "IRkernel" version))
+       (sha256
+        (base32
+         "1n0nc3paij8fgbp7l2b4405zk9k4y3gdi2bz6z8x6j0h5mi6k6a6"))))
+    (properties `((upstream-name . "IRkernel")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-kernelspec
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "HOME" "/tmp")
+               (invoke "jupyter" "kernelspec" "install"
+                       "--name" "ir"
+                       "--prefix" out
+                       (string-append out "/site-library/IRkernel/kernelspec"))
+               #t))))))
+    (inputs
+     `(("jupyter" ,jupyter)))
+    (propagated-inputs
+     `(("r-crayon" ,r-crayon)
+       ("r-digest" ,r-digest)
+       ("r-evaluate" ,r-evaluate)
+       ("r-irdisplay" ,r-irdisplay)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-pbdzmq" ,r-pbdzmq)
+       ("r-repr" ,r-repr)
+       ("r-uuid" ,r-uuid)))
+    (home-page "https://cran.r-project.org/web/packages/IRkernel/")
+    (synopsis "Native R kernel for Jupyter")
+    (description
+     "The R kernel for the Jupyter environment executes R code which the
+front-end (Jupyter Notebook or other front-ends) submits to the kernel via the
+network.")
     (license license:expat)))
