@@ -58,6 +58,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -11522,3 +11523,31 @@ also provides tools for efficient random number generation and graphics.")
 boxplot/stripchart/violin plots.  It can be used to plot univariate comparison
 graphs.")
     (license license:gpl2)))
+
+(define-public r-pbdzmq
+  (package
+    (name "r-pbdzmq")
+    (version "0.3-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pbdZMQ" version))
+       (sha256
+        (base32
+         "1jkfcfhspvqra7vbllrvkz3jx8j7d0ang6zzcdjgpb7200sc29mf"))))
+    (properties `((upstream-name . "pbdZMQ")))
+    (build-system r-build-system)
+    (inputs
+     `(("zeromq" ,zeromq)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://pbdr.org/")
+    (synopsis "R interface to ZeroMQ")
+    (description
+     "ZeroMQ is a well-known library for high-performance asynchronous
+messaging in scalable, distributed applications.  This package provides high
+level R wrapper functions to easily utilize ZeroMQ.  The main focus is on
+interactive client/server programming frameworks.  A few wrapper functions
+compatible with @code{rzmq} are also provided.")
+    (license license:gpl3)))
