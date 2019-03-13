@@ -10923,6 +10923,33 @@ intersecting sets using a novel matrix design, along with visualizations of
 several common set, element and attribute related tasks.")
     (license license:expat)))
 
+;; This package includes a JavaScript file, which is not minified.  When
+;; upgrading please check that there are no new minified JavaScript files.
+(define-public r-shinybs
+  (package
+    (name "r-shinybs")
+    (version "0.61")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyBS" version))
+       (sha256
+        (base32
+         "0rhim4mbp4x9vvm7xkmpl7mhb9qd1gr96cr4dv330v863ra2kgji"))))
+    (properties `((upstream-name . "shinyBS")))
+    (build-system r-build-system)
+    ;; The tests spawn Shiny browser apps.  They cannot be run
+    ;; non-interactively.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://ebailey78.github.io/shinyBS/")
+    (synopsis "Twitter Bootstrap components for Shiny")
+    (description
+     "This package adds additional Twitter Bootstrap components to Shiny.")
+    (license license:gpl3)))
+
 (define-public r-outliers
   (package
     (name "r-outliers")
