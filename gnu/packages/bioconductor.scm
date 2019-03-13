@@ -2315,3 +2315,47 @@ studies.")
      "This package provides tools to analyze and visualize Illumina Infinium
 methylation arrays.")
     (license license:artistic2.0)))
+
+(define-public r-methylumi
+  (package
+    (name "r-methylumi")
+    (version "2.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "methylumi" version))
+       (sha256
+        (base32
+         "14p2qi18cprfvb2gxng1vm48c7zwh23h88q9qjgipj9xl5axsgw2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-fdb-infiniummethylation-hg19" ,r-fdb-infiniummethylation-hg19)
+       ("r-genefilter" ,r-genefilter)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-illuminaio" ,r-illuminaio)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-minfi" ,r-minfi)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/methylumi")
+    (synopsis "Handle Illumina methylation data")
+    (description
+     "This package provides classes for holding and manipulating Illumina
+methylation data.  Based on eSet, it can contain MIAME information, sample
+information, feature information, and multiple matrices of data.  An
+\"intelligent\" import function, methylumiR can read the Illumina text files
+and create a MethyLumiSet.  methylumIDAT can directly read raw IDAT files from
+HumanMethylation27 and HumanMethylation450 microarrays.  Normalization,
+background correction, and quality control features for GoldenGate, Infinium,
+and Infinium HD arrays are also included.")
+    (license license:gpl2)))
