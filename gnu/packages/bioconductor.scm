@@ -2154,3 +2154,24 @@ microarray data.  Given the rich and varied nature of this resource, it is
 only natural to want to apply BioConductor tools to these data.  GEOquery is
 the bridge between GEO and BioConductor.")
     (license license:gpl2)))
+
+(define-public r-illuminaio
+  (package
+    (name "r-illuminaio")
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "illuminaio" version))
+       (sha256
+        (base32
+         "1rdp9b4xlv91yzba7pd7k50s3nkljfxmdmyz5jl0j8ybhmpl6rns"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64" ,r-base64)))
+    (home-page "https://github.com/HenrikBengtsson/illuminaio/")
+    (synopsis "Parse Illumina microarray output files")
+    (description
+     "This package provides tools for parsing Illumina's microarray output
+files, including IDAT.")
+    (license license:gpl2)))
