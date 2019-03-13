@@ -11180,6 +11180,85 @@ functions for both the end user and the developer.  Shinyjs can also be used
 to easily call your own custom JavaScript functions from R.")
     (license license:agpl3+)))
 
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-colourpicker
+  (package
+    (name "r-colourpicker")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "colourpicker" version))
+       (sha256
+        (base32
+         "0z3v2083g7kwdp21x9s2n1crfh24agpdq3yxkcdzc2awn2pwpnpi"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "js-salvattore")
+                         "examples/colourInput/www/salvattore.min.js")
+                        (,(assoc-ref inputs "js-jquery")
+                         "htmlwidgets/lib/jquery/jquery.min.js")
+                        ("www/shared/colourpicker/js/colourpicker.js"
+                         "www/shared/colourpicker/js/colourpicker.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (delete-file target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-miniui" ,r-miniui)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-3.3.1.js")
+           (sha256
+            (base32
+             "1b8zxrp6xwzpw25apn8j4qws0f6sr7qr7h2va5h1mjyfqvn29anq"))))
+       ("js-salvattore"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/rnmp/salvattore/v1.0.9/dist/salvattore.js")
+           (sha256
+            (base32
+             "0lfrbx7l9w5x89jpc6njmd0pk7h8fpvg537vklai2vf7b1r2nnk5"))))))
+    (home-page "https://github.com/daattali/colourpicker")
+    (synopsis "Color picker tool for Shiny and for selecting colors in plots")
+    (description
+     "This package provides a color picker that can be used as an input in
+Shiny apps or Rmarkdown documents.  The color picker supports alpha opacity,
+custom color palettes, and many more options.  A plot color helper tool is
+available as an RStudio Addin, which helps you pick colors to use in your
+plots.  A more generic color picker RStudio Addin is also provided to let you
+select colors to use in your R code.")
+    (license license:expat)))
+
 (define-public r-minpack-lm
   (package
     (name "r-minpack-lm")
