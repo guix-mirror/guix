@@ -11481,3 +11481,24 @@ negative binomial (ZINB) assumption.  The package also contains miscellaneous
 functions to compute density, distribution, quantile, and generate random
 numbers from ZIP and ZINB distributions.")
     (license license:gpl3)))
+
+(define-public r-nor1mix
+  (package
+    (name "r-nor1mix")
+    (version "1.2-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nor1mix" version))
+       (sha256
+        (base32
+         "1bvk888qml9qr7q703s7qzgm0sqfchcjdjqwqllm5vrjx0cnapj3"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/nor1mix/")
+    (synopsis "Normal (1-d) mixture models")
+    (description
+     "This package provides S3 classes and methods for one-dimensional normal
+mixture models, for, e.g., density estimation or clustering algorithms
+research and teaching; it provides the widely used Marron-Wand densities.  It
+also provides tools for efficient random number generation and graphics.")
+    (license license:gpl2+)))
