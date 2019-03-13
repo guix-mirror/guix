@@ -2053,13 +2053,13 @@ time by mocking the datetime module.")
 (define-public python-flexmock
   (package
     (name "python-flexmock")
-    (version "0.10.2")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flexmock" version))
               (sha256
                (base32
-                "0arc6njvs6i9v9hgvzk5m50296g7zy5m9d7pyb43vdsdgxrci5gy"))))
+                "031c624pdqm7cc0xh4yz5k69gqxn2bbrjz13s17684q5shn0ik21"))))
     (build-system python-build-system)
     (home-page "https://flexmock.readthedocs.org")
     (synopsis "Testing library for Python")
