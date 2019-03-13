@@ -1183,3 +1183,27 @@ Go language.")
 language.")
     (home-page "https://gopkg.in/ldap.v2")
     (license expat)))
+
+(define-public go-github-com-flynn-archive-go-shlex
+  (let ((commit "3f9db97f856818214da2e1057f8ad84803971cff")
+        (revision "0"))
+    (package
+      (name "go-github-com-flynn-archive-go-shlex")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/flynn-archive/go-shlex.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1j743lysygkpa2s2gii2xr32j7bxgc15zv4113b0q9jhn676ysia"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/flynn-archive/go-shlex"))
+      (synopsis "Go lexer")
+      (description "Shlex is a simple lexer for go that supports shell-style
+quoting, commenting, and escaping.")
+      (home-page "https://github.com/flynn-archive/go-shlex")
+      (license asl2.0))))
