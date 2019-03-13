@@ -1932,3 +1932,36 @@ performance metrics for evaluation of ranking and binary
 classification (assignment) methods.  It also contains a Shiny application for
 interactive exploration of results.")
     (license license:gpl2+)))
+
+(define-public r-mast
+  (package
+    (name "r-mast")
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MAST" version))
+       (sha256
+        (base32
+         "0rhx655dza0m6yg9jcfz2nmxqahvxx2l91kqgyp7qai0bzz9d9ix"))))
+    (properties `((upstream-name . "MAST")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://github.com/RGLab/MAST/")
+    (synopsis "Model-based analysis of single cell transcriptomics")
+    (description
+     "This package provides methods and models for handling zero-inflated
+single cell assay data.")
+    (license license:gpl2+)))
