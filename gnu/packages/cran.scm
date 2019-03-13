@@ -11502,3 +11502,23 @@ mixture models, for, e.g., density estimation or clustering algorithms
 research and teaching; it provides the widely used Marron-Wand densities.  It
 also provides tools for efficient random number generation and graphics.")
     (license license:gpl2+)))
+
+(define-public r-beanplot
+  (package
+    (name "r-beanplot")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "beanplot" version))
+       (sha256
+        (base32
+         "0wmkr704fl8kdxkjwmaxw2a2h5dwzfgsgpncnk2p2wd4768jknj9"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/beanplot/")
+    (synopsis "Visualization via beanplots")
+    (description
+     "This package provides beanplots, an alternative to
+boxplot/stripchart/violin plots.  It can be used to plot univariate comparison
+graphs.")
+    (license license:gpl2)))
