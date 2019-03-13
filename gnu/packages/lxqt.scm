@@ -790,14 +790,14 @@ allows for launching applications or shutting down the system.")
 (define-public lxqt-session
   (package
     (name "lxqt-session")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1aibppppmg46ybbajx2qc395l0yp9rqlp2am01fqjxadsf8vci5z"))))
+        (base32 "11i2vimv3336dvvxb6y5csdybwjncr7cq3kwlj52vkpisnxslvgy"))))
     (build-system cmake-build-system)
     (inputs
      `(("eudev" ,eudev)
@@ -814,8 +814,6 @@ allows for launching applications or shutting down the system.")
        ("qttools" ,qttools)))
     (arguments
      `(#:tests? #f
-       #:configure-flags
-       `("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -824,6 +822,15 @@ allows for launching applications or shutting down the system.")
                             "config/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
+             #t))
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("lxqt-config-session/CMakeLists.txt"
+                            "lxqt-leave/CMakeLists.txt"
+                            "lxqt-session/CMakeLists.txt")
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
              #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "Session manager for LXQt")
