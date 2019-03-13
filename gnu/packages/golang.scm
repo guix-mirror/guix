@@ -600,8 +600,8 @@ expressing configuration which is easy for both humans and machines to read.")
       (license license:mpl2.0))))
 
 (define-public go-golang-org-x-crypto-bcrypt
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-bcrypt")
       (version (git-version "0.0.0" revision commit))
@@ -614,7 +614,7 @@ expressing configuration which is easy for both humans and machines to read.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/bcrypt"
@@ -626,8 +626,8 @@ password hashing function.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-blowfish
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-blowfish")
       (version (git-version "0.0.0" revision commit))
@@ -640,7 +640,7 @@ password hashing function.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/blowfish"
@@ -652,8 +652,8 @@ symmetric-key block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-pbkdf2
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-pbkdf2")
       (version (git-version "0.0.0" revision commit))
@@ -666,7 +666,7 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/pbkdf2"
@@ -678,8 +678,8 @@ derivation function.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-tea
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-tea")
       (version (git-version "0.0.0" revision commit))
@@ -692,7 +692,7 @@ derivation function.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/tea"
@@ -704,8 +704,8 @@ Algorithm (TEA) block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-salsa20
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-salsa20")
       (version (git-version "0.0.0" revision commit))
@@ -718,7 +718,7 @@ Algorithm (TEA) block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/salsa20"
@@ -730,8 +730,8 @@ stream cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-cast5
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-cast5")
       (version (git-version "0.0.0" revision commit))
@@ -744,7 +744,7 @@ stream cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/cast5"
@@ -756,8 +756,8 @@ symmetric-key block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-twofish
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-twofish")
       (version (git-version "0.0.0" revision commit))
@@ -770,7 +770,7 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/twofish"
@@ -782,8 +782,8 @@ symmetric-key block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-xtea
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-xtea")
       (version (git-version "0.0.0" revision commit))
@@ -796,7 +796,7 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/xtea"
