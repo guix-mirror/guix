@@ -867,8 +867,8 @@ fixed-output-length hash functions and the SHAKE variable-output-length hash
 functions defined by FIPS-202.")))
 
 (define-public go-golang-org-x-net-ipv4
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-ipv4")
       (version (git-version "0.0.0" revision commit))
@@ -880,7 +880,7 @@ functions defined by FIPS-202.")))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv4"
@@ -892,8 +892,8 @@ socket options for the Internet Protocol version 4.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-bpf
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-bpf")
       (version (git-version "0.0.0" revision commit))
@@ -906,7 +906,7 @@ socket options for the Internet Protocol version 4.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/bpf"
@@ -918,8 +918,8 @@ Packet Filter (BPF) virtual machine.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-context
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-context")
       (version (git-version "0.0.0" revision commit))
@@ -932,7 +932,7 @@ Packet Filter (BPF) virtual machine.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/context"
@@ -944,9 +944,59 @@ request-scoped values across API boundaries and between processes.")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-net-internal-socks
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
+    (package
+      (name "go-golang-org-x-net-internal-socks")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/net")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-net-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/net/internal/socks"
+         #:unpack-path "golang.org/x/net"))
+      (synopsis "")
+      (description "")
+      (home-page "https://go.googlesource.com/net/")
+      (license license:bsd-3))))
+
+(define-public go-golang-org-x-net-internal-socket
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
+    (package
+      (name "go-golang-org-x-net-internal-socket")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/net")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-net-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/net/internal/socket"
+         #:unpack-path "golang.org/x/net"))
+      (synopsis "")
+      (description "")
+      (home-page "https://go.googlesource.com/net/")
+      (license license:bsd-3))))
+
 (define-public go-golang-org-x-net-internal-iana
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-internal-iana")
       (version (git-version "0.0.0" revision commit))
@@ -959,7 +1009,7 @@ request-scoped values across API boundaries and between processes.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/internal/iana"
@@ -971,8 +1021,8 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-ipv6
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-ipv6")
       (version (git-version "0.0.0" revision commit))
@@ -985,7 +1035,7 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv6"
@@ -997,8 +1047,8 @@ IP-level socket options for the Internet Protocol version 6.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-proxy
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-proxy")
       (version (git-version "0.0.0" revision commit))
@@ -1011,7 +1061,7 @@ IP-level socket options for the Internet Protocol version 6.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/proxy"
