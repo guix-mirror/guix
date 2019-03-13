@@ -1073,8 +1073,8 @@ for a variety of protocols to proxy network data.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys-unix
-  (let ((commit "83801418e1b59fb1880e363299581ee543af32ca")
-        (revision "1"))
+  (let ((commit "4d1cda033e0619309c606fc686de3adcf599539e")
+        (revision "2"))
     (package
       (name "go-golang-org-x-sys-unix")
       (version (git-version "0.0.0" revision commit))
@@ -1086,19 +1086,11 @@ for a variety of protocols to proxy network data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ilykaanvnzb27d42kmbr4i37hcn7hgqbx98z945gy63aa8dskji"))))
+                  "1wgaldbnkmh568v8kkgvnmkskaj96fqrbzhx23yji2kh1432q6gh"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys/unix"
-         #:unpack-path "golang.org/x/sys"
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-tests
-             (lambda _
-               (pk (getcwd))
-               (substitute* "src/golang.org/x/sys/unix/syscall_unix_test.go"
-                 (("/usr/bin") "/tmp"))
-               #t)))))
+         #:unpack-path "golang.org/x/sys"))
       (synopsis "Go support for low-level system interaction")
       (description "This package provides @code{unix}, which offers Go support
 for low-level interaction with the operating system.")
