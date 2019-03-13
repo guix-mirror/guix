@@ -650,6 +650,38 @@ the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
 based on the knownGene track.")
     (license license:artistic2.0)))
 
+(define-public r-fdb-infiniummethylation-hg19
+  (package
+    (name "r-fdb-infiniummethylation-hg19")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "FDb.InfiniumMethylation.hg19_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0gq90fvph6kgrpjb89nvzq6hl1k24swn19rgjh5g98l86mja6nk0"))))
+    (properties
+     `((upstream-name . "FDb.InfiniumMethylation.hg19")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
+       ("r-txdb-hsapiens-ucsc-hg19-knowngene" ,r-txdb-hsapiens-ucsc-hg19-knowngene)))
+    (home-page "https://bioconductor.org/packages/FDb.InfiniumMethylation.hg19/")
+    (synopsis "Compiled HumanMethylation27 and HumanMethylation450 annotations")
+    (description
+     "This is an annotation package for Illumina Infinium DNA methylation
+probes.  It contains the compiled HumanMethylation27 and HumanMethylation450
+annotations.")
+    (license license:artistic2.0)))
+
 
 ;;; Experiment data
 
