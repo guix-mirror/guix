@@ -658,31 +658,6 @@ generation.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
 
-(define-public go-github-com-audriusbutkevicius-pfilter
-  (let ((commit "9dca34a5b530bfc9843fa8aa2ff08ff9821032cb")
-        (revision "2"))
-    (package
-      (name "go-github-com-audriusbutkevicius-pfilter")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/AudriusButkevicius/pfilter.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "0i4qbnwba49db27fb1y792gcvhb0m744i9q4zgwjbypqmy3bj2a5"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/AudriusButkevicius/pfilter"))
-      (synopsis "Filter packets into mulitple virtual connections")
-      (description "Pfilter is a Go package for filtering packets into multiple
-virtual connections from a single physical connection.")
-      (home-page "https://github.com/AudriusButkevicius/pfilter")
-      (license expat))))
-
 (define-public go-github-com-chmduquesne-rollinghash-adler32
   (let ((commit "a60f8e7142b536ea61bb5d84014171189eeaaa81")
         (revision "0"))
