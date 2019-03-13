@@ -654,14 +654,14 @@ LXQt.")
 (define-public lxqt-powermanagement
   (package
     (name "lxqt-powermanagement")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "15nvdypyjwnp7k3d2pkhdbmaqb3ccacmh95rbdbc5mr7yrjy9613"))))
+        (base32 "06bvgbkbl9p9n8ba5cfsynqgmpb5c8yfnsvp7zqhflj8k9p9msip"))))
     (build-system cmake-build-system)
     (inputs
      `(("kidletime" ,kidletime)
@@ -677,9 +677,6 @@ LXQt.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f                      ; no tests
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -687,6 +684,14 @@ LXQt.")
              (substitute* '("autostart/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
+             #t))
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("config/CMakeLists.txt"
+                            "src/CMakeLists.txt")
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
              #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "Power management module for LXQt")
