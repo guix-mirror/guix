@@ -458,14 +458,14 @@ as a whole and are not limited to distinct applications.")
 (define-public lxqt-notificationd
   (package
     (name "lxqt-notificationd")
-    (version "0.13.0")
+    (version "0.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
                            version "/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1l0hdbvghyhqgvy4pih7rvz26bc6yc8a3l1bdj11hnkw62h1i7d6"))))
+        (base32 "1kiag3fcx12qmslln6x6lwvm4f1spymwf71389kdya3vwx7hkmcy"))))
     (build-system cmake-build-system)
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
@@ -479,9 +479,6 @@ as a whole and are not limited to distinct applications.")
        ("qttools" ,qttools)))
     (arguments
      '(#:tests? #f                      ; no test target
-       #:configure-flags
-       ;; TODO: prefetch translations files from 'lxqt-l10n'.
-       '("-DPULL_TRANSLATIONS=NO")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -489,6 +486,14 @@ as a whole and are not limited to distinct applications.")
              (substitute* '("autostart/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
+             #t))
+         (add-after 'unpack 'patch-translations-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("config/CMakeLists.txt"
+                            "src/CMakeLists.txt")
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/share/lxqt/translations")))
              #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "The LXQt notification daemon")
