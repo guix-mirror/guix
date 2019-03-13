@@ -30,6 +30,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
@@ -1837,3 +1838,33 @@ and regression inferences from RNA-sequencing data.")
      "This package provides tools for differential expression analysis at both
 gene and isoform level using RNA-seq data")
     (license license:artistic2.0)))
+
+(define-public r-lpsymphony
+  (package
+    (name "r-lpsymphony")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "lpsymphony" version))
+       (sha256
+        (base32
+         "0vnsf5x6gvd1k8h89al7r6xbgbxsjbxphr675czzwggz79zbvq7y"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://r-forge.r-project.org/projects/rsymphony")
+    (synopsis "Symphony integer linear programming solver in R")
+    (description
+     "This package was derived from Rsymphony.  The package provides an R
+interface to SYMPHONY, a linear programming solver written in C++.  The main
+difference between this package and Rsymphony is that it includes the solver
+source code, while Rsymphony expects to find header and library files on the
+users' system.  Thus the intention of @code{lpsymphony} is to provide an easy
+to install interface to SYMPHONY.")
+    ;; Symphony 5.4 or later is distributed under the terms of the EPL 1.0.
+    ;; lpsimphony is released under the same terms.
+    (license license:epl1.0)))
