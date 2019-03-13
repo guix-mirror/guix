@@ -11551,3 +11551,26 @@ level R wrapper functions to easily utilize ZeroMQ.  The main focus is on
 interactive client/server programming frameworks.  A few wrapper functions
 compatible with @code{rzmq} are also provided.")
     (license license:gpl3)))
+
+(define-public r-repr
+  (package
+    (name "r-repr")
+    (version "0.19.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "repr" version))
+       (sha256
+        (base32
+         "1mhhzakkagb8z568yx3p2ixs8fcifm7f8l2yq285zrz8jmnpckfx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)))
+    (home-page "https://cran.r-project.org/web/packages/repr/")
+    (synopsis "Serializable representations")
+    (description
+     "This package provides string and binary representations of objects for
+several formats and MIME types.")
+    (license license:gpl3)))
