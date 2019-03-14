@@ -1226,7 +1226,7 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.19c")
+    (version "1.20")
     (source
      (origin
        (method git-fetch)
@@ -1235,16 +1235,16 @@ library remains flexible, portable, and easily embeddable.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14x3n25n9md0sw8cda9m5bd8r96xpw1vdkapklw4mxgfcz1k2kxq"))))
+        (base32 "18zhkqlwfh6f5dg1a41a4p7p9g94dgb9nwls1ksy9r5yz174i2fx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Test dependencies.
        ("lcov" ,lcov)
        ("perl" ,perl)
+       ("perl-conf-libconfig" ,perl-conf-libconfig)
        ("perl-io-socket-inet6" ,perl-io-socket-inet6)
        ("perl-socket6" ,perl-socket6)
-       ("psmisc" ,psmisc)
-       ("valgrind" ,valgrind)))
+       ("psmisc" ,psmisc)))             ; for ‘killall’
     (inputs
      `(("libcap" ,libcap)
        ("libconfig" ,libconfig)
@@ -1255,24 +1255,24 @@ library remains flexible, portable, and easily embeddable.")
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
          (add-before 'check 'fix-tests
-                     (lambda _
-                       (substitute* "./t"
-                         (("\"/tmp") "$ENV{\"TMPDIR\"} . \"")
-                         ;; The Guix build environment lacks ‘ip6-localhost’.
-                         (("ip6-localhost") "localhost"))
-                       #t))
+           (lambda _
+             (substitute* "./t"
+               (("\"/tmp") "$ENV{\"TMPDIR\"} . \"")
+               ;; The Guix build environment lacks ‘ip6-localhost’.
+               (("ip6-localhost") "localhost"))
+             #t))
          ;; Many of these files are mentioned in the man page. Install them.
          (add-after 'install 'install-documentation
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (doc (string-append out "/share/doc/sslh")))
-                        (install-file "README.md" doc)
-                        (for-each
-                         (lambda (file)
-                           (install-file file (string-append doc "/examples")))
-                         (append (find-files "." "\\.cfg")
-                                 (find-files "scripts"))))
-                      #t)))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/sslh")))
+               (install-file "README.md" doc)
+               (for-each
+                (lambda (file)
+                  (install-file file (string-append doc "/examples")))
+                (append (find-files "." "\\.cfg")
+                        (find-files "scripts"))))
+             #t)))
        #:make-flags (list "CC=gcc"
                           "USELIBCAP=1"
                           "USELIBWRAP=1"
