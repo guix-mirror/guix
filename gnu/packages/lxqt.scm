@@ -288,6 +288,10 @@ and memory usage or network traffic.")
      '(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'setenv
+           (lambda _
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
          (add-after 'unpack 'patch-translations-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
