@@ -52,7 +52,8 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages perl-web)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages textutils))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -1347,6 +1348,35 @@ and objects.")
     (description "This module implements some sane defaults for Perl programs,
 as defined by two typical specimens of Perl coders.")
     (license (package-license perl))))
+
+(define-public perl-conf-libconfig
+  (package
+    (name "perl-conf-libconfig")
+    (version "0.100")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CN/CNANGEL/"
+                           "Conf-Libconfig-" version ".tar.gz"))
+       (sha256
+        (base32 "0qdypqd7mx96bwdjlv13fn6p96bs4w0yv94yv94xa7z5lqkdj4rg"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (inputs
+     `(("libconfig" ,libconfig)))
+    (home-page "https://metacpan.org/release/Conf-Libconfig")
+    (synopsis "Perl extension for libconfig")
+    (description
+     "Conf::Libconfig is a Perl interface to the libconfig configuration file
+library.  It support scalar, array, and hash data structures just like its C/C++
+counterpart.  It reduces the effort required to implement a configuration file
+parser in your Perl programme and allows sharing configuration files between
+languages.")
+    (license bsd-3)))
 
 (define-public perl-config-any
   (package
