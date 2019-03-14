@@ -9,7 +9,7 @@
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-# Copyright © 2018 Nils Gillmann <ng0@n0.is>
+# Copyright © 2018 ng0 <ng0@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Alex Vong <alexvong1995@gmail.com>

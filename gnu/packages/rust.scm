@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>

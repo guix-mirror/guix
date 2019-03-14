@@ -34,7 +34,7 @@ Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo
 Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{}
 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018
 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright
-@copyright{} 2016, 2017 Nils Gillmann@* Copyright @copyright{} 2016, 2017,
+@copyright{} 2016, 2017 ng0@* Copyright @copyright{} 2016, 2017,
 2018, 2019 Jan Nieuwenhuizen@* Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016,
 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018

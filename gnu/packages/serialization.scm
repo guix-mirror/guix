@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;

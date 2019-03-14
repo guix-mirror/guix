@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>

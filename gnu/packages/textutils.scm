@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>

@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>

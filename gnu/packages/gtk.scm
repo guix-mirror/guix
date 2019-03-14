@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>

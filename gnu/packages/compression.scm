@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>

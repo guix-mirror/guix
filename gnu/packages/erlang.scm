@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

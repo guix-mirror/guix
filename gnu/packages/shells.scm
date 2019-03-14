@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
