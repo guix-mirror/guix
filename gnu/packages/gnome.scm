@@ -4721,7 +4721,7 @@ configuration program to choose applications starting on login.")
        ;; For testing
        ("dbus-launch" ,dbus)
        ("uuidgen" ,util-linux)
-       ("xvfb" ,xorg-server)))
+       ("xvfb" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; These are all in the Requires.private field of gjs-1.0.pc.
      `(("cairo" ,cairo)
