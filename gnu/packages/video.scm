@@ -1412,7 +1412,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.03.01")
+    (version "2019.03.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1420,7 +1420,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0bxk6adyppdv50jnp5cika8wc6wfgd6d8zbg1njgmcs1pxskllmf"))))
+                "1g46mrmzr31b2r6x0g6wmg3j00qc8l6cbzmdik0l5vwjfcrdvghf"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1531,7 +1531,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1256")
+    (version "0.4.1270")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1540,7 +1540,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hzr7ha1jvbc0v2bwl7s08ymwdmvb0f2jz4xp1fi6agq5y3ca1iv"))))
+                "123g6x8sh32v4yn4ss55lfw7j79hgl3l6aiwgrk4ndq7dzhnz46q"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -1816,15 +1816,15 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.7.1")
+    (version "2.7.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://sourceforge/" name "/" name "/" version "/"
-                   name "_" version ".tar.gz"))
+                   "mirror://sourceforge/avidemux/avidemux/" version "/"
+                   "avidemux_" version ".tar.gz"))
              (sha256
               (base32
-               "15g9h791qbnmycabbbl7s2b3n3xpvygm88qrfk35g2cw6957ik9w"))
+               "07fdz3y4iln7cizikdjj96dqvp2f8zzhs31ncxxwzdkngn5v8138"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1857,73 +1857,74 @@ for use with HTML5 video.")
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
-       (modify-phases %standard-phases
-       (add-before 'patch-source-shebangs 'unpack-ffmpeg
-         (lambda _
-           (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (invoke "tar" "xf" "ffmpeg-3.3.7.tar.bz2")
-             (delete-file "ffmpeg-3.3.7.tar.bz2"))
-           #t))
-       (add-after 'patch-source-shebangs 'repack-ffmpeg
-         (lambda _
-           (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (substitute* "ffmpeg-3.3.7/configure"
-               (("#! /bin/sh") (string-append "#!" (which "sh"))))
-             (invoke "tar" "cjf" "ffmpeg-3.3.7.tar.bz2" "ffmpeg-3.3.7"
-                     ;; avoid non-determinism in the archive
-                     "--sort=name" "--mtime=@0"
-                     "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-3.3.7"))
-           #t))
-       (replace 'configure
-         (lambda _
-           ;; Copy-paste settings from the cmake build system.
-           (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-           (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
-           #t))
-       (replace 'build
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (lib (string-append out "/lib"))
-                  (top (getcwd))
-                  (sdl (assoc-ref inputs "sdl"))
-                  (build_component
-                   (lambda* (component srcdir #:optional (args '()))
-                     (let ((builddir (string-append "build_" component)))
-                       (mkdir builddir)
-                       (with-directory-excursion builddir
-                         (apply invoke "cmake"
-                                "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
-                                (string-append "-DCMAKE_INSTALL_PREFIX=" out)
-                                (string-append "-DCMAKE_INSTALL_RPATH=" lib)
-                                (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
-                                               "\"-Wl,-rpath=" lib "\"")
-                                (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
-                                (string-append "-DSDL_INCLUDE_DIR="
-                                               sdl "/include/SDL")
-                                (string-append "../" srcdir)
-                                "-DENABLE_QT5=True"
-                                args)
-                         (invoke "make" "-j"
-                                 (number->string (parallel-job-count)))
-                         (invoke "make" "install"))))))
-             (mkdir out)
-             (build_component "core" "avidemux_core")
-             (build_component "cli" "avidemux/cli")
-             (build_component "qt4" "avidemux/qt4")
-             (build_component "plugins_common" "avidemux_plugins"
-                              '("-DPLUGIN_UI=COMMON"))
-             (build_component "plugins_cli" "avidemux_plugins"
-                              '("-DPLUGIN_UI=CLI"))
-             (build_component "plugins_qt4" "avidemux_plugins"
-                              '("-DPLUGIN_UI=QT4"))
-             (build_component "plugins_settings" "avidemux_plugins"
-                              '("-DPLUGIN_UI=SETTINGS"))
-             ;; Remove .exe and .dll file.
-             (delete-file-recursively
-              (string-append out "/share/ADM6_addons"))
-             #t)))
-       (delete 'install))))
+       (let ((ffmpeg "ffmpeg-4.1.1"))
+         (modify-phases %standard-phases
+           (add-before 'patch-source-shebangs 'unpack-ffmpeg
+             (lambda _
+               (with-directory-excursion "avidemux_core/ffmpeg_package"
+                 (invoke "tar" "xf" (string-append ffmpeg ".tar.bz2"))
+                 (delete-file (string-append ffmpeg ".tar.bz2")))
+               #t))
+           (add-after 'patch-source-shebangs 'repack-ffmpeg
+             (lambda _
+               (with-directory-excursion "avidemux_core/ffmpeg_package"
+                 (substitute* (string-append ffmpeg "/configure")
+                   (("#! /bin/sh") (string-append "#!" (which "sh"))))
+                 (invoke "tar" "cjf" (string-append ffmpeg ".tar.bz2") ffmpeg
+                         ;; avoid non-determinism in the archive
+                         "--sort=name" "--mtime=@0"
+                         "--owner=root:0" "--group=root:0")
+                 (delete-file-recursively ffmpeg))
+               #t))
+           (replace 'configure
+             (lambda _
+               ;; Copy-paste settings from the cmake build system.
+               (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+               (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+               #t))
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib"))
+                      (top (getcwd))
+                      (sdl (assoc-ref inputs "sdl"))
+                      (build_component
+                       (lambda* (component srcdir #:optional (args '()))
+                         (let ((builddir (string-append "build_" component)))
+                           (mkdir builddir)
+                           (with-directory-excursion builddir
+                             (apply invoke "cmake"
+                                    "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                                    (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                                    (string-append "-DCMAKE_INSTALL_RPATH=" lib)
+                                    (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                                                   "\"-Wl,-rpath=" lib "\"")
+                                    (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
+                                    (string-append "-DSDL_INCLUDE_DIR="
+                                                   sdl "/include/SDL")
+                                    (string-append "../" srcdir)
+                                    "-DENABLE_QT5=True"
+                                    args)
+                             (invoke "make" "-j"
+                                     (number->string (parallel-job-count)))
+                             (invoke "make" "install"))))))
+                 (mkdir out)
+                 (build_component "core" "avidemux_core")
+                 (build_component "cli" "avidemux/cli")
+                 (build_component "qt4" "avidemux/qt4")
+                 (build_component "plugins_common" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=COMMON"))
+                 (build_component "plugins_cli" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=CLI"))
+                 (build_component "plugins_qt4" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=QT4"))
+                 (build_component "plugins_settings" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=SETTINGS"))
+                 ;; Remove .exe and .dll file.
+                 (delete-file-recursively
+                  (string-append out "/share/ADM6_addons"))
+                 #t)))
+           (delete 'install)))))
     (home-page "http://fixounet.free.fr/avidemux/")
     (synopsis "Video editor")
     (description "Avidemux is a video editor designed for simple cutting,
@@ -1983,7 +1984,7 @@ format changes.")
 (define-public xvid
   (package
     (name "xvid")
-    (version "1.3.4")
+    (version "1.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1991,7 +1992,7 @@ format changes.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1xwbmp9wqshc0ckm970zdpi0yvgqxlqg0s8bkz98mnr8p2067bsz"))))
+                "1d0hy1w9sn6491a3vhyf3vmhq4xkn6yd4ralx1191s6qz5wz483w"))))
     (build-system gnu-build-system)
     (native-inputs `(("yasm" ,yasm)))
     (arguments

@@ -63,7 +63,7 @@
 (define-public geos
   (package
     (name "geos")
-    (version "3.7.0")
+    (version "3.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.osgeo.org/geos/geos-"
@@ -71,7 +71,7 @@
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1mrz778m6bd1x9k6sha5kld43kalhq79h2lynlx2jx7xjakl3gsg"))))
+                "1312m02xk4sp6f1xdpb9w0ic0zbxg90p5y66qnwidl5fksscf1h0"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (modify-phases %standard-phases

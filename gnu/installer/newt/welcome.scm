@@ -92,8 +92,8 @@ we want this page to occupy all the screen space available."
 the page. Ask the user to choose between manual installation, graphical
 installation and reboot."
   (run-menu-page
-   (G_ "GNU GuixSD install")
-   (G_ "Welcome to GNU GuixSD installer!
+   (G_ "GNU Guix install")
+   (G_ "Welcome to GNU Guix system installer!
 
 Please note that the present graphical installer is still under heavy \
 development, so you might want to prefer using the shell based process. \

@@ -59,14 +59,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.22.7")
+    (version "2.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zrhmz90sn30zgyflj4i86fsscws10xsi2kfs87nj2nd0pbggrjb"))))
+                "01s446lmjk7y8il4snjm32vpxws2rp4hmxrwm2swx0p47x8d2jif"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -147,6 +147,7 @@
        ("libxslt" ,libxslt)
        ("libxt" ,libxt)
        ("mesa" ,mesa)
+       ("openjpeg" ,openjpeg)
        ("sqlite" ,sqlite)))
     (home-page "https://www.webkitgtk.org/")
     (synopsis "Web content engine for GTK+")

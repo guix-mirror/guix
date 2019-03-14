@@ -40,14 +40,19 @@
   #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
@@ -924,3 +929,101 @@ interactive learning.")
 Models, is a program for performing both single-SNP and SNP-set genome-wide
 association studies (GWAS) on extremely large data sets.")
     (license license:asl2.0)))
+
+;; There have been no proper releases yet.
+(define-public kaldi
+  (let ((commit "2f95609f0bb085bd3a1dc5eb0a39f3edea59e606")
+        (revision "1"))
+    (package
+      (name "kaldi")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/kaldi-asr/kaldi.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "082qh3pfi7hvncylp4xsmkfahbd7gb0whdfa4rwrx7fxk9rdh3kz"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "src") #t))
+           (replace 'configure
+             (lambda* (#:key build system inputs outputs #:allow-other-keys)
+               (when (not (or (string-prefix? "x86_64" system)
+                              (string-prefix? "i686" system)))
+                 (substitute* "makefiles/linux_openblas.mk"
+                   (("-msse -msse2") "")))
+               (substitute* "makefiles/default_rules.mk"
+                 (("/bin/bash") (which "bash")))
+               (substitute* "Makefile"
+                 (("ext_depend: check_portaudio")
+                  "ext_depend:"))
+               (substitute* '("online/Makefile"
+                              "onlinebin/Makefile"
+                              "gst-plugin/Makefile")
+                 (("../../tools/portaudio/install")
+                  (assoc-ref inputs "portaudio")))
+
+               ;; This `configure' script doesn't support variables passed as
+               ;; arguments, nor does it support "prefix".
+               (let ((out (assoc-ref outputs "out"))
+                     (openblas (assoc-ref inputs "openblas"))
+                     (openfst (assoc-ref inputs "openfst")))
+                 (substitute* "configure"
+                   (("check_for_slow_expf;") "")
+                   ;; This affects the RPATH and also serves as the installation
+                   ;; directory.
+                   (("KALDILIBDIR=`pwd`/lib")
+                    (string-append "KALDILIBDIR=" out "/lib")))
+                 (mkdir-p out) ; must exist
+                 (setenv "CONFIG_SHELL" (which "bash"))
+                 (setenv "OPENFST_VER" ,(package-version openfst))
+                 (invoke "./configure"
+                         "--use-cuda=no"
+                         "--shared"
+                         (string-append "--openblas-root=" openblas)
+                         (string-append "--fst-root=" openfst)))))
+           (add-after 'build 'build-ext-and-gstreamer-plugin
+             (lambda _
+               (invoke "make" "-C" "online" "depend")
+               (invoke "make" "-C" "online")
+               (invoke "make" "-C" "onlinebin" "depend")
+               (invoke "make" "-C" "onlinebin")
+               (invoke "make" "-C" "gst-plugin" "depend")
+               (invoke "make" "-C" "gst-plugin")
+               #t))
+           ;; TODO: also install the executables.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib")))
+                 (mkdir-p lib)
+                 (install-file "gst-plugin/libgstonlinegmmdecodefaster.so" lib)
+                 #t))))))
+      (inputs
+       `(("alsa-lib" ,alsa-lib)
+         ("gfortran" ,gfortran "lib")
+         ("glib" ,glib)
+         ("gstreamer" ,gstreamer)
+         ("jack" ,jack-1)
+         ("openblas" ,openblas)
+         ("openfst" ,openfst)
+         ("portaudio" ,portaudio)
+         ("python" ,python)))
+      (native-inputs
+       `(("glib" ,glib "bin")             ; glib-genmarshal
+         ("grep" ,grep)
+         ("sed" ,sed)
+         ("pkg-config" ,pkg-config)
+         ("which" ,which)))
+      (home-page "https://kaldi-asr.org/")
+      (synopsis "Speech recognition toolkit")
+      (description "Kaldi is an extensible toolkit for speech recognition
+written in C++.")
+      (license license:asl2.0))))

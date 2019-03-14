@@ -1403,14 +1403,14 @@ interface or via an external visual interface such as GNU XBoard.")
 (define freedink-engine
   (package
     (name "freedink-engine")
-    (version "109.4")
+    (version "109.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/freedink/freedink-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "0iaagwnyfgm3mqzkj550q60hrsjr13gykg5vfn2nz2ia520bb52g"))))
+                "00hhk1bjdrc1np2qz44sa5n1mb62qzwxbvsnws3vpms6iyn3a2sy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-embedded-resources")
@@ -4437,12 +4437,17 @@ fish.  The whole game is accompanied by quiet, comforting music.")
        ("python-pyyaml" ,python-pyyaml)
        ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:make-flags
+     `(#:make-flags
        (let* ((sqlite (assoc-ref %build-inputs "sqlite"))
               (out (assoc-ref %outputs "out")))
          (list (string-append "SQLITE_INCLUDE_DIR=" sqlite "/include")
                (string-append "prefix=" out)
                "SAVEDIR=~/.crawl"
+               ;; Don't compile with SSE on systems which don't use it
+               ,@(match (%current-system)
+                   ((or "i686-linux" "x86_64-linux")
+                    '())
+                   (_ '("NOSSE=TRUE")))
                ;; don't build any bundled dependencies
                "BUILD_LUA="
                "BUILD_SQLITE="
@@ -4450,11 +4455,6 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                "-Csource"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-flags
-           (lambda _
-             (substitute* "source/Makefile"
-               (("-mfpmath=sse -msse2") ""))
-             #t))
          (add-after 'unpack 'find-SDL-image
            (lambda _
              (substitute* "source/windowmanager-sdl.cc"
@@ -5860,7 +5860,7 @@ when packaged in Blorb container files or optionally from individual files.")
 (define-public libmanette
   (package
     (name "libmanette")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5868,7 +5868,7 @@ when packaged in Blorb container files or optionally from individual files.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14vqz30p4693yy3yxs0gj858x25sl2kawib1g9lj8g5frgl0hd82"))))
+                "1lpprk2qz1lsqf9xj6kj2ciyc1zmjhj5lwd584qkh7jgz2x9y6wb"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-compile-resources

@@ -114,7 +114,7 @@ void LocalStore::optimisePath_(OptimiseStats & stats, const Path & path, InodeHa
 
     /* Sometimes SNAFUs can cause files in the store to be
        modified, in particular when running programs as root under
-       GuixSD (example: $fontconfig/var/cache being modified).  Skip
+       Guix System (example: $fontconfig/var/cache being modified).  Skip
        those files.  FIXME: check the modification time. */
     if (S_ISREG(st.st_mode) && (st.st_mode & S_IWUSR)) {
         printMsg(lvlError, format("skipping suspicious writable file `%1%'") % path);

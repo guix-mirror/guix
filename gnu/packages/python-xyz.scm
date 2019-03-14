@@ -3224,26 +3224,19 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.27.3")
+    (version "0.27.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
         (base32
-         "046ahvsb7a20sgvscqfm3cb32sp3sii4gim9vz7zzrkf7yz16xlv"))))
+         "15c1mhwwjc7nr8hn5gm21hcfhw61jmwb0vngpjhlm3y5565wg2pz"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     '(#:tests? #f; tests don't run correctly in our environment
+       #:phases
        (modify-phases %standard-phases
-         ;; Remove after the next update. See:
-         ;; https://github.com/libgit2/pygit2/pull/851
-         (add-after 'unpack 'compile-with-cffi
-           (lambda _
-             (substitute* "setup.py"
-               (("install_requires")
-                "setup_requires=['cffi'],\n      install_requires"))
-             #t))
          (add-after 'unpack 'fix-dependency-versioning
            (lambda _
              (substitute* "setup.py"
@@ -8976,14 +8969,14 @@ to occurrences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "3.7")
+    (version "3.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
         (base32
-         "0shxcfz4wcczj0mhwp4w0dvwd2fdd9bgprq8slim1519iiqzgwhq"))))
+         "1xrfph277bgjln3jbpzpgkhxad04fjvj7s3xfil42q1sxi4s3q3g"))))
     (build-system python-build-system)
     (inputs
      `(("file" ,file)))
@@ -11619,6 +11612,27 @@ applications in seconds while maintaining all the flexibility.")
 
 (define-public python2-mando
   (package-with-python2 python-mando))
+
+(define-public python2-argparse
+  (package
+    (name "python2-argparse")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "argparse" version))
+       (sha256
+        (base32
+         "1r6nznp64j68ih1k537wms7h57nvppq0szmwsaf99n71bfjqkc32"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (home-page "https://github.com/ThomasWaldmann/argparse/")
+    (synopsis "Python command-line parsing library")
+    (description
+     "This package is mostly for people who want to have @code{argparse} on
+older Pythons because it was not part of the standard library back then.")
+    (license license:psfl)))
 
 (define-public python-fudge
   (package
@@ -14331,14 +14345,14 @@ validation testing and application logic.")
 (define-public python-numba
   (package
     (name "python-numba")
-    (version "0.39.0")
+    (version "0.42.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "numba" version))
        (sha256
         (base32
-         "1bibvkwga1v8293i9ivl469d8bzgabn3vgr2ig7c1i68v8frsx07"))))
+         "03rqdfx0512lcri2bcpngx5k3jwfbqnanqj3n19c7d6h6hqxvq9x"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)

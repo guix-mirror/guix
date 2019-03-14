@@ -92,7 +92,7 @@
                                    '("eshell/esh-groups.el")))
 
                  ;; Make sure Tramp looks for binaries in the right places on
-                 ;; remote GuixSD machines, where 'getconf PATH' returns
+                 ;; remote Guix System machines, where 'getconf PATH' returns
                  ;; something bogus.
                  (substitute* "net/tramp-sh.el"
                    ;; Patch the line after "(defcustom tramp-remote-path".

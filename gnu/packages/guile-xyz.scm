@@ -605,18 +605,19 @@ using Guile's foreign function interface.")
   (package
     (name "guile-colorized")
     (version "0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/NalaGinrut/guile-colorized/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "16xhc3an6aglnca8xl3mvgi8hsqzqn68vsl5ga4bz8bvbap5fn4p"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/NalaGinrut/guile-colorized.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10mv8c63159r3qvwwdvsgnsvdg7nc2ghak85zapwqpv4ywrqp9zc"))))
     (build-system guile-build-system)
     (native-inputs
      `(("guile" ,guile-2.2)))
-    (home-page "https://github.com/NalaGinrut/guile-colorized")
+    (home-page "https://gitlab.com/NalaGinrut/guile-colorized")
     (synopsis "Colorized REPL for Guile")
     (description
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
@@ -2069,6 +2070,7 @@ completion, a simple mode line, etc.")
                 (uri (git-reference
                       (url "https://gitlab.com/tampe/stis-parser")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0v4hvq7rlpbra1ni73lf8k6sdmjlflr50yi3p1f24g85h77pc7c0"))))
@@ -2079,6 +2081,11 @@ completion, a simple mode line, etc.")
          (modify-phases %standard-phases
            (add-after 'unpack 'chdir
              (lambda _ (chdir "modules") #t))
+           (add-after 'chdir 'use-canonical-directory-for-go-files
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("/ccache") "/site-ccache"))
+               #t))
            (add-after 'chdir 'delete-broken-symlink
              (lambda _
                (delete-file "parser/stis-parser/lang/.#calc.scm")
@@ -2096,4 +2103,104 @@ completion, a simple mode line, etc.")
 supports backtracking and a small logical framework. The idea is to build up
 chunks that are memoized and there is no clear scanner/parser separation,
 chunks can be expressions as well as simple tokens.")
+      (license license:lgpl2.0+))))
+
+(define-public guile-persist
+  (let ((commit "b14927b0368af51c024560aee5f55724aee35233")
+        (revision "1"))
+    (package
+      (name "guile-persist")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/tampe/guile-persist")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0z5nf377wh8yj6n3sx2ddn4bdx1qrqnw899dlqjhg0q69qzil522"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-prefix
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "src/Makefile.am"
+                 (("/usr/local/lib/guile")
+                  (string-append (assoc-ref outputs "out") "/lib/guile"))
+                 (("/usr/local/include/guile")
+                  (string-append (assoc-ref inputs "guile") "/include/guile"))
+                 (("-L/usr/local/lib")
+                  (string-append "-L" (assoc-ref inputs "guile") "/lib"))
+                 ;; Use canonical directory for go files.
+                 (("/ccache") "/site-ccache"))
+               #t))
+           (add-after 'unpack 'patch-library-reference
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "persist/persistance.scm"
+                   (("\"libguile-persist\"")
+                    (format #f "\"~a/lib/guile/2.2/extensions/libguile-persist\"" out)))
+                 #t))))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://gitlab.com/tampe/guile-persist")
+      (synopsis "Persistance programming framework for Guile")
+      (description
+       "This is a serialization library for serializing objects like classes
+and objects, closures and structs.  This currently does not support
+serializing continuations or delimited continuations.")
+      (license license:lgpl2.0+))))
+
+(define-public python-on-guile
+  (let ((commit "0cb7c2b2fff4338ca6153473f3f5c409a818f293")
+        (revision "1"))
+    (package
+      (name "python-on-guile")
+      (version (git-version "0.1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/python-on-guile/python-on-guile.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0kpz08rrp5mwcf5ksc4flgrw992syham9x49dn9wq9w31bpcpnby"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:parallel-build? #f ; not supported
+         #:make-flags
+         '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "modules") #t))
+           (add-after 'chdir 'use-canonical-directory-for-go-files
+             (lambda _
+               (substitute* "Makefile.am"
+                 (("/ccache") "/site-ccache"))
+               #t)))))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("guile-persist" ,guile-persist)
+         ("guile-readline" ,guile-readline)
+         ("guile-stis-parser" ,guile-stis-parser)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://gitlab.com/python-on-guile/python-on-guile/")
+      (synopsis "Python implementation in Guile")
+      (description
+       "This package allows you to compile a Guile Python file to any target
+from @code{tree-il}.")
       (license license:lgpl2.0+))))

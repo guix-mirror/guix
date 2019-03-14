@@ -159,23 +159,26 @@ flags."
   ;; Search path for package modules.  Each item must be either a directory
   ;; name or a pair whose car is a directory and whose cdr is a sub-directory
   ;; to narrow the search.
-  (let* ((not-colon   (char-set-complement (char-set #\:)))
-         (environment (string-tokenize (or (getenv "GUIX_PACKAGE_PATH") "")
-                                       not-colon))
-         (channels    (package-path-entries)))
+  (let*-values (((not-colon)
+                 (char-set-complement (char-set #\:)))
+                ((environment)
+                 (string-tokenize (or (getenv "GUIX_PACKAGE_PATH") "")
+                                  not-colon))
+                ((channels-scm channels-go)
+                 (package-path-entries)))
     ;; Automatically add channels and items from $GUIX_PACKAGE_PATH to Guile's
     ;; search path.  For historical reasons, $GUIX_PACKAGE_PATH goes to the
     ;; front; channels go to the back so that they don't override Guix' own
     ;; modules.
     (set! %load-path
-      (append environment %load-path channels))
+      (append environment %load-path channels-scm))
     (set! %load-compiled-path
-      (append environment %load-compiled-path channels))
+      (append environment %load-compiled-path channels-go))
 
     (make-parameter
      (append environment
              %default-package-module-path
-             channels))))
+             channels-scm))))
 
 (define %patch-path
   ;; Define it after '%package-module-path' so that '%load-path' contains user

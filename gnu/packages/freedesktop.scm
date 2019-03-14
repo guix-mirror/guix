@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -36,6 +36,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
@@ -152,7 +153,7 @@ freedesktop.org project.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
-                                  name "-" version ".tar.xz"))
+                                  "libinput-" version ".tar.xz"))
               (sha256
                (base32
                 "0pgla0mc6mvyr1ljy10mcqvfz8i5z6yp7dbx2bcd70y67wx05d0j"))))
@@ -451,6 +452,33 @@ applications, X servers (rootless or fullscreen) or other display servers.")
     (description "This package contains XML definitions of the Wayland protocols.")
     (home-page "https://wayland.freedesktop.org")
     (license license:expat)))
+
+(define-public waylandpp
+  (package
+    (name "waylandpp")
+    (version "0.2.5")
+    (home-page "https://github.com/NilsBrause/waylandpp")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (sha256
+               (base32
+                "16h57hzd688664qcyznzhjp3hxipdkzgv46x82yhkww24av8b55n"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("pugixml" ,pugixml)))
+    (propagated-inputs
+     `(;; In Requires of the .pc files.
+       ("wayland" ,wayland)))
+    (synopsis "Wayland C++ bindings")
+    (description
+     "This package provides C++ bindings for the Wayland display protocol.")
+    (license license:bsd-2)))
 
 (define-public weston
   (package

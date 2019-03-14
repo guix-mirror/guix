@@ -113,7 +113,7 @@ FULL-VALUE tentatives, spaced by 1 second."
   (let* ((full-value 5))
     (run-scale-page
      #:title (G_ "Checking connectivity")
-     #:info-text (G_ "Waiting internet access is established.")
+     #:info-text (G_ "Waiting for Internet access establishment...")
      #:scale-full-value full-value
      #:scale-update-proc
      (lambda (value)
@@ -123,8 +123,8 @@ FULL-VALUE tentatives, spaced by 1 second."
            (+ value 1))))
     (unless (connman-online?)
       (run-error-page
-       (G_ "The selected network does not provide an Internet \
-access, please try again.")
+       (G_ "The selected network does not provide access to the \
+Internet, please try again.")
        (G_ "Connection error"))
       (raise
        (condition

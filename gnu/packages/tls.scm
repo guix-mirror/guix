@@ -497,13 +497,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.31.0")
+    (version "0.32.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1gxjv09c695lj8swspa390nch117i60qkrgy135383vfk00jsp3y"))))
+                "1v0skyrjnbxq0lfmia5k6jy29iig4sxbi9j9q367xsw0g25wxvqf"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -554,7 +554,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0wq4jgyzli684h154w26xplp0fzyks2vlrnmhafhyb0h1bw9cc8c"))))
+                "1j63i0j019q0d3l5rx14fv4nxy01nplhk7q2k2fq10vxl0jlxff0"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -572,8 +572,8 @@ netcat implementation that supports TLS.")
                     #t))))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
        ;; For documentation
        ("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
@@ -582,6 +582,7 @@ netcat implementation that supports TLS.")
        ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("python-acme" ,python-acme)
+       ("python-cryptography" ,python-cryptography)
        ("python-zope-interface" ,python-zope-interface)
        ("python-pyrfc3339" ,python-pyrfc3339)
        ("python-pyopenssl" ,python-pyopenssl)

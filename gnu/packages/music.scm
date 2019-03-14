@@ -3667,7 +3667,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.0.4")
+    (version "3.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3676,7 +3676,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05cn4j5f7xr438lgl0by3lrc7wckdgicdn4jrvxfqic8hv81sca7"))
+                "1inf6zdyh6yspjv1i7g6rw9wn90vki1s2qgilkp0j4aphayj4mic"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3835,7 +3835,7 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "18.06")
+    (version "18.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3843,10 +3843,10 @@ specification and header.")
                     version "/rosegarden-" version ".tar.bz2"))
               (sha256
                (base32
-                "04qc80sqb2ji42pq3mayhvqqn39hlxzymsywpbpzfpchr19chxx7"))))
+                "15i9fm0vkn3wsgahaxqi1j5zs0wc0j3wdwml0x49084gk2p328vb"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DUSE_QT5=1") ; "-DCMAKE_BUILD_TYPE=Release"
+     `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests

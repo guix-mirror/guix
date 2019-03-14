@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -43,6 +43,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -461,6 +462,23 @@ plug-in system.")
                    license:public-domain          ;cpluff/examples
                    license:bsd-3                  ;misc, gtest
                    license:bsd-2))))              ;xbmc/freebsd
+
+(define-public kodi/wayland
+  (package/inherit kodi
+    (name "kodi-wayland")
+    (arguments
+     (substitute-keyword-arguments (package-arguments kodi)
+       ((#:configure-flags flags)
+        `(append '("-DCORE_PLATFORM_NAME=wayland"
+                   "-DWAYLAND_RENDER_SYSTEM=gl")
+                   ,flags))))
+    (inputs
+     `(("libinput" ,libinput)
+       ("libxkbcommon" ,libxkbcommon)
+       ("waylandpp" ,waylandpp)
+       ("waylandp-protocols" ,wayland-protocols)
+       ,@(package-inputs kodi)))
+    (synopsis "Kodi with Wayland rendering backend")))
 
 (define-public kodi-cli
   (let ((commit "104dc23b2a993c8e6db8c46f4f8bec24b146549b") ; Add support for

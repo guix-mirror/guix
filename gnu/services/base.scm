@@ -43,6 +43,7 @@
                 #:select (canonical-package glibc glibc-utf8-locales))
   #:use-module (gnu packages bash)
   #:use-module (gnu packages package-management)
+  #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (gnu packages linux)
   #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
@@ -50,6 +51,7 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -329,7 +331,7 @@ seconds after @code{SIGTERM} has been sent are terminated with
   `(("fstab" ,(plain-file "fstab"
                           (string-append
                            "\
-# This file was generated from your GuixSD configuration.  Any changes
+# This file was generated from your Guix configuration.  Any changes
 # will be lost upon reboot or reconfiguration.\n\n"
                            (string-join (map file-system->fstab-entry
                                              file-systems)
@@ -1481,16 +1483,14 @@ pam-limits-entry specified in LIMITS via pam_limits.so."
 
 (define* (guix-build-accounts count #:key
                               (group "guixbuild")
-                              (first-uid 30001)
                               (shadow shadow))
-  "Return a list of COUNT user accounts for Guix build users, with UIDs
-starting at FIRST-UID, and under GID."
+  "Return a list of COUNT user accounts for Guix build users with the given
+GID."
   (unfold (cut > <> count)
           (lambda (n)
             (user-account
              (name (format #f "guixbuilder~2,'0d" n))
              (system? #t)
-             (uid (+ first-uid n -1))
              (group group)
 
              ;; guix-daemon expects GROUP to be listed as a
@@ -1504,27 +1504,58 @@ starting at FIRST-UID, and under GID."
           1+
           1))
 
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix rest ...) #t)
+    (('gnu rest ...) #t)
+    (rest #f)))
+
 (define (hydra-key-authorization keys guix)
   "Return a gexp with code to register KEYS, a list of files containing 'guix
 archive' public keys, with GUIX."
-  #~(unless (file-exists? "/etc/guix/acl")
-      (for-each (lambda (key)
-                  (let ((pid (primitive-fork)))
-                    (case pid
-                      ((0)
-                       (let* ((port (open-file key "r0b")))
-                         (format #t "registering public key '~a'...~%" key)
-                         (close-port (current-input-port))
-                         (dup port 0)
-                         (execl #$(file-append guix "/bin/guix")
-                                "guix" "archive" "--authorize")
-                         (primitive-exit 1)))
-                      (else
-                       (let ((status (cdr (waitpid pid))))
-                         (unless (zero? status)
-                           (format (current-error-port) "warning: \
-failed to register public key '~a': ~a~%" key status)))))))
-                '(#$@keys))))
+  (define aaa
+    ;; XXX: Terrible hack to work around <https://bugs.gnu.org/15602>: this
+    ;; forces (guix config) and (guix utils) to be loaded upfront, so that
+    ;; their run-time symbols are defined.
+    (scheme-file "aaa.scm"
+                 #~(define-module (guix aaa)
+                     #:use-module (guix config)
+                     #:use-module (guix memoization))))
+
+  (define default-acl
+    (with-extensions (list guile-gcrypt)
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ((guix aaa) => ,aaa)
+                               ,@(source-module-closure '((guix pki))
+                                                        #:select? not-config?))
+        (computed-file "acl"
+                       #~(begin
+                           (use-modules (guix pki)
+                                        (gcrypt pk-crypto)
+                                        (ice-9 rdelim))
+
+                           (define keys
+                             (map (lambda (file)
+                                    (call-with-input-file file
+                                      (compose string->canonical-sexp
+                                               read-string)))
+                                  '(#$@keys)))
+
+                           (call-with-output-file #$output
+                             (lambda (port)
+                               (write-acl (public-keys->acl keys)
+                                          port))))))))
+
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (unless (file-exists? "/etc/guix/acl")
+          (mkdir-p "/etc/guix")
+          (copy-file #+default-acl "/etc/guix/acl")
+          (chmod "/etc/guix/acl" #o600)))))
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.

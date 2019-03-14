@@ -857,27 +857,19 @@ when CUT? returns true for a given package."
                                   #:optional (rewrite-name identity))
   "Return a procedure that, when passed a package, replaces its direct and
 indirect dependencies (but not its implicit inputs) according to REPLACEMENTS.
-REPLACEMENTS is a list of package pairs or a promise thereof; the first
-element of each pair is the package to replace, and the second one is the
-replacement.
+REPLACEMENTS is a list of package pairs; the first element of each pair is the
+package to replace, and the second one is the replacement.
 
 Optionally, REWRITE-NAME is a one-argument procedure that takes the name of a
 package and returns its new name after rewrite."
   (define (rewrite p)
-    (match (assq-ref (if (promise? replacements)
-                         (force replacements)
-                         replacements)
-                     p)
+    (match (assq-ref replacements p)
       (#f  (package
              (inherit p)
              (name (rewrite-name (package-name p)))))
       (new new)))
 
-  (package-mapping rewrite
-                   (lambda (package)
-                     (assq package (if (promise? replacements)
-                                       (force replacements)
-                                       replacements)))))
+  (package-mapping rewrite (cut assq <> replacements)))
 
 (define-syntax-rule (package/inherit p overrides ...)
   "Like (package (inherit P) OVERRIDES ...), except that the same

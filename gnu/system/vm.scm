@@ -463,8 +463,8 @@ the image."
   "Build a docker image.  OS is the desired <operating-system>.  NAME is the
 base name to use for the output file.  When REGISTER-CLOSURES? is not #f,
 register the closure of OS with Guix in the resulting Docker image.  This only
-makes sense when you want to build a GuixSD Docker image that has Guix
-installed inside of it.  If you don't need Guix (e.g., your GuixSD Docker
+makes sense when you want to build a Guix System Docker image that has Guix
+installed inside of it.  If you don't need Guix (e.g., your Docker
 image just contains a web server that is started by the Shepherd), then you
 should set REGISTER-CLOSURES? to #f."
   (define schema
@@ -610,7 +610,7 @@ to USB sticks meant to be read-only."
 
   (define root-label
     ;; Volume name of the root file system.
-    (normalize-label "GuixSD_image"))
+    (normalize-label "Guix_image"))
 
   (define root-uuid
     ;; UUID of the root file system, computed in a deterministic fashion.
