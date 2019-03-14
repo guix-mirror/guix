@@ -1227,14 +1227,15 @@ library remains flexible, portable, and easily embeddable.")
   (package
     (name "sslh")
     (version "1.19c")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/yrutschle/sslh/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pd8hifa9h0rm7vms3k6ic1k29xigrlv2idc5wgcafmb1v1243di"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/yrutschle/sslh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14x3n25n9md0sw8cda9m5bd8r96xpw1vdkapklw4mxgfcz1k2kxq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Test dependencies.
