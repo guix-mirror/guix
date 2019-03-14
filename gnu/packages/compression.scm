@@ -1567,7 +1567,7 @@ recreates the stored directory structure by default.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://libzip.org/download/" name "-" version ".tar.xz"))
+                    "https://libzip.org/download/libzip-" version ".tar.xz"))
               (sha256
                (base32
                 "0wnkkvkq90wyawj9221i77sf3nix1vj3ygzdy59k8yvcjnv3bsh4"))))
