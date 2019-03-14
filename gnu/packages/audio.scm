@@ -2270,7 +2270,7 @@ for experimenting with sound synthesis and algorithmic composition.
 SuperCollider requires jackd to be installed in your user profile and your
 user must be allowed to access the realtime features of the kernel.  Search
 for \"realtime\" in the index of the Guix manual to learn how to achieve this
-using GuixSD.")
+using Guix System.")
     (license license:gpl2+)))
 
 (define-public raul
@@ -2834,7 +2834,26 @@ portions of LAME.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (arguments '(#:tests? #f))                    ;no 'check' target
+    (arguments
+     '(#:tests? #f                    ;no 'check' target
+       #:configure-flags '("--with-pic")
+       #:phases
+       (modify-phases %standard-phases
+         ;; This is needed for linking the static libraries
+         (add-after 'unpack 'build-only-position-independent-code
+           (lambda _
+             (substitute* "configure.in"
+               (("AC_PROG_LIBTOOL" m)
+                (string-append m "\nAM_PROG_AR\nLT_INIT([pic-only])")))
+             (delete-file "configure")
+             #t))
+         ;; Some headers are not installed by default, but are needed by
+         ;; packages like Kaldi.
+         (add-after 'install 'install-missing-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "src/common/pa_ringbuffer.h"
+                           (string-append (assoc-ref outputs "out") "/include"))
+             #t)))))
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
     (description
@@ -3361,14 +3380,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "17.7")
+    (version "19.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "1vm0dy5qlycqkima7y5ajzvazyjybifa803fabjcpncjz08c26vp"))))
+                "1a6ls2hyvggss12idca22hq5vsq4jw2xkwrx22dx29i9926gdr6h"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

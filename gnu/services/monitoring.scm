@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +29,8 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix records)
-  #:use-module ((guix ui) #:select (display-hint))
+  #:use-module (guix utils)
+  #:use-module ((guix ui) #:select (display-hint G_))
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-26)
@@ -509,13 +510,12 @@ create it manually.")
    (number 10051)
    "Zabbix server port."))
 
-(define zabbix-front-end-config
-  (match-lambda
-    (($ <zabbix-front-end-configuration>
-        _ db-host db-port db-name db-user db-password db-secret-file
-        zabbix-host zabbix-port)
-     (mixed-text-file "zabbix.conf.php"
-                      "\
+(define (zabbix-front-end-config config)
+  (match-record config <zabbix-front-end-configuration>
+    (%location db-host db-port db-name db-user db-password db-secret-file
+               zabbix-host zabbix-port)
+    (mixed-text-file "zabbix.conf.php"
+                     "\
 <?php
 // Zabbix GUI configuration file.
 global $DB;
@@ -525,20 +525,29 @@ $DB['SERVER']   = '" db-host "';
 $DB['PORT']     = '" (number->string db-port) "';
 $DB['DATABASE'] = '" db-name "';
 $DB['USER']     = '" db-user "';
-$DB['PASSWORD'] = '" (if (string-null? db-password)
-                         (if (string-null? db-secret-file)
-                             (raise (condition
-                                     (&message
-                                      (message "\
-you must provide either 'db-secret-file' or 'db-password'"))))
-                             (string-trim-both
-                              (with-input-from-file db-secret-file
-                                read-string)))
-                         (begin
-                           (display-hint "\
-Consider using @code{db-secret-file} instead of @code{db-password} and unset
-@code{db-password} for security in @code{zabbix-front-end-configuration}.")
-                           db-password)) "';
+$DB['PASSWORD'] = '" (let ((file (location-file %location))
+                           (line (location-line %location))
+                           (column (location-column %location)))
+                       (if (string-null? db-password)
+                           (if (string-null? db-secret-file)
+                               (raise (make-compound-condition
+                                       (condition
+                                        (&message
+                                         (message
+                                          (format #f "no '~A' or '~A' field in your '~A' record"
+                                                  'db-secret-file 'db-password
+                                                  'zabbix-front-end-configuration))))
+                                       (condition
+                                        (&error-location
+                                         (location %location)))))
+                               (string-trim-both
+                                (with-input-from-file db-secret-file
+                                  read-string)))
+                           (begin
+                             (display-hint (format #f (G_ "~a:~a:~a: ~a:
+Consider using @code{db-secret-file} instead of @code{db-password} for better
+security.") file line column 'zabbix-front-end-configuration))
+                             db-password))) "';
 
 // Schema name. Used for IBM DB2 and PostgreSQL.
 $DB['SCHEMA'] = '';
@@ -548,7 +557,7 @@ $ZBX_SERVER_PORT = '" (number->string zabbix-port) "';
 $ZBX_SERVER_NAME = '';
 
 $IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
-"))))
+")))
 
 (define %maintenance.inc.php
   ;; Empty php file to allow us move zabbix-frontend configs to ‘/etc/zabbix’

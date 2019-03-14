@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,7 +112,7 @@ depends on."
                  ".scm"))
 
 (define (guix-module-name? name)
-  "Return true if NAME (a list of symbols) denotes a Guix or GuixSD module."
+  "Return true if NAME (a list of symbols) denotes a Guix module."
   (match name
     (('guix _ ...) #t)
     (('gnu _ ...) #t)

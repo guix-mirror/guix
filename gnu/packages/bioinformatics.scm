@@ -1752,6 +1752,72 @@ high-throughput sequencing data – with an emphasis on simplicity.")
 (define-public python2-plastid
   (package-with-python2 python-plastid))
 
+(define-public tetoolkit
+  (package
+    (name "tetoolkit")
+    (version "2.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mhammell-laboratory/tetoolkit.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yzi0kfpzip8zpjb82x1ik6h22yzfyjiz2dv85v6as2awwqvk807"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2               ; not guaranteed to work with Python 3
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
+         (add-after 'unpack 'patch-invocations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("bin/TEtranscripts"
+                            "bin/TEcount")
+               (("'sort ")
+                (string-append "'" (which "sort") " "))
+               (("'rm -f ")
+                (string-append "'" (which "rm") " -f "))
+               (("'Rscript'") (string-append "'" (which "Rscript") "'")))
+             (substitute* "TEToolkit/IO/ReadInputs.py"
+               (("BamToBED") (which "bamToBed")))
+             (substitute* "TEToolkit/Normalization.py"
+               (("\"Rscript\"")
+                (string-append "\"" (which "Rscript") "\"")))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure the executables find R packages.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (script)
+                  (wrap-program (string-append out "/bin/" script)
+                    `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))))
+                '("TEtranscripts"
+                  "TEcount")))
+             #t)))))
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("bedtools" ,bedtools)
+       ("python-argparse" ,python2-argparse)
+       ("python-pysam" ,python2-pysam)
+       ("r-minimal" ,r-minimal)
+       ("r-deseq2" ,r-deseq2)))
+    (home-page "https://github.com/mhammell-laboratory/tetoolkit")
+    (synopsis "Transposable elements in differential enrichment analysis")
+    (description
+     "This is package for including transposable elements in differential
+enrichment analysis of sequencing datasets.  TEtranscripts and TEcount take
+RNA-seq (and similar data) and annotates reads to both genes and transposable
+elements.  TEtranscripts then performs differential analysis using DESeq2.
+Note that TEtranscripts and TEcount rely on specially curated GTF files, which
+are not included due to their size.")
+    (license license:gpl3+)))
+
 (define-public cd-hit
   (package
     (name "cd-hit")
@@ -10293,35 +10359,6 @@ quality controls, normalization, visualization, and further analysis are also
 provided.")
     (license license:artistic2.0)))
 
-(define-public r-qvalue
-  (package
-    (name "r-qvalue")
-    (version "2.14.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (bioconductor-uri "qvalue" version))
-       (sha256
-        (base32
-         "0kxavzm1j2mk26qicmjm90nxx4w5h3dxighzks7wzihay3k8cysc"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-ggplot2" ,r-ggplot2)
-       ("r-reshape2" ,r-reshape2)))
-    (home-page "http://github.com/jdstorey/qvalue")
-    (synopsis "Q-value estimation for false discovery rate control")
-    (description
-     "This package takes a list of p-values resulting from the simultaneous
-testing of many hypotheses and estimates their q-values and local @dfn{false
-discovery rate} (FDR) values.  The q-value of a test measures the proportion
-of false positives incurred when that particular test is called significant.
-The local FDR measures the posterior probability the null hypothesis is true
-given the test's p-value.  Various plots are automatically generated, allowing
-one to make sensible significance cut-offs.  The software can be applied to
-problems in genomics, brain imaging, astrophysics, and data mining.")
-    ;; Any version of the LGPL.
-    (license license:lgpl3+)))
-
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
@@ -11908,21 +11945,35 @@ variational inference.")
 (define-public python-loompy
   (package
     (name "python-loompy")
-    (version "2.0.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "loompy" version))
-       (sha256
-        (base32
-         "1drgv8j1hxqzzpnfg272x9djb6j8qr798w1pc2x8ikmfgyd9gh51"))))
+    (version "2.0.17")
+    ;; The tarball on Pypi does not include the tests.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linnarsson-lab/loompy.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12a5kjgiikapv93wahfw0frszx1lblnppyz3vs5gy8fgmgngra07"))))
     (build-system python-build-system)
-    ;; There are no tests
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) ":"
+                                    (getenv "PYTHONPATH")))
+             (invoke "pytest" "tests")
+             #t)))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
        ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
        ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/linnarsson-lab/loompy")
     (synopsis "Work with .loom files for single-cell RNA-seq data")
     (description "The loom file format is an efficient format for very large
@@ -14158,3 +14209,34 @@ short read sequences, removes errors then produces high quality unique
 contigs.  It then uses paired read information, if available, to retrieve the
 repeated areas between contigs.")
     (license license:gpl2+)))
+
+(define-public python-velocyto
+  (package
+    (name "python-velocyto")
+    (version "0.17.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "velocyto" version))
+       (sha256
+        (base32
+         "0fgygyzqgrq32dv6a00biq1p1cwi6kbl5iqblxq1kklj6b2mzmhs"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-cython" ,python-cython)
+       ("python-h5py" ,python-h5py)
+       ("python-loompy" ,python-loompy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numba" ,python-numba)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/velocyto-team/velocyto.py")
+    (synopsis "RNA velocity analysis for single cell RNA-seq data")
+    (description
+     "Velocyto is a library for the analysis of RNA velocity.  Velocyto
+includes a command line tool and an analysis pipeline.")
+    (license license:bsd-2)))

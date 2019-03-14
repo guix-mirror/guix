@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -185,7 +185,7 @@
           ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
           ;; and the "gs" ghostscript executable on Unix. It detects Unix by
           ;; checking for the existence of the /usr/bin directory. Since
-          ;; GuixSD does not have /usr/bin, it is also detected as Windows.
+          ;; Guix System does not have /usr/bin, it is also detected as Windows.
           (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
               (("gswin32c") "gs"))
@@ -5457,14 +5457,14 @@ PDF documents.")
 (define-public texmaker
   (package
     (name "texmaker")
-    (version "5.0.2")
+    (version "5.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.xm1math.net/texmaker/texmaker-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0y81mjm89b99pr9svcwpaf4iz2q9pc9hjas5kiwd1pbgl5vqskm9"))))
+                "0vrj9w5lk3vf6138n5bz8phmy3xp5kv4dq1rgirghcf4hbxdyx30"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

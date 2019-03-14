@@ -108,7 +108,7 @@
              (("/bin/sh") (which "sh")))
 
            ;; XXX FIXME: Test #1510 seems to work on some machines and not
-           ;; others, possibly based on the kernel version.  It works on GuixSD
+           ;; others, possibly based on the kernel version.  It works on Guix System
            ;; on x86_64 with linux-libre-4.1, but fails on Hydra for both i686
            ;; and x86_64 with the following error:
            ;;

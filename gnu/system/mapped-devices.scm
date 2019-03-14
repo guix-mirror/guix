@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -32,8 +32,7 @@
   #:use-module (gnu system uuid)
   #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
   #:autoload   (gnu build linux-modules)
-                 (device-module-aliases matching-modules known-module-aliases
-                  normalize-module-name file-name->module-name)
+                 (missing-modules)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
@@ -118,37 +117,27 @@
 (define (check-device-initrd-modules device linux-modules location)
   "Raise an error if DEVICE needs modules beyond LINUX-MODULES to operate.
 DEVICE must be a \"/dev\" file name."
-  (define aliases
-    ;; Attempt to load 'modules.alias' from the current kernel, assuming we're
-    ;; on GuixSD, and assuming that corresponds to the kernel we'll be
-    ;; installing.  Skip the whole thing if that file cannot be read.
+  (define missing
+    ;; Attempt to determine missing modules.
     (catch 'system-error
       (lambda ()
-        (known-module-aliases))
-      (const #f)))
+        (missing-modules device linux-modules))
 
-  (when aliases
-    (let* ((modules  (delete-duplicates
-                      (append-map (cut matching-modules <> aliases)
-                                  (device-module-aliases device))))
+      ;; If we can't do that (e.g., EPERM), skip the whole thing.
+      (const '())))
 
-           ;; Module names (not file names) are supposed to use underscores
-           ;; instead of hyphens.  MODULES is a list of module names, whereas
-           ;; LINUX-MODULES is file names without '.ko', so normalize them.
-           (provided (map file-name->module-name linux-modules))
-           (missing  (remove (cut member <> provided) modules)))
-      (unless (null? missing)
-        ;; Note: What we suggest here is a list of module names (e.g.,
-        ;; "usb_storage"), not file names (e.g., "usb-storage.ko").  This is
-        ;; OK because we have machinery that accepts both the hyphen and the
-        ;; underscore version.
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "you may need these modules \
+  (unless (null? missing)
+    ;; Note: What we suggest here is a list of module names (e.g.,
+    ;; "usb_storage"), not file names (e.g., "usb-storage.ko").  This is
+    ;; OK because we have machinery that accepts both the hyphen and the
+    ;; underscore version.
+    (raise (condition
+            (&message
+             (message (format #f (G_ "you may need these modules \
 in the initrd for ~a:~{ ~a~}")
-                                  device missing)))
-                (&fix-hint
-                 (hint (format #f (G_ "Try adding them to the
+                              device missing)))
+            (&fix-hint
+             (hint (format #f (G_ "Try adding them to the
 @code{initrd-modules} field of your @code{operating-system} declaration, along
 these lines:
 
@@ -161,9 +150,9 @@ these lines:
 
 If you think this diagnostic is inaccurate, use the @option{--skip-checks}
 option of @command{guix system}.\n")
-                               missing)))
-                (&error-location
-                 (location (source-properties->location location)))))))))
+                           missing)))
+            (&error-location
+             (location (source-properties->location location)))))))
 
 
 ;;;

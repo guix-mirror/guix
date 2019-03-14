@@ -661,17 +661,17 @@ SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux armhf-linux aarch64-linux
 BINARY_TARBALLS =							\
   $(foreach system,$(SUPPORTED_SYSTEMS),guix-binary.$(system).tar.xz)
 
-# Systems supported by GuixSD.
-GUIXSD_SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux
+# Systems supported by Guix System.
+GUIX_SYSTEM_SUPPORTED_SYSTEMS ?= x86_64-linux i686-linux
 
-# Systems for which we build GuixSD VMs.
-GUIXSD_VM_SYSTEMS ?= x86_64-linux
+# Systems for which we build Guix VMs.
+GUIX_SYSTEM_VM_SYSTEMS ?= x86_64-linux
 
-# Prefix of the GuixSD installation image file name.
-GUIXSD_IMAGE_BASE = guixsd-install-$(PACKAGE_VERSION)
+# Prefix of the Guix installation image file name.
+GUIX_SYSTEM_IMAGE_BASE = guix-system-install-$(PACKAGE_VERSION)
 
-# Prefix of the GuixSD VM image file name.
-GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
+# Prefix of the Guix VM image file name.
+GUIX_SYSTEM_VM_IMAGE_BASE = guix-system-vm-image-$(PACKAGE_VERSION)
 
 # The release process works in several phases:
 #
@@ -680,7 +680,7 @@ GUIXSD_VM_IMAGE_BASE = guixsd-vm-image-$(PACKAGE_VERSION)
 #   2. Update the 'guix' package so that it corresponds to the 'vX.Y' tag.
 #   3. Build the binary tarballs for that 'guix' package.
 #   4. Update the 'guix' package again.
-#   5. Build the GuixSD installation images.  The images will run 'guix'
+#   5. Build the installation images.  The images will run 'guix'
 #      corresponding to 'vX.Y' + 1 commit, and they will install 'vX.Y'.
 #
 # This 'release' target takes care of everything and copies the resulting
@@ -713,32 +713,32 @@ release: dist
 	   "`git rev-parse HEAD`"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
-	for system in $(GUIXSD_SUPPORTED_SYSTEMS) ; do					\
+	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
 	    --file-system-type=iso9660							\
             --system=$$system								\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
-	    echo "failed to produced GuixSD installation image for $$system" >&2 ;	\
+	    echo "failed to produced Guix installation image for $$system" >&2 ;	\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz.tmp"			\
-	     "$(releasedir)/$(GUIXSD_IMAGE_BASE).$$system.iso.xz" ;			\
+	  xz < "$$image" > "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz.tmp"		\
+	     "$(releasedir)/$(GUIX_SYSTEM_IMAGE_BASE).$$system.iso.xz" ;		\
 	done
-	for system in $(GUIXSD_VM_SYSTEMS) ; do						\
+	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system vm-image							\
 	    --system=$$system								\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\
-	    echo "failed to produced GuixSD VM image for $$system" >&2 ;		\
+	    echo "failed to produced Guix VM image for $$system" >&2 ;			\
 	    exit 1 ;									\
 	  fi ;										\
-	  xz < "$$image" > "$(releasedir)/$(GUIXSD_VM_IMAGE_BASE).$$system.xz.tmp" ;	\
-	  mv "$(releasedir)/$(GUIXSD_VM_IMAGE_BASE).$$system.xz.tmp"			\
-	     "$(releasedir)/$(GUIXSD_VM_IMAGE_BASE).$$system.xz" ;			\
+	  xz < "$$image" > "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz.tmp" ;	\
+	  mv "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz.tmp"			\
+	     "$(releasedir)/$(GUIX_SYSTEM_VM_IMAGE_BASE).$$system.xz" ;			\
 	done
 	@echo
 	@echo "Congratulations!  All the release files are now in $(releasedir)."

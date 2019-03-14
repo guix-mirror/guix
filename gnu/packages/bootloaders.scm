@@ -340,7 +340,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.7")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -348,11 +348,13 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "1rydi5jvhlhsr110h6n0pavv3daqa0cb4m5vcps50qzq1zqfhhv6"))))
+                "0wh10p42hf5403ipvs0dsxddb6kzfyk2sq4fgid9zqzpr51y8wn6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("libyaml" ,libyaml)
+       ("pkg-config" ,pkg-config)
        ("swig" ,swig)
        ("valgrind" ,valgrind)))
     (inputs

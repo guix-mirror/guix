@@ -26,7 +26,7 @@
 ;;; Copyright © 2017 George Clemmer <myglc2@gmail.com>
 ;;; Copyright © 2017, 2018 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -278,7 +278,12 @@ on stdout instead of using a socket as the Emacsclient does.")
        ("magit-popup" ,emacs-magit-popup)
        ("with-editor" ,emacs-with-editor)))
     (arguments
-     `(#:test-target "test"
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:test-target "test"
        #:tests? #f               ; tests are not included in the release
 
        #:make-flags
@@ -317,8 +322,9 @@ on stdout instead of using a socket as the Emacsclient does.")
           'build 'patch-exec-paths
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((perl (assoc-ref inputs "perl")))
-              (substitute* "lisp/magit-sequence.el"
-                (("perl") (string-append perl "/bin/perl")))
+              (make-file-writable "lisp/magit-sequence.el")
+              (emacs-substitute-variables "lisp/magit-sequence.el"
+                ("magit-perl-executable" (string-append perl "/bin/perl")))
               #t))))))
     (home-page "https://magit.vc/")
     (synopsis "Emacs interface for the Git version control system")
@@ -1610,7 +1616,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.14.1")
+    (version "2.15.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1619,7 +1625,7 @@ and stored in memory.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kzijmjxjxgr7p8clphzvmm47vczckbs8mza9an77c25bn627ywl"))))
+                "0dx8q3jr8fh73cfl7mqi5dq0012ambpvc74d2c71fsv9rfw85693"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -4951,7 +4957,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.0")
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4960,7 +4966,7 @@ ack, ag, helm and pt.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k2r0ccppaqfjvyszaxa16vf7g2qzj1clhfr6v646ncsy17laciw"))))
+                "0ymykcsbcgq2kskqc0ddigg0kfznxx3j02mkd5r3c3n8gn3kgz84"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -7032,7 +7038,19 @@ running a customisable handler command (@code{ignore} by default). ")
        ("ert-runner" ,emacs-ert-runner)))
     (arguments
      `(#:tests? #t
-       #:test-command '("ert-runner")))
+       #:test-command '("ert-runner")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'delete-json-objects-order-test
+           (lambda _
+             (emacs-batch-edit-file "test/json-reformat-test.el"
+               `(progn (progn (goto-char (point-min))
+                              (re-search-forward
+                               "ert-deftest json-reformat-test:json-reformat-region")
+                              (beginning-of-line)
+                              (kill-sexp))
+                       (basic-save-buffer)))
+             #t)))))
     (home-page "https://github.com/gongo/json-reformat")
     (synopsis "Reformatting tool for JSON")
     (description "@code{json-reformat} provides a reformatting tool for
@@ -10143,23 +10161,26 @@ and doesn't require memorisation of commands.
 (define-public emacs-suggest
   (package
     (name "emacs-suggest")
-    (version "0.4")
+    (version "0.7")
+    (home-page "https://github.com/Wilfred/suggest.el")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Wilfred/suggest.el/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1760fm3j19w8xxcawq6s859h86q1rdg69pg9yz48n76kwfk3vlgp"))))
+         "01v8plska5d3g19sb1m4ph1i3ayprfzk8mi6mpabjy6zad397xjl"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-loop" ,emacs-loop)
        ("emacs-dash" ,emacs-dash)
        ("emacs-s" ,emacs-s)
-       ("emacs-f" ,emacs-f)))
-    (home-page "https://github.com/Wilfred/suggest.el")
+       ("emacs-f" ,emacs-f)
+       ("emacs-spinner" ,emacs-spinner)
+       ("emacs-shut-up" ,emacs-shut-up)))
     (synopsis "Suggest Elisp functions that give the output requested")
     (description "Suggest.el will find functions that give the output
 requested.  It's a great way of exploring list, string and arithmetic
@@ -11155,6 +11176,29 @@ systems.")
 filters, highlighting of regexp group levels, and more.")
       (license license:gpl2+))))
 
+(define-public emacs-eshell-bookmark
+  (package
+    (name "emacs-eshell-bookmark")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fuco1/eshell-bookmark")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14dmsnixf9vqdhsixw693sml0fn80zcf0b37z049fb40cmppqxdw"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fuco1/eshell-bookmark")
+    (synopsis "Provide @file{bookmark.el} integration for @code{eshell}")
+    (description
+     "This package allows for bookmarking @code{eshell} buffers.  Upon
+visiting the bookmark, a new @code{eshell} session will be opened in the
+appropriate directory if no @code{eshell} session is active.")
+    (license license:gpl3+)))
+
 (define-public emacs-esh-autosuggest
   (package
     (name "emacs-esh-autosuggest")
@@ -11356,6 +11400,56 @@ Org-mode.  It features:
 @item calendar (date selection) support;
 @item agenda support.
 @end itemize\n")
+      (license license:gpl3+))))
+
+(define-public emacs-debpaste
+  (package
+    (name "emacs-debpaste")
+    (version "0.1.5")
+    (home-page "https://github.com/alezost/debpaste.el")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wi70r56pd5z0x4dp4m58p9asq03j74kdm4fi9vai83vsl2z9amq"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-xml-rpc" ,emacs-xml-rpc)))
+    (synopsis "Manipulate pastes from the Debian Pastezone")
+    (description "Debpaste is an Emacs interface for the Debian Pastezone,
+allowing you to receive, post, and delete pastes.  It communicates with the
+server using XML-RPC.")
+    (license license:gpl3+)))
+
+(define-public emacs-xml-rpc
+  (let ((commit "8f624f8b964e9145acb504e4457c9510e87dd93c")
+        (revision "1"))
+    (package
+      (name "emacs-xml-rpc")
+      (version (git-version "1.6.12" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hexmode/xml-rpc-el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xa54z52rsfl3n0xgmbycj4zazp8ksgdwcq56swzs6wp72zlalmj"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/hexmode/xml-rpc-el")
+      (synopsis "XML-RPC client for Emacs")
+      (description "This package provides an XML-RPC client for Emacs capable
+of both synchronous and asynchronous method calls using the @code{url}
+package's async retrieval functionality.  @file{xml-rpc.el} represents XML-RPC
+datatypes as Lisp values, automatically converting to and from the XML
+datastructures as needed, both for method parameters and return values, making
+using XML-RPC methods fairly transparent to the Lisp code.")
       (license license:gpl3+))))
 
 (define-public emacs-fish-completion
@@ -13234,4 +13328,181 @@ provides several enhancements over the ordinary
 @code{execute-extended-command}, such as prioritizing your most-used commands
 in the completion list and showing keyboard shortcuts, and it supports several
 completion systems for selecting commands, such as ido and ivy.")
+    (license license:gpl3+)))
+
+(define-public emacs-lorem-ipsum
+  (let ((commit "4b39f6fed455d67f635b3837cf5668bf74d0f6cd"))
+    (package
+      (name "emacs-lorem-ipsum")
+      (version (git-version "0.2" "1" commit))
+      (home-page "https://github.com/jschaf/emacs-lorem-ipsum/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0a3b18p3vdjci89prsgdzjnfxsl8p67vjhf8ai4qdng7zvh50lir"))))
+      (build-system emacs-build-system)
+      (synopsis "Insert dummy pseudo Latin text in Emacs")
+      (description "This package provides convenience functions to insert
+dummy Latin text into a buffer.  This can be useful if you need to produce
+paragraphs or pages of text for testing purposes.")
+      (license license:gpl3+))))
+
+(define-public emacs-lisp-extra-font-lock
+  (let ((commit "4605eccbe1a7fcbd3cacf5b71249435413b4db4f"))
+    (package
+      (name "emacs-lisp-extra-font-lock")
+      (version (git-version "0.0.6" "1" commit))
+      (home-page "https://github.com/Lindydancer/lisp-extra-font-lock")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "152vcp3mdlv33jf5va4rinl1d0k960gnfhbrqqrafazgx9j3ya8w"))))
+      (build-system emacs-build-system)
+      (synopsis "Highlight bound variables and quoted expressions in Emacs")
+      (description "This package highlight the location where local variables
+is created (bound, for example, by let) as well as quoted and backquoted
+constant expressions.")
+      (license license:gpl3+))))
+
+(define-public emacs-docker-tramp
+  (package
+    (name "emacs-docker-tramp")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-pe/docker-tramp.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0lxvzmfg52fhxrhbvp92zwp7cv4i1rlxnkyyzgngj3sjm7y60yvg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacs-pe/docker-tramp.el")
+    (synopsis "TRAMP integration for docker containers")
+    (description
+     "This package provides a TRAMP method for Docker containers.")
+    (license license:gpl3+)))
+
+(define-public emacs-docker
+  (package
+    (name "emacs-docker")
+    (version "1.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Silex/docker.el")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15kd86kaq1x6giz855q9w6zvnyc742j309j0pmm86rwx398g4rq1"))))
+    (inputs
+     `(("emacs-undercover" ,emacs-undercover)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-docker-tramp" ,emacs-docker-tramp)
+       ("emacs-magit-popup" ,emacs-magit-popup)
+       ("emacs-s" ,emacs-s)
+       ("emacs-tablist" ,emacs-tablist)
+       ("emacs-json-mode" ,emacs-json-mode)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)))) ;no tests
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Silex/docker.el")
+    (synopsis "Manage docker from Emacs")
+    (description "This package provides an Emacs interface for Docker.")
+    (license license:gpl3+)))
+
+(define-public emacs-dockerfile-mode
+  ;; Latest upstream release is too old.
+  (let ((commit "7223d92718f78fa3ab15667cdb2ed90cfeb579e7"))
+    (package
+      (name "emacs-dockerfile-mode")
+      (version (git-version "1.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/spotify/dockerfile-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0hmipgl4rk6aih11i8mnspwdijjiwk2y0wns6lzs8bgkvy3c064r"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/spotify/dockerfile-mode")
+      (synopsis "Major mode for editing Dockerfile")
+      (description
+       "This package provides a major mode @code{dockerfile-mode} for use with
+the standard @code{Dockerfile} file format.")
+      (license license:asl2.0))))
+
+(define-public emacs-lsp-mode
+  (package
+    (name "emacs-lsp-mode")
+    (version "6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-lsp/lsp-mode.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v1mq6ixzlgiazj8fmg4xaqhsqn3l89iqy74yndhvzh2rdf0pbkl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-ht" ,emacs-ht)
+       ("emacs-spinner" ,emacs-spinner)))
+    (home-page "https://github.com/emacs-lsp/lsp-mode")
+    (synopsis "Emacs client and library for the Language Server Protocol")
+    (description "@code{LSP-mode} is a client and library implmentation for
+the Language Server Protocol.  This mode aims to provide an IDE-like
+experience by providing optional integration with other popular Emacs packages
+like @code{company}, @code{flycheck}, and @code{projectile}.")
+    (license license:gpl3+)))
+
+(define-public emacs-lsp-ui
+  (package
+    (name "emacs-lsp-ui")
+    (version "6.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-lsp/lsp-ui.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1r4327fd8cvjxfwkddp5c4bdskyncbs4sx9m3z2w4d773y2jrakc"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("emacs-flycheck" ,emacs-flycheck)))
+    (home-page "https://github.com/emacs-lsp/lsp-ui")
+    (synopsis "User interface extensions for @code{lsp-mode}")
+    (description
+     "@code{LSP-ui} contains several enhancements and integrations for
+@code{lsp-mode}, such as visual flychecking, displaying references in-line,
+and code peeking.")
     (license license:gpl3+)))

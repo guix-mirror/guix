@@ -414,8 +414,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0")
-(define %linux-libre-hash "18gs0kl5xvbmh725m7crg6iyqw3p8qq421aql7z0nlk035fh5xbx")
+(define %linux-libre-version "5.0.1")
+(define %linux-libre-hash "0izbdpml170g5jg87ccnf2q1hc01gsyiy1gqxnqzzi3pri00dfyz")
 
 (define %linux-libre-5.0-patches
   (list %boot-logo-patch
@@ -428,8 +428,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.27")
-(define %linux-libre-4.19-hash "055n4s4yrkcrwkdsxbf1q1zyxmpabf7kba8d0phpfadian3wr4s0")
+(define %linux-libre-4.19-version "4.19.28")
+(define %linux-libre-4.19-hash "0j65gp9z3qrygx67mkhm4ri3pj1pz0gdwcdlds2ypg53rh12jc0a")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -1119,7 +1119,7 @@ MIDI functionality to the Linux-based operating system.")
     (outputs '("out" "pulseaudio" "jack"))
     (arguments
      `(#:configure-flags '(;; Do not install a "local" configuration targeted
-                           ;; for /etc/alsa.  On GuixSD plugins are loaded from
+                           ;; for /etc/alsa.  On Guix System plugins are loaded from
                            ;; the ALSA service, and other distributions likely
                            ;; won't use these files.
                            "--with-alsalconfdir=/tmp/noop")
@@ -1586,7 +1586,7 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
      '(#:phases
        (modify-phases %standard-phases
          ;; TODO: Patch some hardcoded "wlan0" in calibrate/calibrate.cpp to
-         ;; allow calibrating the network interface in GuixSD.
+         ;; allow calibrating the network interface in Guix System.
          (add-after 'unpack 'patch-absolute-file-names
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((kmod (assoc-ref inputs "kmod")))
@@ -2386,7 +2386,7 @@ compliance.")
        #:tests? #f                                ;no tests
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
-                            (string-append "LSB_ID=GuixSD")
+                            (string-append "LSB_ID=Guix")
                             (string-append "DISTRO_PUBKEY=/dev/null")
                             (string-append "DISTRO_PRIVKEY=/dev/null")
                             (string-append "REGDB_PUBKEY=/dev/null")

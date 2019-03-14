@@ -734,16 +734,16 @@ language.")
 (define-public kicad
     (package
       (name "kicad")
-      (version "5.0.0")
+      (version "5.0.2")
       (source
        (origin
          (method url-fetch)
          (file-name (string-append name "-" version ".tar.xz"))
          (uri (string-append
                 "https://launchpad.net/kicad/" (version-major+minor version)
-                "/" version "/+download/" name "-" version ".tar.xz"))
+                "/" version "/+download/kicad-" version ".tar.xz"))
          (sha256
-          (base32 "17nqjszyvd25wi6550j981whlnb1wxzmlanljdjihiki53j84x9p"))))
+          (base32 "10605rr10x0353n6yk2z095ydnkd1i6j1ncbq64pfxdn5vkhcd1g"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
@@ -888,16 +888,16 @@ render model libraries.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.0.1")
+    (version "5.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/KiCad/kicad-symbols.git")
                     (commit version)))
-              (file-name (string-append "kicad-symbols-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "18z5vpdq7hy2mpvm5vz1dz3ra3a5iybavvlzi8q2bmmdb6gsvf64"))))
+                "1rjh2pjcrc3bhcgyyskj5pssm7vffrjk0ymwr70fb7sjpmk96yjk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; No tests exist

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +28,7 @@
   #:use-module (guix modules)
   #:use-module (gnu build linux-container)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:export (system-container
@@ -54,8 +55,19 @@ containerized OS."
     (file-system (inherit (file-system-mapping->bind-mount fs))
       (needed-for-boot? #t)))
 
+  (define useless-services
+    ;; Services that make no sense in a container.  Those that attempt to
+    ;; access /dev/tty[0-9] in particular cannot work in a container.
+    (list console-font-service-type
+          mingetty-service-type
+          agetty-service-type))
+
   (operating-system (inherit os)
     (swap-devices '()) ; disable swap
+    (services (remove (lambda (service)
+                        (memq (service-kind service)
+                              useless-services))
+                      (operating-system-user-services os)))
     (file-systems (append (map mapping->fs (cons %store-mapping mappings))
                           %container-file-systems
                           user-file-systems))))

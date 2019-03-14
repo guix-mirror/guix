@@ -47,7 +47,7 @@
 
 ;;; Commentary:
 ;;;
-;;; Test the installation of GuixSD using the documented approach at the
+;;; Test the installation of Guix using the documented approach at the
 ;;; command line.
 ;;;
 ;;; Code:
@@ -204,7 +204,7 @@ reboot\n")
                                                 (guix combinators))))
                       (installation-disk-image-file-system-type "ext4")
                       (target-size (* 2200 MiB)))
-  "Run SCRIPT (a shell script following the GuixSD installation procedure) in
+  "Run SCRIPT (a shell script following the system installation procedure) in
 OS to install TARGET-OS.  Return a VM image of TARGET-SIZE bytes containing
 the installed system.  The packages specified in PACKAGES will be appended to
 packages defined in installation-os."

@@ -165,20 +165,23 @@ HTML/CSS applications to full-fledged web browsers.")
 ;; newer version of GCC than our default compiler, and this causes problems
 ;; when linked with C++ libraries built using our default compiler.  For now,
 ;; we use this newer webkitgtk only for selected packages, e.g. epiphany.
-(define-public webkitgtk-2.22
+(define-public webkitgtk-2.24
   (package/inherit webkitgtk
     (name "webkitgtk")
-    (version "2.22.7")
+    (version "2.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zrhmz90sn30zgyflj4i86fsscws10xsi2kfs87nj2nd0pbggrjb"))))
+                "01s446lmjk7y8il4snjm32vpxws2rp4hmxrwm2swx0p47x8d2jif"))))
     (native-inputs
      `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
        ,@(package-native-inputs webkitgtk)))
+    (inputs
+     `(("openjpeg" ,openjpeg)
+       ,@(package-inputs webkitgtk)))
     (arguments
      (substitute-keyword-arguments (package-arguments webkitgtk)
        ((#:phases phases)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -334,7 +334,7 @@ entries corresponding to old generations of the system."
     #~(call-with-output-file #$output
         (lambda (port)
           (format port
-                  "# This file was generated from your GuixSD configuration.  Any changes
+                  "# This file was generated from your Guix configuration.  Any changes
 # will be lost upon reconfiguration.
 ")
           #$sugar
@@ -380,7 +380,7 @@ submenu \"GNU system, old configurations...\" {~%")
       ;; system whose root is mounted at MOUNT-POINT.
       (let ((grub-install (string-append bootloader "/sbin/grub-install"))
             (install-dir (string-append mount-point "/boot"))
-            ;; When installing GuixSD, it's common to mount EFI-DIR below
+            ;; When installing Guix, it's common to mount EFI-DIR below
             ;; MOUNT-POINT rather than /boot/efi on the live image.
             (target-esp (if (file-exists? (string-append mount-point efi-dir))
                             (string-append mount-point efi-dir)
@@ -389,7 +389,7 @@ submenu \"GNU system, old configurations...\" {~%")
         ;; root partition.
         (setenv "GRUB_ENABLE_CRYPTODISK" "y")
         (unless (zero? (system* grub-install "--boot-directory" install-dir
-                                "--bootloader-id=GuixSD"
+                                "--bootloader-id=Guix"
                                 "--efi-directory" target-esp))
           (error "failed to install GRUB (EFI)")))))
 

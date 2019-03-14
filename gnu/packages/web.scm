@@ -194,16 +194,18 @@ Interface} specification.")
 (define-public nginx
   (package
     (name "nginx")
-    ;; Consider updating the nginx-documentation package if the nginx package is
-    ;; updated.
-    (version "1.14.2")
+    ;; Track the ‘mainline’ branch.  Upstream considers it more reliable than
+    ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
+    ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
+    ;; Consider updating the nginx-documentation package together with this one.
+    (version "1.15.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15wppq12qmq8acjs35xfj61czhf9cdc0drnl5mm8hcg3aihryb80"))))
+                "0hxfsz1117r91b9fb5hjddyrf1czvb36lh1z7zalqqdskfcbmkz4"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -327,13 +329,13 @@ documentation.")
       (license l:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx@1.13.11.
-  (let ((revision 2131)
-        (changeset "dbaf3950f8e9"))
+  ;; This documentation should be relevant for nginx@1.15.9.
+  (let ((revision 2345)
+        (changeset "7ef11708457e"))
     (package
       (name "nginx-documentation")
       (version
-       (simple-format #f "2018-04-04-~A-~A" revision changeset))
+       (simple-format #f "2019-03-01-~A-~A" revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -342,7 +344,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "0acdjsdaqixzh9g9s6db552v4pan4nqrllyqapay9ns9yzh1hrp7"))))
+                 "15975jvh53mnsgi4hhgrwdwy3by23v4kxnhy2vnkziq8v7wkmy4y"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -360,8 +362,7 @@ documentation.")
                  ;; banner.
                  (substitute* "xslt/style.xslt"
                    (("#banner           \\{ background:     black;")
-                    "#banner           { background:     black;
-                            display:     none;"))
+                    "#banner           { display:        none;"))
                  (invoke "make")
                  #t)))
            (replace 'install
@@ -750,7 +751,7 @@ current version of any major web browser.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/miloyip/rapidjson.git")
+                   (url "https://github.com/Tencent/rapidjson.git")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -775,7 +776,7 @@ current version of any major web browser.")
                      (("native") "armv8-a"))
                    #t))))
            '())))
-    (home-page "https://github.com/miloyip/rapidjson")
+    (home-page "https://github.com/Tencent/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
     (description
      "RapidJSON is a fast JSON parser/generator for C++ with both SAX/DOM
@@ -4763,15 +4764,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.48")
+  (version "5.50")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32
-        "1pxqn9ixl80nrhfq12igyi874653jclji56hh9w24snf0aixa48h"))))
+       (base32 "0j811iakljjxw39qchmqf235jdkwixb0i4xxjyi55f08558947cm"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.

@@ -3487,7 +3487,7 @@ workspace.")
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)))
-    ;; FIXME: Use GuixSD ca-bundle.crt in etc/xdg/ksslcalist and
+    ;; FIXME: Use Guix ca-bundle.crt in etc/xdg/ksslcalist and
     ;; share/kf5/kssl/ca-bundle.crt
     ;; TODO: NixOS has nix-kde-include-dir.patch to change std-dir "include"
     ;; into "@dev@/include/". Think about whether this is needed for us, too.

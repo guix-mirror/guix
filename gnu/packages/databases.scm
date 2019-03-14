@@ -1275,15 +1275,14 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.048")
+    (version "4.050")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+       (uri (string-append "mirror://cpan/authors/id/D/DV/DVEEDEN/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
-        (base32
-         "1zqmch6c9gq06z90mkmk1skajk2kaggriw19ym5w04l7wv5gydqp"))))
+        (base32 "0y4djb048i09dk19av7mzfb3khr72vw11p3ayw2p82jsy4gm8j2g"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -1313,7 +1312,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.58")
+    (version "1.62")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1321,7 +1320,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0fqx386jgs9mmrknr7smmzapf07izgivza7x08lfm39ks2cxs83i"))))
+                "0p78ri1q6xpc1i98i6mlriv8n66iz8r5r11dlsknjm4y58rfz0mx"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
@@ -1336,15 +1335,14 @@ module, and nothing else.")
 (define-public perl-sql-abstract
   (package
     (name "perl-sql-abstract")
-    (version "1.85")
+    (version "1.86")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "SQL-Abstract-" version ".tar.gz"))
        (sha256
-        (base32
-         "1aycggrvppy2zgkwwn85jkdz93n5gsx4dambrjk67k5067hayi4z"))))
+        (base32 "1pwcm8hwxcgidyyrak37lx69d85q728jxsb0b14jz93gbvdgg9z7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
@@ -1847,14 +1845,13 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.24")
+    (version "4.0.25")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
-        (base32
-         "1m311vi7vpay1j7rkq71fpsk0gb7454k4lldk5b63hyy6yvsn9j3"))
+        (base32 "1bbwrb812w5i0x56jfn0l86mxc2ck904hl8y87mziay96znwia0f"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
@@ -2095,25 +2092,24 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.2.11")
+    (version "1.3.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32
-        "094mmbs4igrxplfyqd59j90jb83ixpbbzqc0w49yw81m82nnjrgg"))))
+       (base32 "12sr36646sipf9ac3n2xh8z0w5pz4d3dvw5qjv2kzvcls6wvf7vq"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-cython" ,python-cython) ;for c extensions
+     `(("python-cython" ,python-cython) ; for C extensions
        ("python-pytest" ,python-pytest)
-       ("python-mock"   ,python-mock))) ;for tests
+       ("python-mock"   ,python-mock))) ; for tests
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _ (invoke "py.test"))))))
-    (home-page "http://www.sqlalchemy.org")
+    (home-page "https://www.sqlalchemy.org")
     (synopsis "Database abstraction library")
     (description
      "SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that
@@ -2335,14 +2331,13 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.7.5")
+    (version "2.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
-        (base32
-         "17klx964gw8z0znl0raz3by8vdc7cq5gxj4pdcrfcina84nrdkzc"))))
+        (base32 "0zjbabb4qjx9dm07imhf8y5a9rpa06d5zah80myiimgdi83nslpl"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
@@ -2580,14 +2575,13 @@ provides support for parsing, splitting and formatting SQL statements.")
 (define-public python-sql
   (package
     (name "python-sql")
-    (version "0.9")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-sql" version))
        (sha256
-        (base32
-         "0p6kaqj02vz0habmdx37zjk6hjxdfm8aw737zs059vvpr70ird87"))))
+        (base32 "05ni936y0ia9xmryl7mlhbj9i80nnvq1bi4zxhb96rv7yvpb3fqb"))))
     (build-system python-build-system)
     (home-page "https://python-sql.tryton.org/")
     (synopsis "Library to write SQL queries in a pythonic way")

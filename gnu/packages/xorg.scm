@@ -2624,17 +2624,14 @@ as USB mice.")
 (define-public xf86-video-amdgpu
   (package
     (name "xf86-video-amdgpu")
-    (version "18.1.0")
+    (version "19.0.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-amdgpu-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-           "0wlnb929l3yqj4hdkzyxyhbaph13ac4villajgmbh66pa6xja7z1"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/driver/"
+                           "xf86-video-amdgpu-" version ".tar.bz2"))
+       (sha256
+        (base32 "0lag9jxd752ja7m7ngz3dmqffb5wbx4crdwjw74qx42m8xyi8dl8"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2694,17 +2691,14 @@ X server.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "18.0.1")
+    (version "19.0.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-ati-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "180l2yw8c63cbcs3zk729vx439aig1d7yicpyxj0nmfl4y0kpskj"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/driver/"
+                           "xf86-video-ati-" version ".tar.bz2"))
+       (sha256
+        (base32 "0mzl7yp3qkvankh22758sgpaw9mg6jxsfbg6wy0nxfw4i0qpv46x"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
@@ -6361,7 +6355,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.189")
+    (version "1.190")
     (source
      (origin
        (method git-fetch)
@@ -6369,7 +6363,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "09rfnnhwjm98im711v6jrgl49iy5n1b26x12zzk5rw6g1667mz86"))
+        (base32 "0qklm9ww1wap2bs7hp31xkfjyhdrirg2mk4hiv7h6fiqckzmdwvd"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

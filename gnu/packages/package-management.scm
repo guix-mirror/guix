@@ -142,8 +142,8 @@
 
                             ;; Set 'DOT_USER_PROGRAM' to the empty string so
                             ;; we don't keep a reference to Graphviz, whose
-                            ;; closure is pretty big (too big for the GuixSD
-                            ;; installation image.)
+                            ;; closure is pretty big (too big for the Guix
+                            ;; system installation image.)
                             "ac_cv_path_DOT_USER_PROGRAM=dot"
 
                             ;; To avoid problems with the length of shebangs,

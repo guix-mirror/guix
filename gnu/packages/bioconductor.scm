@@ -30,8 +30,12 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
+
+
+;;; Annotations
 
 (define-public r-bsgenome-celegans-ucsc-ce6
   (package
@@ -646,7 +650,103 @@ the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
 based on the knownGene track.")
     (license license:artistic2.0)))
 
+(define-public r-fdb-infiniummethylation-hg19
+  (package
+    (name "r-fdb-infiniummethylation-hg19")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "FDb.InfiniumMethylation.hg19_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0gq90fvph6kgrpjb89nvzq6hl1k24swn19rgjh5g98l86mja6nk0"))))
+    (properties
+     `((upstream-name . "FDb.InfiniumMethylation.hg19")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
+       ("r-txdb-hsapiens-ucsc-hg19-knowngene" ,r-txdb-hsapiens-ucsc-hg19-knowngene)))
+    (home-page "https://bioconductor.org/packages/FDb.InfiniumMethylation.hg19/")
+    (synopsis "Compiled HumanMethylation27 and HumanMethylation450 annotations")
+    (description
+     "This is an annotation package for Illumina Infinium DNA methylation
+probes.  It contains the compiled HumanMethylation27 and HumanMethylation450
+annotations.")
+    (license license:artistic2.0)))
+
+(define-public r-illuminahumanmethylationepicmanifest
+  (package
+    (name "r-illuminahumanmethylationepicmanifest")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "IlluminaHumanMethylationEPICmanifest_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0alhjda5g186z8b1nsmnpfswrlj7prdz8mkwx60wkkl6hkcnk6p3"))))
+    (properties
+     `((upstream-name . "IlluminaHumanMethylationEPICmanifest")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-minfi" ,r-minfi)))
+    (home-page "https://bioconductor.org/packages/IlluminaHumanMethylationEPICmanifest/")
+    (synopsis "Manifest for Illumina's EPIC methylation arrays")
+    (description
+     "This is a manifest package for Illumina's EPIC methylation arrays.")
+    (license license:artistic2.0)))
+
 
+;;; Experiment data
+
+(define-public r-hsmmsinglecell
+  (package
+    (name "r-hsmmsinglecell")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/experiment/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "HSMMSingleCell_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vxnr8gr6md85g39csy7g2sqqajiqgyvznys2qa9yixd2b01yph9"))))
+    (properties
+     `((upstream-name . "HSMMSingleCell")))
+    (build-system r-build-system)
+    (home-page "https://www.bioconductor.org/packages/HSMMSingleCell/")
+    (synopsis "Single-cell RNA-Seq for differentiating human skeletal muscle myoblasts (HSMM)")
+    (description
+     "Skeletal myoblasts undergo a well-characterized sequence of
+morphological and transcriptional changes during differentiation.  In this
+experiment, primary @dfn{human skeletal muscle myoblasts} (HSMM) were expanded
+under high mitogen conditions (GM) and then differentiated by switching to
+low-mitogen media (DM).  RNA-Seq libraries were sequenced from each of several
+hundred cells taken over a time-course of serum-induced differentiation.
+Between 49 and 77 cells were captured at each of four time points (0, 24, 48,
+72 hours) following serum switch using the Fluidigm C1 microfluidic system.
+RNA from each cell was isolated and used to construct mRNA-Seq libraries,
+which were then sequenced to a depth of ~4 million reads per library,
+resulting in a complete gene expression profile for each cell.")
+    (license license:artistic2.0)))
+
+
+;;; Packages
+
 (define-public r-biocgenerics
   (package
     (name "r-biocgenerics")
@@ -765,6 +865,35 @@ region sets and other genomic features.")
     (description
      "This package provides functions for plotting genomic data.")
     (license license:artistic2.0)))
+
+(define-public r-qvalue
+  (package
+    (name "r-qvalue")
+    (version "2.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "qvalue" version))
+       (sha256
+        (base32
+         "0kxavzm1j2mk26qicmjm90nxx4w5h3dxighzks7wzihay3k8cysc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "http://github.com/jdstorey/qvalue")
+    (synopsis "Q-value estimation for false discovery rate control")
+    (description
+     "This package takes a list of p-values resulting from the simultaneous
+testing of many hypotheses and estimates their q-values and local @dfn{false
+discovery rate} (FDR) values.  The q-value of a test measures the proportion
+of false positives incurred when that particular test is called significant.
+The local FDR measures the posterior probability the null hypothesis is true
+given the test's p-value.  Various plots are automatically generated, allowing
+one to make sensible significance cut-offs.  The software can be applied to
+problems in genomics, brain imaging, astrophysics, and data mining.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
 
 (define-public r-diffbind
   (package
@@ -1694,3 +1823,663 @@ estimation is performed using either the EM or CEM algorithm, and the slope
 heuristics are used for model selection (i.e., to choose the number of
 clusters).")
     (license license:gpl3+)))
+
+(define-public r-deds
+  (package
+    (name "r-deds")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DEDS" version))
+       (sha256
+        (base32
+         "1zfgaar3bpss49zhs81mwlfzkx5lv92j8a64xd12ig88is24cw2c"))))
+    (properties `((upstream-name . "DEDS")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/DEDS/")
+    (synopsis "Differential expression via distance summary for microarray data")
+    (description
+     "This library contains functions that calculate various statistics of
+differential expression for microarray data, including t statistics, fold
+change, F statistics, SAM, moderated t and F statistics and B statistics.  It
+also implements a new methodology called DEDS (Differential Expression via
+Distance Summary), which selects differentially expressed genes by integrating
+and summarizing a set of statistics using a weighted distance approach.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
+
+;; This is a CRAN package, but since it depends on a Bioconductor package we
+;; put it here.
+(define-public r-nbpseq
+  (package
+    (name "r-nbpseq")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NBPSeq" version))
+       (sha256
+        (base32
+         "0l4ylxhs2k9ww21jjqs67fygk92avdchhx2y1ixzl7yr2yh1y9by"))))
+    (properties `((upstream-name . "NBPSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-qvalue" ,r-qvalue)))
+    (home-page "https://cran.r-project.org/web/packages/NBPSeq")
+    (synopsis "Negative binomial models for RNA-Seq data")
+    (description
+     "This package provides negative binomial models for two-group comparisons
+and regression inferences from RNA-sequencing data.")
+    (license license:gpl2)))
+
+(define-public r-ebseq
+  (package
+    (name "r-ebseq")
+    (version "1.22.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EBSeq" version))
+       (sha256
+        (base32
+         "1gzbk1hbwdan0j131ah88yryfvsiq0wqjnb09qbr4qaczpgvbad0"))))
+    (properties `((upstream-name . "EBSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-blockmodeling" ,r-blockmodeling)
+       ("r-gplots" ,r-gplots)
+       ("r-testthat" ,r-testthat)))
+    (home-page "https://bioconductor.org/packages/EBSeq")
+    (synopsis "Differential expression analysis of RNA-seq data")
+    (description
+     "This package provides tools for differential expression analysis at both
+gene and isoform level using RNA-seq data")
+    (license license:artistic2.0)))
+
+(define-public r-lpsymphony
+  (package
+    (name "r-lpsymphony")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "lpsymphony" version))
+       (sha256
+        (base32
+         "0vnsf5x6gvd1k8h89al7r6xbgbxsjbxphr675czzwggz79zbvq7y"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://r-forge.r-project.org/projects/rsymphony")
+    (synopsis "Symphony integer linear programming solver in R")
+    (description
+     "This package was derived from Rsymphony.  The package provides an R
+interface to SYMPHONY, a linear programming solver written in C++.  The main
+difference between this package and Rsymphony is that it includes the solver
+source code, while Rsymphony expects to find header and library files on the
+users' system.  Thus the intention of @code{lpsymphony} is to provide an easy
+to install interface to SYMPHONY.")
+    ;; Symphony 5.4 or later is distributed under the terms of the EPL 1.0.
+    ;; lpsimphony is released under the same terms.
+    (license license:epl1.0)))
+
+(define-public r-ihw
+  (package
+    (name "r-ihw")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "IHW" version))
+       (sha256
+        (base32
+         "10wqasl8k2j3y5qvak3xr2xj6symk656xww1y5n2l22nz832j19n"))))
+    (properties `((upstream-name . "IHW")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-fdrtool" ,r-fdrtool)
+       ("r-lpsymphony" ,r-lpsymphony)
+       ("r-slam" ,r-slam)))
+    (home-page "https://bioconductor.org/packages/IHW")
+    (synopsis "Independent hypothesis weighting")
+    (description
+     "@dfn{Independent hypothesis weighting} (IHW) is a multiple testing
+procedure that increases power compared to the method of Benjamini and
+Hochberg by assigning data-driven weights to each hypothesis.  The input to
+IHW is a two-column table of p-values and covariates.  The covariate can be
+any continuous-valued or categorical variable that is thought to be
+informative on the statistical properties of each hypothesis test, while it is
+independent of the p-value under the null hypothesis.")
+    (license license:artistic2.0)))
+
+(define-public r-icobra
+  (package
+    (name "r-icobra")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "iCOBRA" version))
+       (sha256
+        (base32
+         "0i1swrm31g0zffi5pm48bfvdfqpd32d0zdchkbyipz96al46jnld"))))
+    (properties `((upstream-name . "iCOBRA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-dt" ,r-dt)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-limma" ,r-limma)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rocr" ,r-rocr)
+       ("r-scales" ,r-scales)
+       ("r-shiny" ,r-shiny)
+       ("r-shinybs" ,r-shinybs)
+       ("r-shinydashboard" ,r-shinydashboard)
+       ("r-upsetr" ,r-upsetr)))
+    (home-page "https://bioconductor.org/packages/iCOBRA")
+    (synopsis "Comparison and visualization of ranking and assignment methods")
+    (description
+     "This package provides functions for calculation and visualization of
+performance metrics for evaluation of ranking and binary
+classification (assignment) methods.  It also contains a Shiny application for
+interactive exploration of results.")
+    (license license:gpl2+)))
+
+(define-public r-mast
+  (package
+    (name "r-mast")
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MAST" version))
+       (sha256
+        (base32
+         "0rhx655dza0m6yg9jcfz2nmxqahvxx2l91kqgyp7qai0bzz9d9ix"))))
+    (properties `((upstream-name . "MAST")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://github.com/RGLab/MAST/")
+    (synopsis "Model-based analysis of single cell transcriptomics")
+    (description
+     "This package provides methods and models for handling zero-inflated
+single cell assay data.")
+    (license license:gpl2+)))
+
+(define-public r-monocle
+  (package
+    (name "r-monocle")
+    (version "2.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "monocle" version))
+       (sha256
+        (base32
+         "0shwkgqs93j2l5h36yyvb1lf724107cfjrmzp5fxfj1lqc0y61lf"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocviews" ,r-biocviews)
+       ("r-cluster" ,r-cluster)
+       ("r-combinat" ,r-combinat)
+       ("r-ddrtree" ,r-ddrtree)
+       ("r-densityclust" ,r-densityclust)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fastica" ,r-fastica)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hsmmsinglecell" ,r-hsmmsinglecell)
+       ("r-igraph" ,r-igraph)
+       ("r-irlba" ,r-irlba)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-plyr" ,r-plyr)
+       ("r-proxy" ,r-proxy)
+       ("r-qlcmatrix" ,r-qlcmatrix)
+       ("r-rann" ,r-rann)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rtsne" ,r-rtsne)
+       ("r-slam" ,r-slam)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-vgam" ,r-vgam)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://bioconductor.org/packages/monocle")
+    (synopsis "Clustering, differential expression, and trajectory analysis for single-cell RNA-Seq")
+    (description
+     "Monocle performs differential expression and time-series analysis for
+single-cell expression experiments.  It orders individual cells according to
+progress through a biological process, without knowing ahead of time which
+genes define progress through that process.  Monocle also performs
+differential expression analysis, clustering, visualization, and other useful
+tasks on single cell expression data.  It is designed to work with RNA-Seq and
+qPCR data, but could be used with other types as well.")
+    (license license:artistic2.0)))
+
+(define-public r-noiseq
+  (package
+    (name "r-noiseq")
+    (version "2.26.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "NOISeq" version))
+       (sha256
+        (base32
+         "1wyhhi9ydlbjlz427093mdp5ppby77n37w5c2iyxlpsdk2m2nqsn"))))
+    (properties `((upstream-name . "NOISeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://bioconductor.org/packages/NOISeq")
+    (synopsis "Exploratory analysis and differential expression for RNA-seq data")
+    (description
+     "This package provides tools to support the analysis of RNA-seq
+expression data or other similar kind of data.  It provides exploratory plots
+to evaluate saturation, count distribution, expression per chromosome, type of
+detected features, features length, etc.  It also supports the analysis of
+differential expression between two experimental conditions with no parametric
+assumptions.")
+    (license license:artistic2.0)))
+
+(define-public r-scdd
+  (package
+    (name "r-scdd")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scDD" version))
+       (sha256
+        (base32
+         "0dp2awajd5281dwpbs0wb8ij2pq9l60p0b80xhxrb41m5qybcri8"))))
+    (properties `((upstream-name . "scDD")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-arm" ,r-arm)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-ebseq" ,r-ebseq)
+       ("r-fields" ,r-fields)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-mclust" ,r-mclust)
+       ("r-outliers" ,r-outliers)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scran" ,r-scran)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://github.com/kdkorthauer/scDD")
+    (synopsis "Mixture modeling of single-cell RNA-seq data")
+    (description
+     "This package implements a method to analyze single-cell RNA-seq data
+utilizing flexible Dirichlet Process mixture models.  Genes with differential
+distributions of expression are classified into several interesting patterns
+of differences between two conditions.  The package also includes functions
+for simulating data with these patterns from negative binomial
+distributions.")
+    (license license:gpl2)))
+
+(define-public r-scone
+  (package
+    (name "r-scone")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "scone" version))
+       (sha256
+        (base32
+         "0l1x4cjnfjbpx6k55sjqx03555daa6v63rq0rg6b7jpz8xxzwa7p"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-aroma-light" ,r-aroma-light)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-boot" ,r-boot)
+       ("r-class" ,r-class)
+       ("r-cluster" ,r-cluster)
+       ("r-compositions" ,r-compositions)
+       ("r-diptest" ,r-diptest)
+       ("r-edger" ,r-edger)
+       ("r-fpc" ,r-fpc)
+       ("r-gplots" ,r-gplots)
+       ("r-hexbin" ,r-hexbin)
+       ("r-limma" ,r-limma)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-mixtools" ,r-mixtools)
+       ("r-rarpack" ,r-rarpack)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-ruvseq" ,r-ruvseq)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/scone")
+    (synopsis "Single cell overview of normalized expression data")
+    (description
+     "SCONE is an R package for comparing and ranking the performance of
+different normalization schemes for single-cell RNA-seq and other
+high-throughput analyses.")
+    (license license:artistic2.0)))
+
+(define-public r-geoquery
+  (package
+    (name "r-geoquery")
+    (version "2.50.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GEOquery" version))
+       (sha256
+        (base32
+         "074dl00c8yi1ihpjkw7vl9vy2hggvipib0jn0hli0wrw7x1h9hg6"))))
+    (properties `((upstream-name . "GEOquery")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
+       ("r-readr" ,r-readr)
+       ("r-tidyr" ,r-tidyr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/seandavi/GEOquery/")
+    (synopsis "Get data from NCBI Gene Expression Omnibus (GEO)")
+    (description
+     "The NCBI Gene Expression Omnibus (GEO) is a public repository of
+microarray data.  Given the rich and varied nature of this resource, it is
+only natural to want to apply BioConductor tools to these data.  GEOquery is
+the bridge between GEO and BioConductor.")
+    (license license:gpl2)))
+
+(define-public r-illuminaio
+  (package
+    (name "r-illuminaio")
+    (version "0.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "illuminaio" version))
+       (sha256
+        (base32
+         "1rdp9b4xlv91yzba7pd7k50s3nkljfxmdmyz5jl0j8ybhmpl6rns"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64" ,r-base64)))
+    (home-page "https://github.com/HenrikBengtsson/illuminaio/")
+    (synopsis "Parse Illumina microarray output files")
+    (description
+     "This package provides tools for parsing Illumina's microarray output
+files, including IDAT.")
+    (license license:gpl2)))
+
+(define-public r-siggenes
+  (package
+    (name "r-siggenes")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "siggenes" version))
+       (sha256
+        (base32
+         "0cjlb5r04x15xkhk00i3wvpx21kj0k29pn0mj3whwqk31zznnk1b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-multtest" ,r-multtest)))
+    (home-page "https://bioconductor.org/packages/siggenes/")
+    (synopsis
+     "Multiple testing using SAM and Efron's empirical Bayes approaches")
+    (description
+     "This package provides tools for the identification of differentially
+expressed genes and estimation of the @dfn{False Discovery Rate} (FDR) using
+both the Significance Analysis of Microarrays (SAM) and the @dfn{Empirical
+Bayes Analyses of Microarrays} (EBAM).")
+    (license license:lgpl2.0+)))
+
+(define-public r-bumphunter
+  (package
+    (name "r-bumphunter")
+    (version "1.24.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bumphunter" version))
+       (sha256
+        (base32
+         "1f9vk3srffbx8jpza40nd18a4y0p0z8q40mx55dlcnddkwrqi19b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dorng" ,r-dorng)
+       ("r-foreach" ,r-foreach)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-iterators" ,r-iterators)
+       ("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/ririzarr/bumphunter")
+    (synopsis "Find bumps in genomic data")
+    (description
+     "This package provides tools for finding bumps in genomic data in order
+to identify differentially methylated regions in epigenetic epidemiology
+studies.")
+    (license license:artistic2.0)))
+
+(define-public r-minfi
+  (package
+    (name "r-minfi")
+    (version "1.28.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "minfi" version))
+       (sha256
+        (base32
+         "1sjwwqb0syngvj75saaky9y06hbxsawhhcmfvavzkhicxipafv7r"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beanplot" ,r-beanplot)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bumphunter" ,r-bumphunter)
+       ("r-data-table" ,r-data-table)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-genefilter" ,r-genefilter)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-geoquery" ,r-geoquery)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-illuminaio" ,r-illuminaio)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-mclust" ,r-mclust)
+       ("r-nlme" ,r-nlme)
+       ("r-nor1mix" ,r-nor1mix)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-quadprog" ,r-quadprog)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape" ,r-reshape)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-siggenes" ,r-siggenes)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://github.com/hansenlab/minfi")
+    (synopsis "Analyze Illumina Infinium DNA methylation arrays")
+    (description
+     "This package provides tools to analyze and visualize Illumina Infinium
+methylation arrays.")
+    (license license:artistic2.0)))
+
+(define-public r-methylumi
+  (package
+    (name "r-methylumi")
+    (version "2.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "methylumi" version))
+       (sha256
+        (base32
+         "14p2qi18cprfvb2gxng1vm48c7zwh23h88q9qjgipj9xl5axsgw2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-fdb-infiniummethylation-hg19" ,r-fdb-infiniummethylation-hg19)
+       ("r-genefilter" ,r-genefilter)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-illuminaio" ,r-illuminaio)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-minfi" ,r-minfi)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-scales" ,r-scales)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/methylumi")
+    (synopsis "Handle Illumina methylation data")
+    (description
+     "This package provides classes for holding and manipulating Illumina
+methylation data.  Based on eSet, it can contain MIAME information, sample
+information, feature information, and multiple matrices of data.  An
+\"intelligent\" import function, methylumiR can read the Illumina text files
+and create a MethyLumiSet.  methylumIDAT can directly read raw IDAT files from
+HumanMethylation27 and HumanMethylation450 microarrays.  Normalization,
+background correction, and quality control features for GoldenGate, Infinium,
+and Infinium HD arrays are also included.")
+    (license license:gpl2)))
+
+(define-public r-lumi
+  (package
+    (name "r-lumi")
+    (version "2.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "lumi" version))
+       (sha256
+        (base32
+         "1fpmjpgcy5n0hx9whn9m3jhjmciqq0l59nvy5addbq0a4wnjhx8q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-dbi" ,r-dbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-methylumi" ,r-methylumi)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nleqslv" ,r-nleqslv)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://bioconductor.org/packages/lumi")
+    (synopsis "BeadArray-specific methods for Illumina methylation and expression microarrays")
+    (description
+     "The lumi package provides an integrated solution for the Illumina
+microarray data analysis.  It includes functions of Illumina
+BeadStudio (GenomeStudio) data input, quality control, BeadArray-specific
+variance stabilization, normalization and gene annotation at the probe level.
+It also includes the functions of processing Illumina methylation microarrays,
+especially Illumina Infinium methylation microarrays.")
+    (license license:lgpl2.0+)))
+
+(define-public r-linnorm
+  (package
+    (name "r-linnorm")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Linnorm" version))
+       (sha256
+        (base32
+         "1qgk8m5kc409flqxs3vnf228v3z0112q8py9hgfgyiwvi6yzdbp6"))))
+    (properties `((upstream-name . "Linnorm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-amap" ,r-amap)
+       ("r-apcluster" ,r-apcluster)
+       ("r-ellipse" ,r-ellipse)
+       ("r-fastcluster" ,r-fastcluster)
+       ("r-fpc" ,r-fpc)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gmodels" ,r-gmodels)
+       ("r-igraph" ,r-igraph)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)
+       ("r-mclust" ,r-mclust)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rtsne" ,r-rtsne)
+       ("r-statmod" ,r-statmod)
+       ("r-vegan" ,r-vegan)
+       ("r-zoo" ,r-zoo)))
+    (home-page "http://www.jjwanglab.org/Linnorm/")
+    (synopsis "Linear model and normality based transformation method")
+    (description
+     "Linnorm is an R package for the analysis of RNA-seq, scRNA-seq, ChIP-seq
+count data or any large scale count data.  It transforms such datasets for
+parametric tests.  In addition to the transformtion function (@code{Linnorm}),
+the following pipelines are implemented:
+
+@enumerate
+@item Library size/batch effect normalization (@code{Linnorm.Norm})
+@item Cell subpopluation analysis and visualization using t-SNE or PCA K-means
+  clustering or hierarchical clustering (@code{Linnorm.tSNE},
+  @code{Linnorm.PCA}, @code{Linnorm.HClust})
+@item Differential expression analysis or differential peak detection using
+  limma (@code{Linnorm.limma})
+@item Highly variable gene discovery and visualization (@code{Linnorm.HVar})
+@item Gene correlation network analysis and visualization (@code{Linnorm.Cor})
+@item Stable gene selection for scRNA-seq data; for users without or who do
+  not want to rely on spike-in genes (@code{Linnorm.SGenes})
+@item Data imputation (@code{Linnorm.DataImput}).
+@end enumerate
+
+Linnorm can work with raw count, CPM, RPKM, FPKM and TPM.  Additionally, the
+@code{RnaXSim} function is included for simulating RNA-seq data for the
+evaluation of DEG analysis methods.")
+    (license license:expat)))

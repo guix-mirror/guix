@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -47,7 +47,8 @@
 
             device-module-aliases
             known-module-aliases
-            matching-modules))
+            matching-modules
+            missing-modules))
 
 ;;; Commentary:
 ;;;
@@ -462,5 +463,27 @@ ALIAS is a string like \"scsi:t-0x00\" as returned by
                  (and (glob-match? pattern alias)
                       module)))
               known-aliases))
+
+(define* (missing-modules device modules-provided)
+  "Assuming MODULES-PROVIDED lists kernel modules that are already
+provided--e.g., in the initrd, return the list of missing kernel modules that
+are required to access DEVICE."
+  (define aliases
+    ;; Attempt to load 'modules.alias' from the current kernel, assuming we're
+    ;; on Guix System, and assuming that corresponds to the kernel we'll be
+    ;; installing.
+    (known-module-aliases))
+
+  (if aliases
+      (let* ((modules  (delete-duplicates
+                        (append-map (cut matching-modules <> aliases)
+                                    (device-module-aliases device))))
+
+             ;; Module names (not file names) are supposed to use underscores
+             ;; instead of hyphens.  MODULES is a list of module names, whereas
+             ;; LINUX-MODULES is file names without '.ko', so normalize them.
+             (provided (map file-name->module-name modules-provided)))
+        (remove (cut member <> provided) modules))
+      '()))
 
 ;;; linux-modules.scm ends here

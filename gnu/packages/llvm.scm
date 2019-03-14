@@ -451,14 +451,14 @@ use with Clang, targeting C++11, C++14 and above.")
 (define-public python-llvmlite
   (package
     (name "python-llvmlite")
-    (version "0.24.0")
+    (version "0.27.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "llvmlite" version))
        (sha256
         (base32
-         "01zwjlc3c5mhrwmv4b73zgbskwqps9ly0nrh54bbj1f1l72f839j"))))
+         "1aq003zbyjnz4q1118h6qx5lfimc8s5fvgskl75j12gxd6pc78a8"))))
     (build-system python-build-system)
     (inputs
      `(("llvm"
@@ -472,10 +472,10 @@ use with Clang, targeting C++11, C++14 and above.")
                          (method url-fetch)
                          (uri (string-append "https://raw.githubusercontent.com/numba/"
                                              "llvmlite/v" version "/conda-recipes/"
-                                             "D47188-svml.patch"))
+                                             "D47188-svml-VF.patch"))
                          (sha256
                           (base32
-                           "0mrj24jvkv3hjcmyg98zmvmyl1znlh2j63rdr69f6g7s96d2pfv1")))
+                           "0wxhgb61k17f0zg2m0726sf3hppm41f8jar2kkg2n8sl5cnjj9mr")))
                        (origin
                          (method url-fetch)
                          (uri (string-append "https://raw.githubusercontent.com/numba/"

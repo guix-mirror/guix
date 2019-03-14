@@ -18,6 +18,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages haskell)
@@ -77,6 +79,10 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages mpd)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages man)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -1102,3 +1108,145 @@ its size
 customizable status bars for their desktop environment.  It has built-in
 functionality to display information about the most commonly used services.")
     (license license:expat)))
+
+(define-public wlroots
+  (package
+    (name "wlroots")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/wlroots.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1phiidyddzgaxy4gbqwmykxn0y8za6y5mp66l9dpd9i6fml153yq"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-Dlogind-provider=elogind")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xwayland/xwayland.c"
+               (("Xwayland") (string-append (assoc-ref inputs
+                                                       "xorg-server-xwayland")
+                                            "/bin/Xwayland")))
+             #t)))))
+    (inputs `(("elogind" ,elogind)
+              ("eudev" ,eudev)
+              ("libinput" ,libinput)
+              ("libxkbcommon" ,libxkbcommon)
+              ("mesa" ,mesa)
+              ("pixman" ,pixman)
+              ("wayland" ,wayland)
+              ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (native-inputs `(("ffmpeg" ,ffmpeg)
+                     ("libcap" ,libcap)
+                     ("libpng" ,libpng)
+                     ("pkg-config" ,pkg-config)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/wlroots")
+    (synopsis "Pluggable, composable, unopinionated modules for building a
+Wayland compositor")
+    (description "wlroots is a set of pluggable, composable, unopinionated
+modules for building a Wayland compositor.")
+    (license license:expat)))  ; MIT license
+
+(define-public sway
+  (package
+    (name "sway")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/sway.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09cndc2nl39d3l7g5634xp0pxcz60pvc5277mfw89r22mh0j78rx"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("scdoc.get_pkgconfig_variable..scdoc..")
+                (string-append "'" (assoc-ref inputs "scdoc")
+                               "/bin/scdoc'")))
+             #t)))))
+    (inputs `(("cairo" ,cairo)
+              ("elogind" ,elogind)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("json-c" ,json-c)
+              ("libinput" ,libinput)
+              ("libxkbcommon" ,libxkbcommon)
+              ("pango" ,pango)
+              ("wayland" ,wayland)
+              ("wlroots" ,wlroots)))
+    (native-inputs `(("git" ,git)
+                     ("libcap" ,libcap)
+                     ("linux-pam" ,linux-pam)
+                     ("mesa" ,mesa)
+                     ("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Wayland compositor compatible with i3")
+    (description "Sway is a i3-compatible Wayland compositor.")
+    (license license:expat)))       ; MIT license
+
+(define-public swayidle
+  (package
+    (name "swayidle")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/swayidle.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0b65flajwn2i6k2kdxxgw25w7ikzzmm595f4j5x1wac1rb0yah9w"))))
+    (build-system meson-build-system)
+    (inputs `(("wayland" ,wayland)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Idle management daemon for Wayland compositors")
+    (description "Swayidle is a idle management daemon for Wayland compositors.")
+    (license license:expat))) ; MIT license
+
+(define-public swaylock
+  (package
+    (name "swaylock")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/swaylock.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "093nv1y9wyg48rfxhd36qdljjry57v1vkzrlc38mkf6zvsq8j7wb"))))
+    (build-system meson-build-system)
+    (inputs `(("cairo" ,cairo)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("libxkbcommon" ,libxkbcommon)
+              ;("linux-pam" ,linux-pam) ; FIXME: Doesn't work.
+              ("wayland" ,wayland)))
+    (native-inputs `(("git" ,git)
+                     ("pango" ,pango)
+                     ("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Screen locking utility for Wayland compositors")
+    (description "Swaylock is a screen locking utility for Wayland compositors.")
+    (license license:expat))) ; MIT license

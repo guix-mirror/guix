@@ -65,19 +65,28 @@ lives in, or #f if this is not applicable."
        (let ((manifest (profile-manifest profile)))
          (manifest-entries manifest))))))
 
-(define package-path-entries
+(define current-channel-entries
   (mlambda ()
-    "Return a list of package path entries to be added to the package search
-path.  These entries are taken from the 'guix pull' profile the calling
-process lives in, when applicable."
-    ;; Filter out Guix itself.
-    (filter-map (lambda (entry)
-                  (and (not (string=? (manifest-entry-name entry)
-                                      "guix"))
-                       (string-append (manifest-entry-item entry)
+    "Return manifest entries corresponding to extra channels--i.e., not the
+'guix' channel."
+    (remove (lambda (entry)
+              (string=? (manifest-entry-name entry) "guix"))
+            (current-profile-entries))))
+
+(define (package-path-entries)
+  "Return two values: the list of package path entries to be added to the
+package search path, and the list to be added to %LOAD-COMPILED-PATH.  These
+entries are taken from the 'guix pull' profile the calling process lives in,
+when applicable."
+  ;; Filter out Guix itself.
+  (unzip2 (map (lambda (entry)
+                 (list (string-append (manifest-entry-item entry)
                                       "/share/guile/site/"
-                                      (effective-version))))
-                (current-profile-entries))))
+                                      (effective-version))
+                       (string-append (manifest-entry-item entry)
+                                      "/lib/guile/" (effective-version)
+                                      "/site-ccache")))
+               (current-channel-entries))))
 
 (define (package-provenance package)
   "Return the provenance of PACKAGE as an sexp for use as the 'provenance'

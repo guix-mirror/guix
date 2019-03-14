@@ -113,14 +113,14 @@
 (define-public aide
   (package
     (name "aide")
-    (version "0.16")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/aide/aide/"
-                                  version "/aide-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ibkv4z2gk14fn014kq13rp2ysiq6nn2cflv2q5i7zf466hm6758"))))
+    (version "0.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/aide/aide/releases/download/v"
+                           version "/aide-" version ".tar.gz"))
+       (sha256
+        (base32 "1dqhc0c24wa4zid06pfy61k357yvzh28ij86bk9jf6hcqzn7qaqg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -141,7 +141,7 @@ that it finds from its configuration files.  Once this database is initialized
 it can be used to verify the integrity of the files.  It has several message
 digest algorithms that are used to check the integrity of files.  All of the
 usual file attributes can be checked for inconsistencies.")
-    (home-page "http://aide.sourceforge.net/")
+    (home-page "https://aide.github.io/")
     (license license:gpl2+)))
 
 (define-public progress
@@ -1598,14 +1598,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.7")
+    (version "2.7.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32
-         "0l4id24jqi578xmybvwrz10sm2jhs90gk9gs1y04gfarz4vcj304"))))
+        (base32 "11yx7vd0mp5gkq428af141dwnrwf8f9cp3f65243qbs9icjxnrrx"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2700,16 +2699,16 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.20-1")
+      (version "3.0.22-1")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/smxi/inxi")
                (commit version)))
+         (file-name (git-file-name real-name version))
          (sha256
-          (base32
-           "1k9148xnfznch1443niaa3w1kmsw4vp0xpwna6npgmi7zqg06ymy"))))
+          (base32 "1br392s3xc2nwqmfx4nwb3i97wjwasvkq8ayr8jq72mi5qzsgizn"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

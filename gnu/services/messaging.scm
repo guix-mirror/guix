@@ -461,7 +461,7 @@ about using the hashed backend.  See also
     (log
      (maybe-string "*syslog")
      "Set logging options.  Advanced logging configuration is not yet supported
-by the GuixSD Prosody Service.  See @url{https://prosody.im/doc/logging}."
+by the Prosody service.  See @url{https://prosody.im/doc/logging}."
      common)
 
     (pidfile
