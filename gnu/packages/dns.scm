@@ -364,14 +364,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.9.0")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "05xrb8havr2vgjsdy7n85kgnvk1mg7qwhjp4a8n6pg4jhd5zjnj1"))))
+        (base32 "1iarvk0i92asvrkpla9z55aan20k6pklzpck9yk4rfnchsdvzh63"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
