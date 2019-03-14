@@ -1002,9 +1002,23 @@ association studies (GWAS) on extremely large data sets.")
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
+                      (inc (string-append out "/include"))
                       (lib (string-append out "/lib")))
                  (mkdir-p lib)
-                 (install-file "gst-plugin/libgstonlinegmmdecodefaster.so" lib)
+                 ;; The build phase installed symlinks to the actual
+                 ;; libraries.  Install the actual targets.
+                 (for-each (lambda (file)
+                             (let ((target (readlink file)))
+                               (delete-file file)
+                               (install-file target lib)))
+                           (find-files lib "\\.so"))
+                 ;; Install headers
+                 (for-each (lambda (file)
+                             (let ((target-dir (string-append inc "/" (dirname file))))
+                               (install-file file target-dir)))
+                           (find-files "." "\\.h"))
+                 (install-file "gst-plugin/libgstonlinegmmdecodefaster.so"
+                               (string-append lib "/gstreamer-1.0"))
                  #t))))))
       (inputs
        `(("alsa-lib" ,alsa-lib)
