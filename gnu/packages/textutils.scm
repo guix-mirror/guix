@@ -188,6 +188,28 @@ normalization, case-folding, and other operations for data in the UTF-8
 encoding, supporting Unicode version 9.0.0.")
     (license license:expat)))
 
+(define-public libconfuse
+  (package
+    (name "libconfuse")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/martinh/libconfuse/"
+                           "releases/download/v" version
+                           "/confuse-" version ".tar.xz"))
+       (sha256
+        (base32 "02r1mmzik2m0iigbc2da3y754vj24i18r3ml5p2wzs027mjhn959"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/martinh/libconfuse")
+    (synopsis "Configuration file parser library")
+    (description "libconfuse is a configuration file parser library.  It
+supports sections and (lists of) values (strings, integers, floats, booleans
+or other sections), as well as some other features (such as
+single/double-quoted strings, environment variable expansion, functions and
+nested include statements).")
+    (license license:isc)))
+
 (define-public libgtextutils
   (package
     (name "libgtextutils")
