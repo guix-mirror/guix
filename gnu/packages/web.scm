@@ -751,7 +751,7 @@ current version of any major web browser.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://github.com/miloyip/rapidjson.git")
+                   (url "https://github.com/Tencent/rapidjson.git")
                    (commit (string-append "v" version))))
              (file-name (git-file-name name version))
              (sha256
@@ -776,7 +776,7 @@ current version of any major web browser.")
                      (("native") "armv8-a"))
                    #t))))
            '())))
-    (home-page "https://github.com/miloyip/rapidjson")
+    (home-page "https://github.com/Tencent/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
     (description
      "RapidJSON is a fast JSON parser/generator for C++ with both SAX/DOM
