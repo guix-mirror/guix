@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;;
@@ -740,16 +740,17 @@ the order of added relations.")
 (define-public python-django-appconf
   (package
     (name "python-django-appconf")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-appconf" version))
               (sha256
                (base32
-                "0qdjdx35g66xjsc50v0c5h3kg6njs8df33mbjx6j4k1vd3m9lkba"))))
+                "1qw0p9qh78bvkgi38ba58djwn0rd5j1lrkg2c2wk5wb7snj3rw9m"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-django" ,python-django)))
+     `(("python-django" ,python-django)
+       ("python-six" ,python-six)))
     (home-page "https://github.com/django-compressor/django-appconf")
     (synopsis "Handle configuration defaults of packaged Django apps")
     (description
