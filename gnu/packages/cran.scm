@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11716,4 +11717,25 @@ plotting functions are available for analyzing clustering results.")
      "This package enables you to read and manipulate genome intervals and
 signals.  It provides functionality similar to command-line tool suites within
 R, enabling interactive analysis and visualization of genome-scale data.")
+    (license license:expat)))
+
+(define-public r-rematch2
+  (package
+    (name "r-rematch2")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rematch2" version))
+       (sha256
+        (base32
+         "16k0i5p7fa3qfxv59ijyn638wpz8n4jrkrnilqmh5g9l8f8bn4h6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/r-lib/rematch2")
+    (synopsis "Tidy output from regular expression matching")
+    (description
+     "This package provides wrappers on @code{regexpr} and @code{gregexpr} to
+return the match results in tidy data frames.")
     (license license:expat)))
