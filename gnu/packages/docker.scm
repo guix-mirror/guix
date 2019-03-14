@@ -43,7 +43,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "18.09.2")
+(define %docker-version "18.09.3")
 
 (define-public python-docker-py
   (package
@@ -239,8 +239,7 @@ network attachments.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "1zfpk2n8j6gnwbrxrh6d6pj24y60dhbanpf55shrm2yxz54ka36c"))
+       (base32 "06yr5xwr181lalh8z1lk07nxlp7hn38aq8cyqjk617dfy4lz0ixx"))
       (patches
        (search-patches "docker-engine-test-noinstall.patch"
                        "docker-fix-tests.patch"))))
@@ -485,8 +484,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "0jzcqh1kqbfyj6ax7z67gihaqgjiz6ddz6rq6k458l68v7zn77r8"))))
+       (base32 "09j1i668p330gjz5vw5pss8ghxh1mz7rl2q9ykp02q9p112zhy4j"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"
