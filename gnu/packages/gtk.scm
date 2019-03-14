@@ -555,7 +555,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.28.0")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -563,12 +563,12 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "11qwdxxx4jm0zj04xydlwah41axiz276dckkiql3rr0wn5x4i8j2"))))
+              "083j1v7kdjrpjsv1b9dl3d8xqj39jyp4cfn8i9gbbm7q2g93b923"))))
    (build-system meson-build-system)
    (outputs '("out" "doc"))
    (arguments
     '(#:configure-flags
-      (list "-Denable_docs=true")
+      (list "-Ddocs=true")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'set-documentation-path
@@ -605,9 +605,8 @@ in the GNOME project.")
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
     `(("dbus" ,dbus)
-      ("glib" ,glib)))
-   (inputs
-    `(("libxi" ,libxi)
+      ("glib" ,glib)
+      ("libxi" ,libxi)
       ("libxtst" ,libxtst)))
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
