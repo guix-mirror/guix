@@ -13506,3 +13506,29 @@ like @code{company}, @code{flycheck}, and @code{projectile}.")
 @code{lsp-mode}, such as visual flychecking, displaying references in-line,
 and code peeking.")
     (license license:gpl3+)))
+
+(define-public emacs-helm-notmuch
+  (let ((commit "9988eb0f787c82c779f2417b5613b9142a5b1c9b"))
+    (package
+      (name "emacs-helm-notmuch")
+      (version (git-version "1.1" "1" commit))
+      (home-page "https://github.com/xuchunyang/helm-notmuch/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1jwhmlqlgzxj2zfz0za33vn8m2zrsmkmnq2vx5i1nry70p9h43b4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("notmuch" ,notmuch)))
+      (synopsis "Search emails with Emacs Notmuch and Helm")
+      (description
+       "This package can be used to search emails in Emacs, searching result
+displays as you type thanks to Helm, though @command{notmuch-search} does the
+real search.")
+      (license license:gpl3+))))
