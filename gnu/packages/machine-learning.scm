@@ -43,6 +43,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -63,6 +64,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -1040,4 +1042,75 @@ association studies (GWAS) on extremely large data sets.")
       (synopsis "Speech recognition toolkit")
       (description "Kaldi is an extensible toolkit for speech recognition
 written in C++.")
+      (license license:asl2.0))))
+
+(define-public gst-kaldi-nnet2-online
+  (let ((commit "617e43e73c7cc45eb9119028c02bd4178f738c4a")
+        (revision "1"))
+    (package
+      (name "gst-kaldi-nnet2-online")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alumae/gst-kaldi-nnet2-online.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xh3w67b69818s6ib02ara4lw7wamjdmh4jznvkpzrs4skbs9jx9"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are none
+         #:make-flags
+         (list (string-append "SHELL="
+                              (assoc-ref %build-inputs "bash") "/bin/bash")
+               (string-append "KALDI_ROOT="
+                              (assoc-ref %build-inputs "kaldi-src"))
+               (string-append "KALDILIBDIR="
+                              (assoc-ref %build-inputs "kaldi") "/lib")
+               "KALDI_FLAVOR=dynamic")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "src") #t))
+           (replace 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((glib (assoc-ref inputs "glib")))
+                 (setenv "CXXFLAGS" "-std=c++11 -fPIC")
+                 (setenv "CPLUS_INCLUDE_PATH"
+                         (string-append glib "/include/glib-2.0:"
+                                        glib "/lib/glib-2.0/include:"
+                                        (assoc-ref inputs "gstreamer")
+                                        "/include/gstreamer-1.0:"
+                                        (getenv "CPLUS_INCLUDE_PATH"))))
+               (substitute* "Makefile"
+                 (("include \\$\\(KALDI_ROOT\\)/src/kaldi.mk") "")
+                 (("\\$\\(error Cannot find") "#"))))
+           (add-before 'build 'build-depend
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke "make" "depend" make-flags)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/gstreamer-1.0")))
+                 (install-file "libgstkaldinnet2onlinedecoder.so" lib)
+                 #t))))))
+      (inputs
+       `(("glib" ,glib)
+         ("gstreamer" ,gstreamer)
+         ("jansson" ,jansson)
+         ("openfst" ,openfst)
+         ("kaldi" ,kaldi)))
+      (native-inputs
+       `(("bash" ,bash)
+         ("glib:bin" ,glib "bin")       ; glib-genmarshal
+         ("kaldi-src" ,(package-source kaldi))
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://kaldi-asr.org/")
+      (synopsis "Gstreamer plugin for decoding speech")
+      (description "This package provides a GStreamer plugin that wraps
+Kaldi's @code{SingleUtteranceNnet2Decoder}.  It requires iVector-adapted DNN
+acoustic models.  The iVectors are adapted to the current audio stream
+automatically.")
       (license license:asl2.0))))
