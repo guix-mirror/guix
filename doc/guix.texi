@@ -4760,14 +4760,24 @@ symlinks, as well as empty mount points for virtual file systems like
 procfs.
 @end table
 
+@cindex relocatable binaries
 @item --relocatable
 @itemx -R
 Produce @dfn{relocatable binaries}---i.e., binaries that can be placed
-anywhere in the file system hierarchy and run from there.  For example,
-if you create a pack containing Bash with:
+anywhere in the file system hierarchy and run from there.
+
+When this option is passed once, the resulting binaries require support for
+@dfn{user namespaces} in the kernel Linux; when passed
+@emph{twice}@footnote{Here's a trick to memorize it: @code{-RR}, which adds
+PRoot support, can be thought of as the abbreviation of ``Really
+Relocatable''.  Neat, isn't it?}, relocatable binaries fall to back to PRoot
+if user namespaces are unavailable, and essentially work anywhere---see below
+for the implications.
+
+For example, if you create a pack containing Bash with:
 
 @example
-guix pack -R -S /mybin=bin bash
+guix pack -RR -S /mybin=bin bash
 @end example
 
 @noindent
@@ -4786,12 +4796,23 @@ In that shell, if you type @code{ls /gnu/store}, you'll notice that
 altogether!  That is probably the simplest way to deploy Guix-built
 software on a non-Guix machine.
 
-There's a gotcha though: this technique relies on the @dfn{user
-namespace} feature of the kernel Linux, which allows unprivileged users
-to mount or change root.  Old versions of Linux did not support it, and
-some GNU/Linux distributions turn it off; on these systems, programs
-from the pack @emph{will fail to run}, unless they are unpacked in the
-root file system.
+@quotation Note
+By default, relocatable binaries rely on the @dfn{user namespace} feature of
+the kernel Linux, which allows unprivileged users to mount or change root.
+Old versions of Linux did not support it, and some GNU/Linux distributions
+turn it off.
+
+To produce relocatable binaries that work even in the absence of user
+namespaces, pass @option{--relocatable} or @option{-R} @emph{twice}.  In that
+case, binaries will try user namespace support and fall back to PRoot if user
+namespaces are not supported.
+
+The @uref{https://proot-me.github.io/, PRoot} program provides the necessary
+support for file system virtualization.  It achieves that by using the
+@code{ptrace} system call on the running program.  This approach has the
+advantage to work without requiring special kernel support, but it incurs
+run-time overhead every time a system call is made.
+@end quotation
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}

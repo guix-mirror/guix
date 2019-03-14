@@ -517,9 +517,13 @@ please email '~a'~%")
 ;;;
 
 (define* (wrapped-package package
-                          #:optional (compiler (c-compiler)))
+                          #:optional (compiler (c-compiler))
+                          #:key proot?)
   (define runner
     (local-file (search-auxiliary-file "run-in-namespace.c")))
+
+  (define (proot)
+    (specification->package "proot-static"))
 
   (define build
     (with-imported-modules (source-module-closure
@@ -550,10 +554,19 @@ please email '~a'~%")
               (("@STORE_DIRECTORY@") (%store-directory)))
 
             (let* ((base   (strip-store-prefix program))
-                   (result (string-append #$output "/" base)))
+                   (result (string-append #$output "/" base))
+                   (proot  #$(and proot?
+                                  #~(string-drop
+                                     #$(file-append (proot) "/bin/proot")
+                                     (+ (string-length (%store-directory))
+                                        1)))))
               (mkdir-p (dirname result))
-              (invoke #$compiler "-std=gnu99" "-static" "-Os" "-g0" "-Wall"
-                      "run.c" "-o" result)
+              (apply invoke #$compiler "-std=gnu99" "-static" "-Os" "-g0" "-Wall"
+                     "run.c" "-o" result
+                     (if proot
+                         (list (string-append "-DPROOT_PROGRAM=\""
+                                              proot "\""))
+                         '()))
               (delete-file "run.c")))
 
           (setvbuf (current-output-port) 'line)
@@ -646,7 +659,12 @@ please email '~a'~%")
                    (exit 0)))
          (option '(#\R "relocatable") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'relocatable? #t result)))
+                   (match (assq-ref result 'relocatable?)
+                     (#f
+                      (alist-cons 'relocatable? #t result))
+                     (_
+                      (alist-cons 'relocatable? 'proot
+                                  (alist-delete 'relocatable? result))))))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
@@ -821,11 +839,14 @@ Create a bundle of PACKAGE.\n"))
                                           #:graft? (assoc-ref opts 'graft?))))
           (let* ((dry-run?    (assoc-ref opts 'dry-run?))
                  (relocatable? (assoc-ref opts 'relocatable?))
+                 (proot?      (eq? relocatable? 'proot))
                  (manifest    (let ((manifest (manifest-from-args store opts)))
                                 ;; Note: We cannot honor '--bootstrap' here because
                                 ;; 'glibc-bootstrap' lacks 'libc.a'.
                                 (if relocatable?
-                                    (map-manifest-entries wrapped-package manifest)
+                                    (map-manifest-entries
+                                     (cut wrapped-package <> #:proot? proot?)
+                                     manifest)
                                     manifest)))
                  (pack-format (assoc-ref opts 'format))
                  (name        (string-append (symbol->string pack-format)

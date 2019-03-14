@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -41,17 +41,28 @@ STORE_PARENT="`dirname $NIX_STORE_DIR`"
 export STORE_PARENT
 if test "$STORE_PARENT" = "/"; then exit 77; fi
 
-# This test requires user namespaces and associated command-line tools.
-if ! unshare -mrf sh -c 'mount -t tmpfs none "$STORE_PARENT"'
+if unshare -mrf sh -c 'mount -t tmpfs none "$STORE_PARENT"'
 then
-    exit 77
+    # Test the wrapper that relies on user namespaces.
+    relocatable_option="-R"
+else
+    case "`uname -m`" in
+	x86_64|i?86)
+	    # Test the wrapper that falls back to PRoot.
+	    relocatable_option="-RR";;
+	*)
+	    # XXX: Our 'proot' package currently fails tests on non-Intel
+	    # architectures, so skip this by default.
+	    exit 77;;
+    esac
 fi
 
 test_directory="`mktemp -d`"
 export test_directory
 trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 
-tarball="`guix pack -R -S /Bin=bin sed`"
+export relocatable_option
+tarball="`guix pack $relocatable_option -S /Bin=bin sed`"
 (cd "$test_directory"; tar xvf "$tarball")
 
 # Run that relocatable 'sed' in a user namespace where we "erase" the store by

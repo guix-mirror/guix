@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2018 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -212,6 +212,46 @@ disallow_setgroups (pid_t pid)
 }
 
 
+#ifdef PROOT_PROGRAM
+
+/* Execute the wrapped program with PRoot, passing it ARGC and ARGV, and
+   "bind-mounting" STORE in the right place.  */
+static void
+exec_with_proot (const char *store, int argc, char *argv[])
+{
+  int proot_specific_argc = 4;
+  int proot_argc = argc + proot_specific_argc;
+  char *proot_argv[proot_argc], *proot;
+  char bind_spec[strlen (store) + 1 + sizeof "@STORE_DIRECTORY@"];
+
+  strcpy (bind_spec, store);
+  strcat (bind_spec, ":");
+  strcat (bind_spec, "@STORE_DIRECTORY@");
+
+  proot = concat (store, PROOT_PROGRAM);
+
+  proot_argv[0] = proot;
+  proot_argv[1] = "-b";
+  proot_argv[2] = bind_spec;
+  proot_argv[3] = "@WRAPPED_PROGRAM@";
+
+  for (int i = 0; i < argc; i++)
+    proot_argv[i + proot_specific_argc] = argv[i + 1];
+
+  proot_argv[proot_argc] = NULL;
+
+  /* Seccomp support seems to invariably lead to segfaults; disable it by
+     default.  */
+  setenv ("PROOT_NO_SECCOMP", "1", 0);
+
+  int err = execv (proot, proot_argv);
+  if (err < 0)
+    assert_perror (errno);
+}
+
+#endif
+
+
 int
 main (int argc, char *argv[])
 {
@@ -274,6 +314,10 @@ main (int argc, char *argv[])
 	  break;
 
 	case -1:
+	  rm_rf (new_root);
+#ifdef PROOT_PROGRAM
+	  exec_with_proot (store, argc, argv);
+#else
 	  fprintf (stderr, "%s: error: 'clone' failed: %m\n", argv[0]);
 	  fprintf (stderr, "\
 This may be because \"user namespaces\" are not supported on this system.\n\
@@ -281,6 +325,7 @@ Consequently, we cannot run '@WRAPPED_PROGRAM@',\n\
 unless you move it to the '@STORE_DIRECTORY@' directory.\n\
 \n\
 Please refer to the 'guix pack' documentation for more information.\n");
+#endif
 	  return EXIT_FAILURE;
 
 	default:
