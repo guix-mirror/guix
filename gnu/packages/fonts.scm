@@ -353,14 +353,28 @@ Biolinum is available in both Regular and Bold weights.")
        (sha256
         (base32 "15qjcpalcxjiwsjgjg5k88vkwp56cs2nnx4ghya6mqp4i1c206qg"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "pcf-8bit"))
+    (arguments
+     `(#:tests? #f                      ; no test target in tarball
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-more-bits
+           ;; X11 8-bit code pages aren't installed by default (they were
+           ;; until version 4.46).  Build and install them separately.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "pcf-8bit" make-flags)))
+         (add-after 'install 'install-more-bits
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((pcf-8bit (assoc-ref outputs "pcf-8bit")))
+               (apply invoke "make" "install-pcf-8bit" (string-append "prefix="
+                                                                      pcf-8bit)
+                      make-flags)))))))
     (native-inputs
      `(("bdftopcf" ,bdftopcf)
        ("font-util" ,font-util)
        ("mkfontdir" ,mkfontdir)
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
-    (arguments
-     `(#:tests? #f))                    ; no test target in tarball
     (home-page "http://terminus-font.sourceforge.net/")
     (synopsis "Simple bitmap programming font")
     (description "Terminus Font is a clean, fixed-width bitmap font, designed
