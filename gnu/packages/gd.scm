@@ -138,15 +138,14 @@ you can create PNG images on the fly or modify existing files.")
 (define-public perl-gd-securityimage
   (package
     (name "perl-gd-securityimage")
-    (version "1.73")
+    (version "1.75")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BU/BURAK/"
                            "GD-SecurityImage-" version ".tar.gz"))
        (sha256
-        (base32
-         "1kaxs67rfd4w46lxgcg3pa05a596l0h1k8n4zk2gwrrar4022wpx"))))
+        (base32 "19lf1kzdavrkkx3f900jnpynr55d5kjd2sdmwpfir5dsmkcj9pix"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
