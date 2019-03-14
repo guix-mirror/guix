@@ -85,7 +85,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.28.1")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -93,17 +93,12 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1z7laf6qwv5zsqcnj222dm5f43c6f3liil0cgx4s4s62xjk1wfnd"))))
-   (build-system gnu-build-system)
-   (outputs '("out" "doc"))
-   (arguments
-    `(#:configure-flags
-      (list (string-append "--with-html-dir="
-                           (assoc-ref %outputs "doc")
-                           "/share/gtk-doc/html"))))
+              "1k4i817bd2w5b9z394f2yyx95591l2746wa40am0vvz4gzdgwhfb"))))
+   (build-system meson-build-system)
    (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
     `(("pkg-config" ,pkg-config)
+      ("gettext" ,gettext-minimal)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME accessibility toolkit")
