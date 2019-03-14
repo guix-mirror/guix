@@ -2634,14 +2634,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.24.0")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "05zmv6jr7qbgnkz0lqh5pr7kr4lm12i8ljm2k5h5kz3q9m8d4mm0"))))
+         "1xabnaqd4n72myrc3mxl2y33vr2p7c9c5a87n77p9k327ckvdx01"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -2653,7 +2653,8 @@ Server (PLS).")
        ("python-pycodestyle" ,python-pycodestyle)
        ("python-mccabe" ,python-mccabe)
        ("python-rope" ,python-rope)
-       ("python-autopep8" ,python-autopep8)))
+       ("python-autopep8" ,python-autopep8)
+       ("python-pylint" ,python-pylint)))
     (home-page "https://github.com/palantir/python-language-server")
     (synopsis "Python implementation of the Language Server Protocol")
     (description
