@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018, 2019 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
@@ -68,16 +68,14 @@
 (define-public libextractor
   (package
    (name "libextractor")
-   (version "1.8")
+   (version "1.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libextractor/libextractor-"
                                 version ".tar.gz"))
-            (patches (search-patches "libextractor-CVE-2018-20430.patch"
-                                     "libextractor-CVE-2018-20431.patch"))
             (sha256
              (base32
-              "1z1cb35griqzvshqdv5ck98dy0sgpsswn7fgiy7lbzi34sma8dg2"))))
+              "1zz2zvikvfibxnk1va3kgzs7djsmiqy7bmk8y01vbsf54ryjb3zh"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.

@@ -968,8 +968,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
-  %D%/packages/patches/libextractor-CVE-2018-20430.patch	\
-  %D%/packages/patches/libextractor-CVE-2018-20431.patch	\
   %D%/packages/patches/libgcrypt-make-yat2m-reproducible.patch	\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgit2-oom-test.patch			\
