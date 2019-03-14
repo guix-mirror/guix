@@ -743,7 +743,7 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public protozero
   (package
     (name "protozero")
-    (version "1.6.5")
+    (version "1.6.7")
     (source
      (origin
        (method git-fetch)
@@ -752,7 +752,7 @@ to create databases that are optimized for rendering/tile/map-services.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10ldzni46cplmkgx1f73yn95qcb71xh9nxpcfdmi107y3kvicv3c"))))
+        (base32 "1ryvn3iwxiaih3mvyy45nbwxnhzfc8vby0xh9m6d6fpakhcpf6s3"))))
     (build-system cmake-build-system)
     (home-page "https://github.com/mapbox/protozero")
     (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
