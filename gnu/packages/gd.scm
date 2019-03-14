@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,15 +108,14 @@ most common applications of GD involve website development.")
 (define-public perl-gd
   (package
     (name "perl-gd")
-    (version "2.69")
+    (version "2.71")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "GD-" version ".tar.gz"))
        (sha256
-        (base32
-         "0palmq7l42fibqxhrabnjm7di4q8kciq9323902d717x3i4jvc6x"))))
+        (base32 "1ivskdb4nwy7ky37369hwkfxp11fkp6ri5k7qlf2dmra7f3y86s5"))))
     (build-system perl-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
