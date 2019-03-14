@@ -201,15 +201,14 @@ and driving.")
 (define-public libgeotiff
   (package
     (name "libgeotiff")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0vjy3bwfhljjx66p9w999i4mdhsf7vjshx29yc3pn5livf5091xd"))
+        (base32 "0rbjqixi4c8yz19larlzq6jda0px2gpmpp9c52cyhplbjsdhsldq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
