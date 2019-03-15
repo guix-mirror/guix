@@ -764,15 +764,14 @@ the behavior, just the input and the output.")
 (define-public perl-test-mocktime
   (package
     (name "perl-test-mocktime")
-    (version "0.15")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DD/DDICK/"
                            "Test-MockTime-" version ".tar.gz"))
        (sha256
-        (base32
-         "0j6cxmkj52i5xkwg8dg6klm0dh386fzc5v80n5nbdalpvq0h48c8"))))
+        (base32 "1y820qsq7yf7r6smy5c6f0mpf2cis2q24vwmpim1svv0n8cf2qrk"))))
     (propagated-inputs
      `(("perl-time-piece" ,perl-time-piece)))
     (build-system perl-build-system)
