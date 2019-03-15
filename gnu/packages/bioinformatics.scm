@@ -1570,6 +1570,47 @@ the original BWA alignment program and shares the genome index structure as
 well as many of the command line options.")
     (license license:gpl3+)))
 
+(define-public bwa-meth
+  (package
+    (name "bwa-meth")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brentp/bwa-meth.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17j31i7zws5j7mhsq9x3qgkxly6mlmrgwhfq0qbflgxrmx04yaiz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'keep-references-to-bwa
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "bwameth.py"
+               (("bwa mem")
+                (string-append (which "bwa") " mem"))
+               ;; There's an ill-advised check for "samtools" on PATH.
+               (("^checkX.*") ""))
+             #t)))))
+    (inputs
+     `(("bwa" ,bwa)))
+    (native-inputs
+     `(("python-toolshed" ,python-toolshed)))
+    (home-page "https://github.com/brentp/bwa-meth")
+    (synopsis "Fast and accurante alignment of BS-Seq reads")
+    (description
+     "BWA-Meth works for single-end reads and for paired-end reads from the
+directional protocol (most common).  It uses the method employed by
+methylcoder and Bismark of in silico conversion of all C's to T's in both
+reference and reads.  It recovers the original read (needed to tabulate
+methylation) by attaching it as a comment which BWA appends as a tag to the
+read.  It performs favorably to existing aligners gauged by number of on and
+off-target reads for a capture method that targets CpG-rich region.")
+    (license license:expat)))
+
 (define-public python-bx-python
   (package
     (name "python-bx-python")
