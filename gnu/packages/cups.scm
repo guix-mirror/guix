@@ -430,9 +430,19 @@ should only be used as part of the Guix cups-pk-helper service.")
                                         (lambda (file stat)
                                           (elf-file? file))))
                   (delete-file "prnt/hpcups/ImageProcessor.h")
+
                   ;; Fix type mismatch.
                   (substitute* "prnt/hpcups/genPCLm.cpp"
                     (("boolean") "bool"))
+
+                  ;; Install binaries under libexec/hplip instead of
+                  ;; share/hplip; that'll at least ensure they get stripped.
+                  ;; It's not even clear that they're of any use though...
+                  (substitute* "Makefile.in"
+                    (("^dat2drvdir =.*")
+                     "dat2drvdir = $(pkglibexecdir)\n")
+                    (("^locatedriverdir =.*")
+                     "locatedriverdir = $(pkglibexecdir)\n"))
                   #t))))
     (build-system gnu-build-system)
     (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
