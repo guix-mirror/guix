@@ -3223,9 +3223,9 @@ playlists in a variety of formats.")
     (version "3.22.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/aisleriot/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "aisleriot-" version ".tar.xz"))
               (sha256
                (base32
                 "0rl39psr5xi584310pyrgw36ini4wn7yr2m1q5118w3a3v1dkhzh"))))
