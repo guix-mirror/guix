@@ -12606,7 +12606,7 @@ correctly.")
 (define-public emacs-helm-slime
   (package
     (name "emacs-helm-slime")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -12615,7 +12615,7 @@ correctly.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vn93vv2wclnwq6f480z14jn9wfp0ylhp5dd48ycc9jicfsnxqfj"))))
+                "1qhb9446rpj17pm0hi3miy5gs5k3ld43bq29kzy0y26bf7ivfcjv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
