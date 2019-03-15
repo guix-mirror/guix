@@ -104,6 +104,8 @@
                (string-append "-DCMAKE_INSTALL_LIBEXECDIR=" out "/libexec")
                (string-append "-DKEYUTILS_INCLUDE_DIR="
                               (assoc-ref %build-inputs "keyutils") "/include")
+               (string-append "-DXFS_INCLUDE_DIR="
+                              (assoc-ref %build-inputs "xfsprogs") "/include")
                "-DCMAKE_INSTALL_LOCALSTATEDIR=/var"
                "-DENABLE_SHARED=ON"
                "-DWITH_SYSTEM_ROCKSDB=ON"
@@ -114,7 +116,6 @@
                "-DWITH_BABELTRACE=OFF"
                "-DWITH_LTTNG=OFF"
                "-DWITH_SPDK=OFF"
-               "-DWITH_XFS=OFF"
                "-DWITH_XIO=OFF"
                ;; Use jemalloc instead of tcmalloc.
                "-DALLOCATOR=jemalloc"))
@@ -347,6 +348,7 @@
        ("snappy" ,snappy)
        ("udev" ,eudev)
        ("util-linux" ,util-linux)
+       ("xfsprogs" ,xfsprogs)
        ("zlib" ,zlib)))
     (home-page "https://ceph.com/")
     (synopsis "Distributed object store and file system")
