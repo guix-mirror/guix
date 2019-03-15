@@ -1110,7 +1110,7 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfs
   (package
     (name "libfs")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -1119,8 +1119,7 @@ synchronization between the X server and direct-rendering clients.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "1wy4km3qwwajbyl8y9pka0zwizn7d9pfiyjgzba02x3a083lr79f"))))
+          (base32 "03xxyvpfa3rhqcld4p2chkil482jn9cp80hj17jdybcv2hkkgqf8"))))
     (build-system gnu-build-system)
     (inputs
       `(("xtrans" ,xtrans)
