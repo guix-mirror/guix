@@ -2596,45 +2596,46 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/OpenRCT2/OpenRCT2/archive/v"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1fxzk037xphpyk7vv5jfrcz739zrj86p43pnf5gjjv9rjxwv7m8f"))
+        (base32 "0yxaphgfq85piaacnnfy6lrvmnqmfj1891rxlkl5ndngq0zh0ysb"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
                                "-DDOWNLOAD_TITLE_SEQUENCES=OFF")
-       #:tests? #f ; Tests require network.
+       #:tests? #f                      ; tests require network access
        #:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'fix-usr-share-paths&add-data
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
-                    (objects (assoc-ref inputs "openrct2-objects")))
-              ;; Fix some references to /usr/share.
-              (substitute* "src/openrct2/platform/Platform.Linux.cpp"
-                (("/usr/share")
-                 (string-append (assoc-ref %outputs "out") "/share")))
-              (copy-recursively (string-append titles
-                                "/share/openrct2/title-sequences") "data/title")
-              (copy-recursively (string-append objects
-                                "/share/openrct2/objects") "data/object"))))
-          (add-before 'configure 'fixgcc7
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))
-          (add-after 'fixgcc7 'get-rid-of-errors
-            (lambda _
-              ;; Don't treat warnings as errors.
-              (substitute* "CMakeLists.txt"
-                (("-Werror") "")))))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-usr-share-paths&add-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
+                   (objects (assoc-ref inputs "openrct2-objects")))
+               ;; Fix some references to /usr/share.
+               (substitute* "src/openrct2/platform/Platform.Linux.cpp"
+                 (("/usr/share")
+                  (string-append (assoc-ref %outputs "out") "/share")))
+               (copy-recursively
+                (string-append titles "/share/openrct2/title-sequences")
+                "data/title")
+               (copy-recursively
+                (string-append objects "/share/openrct2/objects")
+                "data/object"))))
+         (add-before 'configure 'fixgcc7
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
+             #t))
+         (add-after 'fixgcc7 'get-rid-of-errors
+           (lambda _
+             ;; Don't treat warnings as errors.
+             (substitute* "CMakeLists.txt"
+               (("-Werror") "")))))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
