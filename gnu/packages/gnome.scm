@@ -3766,7 +3766,8 @@ for application developers.")
        (sha256
         (base32
          "1llyisls3pzf5bwkpxyfyxc2d3gpa09n5pjy7qsjdqrp3ya4k36g"))
-       (patches (search-patches "totem-meson-easy-codec.patch"))))
+       (patches (search-patches "totem-meson-easy-codec.patch"
+                                "totem-meson-compat.patch"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

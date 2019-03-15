@@ -561,6 +561,7 @@ in the GNOME project.")
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version)  "/"
                                 name "-" version ".tar.xz"))
+            (patches (search-patches "at-spi2-core-meson-compat.patch"))
             (sha256
              (base32
               "083j1v7kdjrpjsv1b9dl3d8xqj39jyp4cfn8i9gbbm7q2g93b923"))))
