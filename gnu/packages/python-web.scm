@@ -3031,3 +3031,40 @@ applications using Publish and Subscribe (PubSub) and routed Remote Procedure
 Calls (rRPC).  It is ideal for distributed, multi-client and server applications
 such as IoT applications or multi-user database-driven business applications.")
     (license license:expat)))
+
+(define-public python-ws4py
+  (package
+    (name "python-ws4py")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ws4py" version))
+       (sha256
+        (base32
+         "10slbbf2jm4hpr92jx7kh7mhf48sjl01v2w4d8z3f1p0ybbp7l19"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'python3.7-compatibility
+           (lambda _
+             (substitute* '("ws4py/server/tulipserver.py"
+                            "ws4py/async_websocket.py")
+               (("asyncio.async")
+                "asyncio.ensure_future"))
+             #t))
+         ;; We don't have a package for cherrypy.
+         (add-after 'unpack 'remove-cherrypy-support
+           (lambda _
+             (delete-file "ws4py/server/cherrypyserver.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://github.com/Lawouach/WebSocket-for-Python")
+    (synopsis "WebSocket client and server library")
+    (description
+     "This package provides a WebSocket client and server library for
+Python.")
+    (license license:bsd-3)))
