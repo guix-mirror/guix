@@ -34,6 +34,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system perl)
@@ -745,14 +746,14 @@ you @code{unmock()} the subroutine.")
         (base32 "06250ayzzd90vbvkpxwr9d3nlbbngl1b9nk2qk0ma4aibn6ha5j5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)
+     `(("perl-cgi" ,perl-cgi)
+       ("perl-test-exception" ,perl-test-exception)
        ("perl-test-warn" ,perl-test-warn)))
     (propagated-inputs
      `(("perl-test-exception" ,perl-test-exception)
        ("perl-test-warn" ,perl-test-warn)
        ("perl-universal-can" ,perl-universal-can)
        ("perl-universal-isa" ,perl-universal-isa)))
-    (arguments `(#:tests? #f))          ;TODO: tests require perl-cgi
     (home-page "https://metacpan.org/release/Test-MockObject")
     (synopsis "Emulate troublesome interfaces in Perl")
     (description "Test::MockObject allows you to create objects that conform
