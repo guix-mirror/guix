@@ -12466,6 +12466,30 @@ execute its commands and resize images.")
 backends, including the @command{wordnet} offline backend.")
       (license license:gpl3+))))
 
+(define-public emacs-editorconfig
+  (package
+    (name "emacs-editorconfig")
+    (version "0.7.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/editorconfig/editorconfig-emacs")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "19j2428ij7sqvrqs7rqg1mcnv9109y6drqba40dkv3vrkk5d2yia"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/editorconfig/editorconfig-emacs")
+    (synopsis "Define and maintain consistent coding styles between different
+editors and IDEs")
+    (description "The EditorConfig project consists of a file format for
+defining coding styles and a collection of text editor plugins that enable
+editors to read the file format and adhere to defined styles.  EditorConfig
+files are easily readable and they work nicely with version control systems.")
+    (license license:gpl3+)))
+
 (define-public emacs-all-the-icons
   (package
     (name "emacs-all-the-icons")
