@@ -367,7 +367,7 @@ connections from and to iOS devices by connecting to a socket provided by a
                             ,(version-major+minor (package-version python))
                             "m"))))
     (propagated-inputs
-     `(("openssl" ,openssl)
+     `(("openssl" ,openssl-1.0)
        ("libplist" ,libplist)
        ("libusbmuxd" ,libusbmuxd)))
     (inputs
