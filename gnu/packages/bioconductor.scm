@@ -2483,3 +2483,41 @@ Linnorm can work with raw count, CPM, RPKM, FPKM and TPM.  Additionally, the
 @code{RnaXSim} function is included for simulating RNA-seq data for the
 evaluation of DEG analysis methods.")
     (license license:expat)))
+
+(define-public r-ioniser
+  (package
+    (name "r-ioniser")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "IONiseR" version))
+       (sha256
+        (base32
+         "01lqisdlsvym8nhgpzn7lpcddk9lv9253dy9v65r2dicb5xqhj00"))))
+    (properties `((upstream-name . "IONiseR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bit64" ,r-bit64)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rhdf5" ,r-rhdf5)
+       ("r-shortread" ,r-shortread)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-xvector" ,r-xvector)))
+    (home-page "https://bioconductor.org/packages/IONiseR/")
+    (synopsis "Quality assessment tools for Oxford Nanopore MinION data")
+    (description
+     "IONiseR provides tools for the quality assessment of Oxford Nanopore
+MinION data.  It extracts summary statistics from a set of fast5 files and can
+be used either before or after base calling.  In addition to standard
+summaries of the read-types produced, it provides a number of plots for
+visualising metrics relative to experiment run time or spatially over the
+surface of a flowcell.")
+    (license license:expat)))
