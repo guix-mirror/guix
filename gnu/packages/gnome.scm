@@ -5690,7 +5690,15 @@ properties, screen resolution, and other GNOME parameters.")
                    #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases
+     `(#:disallowed-references ((,glib "bin")
+                                ,inkscape ,libxslt
+                                ,ruby-sass)
+
+       #:modules ((guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'rebuild-css
            (lambda _
@@ -5726,7 +5734,16 @@ properties, screen resolution, and other GNOME parameters.")
                    `("PYTHONPATH"      ":" prefix (,python-path))
                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
                '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
-              #t))))))
+              #t)))
+         (replace 'glib-or-gtk-wrap
+           (let ((wrap (assoc-ref %standard-phases 'glib-or-gtk-wrap)))
+             (lambda* (#:key inputs outputs #:allow-other-keys #:rest rest)
+               ;; By default Inkscape et al. would end up in the XDG_DATA_DIRS
+               ;; settings of the wrappers created by the 'glib-or-gtk-wrap'
+               ;; phase.  Fix that since we don't need these.
+               (wrap #:inputs (fold alist-delete inputs
+                                    '("inkscape" "intltool" "glib:bin"))
+                     #:outputs outputs)))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
