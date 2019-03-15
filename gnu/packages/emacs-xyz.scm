@@ -11776,29 +11776,26 @@ e.g: @code{from:Peter to:Anne flag:attach search term}.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-pass
-  (let ((commit "ebcbef1a962795a36e3491ae926e2a4b8a8b0ebb"))
-    (package
-      (name "emacs-helm-pass")
-      (version (git-version  "20180416" "1" commit))
-      (source
-       (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://github.com/jabranham/helm-pass/archive/"
-               commit
-               ".tar.gz"))
-         (sha256
-          (base32
-           "1pgq4hj9wvz7z2fyxwsvbh6rmc1akya84v382nx26rr76iavz6wi"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-password-store" ,emacs-password-store)))
-      (home-page
-       "https://github.com/jabranham/helm-pass")
-      (synopsis "Helm interface to pass, the standard Unix password manager")
-      (description
-       "Users of @code{helm-pass} may also be interested in functionality
+  (package
+    (name "emacs-helm-pass")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-helm/helm-pass")
+             (commit version)))
+       (sha256
+        (base32
+         "0vglaknmir3yv4iwibwn8r40ran8d04gcyp99hx73ldmf3zqpnxv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-password-store" ,emacs-password-store)))
+    (home-page "https://github.com/emacs-helm/helm-pass")
+    (synopsis "Helm interface to pass, the standard Unix password manager")
+    (description
+     "Users of @code{helm-pass} may also be interested in functionality
 provided by other Emacs packages dealing with pass:
 @itemize
 @item @code{emacs-password-store}, which @code{helm-pass} relies on.
@@ -11806,7 +11803,7 @@ provided by other Emacs packages dealing with pass:
 @item @code{auth-source-pass.el}: integration of Emacs' auth-source with
 @code{pass}, included in Emacs 26+).
 @end itemize\n")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-image+
   (let ((commit "6834d0c09bb4df9ecc0d7a559bd7827fed48fffc"))
