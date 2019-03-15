@@ -252,89 +252,77 @@ on stdout instead of using a socket as the Emacsclient does.")
     (license license:gpl3+)))
 
 (define-public emacs-magit
-  (package
-    (name "emacs-magit")
-    (version "2.90.1")
-    (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                    (url "https://github.com/magit/magit")
-                    (commit (string-append "v" version))))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1kw94sdczswsyzn1zlk5s5aplpdv4qd7qcqc5zfxsmsfwm3jacl4"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("texinfo" ,texinfo)
-                     ("emacs" ,emacs-minimal)))
-    (inputs
-     `(("git" ,git)
-       ("perl" ,perl)))
-    (propagated-inputs
-     `(("dash" ,emacs-dash)
-       ("ghub" ,emacs-ghub)
-       ("graphql" ,emacs-graphql)
-       ("treepy" ,emacs-treepy)
-       ("magit-popup" ,emacs-magit-popup)
-       ("with-editor" ,emacs-with-editor)))
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-       #:test-target "test"
-       #:tests? #f               ; tests are not included in the release
+  ;; Version 2.90.1 has trouble loading the transient library,
+  ;; so we use a more recent commit that fixes it.
+  (let ((commit "b4aec016b5577afa8d889f258b499814d1bb1d94"))
+    (package
+      (name "emacs-magit")
+      (version (git-version "2.90.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/magit/magit")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0zl7v6z0y50pcgqsf2r8c1k3r5nwjad9ba7r6sgrnf4rc62br7jv"))))
+      (build-system gnu-build-system)
+      (native-inputs `(("texinfo" ,texinfo)
+                       ("emacs" ,emacs-minimal)))
+      (inputs
+       `(("git" ,git)
+         ("perl" ,perl)))
+      (propagated-inputs
+       `(("dash" ,emacs-dash)
+         ("with-editor" ,emacs-with-editor)
+         ("transient" ,emacs-transient)))
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:test-target "test"
+         #:tests? #f                   ; tests are not included in the release
 
-       #:make-flags
-       (list (string-append "PREFIX=" %output)
-             ;; Don't put .el files in a sub-directory.
-             (string-append "lispdir=" %output "/share/emacs/site-lisp")
-             (string-append "DASH_DIR="
-                            (assoc-ref %build-inputs "dash")
-                            "/share/emacs/site-lisp/guix.d/dash-"
-                            ,(package-version emacs-dash))
-             (string-append "GHUB_DIR="
-                            (assoc-ref %build-inputs "ghub")
-                            "/share/emacs/site-lisp/guix.d/ghub-"
-                            ,(package-version emacs-ghub))
-             (string-append "GRAPHQL_DIR="
-                            (assoc-ref %build-inputs "graphql")
-                            "/share/emacs/site-lisp/guix.d/graphql-"
-                            ,(package-version emacs-graphql))
-             (string-append "TREEPY_DIR="
-                            (assoc-ref %build-inputs "treepy")
-                            "/share/emacs/site-lisp/guix.d/treepy-"
-                            ,(package-version emacs-treepy))
-             (string-append "MAGIT_POPUP_DIR="
-                            (assoc-ref %build-inputs "magit-popup")
-                            "/share/emacs/site-lisp/guix.d/magit-popup-"
-                            ,(package-version emacs-magit-popup))
-             (string-append "WITH_EDITOR_DIR="
-                            (assoc-ref %build-inputs "with-editor")
-                            "/share/emacs/site-lisp/guix.d/with-editor-"
-                            ,(package-version emacs-with-editor)))
+         #:make-flags
+         (list (string-append "PREFIX=" %output)
+               ;; Don't put .el files in a sub-directory.
+               (string-append "lispdir=" %output "/share/emacs/site-lisp")
+               (string-append "DASH_DIR="
+                              (assoc-ref %build-inputs "dash")
+                              "/share/emacs/site-lisp/guix.d/dash-"
+                              ,(package-version emacs-dash))
+               (string-append "WITH_EDITOR_DIR="
+                              (assoc-ref %build-inputs "with-editor")
+                              "/share/emacs/site-lisp/guix.d/with-editor-"
+                              ,(package-version emacs-with-editor))
+               (string-append "TRANSIENT_DIR="
+                              (assoc-ref %build-inputs "transient")
+                              "/share/emacs/site-lisp/guix.d/transient-"
+                              ,(package-version emacs-transient)))
 
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before
-          'build 'patch-exec-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((perl (assoc-ref inputs "perl")))
-              (make-file-writable "lisp/magit-sequence.el")
-              (emacs-substitute-variables "lisp/magit-sequence.el"
-                ("magit-perl-executable" (string-append perl "/bin/perl")))
-              #t))))))
-    (home-page "https://magit.vc/")
-    (synopsis "Emacs interface for the Git version control system")
-    (description
-     "With Magit, you can inspect and modify your Git repositories with Emacs.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before
+               'build 'patch-exec-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((perl (assoc-ref inputs "perl")))
+                 (make-file-writable "lisp/magit-sequence.el")
+                 (emacs-substitute-variables "lisp/magit-sequence.el"
+                   ("magit-perl-executable" (string-append perl "/bin/perl")))
+                 #t))))))
+      (home-page "https://magit.vc/")
+      (synopsis "Emacs interface for the Git version control system")
+      (description
+       "With Magit, you can inspect and modify your Git repositories with Emacs.
 You can review and commit the changes you have made to the tracked files, for
 example, and you can browse the history of past changes.  There is support for
 cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public magit
   (deprecated-package "magit" emacs-magit))
