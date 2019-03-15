@@ -92,8 +92,8 @@ things the parser might find in the XML document (like start tags).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dl.matroska.org/downloads/"
-                           name "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://dl.matroska.org/downloads/libebml/"
+                           "libebml-" version ".tar.xz"))
        (sha256
         (base32
          "17iynkj22rbszaymxiaq6k02qy9w4fs1appkn1iam4y441w7lnhy"))
