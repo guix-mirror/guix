@@ -308,7 +308,7 @@ wrapper for accessing libusb-1.0.")
     (version "2.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+              (uri (string-append "https://www.libimobiledevice.org/downloads/"
                                   "libplist-" version ".tar.bz2"))
               (sha256
                (base32
@@ -319,7 +319,7 @@ wrapper for accessing libusb-1.0.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)))
-    (home-page "http://www.libimobiledevice.org/")
+    (home-page "https://www.libimobiledevice.org/")
     (synopsis "C library to handle Apple Property List files")
     (description "This package provides a small portable C library to handle
 Apple Property List files in binary or XML.")
@@ -331,7 +331,7 @@ Apple Property List files in binary or XML.")
     (version "1.0.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+              (uri (string-append "https://www.libimobiledevice.org/downloads/"
                                   "libusbmuxd-" version ".tar.bz2"))
               (sha256
                (base32
@@ -340,7 +340,7 @@ Apple Property List files in binary or XML.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libplist" ,libplist)))
-    (home-page "http://www.libimobiledevice.org/")
+    (home-page "https://www.libimobiledevice.org/")
     (synopsis "Library to multiplex connections from and to iOS devices")
     (description "This package provides a client library to multiplex
 connections from and to iOS devices by connecting to a socket provided by a
@@ -353,7 +353,7 @@ connections from and to iOS devices by connecting to a socket provided by a
     (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+              (uri (string-append "https://www.libimobiledevice.org/downloads/"
                                   "libimobiledevice-" version ".tar.bz2"))
               (sha256
                (base32
@@ -376,7 +376,7 @@ connections from and to iOS devices by connecting to a socket provided by a
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
        ("libtool" ,libtool)))
-    (home-page "http://www.libimobiledevice.org/")
+    (home-page "https://www.libimobiledevice.org/")
     (synopsis "Protocol library and tools to communicate with Apple devices")
     (description "libimobiledevice is a software library that talks the
 protocols to support Apple devices.  It allows other software to easily access
@@ -392,7 +392,7 @@ music and video to the device.")
     (version "1.1.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+              (uri (string-append "https://www.libimobiledevice.org/downloads/"
                                   "ifuse-" version ".tar.bz2"))
               (sha256
                (base32
@@ -403,7 +403,7 @@ music and video to the device.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
-    (home-page "http://www.libimobiledevice.org/")
+    (home-page "https://www.libimobiledevice.org/")
     (synopsis "Mount iOS devices")
     (description "This package provides @command{ifuse}, a command to mount
 iOS devices and access their contents.")
@@ -415,7 +415,7 @@ iOS devices and access their contents.")
     (version "1.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+              (uri (string-append "https://www.libimobiledevice.org/downloads/"
                                   "usbmuxd-" version ".tar.bz2"))
               (sha256
                (base32
@@ -427,7 +427,7 @@ iOS devices and access their contents.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
-    (home-page "http://www.libimobiledevice.org/")
+    (home-page "https://www.libimobiledevice.org/")
     (synopsis "Multiplex connections over USB to an iOS device")
     (description "This package provides the @code{usbmuxd} daemon
 which multiplexes connections over USB to an iOS device.  To
