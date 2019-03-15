@@ -13554,3 +13554,59 @@ real search.")
        "This package displays keyboard macros or latest interactive commands
 as Emacs Lisp.")
       (license license:gpl3+))))
+
+(define-public emacs-transient
+  ;; 0.1.0 depends on lv.el but not later versions.
+  (let ((commit "7e45a57ec81185631fe763733f64c99021df2a06"))
+    (package
+      (name "emacs-transient")
+      (version (git-version "0.1.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/magit/transient")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0r6d4c1lga3bk0s7q7y4v4hbpxnd9h40cjxybqvax2z902931fz1"))))
+      (build-system gnu-build-system)
+      (native-inputs `(("texinfo" ,texinfo)
+                       ("emacs" ,emacs-minimal)))
+      (propagated-inputs
+       `(("dash" ,emacs-dash)))
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-26)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:tests? #f                   ; tests are not included in the release
+         #:make-flags (list "lisp" "info"
+                            (string-append "LOAD_PATH=-L . -L "
+                                           (assoc-ref %build-inputs "dash")
+                                           "/share/emacs/site-lisp/guix.d/dash-"
+                                           ,(package-version emacs-dash)))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lisp (string-append out "/share/emacs/site-lisp/guix.d/"
+                                           "transient" "-" ,version))
+                      (info (string-append out "/share/info")))
+                 (for-each (cut install-file <> lisp)
+                           (find-files "." "\\.elc*$"))
+                 (install-file "docs/transient.info" (string-append info)))
+               #t)))))
+      (home-page "https://magit.vc/manual/transient")
+      (synopsis "Transient commands in Emacs")
+      (description
+       "Taking inspiration from prefix keys and prefix arguments in Emacs,
+Transient implements a similar abstraction involving a prefix command, infix
+arguments and suffix commands.  We could call this abstraction a \"transient
+command\", but because it always involves at least two commands (a prefix and
+a suffix) we prefer to call it just a \"transient\".")
+      (license license:gpl3+))))
