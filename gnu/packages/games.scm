@@ -5311,22 +5311,22 @@ You can save humanity and get programming skills!")
 (define-public gzdoom
   (package
     (name "gzdoom")
-    (version "3.3.0")
+    (version "3.7.2")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "https://zdoom.org/files/gzdoom/src/gzdoom-g"
+               (string-append "https://zdoom.org/files/gzdoom/src/gzdoom-src-g"
                               version ".zip"))
               (sha256
                (base32
-                "09a4kx3ry8pc9r578m7yprwa7zsdqxjpn10lyc92r5g9sx4l1m1a"))
+                "0182f160m8d0c3nywjw3dxvnz93xjs4cn8akx7137cha4s05wdq7"))
               (patches (search-patches "gzdoom-search-in-installed-share.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (delete-file-recursively "bzip2")
                   (delete-file-recursively "game-music-emu")
-                  (delete-file-recursively "jpeg-6b")
+                  (delete-file-recursively "jpeg")
                   (delete-file-recursively "zlib")
                   #t))))
     (arguments
