@@ -51,7 +51,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define-public cups-filters
   (package
@@ -564,10 +565,19 @@ should only be used as part of the Guix cups-pk-helper service.")
     (arguments
       (substitute-keyword-arguments (package-arguments hplip)
         ((#:configure-flags cf)
-         `(delete "--enable-qt5" ,cf))))
-    (inputs
-     (fold alist-delete (package-inputs hplip)
-           '("python-pygobject" "python-pyqt")))
+         ;; Produce a "light build", meaning that only the printer (CUPS) and
+         ;; scanner (SANE) support gets built, without all the 'hp-*'
+         ;; command-line tools.
+         `(cons "--enable-lite-build"
+                (delete "--enable-qt5" ,cf)))
+        ((#:phases phases)
+         ;; The 'wrap-binaries' is not needed here since the 'hp-*' programs
+         ;; are not installed.
+         `(alist-delete 'wrap-binaries ,phases))))
+    (inputs (remove (match-lambda
+                      ((label . _)
+                       (string-prefix? "python" label)))
+                    (package-inputs hplip)))
     (synopsis "GUI-less version of hplip")))
 
 (define-public foomatic-filters
