@@ -749,33 +749,33 @@ current version of any major web browser.")
     (name "rapidjson")
     (version "1.1.0")
     (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/Tencent/rapidjson.git")
-                   (commit (string-append "v" version))))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Remove code using the problematic JSON license (see
-                 ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
-                 (delete-file-recursively "bin/jsonchecker")
-                 #t))))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Tencent/rapidjson.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove code using the problematic JSON license (see
+                  ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
+                  (delete-file-recursively "bin/jsonchecker")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
-     `(,@(if (string-prefix? "aarch64" (or (%current-target-system)
-                                           (%current-system)))
-           '(#:phases
-             (modify-phases %standard-phases
-               (add-after 'unpack 'patch-aarch-march-detection
-                 (lambda _
-                   (substitute* (find-files "." "^CMakeLists\\.txt$")
-                     (("native") "armv8-a"))
-                   #t))))
-           '())))
+     (if (string-prefix? "aarch64" (or (%current-target-system)
+                                       (%current-system)))
+         '(#:phases
+           (modify-phases %standard-phases
+             (add-after 'unpack 'patch-aarch-march-detection
+               (lambda _
+                 (substitute* (find-files "." "^CMakeLists\\.txt$")
+                   (("native") "armv8-a"))
+                 #t))))
+         '()))
     (home-page "https://github.com/Tencent/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
     (description
