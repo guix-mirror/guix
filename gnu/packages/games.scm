@@ -7209,15 +7209,26 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
      `(#:tests? #f
        #:make-flags
        (list "CC=gcc"
-             ;; link openAL instead of using dlopen at runtime
-             "DLOPEN_OPENAL=\"no\""
-             ;; an optional directory where it will look for quake2 data files
-             ;; in addition to the current working directory
+             ;; An optional directory where it will look for quake2 data files
+             ;; in addition to the current working directory.
              "WITH_SYSTEMWIDE=yes"
              "WITH_SYSTEMDIR=\"/opt/quake2\"")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'build 'patch-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The game writes paths to openal.so and curl.so to ~/.yq2/...
+             ;; Workaround: hard-code the compiled paths where it loads them;
+             ;; this prevents loading old or garbage collected libraries.
+             (substitute* "src/client/sound/qal.c"
+               (("al_driver->string")
+                (string-append "\"" (assoc-ref inputs "openal")
+                               "/lib/libopenal.so\"")))
+             (substitute* "src/client/curl/qcurl.c"
+               (("cl_libcurl->string")
+                (string-append "\"" (assoc-ref inputs "curl")
+                               "/lib/libcurl.so\"")))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
