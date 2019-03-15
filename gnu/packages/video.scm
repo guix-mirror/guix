@@ -437,15 +437,29 @@ H.264 (MPEG-4 AVC) video streams.")
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Move the Qt interface to "gui".
-             (let ((out (assoc-ref outputs "out"))
-                   (gui (assoc-ref outputs "gui")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (gui (assoc-ref outputs "gui"))
+                    (strip-store-dir (lambda (path)
+                                       (substring path (string-prefix-length out path)))))
                (for-each
                 (lambda (file)
                   (mkdir-p (string-append gui (dirname file)))
                   (rename-file (string-append out file)
                                (string-append gui file)))
-                '("/bin/mkvtoolnix-gui"
-                  "/share/applications/org.bunkus.mkvtoolnix-gui.desktop")))
+                (append '("/bin/mkvtoolnix-gui"
+                          "/share/applications/org.bunkus.mkvtoolnix-gui.desktop"
+                          "/share/metainfo/org.bunkus.mkvtoolnix-gui.appdata.xml"
+                          "/share/mime/packages/org.bunkus.mkvtoolnix-gui.xml")
+                        (map strip-store-dir (find-files out "\\.ogg$"))
+                        (map strip-store-dir (find-files out "mkvtoolnix-gui\\.png$"))
+                        (map strip-store-dir (find-files out "mkvtoolnix-gui\\.1"))))
+               (for-each
+                (lambda (file)
+                  (delete-file-recursively (string-append out file)))
+                '("/share/applications"
+                  "/share/metainfo"
+                  "/share/mime"
+                  "/share/mkvtoolnix")))
              #t)))))
     (home-page "https://mkvtoolnix.download")
     (synopsis "Tools to create, alter and inspect Matroska files")
