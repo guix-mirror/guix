@@ -93,6 +93,8 @@
               (libdir (string-append lib "/lib")))
          (list (string-append "-DCMAKE_INSTALL_PREFIX=" out)
                (string-append "-DCMAKE_INSTALL_LIBDIR=" libdir)
+               (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
+                              lib "/include")
                ;; We need both libdir and libdir/ceph in RUNPATH.
                (string-append "-DCMAKE_INSTALL_RPATH="
                               libdir ";" libdir "/ceph")
@@ -126,11 +128,6 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (lib (assoc-ref outputs "lib")))
-
-               ;; Make header files follow the dynamic libraries.
-               (substitute* "src/include/CMakeLists.txt"
-                 (("DESTINATION include")
-                  (string-append "DESTINATION " lib "/include")))
 
                (substitute* "cmake/modules/Distutils.cmake"
                  ;; Prevent creation of Python eggs.
