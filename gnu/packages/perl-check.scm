@@ -645,14 +645,14 @@ you test against long strings.")
 (define-public perl-test-manifest
   (package
     (name "perl-test-manifest")
-    (version "2.02")
+    (version "2.021")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
                                   "Test-Manifest-" version ".tar.gz"))
               (sha256
                (base32
-                "15ik52l9macrrfizf4y6wj71d4lx7w590h2dfajnkmbxmz786iq6"))))
+                "1n9jscnni24sbp4v5gjlcy3iknfwvmy0731xwvk1c3jq3kbslym4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)
