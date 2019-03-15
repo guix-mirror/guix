@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -423,8 +423,12 @@ should only be used as part of the Guix cups-pk-helper service.")
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
                '(begin
-                  ;; Delete non-free blobs
-                  (for-each delete-file (find-files "." "\\.so$"))
+                  ;; Delete non-free blobs: .so files, pre-compiled
+                  ;; 'locatedriver' executable, etc.
+                  (for-each delete-file
+                            (find-files "."
+                                        (lambda (file stat)
+                                          (elf-file? file))))
                   (delete-file "prnt/hpcups/ImageProcessor.h")
                   ;; Fix type mismatch.
                   (substitute* "prnt/hpcups/genPCLm.cpp"
