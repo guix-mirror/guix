@@ -377,6 +377,7 @@ H.264 (MPEG-4 AVC) video streams.")
                                "lib/utf8-cpp"))
                    #t))))
     (build-system gnu-build-system)
+    (outputs '("out" "gui")) ; "mkvtoolnix-gui" brings the closure size from ~300 MB to 1.5+ GB.
     (inputs
      `(("boost" ,boost)
        ("bzip2" ,bzip2)
@@ -432,7 +433,20 @@ H.264 (MPEG-4 AVC) video streams.")
              (invoke "rake" "tests/unit")))
          (replace 'install
            (lambda _
-             (invoke "rake" "install"))))))
+             (invoke "rake" "install")))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move the Qt interface to "gui".
+             (let ((out (assoc-ref outputs "out"))
+                   (gui (assoc-ref outputs "gui")))
+               (for-each
+                (lambda (file)
+                  (mkdir-p (string-append gui (dirname file)))
+                  (rename-file (string-append out file)
+                               (string-append gui file)))
+                '("/bin/mkvtoolnix-gui"
+                  "/share/applications/org.bunkus.mkvtoolnix-gui.desktop")))
+             #t)))))
     (home-page "https://mkvtoolnix.download")
     (synopsis "Tools to create, alter and inspect Matroska files")
     (description
