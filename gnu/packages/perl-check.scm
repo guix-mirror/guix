@@ -1362,20 +1362,19 @@ installed.")
     (synopsis "Dynamic generation of tests")
     (description "The Test::WriteVariants module provides for the dynamic
 generation of tests in nested combinations of contexts.")
-    (license perl-license)))  ;See LICENSE
+    (license perl-license)))  ; see LICENSE
 
 (define-public perl-test-yaml
   (package
     (name "perl-test-yaml")
-    (version "1.06")
+    (version "1.07")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+       (uri (string-append "mirror://cpan/authors/id/T/TI/TINITA/"
                            "Test-YAML-" version ".tar.gz"))
        (sha256
-        (base32
-         "0hxrfs7p9hqkhvv5nhk2hd3kh32smwng4nz47b8xf4iw2q1n2dr7"))))
+        (base32 "0pwrrnwi1qaiy3c5522vy0kzncxc9g02r4b056wqqaa69w1hsc0z"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-base" ,perl-test-base)))
