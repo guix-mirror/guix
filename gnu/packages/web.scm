@@ -775,7 +775,8 @@ current version of any major web browser.")
                  (substitute* (find-files "." "^CMakeLists\\.txt$")
                    (("native") "armv8-a"))
                  #t))))
-         '()))
+         ;; Disable CPU optimization for reproducibility.
+         '(#:configure-flags '("-DRAPIDJSON_ENABLE_INSTRUMENTATION_OPT=OFF"))))
     (home-page "https://github.com/Tencent/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
     (description
