@@ -1119,15 +1119,14 @@ bin as is also commonly used) paths of your Perl distribution.")
 (define-public perl-test-sharedfork
   (package
     (name "perl-test-sharedfork")
-    (version "0.29")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                            "Test-SharedFork-" version ".tar.gz"))
        (sha256
-        (base32
-         "0vlak10q4gcf0ch0rfcb9lvddav6r8h15iipzbkbgf9mrj47gbv3"))))
+        (base32 "17y52j20k1bs9dgf4n6rhh9dn4cfxxbnfn2cfs7pb00fc5jyhci9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
