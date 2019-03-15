@@ -1237,7 +1237,7 @@ scripted in a Python-like language.")
 (define-public eureka
   (package
     (name "eureka")
-    (version "1.21")
+    (version "1.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/eureka-editor/Eureka/"
@@ -1247,7 +1247,7 @@ scripted in a Python-like language.")
                                   "-source.tar.gz"))
               (sha256
                (base32
-                "1a7pf7xi56fcz7jc8layih5gq5m66g2ss4x5j61kzgip07j6rkir"))))
+                "1x4idjniz9sma3j9ss6ni7fafmz22zs2jnpsqw4my9rsnmra5d9v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
