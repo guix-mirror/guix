@@ -15125,3 +15125,23 @@ and dates in \"human readable\" forms.  For example, it would display
     (description "Txaio provides a compatibility layer between the Python
 @code{asyncio} module and @code{Twisted}.")
     (license license:expat)))
+
+(define-public python-toolshed
+  (package
+    (name "python-toolshed")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toolshed" version))
+       (sha256
+        (base32
+         "14zvz51gzf9i1i3d1sj363ba4rksl6lcf4lz1arl8hpqgcbir8r3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/brentp/toolshed/")
+    (synopsis "Collection of modules and functions for working with data")
+    (description "This is a collection of well-tested, simple modules and
+functions that aim to reduce boilerplate when working with data.")
+    (license license:bsd-2)))
