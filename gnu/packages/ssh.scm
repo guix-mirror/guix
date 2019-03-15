@@ -141,7 +141,7 @@ the SSH-2 protocol in an easy-to-use self-contained package.  It can be built
 into an application to perform many different tasks when communicating with
 a server that supports the SSH-2 protocol.")
    (license license:bsd-3)
-   (home-page "http://www.libssh2.org/")))
+   (home-page "https://www.libssh2.org/")))
 
 (define-public openssh
   (package
