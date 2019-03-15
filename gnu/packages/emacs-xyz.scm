@@ -10698,7 +10698,7 @@ keep Parens and Indentation inline with one another.")
 (define-public emacs-helm-eww
   (package
     (name "emacs-helm-eww")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10707,7 +10707,7 @@ keep Parens and Indentation inline with one another.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0dvlp7y6kqc4azg5b7jx5lz2rwd0ia7y0y3hcj9y23zd88r73lg7"))))
+                "0hpq1h0p69c9k6hkd2mjpprx213sc5475q7pr2zpmwrjdzgcv70z"))))
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
     (build-system emacs-build-system)
