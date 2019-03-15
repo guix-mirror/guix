@@ -5066,7 +5066,11 @@ management tools in userspace.")
                 "0ss0r6jlxxinf9fhpc0fgf7b89n9mzirpa85xxjmi1ix9l6cls6x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; kernel/user integration tests are in package "xfstests"
+     `(#:tests? #f    ;kernel/user integration tests are in package "xfstests"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-headers
+                    (lambda _
+                      (invoke "make" "install-dev"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("util-linux" ,util-linux)))
