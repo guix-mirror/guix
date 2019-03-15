@@ -54,14 +54,14 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "13.2.2")
+    (version "13.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0h483n9iy0fkbqrhf7k0dzspwdpcaswkjwmc5n5c600fr6s1v9pk"))
+                "0jbs6l763clbqnq2s5jksn44yf71rhcnk85cw64fqvmv0r4ch71n"))
               (patches
                (search-patches "ceph-skip-unittest_blockdev.patch"
                                "ceph-skip-collect-sys-info-test.patch"
