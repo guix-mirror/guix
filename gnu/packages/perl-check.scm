@@ -575,15 +575,14 @@ contents of a file is equal to a particular string.")
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
-    (version "3.41")
+    (version "3.42")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
                            "Test-Harness-" version ".tar.gz"))
        (sha256
-        (base32
-         "0cgdgzywvscbvb9i0dmd2ls5jwqlnf2z6hx4f4lljpvdjd59v3m8"))))
+        (base32 "0lwfaamhpqia0ks4pcci83xbqz6jhng7acv95qk6wbd8zr70vn8g"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
