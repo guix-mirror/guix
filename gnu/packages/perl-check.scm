@@ -1341,15 +1341,14 @@ installed.")
 (define-public perl-test-writevariants
   (package
     (name "perl-test-writevariants")
-    (version "0.010")
+    (version "0.014")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "Test-WriteVariants-" version ".tar.gz"))
        (sha256
-        (base32
-         "0kklp05fj98yiq8znyfx9lx1vmjay2ypfb868qdwv3kf93m5zjwr"))))
+        (base32 "11v4j3607bydxsqy2ylx9w6qr3qxcalfx3mdc4q4ccqmxsyw4jb3"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-most" ,perl-test-most)
@@ -1357,7 +1356,8 @@ installed.")
     (propagated-inputs
      `(("perl-data-tumbler" ,perl-data-tumbler)
        ("perl-file-homedir" ,perl-file-homedir)
-       ("perl-module-pluggable" ,perl-module-pluggable)))
+       ("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-module-runtime" ,perl-module-runtime)))
     (home-page "https://metacpan.org/release/Test-WriteVariants")
     (synopsis "Dynamic generation of tests")
     (description "The Test::WriteVariants module provides for the dynamic
