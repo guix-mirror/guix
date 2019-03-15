@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
@@ -6361,3 +6361,50 @@ Libertatis.  Arx Fatalis features crafting, melee and ranged combat, as well
 as a unique casting system where the player draws runes in real time to effect
 the desired spell.")
     (license license:gpl3+)))
+
+(define-public edgar
+  (package
+    (name "edgar")
+    (version "1.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/riksweeney/edgar/releases/download/"
+                       version "/edgar-" version "-1.tar.gz"))
+       (sha256
+        (base32
+         "0bhbs33dg0nb8wqlh6px1jj41j05f89ngdqwdkffabmjk7wq5isx"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f                    ; there are no tests
+                 #:make-flags
+                 (list "CC=gcc"
+                       (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                       (string-append "BIN_DIR=" (assoc-ref %outputs "out") "/bin/"))
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure)
+                   (add-before 'build 'fix-env
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
+                                                      "/include/SDL/"))
+                       #t)))))
+    (inputs `(("sdl" ,sdl)
+              ("sdl-img" ,sdl-image)
+              ("sdl-mixer" ,sdl-mixer)
+              ("sdl-ttf" ,sdl-ttf)
+              ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gnu-gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("which" ,which)))
+    (synopsis "2d action platformer game")
+    (description "The Legend of Edgar is a 2D platform game with a persistent world.
+When Edgar's father fails to return home after venturing out one dark and stormy night,
+Edgar fears the worst: he has been captured by the evil sorcerer who lives in
+a fortress beyond the forbidden swamp.")
+    (home-page "https://www.parallelrealities.co.uk/games/edgar/")
+    (license license:gpl2+)))
