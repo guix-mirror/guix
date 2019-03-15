@@ -267,19 +267,17 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 (define-public font-liberation
   (package
     (name "font-liberation")
-    (version "2.00.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://releases.pagure.org/"
-                                  "liberation-fonts/liberation-fonts-ttf-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "010m4zfqan4w04b6bs9pm3gapn9hsb18bmwwgp2p6y6idj52g43q"))))
+    (version "2.00.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/liberationfonts/liberation-fonts/"
+                           "files/2926169/liberation-fonts-ttf-" version ".tar.gz"))
+       (sha256
+        (base32 "0kdjsbf0y716k1kv0i0ixdpvg7b9b8xkcsg6favaxdc7pshg0kzi"))))
     (build-system font-build-system)
-    (home-page "https://pagure.io/liberation-fonts/")
-    (synopsis
-     "Fonts compatible with Arial, Times New Roman, and Courier New")
+    (home-page "https://github.com/liberationfonts")
+    (synopsis "Fonts compatible with Arial, Times New Roman, and Courier New")
     (description
      "The Liberation font family aims at metric compatibility with
 Arial, Times New Roman, and Courier New.
