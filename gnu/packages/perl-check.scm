@@ -338,15 +338,14 @@ structures without getting caught in an infinite loop.")
 (define-public perl-test-differences
   (package
     (name "perl-test-differences")
-    (version "0.64")
+    (version "0.67")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DC/DCANTRELL/"
                            "Test-Differences-" version ".tar.gz"))
        (sha256
-        (base32
-         "0xmj5vgklq4yqvi7l63ky1k6g7fhww68llpmw9rhlaihqbcrsicz"))))
+        (base32 "1nkqr3m4lbzw7fkkzah42aiqlhxapamk6kw7hj90cjwkifsbp3f8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
