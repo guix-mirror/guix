@@ -13532,3 +13532,28 @@ and code peeking.")
 displays as you type thanks to Helm, though @command{notmuch-search} does the
 real search.")
       (license license:gpl3+))))
+
+(define-public emacs-elmacro
+  (let ((commit "89b9b0feabafd01fee48111d67131c4c9b5fed9a"))
+    (package
+      (name "emacs-elmacro")
+      (version (git-version "1.1.0" "1" commit))
+      (home-page "https://github.com/Silex/elmacro")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06wkzafh6vbcjf0m3sl253mgcq32p8cdv7vsfmyx51baa36938ha"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)
+         ("emacs-dash" ,emacs-dash)))
+      (synopsis "Convert keyboard macros to Emacs Lisp")
+      (description
+       "This package displays keyboard macros or latest interactive commands
+as Emacs Lisp.")
+      (license license:gpl3+))))
