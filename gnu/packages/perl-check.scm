@@ -10,7 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -204,15 +204,14 @@ using @code{Test::Class}.")
 (define-public perl-test-cleannamespaces
   (package
     (name "perl-test-cleannamespaces")
-    (version "0.22")
+    (version "0.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Test-CleanNamespaces-" version ".tar.gz"))
        (sha256
-        (base32
-         "1jma95agqqy7iwdcl6jbg1waqz7mjqng4l046lpknhfxjhcj4al6"))))
+        (base32 "0yijspncqgmbkkxrh66xx1pliajar05yqhzq6m4nb6p8x1lmb39k"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-pushd" ,perl-file-pushd)
