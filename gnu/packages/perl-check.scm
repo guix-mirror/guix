@@ -1228,15 +1228,14 @@ cause a test fail unless it is exactly as @code{perltidy} would like it to be.")
 (define-public perl-test-trap
   (package
     (name "perl-test-trap")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/EB/EBHANSSEN/"
                            "Test-Trap-v" version ".tar.gz"))
        (sha256
-        (base32
-         "1676gqjyk0zig3yyqv053y5j1pajp2af08ffmgx94n414whbhm5c"))))
+        (base32 "1qjs2080kcc66s4d7499br5lw2qmhr9gxky4xsl6vjdn6dpna10b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
