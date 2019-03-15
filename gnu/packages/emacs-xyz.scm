@@ -5953,6 +5953,32 @@ interface and multiple, selectable \"styles\", whose use is fully
 customizable by the user.")
     (license license:gpl2+)))
 
+(define-public emacs-zones
+  (let ((commit "353fc38a6544eb59887bee045e373406f1d038a5")
+        (revision "1"))
+    (package
+      (name "emacs-zones")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/zones.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0gwnw2giii2a14nlh62xp45f47cw6ikqphhzpmcw6c7mn9x5z2ar"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/Zones")
+      (synopsis "Define and act on multiple zones of buffer text")
+      (description "Library @file{zones.el} lets you easily define and
+subsequently act on multiple zones of buffer text.  You can think of this as
+enlarging the notion of region.  In effect, it can remove the requirement of
+target text being a contiguous sequence of characters.  A set of buffer zones
+is, in effect, a (typically) noncontiguous set of text.")
+      (license license:gpl3+))))
+
 (define-public emacs-mu4e-alert
   (package
     (name "emacs-mu4e-alert")
