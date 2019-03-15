@@ -735,15 +735,14 @@ you @code{unmock()} the subroutine.")
 (define-public perl-test-mockobject
   (package
     (name "perl-test-mockobject")
-    (version "1.20150527")
+    (version "1.20180705")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CH/CHROMATIC/"
                            "Test-MockObject-" version ".tar.gz"))
        (sha256
-        (base32
-         "160xvhbpwqjaff4fgckvldknldzcbn1z3jvyzybs7cqlj1x3bwdd"))))
+        (base32 "06250ayzzd90vbvkpxwr9d3nlbbngl1b9nk2qk0ma4aibn6ha5j5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
