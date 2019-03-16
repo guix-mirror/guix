@@ -830,22 +830,26 @@ the desktop wallpaper.")
 (define-public xfce4-taskmanager
   (package
     (name "xfce4-taskmanager")
-    (version "1.1.0")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/src/apps/"
+              (uri (string-append "https://archive.xfce.org/src/apps/"
                                   name "/" (version-major+minor version) "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jwywmkkkmz7406m1jq40w6apiav25cznafhigbgpjv6z5hv27if"))))
+                "04qflazmdrj4ys4r54yg4s5pqcjgk02idrjsls395zd4374636p4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libwnck" ,libwnck-2)
-       ("gtk+" ,gtk+-2)))
+       ("libxmu" ,libxmu)
+       ("gtk+" ,gtk+)
+       ;; FIXME: Remove libxext and libxt when libxmu propagates them.
+       ("libxext" ,libxext)
+       ("libxt" ,libxt)))
     (home-page "https://goodies.xfce.org/projects/applications/xfce4-taskmanager")
     (synopsis "Easy to use task manager")
     (description
