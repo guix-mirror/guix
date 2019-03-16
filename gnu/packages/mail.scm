@@ -2842,3 +2842,27 @@ replacement for the @code{urlview} program.")
       (synopsis "Debbugs web interface")
       (description "Mumi is a Debbugs web interface.")
       (license agpl3+))))
+
+(define-public ytnef
+  (package
+    (name "ytnef")
+    (version "1.9.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Yeraze/ytnef.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07h48s5qf08503pp9kafqbwipdqghiif22ghki7z8j67gyp04l6l"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/Yeraze/ytnef/")
+    (synopsis "TNEF stream reader for winmail.dat files")
+    (description "This package provides a TNEF stream reader library and
+related tools to process winmail.dat files.")
+    (license gpl2+)))
