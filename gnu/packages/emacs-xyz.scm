@@ -13690,3 +13690,42 @@ arguments and suffix commands.  We could call this abstraction a \"transient
 command\", but because it always involves at least two commands (a prefix and
 a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
+
+(define-public emacs-nhexl-mode
+  (package
+    (name "emacs-nhexl-mode")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/nhexl-mode-"
+             version ".el"))
+       (sha256
+        (base32
+         "031h22p564qdvr9khs05qcba06pmsk68cr7zyc7c04hfr3y3ziaf"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/nhexl-mode.html")
+    (synopsis "Minor mode to edit files via hex-dump format")
+    (description
+     "This package implements NHexl mode, a minor mode for editing files
+in hex dump format.  The mode command is called @command{nhexl-mode}.
+
+This minor mode implements similar functionality to @command{hexl-mode},
+but using a different implementation technique, which makes it
+usable as a \"plain\" minor mode.  It works on any buffer, and does
+not mess with the undo log or with the major mode.
+
+It also comes with:
+
+@itemize
+@item @command{nhexl-nibble-edit-mode}: a \"nibble editor\" minor mode, where
+the cursor pretends to advance by nibbles (4-bit) and the self-insertion keys
+(which only work for hex-digits) will only modify the nibble under point.
+@item @command{nhexl-overwrite-only-mode}: a minor mode to try and avoid
+moving text.  In this minor mode, not only self-inserting keys overwrite
+existing text, but commands like `yank' and @command{kill-region} as well.
+@item It overrides @code{C-u} to use hexadecimal, so you can do @code{C-u a 4
+C-f} to advance by #xa4 characters.
+@end itemize\n")
+    (license license:gpl3+)))
