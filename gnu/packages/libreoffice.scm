@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -527,24 +527,18 @@ Microsoft Publisher documents of all versions.")
 (define-public libnumbertext
   (package
     (name "libnumbertext")
-    (version "1.0")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/numbertext/" name
-                           "/archive/" version ".tar.gz"))
+       (uri (string-append "https://github.com/Numbertext/libnumbertext/"
+                           "releases/download/" version
+                           "/libnumbertext-" version ".tar.xz"))
        (sha256
-        (base32
-         "0wnsn4911fdd2na8jxkcvmk04a6xw6qlviic9w4qwg9fcym6866v"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1xzlwhwwhvr76kfdsw5gvfjfdayz803z65h331gv5dpc9imhijg1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/Numbertext/libnumbertext")
     (synopsis "Language-neutral @code{NUMBERTEXT} and @code{MONEYTEXT} functions")
     (description
