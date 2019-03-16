@@ -244,14 +244,15 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.1.31")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/src/xfce/tumbler/0.1/"
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wvip28gm2w061hn84zp2q4dv947ihylrppahn4cjspzff935zfh"))))
+                "0h3x325dbz0lnb7b3zzbfrva3v0rn99v03zj9cza7ysr2nyy28nh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
