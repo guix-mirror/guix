@@ -3461,3 +3461,72 @@ speed and correctness.")
       (description "Wlstream is a screen capture tool for recording audio and
 video from a Wayland session.")
       (license license:lgpl2.1+))))
+
+(define-public gaupol
+  (package
+    (name "gaupol")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/otsaloma/gaupol/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dk44fmcs86ymfxfbpdbrr4x5nn5hnv57wkqjyw61g779xjhlrd2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python-pygobject" ,python-pygobject)
+       ("gtk+" ,gtk+)
+       ("python-pycairo" ,python-pycairo) ; Required or else clicking on a subtitle line fails.
+       ("python-chardet" ,python-chardet) ; Optional: Character encoding detection.
+       ("gtkspell3" ,gtkspell3)           ; Optional: Inline spell-checking.
+       ("iso-codes" ,iso-codes)           ; Optional: Translations.
+       ("gstreamer" ,gstreamer)
+       ("gst-libav" ,gst-libav)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)))
+    (arguments
+     `(#:tests? #f                      ; Tests seem to require networking.
+       #:phases
+       (modify-phases %standard-phases
+         ;; gaupol's setup.py script does not support one of the Python build
+         ;; system's default flags, "--single-version-externally-managed".
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/")))
+         (add-after 'install 'wrap-gaupol
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/gaupol")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t))
+         (add-after 'unpack 'patch-data-dir
+           ;; Fix some path variables that setup.py seems to garble.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "setup.py"
+                 (("DATA_DIR = \\{!r\\}\"\\.format\\(data_dir\\)")
+                  (string-append "DATA_DIR = '" out "/share/gaupol'\""))
+                 (("LOCALE_DIR = \\{!r\\}\"\\.format\\(locale_dir\\)")
+                  (string-append "LOCALE_DIR = '" out "/share/locale'\"")))
+               #t))))))
+    (synopsis "Editor for text-based subtitles")
+    (description
+     "Gaupol supports multiple subtitle file formats and provides means of
+creating subtitles, editing texts and timing subtitles to match video.  The
+user interface features a builtin video player and is designed with attention
+to convenience of translating and batch processing of multiple documents.")
+    (home-page "https://otsaloma.io/gaupol/")
+    (license license:gpl3+)))
