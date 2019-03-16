@@ -176,8 +176,8 @@ spreadsheets and presentations.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                          name "-" version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpd/libwpd/"
+                          "libwpd-" version "/libwpd-" version ".tar.xz"))
       (sha256 (base32
                "0436gnidx45a9vx114hhh216jrh57mqb9zyssyjfadagmyz6hgrj"))))
     (build-system gnu-build-system)
