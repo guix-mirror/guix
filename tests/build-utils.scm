@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,11 +20,14 @@
 (define-module (test-build-utils)
   #:use-module (guix tests)
   #:use-module (guix build utils)
+  #:use-module ((gnu build bootloader)
+                #:select (invoke/quiet))
   #:use-module ((guix utils)
                 #:select (%current-system call-with-temporary-directory))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 popen))
@@ -123,5 +126,22 @@
            (and (zero? (close-pipe pipe))
                 str)))))))
 
+(test-assert "invoke/quiet, success"
+  (begin
+    (invoke/quiet "true")
+    #t))
+
+(test-assert "invoke/quiet, failure"
+  (guard (c ((message-condition? c)
+             (string-contains (condition-message c) "This is an error.")))
+    (invoke/quiet "sh" "-c" "echo This is an error. ; false")
+    #f))
+
+(test-assert "invoke/quiet, failure, message on stderr"
+  (guard (c ((message-condition? c)
+             (string-contains (condition-message c)
+                              "This is another error.")))
+    (invoke/quiet "sh" "-c" "echo This is another error. >&2 ; false")
+    #f))
 
 (test-end)
