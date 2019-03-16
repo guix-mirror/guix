@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,7 @@
 (define-public liblcf
   (package
     (name "liblcf")
-    (version "0.5.4")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -46,7 +47,7 @@
                     "/liblcf-" version ".tar.gz"))
               (sha256
                (base32
-                "1k99bcw5c23801jk3mbz5sj5h18x46w1qxrkknhwhfgqzpvxhwrs"))))
+                "0dcw9l800314f5c29mqrcg64rkcb6cwqjfnpvwsmvc2l2q5hwlag"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
