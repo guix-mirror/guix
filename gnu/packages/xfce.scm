@@ -762,14 +762,15 @@ system resources, while still being visually appealing and user friendly.")
 (define-public xfce4-power-manager
   (package
     (name "xfce4-power-manager")
-    (version "1.4.3")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.12"
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "04909sfc2nrj2wg9cw6y9y2r9yrp3l3vc201sy1gaiap67fi33h1"))))
+                "0sv5927q8jxvdfx7b06f8s7qyq3qa1nqn0b8c1b9bf234d2jba0y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-gtk3")))
