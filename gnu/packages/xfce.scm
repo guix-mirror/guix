@@ -474,15 +474,15 @@ your system in categories, so you can quickly find and launch them.")
 (define-public xfce4-session
   (package
     (name "xfce4-session")
-    (version "4.12.0")
+    (version "4.12.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "01kvbd09c06j20n155hracsgrq06rlmfgdywffjsvlwpn19m9j38"))
+                "1z88klls3j161n5snpamz4l3p4823q4h87wdnqikczxgs2ig5mwp"))
               (patches
                ;; See: https://bugzilla.xfce.org/show_bug.cgi?id=12282
                (search-patches "xfce4-session-fix-xflock4.patch"))
