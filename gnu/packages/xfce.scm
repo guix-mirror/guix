@@ -318,15 +318,15 @@ applications menu, workspace switcher and more.")
 (define-public xfce4-battery-plugin
   (package
     (name "xfce4-battery-plugin")
-    (version "1.0.5")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+              (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
                                   name "/" (version-major+minor version) "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "04gbplcj8z4vg5xbks8cc2jjf62mmf9sdymg90scjwmb82pv2ngn"))))
+                "1nypi0zazrcrbbm5vb221yw64zxrk56v4fffkblxlyd9m6gk80fn"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
