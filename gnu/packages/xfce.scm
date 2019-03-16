@@ -347,15 +347,15 @@ applications menu, workspace switcher and more.")
 (define-public xfce4-clipman-plugin
   (package
     (name "xfce4-clipman-plugin")
-    (version "1.2.6")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+              (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
                                   name "/" (version-major+minor version) "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "19a8gwcqc0r5qqi8w28dc8arqip34m8yxdb87lgps9g5qfcky113"))))
+                "1liacff4wl5mpyf9dzdrfbwxzmhl95y5nsfc0jf5rgalzdgbik99"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
