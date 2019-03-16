@@ -540,6 +540,35 @@ handful of functions that are not resource-specific.")
 for editing Racket's Scribble documentation syntax in Emacs.")
       (license license:gpl3+))))
 
+(define-public emacs-unpackaged-el
+  (let ((commit "f4df7f8dfea715e893b2223adda32545803f5cce")
+        (revision "1"))
+    (package
+      (name "emacs-unpackaged-el")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/unpackaged.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yf3zrgqfhnr0az8gn1kqqwnhfi3nc0vbjkcagwcqwk3sp1jda86"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-org" ,emacs-org)
+         ("emacs-s" ,emacs-s)
+         ("emacs-use-package" ,emacs-use-package)))
+      (home-page "https://github.com/alphapapa/unpackaged.el")
+      (synopsis "Useful snippets of Emacs Lisp code")
+      (description "This package provides Emacs Lisp utilities for a variety
+of tasks, including version control, task management, and regex-based
+replacement.")
+      (license license:gpl3+))))
+
 (define-public emacs-haskell-mode
   (package
     (name "emacs-haskell-mode")
