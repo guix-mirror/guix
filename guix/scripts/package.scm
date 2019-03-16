@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -526,14 +527,14 @@ upgrading, #f otherwise."
   (define upgrade-regexps
     (filter-map (match-lambda
                   (('upgrade . regexp)
-                   (make-regexp* (or regexp "")))
+                   (make-regexp* (or regexp "") regexp/icase))
                   (_ #f))
                 opts))
 
   (define do-not-upgrade-regexps
     (filter-map (match-lambda
                   (('do-not-upgrade . regexp)
-                   (make-regexp* regexp))
+                   (make-regexp* regexp regexp/icase))
                   (_ #f))
                 opts))
 
@@ -686,7 +687,7 @@ processed, #f otherwise."
        #t)
 
       (('list-installed regexp)
-       (let* ((regexp    (and regexp (make-regexp* regexp)))
+       (let* ((regexp    (and regexp (make-regexp* regexp regexp/icase)))
               (manifest  (profile-manifest profile))
               (installed (manifest-entries manifest)))
          (leave-on-EPIPE
@@ -702,7 +703,7 @@ processed, #f otherwise."
          #t))
 
       (('list-available regexp)
-       (let* ((regexp    (and regexp (make-regexp* regexp)))
+       (let* ((regexp    (and regexp (make-regexp* regexp regexp/icase)))
               (available (fold-available-packages
                           (lambda* (name version result
                                          #:key outputs location
