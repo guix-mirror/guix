@@ -378,15 +378,15 @@ matching them against regular expressions.")
 (define-public xfce4-pulseaudio-plugin
   (package
     (name "xfce4-pulseaudio-plugin")
-    (version "0.2.3")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+              (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
                                   name "/" (version-major+minor version) "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0crvb2gyxbnlf46712arg3m2vqx81dixqhqdwss0bngpijy3ca78"))))
+                "1w29y0a066y8as12xrkbfqcn7dpdsvx97idzw7028gmcvca87a3c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
