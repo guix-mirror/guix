@@ -204,14 +204,14 @@ not rely on XS.")
 (define-public perl-ev
   (package
     (name "perl-ev")
-    (version "4.22")
+    (version "4.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/EV-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14d9115q8f2ca2q3vbcalm55zqsbx8xjq5aj098laj9f9rrzirra"))
+                "0slw68zxrkfribf6lhggdhpay3mdng0nqxlglkwrk19myblchr9f"))
               (modules '((guix build utils)))
               (snippet
                '(begin
