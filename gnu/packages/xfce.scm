@@ -649,15 +649,15 @@ on the screen.")
 (define-public xfdesktop
   (package
     (name "xfdesktop")
-    (version "4.12.0")
+    (version "4.12.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ivzgg4792nid6wcgd1nq5vc3z0y5ip6ymq7ci5j2qkp663qnykf"))))
+                "1jzi851arljq5lza9inyq4ss513l62lbzbfm64a7x4320m8kb2h9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
