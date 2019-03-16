@@ -619,15 +619,15 @@ and import the new pictures from your camera.")
 (define-public xfwm4
   (package
     (name "xfwm4")
-    (version "4.12.0")
+    (version "4.12.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0fnc2ps4k733n9qfpxrz047h1myyqjzxczl7fmkjmqwshvicpx19"))))
+                "1jnav0wcqlswl2v7nh61big9czg5hmnyvrvm6812sv362qic0xbp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
