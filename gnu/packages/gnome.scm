@@ -7604,6 +7604,6 @@ generic enough to work for everyone.")
 that provides integrated mail, calendaring and address book
 functionality.")
     ;; See COPYING for details.
-    (license (list license:lgpl2.0 license:lgpl3 ; either one of these
+    (license (list license:lgpl2.1 license:lgpl3 ; either one of these
                    license:openldap2.8 ; addressbook/gui/component/openldap-extract.h
-                   license:lgpl2+))))  ; smime/lib/*
+                   license:lgpl2.1+))))  ; smime/lib/*
