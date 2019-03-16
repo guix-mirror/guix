@@ -267,8 +267,8 @@ way--presentation and vector drawing interfaces.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                          name "-" version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpg/libwpg/"
+                          "libwpg-" version "/libwpg-" version ".tar.xz"))
       (sha256 (base32
                "0cwc5zkp210c661l0bvk6q21jg9ak5g8gmy578w5fgfnjymz3yjp"))))
     (build-system gnu-build-system)
