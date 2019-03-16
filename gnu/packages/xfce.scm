@@ -104,15 +104,15 @@ Xfce Desktop Environment.")
 (define-public xfconf
   (package
     (name "xfconf")
-    (version "4.12.0")
+    (version "4.12.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0mmi0g30aln3x98y5p507g17pipq0dj0bwypshan8cq5hkmfl44r"))))
+                "0dns190bwb615wy9ma2654sw4vz1d0rcv061zmaalkv9wmj8bx1m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
