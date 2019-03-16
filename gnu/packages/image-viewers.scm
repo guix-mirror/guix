@@ -285,17 +285,16 @@ your images.  Among its features are:
 (define-public catimg
   (package
     (name "catimg")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/posva/catimg.git")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1sk74nfc1aklg784pzknr37dyz4k7h9fck3mifpn43rav5qy2zpy"))))
+        (base32 "0n74iczzgxrcq3zpa7ndycb9rinm829yvf81c747q4ngv5q6pzcm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
