@@ -188,7 +188,7 @@ It is the default image viewer on LXDE desktop environment.")
 (define-public sxiv
   (package
     (name "sxiv")
-    (version "24")
+    (version "25")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -197,7 +197,7 @@ It is the default image viewer on LXDE desktop environment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "020n1bdxbzqncprh8a4rnjzc4frp335yxbqh5w6dr970f7n5qm8d"))))
+                "13s1lfar142hq1j7xld0ri616p4bqs57b17yr4d0b9a9w7liz4hp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -206,7 +206,7 @@ It is the default image viewer on LXDE desktop environment.")
              "CC=gcc"
              ;; Xft.h #includes <ft2build.h> (without ‘freetype2/’).  The sxiv
              ;; Makefile works around this by hard-coding /usr/include instead.
-             (string-append "DEF_CPPFLAGS=-I"
+             (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "freetype")
                             "/include/freetype2")
              "V=1")
