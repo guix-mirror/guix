@@ -219,7 +219,7 @@ written in Go.")
 (define-public go-ipfs
   (package
     (name "go-ipfs")
-    (version "0.4.18")
+    (version "0.4.19")
     (source
      (origin
        (method url-fetch/tarbomb)
@@ -227,8 +227,7 @@ written in Go.")
              "https://dist.ipfs.io/go-ipfs/v" version
              "/go-ipfs-source.tar.gz"))
        (sha256
-        (base32
-         "19hfgbyn5sr1bw0cwm3gsjz0w3b3vh3mmkax1906raah30lavj1x"))
+        (base32 "0s04ap14p6hnipjm27nm5k8s28zv9k5g9mziyh3ibgwn7dzb1kpx"))
        (file-name (string-append name "-" version "-source"))))
     (build-system go-build-system)
     (arguments
