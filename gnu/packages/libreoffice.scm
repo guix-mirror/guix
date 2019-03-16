@@ -897,14 +897,14 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libqxp
   (package
     (name "libqxp")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dev-www.libreoffice.org/src/libqxp/"
                                   "libqxp-" version ".tar.xz"))
               (sha256
                (base32
-                "0wswz49y0lqwqw2nj9j7jaj5ag88hapcz8czgkxax57zhihpy9cc"))))
+                "0p4lb84m05wqd8qr8ni9sp80ivlm83ffn0nxiv4m42hj22qvcdz1"))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)
