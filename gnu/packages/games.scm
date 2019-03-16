@@ -143,6 +143,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -6276,3 +6277,83 @@ game field is extended to 4D space, which has to filled up by the gamer with
 4D hyper cubes.")
     (license license:gpl3)))
 
+(define-public arx-libertatis
+  (package
+    (name "arx-libertatis")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://arx-libertatis.org/files/arx-libertatis-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0hjfxlsmp8wwqr06snv2dlly2s79ra0d9aw49gkp6rn8m50b9bc2"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "installer"))
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-helper-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((p7zip (assoc-ref inputs "p7zip"))
+                   (innoextract (assoc-ref inputs "innoextract"))
+                   (wget (assoc-ref inputs "wget"))
+                   (zenity (assoc-ref inputs "zenity")))
+               (substitute* "scripts/arx-install-data"
+                 (("have innoextract")
+                  (string-append "have " innoextract "/bin/innoextract"))
+                 (("then innoextract")
+                  (string-append "then " innoextract "/bin/innoextract"))
+                 (("else innoextract")
+                  (string-append "else " innoextract "/bin/innoextract"))
+                 (("for _extract_zip_sz in 7za 7z")
+                  (string-append "for _extract_zip_sz in " p7zip "/bin/7za"))
+                 (("else if have 7z")
+                  (string-append "else if have " p7zip "/bin/7za"))
+                 (("7z x -tiso")
+                  (string-append p7zip "/bin/7z x -tiso"))
+                 (("if have wget")
+                  (string-append "if have " wget "/bin/wget"))
+                 (("wget -O")
+                  (string-append wget "/bin/wget -O"))
+                 (("for backend in \\$preferred zenity")
+                  (string-append "for backend in $preferred " zenity "/bin/zenity"))
+                 (("zenity +--title")
+                  (string-append zenity "/bin/zenity --title"))
+                 (("^zenity\\)")
+                  (string-append zenity "/bin/zenity)"))))
+             #t))
+         (add-after 'install 'move-installer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (installer (assoc-ref outputs "installer")))
+               (mkdir-p (string-append installer "/bin"))
+               (rename-file (string-append out "/bin/arx-install-data")
+                            (string-append installer "/bin/arx-install-data"))))))))
+    (inputs
+     `(("sdl" ,sdl)                     ; Switch to sdl2 in >1.1.2.
+       ("mesa" ,mesa)                   ; Switch to libepoxy in >1.1.2.
+       ("glew" ,glew)
+       ("openal" ,openal)
+       ("zlib" ,zlib)
+       ("boost" ,boost)
+       ("glm" ,glm)
+       ("freetype" ,freetype)
+       ;; The following are only needed by the arx-install-data script.
+       ("p7zip" ,p7zip) ; Install-helper uses it to extract ISO and .cab archives.
+       ("zenity" ,zenity)           ; GUI for install-helper.
+       ("wget" ,wget)     ; Used by the install-helper to download the patch.
+       ;; The install-helper needs it to extract the patch.
+       ("innoextract" ,innoextract)))
+    (home-page "https://arx-libertatis.org/")
+    (synopsis "Port of Arx Fatalis, a first-person role-playing game")
+    (description "Arx Libertatis is a cross-platform, open source port of Arx
+Fatalis, a 2002 first-person role-playing game / dungeon crawler developed by
+Arkane Studios.  This port however does not include the game data, so you need
+to obtain a copy of the original Arx Fatalis or its demo to play Arx
+Libertatis.  Arx Fatalis features crafting, melee and ranged combat, as well
+as a unique casting system where the player draws runes in real time to effect
+the desired spell.")
+    (license license:gpl3+)))
