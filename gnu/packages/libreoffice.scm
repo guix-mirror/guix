@@ -263,14 +263,14 @@ way--presentation and vector drawing interfaces.")
 (define-public libwpg
   (package
     (name "libwpg")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libwpg/libwpg/"
                           "libwpg-" version "/libwpg-" version ".tar.xz"))
       (sha256 (base32
-               "0cwc5zkp210c661l0bvk6q21jg9ak5g8gmy578w5fgfnjymz3yjp"))))
+               "074x159immf139szkswv2zapnq75p7xk10dbha2p9193hgwggcwr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
