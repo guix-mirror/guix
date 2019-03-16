@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,19 +24,6 @@
   #:use-module (srfi srfi-64))
 
 ;; Test the (guix scripts) module.
-
-(define-syntax-rule (with-environment-variable variable value body ...)
-  "Run BODY with VARIABLE set to VALUE."
-  (let ((orig (getenv variable)))
-    (dynamic-wind
-      (lambda ()
-        (setenv variable value))
-      (lambda ()
-        body ...)
-      (lambda ()
-        (if orig
-            (setenv variable orig)
-            (unsetenv variable))))))
 
 
 (test-begin "scripts")

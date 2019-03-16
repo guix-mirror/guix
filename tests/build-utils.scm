@@ -107,19 +107,21 @@
        ;; it can't know about the bootstrap bash in the store, since it's not
        ;; named "bash".  Help it out a bit by providing a symlink it this
        ;; package's output.
-       (setenv "PATH" (dirname bash))
-       (wrap-program foo `("GUIX_FOO" prefix ("hello")))
-       (wrap-program foo `("GUIX_BAR" prefix ("world")))
+       (with-environment-variable "PATH" (dirname bash)
+         (wrap-program foo `("GUIX_FOO" prefix ("hello")))
+         (wrap-program foo `("GUIX_BAR" prefix ("world")))
 
-       ;; The bootstrap Bash is linked against an old libc and would abort with
-       ;; an assertion failure when trying to load incompatible locale data.
-       (unsetenv "LOCPATH")
+         ;; The bootstrap Bash is linked against an old libc and would abort
+         ;; with an assertion failure when trying to load incompatible locale
+         ;; data.
+         (unsetenv "LOCPATH")
 
-       (let* ((pipe (open-input-pipe foo))
-              (str  (get-string-all pipe)))
-         (with-directory-excursion directory
-           (for-each delete-file '("foo" ".foo-real")))
-         (and (zero? (close-pipe pipe))
-              str))))))
+         (let* ((pipe (open-input-pipe foo))
+                (str  (get-string-all pipe)))
+           (with-directory-excursion directory
+             (for-each delete-file '("foo" ".foo-real")))
+           (and (zero? (close-pipe pipe))
+                str)))))))
+
 
 (test-end)
