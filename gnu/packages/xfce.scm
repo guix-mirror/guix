@@ -280,15 +280,15 @@ management D-Bus specification.")
 (define-public xfce4-panel
   (package
     (name "xfce4-panel")
-    (version "4.12.0")
+    (version "4.12.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1c4p3ckghvsad1sj5v8wmar5mh9cbhail9mmhad2f9pwwb10z4ih"))
+                "1s8cvsrgmkmmm84g6mghpj2k4777gm22g5lrsf8pdy5qh6xql1a2"))
               (patches (search-patches "xfce4-panel-plugins.patch"))))
     (build-system gnu-build-system)
     (arguments
