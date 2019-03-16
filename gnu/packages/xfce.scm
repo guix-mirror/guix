@@ -557,14 +557,15 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.6.6")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.12/src/"
+              (uri (string-append "http://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "1cl9v3rdzipyyxml3pyrzspxfmmssz5h5snpj18irq4an42539dr"))))
+                "1c4kg8w77nwi75b4ashy2m1y39icv951h63qsr1gdj6yipd53gy2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
