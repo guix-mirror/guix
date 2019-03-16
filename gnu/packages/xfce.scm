@@ -148,15 +148,15 @@ storage system.")
 (define-public libxfce4ui
   (package
     (name "libxfce4ui")
-    (version "4.12.0")
+    (version "4.12.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
-                                  (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+              (uri (string-append "https://archive.xfce.org/src/xfce/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "11rrhqxnfwx5jls3nlg9s2x8saag9f2zqk9cdm6hr3bs6cr9a781"))))
+                "0hzzhiiwmqsrbv17nninhs2x1b8ck0ym85jck2xphx5ypw8rhq9x"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
