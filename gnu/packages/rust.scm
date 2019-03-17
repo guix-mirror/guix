@@ -430,7 +430,13 @@ safety and thread safety guarantees.")
     (package
       (inherit base-rust)
       (outputs '("out" "doc" "cargo"))
-      (properties '())
+      ;; Since rust-1.19 is local, it's quite probable that Hydra
+      ;; will build rust-1.19 only as a dependency of rust-1.20.
+      ;; But then Hydra will use the wrong properties, the ones here,
+      ;; for rust-1.19.  Therefore, we copied the properties of
+      ;; rust-1.19 here.
+      (properties '((timeout . 72000)               ;20 hours
+                    (max-silent-time . 18000)))     ;5 hours (for armel)
       (arguments
        (substitute-keyword-arguments (package-arguments rust-1.19)
          ((#:phases phases)
