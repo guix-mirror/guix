@@ -818,7 +818,7 @@ and TARGET arguments."
                                 (exit 1)))
                        (#$installer #$bootloader #$device #$target)
                        (format #t "bootloader successfully installed on '~a'~%"
-                               device))))))
+                               #$device))))))
 
 (define* (perform-action action os
                          #:key skip-safety-checks?
