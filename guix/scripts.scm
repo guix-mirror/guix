@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module ((guix profiles) #:select (%profile-directory))
+  #:autoload   (guix describe) (current-profile-date)
   #:use-module (guix build syscalls)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
@@ -158,36 +159,25 @@ Show what and how will/would be built."
                                 #:key (suggested-command
                                        "guix package -u"))
   "Emit a warning if Guix is older than OLD seconds."
-  (let-syntax ((false-if-not-found
-                (syntax-rules ()
-                  ((_ exp)
-                   (catch 'system-error
-                     (lambda ()
-                       exp)
-                     (lambda args
-                       (if (= ENOENT (system-error-errno args))
-                           #f
-                           (apply throw args))))))))
-    (define (seconds->days seconds)
-      (round (/ seconds (* 3600 24))))
+  (define (seconds->days seconds)
+    (round (/ seconds (* 3600 24))))
 
-    (define age
-      (match (false-if-not-found
-              (lstat (string-append %profile-directory "/current-guix")))
-        (#f    #f)
-        (stat  (- (time-second (current-time time-utc))
-                  (stat:mtime stat)))))
+  (define age
+    (match (current-profile-date)
+      (#f    #f)
+      (date  (- (time-second (current-time time-utc))
+                date))))
 
-    (when (and age (>= age old))
-      (warning (N_ "Your Guix installation is ~a day old.\n"
-                   "Your Guix installation is ~a days old.\n"
-                   (seconds->days age))
-               (seconds->days age)))
-    (when (or (not age) (>= age old))
-      (warning (G_ "Consider running 'guix pull' followed by
+  (when (and age (>= age old))
+    (warning (N_ "Your Guix installation is ~a day old.\n"
+                 "Your Guix installation is ~a days old.\n"
+                 (seconds->days age))
+             (seconds->days age)))
+  (when (or (not age) (>= age old))
+    (warning (G_ "Consider running 'guix pull' followed by
 '~a' to get up-to-date packages and security updates.\n")
-               suggested-command)
-      (newline (guix-warning-port)))))
+             suggested-command)
+    (newline (guix-warning-port))))
 
 (define %disk-space-warning
   ;; The fraction (between 0 and 1) of free disk space below which a warning
