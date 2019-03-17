@@ -4333,7 +4333,7 @@ a display running X server.")
 (define-public xtrans
   (package
     (name "xtrans")
-    (version "1.3.5")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -4343,7 +4343,7 @@ a display running X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00c3ph17acnsch3gbdmx33b9ifjnl5w7vx8hrmic1r1cjcv3pgdd"))))
+            "0wyp0yc6gi72hwc3kjmvm3vkj9p6s407cb6dxx37jh9wb68l8z1p"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
