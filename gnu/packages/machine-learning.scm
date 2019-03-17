@@ -61,6 +61,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
@@ -1114,3 +1115,96 @@ Kaldi's @code{SingleUtteranceNnet2Decoder}.  It requires iVector-adapted DNN
 acoustic models.  The iVectors are adapted to the current audio stream
 automatically.")
       (license license:asl2.0))))
+
+(define-public kaldi-gstreamer-server
+  (let ((commit "1735ba49c5dc0ebfc184e45105fc600cd9f1f508")
+        (revision "1"))
+    (package
+      (name "kaldi-gstreamer-server")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alumae/kaldi-gstreamer-server.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0j701m7lbwmzqxsfanj882v7881hrbmpqybbczbxqpcbg8q34w0k"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; there are no tests that can be run automatically
+         #:modules ((guix build utils)
+                    (guix build gnu-build-system)
+                    (srfi srfi-26))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Disable hash randomization to ensure the generated .pycs
+               ;; are reproducible.
+               (setenv "PYTHONHASHSEED" "0")
+               (with-directory-excursion "kaldigstserver"
+                 (for-each (lambda (file)
+                             (apply invoke
+                                    `("python"
+                                      "-m" "compileall"
+                                      "-f" ; force rebuild
+                                      ,file)))
+                           (find-files "." "\\.py$")))
+               #t))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (share (string-append out "/share/kaldi-gstreamer-server/")))
+                 ;; Install Python files
+                 (with-directory-excursion "kaldigstserver"
+                   (for-each (cut install-file <> share)
+                             (find-files "." ".*")))
+
+                 ;; Install sample configuration files
+                 (for-each (cut install-file <> share)
+                           (find-files "." "\\.yaml"))
+
+                 ;; Install executables
+                 (mkdir-p bin)
+                 (let* ((server (string-append bin "/kaldi-gst-server"))
+                        (client (string-append bin "/kaldi-gst-client"))
+                        (worker (string-append bin "/kaldi-gst-worker"))
+                        (PYTHONPATH (getenv "PYTHONPATH"))
+                        (GST_PLUGIN_PATH (string-append
+                                          (assoc-ref inputs "gst-kaldi-nnet2-online")
+                                          "/lib/gstreamer-1.0:${GST_PLUGIN_PATH}"))
+                        (wrap (lambda (wrapper what)
+                                (with-output-to-file wrapper
+                                  (lambda _
+                                    (format #t
+                                            "#!~a
+export PYTHONPATH=~a
+export GST_PLUGIN_PATH=~a
+exec ~a ~a/~a \"$@\"~%"
+                                            (which "bash") PYTHONPATH GST_PLUGIN_PATH
+                                            (which "python") share what)))
+                                (chmod wrapper #o555))))
+                   (for-each wrap
+                             (list server client worker)
+                             (list "master_server.py"
+                                   "client.py"
+                                   "worker.py")))
+                 #t))))))
+      (inputs
+       `(("gst-kaldi-nnet2-online" ,gst-kaldi-nnet2-online)
+         ("python2" ,python-2)
+         ("python2-futures" ,python2-futures)
+         ("python2-pygobject" ,python2-pygobject)
+         ("python2-pyyaml" ,python2-pyyaml)
+         ("python2-tornado" ,python2-tornado)
+         ("python2-ws4py" ,python2-ws4py-for-kaldi-gstreamer-server)))
+      (home-page "https://github.com/alumae/kaldi-gstreamer-server")
+      (synopsis "Real-time full-duplex speech recognition server")
+      (description "This is a real-time full-duplex speech recognition server,
+based on the Kaldi toolkit and the GStreamer framework and implemented in
+Python.")
+      (license license:bsd-2))))
