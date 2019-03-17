@@ -892,22 +892,23 @@ several different time zones.")
 (define-public xfce4-notifyd
   (package
     (name "xfce4-notifyd")
-    (version "0.3.6")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/src/apps/"
+              (uri (string-append "https://archive.xfce.org/src/apps/"
                                   name "/" (version-major+minor version) "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ybcfqfynr33g5hp2lgq17s8qyx7rq6fd2iwrpwcvm6kml6prjpl"))))
+                "1h7avj149cafj9dabiza22y14i66vxgp5qj0wxx8i97w9h4dlg99"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libxfce4ui" ,libxfce4ui)
-       ("libnotify" ,libnotify)))
+       ("libnotify" ,libnotify)
+       ("xfce4-panel" ,xfce4-panel)))
     (home-page "https://goodies.xfce.org/projects/applications/xfce4-notifyd")
     (synopsis "Show notification bubbles on Xfce")
     (description
