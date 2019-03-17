@@ -58,6 +58,7 @@
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -228,6 +229,28 @@ pidof, tty, taskset, pmap.")
     (synopsis "Library for the manipulation and analysis of geometric objects")
     (description "Shapely is a Python package for manipulation and analysis of
 planar geometric objects.  It is based on the @code{GEOS} library.")
+    (license license:bsd-3)))
+
+(define-public python-shortuuid
+  (package
+    (name "python-shortuuid")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "shortuuid" version))
+       (sha256
+        (base32
+         "1f8i4zwj5vmpzbz6b17bljy4399gx5aq7vsyw63sz2qgyjcd73yh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pep8" ,python-pep8)))
+    (home-page "https://github.com/skorokithakis/shortuuid")
+    (synopsis "Generator library for concise, unambiguous and URL-safe UUIDs")
+    (description
+     "@code{shortuuid} is a Python library for generating concise, unambiguous
+and URL-safe UUIDs.  UUIDs are generated using the built-in Python @code{uuid}
+module and then similar looking characters are removed.")
     (license license:bsd-3)))
 
 (define-public python-logwrap
