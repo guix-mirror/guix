@@ -305,7 +305,7 @@ for building OCaml library and programs.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.1")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               ;; Use the '-full' version, which includes all the dependencies.
@@ -317,7 +317,7 @@ for building OCaml library and programs.")
                )
               (sha256
                (base32
-                "0z6r9qr4awcdn7wyrl5y5jm34jsjlnzd00py893f1hd0c6vg3xw1"))))
+                "1qphm1grxx5j8li7f9qfpih4ylrnjl08b4ym8ma4ln44l56xm285"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Sometimes, 'make -jX' would fail right after ./configure with
