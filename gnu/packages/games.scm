@@ -2338,7 +2338,7 @@ world}, @uref{http://evolonline.org, Evol Online} and
        ("sdl" ,sdl)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (synopsis "Transportation economics simulator")
+    (synopsis "Transportation economics simulator game")
     (description "OpenTTD is a game in which you transport goods and
 passengers by land, water and air.  It is a re-implementation of Transport
 Tycoon Deluxe with many enhancements including multiplayer mode,
