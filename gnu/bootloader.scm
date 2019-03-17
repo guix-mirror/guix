@@ -122,8 +122,6 @@
   (serial-unit                     bootloader-configuration-serial-unit      ; integer | #f
                                    (default #f))
   (serial-speed                    bootloader-configuration-serial-speed     ; integer | #f
-                                   (default #f))
-  (additional-configuration        bootloader-configuration-additional-configuration ; record
                                    (default #f)))
 
 
