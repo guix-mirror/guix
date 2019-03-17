@@ -1385,7 +1385,7 @@ configuration files.")
 (define-public libxmu
   (package
     (name "libxmu")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -1395,7 +1395,7 @@ configuration files.")
                ".tar.bz2"))
         (sha256
           (base32
-            "02wx6jw7i0q5qwx87yf94fsn3h0xpz1k7dz1nkwfwm1j71ydqvkm"))))
+            "0cdpqnx6258i4l6qhphvkdiyspysg0i5caqjy820kp63wwjk4d4w"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
