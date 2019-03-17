@@ -23654,6 +23654,34 @@ current system.
 The number of seconds to wait for keyboard input before booting.  Set to
 0 to boot immediately, and to -1 to wait indefinitely.
 
+@cindex keyboard layout, for the bootloader
+@item @code{keyboard-layout} (default: @code{#f})
+If this is @code{#f}, the bootloader's menu (if any) uses the default keyboard
+layout, usually US@tie{}English (``qwerty'').
+
+Otherwise, this must be a @code{keyboard-layout} object.  For instance, the
+following example defines a standard German keyboard layout:
+
+@example
+(keyboard-layout "de")
+@end example
+
+@noindent
+while the example below designates the bépo layout for French:
+
+@example
+(keyboard-layout "fr" "bepo")
+@end example
+
+The layout name and variant must match an existing layout in the
+@code{xkeyboard-config} package under the @file{share/X11/xkb/symbols}
+directory.
+
+@quotation Note
+This option is currently ignored by bootloaders other than @code{grub} and
+@code{grub-efi}.
+@end quotation
+
 @item @code{theme} (default: @var{#f})
 The bootloader theme object describing the theme to use.  If no theme
 is provided, some bootloaders might use a default theme, that's true

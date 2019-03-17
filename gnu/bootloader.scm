@@ -47,6 +47,7 @@
             bootloader-configuration-menu-entries
             bootloader-configuration-default-entry
             bootloader-configuration-timeout
+            bootloader-configuration-keyboard-layout
             bootloader-configuration-theme
             bootloader-configuration-terminal-outputs
             bootloader-configuration-terminal-inputs
@@ -113,6 +114,8 @@
                       (default 0))
   (timeout            bootloader-configuration-timeout ;seconds as integer
                       (default 5))
+  (keyboard-layout    bootloader-configuration-keyboard-layout ;<keyboard-layout> | #f
+                      (default #f))
   (theme              bootloader-configuration-theme ;bootloader-specific theme
                       (default #f))
   (terminal-outputs   bootloader-configuration-terminal-outputs ;list of symbols
