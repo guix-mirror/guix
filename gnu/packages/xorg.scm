@@ -1964,7 +1964,7 @@ server.")
 (define-public x11perf
   (package
     (name "x11perf")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
       (origin
         (method url-fetch)
@@ -1974,7 +1974,7 @@ server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0lb716yfdb8f11h4cz93d1bapqdxf1xplsb21kbp4xclq7g9hw78"))))
+            "0d3wh6z6znwhfdiv0zaggfj0xgish98xa10yy76b9517zj7hnzhw"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
