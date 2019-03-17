@@ -560,14 +560,14 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20170731")
+   (version "20190317")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
-                  version "/fontforge-dist-" version ".tar.xz"))
+                  version "/fontforge-" version ".tar.gz"))
             (sha256 (base32
-                     "08l8h3yvk4v7652jvmd3ls7nf5miybkx2fmkf1mpwwfixpxxw2l4"))))
+                     "1ddqbpc32cgbccdnv0lfw0qhj59hcqzb7616ph5lkvm91pnas4dp"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -614,11 +614,7 @@ definitions.")
                           "pango" "cairo" "fontconfig")))
                 ;; Checks for potrace program at runtime
                 `("PATH" ":" prefix (,potrace)))
-              #t))))
-
-      ;; Skip test 40 "FontForge .sfd file open check" to work around
-      ;; <https://github.com/fontforge/fontforge/issues/3246>.
-      #:make-flags '("TESTSUITEFLAGS=-k '!\\.sfd'")))
+              #t))))))
    (synopsis "Outline font editor")
    (description
     "FontForge allows you to create and modify postscript, truetype and
