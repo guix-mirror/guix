@@ -4560,7 +4560,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxext
   (package
     (name "libxext")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
       (origin
         (method url-fetch)
@@ -4570,7 +4570,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0dbfn5bznnrhqzvkrcmw4c44yvvpwdcsrvzxf4rk27r36b9x865m"))))
+            "0azqxllcsfxc3ilhz6kwc6x7m8wc477p59ir9p0yrsldx766zbar"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
