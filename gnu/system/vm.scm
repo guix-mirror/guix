@@ -187,8 +187,9 @@ made available under the /xchg CIFS share."
                   ;; When USER-BUILDER succeeds, reboot (indicating a
                   ;; success), otherwise die, which causes a kernel panic
                   ;; ("Attempted to kill init!").
-                  #~(when (zero? (system* #$user-builder))
-                      (reboot))))
+                  #~(if (zero? (system* #$user-builder))
+                        (reboot)
+                        (exit 1))))
 
   (let ((initrd (or initrd
                     (base-initrd file-systems
