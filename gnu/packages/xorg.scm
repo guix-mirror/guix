@@ -104,10 +104,9 @@
   ;; License: x11, see COPYING
   (origin
     (method url-fetch)
-    (uri "mirror://xorg/individual/util/xorg-cf-files-1.0.5.tar.bz2")
+    (uri "mirror://xorg/individual/util/xorg-cf-files-1.0.6.tar.bz2")
     (sha256
-     (base32
-      "1m3ypq0xcy46ghxc0svl1rbhpy3zvgmy0aa2mn7w7v7d8d8bh8zd"))))
+     (base32 "0kckng0zs1viz0nr84rdl6dswgip7ndn4pnh5nfwnviwpsfmmksd"))))
 
 (define-public imake
   (package
