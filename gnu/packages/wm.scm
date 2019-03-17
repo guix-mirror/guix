@@ -488,7 +488,7 @@ desktop environment.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmonad/"
-                                  name "-" version ".tar.gz"))
+                                  "xmonad-" version ".tar.gz"))
               (sha256
                (base32
                 "0gqyivpw8z1x73p1l1fpyq1wc013a1c07r6xn1a82liijs91b949"))))
