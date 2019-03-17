@@ -586,10 +586,7 @@ definitions.")
              ("libxml2"         ,libxml2)
              ("pango"           ,pango)
              ("potrace"         ,potrace)
-             ;; FIXME: We use Python 2 here because there is a bug in Python
-             ;; 3.7 that is triggered when Py_Main is called after Py_Init, as
-             ;; is done by fontforge.  This will be fixed in Python 3.7.1.
-             ("python"          ,python-2)
+             ("python"          ,python)
              ("zlib"            ,zlib)))
    (arguments
     '(#:phases
