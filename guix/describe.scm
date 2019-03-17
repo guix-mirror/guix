@@ -21,10 +21,12 @@
   #:use-module (guix profiles)
   #:use-module (guix packages)
   #:use-module ((guix utils) #:select (location-file))
-  #:use-module ((guix store) #:select (%store-prefix))
+  #:use-module ((guix store) #:select (%store-prefix store-path?))
+  #:use-module ((guix config) #:select (%state-directory))
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (current-profile
+            current-profile-date
             current-profile-entries
             package-path-entries
 
@@ -54,6 +56,27 @@ or #f if this is not applicable."
             (let ((candidate (dirname (dirname program))))
               (and (file-exists? (string-append candidate "/manifest"))
                    candidate)))))))
+
+(define (current-profile-date)
+  "Return the creation date of the current profile (produced by 'guix pull'),
+as a number of seconds since the Epoch, or #f if it could not be determined."
+  ;; Normally 'current-profile' will return ~/.config/guix/current.  We need
+  ;; to 'readlink' once to get '/var/guix/…/guix-profile', whose mtime is the
+  ;; piece of information we're looking for.
+  (let loop ((profile (current-profile)))
+    (match profile
+      (#f #f)
+      ((? store-path?) #f)
+      (file
+       (if (string-prefix? %state-directory file)
+           (and=> (lstat file) stat:mtime)
+           (catch 'system-error
+             (lambda ()
+               (let ((target (readlink file)))
+                 (loop (if (string-prefix? "/" target)
+                           target
+                           (string-append (dirname file) "/" target)))))
+             (const #f)))))))
 
 (define current-profile-entries
   (mlambda ()
