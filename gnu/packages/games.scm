@@ -37,6 +37,7 @@
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4828,6 +4829,8 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
              (("#elif defined(__FreeBSD__)" line)
               (string-append
                line " || defined(__GNUC__)")))
+           (substitute* '("src/tgl.h")
+             (("#include <GL/glext.h>") ""))
            #t))))
     (build-system gnu-build-system)
     (native-inputs
