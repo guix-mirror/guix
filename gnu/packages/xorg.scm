@@ -1497,25 +1497,22 @@ treat it as part of their software base when porting.")
 (define-public libxxf86dga
   (package
     (name "libxxf86dga")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/lib/libXxf86dga-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0zn7aqj8x0951d8zb2h2andldvwkzbsc4cs7q023g6nzq6vd9v4f"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/lib/"
+                           "libXxf86dga-" version ".tar.bz2"))
+       (sha256
+        (base32 "00vjvcdlc1sga251jkxn6gkxmx9h5n290ffxxpa40qbca1gvr61b"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+     `(("xorgproto" ,xorgproto)))
     (inputs
-      `(("libx11" ,libx11)
-        ("libxext" ,libxext)))
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XFree86-DGA library")
     (description "Client library for the XFree86-DGA extension.")
