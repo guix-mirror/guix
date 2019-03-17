@@ -3068,3 +3068,29 @@ such as IoT applications or multi-user database-driven business applications.")
      "This package provides a WebSocket client and server library for
 Python.")
     (license license:bsd-3)))
+
+;; kaldi-gstreamer-server does not yet work with python-ws4py > 0.3.2
+(define-public python2-ws4py-for-kaldi-gstreamer-server
+  (package (inherit python-ws4py)
+    (name "python2-ws4py")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ws4py" version))
+       (sha256
+        (base32
+         "12ys3dv98awhrxd570vla3hqgzq3avjhq4yafhghhq3a942y1928"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; We don't have a package for cherrypy.
+         (add-after 'unpack 'remove-cherrypy-support
+           (lambda _
+             (delete-file "ws4py/server/cherrypyserver.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-gevent" ,python2-gevent)
+       ("python-tornado" ,python2-tornado)))))
