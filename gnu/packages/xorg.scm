@@ -6378,6 +6378,15 @@ output.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'patch-file-names
+           (lambda _
+             ;; 'ckbcomp' calls out to 'cat' (!).  Give it the right file
+             ;; name.
+             (substitute* '("Keyboard/ckbcomp")
+               (("\"cat ")
+                (string-append "\"" (which "cat")
+                               " ")))
+             #t))
          (add-before 'build 'make-doubled-bdfs
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "make" "-C" "Fonts"
