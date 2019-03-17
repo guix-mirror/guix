@@ -104,25 +104,25 @@
 (define-record-type* <bootloader-configuration>
   bootloader-configuration make-bootloader-configuration
   bootloader-configuration?
-  (bootloader                      bootloader-configuration-bootloader)    ; <bootloader>
-  (target                          bootloader-configuration-target         ; string
-                                   (default #f))
-  (menu-entries                    bootloader-configuration-menu-entries   ; list of <boot-parameters>
-                                   (default '()))
-  (default-entry                   bootloader-configuration-default-entry  ; integer
-                                   (default 0))
-  (timeout                         bootloader-configuration-timeout        ; seconds as integer
-                                   (default 5))
-  (theme                           bootloader-configuration-theme          ; bootloader-specific theme
-                                   (default #f))
-  (terminal-outputs                bootloader-configuration-terminal-outputs ; list of symbols
-                                   (default '(gfxterm)))
-  (terminal-inputs                 bootloader-configuration-terminal-inputs  ; list of symbols
-                                   (default '()))
-  (serial-unit                     bootloader-configuration-serial-unit      ; integer | #f
-                                   (default #f))
-  (serial-speed                    bootloader-configuration-serial-speed     ; integer | #f
-                                   (default #f)))
+  (bootloader         bootloader-configuration-bootloader) ;<bootloader>
+  (target             bootloader-configuration-target      ;string
+                      (default #f))
+  (menu-entries       bootloader-configuration-menu-entries ;list of <boot-parameters>
+                      (default '()))
+  (default-entry      bootloader-configuration-default-entry ;integer
+                      (default 0))
+  (timeout            bootloader-configuration-timeout ;seconds as integer
+                      (default 5))
+  (theme              bootloader-configuration-theme ;bootloader-specific theme
+                      (default #f))
+  (terminal-outputs   bootloader-configuration-terminal-outputs ;list of symbols
+                      (default '(gfxterm)))
+  (terminal-inputs    bootloader-configuration-terminal-inputs ;list of symbols
+                      (default '()))
+  (serial-unit        bootloader-configuration-serial-unit ;integer | #f
+                      (default #f))
+  (serial-speed       bootloader-configuration-serial-speed ;integer | #f
+                      (default #f)))
 
 
 ;;;
