@@ -1326,7 +1326,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxft
   (package
     (name "libxft")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
       (origin
         (method url-fetch)
@@ -1336,7 +1336,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0k6wzi5rzs0d0n338ms8n8lfyhq914hw4yl2j7553wqxfqjci8zm"))))
+            "05lja9s54090xwh31r0bqms4v3pimng5xr09g2rdnafx2vk6hp12"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xft.pc refers to all these.
