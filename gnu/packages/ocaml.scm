@@ -816,14 +816,10 @@ libpanel, librsvg and quartz.")
                (let ((doc (string-append (assoc-ref outputs "doc")
                                          "/share/doc/unison")))
                  (mkdir-p doc)
-                 ;; This is a workaround to prevent a build failure. Running
-                 ;; make docs somehow allows it to pass, but the generated
-                 ;; documentation is not pretty.
-                 (catch #t
-                   (lambda _
-                     (invoke "make" "docs"
-                             "TEXDIRECTIVES=\\\\draftfalse"))
-                   (lambda _ #t))
+                 ;; Remove an '\n' that prevents the doc to be generated
+                 ;; correctly with newer hevea.
+                 (substitute* "doc/local.tex"
+                   (("----SNIP----.*") "----SNIP----"))
                  ;; This file needs write-permissions, because it's
                  ;; overwritten by 'docs' during documentation generation.
                  (chmod "src/strings.ml" #o600)
