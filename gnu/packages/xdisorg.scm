@@ -179,7 +179,7 @@ program.")
                        "install_manpage"
                        "install_bash_completion"
                        "install_launcher"))))))
-      (synopsis "Auto-detect connected displays and load appropiate setup")
+      (synopsis "Auto-detect connected displays and load appropriate setup")
       (description "Autorandr wraps around xrandr to help with X11
 multi-screen configuration management.  It allows the user to create profiles
 for various multi-screen setups.  Autorandr automatically detects the profiles
