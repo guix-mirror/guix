@@ -84,6 +84,7 @@
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -213,7 +214,11 @@
        ("readline" ,readline)
        ("linux-pam" ,linux-pam)
        ("libltdl" ,libltdl)
-       ("gdbm" ,gdbm)))
+       ("gdbm" ,gdbm)
+
+       ;; Required for SEARCH CHARSET.
+       ("libiconv" ,libiconv)
+       ("libunistring" ,libunistring)))
     (home-page "https://mailutils.org")
     (synopsis "Utilities and library for reading and serving mail")
     (description
