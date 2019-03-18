@@ -14445,3 +14445,69 @@ repeated areas between contigs.")
      "Velocyto is a library for the analysis of RNA velocity.  Velocyto
 includes a command line tool and an analysis pipeline.")
     (license license:bsd-2)))
+
+(define-public arriba
+  (package
+    (name "arriba")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/suhrig/arriba/releases/"
+                           "download/v" version "/arriba_v" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jx9656ry766vb8z08m1c3im87b0c82qpnjby9wz4kcz8vn87dx2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((htslib (assoc-ref inputs "htslib")))
+               (substitute* "Makefile"
+                 (("-I\\$\\(HTSLIB\\)/htslib")
+                  (string-append "-I" htslib "/include/htslib"))
+                 ((" \\$\\(HTSLIB\\)/libhts.a")
+                  (string-append " " htslib "/lib/libhts.so"))))
+             (substitute* "run_arriba.sh"
+               (("^STAR ") (string-append (which "STAR") " "))
+               (("samtools --version-only")
+                (string-append (which "samtools") " --version-only"))
+               (("samtools index")
+                (string-append (which "samtools") " index"))
+               (("samtools sort")
+                (string-append (which "samtools") " sort")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "arriba" bin)
+               (install-file "run_arriba.sh" bin)
+               (install-file "draw_fusions.R" bin)
+               (wrap-program (string-append bin "/draw_fusions.R")
+                 `("R_LIBS_SITE" ":" prefix (,(getenv "R_LIBS_SITE")))))
+             #t)))))
+    (inputs
+     `(("htslib" ,htslib)
+       ("r-minimal" ,r-minimal)
+       ("r-circlize" ,r-circlize)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("samtools" ,samtools)
+       ("star" ,star)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/suhrig/arriba")
+    (synopsis "Gene fusion detection from RNA-Seq data ")
+    (description
+     "Arriba is a command-line tool for the detection of gene fusions from
+RNA-Seq data.  It was developed for the use in a clinical research setting.
+Therefore, short runtimes and high sensitivity were important design criteria.
+It is based on the fast STAR aligner and the post-alignment runtime is
+typically just around two minutes.  In contrast to many other fusion detection
+tools which build on STAR, Arriba does not require to reduce the
+@code{alignIntronMax} parameter of STAR to detect small deletions.")
+    ;; All code is under the Expat license with the exception of
+    ;; "draw_fusions.R", which is under GPLv3.
+    (license (list license:expat license:gpl3))))
