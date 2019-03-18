@@ -2778,7 +2778,7 @@ algorithm implementations.")
 (define-public python-pyarrow
   (package
     (name "python-pyarrow")
-    (version "0.7.0")
+    (version "0.10.0")
     (source
       (origin
        (method git-fetch)
@@ -2787,14 +2787,14 @@ algorithm implementations.")
              (commit (string-append "apache-arrow-" version))))
        (file-name (git-file-name name version))
        (sha256
-         (base32
-           "1x7sdd8lbs3nfqjql1pcgbkjc19bls56zmgjayshkmablvlc4dy3"))))
+        (base32
+         "04xkp922b8qrrnpvv9ixxnvk7151n1plzx6aqdff6frn9651zvxs"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f ; XXX Test failures related to missing libhdfs, libhdfs3,
-                   ; and "Unsupported numpy type 22".
+     '(#:tests? #f ; XXX There are no tests in the "python" directory
        #:phases
        (modify-phases %standard-phases
+         (delete 'build) ; XXX the build is performed again during the install phase
          (add-after 'unpack 'enter-source-directory
            (lambda _ (chdir "python") #t))
          (add-after 'unpack 'set-env
@@ -2810,6 +2810,7 @@ algorithm implementations.")
      `(("cmake" ,cmake)
        ("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://arrow.apache.org/docs/python/")
     (synopsis "Python bindings for Apache Arrow")
