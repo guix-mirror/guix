@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -65,29 +65,27 @@
   #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
 
-;; We use the latest snapshot of this package because the latest release is
-;; from 2011 and has known vulnerabilities that cannot easily be fixed by
-;; applying patches.
 (define-public dcmtk
   (package
     (name "dcmtk")
-    (version "3.6.1_20170228")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "ftp://dicom.offis.de/pub/dicom/offis/"
-                                  "software/dcmtk/snapshot/dcmtk-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "04cwfx8yrscqcd59mxk2fh6314ckayi9cp68iql5a57pf2pg5qld"))))
-    (build-system gnu-build-system)
+    (version "3.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "ftp://dicom.offis.de/pub/dicom/offis/software/dcmtk/"
+                       "dcmtk" (string-join (string-split version #\.) "")
+                       "/dcmtk-" version ".tar.gz"))
+       (sha256
+        (base32 "1h22z8g0kmvhg8lgkbikyzyphhvxvq6018a00yd6i4g0z9ag6gx9"))))
+    (build-system cmake-build-system)
     (inputs
-     `(("libtiff" ,libtiff)
+     `(("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
-       ("doxygen" ,doxygen)
+       ("libtiff" ,libtiff)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("doxygen" ,doxygen)))           ; for HTML documentation
     (home-page "https://dcmtk.org")
     (synopsis "Libraries and programs implementing parts of the DICOM standard")
     (description "DCMTK is a collection of libraries and applications
