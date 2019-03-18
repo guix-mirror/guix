@@ -1168,7 +1168,7 @@ libproxy only have to specify which proxy to use.")
      (origin
        (method url-fetch)
        (uri (string-append "http://ftp.barfooze.de/pub/sabotage/tarballs/"
-                           name "-" version ".tar.xz"))
+                           "proxychains-ng-" version ".tar.xz"))
        (sha256
         (base32
          "0418fv8hgf43rzrxxlybg49jz2h6w8inndhb6v1184k4cwzjnl3p"))))
