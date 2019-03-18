@@ -896,17 +896,27 @@ Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rna16lyk5aqhnv0dp77wwaplias93f1vw28ad3jmyw6hwkai05v"))))
+         "1rna16lyk5aqhnv0dp77wwaplias93f1vw28ad3jmyw6hwkai05v"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete generated C files.
+                   (for-each delete-file (find-files "." "\\.c"))
+                   #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-cython
            (lambda _ (setenv "USE_CYTHON" "1") #t))
-         (add-after 'unpack 'disable-broken-test
+         (add-after 'unpack 'disable-broken-tests
            (lambda _
              (substitute* "biom/tests/test_cli/test_validate_table.py"
                (("^(.+)def test_invalid_hdf5" m indent)
+                (string-append indent
+                               "@npt.dec.skipif(True, msg='Guix')\n"
+                               m)))
+             (substitute* "biom/tests/test_table.py"
+               (("^(.+)def test_from_hdf5_issue_731" m indent)
                 (string-append indent
                                "@npt.dec.skipif(True, msg='Guix')\n"
                                m)))
