@@ -4810,13 +4810,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.1.1")
+    (version "6.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "0gf9hzzrr1lndbbqi8cwlfasi7l517cy3nbgna88i78lm247rvp0"))))
+                "0lwfk2gq99c653h5f51fs3j37r0gh2pf0p4w5z986nm2mi9z6yn3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -4824,10 +4824,6 @@ deployments.")
                                (string-append "PTHREAD_CC="
                                               (assoc-ref %build-inputs "gcc")
                                               "/bin/gcc")
-                               ;; XXX: Disable PCRE-JIT to work around a segmentation
-                               ;; fault when using jemalloc 5.x:
-                               ;; <https://github.com/varnishcache/varnish-cache/issues/2817>
-                               "--disable-pcre-jit"
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
@@ -4839,6 +4835,8 @@ deployments.")
                (("/bin/sh") (which "sh")))
              (substitute* "bin/varnishd/mgt/mgt_shmem.c"
                (("rm -rf") (string-append (which "rm") " -rf")))
+             (substitute* "bin/varnishtest/vtc_main.c"
+               (("/bin/rm") (which "rm")))
              #t))
          (add-before 'install 'patch-Makefile
            (lambda _
