@@ -1193,7 +1193,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.90.1")
+    (version "4.92")
     (source
      (origin
        (method url-fetch)
@@ -1202,11 +1202,10 @@ delivery.")
                   (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
-        (base32
-         "1w6blvvrd87c649j8xpag034md2w1ib0db9c4ijqbzc5dh2i1xfq"))))
+        (base32 "127spqn009wa6irp6r1k7a24r8vdwb6mf0raamxn8lbxsnrwy7sl"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bdb" ,bdb)
+     `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
        ("gnutls" ,gnutls)
        ("gzip" ,gzip)
        ("bzip2" ,bzip2)
@@ -1242,7 +1241,7 @@ delivery.")
                  (("(EXIM_USER=).*" all var)
                   (string-append var "nobody\n"))
                  (("(FIXED_NEVER_USERS=).*" all var)
-                  (string-append var "\n"))  ;XXX no root in build environment
+                  (string-append var "\n")) ; XXX no root in build environment
                  (("(COMPRESS_COMMAND=).*" all var)
                   (string-append var gzip "/bin/gzip\n"))
                  (("(ZCAT_COMMAND=).*" all var)
