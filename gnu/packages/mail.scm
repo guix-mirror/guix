@@ -619,14 +619,14 @@ repository and Maildir/IMAP as LOCAL repository.")
 (define-public emacs-mew
   (package
     (name "emacs-mew")
-    (version "6.7")
+    (version "6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mew.org/Release/mew-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03fzky2kz73vgx4cbps2psbbnrgqgkk5q7jwfldisymkzr9iz03y"))))
+                "0ixzyq33l6j34410kqav3lwn2wx171zvqd3irvns2jvhrbww8i6g"))))
     (native-inputs
      `(("emacs" ,emacs)))
     (propagated-inputs
