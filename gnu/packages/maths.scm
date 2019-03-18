@@ -1637,7 +1637,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.10.3")
+    (version "3.10.4")
     (source
      (origin
       (method url-fetch)
@@ -1645,9 +1645,9 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "10p9ap1rp6k8k2g8zdc505kdlsc3976fjymyp393sccjapm50dph"))))
-    (outputs '("out"                    ;libraries and headers
-               "examples"))             ;~30MiB of examples
+       (base32 "0fk16944zh3473ra198kdkxdn08rq7b6ap838hxy1mh1i0hb488r"))))
+    (outputs '("out"                    ; libraries and headers
+               "examples"))             ; ~30MiB of examples
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1660,7 +1660,7 @@ September 2004}")
        ))
     (arguments
      `(#:test-target "test"
-       #:parallel-build? #f             ;build is parallel by default
+       #:parallel-build? #f             ; build is parallel by default
        #:configure-flags
        `("--with-mpi=0"
          "--with-openmp=1"
