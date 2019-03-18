@@ -211,7 +211,7 @@ identi.ca and status.net).")
 (define-public bitlbee-discord
   (package
     (name "bitlbee-discord")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -220,7 +220,7 @@ identi.ca and status.net).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n3xw5mcmg7224r09gbm39bd6h2158dwl6jx21290636b4345f4c"))))
+        (base32 "02pigk2vbz0jdz11f96sygdvp1j762yjn62h124fkcsc070g7a2f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -243,7 +243,7 @@ identi.ca and status.net).")
                      ("automake" ,automake)
                      ("texinfo" ,texinfo)
                      ("libtool" ,libtool)
-                     ("bitlbee" ,bitlbee)         ;needs bitlbee headers
+                     ("bitlbee" ,bitlbee) ; needs bitlbee headers
                      ("bash" ,bash)))
     (synopsis "Discord plugin for Bitlbee")
     (description "Bitlbee-discord is a plugin for Bitlbee witch provides
