@@ -28,7 +28,7 @@
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -2709,7 +2709,7 @@ Monitor read/write activity on a mongo server
 (define-public apache-arrow
   (package
     (name "apache-arrow")
-    (version "0.7.0")
+    (version "0.10.0")
     (source
       (origin
         (method git-fetch)
@@ -2718,8 +2718,8 @@ Monitor read/write activity on a mongo server
                (commit (string-append "apache-arrow-" version))))
         (file-name (git-file-name name version))
         (sha256
-          (base32
-            "1x7sdd8lbs3nfqjql1pcgbkjc19bls56zmgjayshkmablvlc4dy3"))))
+         (base32
+          "04xkp922b8qrrnpvv9ixxnvk7151n1plzx6aqdff6frn9651zvxs"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -2763,9 +2763,7 @@ Monitor read/write activity on a mongo server
        ("rapidjson" ,rapidjson)
        ("brotli" ,google-brotli)
        ("flatbuffers" ,flatbuffers)
-       ;; Arrow is not yet compatible with jemalloc >= 5:
-       ;; https://issues.apache.org/jira/browse/ARROW-1141
-       ("jemalloc" ,jemalloc-4.5.0)
+       ("jemalloc" ,jemalloc)
        ("python-3" ,python)
        ("python-numpy" ,python-numpy)))
     (home-page "https://arrow.apache.org/")
