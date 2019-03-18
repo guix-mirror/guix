@@ -402,9 +402,9 @@ printing and other features typical of a source code editor.")
    (version "3.24.8")
    (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/gtksourceview/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "gtksourceview-" version ".tar.xz"))
              (sha256
               (base32
                "1zinqid62zjcsq7vy1y4mq1qh3hzd3zj7p8np7g0bdqd37zvi6qy"))))
