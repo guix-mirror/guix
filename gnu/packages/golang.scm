@@ -226,7 +226,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.11.5")
+    (version "1.11.6")
     (source
      (origin
        (method url-fetch)
@@ -234,23 +234,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "0gllmbjvp12iszwils8id78mvjxwviwf98lh2gdkb236n4mz07mw"))))
+         "0cz1sdhxf9283p1p4jxb020pym0ncd0qlfh36r3hkv6bbm1a2vd9"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
         `(modify-phases ,phases
-           ;; XXX Work around the Go 1.11.5 tarbomb.
-           ;; <https://github.com/golang/go/issues/29906>
-           (add-after 'unpack 'tarbomb-workaround
-             (lambda _
-               (chdir "..")
-               (delete-file-recursively "gocache")
-               (delete-file-recursively "tmp")
-               #t))
-           (replace 'chdir
-             (lambda _
-               (chdir "go/src")
-               #t))
            (replace 'prebuild
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
