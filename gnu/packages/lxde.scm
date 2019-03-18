@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ison111 <ison111@protonmail.com>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -213,7 +213,7 @@ speed up the access to freedesktop.org defined application menus.")
 (define-public pcmanfm
   (package
     (name "pcmanfm")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -221,7 +221,7 @@ speed up the access to freedesktop.org defined application menus.")
                                   "%29/PCManFM/pcmanfm-" version ".tar.xz"))
               (sha256
                (base32
-                "1ywgfyklms5hqkapsbjps4kyx20ac0d1qk16ww74yagkyfdkwsas"))))
+                "0mb8hg76x1z0szdyl0w7jpz0bdblc6a29is1vvnh79z37qxh8138"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+"   ,gtk+-2)
               ("gvfs"   ,gvfs)          ; for trash and mount support
