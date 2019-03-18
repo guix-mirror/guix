@@ -292,6 +292,7 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.0-i686.conf	\
   gnu/packages/aux-files/linux-libre/5.0-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.0-arm-veyron.conf       \
   gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.19-x86_64.conf	\

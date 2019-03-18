@@ -254,6 +254,15 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (file (string-append "linux-libre/" name)))
     (search-auxiliary-file file)))
 
+;; FIXME: merge into kernel-config
+(define* (kernel-config-veyron arch #:key variant)
+  "Return the absolute file name of the Linux-Libre build configuration file
+for ARCH and optionally VARIANT, or #f if there is no such configuration."
+  (let* ((name (string-append (if variant (string-append variant "-") "")
+                              (if (string=? "i386" arch) "i686" arch) "-veyron.conf"))
+         (file (string-append "linux-libre/" name)))
+    (search-auxiliary-file file)))
+
 (define %default-extra-linux-options
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
     ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
@@ -471,6 +480,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-veyron
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-5.0-patches
+                    #:configuration-file kernel-config-veyron
+                    #:extra-version "arm-veyron"))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre %linux-libre-4.19-version
