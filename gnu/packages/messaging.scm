@@ -212,15 +212,15 @@ identi.ca and status.net).")
   (package
     (name "bitlbee-discord")
     (version "0.4.1")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/sm00th/bitlbee-discord/"
-                              "archive/" version ".tar.gz"))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1bwqxlg6fwj3749y7w69n9jwsdzf5nl9xqiszbpv9k8x1422i1y1"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sm00th/bitlbee-discord.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n3xw5mcmg7224r09gbm39bd6h2158dwl6jx21290636b4345f4c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
