@@ -1482,15 +1482,14 @@ write simple, representation-independent mail handling code.")
 (define-public perl-email-address
   (package
     (name "perl-email-address")
-    (version "1.909")
+    (version "1.912")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Address-" version ".tar.gz"))
        (sha256
-        (base32
-         "0l7x6sl06j9ffgfz5f9vgms2b5axd4cgp5fj03ivb3kia4km6b3g"))))
+        (base32 "1vzr0vx4zsw4zbc9xdffc31wnkc1raqmyfiyws06fbyck197i8qg"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Email-Address")
     (synopsis "Email address parsing and creation")
