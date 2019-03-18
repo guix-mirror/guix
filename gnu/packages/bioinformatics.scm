@@ -635,7 +635,7 @@ cpp.find_library('hdf5_cpp', dirs : '~a'), "
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "")
+    (home-page "https://github.com/PacificBiosciences/blasr")
     (synopsis "PacBio long read aligner")
     (description
      "Blasr is a genomic sequence aligner for processing PacBio long reads.")
