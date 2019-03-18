@@ -800,17 +800,31 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public bwm-ng
   (package
     (name "bwm-ng")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://www.gropp.org/bwm-ng/bwm-ng-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vgropp/bwm-ng.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1w0dwpjjm9pqi613i8glxrgca3rdyqyp3xydzagzr5ndc34z6z02"))))
+        (base32 "0k906wb4pw3dcqpcwnni78lahzi3bva483f8c17sjykic7as4y5n"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-premature-./configure
+           (lambda _
+             (substitute* "autogen.sh"
+               (("\\$srcdir/configure")
+                "true"))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("ncurses" ,ncurses)))
     (synopsis "Console based live network and disk I/O bandwidth monitor")
     (description "Bandwidth Monitor NG is a small and simple console based
 live network and disk I/O bandwidth monitor.")
