@@ -450,9 +450,15 @@ vision algorithms.  It can be used to do things like:
        ("expat" ,expat)
        ("hdf5" ,hdf5)))
     (home-page "https://libvips.github.io/libvips/")
-    (synopsis "Image processing system")
+    (synopsis "Multithreaded image processing system with low memory needs")
     (description
-     "vips is a demand-driven, horizontally threaded image processing library.")
+     "VIPS is a demand-driven, horizontally threaded image processing library.
+It's particularly good at processing large images, working with colour,
+scientific analysis, and general research & development.
+
+Compared to most image processing libraries VIPS needs little RAM and runs
+quickly, especially on machines with more than one CPU core.  This is primarily
+due to its architecture which automatically parallelises the image workflows.")
     (license license:lgpl2.1+)))
 
 (define-public nip2
