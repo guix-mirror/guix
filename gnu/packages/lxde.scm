@@ -216,9 +216,9 @@ speed up the access to freedesktop.org defined application menus.")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/"
+              (uri (string-append "mirror://sourceforge/pcmanfm/"
                                   "PCManFM%20%2B%20Libfm%20%28tarball%20release"
-                                  "%29/PCManFM/" name "-" version ".tar.xz"))
+                                  "%29/PCManFM/pcmanfm-" version ".tar.xz"))
               (sha256
                (base32
                 "1ywgfyklms5hqkapsbjps4kyx20ac0d1qk16ww74yagkyfdkwsas"))))
