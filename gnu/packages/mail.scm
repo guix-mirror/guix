@@ -1728,15 +1728,13 @@ compatibility shims for the @command{sendmail}, @command{mailq}, and
 (define-public fdm
   (package
     (name "fdm")
-    (version "1.9")
+    (version "2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/nicm/fdm/releases/download/"
-                                 version "/fdm-"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+                                 version "/fdm-" version ".tar.gz"))
              (sha256
-               (base32 "054rscijahiza5f9qha79rg3siji3bk5mk10f8c2vqx7m4w6qh8n"))))
+               (base32 "196fs1z8y7p12wmqn1bylzz94szl58yv2aby3p30nmwjnyv8rch6"))))
     (build-system gnu-build-system)
     (inputs
      `(("tdb" ,tdb)
