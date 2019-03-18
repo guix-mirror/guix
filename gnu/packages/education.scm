@@ -309,18 +309,17 @@ to open the application in a web browser, for offline usage.")
 (define-public toutenclic
   (package
     (name "toutenclic")
-    (version "6.12")
+    (version "6.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.bipede.fr/downloads/logiciels/"
                            "ToutEnClic-" version ".tar.xz"))
        (sha256
-        (base32
-         "1369m76fxmi2hgc2bbsq2jchcbh8q0qzml7600pqn8xiqrybvg9g"))))
+        (base32 "1pjprdzc4bn7ckbg4469691ph6yjjr8f022hb4gi4lacs4h71wnd"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f                      ;no test
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'build)
