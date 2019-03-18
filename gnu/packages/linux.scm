@@ -5213,7 +5213,7 @@ have to construct the archives directly, without using the archiver.")
              (with-directory-excursion "inputattach"
                (invoke (string-append (assoc-ref inputs "gcc")
                                       "/bin/gcc")
-                       "-o" "inputattach" "inputattach.c"))
+                       "-O2" "-o" "inputattach" "inputattach.c"))
              #t))
          (delete 'check)
          (replace 'install
