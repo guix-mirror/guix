@@ -36,7 +36,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
-;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
@@ -13742,6 +13742,47 @@ Transient implements a similar abstraction involving a prefix command, infix
 arguments and suffix commands.  We could call this abstraction a \"transient
 command\", but because it always involves at least two commands (a prefix and
 a suffix) we prefer to call it just a \"transient\".")
+      (license license:gpl3+))))
+
+(define-public emacs-semantic-refactor
+  ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
+  ;; commits since then.
+  (let ((commit "6f2c97d17fb70f4ca2112f5a2b99a8ec162004f5"))
+    (package
+      (name "emacs-semantic-refactor")
+      (version (git-version "0.5" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tuhdo/semantic-refactor")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1lyz3zjkx2csh0xdy1zpx8s32qp1p3sig57mwi9xhgpqjyf0axmb"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/tuhdo/semantic-refactor")
+      (synopsis "Refactoring tool for C/C++ and Lisp dialects")
+      (description "This package provides a refactoring tool based on the
+Emacs Semantic parser framework.  For C and C++ it supports operations such as:
+
+@enumerate
+@item Generating class implementations
+@item Generating function prototypes
+@item Converting functions to function pointers
+@item Moving semantic units
+@item etc...
+@end enumerate
+
+For Lisp dialects like Clojure, ELisp, and Scheme, it supports operations such
+as:
+
+@enumerate
+@item Formatting the whole buffer
+@item Converting sexpressions to one or multiple lines
+@item etc...
+@end enumerate\n")
       (license license:gpl3+))))
 
 (define-public emacs-nhexl-mode
