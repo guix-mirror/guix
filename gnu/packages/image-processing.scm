@@ -59,6 +59,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -80,9 +81,13 @@
         (base32 "1h22z8g0kmvhg8lgkbikyzyphhvxvq6018a00yd6i4g0z9ag6gx9"))))
     (build-system cmake-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(;; Our ICU is too recent: “error: ‘UChar’ does not name a type“.
+       ;; ("icu4c" ,icu4c)
+       ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
      `(("doxygen" ,doxygen)))           ; for HTML documentation
