@@ -596,6 +596,51 @@ PacBio genomic sequences.  This library contains three sub-libraries: pbdata,
 hdf and alignment.")
     (license license:bsd-3)))
 
+(define-public blasr
+  (package
+    (name "blasr")
+    (version "5.3.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PacificBiosciences/blasr.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1skgy2mvz8gsgfh1gc2nfgwvpyzb1hpmp2cf2773h5wsj8nw22kl"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-with-hdf5
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((hdf5 (assoc-ref inputs "hdf5")))
+               (substitute* "meson.build"
+                 (("blasr_deps = \\[" m)
+                  (string-append
+                   m
+                   (format #f "cpp.find_library('hdf5', dirs : '~a'), \
+cpp.find_library('hdf5_cpp', dirs : '~a'), "
+                           hdf5 hdf5)))))
+             #t)))
+       ;; Tests require "cram" executable, which is not packaged.
+       #:tests? #f
+       #:configure-flags '("-Dtests=false")))
+    (inputs
+     `(("boost" ,boost)
+       ("blasr-libcpp" ,blasr-libcpp)
+       ("hdf5" ,hdf5)
+       ("pbbam" ,pbbam)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "")
+    (synopsis "PacBio long read aligner")
+    (description
+     "Blasr is a genomic sequence aligner for processing PacBio long reads.")
+    (license license:bsd-3)))
+
 (define-public ribotaper
   (package
     (name "ribotaper")
