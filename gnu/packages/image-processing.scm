@@ -88,7 +88,7 @@
        ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)))
-    (home-page "http://dcmtk.org")
+    (home-page "https://dcmtk.org")
     (synopsis "Libraries and programs implementing parts of the DICOM standard")
     (description "DCMTK is a collection of libraries and applications
 implementing large parts the DICOM standard.  It includes software for
