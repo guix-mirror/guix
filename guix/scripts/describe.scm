@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -85,7 +85,9 @@ Display information about the channels currently in use.\n"))
         (format #t "~%GUIX_PACKAGE_PATH=\"~a\"~%" string))
        ('channels
         (format #t (G_ "~%;; warning: GUIX_PACKAGE_PATH=\"~a\"~%")
-                string))))))
+                string))
+       (_
+        (warning (G_ "'GUIX_PACKAGE_PATH' is set but it is not captured~%")))))))
 
 (define (channel->sexp channel)
   `(channel
