@@ -1163,18 +1163,17 @@ libproxy only have to specify which proxy to use.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.13")
+    (version "4.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://ftp.barfooze.de/pub/sabotage/tarballs/"
                            "proxychains-ng-" version ".tar.xz"))
        (sha256
-        (base32
-         "0418fv8hgf43rzrxxlybg49jz2h6w8inndhb6v1184k4cwzjnl3p"))))
+        (base32 "1bmhfbl1bzc87vl0xwr1wh5xvslfyc41nl2hqzhbj258p0sy004x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
+     `(#:tests? #f                      ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-configure-script
