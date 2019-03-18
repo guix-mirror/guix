@@ -490,7 +490,7 @@ libraries, like OpenSSL.")
 (define-public ghc-x509-store
   (package
     (name "ghc-x509-store")
-    (version "1.6.6")
+    (version "1.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -498,7 +498,7 @@ libraries, like OpenSSL.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dbndqmnmyixxc7308nyq3zlkhz9dff4rbcw2a49c77rbicny9va"))))
+                "1y8yyr1i95jkllg8k0z54k5v4vachp848clc07m33xpxidn3b1lp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-pem" ,ghc-pem)
