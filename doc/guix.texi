@@ -13352,7 +13352,7 @@ type @code{<sddm-configuration>}.
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} xorg-start-command [#:guile] @
+@deffn {Scheme Procedure} xorg-start-command @
   [#:modules %default-xorg-modules] @
   [#:fonts %default-xorg-fonts] @
   [#:configuration-file (xorg-configuration-file @dots{})] @

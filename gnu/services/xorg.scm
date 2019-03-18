@@ -261,7 +261,6 @@ in @var{modules}."
                        #t))))
 
 (define* (xorg-wrapper #:key
-                       (guile (canonical-package guile-2.0))
                        (modules %default-xorg-modules)
                        (configuration-file (xorg-configuration-file
                                             #:modules modules))
@@ -287,7 +286,6 @@ in place of @code{/usr/bin/X}."
   (program-file "X-wrapper" exp))
 
 (define* (xorg-start-command #:key
-                             (guile (canonical-package guile-2.0))
                              (modules %default-xorg-modules)
                              (fonts %default-xorg-fonts)
                              (configuration-file
@@ -300,8 +298,7 @@ packages, and @var{fonts}, a list of X font directories, are available.  See
 @code{xorg-wrapper} for more details on the arguments.  The result should be
 used in place of @code{startx}."
   (define X
-    (xorg-wrapper #:guile guile
-                  #:configuration-file configuration-file
+    (xorg-wrapper #:configuration-file configuration-file
                   #:modules modules
                   #:xorg-server xorg-server))
   (define exp
@@ -312,9 +309,7 @@ used in place of @code{startx}."
 
   (program-file "startx" exp))
 
-(define* (xinitrc #:key
-                  (guile (canonical-package guile-2.0))
-                  fallback-session)
+(define* (xinitrc #:key fallback-session)
   "Return a system-wide xinitrc script that starts the specified X session,
 which should be passed to this script as the first argument.  If not, the
 @var{fallback-session} will be used or, if @var{fallback-session} is false, a
