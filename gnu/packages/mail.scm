@@ -1935,7 +1935,7 @@ converts them to maildir format directories.")
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
-                           name "-" version ".tar.xz"))
+                           "mpop-" version ".tar.xz"))
        (sha256
         (base32
          "1rx5mhgqkm7swbynrhbsz32v85h0rydb4kqfgfs9jrznd9d14m2d"))))
