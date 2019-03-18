@@ -1491,7 +1491,7 @@ reverb effects.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.7")
+    (version "0.8.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1500,10 +1500,10 @@ reverb effects.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r2i8cp0gfzqp6scrxwwf7pn7lk2j9kmf8cx7bqjvgfyn251dw3j"))))
+                "15dr1nyj69wc9jnjq5z8ril90a3c0mcrii4zjyz0z3h7dhia3382"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:tests? #f                      ; no "check" target
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "FONTFILE="
@@ -1519,7 +1519,7 @@ reverb effects.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-CC-variable
-                     (lambda _ (setenv "CC" "gcc") #t))
+           (lambda _ (setenv "CC" "gcc") #t))
          (delete 'configure))))
     (inputs
      `(("jack" ,jack-1)
