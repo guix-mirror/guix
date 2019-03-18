@@ -290,14 +290,14 @@ directory structure and file attributes.")
 (define (make-lua-sec name lua)
   (package
     (name name)
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brunoos/luasec/archive/"
                                   "luasec-" version ".tar.gz"))
               (sha256
                (base32
-                "0pgd1anzznl4s0h16wg8dlw9mgdb9h52drlcki6sbf5y31fa7wyf"))))
+                "0c9sdz3gvrsbvvdqzpnsappgwl40hfljlpfybqis6wia3mdyjxi1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
