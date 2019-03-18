@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -357,7 +357,7 @@ are implemented as FFI bindings to efficient code from zlib.")
 (define-public ghc-entropy
   (package
     (name "ghc-entropy")
-    (version "0.4.1.1")
+    (version "0.4.1.4")
     (source
      (origin
        (method url-fetch)
@@ -365,8 +365,7 @@ are implemented as FFI bindings to efficient code from zlib.")
                            "entropy-" version "/"
                            "entropy-" version ".tar.gz"))
        (sha256
-        (base32
-         "1ahz5g148l6sax3dy505na2513i99c7bxix68jja5kbx4f271zcf"))))
+        (base32 "1fgf47l9klwn1xssbcbq6by651vikd8hlfxhiwd5bqzxr1jnlgrf"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/TomMD/entropy")
     (synopsis "Provides platform independent entropy source for Haskell")
