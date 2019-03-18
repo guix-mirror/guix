@@ -13352,98 +13352,52 @@ type @code{<sddm-configuration>}.
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} xorg-start-command @
-  [#:modules %default-xorg-modules] @
-  [#:fonts %default-xorg-fonts] @
-  [#:configuration-file (xorg-configuration-file @dots{})] @
-  [#:xorg-server @var{xorg-server}]
-  [#:xserver-arguments '("-nolisten" "tcp")]
-Return a @code{startx} script in which @var{modules}, a list of X module
-packages, and @var{fonts}, a list of X font directories, are available.  See
-@code{xorg-wrapper} for more details on the arguments.  The result should be
-used in place of @code{startx}.
+@cindex Xorg, configuration
+@deftp {Data Type} xorg-configuration
+This data type represents the configuration of the Xorg graphical display
+server.  Note that there is not Xorg service; instead, the X server is started
+by a ``display manager'' such as GDM, SDDM, and SLiM.  Thus, the configuration
+of these display managers aggregates an @code{xorg-configuration} record.
+
+@table @asis
+@item @code{modules} (default: @code{%default-xorg-modules})
+This is a list of @dfn{module packages} loaded by the Xorg
+server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
+
+@item @code{fonts} (default: @code{%default-xorg-fonts})
+This is a list of font directories to add to the server's @dfn{font path}.
+
+@item @code{drivers} (default: @code{'()})
+This must be either the empty list, in which case Xorg chooses a graphics
+driver automatically, or a list of driver names that will be tried in this
+order---e.g., @code{("modesetting" "vesa")}.
+
+@item @code{resolutions} (default: @code{'()})
+When @code{resolutions} is the empty list, Xorg chooses an appropriate screen
+resolution.  Otherwise, it must be a list of resolutions---e.g., @code{((1024
+768) (640 480))}.
+
+@item @code{extra-config} (default: @code{'()})
+This is a list of strings or objects appended to the configuration file.  It
+is used to pass extra text to be added verbatim to the configuration file.
+
+@item @code{server} (default: @code{xorg-server})
+This is the package providing the Xorg server.
+
+@item @code{server-arguments} (default: @code{%default-xorg-server-arguments})
+This is the list of command-line arguments to pass to the X server.  The
+default is @code{-nolisten tcp}.
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} xorg-start-command [@var{config}]
+Return a @code{startx} script in which the modules, fonts, etc. specified
+in @var{config}, are available.  The result should be used in place of
+@code{startx}.
 
 Usually the X server is started by a login manager.
 @end deffn
 
-@cindex @code{-listen tcp}, for X11.
-This procedure is useful to override command line options for the X server,
-such as having it listen to over TCP:
-
-@example
-(operating-system
-  ...
-  (services
-    (modify-services %desktop-services
-      (slim-service-type config =>
-        (slim-configuration
-          (inherit config)
-          (startx (xorg-start-command
-                   #:xserver-arguments '("-listen" "tcp"))))))))
-@end example
-
-@deffn {Scheme Procedure} xorg-configuration-file @
-  [#:modules %default-xorg-modules] @
-  [#:fonts %default-xorg-fonts] @
-  [#:drivers '()] [#:resolutions '()] [#:extra-config '()]
-Return a configuration file for the Xorg server containing search paths for
-all the common drivers.
-
-@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
-server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
-@var{fonts} must be a list of font directories to add to the server's
-@dfn{font path}.
-
-@var{drivers} must be either the empty list, in which case Xorg chooses a
-graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{("modesetting" "vesa")}.
-
-Likewise, when @var{resolutions} is the empty list, Xorg chooses an
-appropriate screen resolution; otherwise, it must be a list of
-resolutions---e.g., @code{((1024 768) (640 480))}.
-
-Last, @var{extra-config} is a list of strings or objects appended to the
-configuration file.  It is used to pass extra text to be
-added verbatim to the configuration file.
-
-@cindex keymap
-@cindex keyboard layout
-This procedure is especially useful to configure a different keyboard layout
-than the default US keymap.  For instance, to use the ``bépo'' keymap by
-default on the display manager:
-
-@example
-(define bepo-evdev
-  "Section \"InputClass\"
-        Identifier \"evdev keyboard catchall\"
-        Driver \"evdev\"
-        MatchIsKeyboard \"on\"
-        Option \"xkb_layout\" \"fr\"
-        Option \"xkb_variant\" \"bepo\"
-EndSection")
-
-(operating-system
-  ...
-  (services
-    (modify-services %desktop-services
-      (slim-service-type config =>
-        (slim-configuration
-          (inherit config)
-          (startx (xorg-start-command
-                   #:configuration-file
-                   (xorg-configuration-file
-                     #:extra-config
-                     (list bepo-evdev)))))))))
-@end example
-
-The @code{MatchIsKeyboard} line specifies that we only apply the configuration
-to keyboards.  Without this line, other devices such as touchpad may not work
-correctly because they will be attached to the wrong driver.  In this example,
-the user typically used @code{setxkbmap fr bepo} to set their favorite keymap
-once logged in.  The first argument corresponds to the layout, while the second
-argument corresponds to the variant.  The @code{xkb_variant} line can be omitted
-to select the default variant.
-@end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{program}]
 Add @var{package}, a package for a screen locker or screen saver whose

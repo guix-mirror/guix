@@ -48,7 +48,16 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (xorg-configuration-file
+  #:export (xorg-configuration
+            xorg-configuration?
+            xorg-configuration-modules
+            xorg-configuration-fonts
+            xorg-configuration-drivers
+            xorg-configuration-resolutions
+            xorg-configuration-extra-config
+            xorg-configuration-server
+            xorg-configuration-server-arguments
+
             %default-xorg-modules
             %default-xorg-fonts
             xorg-wrapper
@@ -122,33 +131,36 @@
                      "/share/fonts/X11/misc")
         (file-append font-adobe75dpi "/share/fonts/X11/75dpi")))
 
-(define* (xorg-configuration-file #:key
-                                  (modules %default-xorg-modules)
-                                  (fonts %default-xorg-fonts)
-                                  (drivers '()) (resolutions '())
-                                  (extra-config '()))
-  "Return a configuration file for the Xorg server containing search paths for
-all the common drivers.
+(define %default-xorg-server-arguments
+  ;; Default command-line arguments for X.
+  '("-nolisten" "tcp"))
 
-@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
-server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
-@var{fonts} must be a list of font directories to add to the server's
-@dfn{font path}.
+;; Configuration of an Xorg server.
+(define-record-type* <xorg-configuration>
+  xorg-configuration make-xorg-configuration
+  xorg-configuration?
+  (modules          xorg-configuration-modules    ;list of packages
+                    (default %default-xorg-modules))
+  (fonts            xorg-configuration-fonts      ;list of packges
+                    (default %default-xorg-fonts))
+  (drivers          xorg-configuration-drivers    ;list of strings
+                    (default '()))
+  (resolutions      xorg-configuration-resolutions ;list of tuples
+                    (default '()))
+  (extra-config     xorg-configuration-extra-config ;list of strings
+                    (default '()))
+  (server           xorg-configuration-server     ;package
+                    (default xorg-server))
+  (server-arguments xorg-configuration-server-arguments ;list of strings
+                    (default %default-xorg-server-arguments)))
 
-@var{drivers} must be either the empty list, in which case Xorg chooses a
-graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{(\"modesetting\" \"vesa\")}.
-
-Likewise, when @var{resolutions} is the empty list, Xorg chooses an
-appropriate screen resolution; otherwise, it must be a list of
-resolutions---e.g., @code{((1024 768) (640 480))}.
-
-Last, @var{extra-config} is a list of strings or objects appended to the
-configuration file.  It is used to pass extra text to be
-added verbatim to the configuration file."
+(define (xorg-configuration->file config)
+  "Compute an Xorg configuration file corresponding to CONFIG, an
+<xorg-configuration> record."
   (define all-modules
     ;; 'xorg-server' provides 'fbdevhw.so' etc.
-    (append modules (list xorg-server)))
+    (append (xorg-configuration-modules config)
+            (list xorg-server)))
 
   (define build
     #~(begin
@@ -159,7 +171,7 @@ added verbatim to the configuration file."
         (call-with-output-file #$output
           (lambda (port)
             (define drivers
-              '#$drivers)
+              '#$(xorg-configuration-drivers config))
 
             (define (device-section driver)
               (string-append "
@@ -201,7 +213,7 @@ EndSection"))
             (display "Section \"Files\"\n" port)
             (for-each (lambda (font)
                         (format port "  FontPath \"~a\"~%" font))
-                      '#$fonts)
+                      '#$(xorg-configuration-fonts config))
             (for-each (lambda (module)
                         (format port
                                 "  ModulePath \"~a\"~%"
@@ -221,7 +233,8 @@ EndSection\n" port)
                      port)
             (newline port)
             (display (string-join
-                      (map (cut screen-section <> '#$resolutions)
+                      (map (cut screen-section <>
+                                '#$(xorg-configuration-resolutions config))
                            drivers)
                       "\n")
                      port)
@@ -229,10 +242,9 @@ EndSection\n" port)
 
             (for-each (lambda (config)
                         (display config port))
-                      '#$extra-config)))))
+                      '#$(xorg-configuration-extra-config config))))))
 
   (computed-file "xserver.conf" build))
-
 
 (define (xorg-configuration-directory modules)
   "Return a directory that contains the @code{.conf} files for X.org that
@@ -260,51 +272,38 @@ in @var{modules}."
                                  files)
                        #t))))
 
-(define* (xorg-wrapper #:key
-                       (modules %default-xorg-modules)
-                       (configuration-file (xorg-configuration-file
-                                            #:modules modules))
-                       (xorg-server xorg-server))
-  "Return a derivation that builds a @var{guile} script to start the X server
-from @var{xorg-server}.  @var{configuration-file} is the server configuration
-file or a derivation that builds it; when omitted, the result of
-@code{xorg-configuration-file} is used.  The resulting script should be used
-in place of @code{/usr/bin/X}."
+(define* (xorg-wrapper #:optional (config (xorg-configuration)))
+  "Return a derivation that builds a script to start the X server with the
+given @var{config}.  The resulting script should be used in place of
+@code{/usr/bin/X}."
   (define exp
     ;; Write a small wrapper around the X server.
     #~(begin
         (setenv "XORG_DRI_DRIVER_PATH" (string-append #$mesa "/lib/dri"))
         (setenv "XKB_BINDIR" (string-append #$xkbcomp "/bin"))
 
-        (let ((X (string-append #$xorg-server "/bin/X")))
+        (let ((X (string-append #$(xorg-configuration-server config) "/bin/X")))
           (apply execl X X
                  "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
-                 "-config" #$configuration-file
-                 "-configdir" #$(xorg-configuration-directory modules)
+                 "-config" #$(xorg-configuration->file config)
+                 "-configdir" #$(xorg-configuration-directory
+                                 (xorg-configuration-modules config))
                  (cdr (command-line))))))
 
   (program-file "X-wrapper" exp))
 
-(define* (xorg-start-command #:key
-                             (modules %default-xorg-modules)
-                             (fonts %default-xorg-fonts)
-                             (configuration-file
-                              (xorg-configuration-file #:modules modules
-                                                       #:fonts fonts))
-                             (xorg-server xorg-server)
-                             (xserver-arguments '("-nolisten" "tcp")))
-  "Return a @code{startx} script in which @var{modules}, a list of X module
-packages, and @var{fonts}, a list of X font directories, are available.  See
-@code{xorg-wrapper} for more details on the arguments.  The result should be
-used in place of @code{startx}."
+(define* (xorg-start-command #:optional (config (xorg-configuration)))
+  "Return a @code{startx} script in which the modules, fonts, etc. specified
+in @var{config}, are available.  The result should be used in place of
+@code{startx}."
   (define X
-    (xorg-wrapper #:configuration-file configuration-file
-                  #:modules modules
-                  #:xorg-server xorg-server))
+    (xorg-wrapper config))
+
   (define exp
     ;; Write a small wrapper around the X server.
     #~(apply execl #$X #$X ;; Second #$X is for argv[0].
-             "-logverbose" "-verbose" "-terminate" #$@xserver-arguments
+             "-logverbose" "-verbose" "-terminate"
+             #$@(xorg-configuration-server-arguments config)
               (cdr (command-line))))
 
   (program-file "startx" exp))
