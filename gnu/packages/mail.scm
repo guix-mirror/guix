@@ -1841,45 +1841,43 @@ Khard can also be used from within the email client @command{mutt}.")
     (license gpl3+)))
 
 (define-public perl-mail-spf
- (package
-  (name "perl-mail-spf")
-  (version "v2.9.0")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/J/JM/JMEHNLE/mail-spf/Mail-SPF-"
+  (package
+    (name "perl-mail-spf")
+    (version "2.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JM/JMEHNLE/mail-spf/Mail-SPF-v"
              version
              ".tar.gz"))
-      (sha256
-        (base32
-          "0qk1rfgfm5drj4iyniiabrasrpqv570vzhgz66lwgb67y4amkjv1"))))
-  (build-system perl-build-system)
-  (native-inputs
-    `(("perl-module-build" ,perl-module-build)
-      ("perl-net-dns-resolver-programmable"
-       ,perl-net-dns-resolver-programmable)))
-  (arguments
-   `(#:phases (modify-phases %standard-phases
-       (add-before 'configure 'modify-Build.PL
-         (lambda* (#:key outputs #:allow-other-keys)
-           (substitute* "Build.PL"
-             (("'/usr/sbin'") (string-append "'"
-                                             (assoc-ref outputs "out")
-                                             "/sbin'")))
+       (sha256
+        (base32 "0qk1rfgfm5drj4iyniiabrasrpqv570vzhgz66lwgb67y4amkjv1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-net-dns-resolver-programmable"
+        ,perl-net-dns-resolver-programmable)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'modify-Build.PL
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Build.PL"
+               (("'/usr/sbin'") (string-append "'"
+                                               (assoc-ref outputs "out")
+                                               "/sbin'")))
              #t)))))
-  (inputs
-    `(("perl-error" ,perl-error)
-      ("perl-net-dns" ,perl-net-dns)
-      ("perl-netaddr-ip" ,perl-netaddr-ip)
-      ("perl-uri" ,perl-uri)))
-  (home-page
-    "https://metacpan.org/release/Mail-SPF")
-  (synopsis
-    "Perl implementation of Sender Policy Framework")
-  (description "Mail::SPF is the Sender Policy Framework implemented
+    (inputs
+     `(("perl-error" ,perl-error)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-netaddr-ip" ,perl-netaddr-ip)
+       ("perl-uri" ,perl-uri)))
+    (home-page "https://metacpan.org/release/Mail-SPF")
+    (synopsis "Perl implementation of Sender Policy Framework")
+    (description "Mail::SPF is the Sender Policy Framework implemented
 in Perl.")
-  (license bsd-3)))
+    (license bsd-3)))
 
 (define-public mb2md
   (package
