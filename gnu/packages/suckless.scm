@@ -226,28 +226,27 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.suckless.org/st/st-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "09k94v3n20gg32xy7y68p96x9dq5msl80gknf9gbvlyjp3i0zyy4"))))
+        (base32 "0ddz2mdp1c7q67rd5vrvws9r0493ln0mlqyc3d73dv8im884xdxf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'unpack 'inhibit-terminfo-install
-                    (lambda _
-                      (substitute* "Makefile"
-                        (("\ttic .*") ""))
-                      #t)))))
+           (lambda _
+             (substitute* "Makefile"
+               (("\ttic .*") ""))
+             #t)))))
     (inputs
      `(("libx11" ,libx11)
        ("libxft" ,libxft)
