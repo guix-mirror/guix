@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -295,17 +295,15 @@ and vice versa.")
 (define-public cracklib
   (package
     (name "cracklib")
-    (version "2.9.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/cracklib/cracklib/"
-                                  "releases/download/" name "-" version "/"
-                                  name "-" version ".tar.gz"))
-              (patches (search-patches "cracklib-CVE-2016-6318.patch"
-                                       "cracklib-fix-buffer-overflow.patch"))
-              (sha256
-               (base32
-                "0hrkb0prf7n92w6rxgq0ilzkk6rkhpys2cfqkrbzswp27na7dkqp"))))
+    (version "2.9.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cracklib/cracklib/"
+                           "releases/download/v" version "/"
+                           "cracklib-" version ".tar.bz2"))
+       (sha256
+        (base32 "1rimpjsdnmw8f5b7k558cic41p2qy2n2yrlqp5vh7mp4162hk0py"))))
     (build-system gnu-build-system)
     (synopsis "Password checking library")
     (home-page "https://github.com/cracklib/cracklib")
