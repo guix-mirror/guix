@@ -414,14 +414,15 @@ vision algorithms.  It can be used to do things like:
 (define-public vips
   (package
     (name "vips")
-    (version "8.7.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/libvips/libvips/releases/download/v"
-                    version "/vips-" version ".tar.gz"))
-              (sha256
-               (base32 "1w3b90pdw7nj2p0gb4f96h6zhmga513f968ldfhz1rkhg7y81c0s"))))
+    (version "8.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/libvips/libvips/releases/download/v"
+             version "/vips-" version ".tar.gz"))
+       (sha256
+        (base32 "01gjhcrl6zj7mcj1al717v5jsniahplqhz1xkfh2j78vyfl1hxff"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
