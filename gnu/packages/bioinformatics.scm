@@ -14357,6 +14357,82 @@ approximate the gradient at each iteration of gradient descent.  This package
 is a Cython wrapper for FIt-SNE.")
     (license license:bsd-4)))
 
+(define-public bbmap
+  (package
+    (name "bbmap")
+    (version "35.82")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/bbmap/BBMap_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q4rfhxcb6z3gm8zg2davjz98w22lkf4hm9ikxz9kdl93pil3wkd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "dist"
+       #:tests? #f ; there are none
+       #:make-flags
+       (list (string-append "-Dmpijar="
+                            (assoc-ref %build-inputs "java-openmpi")
+                            "/lib/mpi.jar"))
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-jni-library
+           (lambda _
+             (with-directory-excursion "jni"
+               (invoke "make" "-f" "makefile.linux"))))
+         ;; There is no install target
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-scripts-and-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "calcmem.sh"
+               (("\\| awk ") (string-append "| " (which "awk") " ")))
+             (let* ((scripts (find-files "." "\\.sh$"))
+                    (out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/bbmap"))
+                    (jni (string-append out "/lib/jni")))
+               (substitute* scripts
+                 (("\\$DIR\"\"docs") doc)
+                 (("^CP=.*")
+                  (string-append "CP=" out "/share/java/BBTools.jar\n"))
+                 (("^NATIVELIBDIR.*")
+                  (string-append "NATIVELIBDIR=" jni "\n"))
+                 (("CMD=\"java")
+                  (string-append "CMD=\"" (which "java"))))
+               (for-each (lambda (script) (install-file script bin)) scripts)
+
+               ;; Install JNI library
+               (install-file "jni/libbbtoolsjni.so" jni)
+
+               ;; Install documentation
+               (install-file "docs/readme.txt" doc)
+               (copy-recursively "docs/guides" doc))
+             #t)))
+       #:jdk ,openjdk11))
+    (inputs
+     `(("gawk" ,gawk)
+       ("java-eclipse-jdt-core" ,java-eclipse-jdt-core)
+       ("java-eclipse-jdt-compiler-apt" ,java-eclipse-jdt-compiler-apt)
+       ("java-openmpi" ,java-openmpi)))
+    (home-page "http://sourceforge.net/projects/bbmap/")
+    (synopsis "Aligner and other tools for short sequencing reads")
+    (description
+     "This package provides bioinformatic tools to align, deduplicate,
+reformat, filter and normalize DNA and RNA-seq data.  It includes the
+following tools: BBMap, a short read aligner for DNA and RNA-seq data; BBNorm,
+a kmer-based error-correction and normalization tool; Dedupe, a tool to
+simplify assemblies by removing duplicate or contained subsequences that share
+a target percent identity; Reformat, to convert reads between
+fasta/fastq/scarf/fasta+qual/sam, interleaved/paired, and ASCII-33/64, at over
+500 MB/s; and BBDuk, a tool to filter, trim, or mask reads with kmer matches
+to an artifact/contaminant file.")
+    (license license:bsd-3)))
+
 (define-public velvet
   (package
     (name "velvet")
