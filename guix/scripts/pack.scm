@@ -306,11 +306,13 @@ added to the pack."
     (with-imported-modules (source-module-closure
                             '((guix build utils)
                               (guix build store-copy)
+                              (guix build union)
                               (gnu build install))
                             #:select? not-config?)
       #~(begin
           (use-modules (guix build utils)
                        (guix build store-copy)
+                       ((guix build union) #:select (relative-file-name))
                        (gnu build install)
                        (srfi srfi-1)
                        (srfi srfi-26)
@@ -359,12 +361,18 @@ added to the pack."
                    ,@(append-map
                       (match-lambda
                         ((source '-> target)
-                         (list "-p"
-                               (string-join
-                                ;; name s mode uid gid symlink
-                                (list source
-                                      "s" "777" "0" "0"
-                                      (string-append #$profile "/" target))))))
+                         ;; Create relative symlinks to work around a bug in
+                         ;; Singularity 2.x:
+                         ;;   https://bugs.gnu.org/34913
+                         ;;   https://github.com/sylabs/singularity/issues/1487
+                         (let ((target (string-append #$profile "/" target)))
+                           (list "-p"
+                                 (string-join
+                                  ;; name s mode uid gid symlink
+                                  (list source
+                                        "s" "777" "0" "0"
+                                        (relative-file-name (dirname source)
+                                                            target)))))))
                       '#$symlinks)
 
                    ;; Create empty mount points.
@@ -881,7 +889,14 @@ Create a bundle of PACKAGE.\n"))
             (run-with-store store
               (mlet* %store-monad ((profile (profile-derivation
                                              manifest
-                                             #:relative-symlinks? relocatable?
+
+                                             ;; Always produce relative
+                                             ;; symlinks for Singularity (see
+                                             ;; <https://bugs.gnu.org/34913>).
+                                             #:relative-symlinks?
+                                             (or relocatable?
+                                                 (eq? 'squashfs pack-format))
+
                                              #:hooks (if bootstrap?
                                                          '()
                                                          %default-profile-hooks)
