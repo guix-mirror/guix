@@ -1470,13 +1470,13 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
 (define-public python-ipy
   (package
     (name "python-ipy")
-    (version "0.83")
+    (version "1.00")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "IPy" version))
               (sha256
                (base32
-                "1f6sdrxclifky4gvkf4gvyv5hx3fjh8vzspnfrqki6qm5d9mmnk1"))))
+                "08d6kcacj67mvh0b6y765ipccy6gi4w2ndd4v1l3im2qm1cgcarg"))))
     (build-system python-build-system)
     (home-page "https://github.com/autocracy/python-ipy/")
     (synopsis "Python class and tools for handling IP addresses and networks")
