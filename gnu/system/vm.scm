@@ -790,6 +790,7 @@ environment with the store shared with the host.  MAPPINGS is a list of
     ;; force the traditional i386/BIOS method.
     ;; See <https://bugs.gnu.org/28768>.
     (bootloader (bootloader-configuration
+                  (inherit (operating-system-bootloader os))
                   (bootloader grub-bootloader)
                   (target "/dev/vda")))
 
