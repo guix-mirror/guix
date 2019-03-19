@@ -1780,15 +1780,14 @@ formats.")
 (define-public perl-catalyst-plugin-session
   (package
     (name "perl-catalyst-plugin-session")
-    (version "0.40")
+    (version "0.41")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                            "Catalyst-Plugin-Session-" version ".tar.gz"))
        (sha256
-        (base32
-         "171vi9xcl775scjaw4fcfdmqvz0rb1nr0xxg2gb3ng6bjzpslhgv"))))
+        (base32 "0a451997zc2vjx7rvndgx1ldbrpic8sfbddyvncynh0zr8bhlqc5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
