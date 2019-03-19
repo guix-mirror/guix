@@ -1,0 +1,131 @@
+The following patch, authored by Andreas Enge, looks for the flint include
+files in the correct subdirectory.
+
+diff -u -r python-flint-old/src/flint.pxd python-flint-new/src/flint.pxd
+--- python-flint-old/src/flint.pxd	2019-03-19 10:26:11.055748626 +0100
++++ python-flint-new/src/flint.pxd	2019-03-19 10:35:23.269341203 +0100
+@@ -27,7 +27,7 @@
+ 
+ ctypedef long fmpz_struct
+ 
+-cdef extern from "flint.h":
++cdef extern from "flint/flint.h":
+     ctypedef void * flint_rand_t
+     void flint_randinit(flint_rand_t state)
+     void flint_randclear(flint_rand_t state)
+@@ -35,7 +35,7 @@
+     long flint_get_num_threads()
+     void flint_cleanup()
+ 
+-cdef extern from "nmod_vec.h":
++cdef extern from "flint/nmod_vec.h":
+     ctypedef struct nmod_t:
+        mp_limb_t n
+        mp_limb_t ninv
+@@ -47,7 +47,7 @@
+     mp_limb_t nmod_mul(mp_limb_t a, mp_limb_t b, nmod_t mod)
+     mp_limb_t nmod_div(mp_limb_t a, mp_limb_t b, nmod_t mod)
+ 
+-cdef extern from "nmod_poly.h":
++cdef extern from "flint/nmod_poly.h":
+     ctypedef struct nmod_poly_struct:
+         mp_ptr coeffs
+         long alloc
+@@ -129,7 +129,7 @@
+     void nmod_poly_factor_init(nmod_poly_factor_t fac)
+     void nmod_poly_factor_clear(nmod_poly_factor_t fac)
+ 
+-cdef extern from "nmod_mat.h":
++cdef extern from "flint/nmod_mat.h":
+     ctypedef struct nmod_mat_struct:
+         mp_limb_t * entries
+         long r
+@@ -178,7 +178,7 @@
+     long nmod_mat_rref(nmod_mat_t A)
+     long nmod_mat_nullspace(nmod_mat_t X, nmod_mat_t A)
+ 
+-cdef extern from "fmpz.h":
++cdef extern from "flint/fmpz.h":
+     ctypedef fmpz_struct fmpz_t[1]
+     int COEFF_IS_MPZ(fmpz_struct v)
+     void fmpz_init(fmpz_t op)
+@@ -268,7 +268,7 @@
+     void fmpz_rfac_uiui(fmpz_t r, ulong x, ulong n)
+     void fmpz_primorial(fmpz_t res, ulong n)
+ 
+-cdef extern from "fmpz_factor.h":
++cdef extern from "flint/fmpz_factor.h":
+     ctypedef struct fmpz_factor_struct:
+         int sign
+         fmpz_struct * p
+@@ -280,7 +280,7 @@
+     void fmpz_factor_clear(fmpz_factor_t factor)
+     void fmpz_factor(fmpz_factor_t factor, fmpz_t n)
+ 
+-cdef extern from "fmpz_poly.h":
++cdef extern from "flint/fmpz_poly.h":
+     ctypedef struct fmpz_poly_struct:
+         fmpz_struct * coeffs
+         long alloc
+@@ -390,14 +390,14 @@
+     void fmpz_poly_cos_minpoly(fmpz_poly_t, ulong)
+     void fmpz_poly_swinnerton_dyer(fmpz_poly_t, ulong)
+ 
+-cdef extern from "fmpz_poly_factor.h":
++cdef extern from "flint/fmpz_poly_factor.h":
+     void fmpz_poly_factor_init(fmpz_poly_factor_t fac)
+     void fmpz_poly_factor_clear(fmpz_poly_factor_t fac)
+     void fmpz_poly_factor_zassenhaus(fmpz_poly_factor_t fac, fmpz_poly_t G)
+     void fmpz_poly_factor(fmpz_poly_factor_t fac, fmpz_poly_t G)
+     void fmpz_poly_factor_squarefree(fmpz_poly_factor_t fac, fmpz_poly_t G)
+ 
+-cdef extern from "fmpz_mat.h":
++cdef extern from "flint/fmpz_mat.h":
+     ctypedef struct fmpz_mat_struct:
+         fmpz_struct * entries
+         long r
+@@ -448,7 +448,7 @@
+     void fmpz_mat_snf(fmpz_mat_t S, const fmpz_mat_t A)
+     int fmpz_mat_is_in_snf(const fmpz_mat_t A)
+ 
+-cdef extern from "fmpz_lll.h":
++cdef extern from "flint/fmpz_lll.h":
+     ctypedef struct fmpz_lll_struct:
+         double delta
+         double eta
+@@ -461,7 +461,7 @@
+     void fmpz_lll(fmpz_mat_t B, fmpz_mat_t U, const fmpz_lll_t fl)
+ 
+ 
+-cdef extern from "fmpq.h":
++cdef extern from "flint/fmpq.h":
+     ctypedef struct fmpq_struct:
+         fmpz_struct num
+         fmpz_struct den
+@@ -506,7 +506,7 @@
+     void fmpq_next_signed_minimal(fmpq_t res, fmpq_t x)
+     void fmpq_harmonic_ui(fmpq_t res, ulong n)
+ 
+-cdef extern from "fmpq_poly.h":
++cdef extern from "flint/fmpq_poly.h":
+     ctypedef struct fmpq_poly_struct:
+         fmpz_struct * coeffs
+         fmpz_t den
+@@ -620,7 +620,7 @@
+     void fmpq_poly_compose_series(fmpq_poly_t res, fmpq_poly_t poly1, fmpq_poly_t poly2, long n)
+     void fmpq_poly_revert_series(fmpq_poly_t res, fmpq_poly_t poly1, long n)
+ 
+-cdef extern from "fmpq_mat.h":
++cdef extern from "flint/fmpq_mat.h":
+     ctypedef struct fmpq_mat_struct:
+         fmpq_struct * entries
+         long r
+@@ -672,7 +672,7 @@
+     long fmpq_mat_rref(fmpq_mat_t B, fmpq_mat_t A)
+     void fmpq_mat_transpose(fmpq_mat_t B, fmpq_mat_t A)
+ 
+-cdef extern from "arith.h":
++cdef extern from "flint/arith.h":
+     void arith_number_of_partitions(fmpz_t res, ulong n)
+     int arith_moebius_mu(fmpz_t n)
+     void arith_divisor_sigma(fmpz_t v, fmpz_t n, ulong k)

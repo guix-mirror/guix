@@ -43,6 +43,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages tex)
@@ -52,6 +53,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -420,6 +422,38 @@ polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
     (license license:lgpl2.1+)
     (home-page "http://fredrikj.net/arb/")))
+
+(define-public python-flint
+  (package
+    (name "python-flint")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fredrik-johansson/python-flint.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v0anazbj1cfi68nl2j6dbd31kgkc1563xmr0zk5xk3xj78569pw"))
+              (patches (search-patches "python-flint-includes.patch"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (inputs
+     `(("arb" ,arb)
+       ("flint" ,flint)))
+    (synopsis "Python module wrapping ARB and FLINT")
+    (description
+     "Python-flint is a Python extension module wrapping FLINT
+(Fast Library for Number Theory) and Arb (arbitrary-precision ball
+arithmetic).  It supports integers, rationals, modular integers,
+real and complex ball arithmetic, polynomials and matrices over all
+these types and other mathematical functions.")
+    (license license:expat)
+    (home-page "http://fredrikj.net/python-flint/")))
 
 (define-public ntl
   (package
