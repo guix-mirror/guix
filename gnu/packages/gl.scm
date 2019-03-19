@@ -221,7 +221,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.3.4")
+    (version "18.3.5")
     (source
       (origin
         (method url-fetch)
@@ -233,10 +233,10 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "01xv03ah4l5lcfx015n3fg1620dh4nbbv6gmhh6zhdsx6sj4sc9j"))
+          "0lvrfjaic7dhay9v52f9k3q5aac8xagfq3pnzjrl0cn65jlaw9s0"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (propagated-inputs
       `(;; The following are in the Requires.private field of gl.pc.
         ("libdrm" ,libdrm)
@@ -264,7 +264,10 @@ also known as DXTn or DXTC) for Mesa.")
         ("wayland" ,wayland)
         ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
+      `(("bison" ,bison)
+        ("flex" ,flex)
+        ("gettext" ,gettext-minimal)
+        ("pkg-config" ,pkg-config)
         ("python" ,python)
         ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
@@ -273,47 +276,48 @@ also known as DXTn or DXTC) for Mesa.")
        '(,@(match (%current-system)
              ((or "armhf-linux" "aarch64-linux")
               ;; TODO: Fix svga driver for aarch64 and armhf.
-              '("--with-gallium-drivers=etnaviv,freedreno,imx,nouveau,pl111,r300,r600,swrast,tegra,v3d,vc4,virgl"))
+              '("-Dgallium-drivers=etnaviv,freedreno,imx,nouveau,pl111,r300,r600,swrast,tegra,v3d,vc4,virgl"))
              (_
-              '("--with-gallium-drivers=i915,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
+              '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "--with-platforms=x11,drm,surfaceless,wayland"
-         "--enable-glx-tls"        ;Thread Local Storage, improves performance
-         ;; "--enable-opencl"
-         ;; "--enable-omx"
-         "--enable-osmesa"
-         "--enable-xa"
+         "-Dplatforms=x11,drm,surfaceless,wayland"
+         "-Dglx=dri"        ;Thread Local Storage, improves performance
+         ;; "-Dopencl=true"
+         ;; "-Domx=true"
+         "-Dosmesa=gallium"
+         "-Dgallium-xa=true"
+
          ;; features required by wayland
-         "--enable-gles2"
-         "--enable-gbm"
-         "--enable-shared-glapi"
+         "-Dgles2=true"
+         "-Dgbm=true"
+         "-Dshared-glapi=true"
 
          ;; Enable Vulkan on i686-linux and x86-64-linux.
          ,@(match (%current-system)
              ("x86_64-linux"
-              '("--with-vulkan-drivers=intel,radeon"))
+              '("-Dvulkan-drivers=intel,amd"))
              ;; TODO: Fix intel driver on i686-linux.
              ("i686-linux"
-              '("--with-vulkan-drivers=radeon"))
+              '("-Dvulkan-drivers=amd"))
              (_
               '("")))
 
          ;; Also enable the tests.
-         "--enable-gallium-tests"
+         "-Dbuild-tests=true"
 
          ;; on non-intel systems, drop i915 and i965
          ;; from the default dri drivers
          ,@(match (%current-system)
              ((or "x86_64-linux" "i686-linux")
-              '("--with-dri-drivers=i915,i965,nouveau,r200,radeon,swrast"
-                "--enable-llvm"))         ; default is x86/x86_64 only
+              '("-Ddri-drivers=i915,i965,nouveau,r200,r100"
+                "-Dllvm=true"))         ; default is x86/x86_64 only
              (_
-              '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
+              '("-Ddri-drivers=nouveau,r200,r100"))))
        #:modules ((ice-9 match)
                   (srfi srfi-1)
                   (guix build utils)
-                  (guix build gnu-build-system))
+                  (guix build meson-build-system))
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -323,7 +327,7 @@ also known as DXTn or DXTC) for Mesa.")
                (("/usr/bin/env python2") (which "python")))
              #t))
          (add-before
-           'build 'fix-dlopen-libnames
+           'configure 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                ;; Remain agnostic to .so.X.Y.Z versions while doing

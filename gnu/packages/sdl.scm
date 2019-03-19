@@ -87,10 +87,13 @@
     (propagated-inputs
      ;; SDL headers include X11 headers.
      `(("libx11" ,libx11)
-       ("libcap" ,libcap))) ; 'libSDL.la' contain `-lcap'.
+       ("libcap" ,libcap) ; 'libSDL.la' contain `-lcap'.
+       ;; TODO: Since building Mesa with Meson it is now necessary that Mesa is
+       ;; a propogated input. We still need to figure out why, possibly due to a
+       ;; change in pkg-config.
+       ("mesa" ,mesa)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libxrandr" ,libxrandr)
-              ("mesa" ,mesa)
               ("glu" ,glu)
               ("alsa-lib" ,alsa-lib)
               ("pulseaudio" ,pulseaudio)))
