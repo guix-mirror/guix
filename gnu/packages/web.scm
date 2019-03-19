@@ -1338,25 +1338,24 @@ language known as SASS.")
 (define-public perl-apache-logformat-compiler
   (package
     (name "perl-apache-logformat-compiler")
-    (version "0.33")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
                            "Apache-LogFormat-Compiler-" version ".tar.gz"))
        (sha256
-        (base32
-         "17blk3zhp05azgypn25ydxf3d7fyfgr9bxyiv7xkchhqma96vwqv"))))
+        (base32 "06i70ydxk2wa2rcqn16842kra2qz3jwk0vk1abq8lah4180c0m0n"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-http-message" ,perl-http-message)
-       ("perl-module-build" ,perl-module-build)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
        ("perl-test-mocktime" ,perl-test-mocktime)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-uri" ,perl-uri)))
     (propagated-inputs
      `(("perl-posix-strftime-compiler" ,perl-posix-strftime-compiler)))
-    (arguments `(#:tests? #f))          ;TODO: Timezone test failures
+    (arguments `(#:tests? #f))          ; TODO: Timezone test failures
     (home-page "https://metacpan.org/release/Apache-LogFormat-Compiler")
     (synopsis "Compile a log format string to perl-code")
     (description "This module provides methods to compile a log format string
