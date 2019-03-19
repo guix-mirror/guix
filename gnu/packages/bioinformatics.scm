@@ -14246,7 +14246,12 @@ choosing which reads pass the filter.")
                (recursive? #t)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))))
+          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (delete-file-recursively "htslib")
+             #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
