@@ -223,6 +223,7 @@ servers from Python programs.")
                             (assoc-ref %build-inputs "pcre"))
              (string-append "--with-selinux="
                             (assoc-ref %build-inputs "libselinux"))
+             "--localstatedir=/var"
              ;; The Perl scripts are being removed in the 1.4.0 release.
              ;; Building them would require packaging of the outdated Mozilla
              ;; LDAP SDK (instead of OpenLDAP) and PerLDAP.
