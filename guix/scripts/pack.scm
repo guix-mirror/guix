@@ -378,7 +378,8 @@ added to the pack."
                    ;; Create empty mount points.
                    "-p" "/proc d 555 0 0"
                    "-p" "/sys d 555 0 0"
-                   "-p" "/dev d 555 0 0"))
+                   "-p" "/dev d 555 0 0"
+                   "-p" "/home d 555 0 0"))
 
           (when database
             ;; Initialize /var/guix.
