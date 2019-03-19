@@ -10009,6 +10009,7 @@ The default setup uses helm-bibtex.
 You should really read org-ref.org in this package for details.")
       (license license:gpl3+))))
 
+;; This project is unmaintained.  Please use emacs-org-re-reveal instead.
 (define-public emacs-org-reveal
   (let ((commit "1cdd088ec5fab631c564dca7f9f74fd3e9b7d4d4"))
     (package
@@ -10030,6 +10031,30 @@ You should really read org-ref.org in this package for details.")
 to create beautiful presentations (slides) with 3D effects from simple but
 powerful Org contents.")
       (license license:gpl3+))))
+
+(define-public emacs-org-re-reveal
+  (package
+    (name "emacs-org-re-reveal")
+    (version "1.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/oer/org-re-reveal.git")
+                    (commit "50cc6574c77f12d423f6cd096d8f76feb3673abc")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v3z30gpimg4spf6zzqwp9b597zxk89h0vpq6xp58js4rjg4ixk8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-htmlize" ,emacs-htmlize)
+       ("emacs-org" ,emacs-org)))
+    (home-page "https://gitlab.com/oer/org-re-reveal")
+    (synopsis "Build HTML presentations with reveal.js from Org source files")
+    (description "This project started as fork of org-reveal.  It provides an
+export back-end for HTML presentations with reveal.js from Org mode source
+files.")
+    (license license:gpl3+)))
 
 (define-public emacs-add-hooks
   (package
