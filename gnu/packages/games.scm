@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -164,6 +164,80 @@
   #:use-module (guix build-system trivial)
   #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26))
+
+;; Data package for adanaxisgpl.
+(define adanaxis-mush
+  (let ((version "1.1.0"))
+    (origin
+      (method url-fetch)
+      (uri (string-append "http://www.mushware.com/files/adanaxis-mush-"
+                          version ".tar.gz"))
+      (sha256
+       (base32 "0mk9ibis5nkdcalcg1lkgnsdxxbw4g5w2i3icjzy667hqirsng03")))))
+
+(define-public adanaxisgpl
+  (package
+    (name "adanaxisgpl")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.mushware.com/files/adanaxisgpl-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0jkn637jaabvlhd6hpvzb57vvjph94l6fbf7qxbjlw9zpr19dw1f"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Necessary for building with gcc >=4.7.
+           (substitute* "src/Mushcore/MushcoreSingleton.h"
+             (("SingletonPtrSet\\(new SingletonType\\);")
+              "MushcoreSingleton::SingletonPtrSet(new SingletonType);"))
+           ;; Avoid an "invalid conversion from const char* to char*" error.
+           (substitute* "src/Platform/X11/PlatformMiscUtils.cpp"
+             (("char \\*end, \\*result;")
+              (string-append "const char *end;"
+                             "\n"
+                             "char *result;")))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((data (assoc-ref inputs "adanaxis-mush"))
+                   (share (string-append (assoc-ref outputs "out")
+                                         "/share/" ,name "-" ,version)))
+               (mkdir-p share)
+               (invoke "tar" "xvf" data "-C" share)))))))
+    (native-inputs
+     `(("adanaxis-mush" ,adanaxis-mush))) ; game data
+    (inputs
+     `(("expat" ,expat)
+       ("freeglut" ,freeglut)
+       ("glu" ,glu)
+       ("libjpeg" ,libjpeg)
+       ("libogg" ,libogg)
+       ("libtiff" ,libtiff)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("pcre" ,pcre)
+       ("sdl" ,sdl)
+       ("sdl-mixer" ,sdl-mixer)))
+    (home-page "https://www.mushware.com")
+    (synopsis "Action game in four spatial dimensions")
+    (description
+     "Adanaxis is a fast-moving first person shooter set in deep space, where
+the fundamentals of space itself are changed.  By adding another dimension to
+space this game provides an environment with movement in four directions and
+six planes of rotation.  Initially the game explains the 4D control system via
+a graphical sequence, before moving on to 30 levels of gameplay with numerous
+enemy, ally, weapon and mission types.  Features include simulated 4D texturing,
+mouse and joystick control, and original music.")
+    (license license:gpl2)))
 
 (define-public armagetron-advanced
   (package
