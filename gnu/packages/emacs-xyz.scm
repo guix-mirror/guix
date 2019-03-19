@@ -13783,3 +13783,28 @@ existing text, but commands like `yank' and @command{kill-region} as well.
 C-f} to advance by #xa4 characters.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public emacs-helm-wikipedia
+  (let ((commit "126f044e0a0e1432e0791c33ce2a41875d704a9b"))
+    (package
+      (name "emacs-helm-wikipedia")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/emacs-helm/helm-wikipedia/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "148a5xsnbsiddhf9cl7yxdk41lrv38h0pip91kcflw9d7l0dp7pr"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("helm" ,emacs-helm)))
+      (synopsis "Search suggestions and article extracts from Wikipedia for Emacs")
+      (description
+       "This package provides an Emacs Helm interface for search suggestions
+and article extracts for Wikipedia.")
+      (license license:gpl3+))))
