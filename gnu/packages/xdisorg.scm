@@ -395,15 +395,11 @@ rasterisation.")
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
-             ("armhf-linux"
-              '("-Dexynos-experimental-api=true"
-                "-Domap-experimental-api=true"
-                "-Detnaviv-experimental-api=true"
-                "-Dtegra-experimental-api=true"
-                "-Dfreedreno-kgsl=true"))
-             ("aarch64-linux=true"
-              '("-Dtegra-experimental-api=true"
-                "-Detnaviv-experimental-api=true"
+             ((or "armhf-linux" "aarch64-linux")
+              '("-Dexynos=true"
+                "-Domap=true"
+                "-Detnaviv=true"
+                "-Dtegra=true"
                 "-Dfreedreno-kgsl=true"))
              (_ '())))))
     (inputs
