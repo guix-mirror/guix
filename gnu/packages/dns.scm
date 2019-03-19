@@ -569,14 +569,16 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.7.6")
+    (version "2.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   "knot-" version ".tar.xz"))
               (sha256
                (base32
-                "18lpyq3vgr2ainmfiy14x7hcf1zxza66bhkpr54jaz2gy1viijx1"))
+                "1vw7xx7bm440jwrpvdd04vrp6ccz2b11swcn9msvs62hf0kdjjj9"))
+              (patches
+               (search-patches "knot-include-system-lmdb-header.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
