@@ -1758,7 +1758,7 @@ non-Windows systems without running the actual installer using wine.")
 (define-public google-brotli
   (package
     (name "google-brotli")
-    (version "1.0.4")
+    (version "1.0.7")
     (source
      (origin
        (method git-fetch)
@@ -1767,7 +1767,7 @@ non-Windows systems without running the actual installer using wine.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0n5snycxgwqj2v8sgxiqxq4zqh5ydx70dr7qa4ygizs02ms69n1i"))))
+        (base32 "1811b55wdfg4kbsjcgh1kc938g118jpvif97ilgrmbls25dfpvvw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
