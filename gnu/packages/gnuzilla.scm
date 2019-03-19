@@ -722,11 +722,15 @@ from forcing GEXP-PROMISE."
                         (string-append old-icecat-dir "/l10n")
                         (string-append old-icecat-dir "/debian"))
 
-                (format #t (string-append "Packing new IceCat tarball...~%"))
+                (format #t "Packing new IceCat tarball...~%")
                 (force-output)
                 (invoke "tar" "cfa" #$output
-                        ;; avoid non-determinism in the archive
-                        "--mtime=@0"
+                        ;; Avoid non-determinism in the archive.  We set the
+                        ;; mtime of files in the archive to early 1980 because
+                        ;; the build process fails if the mtime of source
+                        ;; files is pre-1980, due to the creation of zip
+                        ;; archives.
+                        "--mtime=@315619200" ; 1980-01-02 UTC
                         "--owner=root:0"
                         "--group=root:0"
                         "--sort=name"
