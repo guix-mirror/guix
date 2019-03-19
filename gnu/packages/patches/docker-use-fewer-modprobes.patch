@@ -1,0 +1,116 @@
+This patch makes docker find out whether a filesystem type is supported
+by trying to mount a filesystem of that type rather than invoking "modprobe".
+--- docker-18.09.0-checkout/daemon/graphdriver/overlay/overlay.go.orig	1970-01-01 01:00:00.000000000 +0100
++++ docker-18.09.0-checkout/daemon/graphdriver/overlay/overlay.go	2019-03-19 09:16:03.487087490 +0100
+@@ -8,7 +8,6 @@
+ 	"io"
+ 	"io/ioutil"
+ 	"os"
+-	"os/exec"
+ 	"path"
+ 	"path/filepath"
+ 	"strconv"
+@@ -201,9 +200,16 @@
+ }
+ 
+ func supportsOverlay() error {
+-	// We can try to modprobe overlay first before looking at
+-	// proc/filesystems for when overlay is supported
+-	exec.Command("modprobe", "overlay").Run()
++	// Access overlay filesystem so that Linux loads it (if possible).
++	mountTarget, err := ioutil.TempDir("", "supportsOverlay")
++	if err != nil {
++		logrus.WithField("storage-driver", "overlay2").Error("Could not create temporary directory, so assuming that 'overlay' is not supported.")
++		return graphdriver.ErrNotSupported
++	} else {
++		/* The mounting will fail--after the module has been loaded.*/
++		defer os.RemoveAll(mountTarget)
++		unix.Mount("overlay", mountTarget, "overlay", 0, "")
++	}
+ 
+ 	f, err := os.Open("/proc/filesystems")
+ 	if err != nil {
+--- docker-18.09.0-checkout/daemon/graphdriver/overlay2/overlay.go.orig	2019-03-18 23:42:23.728525231 +0100
++++ docker-18.09.0-checkout/daemon/graphdriver/overlay2/overlay.go	2019-03-19 08:54:31.411906113 +0100
+@@ -10,7 +10,6 @@
+ 	"io"
+ 	"io/ioutil"
+ 	"os"
+-	"os/exec"
+ 	"path"
+ 	"path/filepath"
+ 	"strconv"
+@@ -261,9 +260,16 @@
+ }
+ 
+ func supportsOverlay() error {
+-	// We can try to modprobe overlay first before looking at
+-	// proc/filesystems for when overlay is supported
+-	exec.Command("modprobe", "overlay").Run()
++	// Access overlay filesystem so that Linux loads it (if possible).
++	mountTarget, err := ioutil.TempDir("", "supportsOverlay")
++	if err != nil {
++		logrus.WithField("storage-driver", "overlay2").Error("Could not create temporary directory, so assuming that 'overlay' is not supported.")
++		return graphdriver.ErrNotSupported
++	} else {
++		/* The mounting will fail--after the module has been loaded.*/
++		defer os.RemoveAll(mountTarget)
++		unix.Mount("overlay", mountTarget, "overlay", 0, "")
++	}
+ 
+ 	f, err := os.Open("/proc/filesystems")
+ 	if err != nil {
+--- docker-18.09.0-checkout/daemon/graphdriver/devmapper/deviceset.go.orig	2019-03-19 09:19:16.592844887 +0100
++++ docker-18.09.0-checkout/daemon/graphdriver/devmapper/deviceset.go	2019-03-19 09:21:18.019361761 +0100
+@@ -540,8 +539,14 @@
+ 		return err // error text is descriptive enough
+ 	}
+ 
+-	// Check if kernel supports xfs filesystem or not.
+-	exec.Command("modprobe", "xfs").Run()
++        mountTarget, err := ioutil.TempDir("", "supportsOverlay")
++        if err != nil {
++		return errors.Wrapf(err, "error checking for xfs support")
++        } else {
++                /* The mounting will fail--after the module has been loaded.*/
++                defer os.RemoveAll(mountTarget)
++                unix.Mount("none", mountTarget, "xfs", 0, "")
++        }
+ 
+ 	f, err := os.Open("/proc/filesystems")
+ 	if err != nil {
+--- docker-18.09.0-checkout/vendor/github.com/docker/libnetwork/iptables/iptables.go.orig	2019-03-19 09:47:19.430111170 +0100
++++ docker-18.09.0-checkout/vendor/github.com/docker/libnetwork/iptables/iptables.go	2019-03-19 10:38:01.445136177 +0100
+@@ -72,11 +71,12 @@
+ }
+ 
+ func probe() {
+-	if out, err := exec.Command("modprobe", "-va", "nf_nat").CombinedOutput(); err != nil {
+-		logrus.Warnf("Running modprobe nf_nat failed with message: `%s`, error: %v", strings.TrimSpace(string(out)), err)
++	path, err := exec.LookPath("iptables")
++	if err != nil {
++		return
+ 	}
+-	if out, err := exec.Command("modprobe", "-va", "xt_conntrack").CombinedOutput(); err != nil {
+-		logrus.Warnf("Running modprobe xt_conntrack failed with message: `%s`, error: %v", strings.TrimSpace(string(out)), err)
++	if out, err := exec.Command(path, "--wait", "-t", "nat", "-L", "-n").CombinedOutput(); err != nil {
++		logrus.Warnf("Running iptables --wait -t nat -L -n failed with message: `%s`, error: %v", strings.TrimSpace(string(out)), err)
+ 	}
+ }
+ 
+--- docker-18.09.0-checkout/vendor/github.com/docker/libnetwork/ns/init_linux.go.orig	2019-03-19 11:23:20.738316699 +0100
++++ docker-18.09.0-checkout/vendor/github.com/docker/libnetwork/ns/init_linux.go	2019-03-19 11:27:57.149753073 +0100
+@@ -100,12 +100,7 @@
+ }
+ 
+ func loadXfrmModules() error {
+-	if out, err := exec.Command("modprobe", "-va", "xfrm_user").CombinedOutput(); err != nil {
+-		return fmt.Errorf("Running modprobe xfrm_user failed with message: `%s`, error: %v", strings.TrimSpace(string(out)), err)
+-	}
+-	if out, err := exec.Command("modprobe", "-va", "xfrm_algo").CombinedOutput(); err != nil {
+-		return fmt.Errorf("Running modprobe xfrm_algo failed with message: `%s`, error: %v", strings.TrimSpace(string(out)), err)
+-	}
++	// Those are automatically loaded when someone opens the socket anyway.
+ 	return nil
+ }
+ 
