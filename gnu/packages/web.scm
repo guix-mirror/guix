@@ -6219,7 +6219,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
        #:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
-    (home-page "http://git.r-36.net/geomyidae")
+    (home-page "http://r-36.net/scm/geomyidae/file/README.html")
     (synopsis "Small Gopher server")
     (description
      "Geomyidae is a server for distributed hypertext protocol Gopher.  Its
