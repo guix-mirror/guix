@@ -1759,13 +1759,15 @@ non-Windows systems without running the actual installer using wine.")
   (package
     (name "google-brotli")
     (version "1.0.4")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/google/brotli/archive/v"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "1hrpmz162k4x3xm6vmbpm443jlfr1kp536p8962y2dncy7gs6s12"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/brotli.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0n5snycxgwqj2v8sgxiqxq4zqh5ydx70dr7qa4ygizs02ms69n1i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
