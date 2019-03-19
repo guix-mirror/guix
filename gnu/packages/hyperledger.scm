@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,7 @@
 (define-public hyperledger-fabric
   (package
     (name "hyperledger-fabric")
-    (version "1.4")
+    (version "1.4.0")
     ;; While the GitHub repository is supposed to be "just a mirror," the Go
     ;; imports refer to it explicitly.
     (home-page "https://github.com/hyperledger/fabric")
@@ -42,10 +43,11 @@
               (method git-fetch)
               (uri (git-reference
                     (url home-page)
-                    (commit (string-append "release-" version))))
+                    ;; ‘release-…’ are branches, and move. ‘v…’ are the tags.
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1g003wf6439f2c9i2vphf4sh463yyasq1vpqmkpw9lj170a6kl8k"))
+                "0nmg24ishwddxm1i2vh5ah5ylmmcg0apnjbgv1hljvhl48k4pzxq"))
               (file-name (git-file-name name version))))
     (build-system go-build-system)
     (native-inputs
