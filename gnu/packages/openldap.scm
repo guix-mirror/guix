@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -36,6 +36,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -198,14 +199,14 @@ servers from Python programs.")
 (define-public 389-ds-base
   (package
     (name "389-ds-base")
-    (version "1.4.0.13")
+    (version "1.4.0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/389-ds-base/"
                                   "389-ds-base-" version ".tar.bz2"))
               (sha256
                (base32
-                "01dm3zq3w5ami9pwcjbjz8wfbx9krjxybjrgc4wyhrxlzd90ylzj"))))
+                "1qd1ap5d5nxyiq0d19czfwc3h7iwl9lmr5sy7d7xmpr2by59aysr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((srfi srfi-1)
@@ -228,6 +229,11 @@ servers from Python programs.")
              "--disable-perl")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-includes
+           (lambda _
+             (substitute* "include/ldaputil/certmap.h"
+               (("nss3/cert.h") "nss/cert.h"))
+             #t))
          (add-after 'unpack 'fix-install-location-of-python-tools
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -286,6 +292,7 @@ servers from Python programs.")
              #t)))))
     (inputs
      `(("bdb" ,bdb)
+       ("cracklib" ,cracklib)
        ("cyrus-sasl" ,cyrus-sasl)
        ("gnutls" ,gnutls)
        ("httpd" ,httpd)
