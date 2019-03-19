@@ -5253,8 +5253,8 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "e7b57aae0131634d0da5e599717a86c4b3ca6092")
-        (revision "7"))
+  (let ((commit "baa9c6880779d416a91bf5bde3589673a7403612")
+        (revision "8"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.1" revision commit))
@@ -5266,7 +5266,7 @@ extensions.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1g7bxvgnsikpxxdimy0lymn3xz53fari048l827sjyw5kxi59d20"))))
+                  "09v97nk7qawphfijzqxzi2y63ydmfq7hsgpljjxwkykrc5h0kdlj"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
