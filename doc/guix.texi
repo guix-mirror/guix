@@ -13223,8 +13223,8 @@ your user profile.  Failing to do that, if @code{auto-login-session} is
 false, you will be unable to log in.
 @end quotation
 
-@item @code{startx} (default: @code{(xorg-start-command)})
-The command used to start the X11 graphical server.
+@item @code{xorg-configuration} (default @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
 
 @item @code{xauth} (default: @code{xauth})
 The XAuth package to use.
@@ -13300,8 +13300,8 @@ Script to run before starting a wayland session.
 @item @code{sessions-directory} (default "/run/current-system/profile/share/wayland-sessions")
 Directory to look for desktop files starting wayland sessions.
 
-@item @code{xorg-server-path} (default @code{xorg-start-command})
-Path to xorg-server.
+@item @code{xorg-configuration} (default @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
 
 @item @code{xauth-path} (default @code{#~(string-append #$xauth "/bin/xauth")})
 Path to xauth.
@@ -13323,9 +13323,6 @@ Directory to look for desktop files starting X sessions.
 
 @item @code{minimum-vt} (default: 7)
 Minimum VT to use.
-
-@item @code{xserver-arguments} (default "-nolisten tcp")
-Arguments to pass to xorg-server.
 
 @item @code{auto-login-user} (default "")
 User to use for auto-login.

@@ -436,8 +436,8 @@ desktop session from the system or user profile will be used."
             (default shepherd))
   (auto-login-session slim-configuration-auto-login-session
                       (default #f))
-  (startx slim-configuration-startx
-          (default (xorg-start-command)))
+  (xorg-configuration slim-configuration-xorg
+                      (default (xorg-configuration)))
   (sessreg slim-configuration-sessreg
            (default sessreg)))
 
@@ -454,7 +454,7 @@ desktop session from the system or user profile will be used."
                             (slim-configuration-auto-login-session config)))
           (slim    (slim-configuration-slim config))
           (xauth   (slim-configuration-xauth config))
-          (startx  (slim-configuration-startx config))
+          (startx  (xorg-start-command (slim-configuration-xorg config)))
           (shepherd   (slim-configuration-shepherd config))
           (theme-name (slim-configuration-theme-name config))
           (sessreg (slim-configuration-sessreg config)))
@@ -561,8 +561,7 @@ theme."
             (auto-login? auto-login?) (default-user default-user)
             (theme theme) (theme-name theme-name)
             (xauth xauth) (shepherd shepherd)
-            (auto-login-session auto-login-session)
-            (startx startx))))
+            (auto-login-session auto-login-session))))
 
 
 ;;;
@@ -641,8 +640,8 @@ makes the good ol' XlockMore usable."
   (default-user gdm-configuration-default-user (default #f))
   (gnome-shell-assets gdm-configuration-gnome-shell-assets
                       (default (list adwaita-icon-theme font-cantarell)))
-  (x-server gdm-configuration-x-server
-            (default (xorg-wrapper)))
+  (xorg-configuration gdm-configuration-xorg
+                      (default (xorg-configuration)))
   (x-session gdm-configuration-x-session
              (default (xinitrc))))
 
@@ -714,7 +713,8 @@ makes the good ol' XlockMore usable."
                             #$(gdm-configuration-dbus-daemon config))
                            (string-append
                             "GDM_X_SERVER="
-                            #$(gdm-configuration-x-server config))
+                            #$(xorg-wrapper
+                               (gdm-configuration-xorg config)))
                            (string-append
                             "GDM_X_SESSION="
                             #$(gdm-configuration-x-session config))
@@ -779,7 +779,6 @@ password."
   (service gdm-service-type
            (gdm-configuration
             (gdm gdm)
-            (allow-empty-passwords? allow-empty-passwords?)
-            (x-server x-server))))
+            (allow-empty-passwords? allow-empty-passwords?))))
 
 ;;; xorg.scm ends here
