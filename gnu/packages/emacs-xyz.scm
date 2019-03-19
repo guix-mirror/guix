@@ -10010,27 +10010,26 @@ You should really read org-ref.org in this package for details.")
       (license license:gpl3+))))
 
 (define-public emacs-org-reveal
-  (package
-    (name "emacs-org-reveal")
-    ;; There are no proper tag, so we use the latest commit of the stable
-    ;; branch, as does MELPA.
-    (version "20161027.926")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/yjwen/org-reveal.git")
-                    (commit "001567cc12d50ba07612edd1718b86a12e8c2547")))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "18rma8smjrskbjyna076zhvx79zs5r5vinb537h8mw13pfxd6cm8"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/yjwen/org-reveal")
-    (synopsis "Org and Reveal.js powered HTML presentation tool")
-    (description "Org-Reveal is a command@{org-mode} extension that allows to
-create beautiful presentations (slides) with 3D effects from simple but
+  (let ((commit "001567cc12d50ba07612edd1718b86a12e8c2547"))
+    (package
+      (name "emacs-org-reveal")
+      (version (git-version "0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/yjwen/org-reveal.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "18rma8smjrskbjyna076zhvx79zs5r5vinb537h8mw13pfxd6cm8"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/yjwen/org-reveal")
+      (synopsis "Org and Reveal.js powered HTML presentation tool")
+      (description "Org-Reveal is a command@{org-mode} extension that allows
+to create beautiful presentations (slides) with 3D effects from simple but
 powerful Org contents.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-add-hooks
   (package
