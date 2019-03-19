@@ -1420,14 +1420,14 @@ action, which will forward to the first available view.")
 (define-public perl-catalyst-action-rest
   (package
     (name "perl-catalyst-action-rest")
-    (version "1.20")
+    (version "1.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                                   "Catalyst-Action-REST-" version ".tar.gz"))
               (sha256
                (base32
-                "1mpa64p61f3dp24xnhdraswch4sqj5vyv1iivcvvh5h0xi0haiy0"))))
+                "086bykggzalbjfk0islac4b48g9s2ypj7y81d6ns1lq0aax1py6c"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)
