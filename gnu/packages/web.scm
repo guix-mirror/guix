@@ -6204,18 +6204,19 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
     (version "0.31")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://git.r-36.net/geomyidae/snapshot/"
-                           "geomyidae-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://r-36.net/geomyidae")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1ih7220c6mgq4r7blm4kx3pxbl53sph58lqgwci6cmi3c0sq5c3x"))))
+        (base32 "1ldv4bca2x9kq2fwmzg3l6qahvzg9kki3j9j5njl74k23zc2acik"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
-       #:tests? #f                                ;no tests
+       #:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
     (home-page "http://git.r-36.net/geomyidae")
