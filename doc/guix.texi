@@ -13374,6 +13374,15 @@ When @code{resolutions} is the empty list, Xorg chooses an appropriate screen
 resolution.  Otherwise, it must be a list of resolutions---e.g., @code{((1024
 768) (640 480))}.
 
+@cindex keyboard layout, for Xorg
+@cindex keymap, for Xorg
+@item @code{keyboard-layout} (default: @code{#f})
+If this is @code{#f}, Xorg uses the default keyboard layout---usually US
+English (``qwerty'') for a 105-key PC keyboard.
+
+Otherwise this must be a @code{keyboard-layout} object specifying the keyboard
+layout in use when Xorg is running.
+
 @item @code{extra-config} (default: @code{'()})
 This is a list of strings or objects appended to the configuration file.  It
 is used to pass extra text to be added verbatim to the configuration file.

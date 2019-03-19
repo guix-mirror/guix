@@ -25,6 +25,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
+  #:use-module (gnu system keyboard)
   #:use-module (gnu services dbus)
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
@@ -147,6 +148,8 @@
                     (default '()))
   (resolutions      xorg-configuration-resolutions ;list of tuples
                     (default '()))
+  (keyboard-layout  xorg-configuration-keyboard-layout ;#f | <keyboard-layout>
+                    (default #f))
   (extra-config     xorg-configuration-extra-config ;list of strings
                     (default '()))
   (server           xorg-configuration-server     ;package
@@ -195,6 +198,31 @@ Section \"Screen\"
   EndSubSection
 EndSection"))
 
+            (define (input-class-section layout variant model options)
+              (string-append "
+Section \"InputClass\"
+  Identifier \"evdev keyboard catchall\"
+  MatchIsKeyboard \"on\"
+  Option \"XkbLayout\" " (object->string layout)
+  (if variant
+      (string-append "  Option \"XkbVariant\" \""
+                     variant "\"")
+      "")
+  (if model
+      (string-append "  Option \"XkbModel\" \""
+                     model "\"")
+      "")
+  (match options
+    (()
+     "")
+    (_
+     (string-append "  Option \"XkbOptions\" \""
+                    (string-join options ",") "\""))) "
+
+  MatchDevicePath \"/dev/input/event*\"
+  Driver \"evdev\"
+EndSection\n"))
+
             (define (expand modules)
               ;; Append to MODULES the relevant /lib/xorg/modules
               ;; sub-directories.
@@ -239,6 +267,19 @@ EndSection\n" port)
                       "\n")
                      port)
             (newline port)
+
+            (let ((layout  #$(and=> (xorg-configuration-keyboard-layout config)
+                                    keyboard-layout-name))
+                  (variant #$(and=> (xorg-configuration-keyboard-layout config)
+                                    keyboard-layout-variant))
+                  (model   #$(and=> (xorg-configuration-keyboard-layout config)
+                                    keyboard-layout-model))
+                  (options '#$(keyboard-layout-options
+                               (xorg-configuration-keyboard-layout config))))
+              (when layout
+                (display (input-class-section layout variant model options)
+                         port)
+                (newline port)))
 
             (for-each (lambda (config)
                         (display config port))
