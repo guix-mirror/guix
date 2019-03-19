@@ -6201,7 +6201,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
 (define-public geomyidae
   (package
     (name "geomyidae")
-    (version "0.31")
+    (version "0.34")
     (source
      (origin
        (method git-fetch)
@@ -6210,7 +6210,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ldv4bca2x9kq2fwmzg3l6qahvzg9kki3j9j5njl74k23zc2acik"))))
+        (base32 "02afgrk36wkdkflyqr2xgh49v9zq6ma454jshk7igvhpxfb5l3ks"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
