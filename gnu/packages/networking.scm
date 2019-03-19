@@ -684,13 +684,13 @@ fashion.")
 (define-public gandi.cli
   (package
     (name "gandi.cli")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
-        (base32 "0vfzkw1avybjkf6fwqpf5m4kjz4c0qkkmj62f3jd0zx00vh5ly1d"))))
+        (base32 "1lfvb5npk99nz1lwhr5m67ia1kj35nqd6a2xp9mii28xgzsd5awk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
