@@ -301,7 +301,7 @@ also known as DXTn or DXTC) for Mesa.")
              ("i686-linux"
               '("-Dvulkan-drivers=amd"))
              (_
-              '("")))
+              '("-Dvulkan-drivers=auto")))
 
          ;; Also enable the tests.
          "-Dbuild-tests=true"
