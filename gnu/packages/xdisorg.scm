@@ -401,7 +401,14 @@ rasterisation.")
                 "-Detnaviv=true"
                 "-Dtegra=true"
                 "-Dfreedreno-kgsl=true"))
-             (_ '())))))
+             (_ '())))
+       ,@(if (string=? (%current-system) "armhf-linux")
+             '(#:phases
+               (modify-phases %standard-phases
+                 (replace 'check
+                   (lambda _
+                     (invoke "meson" "test" "--timeout-multiplier" "5")))))
+             '())))
     (inputs
      `(("libpciaccess" ,libpciaccess)))
     (native-inputs
