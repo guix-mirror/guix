@@ -10405,6 +10405,24 @@ the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{Bootloader Configuration}.
 
+@item @code{keyboard-layout} (default: @code{#f})
+This field specifies the keyboard layout to use in the console.  It can be
+either @code{#f}, in which case the default keyboard layout is used (usually
+US English), or a @code{<keyboard-layout>} record.
+
+This keyboard layout is in effect as soon as the kernel has booted.  For
+instance, it is the keyboard layout in effect when you type a passphrase if
+your root file system is on a @code{luks-device-mapping} mapped device
+(@pxref{Mapped Devices}).
+
+@quotation Note
+This does @emph{not} specify the keyboard layout used by the bootloader, nor
+that used by the graphical display server.  @xref{Bootloader Configuration},
+for information on how to specify the bootloader's keyboard layout.  @xref{X
+Window}, for information on how to specify the keyboard layout used by the X
+Window System.
+@end quotation
+
 @item @code{initrd-modules} (default: @code{%base-initrd-modules})
 @cindex initrd
 @cindex initial RAM disk
@@ -23493,6 +23511,7 @@ here is how to use it and customize it further.
 @cindex initial RAM disk
 @deffn {Scheme Procedure} raw-initrd @var{file-systems} @
        [#:linux-modules '()] [#:mapped-devices '()] @
+       [#:keyboard-layout #f] @
        [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
 Return a derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
@@ -23504,6 +23523,12 @@ the root file system specified on the kernel command line via @code{--root}.
 include @code{e2fsck/static} or other packages needed by the initrd to check
 the root file system.
 
+When true, @var{keyboard-layout} is a @code{<keyboard-layout>} record denoting
+the desired console keyboard layout.  This is done before @var{mapped-devices}
+are set up and before @var{file-systems} are mounted such that, should the
+user need to enter a passphrase or use the REPL, this happens using the
+intended keyboard layout.
+
 When @var{qemu-networking?} is true, set up networking with the standard QEMU
 parameters.  When @var{virtio?} is true, load additional modules so that the
 initrd can be used as a QEMU guest with para-virtualized I/O drivers.
@@ -23513,13 +23538,20 @@ to it are lost.
 @end deffn
 
 @deffn {Scheme Procedure} base-initrd @var{file-systems} @
-       [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
+       [#:mapped-devices '()] [#:keyboard-layout #f] @
+       [#:qemu-networking? #f] [#:volatile-root? #f] @
        [#:linux-modules '()]
 Return as a file-like object a generic initrd, with kernel
 modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
 mappings to realize before @var{file-systems} are mounted.
+
+When true, @var{keyboard-layout} is a @code{<keyboard-layout>} record denoting
+the desired console keyboard layout.  This is done before @var{mapped-devices}
+are set up and before @var{file-systems} are mounted such that, should the
+user need to enter a passphrase or use the REPL, this happens using the
+intended keyboard layout.
 
 @var{qemu-networking?} and @var{volatile-root?} behaves as in @code{raw-initrd}.
 

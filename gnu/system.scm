@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -157,6 +157,8 @@
                     (default '()))                ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
 
+  (keyboard-layout operating-system-keyboard-layout ;#f | <keyboard-layout>
+                   (default #f))
   (initrd operating-system-initrd                 ; (list fs) -> file-like
           (default base-initrd))
   (initrd-modules operating-system-initrd-modules ; list of strings
@@ -878,7 +880,8 @@ hardware-related operations as necessary when booting a Linux container."
                #:linux (operating-system-kernel os)
                #:linux-modules
                (operating-system-initrd-modules os)
-               #:mapped-devices mapped-devices))
+               #:mapped-devices mapped-devices
+               #:keyboard-layout (operating-system-keyboard-layout os)))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."
