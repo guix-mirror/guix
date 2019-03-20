@@ -5842,24 +5842,22 @@ information are missing.")
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
-    (version "1.0.16")
+    (version "1.0.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjlabelled" version))
        (sha256
         (base32
-         "1zi1ncna16zl9hcy7mzara4kjxqkgwcw9ncp388ss353wwc9y2nc"))))
+         "00c0c22ynpihgf2bvmcfnkvqwqvxax2zzb7wldsmg2f7z5a32aa6"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-broom" ,r-broom)
-       ("r-dplyr" ,r-dplyr)
+     `(("r-dplyr" ,r-dplyr)
        ("r-haven" ,r-haven)
+       ("r-insight" ,r-insight)
        ("r-magrittr" ,r-magrittr)
-       ("r-prediction" ,r-prediction)
        ("r-purrr" ,r-purrr)
-       ("r-rlang" ,r-rlang)
-       ("r-snakecase" ,r-snakecase)))
+       ("r-rlang" ,r-rlang)))
     (home-page "https://github.com/strengejacke/sjlabelled")
     (synopsis "Labelled data utility functions")
     (description
