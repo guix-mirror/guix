@@ -251,6 +251,7 @@ System Configuration
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Keyboard Layout::             How the system interprets key strokes.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
@@ -10132,6 +10133,7 @@ instance to support new system services.
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Keyboard Layout::             How the system interprets key strokes.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
@@ -10991,6 +10993,108 @@ find on a GNU/Linux system, such as the ``nobody'' account.
 Note that the ``root'' account is not included here.  It is a
 special-case and is automatically added whether or not it is specified.
 @end defvr
+
+@node Keyboard Layout
+@section Keyboard Layout
+
+To specify what each key of your keyboard does, you need to tell the operating
+system what @dfn{keyboard layout} you want to use.  The default, when nothing
+is specified, is the US English QWERTY layout for 105-key PC keyboards.
+However, German speakers will usually prefer the German QWERTZ layout, French
+speakers will want the AZERTY layout, and so on; hackers might prefer Dvorak
+or bépo, and they might even want to further customize the effect of some of
+the keys.  This section explains how to get that done.
+
+@cindex keyboard layout, definition
+There are three components that will want to know about your keyboard layout:
+
+@itemize
+@item
+The @emph{bootloader} may want to know what keyboard layout you want to use
+(@pxref{Bootloader Configuration, @code{keyboard-layout}}).  This is useful if
+you want, for instance, to make sure that you can type the passphrase of your
+encrypted root partition using the right layout.
+
+@item
+The @emph{operating system kernel}, Linux, will need that so that the console
+is properly configured (@pxref{operating-system Reference,
+@code{keyboard-layout}}).
+
+@item
+The @emph{graphical display server}, usually Xorg, also has its own idea of
+the keyboard layout (@pxref{X Window, @code{keyboard-layout}}).
+@end itemize
+
+Guix allows you to configure all three separately but, fortunately, it allows
+you to share the same keyboard layout for all three components.
+
+@cindex XKB, keyboard layouts
+Keyboard layouts are represented by records created by the
+@code{keyboard-layout} procedure of @code{(gnu system keyboard)}.  Following
+the X Keyboard extension (XKB), each layout has four attributes: a name (often
+a language code such as ``fi'' for Finnish or ``jp'' for Japanese), an
+optional variant name, an optional keyboard model name, and a possibly empty
+list of additional options.  In most cases the layout name is all you care
+about.  Here are a few example:
+
+@example
+;; The German QWERTZ layout.  Here we assume a standard
+;; "pc105" keyboard model.
+(keyboard-layout "de")
+
+;; The bépo variant of the French layout.
+(keyboard-layout "fr" "bepo")
+
+;; The Catalan layout.
+(keyboard-layout "es" "cat")
+
+;; The Latin American Spanish layout.  In addition, the
+;; "Caps Lock" key is used as an additional "Ctrl" key,
+;; and the "Menu" key is used as a "Compose" key to enter
+;; accented letters.
+(keyboard-layout "latam"
+                 #:options '("ctrl:nocaps" "compose:menu"))
+
+;; The Russian layout for a ThinkPad keyboard.
+(keyboard-layout "ru" #:model "thinkpad")
+
+;; The "US international" layout, which is the US layout plus
+;; dead keys to enter accented characters.  This is for an
+;; Apple MacBook keyboard.
+(keyboard-layout "us" "intl" #:model "macbook78")
+@end example
+
+See the @file{share/X11/xkb} directory of the @code{xkeyboard-config} package
+for a complete list of supported layouts, variants, and models.
+
+@cindex keyboard layout, configuration
+Let's say you want your system to use the Turkish keyboard layout throughout
+your system---bootloader, console, and Xorg.  Here's what your system
+configuration would look like:
+
+@lisp
+;; Using the Turkish layout for the bootloader, the console,
+;; and for Xorg.
+
+(operating-system
+  ;; ...
+  (keyboard-layout (keyboard-layout "tr"))  ;for the console
+  (bootloader (bootloader-configuration
+                (bootloader grub-efi-bootloader)
+                (target "/boot/efi")
+                (keyboard-layout keyboard-layout))) ;for GRUB
+  (services (modify-services %desktop-services
+              (slim-service-type config =>
+                (slim-configuration
+                  (inherit config)
+                  (xorg-configuration
+                    (xorg-configuration             ;for Xorg
+                      (keyboard-layout keyboard-layout))))))))
+@end lisp
+
+In the example above, for GRUB and for Xorg, we just refer to the
+@code{keyboard-layout} field defined above, but we could just as well refer to
+a different layout.
 
 @node Locales
 @section Locales
@@ -13399,7 +13503,8 @@ If this is @code{#f}, Xorg uses the default keyboard layout---usually US
 English (``qwerty'') for a 105-key PC keyboard.
 
 Otherwise this must be a @code{keyboard-layout} object specifying the keyboard
-layout in use when Xorg is running.
+layout in use when Xorg is running.  @xref{Keyboard Layout}, for more
+information on how to specify the keyboard layout.
 
 @item @code{extra-config} (default: @code{'()})
 This is a list of strings or objects appended to the configuration file.  It
@@ -23651,23 +23756,8 @@ The number of seconds to wait for keyboard input before booting.  Set to
 If this is @code{#f}, the bootloader's menu (if any) uses the default keyboard
 layout, usually US@tie{}English (``qwerty'').
 
-Otherwise, this must be a @code{keyboard-layout} object.  For instance, the
-following example defines a standard German keyboard layout:
-
-@example
-(keyboard-layout "de")
-@end example
-
-@noindent
-while the example below designates the bépo layout for French:
-
-@example
-(keyboard-layout "fr" "bepo")
-@end example
-
-The layout name and variant must match an existing layout in the
-@code{xkeyboard-config} package under the @file{share/X11/xkb/symbols}
-directory.
+Otherwise, this must be a @code{keyboard-layout} object (@pxref{Keyboard
+Layout}).
 
 @quotation Note
 This option is currently ignored by bootloaders other than @code{grub} and
