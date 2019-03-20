@@ -10755,14 +10755,14 @@ them in distributed compute environments.")
 (define-public r-future
   (package
     (name "r-future")
-    (version "1.11.1.1")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "future" version))
        (sha256
         (base32
-         "1s4lyqg4mm1drzc6czaalmhmxfjgp4nznb14ql5xzny9rprgz43i"))))
+         "12hq7hsfydlscwrb37ns9a8561bzpsp82nn7jrcyj0ydk610nipm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
