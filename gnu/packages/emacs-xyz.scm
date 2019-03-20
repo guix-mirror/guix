@@ -13639,30 +13639,29 @@ and code peeking.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-notmuch
-  (let ((commit "9988eb0f787c82c779f2417b5613b9142a5b1c9b"))
-    (package
-      (name "emacs-helm-notmuch")
-      (version (git-version "1.1" "1" commit))
-      (home-page "https://github.com/xuchunyang/helm-notmuch/")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1jwhmlqlgzxj2zfz0za33vn8m2zrsmkmnq2vx5i1nry70p9h43b4"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("notmuch" ,notmuch)))
-      (synopsis "Search emails with Emacs Notmuch and Helm")
-      (description
-       "This package can be used to search emails in Emacs, searching result
+  (package
+    (name "emacs-helm-notmuch")
+    (version "1.2")
+    (home-page "https://github.com/emacs-helm/helm-notmuch/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1k038dbdpaa411gl4071x19fklhnizhr346plxw23lsnxir9dhqc"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("notmuch" ,notmuch)))
+    (synopsis "Search emails with Emacs Notmuch and Helm")
+    (description
+     "This package can be used to search emails in Emacs, searching result
 displays as you type thanks to Helm, though @command{notmuch-search} does the
 real search.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-elmacro
   (let ((commit "89b9b0feabafd01fee48111d67131c4c9b5fed9a"))
