@@ -7735,31 +7735,26 @@ detection, parallelism through BLAS and parallel user templates.")
 (define-public r-sjstats
   (package
     (name "r-sjstats")
-    (version "0.17.3")
+    (version "0.17.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjstats" version))
        (sha256
         (base32
-         "02na2pzxp88yp52h7vs959fgydiddmns39m9x4i0vz8fp016bdf8"))))
+         "012hp9m17xzjnsfvjjz2wdfgxm3irsrfx0zmahfnfmgdrwxd5vk5"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-bayesplot" ,r-bayesplot)
-       ("r-broom" ,r-broom)
-       ("r-coin" ,r-coin)
-       ("r-crayon" ,r-crayon)
+     `(("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
        ("r-emmeans" ,r-emmeans)
-       ("r-glmmtmb" ,r-glmmtmb)
+       ("r-insight" ,r-insight)
        ("r-lme4" ,r-lme4)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
        ("r-modelr" ,r-modelr)
-       ("r-nlme" ,r-nlme)
        ("r-purrr" ,r-purrr)
-       ("r-pwr" ,r-pwr)
        ("r-rlang" ,r-rlang)
        ("r-sjlabelled" ,r-sjlabelled)
        ("r-sjmisc" ,r-sjmisc)
