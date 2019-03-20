@@ -14602,3 +14602,40 @@ tools which build on STAR, Arriba does not require to reduce the
     ;; All code is under the Expat license with the exception of
     ;; "draw_fusions.R", which is under GPLv3.
     (license (list license:expat license:gpl3))))
+
+(define-public adapterremoval
+  (package
+    (name "adapterremoval")
+    (version "2.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MikkelSchubert/adapterremoval.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nf3ki5pfzalhrx2fr1y6pfqfi133yj2m7q4fj9irf5fb94bapwr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "COLOR_BUILD=no"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://adapterremoval.readthedocs.io/")
+    (synopsis "Rapid sequence adapter trimming, identification, and read merging")
+    (description
+     "This program searches for and removes remnant adapter sequences from
+@dfn{High-Throughput Sequencing} (HTS) data and (optionally) trims low quality
+bases from the 3' end of reads following adapter removal.  AdapterRemoval can
+analyze both single end and paired end data, and can be used to merge
+overlapping paired-ended reads into (longer) consensus sequences.
+Additionally, the AdapterRemoval may be used to recover a consensus adapter
+sequence for paired-ended data, for which this information is not available.")
+    (license license:gpl3+)))
