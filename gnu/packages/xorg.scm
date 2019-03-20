@@ -2618,14 +2618,14 @@ as USB mice.")
 (define-public xf86-video-amdgpu
   (package
     (name "xf86-video-amdgpu")
-    (version "19.0.0")
+    (version "19.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/driver/"
                            "xf86-video-amdgpu-" version ".tar.bz2"))
        (sha256
-        (base32 "0lag9jxd752ja7m7ngz3dmqffb5wbx4crdwjw74qx42m8xyi8dl8"))))
+        (base32 "1mf6s7i423b2xyl469kwnakrpp5fr41sm8hh7vli5jxdd8crg8da"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
