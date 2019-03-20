@@ -10229,14 +10229,14 @@ This makes it a convenient and fast interface to C/C++ and Fortran code.")
 (define-public r-spam
   (package
     (name "r-spam")
-    (version "2.2-1")
+    (version "2.2-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spam" version))
        (sha256
         (base32
-         "04bfwwna013hrbl4k6w1cdiz5bkc83jlasivriyn5l9gkj2qskr2"))))
+         "024dgfnjfxvsiymbzrhadinamj6qy509f4sbd1zxql8ymkyxn7vi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dotcall64" ,r-dotcall64)))
