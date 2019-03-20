@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,14 +152,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.9.5")
+    (version "4.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "001p896z609vb0qs196bgl362j7y3qibgm5gcl9028lfv795d287"))))
+               "0n1ld77y8sydkpx6l8i2hqa1k7hpkr8df91pg849glc4b85407wz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -225,7 +226,7 @@ anywhere.")
        ("xsltproc" ,libxslt)           ;ditto
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2))) ; incompatible with Python 3
+       ("python" ,python)))
     (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
