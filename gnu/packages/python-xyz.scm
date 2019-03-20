@@ -3521,13 +3521,14 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
     (name "python-colorspacious")
     (version "1.1.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/njsmith/colorspacious/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version))
-        (sha256
-         (base32 "1vflh5jm32qb0skza2i8pjacv09w6gq84fqpp2nj77s0rbmzgr4k"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/njsmith/colorspacious.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g0lxqiscy5g5rq9421vv7abg0c90jzy0zmas2z3hya6k2dr5aid"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
