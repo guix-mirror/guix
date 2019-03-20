@@ -3405,16 +3405,15 @@ already set.")
 (define-public perl-plack-middleware-methodoverride
   (package
     (name "perl-plack-middleware-methodoverride")
-    (version "0.11")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DW/DWHEELER/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                            "Plack-Middleware-MethodOverride-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1hb8dx7i4vs74n0p737wrvpdnnw6argxrjpr6kj6432zabp8325z"))))
+        (base32 "1wdmmav3rbhv49zpw311zrxxqmg1fz3f3q9src0ypgs8zcp5myyv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
