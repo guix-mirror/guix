@@ -230,10 +230,15 @@ servers from Python programs.")
              "--disable-perl")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-includes
+         (add-after 'unpack 'fix-references
            (lambda _
              (substitute* "include/ldaputil/certmap.h"
                (("nss3/cert.h") "nss/cert.h"))
+             (substitute* "src/lib389/lib389/nss_ssl.py"
+               (("'/usr/bin/certutil'")
+                (string-append "'" (which "certutil") "'"))
+               (("'/usr/bin/c_rehash'")
+                (string-append "'" (which "perl") "', '" (which "c_rehash") "'")))
              #t))
          (add-after 'unpack 'fix-install-location-of-python-tools
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -305,6 +310,7 @@ servers from Python programs.")
        ("net-snmp" ,net-snmp)
        ("nspr" ,nspr)
        ("nss" ,nss)
+       ("nss:bin" ,nss "bin") ; for certutil
        ("openldap" ,openldap)
        ("openssl" ,openssl)             ; #included by net-snmp
        ("pcre" ,pcre)
