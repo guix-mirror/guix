@@ -7633,6 +7633,26 @@ comparisons of slopes.")
 Cohen (1988).")
     (license license:gpl3+)))
 
+(define-public r-libcoin
+  (package
+    (name "r-libcoin")
+    (version "1.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "libcoin" version))
+       (sha256
+        (base32
+         "1i893ij9vkmc4y721npw1s3prmmcs2da5vf3ajm0j8ccmfhbmp4i"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://cran.r-project.org/web/packages/libcoin")
+    (synopsis "Linear test statistics for permutation inference")
+    (description
+     "This package provides basic infrastructure for linear test statistics
+and permutation inference in the framework of Strasser and Weber (1999).")
+    (license license:gpl2)))
+
 (define-public r-coin
   (package
     (name "r-coin")
