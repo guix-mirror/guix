@@ -7811,30 +7811,25 @@ differentiation.")
 (define-public r-ggeffects
   (package
     (name "r-ggeffects")
-    (version "0.8.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggeffects" version))
        (sha256
         (base32
-         "152xyadj5m171z7dlzzy40y1fp2l9v46525dlw2al3qr0b7zpm61"))))
+         "1bbr44yk1j8pz4kcbw1cqrzcnbih9n6rsgf96a6py5094qcal2qd"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-crayon" ,r-crayon)
-       ("r-dplyr" ,r-dplyr)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-lme4" ,r-lme4)
+     `(("r-dplyr" ,r-dplyr)
+       ("r-insight" ,r-insight)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
-       ("r-prediction" ,r-prediction)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-sjlabelled" ,r-sjlabelled)
-       ("r-sjmisc" ,r-sjmisc)
-       ("r-sjstats" ,r-sjstats)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-sjmisc" ,r-sjmisc)))
     (home-page "https://github.com/strengejacke/ggeffects")
     (synopsis "Create tidy data frames of marginal effects for ggplot")
     (description
