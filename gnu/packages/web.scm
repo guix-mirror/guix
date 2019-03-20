@@ -3705,14 +3705,14 @@ methods for WebSocket URIs as it does for HTTP URIs.")
 (define-public perl-uri-template
   (package
     (name "perl-uri-template")
-    (version "0.23")
+    (version "0.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/URI-Template-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nnijyv4n5qfg7l94j7fmvqy9cbq3gl9sz9anmgsiprmkmpk419j"))))
+                "1phibcmam2hklrddzj79l43va1gcqpyszbw21ynxq53ynmhjvbk8"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-uri" ,perl-uri)))
