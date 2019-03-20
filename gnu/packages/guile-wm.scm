@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex ter Weele <alex.ter.weele@gmail.com>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -87,39 +87,74 @@ dependencies.")
                   "086dijnpl5dpglf70d6f9sizyakr313y7blpdjrmbi687j1x3qcl"))))
       (build-system gnu-build-system)
       (arguments
-       `( ;; The '.scm' files go to $(datadir), so set that to the
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 rdelim)
+                    (ice-9 popen))
+         ;; The '.scm' files go to $(datadir), so set that to the
          ;; standard value.
          #:configure-flags (list (string-append "--datadir="
                                                 (assoc-ref %outputs "out")
                                                 "/share/guile/site/2.2"))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'set-go-directory
+           (add-before 'configure 'set-module-directory
              (lambda* (#:key outputs #:allow-other-keys)
-               ;; Install .go files to $out/share/guile/site/2.2.
-               (let ((out (assoc-ref outputs "out")))
+               ;; Install .scm files to $out/share/guile/site/2.2.
+               (let ((out (assoc-ref outputs "out"))
+                     (effective (read-line
+                                 (open-pipe* OPEN_READ
+                                             "guile" "-c"
+                                             "(display (effective-version))"))))
                  (substitute* "module/Makefile.in"
                    (("^wmdir = .*$")
                     (string-append "wmdir = " out
-                                   "/share/guile/site/2.2\n"))))
+                                   "/share/guile/site/"
+                                   effective "\n"))))
                #t))
            (add-after 'install 'set-load-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Put Guile-XCB's and Guile-WM's modules in the
                ;; search path of PROG.
-               (let* ((out  (assoc-ref outputs "out"))
-                      (prog (string-append out "/bin/guile-wm"))
-                      (mods (string-append
-                             out "/share/guile/site/2.2"))
-                      (xcb  (string-append
-                             (assoc-ref inputs "guile-xcb")
-                             "/share/guile/site/2.2")))
-                 (wrap-program
-                     prog
-                   `("GUILE_LOAD_PATH" ":" prefix (,mods ,xcb))
+               (let* ((out       (assoc-ref outputs "out"))
+                      (effective (read-line
+                                  (open-pipe* OPEN_READ
+                                              "guile" "-c"
+                                              "(display (effective-version))")))
+                      (prog      (string-append out "/bin/guile-wm"))
+                      (mods      (string-append out "/share/guile/site/" effective))
+                      (gos       (string-append out "/lib/guile/" effective "/site-ccache"))
+                      (xcb       (assoc-ref inputs "guile-xcb")))
+                 (wrap-program prog
+                   `("GUILE_AUTO_COMPILE" ":" = ("0"))
+                   `("GUILE_LOAD_PATH" ":" prefix
+                     (,mods ,(string-append xcb "/share/guile/site/" effective)))
                    `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                     (,mods ,xcb))))
+                     (,gos ,(string-append xcb "/lib/guile/"
+                                           effective "/site-ccache")))))
                #t))
+           (add-after 'install 'install-go-files
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (effective (read-line
+                                  (open-pipe* OPEN_READ
+                                              "guile" "-c"
+                                              "(display (effective-version))")))
+                      (module-dir (string-append out "/share/guile/site/"
+                                                 effective))
+                      (object-dir (string-append out "/lib/guile/" effective
+                                                 "/site-ccache"))
+                      (prefix     (string-length module-dir)))
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+                 ;; compile to the destination
+                 (for-each (lambda (file)
+                             (let* ((base (string-drop (string-drop-right file 4)
+                                                       prefix))
+                                    (go   (string-append object-dir base ".go")))
+                               (invoke "guild" "compile" "-L" module-dir
+                                       file "-o" go)))
+                           (find-files module-dir "\\.scm$"))
+                 #t)))
            (add-after 'install 'install-xsession
              (lambda* (#:key outputs #:allow-other-keys)
                ;; add a .desktop file to xsessions
