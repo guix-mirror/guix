@@ -1999,6 +1999,43 @@ for systems using the Linux kernel.  This includes commands such as
 'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
     (license license:gpl2+)))
 
+(define-public loadkeys-static
+  (package
+    (inherit kbd)
+    (name "loadkeys-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments kbd)
+       ((#:configure-flags flags ''())
+        `(append '("LDFLAGS=-static" "--disable-shared" "--disable-nls"
+                   "--disable-vlock"              ;so we don't need libpam
+                   "--disable-libkeymap")
+                 ,flags))
+       ((#:make-flags flags ''())
+        `(cons "LDFLAGS=-all-static" ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; The binary keeps references to gzip, among other things,
+                 ;; which we don't need in the initrd, so strip references.
+                 (remove-store-references "src/loadkeys")
+
+                 (install-file "src/loadkeys"
+                               (string-append out "/bin"))
+                 #t)))
+           (delete 'post-install)))
+       ((#:strip-flags _ '())
+        ''("--strip-all"))
+       ((#:allowed-references _ '())
+        '())))
+
+    (synopsis "Statically-linked @command{loadkeys} program")
+
+    ;; This package is meant to be used internally in the initrd so don't
+    ;; expose it.
+    (properties '((hidden? . #t)))))
+
 (define-public inotify-tools
   (package
     (name "inotify-tools")
