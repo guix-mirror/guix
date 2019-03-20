@@ -57,6 +57,36 @@
 and track podcasts.")
     (license license:lgpl2.1+)))
 
+(define-public python-mygpoclient
+  (package
+    (name "python-mygpoclient")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mygpoclient" version))
+       (sha256
+        (base32
+         "1fi5x6k1mngr0iviw2s4n1f3y2x7pwqy5ivkcrjdprzvwr37f0mh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-minimock" ,python-minimock)
+       ("python-nose" ,python-nose)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "make" "test"))))))
+    (home-page "https://mygpoclient.readthedocs.io")
+    (synopsis "Python library for the gPodder web service")
+    (description "@code{mygpoclient} provides an easy and structured way to
+access the @url{https://gpodder.net} web services.  In addition to
+subscription list synchronization and storage, the API supports uploading and
+downloading episode status changes.")
+    (license license:gpl3+)))
+
 (define-public python-podcastparser
   (package
     (name "python-podcastparser")
