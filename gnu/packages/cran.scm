@@ -9755,14 +9755,14 @@ and manipulating sets of ontological terms.")
 (define-public r-gmp
   (package
     (name "r-gmp")
-    (version "0.5-13.4")
+    (version "0.5-13.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gmp" version))
        (sha256
         (base32
-         "15jifzwbzqcnq2apzvsylkx4k9lillkgblm4wf4wb7y31ys0amph"))))
+         "042mzsl6z6s61fy5m21yf9q83l08vnyqljn4iax7kqyiycpsp0gn"))))
     (build-system r-build-system)
     (arguments
      '(#:phases
