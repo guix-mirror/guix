@@ -224,6 +224,7 @@ servers from Python programs.")
              (string-append "--with-selinux="
                             (assoc-ref %build-inputs "libselinux"))
              "--localstatedir=/var"
+             "--with-instconfigdir=/etc/dirsrv"
              ;; The Perl scripts are being removed in the 1.4.0 release.
              ;; Building them would require packaging of the outdated Mozilla
              ;; LDAP SDK (instead of OpenLDAP) and PerLDAP.
@@ -240,6 +241,25 @@ servers from Python programs.")
                (("'/usr/bin/c_rehash'")
                 (string-append "'" (which "perl") "', '" (which "c_rehash") "'")))
              #t))
+         (add-after 'unpack 'overwrite-default-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "src/lib389/lib389/paths.py"
+                 (("/usr/share/dirsrv/inf/defaults.inf")
+                  (string-append out "/share/dirsrv/inf/defaults.inf")))
+               ;; This directory can only be specified relative to sysconfdir.  This
+               ;; is used to determine where to look for installed directory
+               ;; servers, so in the absence of a search path it needs to be global.
+               (substitute* "ldap/admin/src/defaults.inf.in"
+                 (("^initconfig_dir =.*")
+                  "initconfig_dir = /etc/dirsrv/registry\n"))
+               ;; This is used to determine where to write certificate files
+               ;; when installing new directory server instances.
+               (substitute* '("src/lib389/lib389/instance/setup.py"
+                              "src/lib389/lib389/instance/remove.py")
+                 (("etc_dirsrv_path = .*")
+                  "etc_dirsrv_path = '/etc/dirsrv/'\n"))
+               #t)))
          (add-after 'unpack 'fix-install-location-of-python-tools
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
