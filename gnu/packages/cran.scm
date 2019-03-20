@@ -6097,19 +6097,18 @@ matches version and feature constraints.")
 (define-public r-argparse
   (package
     (name "r-argparse")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "argparse" version))
        (sha256
         (base32
-         "1qrp7hc8sm6ryw0zws76al865ansig1xbx8ljxz4wabh60msrz3i"))))
+         "1as7h6z7kzgv0fqzpnp76qbm96b4jcd37azd58b7rz0l1n94764l"))))
     (build-system r-build-system)
     (inputs `(("python" ,python)))
     (propagated-inputs
      `(("r-findpython" ,r-findpython)
-       ("r-getopt" ,r-getopt)
        ("r-jsonlite" ,r-jsonlite)
        ("r-r6" ,r-r6)))
     (home-page "https://github.com/trevorld/argparse")
