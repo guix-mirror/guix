@@ -1254,13 +1254,13 @@ wrong.")
 (define-public r-lazyeval
   (package
     (name "r-lazyeval")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lazyeval" version))
               (sha256
                (base32
-                "0q9zx78ncy2ffzrf9sh053069kd3w1xn1ss3gsbyf3y4jhza9cw3"))))
+                "1m10i059csrcqkcn59a8wspn784alxsq3symzhn24mhhl894346n"))))
     (build-system r-build-system)
     (home-page "https://github.com/hadley/lazyeval")
     (synopsis "Lazy (non-standard) evaluation in R")
