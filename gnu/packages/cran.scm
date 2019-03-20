@@ -8491,14 +8491,14 @@ This package provides an R interface.")
 (define-public r-ncdf4
   (package
     (name "r-ncdf4")
-    (version "1.16")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ncdf4" version))
        (sha256
         (base32
-         "0lwjjis0b83c4l3xvqai4ckzrskd6mychck1iwxcxgjvh0d77mgd"))))
+         "083sb24anyd4sw0il3x07pqn9rbx5y5ayqass6mz8x443rnjvphd"))))
     (build-system r-build-system)
     (inputs
      `(("netcdf" ,netcdf)
