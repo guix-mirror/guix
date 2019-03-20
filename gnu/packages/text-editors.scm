@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -105,7 +105,7 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2018.09.04")
+    (version "2019.01.20")
     (source
      (origin
        (method url-fetch)
@@ -113,8 +113,7 @@ based command language.")
                            "releases/download/v" version "/"
                            "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1qbj2hmcfs6pr5lc78z9ni5zxdyp3mr64dvms4l52716ikqcjcbs"))))
+        (base32 "15drk7i17qdiqxqkjxhrxfclryj9qzb5ymxd20dwl05y4yi064cr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
