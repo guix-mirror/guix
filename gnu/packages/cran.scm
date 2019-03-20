@@ -1157,14 +1157,14 @@ colors are provided.")
 (define-public r-glue
   (package
     (name "r-glue")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glue" version))
        (sha256
         (base32
-         "1vhw5497lpfr4m8lcx9bs0fgdp4ax0sycrk6n8yksp33qd25m7kq"))))
+         "1a1ycg9r3gd91visp49q49rsrdgyf8kr9dxdy3hk99kikn4z5hag"))))
     (build-system r-build-system)
     (home-page "https://github.com/tidyverse/glue")
     (synopsis "Interpreted string literals")
