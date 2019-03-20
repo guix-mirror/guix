@@ -111,7 +111,7 @@ based command language.")
        (method url-fetch)
        (uri (string-append "https://github.com/mawww/kakoune/"
                            "releases/download/v" version "/"
-                           name "-" version ".tar.bz2"))
+                           "kakoune-" version ".tar.bz2"))
        (sha256
         (base32
          "1qbj2hmcfs6pr5lc78z9ni5zxdyp3mr64dvms4l52716ikqcjcbs"))))
