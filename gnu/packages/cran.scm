@@ -1874,16 +1874,19 @@ provides an interactive R manager and worker environment.")
 (define-public r-lmoments
   (package
     (name "r-lmoments")
-    (version "1.2-3")
+    (version "1.3-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Lmoments" version))
        (sha256
         (base32
-         "13p0r4w16jvjnyjmkhkp3dwdfr1gap2l0k4k5jy41m8nc5fvcx79"))))
+         "0pc63bj9a8hzr5m3yssrc4kin39fffwkl8rggs3sagzr12d4i7bw"))))
     (properties `((upstream-name . "Lmoments")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
     (home-page "http://www.tilastotiede.fi/juha_karvanen.html")
     (synopsis "L-moments and quantile mixtures")
     (description
