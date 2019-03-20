@@ -5811,6 +5811,32 @@ from the @code{stats} package, as well as numerous other model classes from
 other add-on packages.")
     (license license:expat)))
 
+(define-public r-insight
+  (package
+    (name "r-insight")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "insight" version))
+       (sha256
+        (base32
+         "0cy00j4m9r690hrjdmv8wzwn8mbnkjd3g527nvsmid64h9jgks5f"))))
+    (build-system r-build-system)
+    (home-page "https://easystats.github.io/insight/")
+    (synopsis "Easy access to model information for various model objects")
+    (description
+     "This package provides a tool to provide an easy, intuitive and
+consistent access to information contained in various R models, like model
+formulas, model terms, information about random effects, data that was used to
+fit the model or data from response variables.  The package mainly revolves
+around two types of functions: Functions that find (the names of) information,
+starting with @code{find_}, and functions that get the underlying data,
+starting with @code{get_}.  The package has a consistent syntax and works with
+many different model objects, where otherwise functions to access these
+information are missing.")
+    (license license:gpl3)))
+
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
