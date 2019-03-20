@@ -916,14 +916,14 @@ Munsell colour system.")
 (define-public r-permute
   (package
    (name "r-permute")
-   (version "0.9-4")
+   (version "0.9-5")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "permute" version))
      (sha256
       (base32
-       "1w8wzk1fg9q7wvisnfp2js70dg0m9wi12gkdhpyngpbdcgssahd5"))))
+       "0ra8p5mf2590azrkas8z2ry7mif77xqxd29n4zgyi5vll225726j"))))
    (build-system r-build-system)
    ;; Tests do not run correctly, but running them properly would entail a
    ;; circular dependency with vegan.
