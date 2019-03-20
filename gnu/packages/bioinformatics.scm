@@ -9283,14 +9283,14 @@ trait.")
 (define-public r-maldiquant
   (package
     (name "r-maldiquant")
-    (version "1.18")
+    (version "1.19.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MALDIquant" version))
        (sha256
         (base32
-         "18nl214xjsxkcpbg79jkmw0yznwm5szyh2qb84n7ip46mm779ha6"))))
+         "11zbvm1vw8zn2vmymvydgdczvwj961s2knvrn1q4gbziwi5gqvlc"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/MALDIquant")
