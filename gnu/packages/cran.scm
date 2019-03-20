@@ -394,21 +394,20 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.5.1")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "0mqd40jckdpkjw1jjd860cdwkb03l6dkh931maijfdaqr1w9hwvn"))))
+                "19m9514yj5sg0rz1zvi8w1z98srnrql4iirgr794fkaap6bs7i2f"))))
     (build-system r-build-system)
-    (native-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
        ("r-later" ,r-later)
-       ("r-promises" ,r-promises)))
+       ("r-promises" ,r-promises)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/rstudio/httpuv")
     (synopsis "HTTP and WebSocket server library for R")
     (description
