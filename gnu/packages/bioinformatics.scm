@@ -13130,7 +13130,7 @@ analyses in addition to large-scale sequence-level searches.")
      `(("r-ape" ,r-ape)
        ("r-desolve" ,r-desolve)
        ("r-rcpp" ,r-rcpp)
-       ("r-suplex" ,r-subplex)))
+       ("r-subplex" ,r-subplex)))
     (home-page "https://www.zoology.ubc.ca/prog/diversitree")
     (synopsis "Comparative 'phylogenetic' analyses of diversification")
     (description "This package contains a number of comparative \"phylogenetic\"
