@@ -6273,19 +6273,18 @@ containing one or more SNPs that evolved under directional selection.")
 (define-public r-proc
   (package
     (name "r-proc")
-    (version "1.13.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pROC" version))
        (sha256
         (base32
-         "0ain17clympkx09ym7gydylcd93096dxzqx1qzci310yq2l7fknm"))))
+         "0ki1pvj5iaki81crapvwqllg5avn5qlvv62axnsdkdcmv9xc3wg0"))))
     (properties `((upstream-name . "pROC")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ggplot2" ,r-ggplot2)
-       ("r-plyr" ,r-plyr)
+     `(("r-plyr" ,r-plyr)
        ("r-rcpp" ,r-rcpp)))
     (home-page "http://expasy.org/tools/pROC/")
     (synopsis "Display and analyze ROC curves")
