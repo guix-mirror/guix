@@ -7649,17 +7649,19 @@ and permutation inference in the framework of Strasser and Weber (1999).")
 (define-public r-coin
   (package
     (name "r-coin")
-    (version "1.2-2")
+    (version "1.3-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "coin" version))
        (sha256
         (base32
-         "1fq58793bymzig1syjg2lvn6hsxfwkhh00jfrchh3c0y7rfhc66m"))))
+         "1y0yl4mjaxca0jqz53sv1gcpdg89m099rq61iszxvpx7w0vvpkmd"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-modeltools" ,r-modeltools)
+     `(("r-libcoin" ,r-libcoin)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-modeltools" ,r-modeltools)
        ("r-multcomp" ,r-multcomp)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-survival" ,r-survival)))
