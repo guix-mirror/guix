@@ -1254,7 +1254,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.20.0")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1262,10 +1262,11 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1a7xyvqjxfnm7rk21amm0xgxa38clg7q7cmc4dmlg27q81mambf8"))))
+                "1fi03lb8dqr8hq633gcqsf6228vsvysxms075j1yyl4nlc17616z"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                                ; no test suite
+     `( ;; There is a test suite, but it wants network namespaces and sudo.
+       #:tests? #f
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "DESTDIR="
                             (string-append "BASH_COMPDIR=" out
@@ -1285,12 +1286,15 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                         (("^.*ARPDDIR.*$") ""))
                       #t)))))
     (inputs
-     `(("iptables" ,iptables)
-       ("db4" ,bdb)))
+     `(("db4" ,bdb)
+       ("iptables" ,iptables)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("bison" ,bison)
        ("flex" ,flex)
-       ("bison" ,bison)))
+       ("pkg-config" ,pkg-config)))
+    ;; For tests.
+    ;; ("libmnl" ,libmnl)
+    ;; ("util-linux" ,util-linux)
     (home-page
      "https://wiki.linuxfoundation.org/networking/iproute2")
     (synopsis
