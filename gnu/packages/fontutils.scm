@@ -389,14 +389,14 @@ X11-system or any other graphical user interface.")
 (define-public teckit
   (package
     (name "teckit")
-    (version "2.5.8")                   ;signed by key 0xC9183BEA0288CDEE
+    (version "2.5.9")                   ;signed by key 0xC9183BEA0288CDEE
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/teckit/releases/"
                            "download/v" version "/teckit-" version ".tar.gz"))
        (sha256
-        (base32 "00dy4hpxlf36xn9ngwy8p8hcvqjdmfzlfadihjl92dq8y5l1zprm"))))
+        (base32 "0gbxyip4wdibirdg2pvzayzyy927vxyd6dfyfiflx8zg88qzn8v8"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
