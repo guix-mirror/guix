@@ -388,24 +388,24 @@ X11-system or any other graphical user interface.")
 
 (define-public teckit
   (package
-   (name "teckit")
-   (version "2.5.8")                    ;signed by key 0xC9183BEA0288CDEE
-   (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/silnrsi/teckit/releases/"
-                          "download/v" version "/teckit-" version ".tar.gz"))
-      (sha256
-       (base32 "00dy4hpxlf36xn9ngwy8p8hcvqjdmfzlfadihjl92dq8y5l1zprm"))))
-   (build-system gnu-build-system)
-   (inputs
-    `(("zlib" ,zlib)
-      ("expat" ,expat)))
-   (native-inputs
-    `(("perl" ,perl)))                  ;for the tests
-   (synopsis "Toolkit for encoding conversions")
-   (description
-    "TECkit is a low-level toolkit intended to be used by other applications
+    (name "teckit")
+    (version "2.5.8")                   ;signed by key 0xC9183BEA0288CDEE
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/silnrsi/teckit/releases/"
+                           "download/v" version "/teckit-" version ".tar.gz"))
+       (sha256
+        (base32 "00dy4hpxlf36xn9ngwy8p8hcvqjdmfzlfadihjl92dq8y5l1zprm"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("expat" ,expat)))
+    (native-inputs
+     `(("perl" ,perl)))                 ;for the tests
+    (synopsis "Toolkit for encoding conversions")
+    (description
+     "TECkit is a low-level toolkit intended to be used by other applications
 that need to perform encoding conversions (e.g., when importing legacy data
 into a Unicode-based application).  The primary component of the TECkit
 package is therefore a library that performs conversions; this is the
@@ -422,8 +422,8 @@ TECkit compiler.  However, it is not intended that these tools will be the
 primary means by which end users perform conversions, and they have not
 been designed, tested, and debugged to the extent that general-purpose
 applications should be.")
-   (license license:lgpl2.1+)
-   (home-page "http://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
+    (license license:lgpl2.1+)
+    (home-page "http://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
 
 (define-public graphite2
   (package
