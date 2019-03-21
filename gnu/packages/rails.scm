@@ -258,14 +258,14 @@ applications.  These work with any Rack-compatible server.")
 (define-public ruby-actioncable
   (package
    (name "ruby-actioncable")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actioncable" version))
      (sha256
       (base32
-       "0826k5ch0l03f9yrkxy69aiv039z4qi00lnahw2rzywd2iz6r68x"))))
+       "1x5fxhsr2mxq5r6258s48xsn7ld081d3qaavppvj7yp7w9vqn871"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
