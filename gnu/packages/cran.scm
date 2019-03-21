@@ -11797,3 +11797,29 @@ utility functions for data input/output and phylogeny plotting.  A full
 description of package functionality and methods are provided by Kembel et
 al. (2010).")
     (license license:gpl2)))
+
+(define-public r-reinforcelearn
+  (package
+    (name "r-reinforcelearn")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "reinforcelearn" version))
+       (sha256
+        (base32
+         "0naakmyb14d2cf7cy5ir52qh3bp51gvs6hyhfi3f72yl2jfnnpzg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-nnet" ,r-nnet)
+       ("r-purrr" ,r-purrr)
+       ("r-r6" ,r-r6)))
+    (home-page "https://markusdumke.github.io/reinforcelearn")
+    (synopsis "Reinforcement learning")
+    (description
+     "This package implements reinforcement learning environments and
+algorithms as described in Sutton & Barto (1998).  The Q-Learning algorithm
+can be used with function approximation, eligibility traces (Singh & Sutton,
+1996) and experience replay (Mnih et al., 2013).")
+    (license license:expat)))
