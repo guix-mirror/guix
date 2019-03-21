@@ -5844,7 +5844,7 @@ properties, screen resolution, and other GNOME parameters.")
        ("sassc" ,sassc)
        ("xsltproc" ,libxslt)
        ;; For tests
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("accountsservice" ,accountsservice)
        ("caribou" ,caribou)
