@@ -21,7 +21,9 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt))
 
@@ -54,3 +56,24 @@
 @url{https://gpodder.net} APIs.  It allows applications to discover, manage
 and track podcasts.")
     (license license:lgpl2.1+)))
+
+(define-public python-podcastparser
+  (package
+    (name "python-podcastparser")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "podcastparser" version))
+       (sha256
+        (base32
+         "1ksj1gcmbnm5i43xhpqxbs2mqi6xzawwwkwbh9h6lwa1wxxvv247"))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (build-system python-build-system)
+    (home-page "http://gpodder.org/podcastparser")
+    (synopsis "Simplified and fast RSS parser Python library")
+    (description "@code{podcastparser} is a library for the gPodder project to
+provide an easy and reliable way of parsing RSS and Atom-based podcast feeds
+in Python.")
+    (license license:isc)))
