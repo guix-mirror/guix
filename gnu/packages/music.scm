@@ -88,6 +88,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gpodder)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -4008,36 +4009,6 @@ OSC connections.")
     (description "Sorcer is a wavetable LV2 plugin synthesizer, targeted at
 the electronic or dubstep genre.")
     (license license:gpl3+)))
-
-(define-public libmygpo-qt
-  (package
-    (name "libmygpo-qt")
-    (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://stefan.derkits.at/files/"
-                                  "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
-              (sha256
-               (base32
-                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))
-              (patches (search-patches "libmygpo-qt-fix-qt-5.11.patch"
-                                       "libmygpo-qt-missing-qt5-modules.patch"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("qt" ,qtbase)))
-    (arguments
-     `(#:configure-flags '("-DMYGPO_BUILD_TESTS=ON")
-       ;; TODO: Enable tests when https://github.com/gpodder/gpodder/issues/446
-       ;; is fixed.
-       #:tests? #f))
-    (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
-    (synopsis "Qt/C++ library wrapping the gpodder web service")
-    (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the
-@url{https://gpodder.net} APIs.  It allows applications to discover, manage
-and track podcasts.")
-    (license license:lgpl2.1+)))
 
 (define-public sonivox-eas
   (package
