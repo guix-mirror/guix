@@ -297,7 +297,7 @@ team.")
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "1.6.2")
+    (version "1.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -306,11 +306,11 @@ team.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0251563zy0q69fzfacvalpx43y15cshb0bhshyd4w37061gh1c12"))))
+                "1pqlr08z5syqcq5p282asxwzrrm7c1w94baxyb467swh8yp3fj5m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))           ;for lrelease
+       ("qttools" ,qttools)))           ; for lrelease
     (inputs
      `(("hunspell" ,hunspell)
        ("qtbase" ,qtbase)
@@ -344,7 +344,7 @@ team.")
     (description
      "@code{ghostwriter} provides a relaxing, distraction-free writing
 environment with Markdown markup.")
-    (license license:gpl3+)))           ;icons/* under CC-BY-SA3
+    (license license:gpl3+)))           ; icons/* under CC-BY-SA3
 
 (define-public editorconfig-core-c
   (package
