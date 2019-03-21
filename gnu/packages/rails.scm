@@ -201,14 +201,14 @@ useful when writing tests.")
 (define-public ruby-actionview
   (package
    (name "ruby-actionview")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionview" version))
      (sha256
       (base32
-       "1lz04drbi1z0xhvb8jnr14pbf505lilr02arahxq7y3mxiz0rs8z"))))
+       "0832vlx37rly8ryfgi01b20mld8b3bv9cg62n5wax4zpzgn6jdxb"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
