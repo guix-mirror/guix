@@ -284,14 +284,14 @@ WebSockets it allows for real-time features in web applications.")
 (define-public ruby-activejob
   (package
    (name "ruby-activejob")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activejob" version))
      (sha256
       (base32
-       "1jjkl62x2aprg55x9rpm0h2c82vr2qr989hg3l9r21l01q4822ir"))))
+       "1zma452lc3qp4a7r10zbdmsci0kv9a3gnk4da2apbdrc8fib5mr3"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
