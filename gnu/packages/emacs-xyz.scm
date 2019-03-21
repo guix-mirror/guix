@@ -97,6 +97,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages w3m)
@@ -968,6 +969,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
                    (alsa    (assoc-ref inputs "alsa-utils"))
                    (mpg321  (assoc-ref inputs "mpg321"))
                    (mp3info (assoc-ref inputs "mp3info"))
+                   (mutagen (assoc-ref inputs "mutagen"))
                    (opus    (assoc-ref inputs "opus-tools")))
                ;; Specify the installation directory.
                (substitute* "Makefile"
@@ -1011,8 +1013,9 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
                    (("\"amixer\"")
                     (string-append "\"" alsa "/bin/amixer\"")))
                  (substitute* "emms-tag-editor.el"
-                   (("\"mp3info\"")
-                    (string-append "\"" mp3info "/bin/mp3info\"")))))))
+                   (("\"mid3v2\"")
+                    (string-append "\"" mutagen "/bin/mid3v2\"")))
+                 #t))))
          (add-before 'install 'pre-install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The 'install' rule expects the target directories to exist.
@@ -1045,6 +1048,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
               ("mp3info" ,mp3info)
+              ("mutagen" ,python-mutagen)
               ("opus-tools" ,opus-tools)))
     (properties '((upstream-name . "emms")))
     (synopsis "Emacs Multimedia System")
