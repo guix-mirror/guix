@@ -98,14 +98,14 @@ API.")
 (define-public ruby-activemodel
   (package
    (name "ruby-activemodel")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activemodel" version))
      (sha256
       (base32
-       "1xmwi3mw8g4shbjvkhk72ra3r5jccbdsd4piphqka2y1h8s7sxvi"))))
+       "1idmvqvpgri34k31s44pjb88rc3jad3yxra7fd1kpidpnv5f3v65"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
