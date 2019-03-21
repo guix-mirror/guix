@@ -8266,13 +8266,13 @@ Pathname.")
 (define-public jekyll
   (package
     (name "jekyll")
-    (version "3.8.3")
+    (version "3.8.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll" version))
               (sha256
                (base32
-                "1iw90wihk9dscgmppf5v6lysg3kjmnx50mjyl4gghkdb4spw97xk"))))
+                "1nn2sc308l2mz0yiall4r90l6vy67qp4sy9zapi73a948nd4a5k3"))))
     (build-system ruby-build-system)
     (arguments
      ;; No rakefile, but a test subdirectory
