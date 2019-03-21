@@ -389,25 +389,20 @@ X11-system or any other graphical user interface.")
 (define-public teckit
   (package
    (name "teckit")
-   (version "2.5.8")
+   (version "2.5.8")                    ;signed by key 0xC9183BEA0288CDEE
    (source
     (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/silnrsi/teckit")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
+      (method url-fetch)
+      (uri (string-append "https://github.com/silnrsi/teckit/releases/"
+                          "download/v" version "/teckit-" version ".tar.gz"))
       (sha256
-       (base32 "1jmsdmfz7bgq1n5qsqgpq1b1n77f1hll0czfw5wkxz4knzb14ndn"))))
+       (base32 "00dy4hpxlf36xn9ngwy8p8hcvqjdmfzlfadihjl92dq8y5l1zprm"))))
    (build-system gnu-build-system)
    (inputs
     `(("zlib" ,zlib)
       ("expat" ,expat)))
    (native-inputs
-    `(("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("libtool" ,libtool)
-      ("perl" ,perl))) ; for the tests
+    `(("perl" ,perl)))                  ;for the tests
    (synopsis "Toolkit for encoding conversions")
    (description
     "TECkit is a low-level toolkit intended to be used by other applications
