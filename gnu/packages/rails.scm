@@ -123,14 +123,14 @@ serialization, internationalization, and testing.")
 (define-public ruby-activerecord
   (package
    (name "ruby-activerecord")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activerecord" version))
      (sha256
       (base32
-       "19a0sns6a5wz2wym25lb1dv4lbrrl5sd1n15s5ky2636znmhz30y"))))
+       "1c5cz9v7ggpqjxf0fqs1xhy1pb9m34cp31pxarhs9aqb71qjl98v"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
