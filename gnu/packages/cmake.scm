@@ -8,6 +8,8 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,11 +41,16 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages xml)
+  #:use-module (srfi srfi-1))
 
-(define-public cmake
+;;; This minimal variant of CMake does not include the documentation. It is
+;;; used by the cmake-build-system.
+(define-public cmake-minimal
   (package
-    (name "cmake")
+    (name "cmake-minimal")
     (version "3.14.0")
     (source (origin
               (method url-fetch)
@@ -72,6 +79,23 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (parallel-job-count (number->string (parallel-job-count))))
+         (list "--verbose"
+               (string-append "--parallel=" parallel-job-count)
+               (string-append "--prefix=" out)
+               "--system-libs"
+               "--no-system-jsoncpp"    ; FIXME: Circular dependency.
+               ;; By default, the man pages and other docs land
+               ;; in PREFIX/man and PREFIX/doc, but we want them
+               ;; in share/{man,doc}.  Note that unlike
+               ;; autoconf-generated configure scripts, cmake's
+               ;; configure prepends "PREFIX/" to what we pass
+               ;; to --mandir and --docdir.
+               "--mandir=share/man"
+               ,(string-append "--docdir=share/doc/cmake-"
+                               (version-major+minor version))))
        #:make-flags
        (let ((skipped-tests
               (list "BundleUtilities" ; This test fails on Guix.
@@ -119,25 +143,10 @@
                (setenv "CMAKE_INCLUDE_PATH" (or (getenv "CPATH")
                                                 (getenv "C_INCLUDE_PATH")))
                #t)))
+         ;; CMake uses its own configure script.
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (invoke
-                "./configure" "--verbose"
-                (string-append "--parallel=" (number->string (parallel-job-count)))
-                (string-append "--prefix=" out)
-                "--system-libs"
-                "--no-system-jsoncpp" ; FIXME: Circular dependency.
-                ;; By default, the man pages and other docs land
-                ;; in PREFIX/man and PREFIX/doc, but we want them
-                ;; in share/{man,doc}.  Note that unlike
-                ;; autoconf-generated configure scripts, cmake's
-                ;; configure prepends "PREFIX/" to what we pass
-                ;; to --mandir and --docdir.
-                "--mandir=share/man"
-                ,(string-append
-                  "--docdir=share/doc/cmake-"
-                  (version-major+minor version)))))))))
+           (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+             (apply invoke "./configure" configure-flags))))))
     (inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl)
@@ -159,11 +168,46 @@
 CMake is used to control the software compilation process using simple platform
 and compiler independent configuration files.  CMake generates native makefiles
 and workspaces that can be used in the compiler environment of your choice.")
-    (license (list license:bsd-3             ; cmake
-                   license:bsd-4             ; cmcompress
-                   license:bsd-2             ; cmlibarchive
-                   license:expat             ; cmjsoncpp is dual MIT/public domain
+    (properties '((hidden? . #t)))
+    (license (list license:bsd-3        ; cmake
+                   license:bsd-4        ; cmcompress
+                   license:bsd-2        ; cmlibarchive
+                   license:expat        ; cmjsoncpp is dual MIT/public domain
                    license:public-domain)))) ; cmlibarchive/archive_getdate.c
+
+(define-public cmake
+  (package
+    (inherit cmake-minimal)
+    (name "cmake")
+    (arguments
+     (substitute-keyword-arguments (package-arguments cmake-minimal)
+       ((#:configure-flags configure-flags ''())
+        `(append ,configure-flags
+                ;; Extra configure flags used to generate the documentation.
+                '("--sphinx-info"
+                  "--sphinx-man"
+                  "--sphinx-html")))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'move-html-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (doc (assoc-ref outputs "doc"))
+                     (html (string-append "/share/doc/cmake-"
+                                          ,(version-major+minor
+                                            (package-version cmake-minimal))
+                                          "/html")))
+                 (copy-recursively (string-append out html)
+                                   (string-append doc html))
+                 (delete-file-recursively (string-append out html))
+                 #t)))))))
+    ;; Extra inputs required to build the documentation.
+    (native-inputs
+     `(,@(package-native-inputs cmake-minimal)
+       ("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
+    (outputs '("out" "doc"))
+    (properties (alist-delete 'hidden? (package-properties cmake-minimal)))))
 
 (define-public emacs-cmake-mode
   (package
