@@ -309,14 +309,14 @@ applications.")
 (define-public ruby-activestorage
   (package
     (name "ruby-activestorage")
-    (version "5.2.2")
+    (version "5.2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activestorage" version))
        (sha256
         (base32
-         "0c72837098sw384vk6dmrb2p7q3wx4swnibk6sw9dp4hn1vc4p31"))))
+         "155xpbzrz0kr0argx0vsh5prvadd2h1g1m61kdiabvfy2iygc02n"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
