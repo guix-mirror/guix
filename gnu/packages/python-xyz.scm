@@ -13374,14 +13374,13 @@ such as figshare or Zenodo.")
 (define-public python-pyro4
   (package
     (name "python-pyro4")
-    (version "4.74")
+    (version "4.75")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pyro4" version))
        (sha256
-        (base32
-         "0pzp7c6q3vvkxq0wy9lr6wd5wky40sajz69g697i5rb2q497pvc9"))))
+        (base32 "1dfpp36imddx19yv0kd28gk1l71ckhpqy6jd590wpm2680jw15rq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-serpent" ,python-serpent)))
