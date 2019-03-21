@@ -229,14 +229,14 @@ Ruby.")
 (define-public ruby-actionpack
   (package
    (name "ruby-actionpack")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionpack" version))
      (sha256
       (base32
-       "0iwhbqqn0cm39dq040iwq8cfyclqk3kyzwlp5k3j5cz8k2668wws"))))
+       "1lxqzxa728dqg42yw0q4hqkaawqagiw1k0392an2ghjfgb16pafx"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
