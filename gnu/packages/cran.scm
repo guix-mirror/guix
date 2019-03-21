@@ -11768,3 +11768,32 @@ R, enabling interactive analysis and visualization of genome-scale data.")
      "This package provides wrappers on @code{regexpr} and @code{gregexpr} to
 return the match results in tidy data frames.")
     (license license:expat)))
+
+(define-public r-picante
+  (package
+    (name "r-picante")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "picante" version))
+       (sha256
+        (base32
+         "1bcq2j7fs89c2jib68qq6la67rxyg9raryf162mwvjakpf6k19l1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-nlme" ,r-nlme)
+       ("r-vegan" ,r-vegan)))
+    (home-page "https://cran.r-project.org/web/packages/picante/")
+    (synopsis "Integrating phylogenies and ecology")
+    (description
+     "This package provides functions for phylocom integration, community
+analyses, null-models, traits and evolution.  It implements numerous
+ecophylogenetic approaches including measures of community phylogenetic and
+trait diversity, phylogenetic signal, estimation of trait values for
+unobserved taxa, null models for community and phylogeny randomizations, and
+utility functions for data input/output and phylogeny plotting.  A full
+description of package functionality and methods are provided by Kembel et
+al. (2010).")
+    (license license:gpl2)))
