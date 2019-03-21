@@ -20,7 +20,7 @@
 (define-module (gnu packages tbb)
   #:use-module (guix packages)
   #:use-module (guix licenses)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages))
@@ -28,16 +28,15 @@
 (define-public tbb
   (package
     (name "tbb")
-    (version "2017_20160916")
+    (version "2019_U5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.threadingbuildingblocks.org/sites/default"
-                    "/files/software_releases/source/"
-                    "tbb" version "oss_src.tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/01org/tbb")
+                    (commit version)))
               (sha256
                (base32
-                "1i3zy87gyzw22fvajm039w6g822qzqn7jbmznc8y8c57qpqnf330"))
+                "0390da1iya2mvn3ribjb1f8yvzsqsf5b16wn6dqbjxcz0crmwlzk"))
               (modules '((guix build utils)))
               (snippet
                '(begin
