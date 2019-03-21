@@ -68,6 +68,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
@@ -535,7 +536,8 @@ everything from small to very large projects with speed and efficiency.")
               (sha256
                (base32
                 "0swk2dyq5a4p1jn5wvbcsrxckhh808vifxz5y8w663avg541188c"))
-              (patches (search-patches "libgit2-mtime-0.patch"))
+              (patches (search-patches "libgit2-avoid-python.patch"
+                                       "libgit2-mtime-0.patch"))
 
               ;; Remove bundled software.
               (snippet '(begin
@@ -561,10 +563,10 @@ everything from small to very large projects with speed and efficiency.")
            (lambda _ (invoke "./libgit2_clar" "-v" "-Q"))))))
     (inputs
      `(("libssh2" ,libssh2)
-       ("http-parser" ,http-parser)
-       ("python" ,python-wrapper)))
+       ("http-parser" ,http-parser)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("guile" ,guile-2.2)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; These two libraries are in 'Requires.private' in libgit2.pc.
      `(("openssl" ,openssl)

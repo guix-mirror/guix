@@ -1,0 +1,304 @@
+diff -ruN orig/libgit2-0.27.7/tests/CMakeLists.txt libgit2-0.27.7/tests/CMakeLists.txt
+--- orig/libgit2-0.27.7/tests/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
++++ libgit2-0.27.7/tests/CMakeLists.txt	2019-03-04 11:13:06.640118979 +0100
+@@ -1,10 +1,3 @@
+-FIND_PACKAGE(PythonInterp)
+-
+-IF(NOT PYTHONINTERP_FOUND)
+-  MESSAGE(FATAL_ERROR "Could not find a python interpeter, which is needed to build the tests. "
+-    "Make sure python is available, or pass -DBUILD_CLAR=OFF to skip building the tests")
+-ENDIF()
+-
+ SET(CLAR_FIXTURES "${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+ SET(CLAR_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+ ADD_DEFINITIONS(-DCLAR_FIXTURE_PATH=\"${CLAR_FIXTURES}\")
+@@ -21,7 +14,7 @@
+ 
+ ADD_CUSTOM_COMMAND(
+ 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/clar.suite
+-	COMMAND ${PYTHON_EXECUTABLE} generate.py -o "${CMAKE_CURRENT_BINARY_DIR}" -f -xonline -xstress -xperf .
++	COMMAND guile generate.scm -o "${CMAKE_CURRENT_BINARY_DIR}" -f -x online -x stress -x perf .
+ 	DEPENDS ${SRC_TEST}
+ 	WORKING_DIRECTORY ${CLAR_PATH}
+ )
+diff -ruN orig/libgit2-0.27.7/tests/generate.scm libgit2-0.27.7/tests/generate.scm
+--- orig/libgit2-0.27.7/tests/generate.scm	1970-01-01 01:00:00.000000000 +0100
++++ libgit2-0.27.7/tests/generate.scm	2019-03-04 12:18:00.688040975 +0100
+@@ -0,0 +1,277 @@
++;; -*- geiser-scheme-implementation: guile -*-
++
++;;; Implementation: Danny Milosavljevic <dannym@scratchpost.org>
++;;; Based on: Implementation in Python by Vicent Marti.
++;;; License: ISC, like the original generate.py in clar.
++
++(use-modules (ice-9 ftw))
++(use-modules (ice-9 regex))
++(use-modules (ice-9 getopt-long))
++(use-modules (ice-9 rdelim))
++(use-modules (ice-9 match))
++(use-modules (ice-9 textual-ports))
++(use-modules (srfi srfi-1))
++
++(define (render-callback cb)
++  (if cb
++      (string-append "    { \"" (assoc-ref cb "short-name") "\", &"
++                     (assoc-ref cb "symbol") " }")
++      "    { NULL, NULL }"))
++
++(define (replace needle replacement haystack)
++  "Replace all occurences of NEEDLE in HAYSTACK by REPLACEMENT.
++NEEDLE is a regular expression."
++  (regexp-substitute/global #f needle haystack 'pre replacement 'post))
++
++(define (skip-comments* text)
++  (call-with-input-string
++   text
++   (lambda (port)
++     (let loop ((result '())
++                (section #f))
++       (define (consume-char)
++         (cons (read-char port) result))
++       (define (skip-char)
++         (read-char port)
++         result)
++       (match section
++        (#f
++         (match (peek-char port)
++          (#\/ (loop (consume-char) 'almost-in-block-comment))
++          (#\" (loop (consume-char) 'in-string-literal))
++          (#\' (loop (consume-char) 'in-character-literal))
++          ((? eof-object?) result)
++          (_ (loop (consume-char) section))))
++        ('almost-in-block-comment
++         (match (peek-char port)
++          (#\* (loop (consume-char) 'in-block-comment))
++          (#\/ (loop (consume-char) 'in-line-comment))
++          ((? eof-object?) result)
++          (_ (loop (consume-char) #f))))
++        ('in-line-comment
++         (match (peek-char port)
++          (#\newline (loop (consume-char) #f))
++          ((? eof-object?) result)
++          (_ (loop (skip-char) section))))
++        ('in-block-comment
++         (match (peek-char port)
++           (#\* (loop (skip-char) 'almost-out-of-block-comment))
++           ((? eof-object?) result)
++           (_ (loop (skip-char) section))))
++        ('almost-out-of-block-comment
++         (match (peek-char port)
++           (#\/ (loop (cons (read-char port) (cons #\* result)) #f))
++           (#\* (loop (skip-char) 'almost-out-of-block-comment))
++           ((? eof-object?) result)
++           (_ (loop (skip-char) 'in-block-comment))))
++        ('in-string-literal
++         (match (peek-char port)
++           (#\\ (loop (consume-char) 'in-string-literal-escape))
++           (#\" (loop (consume-char) #f))
++           ((? eof-object?) result)
++           (_ (loop (consume-char) section))))
++        ('in-string-literal-escape
++         (match (peek-char port)
++           ((? eof-object?) result)
++           (_ (loop (consume-char) 'in-string-literal))))
++        ('in-character-literal
++         (match (peek-char port)
++           (#\\ (loop (consume-char) 'in-character-literal-escape))
++           (#\' (loop (consume-char) #f))
++           ((? eof-object?) result)
++           (_ (loop (consume-char) section))))
++        ('in-character-literal-escape
++         (match (peek-char port)
++           ((? eof-object?) result)
++           (_ (loop (consume-char) 'in-character-literal)))))))))
++
++(define (skip-comments text)
++  (list->string (reverse (skip-comments* text))))
++
++(define (maybe-only items)
++  (match items
++   ((a) a)
++   (_ #f)))
++
++(define (Module name path excludes)
++  (let* ((clean-name (replace "_" "::" name))
++         (enabled (not (any (lambda (exclude)
++                              (string-prefix? exclude clean-name))
++                            excludes))))
++    (define (parse contents)
++      (define (cons-match match prev)
++        (cons
++         `(("declaration" . ,(match:substring match 1))
++           ("symbol" . ,(match:substring match 2))
++           ("short-name" . ,(match:substring match 3)))
++         prev))
++      (let* ((contents (skip-comments contents))
++             (entries (fold-matches (make-regexp
++                                     (string-append "^(void\\s+(test_"
++                                                    name
++                                                    "__(\\w+))\\s*\\(\\s*void\\s*\\))\\s*\\{")
++                                     regexp/newline)
++                                    contents
++                                    '()
++                                    cons-match))
++             (entries (reverse entries))
++             (callbacks (filter (lambda (entry)
++                                   (match (assoc-ref entry "short-name")
++                                    ("initialize" #f)
++                                    ("cleanup" #f)
++                                    (_ #t)))
++                                entries)))
++        (if (> (length callbacks) 0)
++            `(("name" . ,name)
++              ("enabled" . ,(if enabled "1" "0"))
++              ("clean-name" . ,clean-name)
++              ("initialize" . ,(maybe-only (filter-map (lambda (entry)
++                                                      (match (assoc-ref entry "short-name")
++                                                       ("initialize" entry)
++                                                       (_ #f)))
++                                                     entries)))
++              ("cleanup" . ,(maybe-only (filter-map (lambda (entry)
++                                                   (match (assoc-ref entry "short-name")
++                                                    ("cleanup" entry)
++                                                    (_ #f)))
++                                                  entries)))
++              ("callbacks" . ,callbacks))
++            #f)))
++
++    (define (refresh path)
++      (and (file-exists? path)
++           (parse (call-with-input-file path get-string-all))))
++    (refresh path)))
++
++(define (generate-TestSuite path output excludes)
++    (define (load)
++        (define enter? (const #t))
++        (define (leaf file stat result)
++          (let* ((module-root (string-drop (dirname file)
++                                           (string-length path)))
++                 (module-root (filter-map (match-lambda
++                                           ("" #f)
++                                           (a a))
++                                          (string-split module-root #\/))))
++            (define (make-module path)
++              (let* ((name (string-join (append module-root (list (string-drop-right (basename path) (string-length ".c")))) "_"))
++                     (name (replace "-" "_" name)))
++                (Module name path excludes)))
++            (if (string-suffix? ".c" file)
++                (let ((module (make-module file)))
++                  (if module
++                      (cons module result)
++                      result))
++                result)))
++        (define (down dir stat result)
++          result)
++        (define (up file state result)
++          result)
++        (define skip (const #f))
++        (file-system-fold enter? leaf down up skip error '() path))
++
++    (define (CallbacksTemplate module)
++      (string-append "static const struct clar_func _clar_cb_"
++                     (assoc-ref module "name") "[] = {\n"
++                     (string-join (map render-callback
++                                       (assoc-ref module "callbacks"))
++                                  ",\n")
++                     "\n};\n"))
++
++    (define (DeclarationTemplate module)
++      (string-append (string-join (map (lambda (cb)
++                                         (string-append "extern "
++                                                        (assoc-ref cb "declaration")
++                                                        ";"))
++                                       (assoc-ref module "callbacks"))
++                                  "\n")
++                     "\n"
++                     (if (assoc-ref module "initialize")
++                         (string-append "extern " (assoc-ref (assoc-ref module "initialize") "declaration") ";\n")
++                         "")
++                     (if (assoc-ref module "cleanup")
++                         (string-append "extern " (assoc-ref (assoc-ref module "cleanup") "declaration") ";\n")
++                         "")))
++
++    (define (InfoTemplate module)
++      (string-append "
++    {
++        \"" (assoc-ref module "clean-name") "\",
++    " (render-callback (assoc-ref module "initialize")) ",
++    " (render-callback (assoc-ref module "cleanup")) ",
++        _clar_cb_" (assoc-ref module "name") ", "
++        (number->string (length (assoc-ref module "callbacks")))
++        ", " (assoc-ref module "enabled") "
++    }"))
++
++    (define (Write data)
++      (define (name< module-a module-b)
++        (string<? (assoc-ref module-a "name")
++                  (assoc-ref module-b "name")))
++      (define modules (sort (load) name<))
++
++      (define (suite-count)
++        (length modules))
++
++      (define (callback-count)
++        (fold + 0 (map (lambda (entry)
++                         (length (assoc-ref entry "callbacks")))
++                         modules)))
++
++      (define (display-x value)
++        (display value data))
++
++      (for-each (compose display-x DeclarationTemplate) modules)
++      (for-each (compose display-x CallbacksTemplate) modules)
++
++      (display-x "static struct clar_suite _clar_suites[] = {")
++      (display-x (string-join (map InfoTemplate modules) ","))
++      (display-x "\n};\n")
++
++      (let ((suite-count-str (number->string (suite-count)))
++            (callback-count-str (number->string (callback-count))))
++        (display-x "static const size_t _clar_suite_count = ")
++        (display-x suite-count-str)
++        (display-x ";\n")
++
++        (display-x "static const size_t _clar_callback_count = ")
++        (display-x callback-count-str)
++        (display-x ";\n")
++
++        (display (string-append "Written `clar.suite` ("
++                                callback-count-str
++                                " tests in "
++                                suite-count-str
++                                " suites)"))
++        (newline))
++      #t)
++
++    (call-with-output-file (string-append output "/clar.suite") Write))
++
++;;; main
++
++(define (main)
++  (define option-spec
++    '((force (single-char #\f) (value #f))
++      (exclude (single-char #\x) (value #t))
++      (output (single-char #\o) (value #t))
++      (help  (single-char #\h) (value #f))))
++
++  (define options (getopt-long (command-line) option-spec #:stop-at-first-non-option #t))
++  (define args (reverse (option-ref options '() '())))
++  (when (> (length args) 1)
++    (display "More than one path given\n")
++    (exit 1))
++
++  (if (< (length args) 1)
++      (set! args '(".")))
++
++  (let* ((path (car args))
++         (output (option-ref options 'output path))
++         (excluded (filter-map (match-lambda
++                                (('exclude . value) value)
++                                (_ #f))
++                               options)))
++    (generate-TestSuite path output excluded)))
++
++(main)
