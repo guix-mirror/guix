@@ -363,14 +363,14 @@ pattern.  Including support for multipart email and attachments.")
 (define-public ruby-railties
   (package
    (name "ruby-railties")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "railties" version))
      (sha256
       (base32
-       "00pnylmbz4c46mxw5lhxi8h39lndfg6fs1hpd0qd6swnjhkqsr1l"))))
+       "0al6mvh2jvr3n7cxkx0yvhgiiarby6gxc93vl5xg1yxkvx27qzd6"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
