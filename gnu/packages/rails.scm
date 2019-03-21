@@ -444,14 +444,14 @@ for locks.")
 (define-public ruby-rails
   (package
    (name "ruby-rails")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "rails" version))
      (sha256
       (base32
-       "1m9cszds68dsiycciiayd3c9g90s2yzn1izkr3gpgqkfw6dmvzyr"))))
+       "1jxmwrykwgbn116hhmi7h75hcsdifhj89wk12m7ch2f3mn1lrmp9"))))
    (build-system ruby-build-system)
    (arguments
     '(#:phases
