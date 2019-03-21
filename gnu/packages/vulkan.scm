@@ -253,13 +253,12 @@ and the ICD.")
     (inputs
      `(("glslang" ,glslang)
        ("libxrandr" ,libxrandr)
-       ("mesa" ,mesa)
-       ("vulkan-headers" ,vulkan-headers)
        ("vulkan-loader" ,vulkan-loader)
        ("wayland" ,wayland)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("python" ,python)
+       ("vulkan-headers" ,vulkan-headers)))
     (arguments
      `(#:tests? #f                      ; No tests.
        #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
