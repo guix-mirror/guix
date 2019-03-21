@@ -18,14 +18,82 @@
 
 (define-module (gnu packages gpodder)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt))
+
+(define-public gpodder
+  (package
+    (name "gpodder")
+    (version "3.10.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gpodder/gpodder.git")
+             (commit version)))
+       (sha256
+        (base32
+         "0sx9rj6dpvd2xz7lak2yi0zlgr3lp2ng1fw23s39la9ly4g1835j"))
+       (file-name (git-file-name name version))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pycairo" ,python-pycairo)
+       ("python-dbus" ,python-dbus)
+       ("python-html5lib" ,python-html5lib)
+       ("python-mygpoclient" ,python-mygpoclient)
+       ("python-podcastparser" ,python-podcastparser)
+       ("xdg-utils" ,xdg-utils)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Avoid needing xdg-utils as a propagated input.
+         (add-after 'unpack 'patch-xdg-open
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xdg-utils (assoc-ref inputs "xdg-utils")))
+               (substitute* "src/gpodder/util.py"
+                 (("xdg-open") (string-append xdg-utils "/bin/xdg-open")))
+               #t)))
+         (add-before 'install 'make-po-files-writable
+           (lambda _
+             (for-each
+               (lambda (f)
+                 (chmod f #o664))
+               (find-files "po"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "PREFIX" (assoc-ref outputs "out"))
+             (invoke "make" "install")
+             #t))
+         (add-after 'install 'wrap-gpodder
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/gpodder")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
+               #t))))))
+    (home-page "https://gpodder.github.io")
+    (synopsis "Simple podcast client")
+    (description "gPodder is a podcatcher, i.e. an application that allows
+podcast feeds (RSS, Atom, Youtube, Soundcloud, Vimeo and XSPF) to be
+subscribed to, checks for new episodes and allows the podcast to be saved
+locally for later listening.")
+    (license license:gpl3+)))
 
 (define-public libmygpo-qt
   (package
