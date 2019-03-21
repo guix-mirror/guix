@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -66,10 +66,14 @@
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
              ("libidn" ,libidn)
-             ("libssh2" ,libssh2)
              ("openldap" ,openldap)
              ("nghttp2" ,nghttp2 "lib")
-             ("zlib" ,zlib)))
+             ("zlib" ,zlib)
+             ;; TODO XXX <https://bugs.gnu.org/34927>
+             ;; Curl doesn't actually use or refer to libssh2 because the build
+             ;; is not configured with '--with-libssh2'.  Remove this input when
+             ;; a mass rebuild is appropriate (e.g. core-updates).
+             ("libssh2" ,libssh2-1.8.0)))
    (native-inputs
      `(("perl" ,perl)
        ;; to enable the --manual option and make test 1026 pass
