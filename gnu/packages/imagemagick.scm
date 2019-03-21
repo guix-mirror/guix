@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -171,18 +171,18 @@ script.")
   (package
     (name "graphicsmagick")
     (version "1.3.30")
-    (source (origin
-              (method url-fetch)
-              (uri
-                (list
-                  (string-append "mirror://sourceforge/" name "/" name
-                                 "/" version "/GraphicsMagick-" version ".tar.xz")
-                  (string-append "ftp://ftp.graphicsmagick.org/pub/"
-                                 "GraphicsMagick/" (version-major+minor version)
-                                 "/GraphicsMagick-" version ".tar.xz")))
-              (sha256
-               (base32
-                "1warar0731xf94r4bn5x1km85rjabl4iq8r0dk3ywmczap3farfr"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (list
+         (string-append "mirror://sourceforge/graphicsmagick/graphicsmagick"
+                        "/" version "/GraphicsMagick-" version ".tar.xz")
+         (string-append "ftp://ftp.graphicsmagick.org/pub/"
+                        "GraphicsMagick/" (version-major+minor version)
+                        "/GraphicsMagick-" version ".tar.xz")))
+       (sha256
+        (base32 "1warar0731xf94r4bn5x1km85rjabl4iq8r0dk3ywmczap3farfr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
