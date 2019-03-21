@@ -48,6 +48,23 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
+;; XXX A hidden special obsolete libssh2 for temporary use in the curl package.
+;; <https://bugs.gnu.org/34927>
+(define libssh2-1.8.0
+  (package
+    (inherit libssh2)
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.libssh2.org/download/libssh2-"
+                    version ".tar.gz"))
+               (sha256
+                (base32
+                 "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
+               (patches
+                (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))))
+
 (define-public curl
   (package
    (name "curl")
@@ -66,14 +83,14 @@
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
              ("libidn" ,libidn)
-             ("openldap" ,openldap)
-             ("nghttp2" ,nghttp2 "lib")
-             ("zlib" ,zlib)
              ;; TODO XXX <https://bugs.gnu.org/34927>
              ;; Curl doesn't actually use or refer to libssh2 because the build
              ;; is not configured with '--with-libssh2'.  Remove this input when
              ;; a mass rebuild is appropriate (e.g. core-updates).
-             ("libssh2" ,libssh2-1.8.0)))
+             ("libssh2" ,libssh2-1.8.0)
+             ("openldap" ,openldap)
+             ("nghttp2" ,nghttp2 "lib")
+             ("zlib" ,zlib)))
    (native-inputs
      `(("perl" ,perl)
        ;; to enable the --manual option and make test 1026 pass
