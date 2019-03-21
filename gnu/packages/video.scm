@@ -675,7 +675,7 @@ SMPTE 314M.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
-                           name "/" name "-" version ".tar.xz"))
+                           "libmatroska/libmatroska-" version ".tar.xz"))
        (sha256
         (base32
          "1j4mjzx6mjzfjf9hz8g4w84krf5jccmr5cyynll0j1vwv3aiv9iq"))))
