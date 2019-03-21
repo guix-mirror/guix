@@ -335,14 +335,14 @@ allowing files to be attached to ActiveRecord models..")
 (define-public ruby-actionmailer
   (package
    (name "ruby-actionmailer")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionmailer" version))
      (sha256
       (base32
-       "0sfpb8s95cmkpp9ybyp2c88r55r5llscmmnkfwcwgasz9ncjiq5n"))))
+       "10n2v2al68rsq5ghrdp7cpycsc1q0m19fcd8cd5i528n30nl23iw"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
