@@ -209,20 +209,14 @@ interpretation of the specifications for these languages.")
              (substitute* "CMakeLists.txt" ((".*spirv_tools_commit_id.h.*") ""))
              #t)))
        #:configure-flags (list
-                          "-DBUILD_LAYERS=OFF" ; FIXME: Fails to build.
                           "-DBUILD_TESTS=OFF" ; FIXME: Needs 'googletest' submodule.
                           (string-append "-DCMAKE_INSTALL_LIBDIR="
                                          (assoc-ref %outputs "out") "/lib"))))
-    (inputs `(("glslang" ,glslang)
-              ("libxcb" ,libxcb)
-              ("libx11" ,libx11)
-              ("libxrandr" ,libxrandr)
-              ("mesa" ,mesa)
-              ("spirv-tools" ,spirv-tools)
-              ("vulkan-headers" ,vulkan-headers)
-              ("wayland" ,wayland)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("python" ,python)))
+    (native-inputs `(("libxrandr" ,libxrandr)
+                     ("pkg-config" ,pkg-config)
+                     ("python" ,python)
+                     ("vulkan-headers" ,vulkan-headers)
+                     ("wayland" ,wayland)))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
