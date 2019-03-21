@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -156,17 +156,17 @@ Filter) modules follow the convention of 1V / Octave.")
 (define-public aubio
   (package
     (name "aubio")
-    (version "0.4.6")
+    (version "0.4.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://aubio.org/pub/aubio-" version ".tar.bz2"))
              (sha256
               (base32
-               "1yvwskahx1bf3x2fvi6cwah1ay11iarh79fjlqz8s887y3hkpixx"))))
+               "1npks71ljc48w6858l9bq30kaf5nph8z0v61jkfb70xb9np850nl"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags
        (list
         (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out") "/lib")
@@ -2120,17 +2120,17 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.5")
+    (version "0.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1rzzqa39a6llr52vjkjr0a86nc776kmr5xs52qqga8ms9697psz5"))))
+                "0wlmbb9m7cf3wr7c2h2hji18592x2b119m7mx85wksjs6rjaq2mj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; no check target
+     '(#:tests? #f                      ; no check target
        ;; Disable xunique to prevent X hanging when starting qjackctl in
        ;; tiling window managers such as StumpWM or i3
        ;; (see https://github.com/rncbc/qjackctl/issues/13).
@@ -2865,15 +2865,14 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.4")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
                            "/qsynth-" version ".tar.gz"))
        (sha256
-        (base32
-         "0kpq5fxr96wnii18ax780w1ivq8ksk892ac0bprn92iz0asfysrd"))))
+        (base32 "08x7znvbwi9miavcarymi7dsv8njmxzwzma20dbmz8j2aswm53w5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" phase

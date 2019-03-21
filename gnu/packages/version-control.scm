@@ -10,7 +10,7 @@
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -526,7 +526,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.27.7")
+    (version "0.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -534,9 +534,8 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0c95pbv7hwclwmn51nqnh1lb0cajpcdb24pbdzcir6vmhfj3am0s"))
-              (patches (search-patches "libgit2-mtime-0.patch"
-                                       "libgit2-oom-test.patch"))
+                "0swk2dyq5a4p1jn5wvbcsrxckhh808vifxz5y8w663avg541188c"))
+              (patches (search-patches "libgit2-mtime-0.patch"))
 
               ;; Remove bundled software.
               (snippet '(begin

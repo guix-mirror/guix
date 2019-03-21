@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -182,7 +182,7 @@ together over the internet in real-time.")
 (define-public libinfinity
   (package
     (name "libinfinity")
-    (version "0.6.8")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
@@ -190,12 +190,12 @@ together over the internet in real-time.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0nylsb6qz9pjw3agjp27c4za205i6zg6i5g1vgs5vbdnbh77wkhc"))))
+         "1jw2fhrcbpyz99bij07iyhy9ffyqdn87vl8cb1qz897y3f2f0vk2"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)
        ("gsasl" ,gsasl)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

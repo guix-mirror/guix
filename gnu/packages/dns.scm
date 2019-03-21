@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
@@ -364,14 +364,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.9.0")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "05xrb8havr2vgjsdy7n85kgnvk1mg7qwhjp4a8n6pg4jhd5zjnj1"))))
+        (base32 "1iarvk0i92asvrkpla9z55aan20k6pklzpck9yk4rfnchsdvzh63"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
@@ -569,14 +569,16 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.7.6")
+    (version "2.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   "knot-" version ".tar.xz"))
               (sha256
                (base32
-                "18lpyq3vgr2ainmfiy14x7hcf1zxza66bhkpr54jaz2gy1viijx1"))
+                "1vw7xx7bm440jwrpvdd04vrp6ccz2b11swcn9msvs62hf0kdjjj9"))
+              (patches
+               (search-patches "knot-include-system-lmdb-header.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin

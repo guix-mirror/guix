@@ -230,7 +230,7 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "239.4")
+    (version "241.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -239,7 +239,7 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "106hld2fa89iz0d17gkmwvbkxc2yspn1klq73nvkj4878wx3vcr9"))))
+                "0a4irq4ycps3xcizjjr0gz3j46dyqvcwa4ncinpqpqlasi8l18nk"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

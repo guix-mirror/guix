@@ -369,10 +369,11 @@ submenu \"GNU system, old configurations...\" {~%")
         ;; root partition.
         (setenv "GRUB_ENABLE_CRYPTODISK" "y")
 
-        (unless (zero? (system* grub "--no-floppy" "--target=i386-pc"
-                                "--boot-directory" install-dir
-                                device))
-          (error "failed to install GRUB (BIOS)")))))
+        ;; Hide potentially confusing messages from the user, such as
+        ;; "Installing for i386-pc platform."
+        (invoke/quiet grub "--no-floppy" "--target=i386-pc"
+                      "--boot-directory" install-dir
+                      device))))
 
 (define install-grub-efi
   #~(lambda (bootloader efi-dir mount-point)
@@ -388,10 +389,9 @@ submenu \"GNU system, old configurations...\" {~%")
         ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
         ;; root partition.
         (setenv "GRUB_ENABLE_CRYPTODISK" "y")
-        (unless (zero? (system* grub-install "--boot-directory" install-dir
-                                "--bootloader-id=Guix"
-                                "--efi-directory" target-esp))
-          (error "failed to install GRUB (EFI)")))))
+        (invoke/quiet grub-install "--boot-directory" install-dir
+                      "--bootloader-id=Guix"
+                      "--efi-directory" target-esp))))
 
 
 

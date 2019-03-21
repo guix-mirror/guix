@@ -3,9 +3,10 @@
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
@@ -41,6 +43,7 @@
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages regex)
@@ -102,16 +105,15 @@ based command language.")
 (define-public kakoune
   (package
     (name "kakoune")
-    (version "2018.09.04")
+    (version "2019.01.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/mawww/kakoune/"
                            "releases/download/v" version "/"
-                           name "-" version ".tar.bz2"))
+                           "kakoune-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1qbj2hmcfs6pr5lc78z9ni5zxdyp3mr64dvms4l52716ikqcjcbs"))))
+        (base32 "15drk7i17qdiqxqkjxhrxfclryj9qzb5ymxd20dwl05y4yi064cr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -295,7 +297,7 @@ team.")
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "1.6.2")
+    (version "1.7.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -304,11 +306,11 @@ team.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0251563zy0q69fzfacvalpx43y15cshb0bhshyd4w37061gh1c12"))))
+                "1pqlr08z5syqcq5p282asxwzrrm7c1w94baxyb467swh8yp3fj5m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))           ;for lrelease
+       ("qttools" ,qttools)))           ; for lrelease
     (inputs
      `(("hunspell" ,hunspell)
        ("qtbase" ,qtbase)
@@ -342,4 +344,48 @@ team.")
     (description
      "@code{ghostwriter} provides a relaxing, distraction-free writing
 environment with Markdown markup.")
-    (license license:gpl3+)))           ;icons/* under CC-BY-SA3
+    (license license:gpl3+)))           ; icons/* under CC-BY-SA3
+
+(define-public editorconfig-core-c
+  (package
+    (name "editorconfig-core-c")
+    (version "0.12.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/editorconfig/editorconfig-core-c.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0jkc69r4jwn4rih6h6cqvgljjc3ff49cxj8286mi515aczr48cm1"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'insert-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((tests (assoc-ref inputs "tests")))
+               (copy-recursively tests "tests"))
+             #t)))))
+    (native-inputs
+     `(("tests" ,(origin
+                   (method git-fetch)
+                   (uri (git-reference
+                          (url "https://github.com/editorconfig/editorconfig-core-test")
+                          (commit "6ea1d8ece62cac9cf72c79dce4879b046abe1fe7"))) ; matches version
+                   (file-name (git-file-name "editorconfig-core-test" version))
+                   (sha256
+                    (base32
+                     "1sf6910idnd4bgzbj8w8f9ldsbkaqa0lh6syymwy3hfqda63acj7"))))))
+    (inputs
+     `(("pcre2" ,pcre2)))
+    (home-page "https://editorconfig.org/")
+    (synopsis "EditorConfig core library written in C")
+    (description "EditorConfig makes it easy to maintain the correct coding
+style when switching between different text editors and between different
+projects.  The EditorConfig project maintains a file format and plugins for
+various text editors which allow this file format to be read and used by those
+editors.")
+    (license license:bsd-2)))

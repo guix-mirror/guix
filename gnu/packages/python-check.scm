@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages web)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -56,4 +58,50 @@
      "Coveralls.io is a service for publishing code coverage statistics online.
 This package provides seamless integration with coverage.py (and thus pytest,
 nosetests, etc...) in Python projects.")
+    (license license:expat)))
+
+(define-public python-vcrpy
+  (package
+    (name "python-vcrpy")
+    (version "2.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "vcrpy" version))
+        (sha256
+         (base32
+          "0kws7l3hci1dvjv01nxw3805q9v2mwldw58bgl8s90wqism69gjp"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; tests require more packages for python-pytest-httpbin
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-wrapt" ,python-wrapt)
+       ("python-yarl" ,python-yarl)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-httpbin" ,python-pytest-httpbin)))
+    (home-page "https://github.com/kevin1024/vcrpy")
+    (synopsis "Automatically mock your HTTP interactions")
+    (description
+     "VCR.py simplifies and speeds up tests that make HTTP requests.  The first
+time you run code that is inside a VCR.py context manager or decorated function,
+VCR.py records all HTTP interactions that take place through the libraries it
+supports and serializes and writes them to a flat file (in yaml format by
+default).  This flat file is called a cassette.  When the relevant piece of code
+is executed again, VCR.py will read the serialized requests and responses from
+the aforementioned cassette file, and intercept any HTTP requests that it
+recognizes from the original test run and return the responses that corresponded
+to those requests.  This means that the requests will not actually result in
+HTTP traffic, which confers several benefits including:
+@enumerate
+@item The ability to work offline
+@item Completely deterministic tests
+@item Increased test execution speed
+@end enumerate
+If the server you are testing against ever changes its API, all you need to do
+is delete your existing cassette files, and run your tests again.  VCR.py will
+detect the absence of a cassette file and once again record all HTTP
+interactions, which will update them to correspond to the new API.")
     (license license:expat)))

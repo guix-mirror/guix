@@ -35,6 +35,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages fabric-management)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pciutils)
@@ -264,6 +265,51 @@ best MPI library available.  Open MPI offers advantages for system and
 software vendors, application developers and computer science researchers.")
     ;; See file://LICENSE
     (license bsd-2)))
+
+;; TODO: javadoc files contain timestamps.
+(define-public java-openmpi
+  (package (inherit openmpi)
+    (name "java-openmpi")
+    (inputs
+     `(("openmpi" ,openmpi)
+       ,@(package-inputs openmpi)))
+    (native-inputs
+     `(("jdk" ,openjdk11 "jdk")
+       ("zip" ,(@ (gnu packages compression) zip))
+       ,@(package-native-inputs openmpi)))
+    (outputs '("out"))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build ant-build-system) #:prefix ant:)
+                  (guix build utils))
+       #:imported-modules ((guix build ant-build-system)
+                           (guix build syscalls)
+                           ,@%gnu-build-system-modules)
+       ,@(substitute-keyword-arguments (package-arguments openmpi)
+           ((#:configure-flags flags)
+            `(cons "--enable-mpi-java" ,flags))
+           ((#:make-flags flags ''())
+            `(append '("-C" "ompi/mpi/java")
+                     ,flags))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               ;; We could provide the location of the JDK in the configure
+               ;; flags, but since the configure flags are embedded in the
+               ;; info binaries that would leave a reference to the JDK in
+               ;; the "out" output.  To avoid this we set JAVA_HOME.
+               (add-after 'unpack 'set-JAVA_HOME
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+                   #t))
+               (add-after 'unpack 'link-with-existing-mpi-libraries
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "ompi/mpi/java/c/Makefile.in"
+                     (("\\$\\(top_builddir\\)/ompi/lib@OMPI_LIBMPI_NAME@.la")
+                      (string-append (assoc-ref inputs "openmpi") "/lib/libmpi.la")))
+                   #t))
+               (add-after 'install 'strip-jar-timestamps
+                 (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
+    (synopsis "Java bindings for MPI")))
 
 (define-public openmpi-thread-multiple
   (package

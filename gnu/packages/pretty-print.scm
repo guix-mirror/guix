@@ -244,15 +244,14 @@ seen in a terminal.")
 (define-public highlight
   (package
     (name "highlight")
-    (version "3.47")
+    (version "3.49")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.andre-simon.de/zip/highlight-"
                            version ".tar.bz2"))
        (sha256
-        (base32
-         "0xidf8755lnx55x6p4ajgg4l145akjqswny41483fvg5lpa41i6f"))))
+        (base32 "1zlhmlq5fnsxxmm04qfchhl4w2iw5fa6sn81c34q6k2m1m77g6aj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -267,9 +266,10 @@ seen in a terminal.")
          (add-after 'unpack 'fix-search-for-lua
            (lambda _
              (substitute* "src/makefile"
-               (("(pkg-config.*)lua" _ prefix)
-                (string-append prefix "lua-" ,(version-major+minor
-                                               (package-version lua)))))
+               (("(LUA_PKG_NAME=).*" _ assignment)
+                (string-append assignment "lua-" ,(version-major+minor
+                                                   (package-version lua))
+                               "\n")))
              #t)))))
     (inputs
      `(("lua" ,lua)

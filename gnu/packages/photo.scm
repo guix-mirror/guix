@@ -357,19 +357,18 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/darktable-org/darktable/releases/"
-                    "download/release-"
-                    version "/darktable-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0y04cx0a0rwdclmn16f5y0z2vnm7yxly291gzjgdhcn59a77sga8"))))
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/darktable-org/darktable/releases/"
+             "download/release-" version "/darktable-" version ".tar.xz"))
+       (sha256
+        (base32 "09ihbj0602spgc5lfbskf9am38n03gam2r8v3kj4dyfgxqr37ib3"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
        #:make-flags
        (list
@@ -420,7 +419,7 @@ photographic equipment.")
 developer.  It manages your digital negatives in a database, lets you view
 them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
-    ;; see src/is_supported_platform.h for supported platforms
+    ;; See src/is_supported_platform.h for supported platforms.
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
     (license license:gpl3+)))
 

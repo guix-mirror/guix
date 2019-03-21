@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -121,6 +121,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -3262,15 +3263,15 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.5")
+    (version "3.22.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/aisleriot/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "aisleriot-" version ".tar.xz"))
               (sha256
                (base32
-                "0rl39psr5xi584310pyrgw36ini4wn7yr2m1q5118w3a3v1dkhzh"))))
+                "15pm39679ymxki07sb5nvhycz4z53zwbvascyp5wm4864bn98815"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -4778,7 +4779,7 @@ configuration program to choose applications starting on login.")
        ;; For testing
        ("dbus-launch" ,dbus)
        ("uuidgen" ,util-linux)
-       ("xvfb" ,xorg-server)))
+       ("xvfb" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; These are all in the Requires.private field of gjs-1.0.pc.
      `(("cairo" ,cairo)
@@ -5764,13 +5765,21 @@ properties, screen resolution, and other GNOME parameters.")
                    #t))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:disallowed-references ((,glib "bin")
+                                ,inkscape ,libxslt
+                                ,ruby-sass)
        #:configure-flags
        (list "-Dsystemd=false"
              ;; Otherwise, the RUNPATH will lack the final path component.
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib/gnome-shell"))
+
+       #:modules ((guix build meson-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-keysdir
@@ -5813,7 +5822,16 @@ properties, screen resolution, and other GNOME parameters.")
                     `("PYTHONPATH"      ":" prefix (,python-path))
                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
                 '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
-               #t))))))
+               #t)))
+         (replace 'glib-or-gtk-wrap
+           (let ((wrap (assoc-ref %standard-phases 'glib-or-gtk-wrap)))
+             (lambda* (#:key inputs outputs #:allow-other-keys #:rest rest)
+               ;; By default Inkscape et al. would end up in the XDG_DATA_DIRS
+               ;; settings of the wrappers created by the 'glib-or-gtk-wrap'
+               ;; phase.  Fix that since we don't need these.
+               (wrap #:inputs (fold alist-delete inputs
+                                    '("inkscape" "intltool" "glib:bin"))
+                     #:outputs outputs)))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
@@ -7708,3 +7726,52 @@ underlying library but cannot for various reasons.  In most cases, they are
 wildly out of scope for those libraries.  In other cases, they are not quite
 generic enough to work for everyone.")
     (license license:gpl3+)))
+
+(define-public evolution
+  (package
+    (name "evolution")
+    (version "3.28.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/evolution/"
+                                  (version-major+minor version) "/"
+                                  "evolution-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0sdv5lg2vlz5f4raymz9d8a5jq4j18vbqyigaip6508p3bjnfj8l"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DENABLE_PST_IMPORT=OFF"    ; libpst is not packaged
+             "-DENABLE_LIBCRYPTUI=OFF"))) ; libcryptui hasn't seen a release
+                                          ; in four years and cannot be built.
+    (native-inputs
+     `(("glib" ,glib "bin")               ; glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("evolution-data-server" ,evolution-data-server) ; must be the same version
+       ("gcr" ,gcr)
+       ("gnome-autoar" ,gnome-autoar)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gtkspell3" ,gtkspell3)
+       ("highlight" ,highlight)
+       ("libcanberra" ,libcanberra)
+       ("libgweather" ,libgweather)
+       ("libnotify" ,libnotify)
+       ("libsoup" ,libsoup)
+       ("nss" ,nss)
+       ("openldap" ,openldap)
+       ("webkitgtk" ,webkitgtk)
+       ("ytnef" ,ytnef)))
+    (home-page "https://gitlab.gnome.org/GNOME/evolution")
+    (synopsis "Manage your email, contacts and schedule")
+    (description "Evolution is a personal information management application
+that provides integrated mail, calendaring and address book
+functionality.")
+    ;; See COPYING for details.
+    (license (list license:lgpl2.1 license:lgpl3 ; either one of these
+                   license:openldap2.8 ; addressbook/gui/component/openldap-extract.h
+                   license:lgpl2.1+))))  ; smime/lib/*

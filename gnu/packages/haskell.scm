@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
@@ -3974,7 +3974,7 @@ work, but is substantially simpler and faster.")
 (define-public ghc-base64-bytestring
   (package
     (name "ghc-base64-bytestring")
-    (version "1.0.0.1")
+    (version "1.0.0.2")
     (source
      (origin
        (method url-fetch)
@@ -3983,8 +3983,7 @@ work, but is substantially simpler and faster.")
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0l1v4ddjdsgi9nqzyzcxxj76rwar3lzx8gmwf2r54bqan3san9db"))))
+        (base32 "13305brzlac24pifiqd5a2z10c6k6amhpdy9cc0z5ryrkgnm8dhr"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))         ; FIXME: testing libraries are missing.
     (home-page "https://github.com/bos/base64-bytestring")

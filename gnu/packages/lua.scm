@@ -290,14 +290,14 @@ directory structure and file attributes.")
 (define (make-lua-sec name lua)
   (package
     (name name)
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brunoos/luasec/archive/"
                                   "luasec-" version ".tar.gz"))
               (sha256
                (base32
-                "0pgd1anzznl4s0h16wg8dlw9mgdb9h52drlcki6sbf5y31fa7wyf"))))
+                "0c9sdz3gvrsbvvdqzpnsappgwl40hfljlpfybqis6wia3mdyjxi1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -410,13 +410,13 @@ Notable examples are GTK+, GStreamer and Webkit.")
 (define (make-lua-lpeg name lua)
   (package
     (name name)
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0sq25z3r324a324ky73izgq9mbf66j2xvjp0fxf227rwxalzgnb2"))))
+               (base32 "1zjzl7acvcdavmcg5l7wi12jd4rh95q9pl5aiww7hv0v0mv6bmj8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

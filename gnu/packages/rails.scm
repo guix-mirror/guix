@@ -98,14 +98,14 @@ API.")
 (define-public ruby-activemodel
   (package
    (name "ruby-activemodel")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activemodel" version))
      (sha256
       (base32
-       "1xmwi3mw8g4shbjvkhk72ra3r5jccbdsd4piphqka2y1h8s7sxvi"))))
+       "1idmvqvpgri34k31s44pjb88rc3jad3yxra7fd1kpidpnv5f3v65"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -123,14 +123,14 @@ serialization, internationalization, and testing.")
 (define-public ruby-activerecord
   (package
    (name "ruby-activerecord")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activerecord" version))
      (sha256
       (base32
-       "19a0sns6a5wz2wym25lb1dv4lbrrl5sd1n15s5ky2636znmhz30y"))))
+       "1c5cz9v7ggpqjxf0fqs1xhy1pb9m34cp31pxarhs9aqb71qjl98v"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -201,14 +201,14 @@ useful when writing tests.")
 (define-public ruby-actionview
   (package
    (name "ruby-actionview")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionview" version))
      (sha256
       (base32
-       "1lz04drbi1z0xhvb8jnr14pbf505lilr02arahxq7y3mxiz0rs8z"))))
+       "0832vlx37rly8ryfgi01b20mld8b3bv9cg62n5wax4zpzgn6jdxb"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -229,14 +229,14 @@ Ruby.")
 (define-public ruby-actionpack
   (package
    (name "ruby-actionpack")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionpack" version))
      (sha256
       (base32
-       "0iwhbqqn0cm39dq040iwq8cfyclqk3kyzwlp5k3j5cz8k2668wws"))))
+       "1lxqzxa728dqg42yw0q4hqkaawqagiw1k0392an2ghjfgb16pafx"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -258,14 +258,14 @@ applications.  These work with any Rack-compatible server.")
 (define-public ruby-actioncable
   (package
    (name "ruby-actioncable")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actioncable" version))
      (sha256
       (base32
-       "0826k5ch0l03f9yrkxy69aiv039z4qi00lnahw2rzywd2iz6r68x"))))
+       "1x5fxhsr2mxq5r6258s48xsn7ld081d3qaavppvj7yp7w9vqn871"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -284,14 +284,14 @@ WebSockets it allows for real-time features in web applications.")
 (define-public ruby-activejob
   (package
    (name "ruby-activejob")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activejob" version))
      (sha256
       (base32
-       "1jjkl62x2aprg55x9rpm0h2c82vr2qr989hg3l9r21l01q4822ir"))))
+       "1zma452lc3qp4a7r10zbdmsci0kv9a3gnk4da2apbdrc8fib5mr3"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -309,14 +309,14 @@ applications.")
 (define-public ruby-activestorage
   (package
     (name "ruby-activestorage")
-    (version "5.2.2")
+    (version "5.2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activestorage" version))
        (sha256
         (base32
-         "0c72837098sw384vk6dmrb2p7q3wx4swnibk6sw9dp4hn1vc4p31"))))
+         "155xpbzrz0kr0argx0vsh5prvadd2h1g1m61kdiabvfy2iygc02n"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
@@ -335,14 +335,14 @@ allowing files to be attached to ActiveRecord models..")
 (define-public ruby-actionmailer
   (package
    (name "ruby-actionmailer")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionmailer" version))
      (sha256
       (base32
-       "0sfpb8s95cmkpp9ybyp2c88r55r5llscmmnkfwcwgasz9ncjiq5n"))))
+       "10n2v2al68rsq5ghrdp7cpycsc1q0m19fcd8cd5i528n30nl23iw"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -363,14 +363,14 @@ pattern.  Including support for multipart email and attachments.")
 (define-public ruby-railties
   (package
    (name "ruby-railties")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "railties" version))
      (sha256
       (base32
-       "00pnylmbz4c46mxw5lhxi8h39lndfg6fs1hpd0qd6swnjhkqsr1l"))))
+       "0al6mvh2jvr3n7cxkx0yvhgiiarby6gxc93vl5xg1yxkvx27qzd6"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -444,14 +444,14 @@ for locks.")
 (define-public ruby-rails
   (package
    (name "ruby-rails")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "rails" version))
      (sha256
       (base32
-       "1m9cszds68dsiycciiayd3c9g90s2yzn1izkr3gpgqkfw6dmvzyr"))))
+       "1jxmwrykwgbn116hhmi7h75hcsdifhj89wk12m7ch2f3mn1lrmp9"))))
    (build-system ruby-build-system)
    (arguments
     '(#:phases

@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -397,9 +397,9 @@ printing and other features typical of a source code editor.")
    (version "4.0.2")
    (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/gtksourceview/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "gtksourceview-" version ".tar.xz"))
              (sha256
               (base32
                "1b2z9c0skxrgw2vh08hv6qxky8jbvamc4rgww82j0kpp533rz0hm"))))
@@ -442,7 +442,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gtksourceview-3
  (package (inherit gtksourceview)
    (name "gtksourceview")
-   (version "3.24.7")
+   (version "3.24.10")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -450,7 +450,7 @@ highlighting and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1rp8zspwyw3mmdgccsas3pa6v7s0hqjaaglg6n4kcls7ccx0vhm5"))))))
+               "16ym7jwiki4s1pilwr4incx0yg7ll94f1cajrnpndkxxs36hcm5b"))))))
 
 (define-public gdk-pixbuf
   (package

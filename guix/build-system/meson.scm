@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,9 +109,25 @@
                       (system (%current-system))
                       (imported-modules %meson-build-system-modules)
                       (modules '((guix build meson-build-system)
-                                 (guix build utils))))
+                                 (guix build utils)))
+                      allowed-references
+                      disallowed-references)
   "Build SOURCE using MESON, and with INPUTS, assuming that SOURCE
 has a 'meson.build' file."
+
+  ;; TODO: Copied from build-system/gnu, factorize this!
+  (define canonicalize-reference
+    (match-lambda
+     ((? package? p)
+      (derivation->output-path (package-derivation store p system
+                                                   #:graft? #f)))
+     (((? package? p) output)
+      (derivation->output-path (package-derivation store p system
+                                                   #:graft? #f)
+                               output))
+     ((? string? output)
+      output)))
+
   (define builder
     `(let ((build-phases (if ,glib-or-gtk?
                              ,phases
@@ -159,7 +175,15 @@ has a 'meson.build' file."
                                 #:inputs inputs
                                 #:modules imported-modules
                                 #:outputs outputs
-                                #:guile-for-build guile-for-build))
+                                #:guile-for-build guile-for-build
+                                #:allowed-references
+                                (and allowed-references
+                                     (map canonicalize-reference
+                                          allowed-references))
+                                #:disallowed-references
+                                (and disallowed-references
+                                     (map canonicalize-reference
+                                          disallowed-references))))
 
 (define meson-build-system
   (build-system

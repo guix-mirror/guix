@@ -1,6 +1,6 @@
 #
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2017, 2018 Nils Gillmann <ng0@n0.is>
+# Copyright © 2017, 2018 ng0 <ng0@n0.is>
 #
 # This file is part of GNU Guix.
 #

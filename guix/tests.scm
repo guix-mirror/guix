@@ -39,6 +39,8 @@
             canonical-file?
             network-reachable?
             shebang-too-long?
+            with-environment-variable
+
             mock
             %test-substitute-urls
             test-assertm
@@ -194,6 +196,19 @@ store is opened."
     (with-store store
       (run-with-store store exp
                       #:guile-for-build (%guile-for-build)))))
+
+(define-syntax-rule (with-environment-variable variable value body ...)
+  "Run BODY with VARIABLE set to VALUE."
+  (let ((orig (getenv variable)))
+    (dynamic-wind
+      (lambda ()
+        (setenv variable value))
+      (lambda ()
+        body ...)
+      (lambda ()
+        (if orig
+            (setenv variable orig)
+            (unsetenv variable))))))
 
 
 ;;;

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,12 +22,17 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
@@ -88,3 +93,47 @@ It started life as a fork of the currently unmaintained Newsbeuter.")
 (define-public newsbeuter
   ;; Newsbeuter is unmaintained with multiple CVEs, and was forked as Newsboat.
   (deprecated-package "newsbeuter" newsboat))
+
+(define-public rtv
+  (package
+    (name "rtv")
+    (version "1.26.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rtv" version))
+        (sha256
+         (base32
+          "1aamkli1mlq2vxixlva790y0l0cbvbkz07lknajin0841sdq0411"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-environment-variables
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "HOME" (getcwd))
+             (setenv "TERM" "linux")
+             (setenv "TERMINFO" (string-append (assoc-ref inputs "ncurses")
+                                               "/share/terminfo"))
+             #t)))
+       #:tests? #f)) ; tests fail: _curses.error: nocbreak() returned ERR
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-decorator" ,python-decorator)
+       ("python-kitchen" ,python-kitchen)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("ncurses" ,ncurses)
+       ("python-coveralls" ,python-coveralls)
+       ("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-pylint" ,python-pylint)
+       ("python-pytest" ,python-pytest)
+       ("python-vcrpy" ,python-vcrpy)))
+    (home-page "https://github.com/michael-lazar/rtv")
+    (synopsis "Terminal viewer for Reddit (Reddit Terminal Viewer)")
+    (description
+     "RTV provides a text-based interface to view and interact with Reddit.")
+    (license (list license:expat
+                   license:gpl3+)))) ; rtv/packages/praw

@@ -39,10 +39,12 @@
   #:use-module (guix build-system r)
   #:use-module (guix git-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -59,10 +61,14 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -1002,9 +1008,23 @@ association studies (GWAS) on extremely large data sets.")
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
+                      (inc (string-append out "/include"))
                       (lib (string-append out "/lib")))
                  (mkdir-p lib)
-                 (install-file "gst-plugin/libgstonlinegmmdecodefaster.so" lib)
+                 ;; The build phase installed symlinks to the actual
+                 ;; libraries.  Install the actual targets.
+                 (for-each (lambda (file)
+                             (let ((target (readlink file)))
+                               (delete-file file)
+                               (install-file target lib)))
+                           (find-files lib "\\.so"))
+                 ;; Install headers
+                 (for-each (lambda (file)
+                             (let ((target-dir (string-append inc "/" (dirname file))))
+                               (install-file file target-dir)))
+                           (find-files "." "\\.h"))
+                 (install-file "gst-plugin/libgstonlinegmmdecodefaster.so"
+                               (string-append lib "/gstreamer-1.0"))
                  #t))))))
       (inputs
        `(("alsa-lib" ,alsa-lib)
@@ -1027,3 +1047,205 @@ association studies (GWAS) on extremely large data sets.")
       (description "Kaldi is an extensible toolkit for speech recognition
 written in C++.")
       (license license:asl2.0))))
+
+(define-public gst-kaldi-nnet2-online
+  (let ((commit "617e43e73c7cc45eb9119028c02bd4178f738c4a")
+        (revision "1"))
+    (package
+      (name "gst-kaldi-nnet2-online")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alumae/gst-kaldi-nnet2-online.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xh3w67b69818s6ib02ara4lw7wamjdmh4jznvkpzrs4skbs9jx9"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are none
+         #:make-flags
+         (list (string-append "SHELL="
+                              (assoc-ref %build-inputs "bash") "/bin/bash")
+               (string-append "KALDI_ROOT="
+                              (assoc-ref %build-inputs "kaldi-src"))
+               (string-append "KALDILIBDIR="
+                              (assoc-ref %build-inputs "kaldi") "/lib")
+               "KALDI_FLAVOR=dynamic")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "src") #t))
+           (replace 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((glib (assoc-ref inputs "glib")))
+                 (setenv "CXXFLAGS" "-std=c++11 -fPIC")
+                 (setenv "CPLUS_INCLUDE_PATH"
+                         (string-append glib "/include/glib-2.0:"
+                                        glib "/lib/glib-2.0/include:"
+                                        (assoc-ref inputs "gstreamer")
+                                        "/include/gstreamer-1.0:"
+                                        (getenv "CPLUS_INCLUDE_PATH"))))
+               (substitute* "Makefile"
+                 (("include \\$\\(KALDI_ROOT\\)/src/kaldi.mk") "")
+                 (("\\$\\(error Cannot find") "#"))))
+           (add-before 'build 'build-depend
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke "make" "depend" make-flags)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/gstreamer-1.0")))
+                 (install-file "libgstkaldinnet2onlinedecoder.so" lib)
+                 #t))))))
+      (inputs
+       `(("glib" ,glib)
+         ("gstreamer" ,gstreamer)
+         ("jansson" ,jansson)
+         ("openfst" ,openfst)
+         ("kaldi" ,kaldi)))
+      (native-inputs
+       `(("bash" ,bash)
+         ("glib:bin" ,glib "bin")       ; glib-genmarshal
+         ("kaldi-src" ,(package-source kaldi))
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://kaldi-asr.org/")
+      (synopsis "Gstreamer plugin for decoding speech")
+      (description "This package provides a GStreamer plugin that wraps
+Kaldi's @code{SingleUtteranceNnet2Decoder}.  It requires iVector-adapted DNN
+acoustic models.  The iVectors are adapted to the current audio stream
+automatically.")
+      (license license:asl2.0))))
+
+(define-public kaldi-gstreamer-server
+  (let ((commit "1735ba49c5dc0ebfc184e45105fc600cd9f1f508")
+        (revision "1"))
+    (package
+      (name "kaldi-gstreamer-server")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alumae/kaldi-gstreamer-server.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0j701m7lbwmzqxsfanj882v7881hrbmpqybbczbxqpcbg8q34w0k"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; there are no tests that can be run automatically
+         #:modules ((guix build utils)
+                    (guix build gnu-build-system)
+                    (srfi srfi-26))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Disable hash randomization to ensure the generated .pycs
+               ;; are reproducible.
+               (setenv "PYTHONHASHSEED" "0")
+               (with-directory-excursion "kaldigstserver"
+                 (for-each (lambda (file)
+                             (apply invoke
+                                    `("python"
+                                      "-m" "compileall"
+                                      "-f" ; force rebuild
+                                      ,file)))
+                           (find-files "." "\\.py$")))
+               #t))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (share (string-append out "/share/kaldi-gstreamer-server/")))
+                 ;; Install Python files
+                 (with-directory-excursion "kaldigstserver"
+                   (for-each (cut install-file <> share)
+                             (find-files "." ".*")))
+
+                 ;; Install sample configuration files
+                 (for-each (cut install-file <> share)
+                           (find-files "." "\\.yaml"))
+
+                 ;; Install executables
+                 (mkdir-p bin)
+                 (let* ((server (string-append bin "/kaldi-gst-server"))
+                        (client (string-append bin "/kaldi-gst-client"))
+                        (worker (string-append bin "/kaldi-gst-worker"))
+                        (PYTHONPATH (getenv "PYTHONPATH"))
+                        (GST_PLUGIN_PATH (string-append
+                                          (assoc-ref inputs "gst-kaldi-nnet2-online")
+                                          "/lib/gstreamer-1.0:${GST_PLUGIN_PATH}"))
+                        (wrap (lambda (wrapper what)
+                                (with-output-to-file wrapper
+                                  (lambda _
+                                    (format #t
+                                            "#!~a
+export PYTHONPATH=~a
+export GST_PLUGIN_PATH=~a
+exec ~a ~a/~a \"$@\"~%"
+                                            (which "bash") PYTHONPATH GST_PLUGIN_PATH
+                                            (which "python") share what)))
+                                (chmod wrapper #o555))))
+                   (for-each wrap
+                             (list server client worker)
+                             (list "master_server.py"
+                                   "client.py"
+                                   "worker.py")))
+                 #t))))))
+      (inputs
+       `(("gst-kaldi-nnet2-online" ,gst-kaldi-nnet2-online)
+         ("python2" ,python-2)
+         ("python2-futures" ,python2-futures)
+         ("python2-pygobject" ,python2-pygobject)
+         ("python2-pyyaml" ,python2-pyyaml)
+         ("python2-tornado" ,python2-tornado)
+         ("python2-ws4py" ,python2-ws4py-for-kaldi-gstreamer-server)))
+      (home-page "https://github.com/alumae/kaldi-gstreamer-server")
+      (synopsis "Real-time full-duplex speech recognition server")
+      (description "This is a real-time full-duplex speech recognition server,
+based on the Kaldi toolkit and the GStreamer framework and implemented in
+Python.")
+      (license license:bsd-2))))
+
+(define-public grpc
+  (package
+    (name "grpc")
+    (version "1.16.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/grpc/grpc.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jimqz3115f9pli5w6ik9wi7mjc7ix6y7yrq4a1ab9fc3dalj7p2"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no test target
+       #:configure-flags
+       (list "-DgRPC_ZLIB_PROVIDER=package"
+             "-DgRPC_CARES_PROVIDER=package"
+             "-DgRPC_SSL_PROVIDER=package"
+             "-DgRPC_PROTOBUF_PROVIDER=package")))
+    (inputs
+     `(("c-ares" ,c-ares-next)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("protobuf" ,protobuf-next)
+       ("python" ,python-wrapper)))
+    (home-page "https://grpc.io")
+    (synopsis "High performance universal RPC framework")
+    (description "gRPC is a modern open source high performance @dfn{Remote
+Procedure Call} (RPC) framework that can run in any environment.  It can
+efficiently connect services in and across data centers with pluggable support
+for load balancing, tracing, health checking and authentication.  It is also
+applicable in last mile of distributed computing to connect devices, mobile
+applications and browsers to backend services.")
+    (license license:asl2.0)))

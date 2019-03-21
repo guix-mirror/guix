@@ -3,14 +3,14 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -34,6 +34,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system perl)
@@ -204,15 +205,14 @@ using @code{Test::Class}.")
 (define-public perl-test-cleannamespaces
   (package
     (name "perl-test-cleannamespaces")
-    (version "0.22")
+    (version "0.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Test-CleanNamespaces-" version ".tar.gz"))
        (sha256
-        (base32
-         "1jma95agqqy7iwdcl6jbg1waqz7mjqng4l046lpknhfxjhcj4al6"))))
+        (base32 "0yijspncqgmbkkxrh66xx1pliajar05yqhzq6m4nb6p8x1lmb39k"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-pushd" ,perl-file-pushd)
@@ -339,15 +339,14 @@ structures without getting caught in an infinite loop.")
 (define-public perl-test-differences
   (package
     (name "perl-test-differences")
-    (version "0.64")
+    (version "0.67")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DC/DCANTRELL/"
                            "Test-Differences-" version ".tar.gz"))
        (sha256
-        (base32
-         "0xmj5vgklq4yqvi7l63ky1k6g7fhww68llpmw9rhlaihqbcrsicz"))))
+        (base32 "1nkqr3m4lbzw7fkkzah42aiqlhxapamk6kw7hj90cjwkifsbp3f8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -577,15 +576,14 @@ contents of a file is equal to a particular string.")
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
-    (version "3.41")
+    (version "3.42")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
                            "Test-Harness-" version ".tar.gz"))
        (sha256
-        (base32
-         "0cgdgzywvscbvb9i0dmd2ls5jwqlnf2z6hx4f4lljpvdjd59v3m8"))))
+        (base32 "0lwfaamhpqia0ks4pcci83xbqz6jhng7acv95qk6wbd8zr70vn8g"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -648,14 +646,14 @@ you test against long strings.")
 (define-public perl-test-manifest
   (package
     (name "perl-test-manifest")
-    (version "2.02")
+    (version "2.021")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
                                   "Test-Manifest-" version ".tar.gz"))
               (sha256
                (base32
-                "15ik52l9macrrfizf4y6wj71d4lx7w590h2dfajnkmbxmz786iq6"))))
+                "1n9jscnni24sbp4v5gjlcy3iknfwvmy0731xwvk1c3jq3kbslym4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)
@@ -738,25 +736,24 @@ you @code{unmock()} the subroutine.")
 (define-public perl-test-mockobject
   (package
     (name "perl-test-mockobject")
-    (version "1.20150527")
+    (version "1.20180705")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CH/CHROMATIC/"
                            "Test-MockObject-" version ".tar.gz"))
        (sha256
-        (base32
-         "160xvhbpwqjaff4fgckvldknldzcbn1z3jvyzybs7cqlj1x3bwdd"))))
+        (base32 "06250ayzzd90vbvkpxwr9d3nlbbngl1b9nk2qk0ma4aibn6ha5j5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)
+     `(("perl-cgi" ,perl-cgi)
+       ("perl-test-exception" ,perl-test-exception)
        ("perl-test-warn" ,perl-test-warn)))
     (propagated-inputs
      `(("perl-test-exception" ,perl-test-exception)
        ("perl-test-warn" ,perl-test-warn)
        ("perl-universal-can" ,perl-universal-can)
        ("perl-universal-isa" ,perl-universal-isa)))
-    (arguments `(#:tests? #f))          ;TODO: tests require perl-cgi
     (home-page "https://metacpan.org/release/Test-MockObject")
     (synopsis "Emulate troublesome interfaces in Perl")
     (description "Test::MockObject allows you to create objects that conform
@@ -767,15 +764,14 @@ the behavior, just the input and the output.")
 (define-public perl-test-mocktime
   (package
     (name "perl-test-mocktime")
-    (version "0.15")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DD/DDICK/"
                            "Test-MockTime-" version ".tar.gz"))
        (sha256
-        (base32
-         "0j6cxmkj52i5xkwg8dg6klm0dh386fzc5v80n5nbdalpvq0h48c8"))))
+        (base32 "1y820qsq7yf7r6smy5c6f0mpf2cis2q24vwmpim1svv0n8cf2qrk"))))
     (propagated-inputs
      `(("perl-time-piece" ,perl-time-piece)))
     (build-system perl-build-system)
@@ -1123,15 +1119,14 @@ bin as is also commonly used) paths of your Perl distribution.")
 (define-public perl-test-sharedfork
   (package
     (name "perl-test-sharedfork")
-    (version "0.29")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                            "Test-SharedFork-" version ".tar.gz"))
        (sha256
-        (base32
-         "0vlak10q4gcf0ch0rfcb9lvddav6r8h15iipzbkbgf9mrj47gbv3"))))
+        (base32 "17y52j20k1bs9dgf4n6rhh9dn4cfxxbnfn2cfs7pb00fc5jyhci9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
@@ -1144,14 +1139,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302141")
+    (version "1.302162")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "1dwmsf7jzhw8xppzrw2raq3q6nzd1kcl8b53hik4586b2k45n16p"))))
+                "1i0zsgp5ypygsfbl5gdsgnzlqv57bx69yl6sh440cpkk7my1k83k"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description
@@ -1233,15 +1228,14 @@ cause a test fail unless it is exactly as @code{perltidy} would like it to be.")
 (define-public perl-test-trap
   (package
     (name "perl-test-trap")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/EB/EBHANSSEN/"
                            "Test-Trap-v" version ".tar.gz"))
        (sha256
-        (base32
-         "1676gqjyk0zig3yyqv053y5j1pajp2af08ffmgx94n414whbhm5c"))))
+        (base32 "1qjs2080kcc66s4d7499br5lw2qmhr9gxky4xsl6vjdn6dpna10b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1347,15 +1341,14 @@ installed.")
 (define-public perl-test-writevariants
   (package
     (name "perl-test-writevariants")
-    (version "0.010")
+    (version "0.014")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "Test-WriteVariants-" version ".tar.gz"))
        (sha256
-        (base32
-         "0kklp05fj98yiq8znyfx9lx1vmjay2ypfb868qdwv3kf93m5zjwr"))))
+        (base32 "11v4j3607bydxsqy2ylx9w6qr3qxcalfx3mdc4q4ccqmxsyw4jb3"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-most" ,perl-test-most)
@@ -1363,25 +1356,25 @@ installed.")
     (propagated-inputs
      `(("perl-data-tumbler" ,perl-data-tumbler)
        ("perl-file-homedir" ,perl-file-homedir)
-       ("perl-module-pluggable" ,perl-module-pluggable)))
+       ("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-module-runtime" ,perl-module-runtime)))
     (home-page "https://metacpan.org/release/Test-WriteVariants")
     (synopsis "Dynamic generation of tests")
     (description "The Test::WriteVariants module provides for the dynamic
 generation of tests in nested combinations of contexts.")
-    (license perl-license)))  ;See LICENSE
+    (license perl-license)))  ; see LICENSE
 
 (define-public perl-test-yaml
   (package
     (name "perl-test-yaml")
-    (version "1.06")
+    (version "1.07")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+       (uri (string-append "mirror://cpan/authors/id/T/TI/TINITA/"
                            "Test-YAML-" version ".tar.gz"))
        (sha256
-        (base32
-         "0hxrfs7p9hqkhvv5nhk2hd3kh32smwng4nz47b8xf4iw2q1n2dr7"))))
+        (base32 "0pwrrnwi1qaiy3c5522vy0kzncxc9g02r4b056wqqaa69w1hsc0z"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-base" ,perl-test-base)))

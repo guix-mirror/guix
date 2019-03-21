@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +27,7 @@
 (define-public terraform-docs
   (package
     (name "terraform-docs")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -36,7 +36,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "12w2yr669hk5kxdb9rrzsn8hwvx8rzrc1rmn8hs9l8z1bkfhr4gg"))))
+                "1p6prhjf82qnhf1zwl9h92j4ds5g383a6g9pwwnqbc3wdwy5zx7d"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/segmentio/terraform-docs"))

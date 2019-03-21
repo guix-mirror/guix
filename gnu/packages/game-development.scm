@@ -857,16 +857,16 @@ interface (API).")
 (define-public python-pygame
   (package
     (name "python-pygame")
-    (version "1.9.3")
+    (version "1.9.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pygame" version))
               (sha256
                (base32
-                "1hlydiyygl444bq5m5g8n3jsxsgrdyxlm42ipmfbw36wkf0j243m"))))
+                "1dn0nb86jl7yr8709cncxdr0yrmviqakw7zx3g8jbbwrr60if3bh"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; Tests require pygame to be installed first.
+     `(#:tests? #f                ; tests require pygame to be installed first
        #:phases
        (modify-phases %standard-phases
          ;; Set the paths to the dependencies manually because
@@ -891,23 +891,23 @@ interface (API).")
                (substitute* "Setup.in"
                  (("FONT = -lSDL_ttf")
                   (string-append "FONT = -I" font-ref "/include/SDL -L"
-                                             font-ref "/lib -lSDL_ttf")))
+                                 font-ref "/lib -lSDL_ttf")))
                (substitute* "Setup.in"
                  (("IMAGE = -lSDL_image")
                   (string-append "IMAGE = -I" image-ref "/include/SDL -L"
-                                              image-ref "/lib -lSDL_image")))
+                                 image-ref "/lib -lSDL_image")))
                (substitute* "Setup.in"
                  (("MIXER = -lSDL_mixer")
                   (string-append "MIXER = -I" mixer-ref "/include/SDL -L"
-                                              mixer-ref "/lib -lSDL_mixer")))
+                                 mixer-ref "/lib -lSDL_mixer")))
                (substitute* "Setup.in"
                  (("SMPEG = -lsmpeg")
                   (string-append "SMPEG = -I" smpeg-ref "/include/smpeg -L"
-                                              smpeg-ref "/lib -lsmpeg")))
+                                 smpeg-ref "/lib -lsmpeg")))
                (substitute* "Setup.in"
                  (("PNG = -lpng")
                   (string-append "PNG = -I" png-ref "/include -L"
-                                            png-ref "/lib -lpng")))
+                                 png-ref "/lib -lpng")))
                (substitute* "Setup.in"
                  (("JPEG = -ljpeg")
                   (string-append "JPEG = -I" jpeg-ref "/include -L"
@@ -1237,7 +1237,7 @@ scripted in a Python-like language.")
 (define-public eureka
   (package
     (name "eureka")
-    (version "1.21")
+    (version "1.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/eureka-editor/Eureka/"
@@ -1247,7 +1247,7 @@ scripted in a Python-like language.")
                                   "-source.tar.gz"))
               (sha256
                (base32
-                "1a7pf7xi56fcz7jc8layih5gq5m66g2ss4x5j61kzgip07j6rkir"))))
+                "1x4idjniz9sma3j9ss6ni7fafmz22zs2jnpsqw4my9rsnmra5d9v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f

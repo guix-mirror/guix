@@ -305,7 +305,7 @@ for building OCaml library and programs.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.1")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               ;; Use the '-full' version, which includes all the dependencies.
@@ -317,7 +317,7 @@ for building OCaml library and programs.")
                )
               (sha256
                (base32
-                "0z6r9qr4awcdn7wyrl5y5jm34jsjlnzd00py893f1hd0c6vg3xw1"))))
+                "1qphm1grxx5j8li7f9qfpih4ylrnjl08b4ym8ma4ln44l56xm285"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Sometimes, 'make -jX' would fail right after ./configure with
@@ -816,14 +816,10 @@ libpanel, librsvg and quartz.")
                (let ((doc (string-append (assoc-ref outputs "doc")
                                          "/share/doc/unison")))
                  (mkdir-p doc)
-                 ;; This is a workaround to prevent a build failure. Running
-                 ;; make docs somehow allows it to pass, but the generated
-                 ;; documentation is not pretty.
-                 (catch #t
-                   (lambda _
-                     (invoke "make" "docs"
-                             "TEXDIRECTIVES=\\\\draftfalse"))
-                   (lambda _ #t))
+                 ;; Remove an '\n' that prevents the doc to be generated
+                 ;; correctly with newer hevea.
+                 (substitute* "doc/local.tex"
+                   (("----SNIP----.*") "----SNIP----"))
                  ;; This file needs write-permissions, because it's
                  ;; overwritten by 'docs' during documentation generation.
                  (chmod "src/strings.ml" #o600)

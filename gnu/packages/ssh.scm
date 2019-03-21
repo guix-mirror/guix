@@ -3,13 +3,13 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
@@ -111,7 +111,7 @@ applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.8.0")
+   (version "1.8.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -119,7 +119,7 @@ applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
+              "0ngif3ynk6xqzy5nlfjs7bsmfm81g9f145av0z86kf0vbgrigda0"))
             (patches
              (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))
    (build-system gnu-build-system)
@@ -141,7 +141,7 @@ the SSH-2 protocol in an easy-to-use self-contained package.  It can be built
 into an application to perform many different tasks when communicating with
 a server that supports the SSH-2 protocol.")
    (license license:bsd-3)
-   (home-page "http://www.libssh2.org/")))
+   (home-page "https://www.libssh2.org/")))
 
 (define-public openssh
   (package

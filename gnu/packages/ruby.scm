@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -4530,14 +4530,14 @@ documents and fragments.  It's built on top of Nokogiri and libxml2.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.2.2")
+    (version "5.2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "1iya7vxqwxysr74s7b4z1x19gmnx5advimzip3cbmsd5bd43wfgz"))))
+         "161bp4p01v1a1lvszrhd1a02zf9x1p1l1yhw79a3rix1kvzkkdqb"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -5915,14 +5915,14 @@ definitions.")
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
-    (version "1.3.6")
+    (version "1.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "fivemat" version))
        (sha256
         (base32
-         "006n7b09vviv5bs5hv2ccmjxw9iw3brcsm3xh3dhzfncsknz4jp7"))))
+         "0pzlycasvwmg4bbx7plllpqnhd9zlmmff8l2w3yii86nrm2nvf9n"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests
@@ -8266,13 +8266,13 @@ Pathname.")
 (define-public jekyll
   (package
     (name "jekyll")
-    (version "3.8.3")
+    (version "3.8.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll" version))
               (sha256
                (base32
-                "1iw90wihk9dscgmppf5v6lysg3kjmnx50mjyl4gghkdb4spw97xk"))))
+                "1nn2sc308l2mz0yiall4r90l6vy67qp4sy9zapi73a948nd4a5k3"))))
     (build-system ruby-build-system)
     (arguments
      ;; No rakefile, but a test subdirectory

@@ -54,14 +54,14 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "13.2.2")
+    (version "13.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0h483n9iy0fkbqrhf7k0dzspwdpcaswkjwmc5n5c600fr6s1v9pk"))
+                "0jbs6l763clbqnq2s5jksn44yf71rhcnk85cw64fqvmv0r4ch71n"))
               (patches
                (search-patches "ceph-skip-unittest_blockdev.patch"
                                "ceph-skip-collect-sys-info-test.patch"
@@ -93,6 +93,8 @@
               (libdir (string-append lib "/lib")))
          (list (string-append "-DCMAKE_INSTALL_PREFIX=" out)
                (string-append "-DCMAKE_INSTALL_LIBDIR=" libdir)
+               (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
+                              lib "/include")
                ;; We need both libdir and libdir/ceph in RUNPATH.
                (string-append "-DCMAKE_INSTALL_RPATH="
                               libdir ";" libdir "/ceph")
@@ -102,6 +104,8 @@
                (string-append "-DCMAKE_INSTALL_LIBEXECDIR=" out "/libexec")
                (string-append "-DKEYUTILS_INCLUDE_DIR="
                               (assoc-ref %build-inputs "keyutils") "/include")
+               (string-append "-DXFS_INCLUDE_DIR="
+                              (assoc-ref %build-inputs "xfsprogs") "/include")
                "-DCMAKE_INSTALL_LOCALSTATEDIR=/var"
                "-DENABLE_SHARED=ON"
                "-DWITH_SYSTEM_ROCKSDB=ON"
@@ -112,7 +116,6 @@
                "-DWITH_BABELTRACE=OFF"
                "-DWITH_LTTNG=OFF"
                "-DWITH_SPDK=OFF"
-               "-DWITH_XFS=OFF"
                "-DWITH_XIO=OFF"
                ;; Use jemalloc instead of tcmalloc.
                "-DALLOCATOR=jemalloc"))
@@ -126,11 +129,6 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (lib (assoc-ref outputs "lib")))
-
-               ;; Make header files follow the dynamic libraries.
-               (substitute* "src/include/CMakeLists.txt"
-                 (("DESTINATION include")
-                  (string-append "DESTINATION " lib "/include")))
 
                (substitute* "cmake/modules/Distutils.cmake"
                  ;; Prevent creation of Python eggs.
@@ -350,6 +348,7 @@
        ("snappy" ,snappy)
        ("udev" ,eudev)
        ("util-linux" ,util-linux)
+       ("xfsprogs" ,xfsprogs)
        ("zlib" ,zlib)))
     (home-page "https://ceph.com/")
     (synopsis "Distributed object store and file system")

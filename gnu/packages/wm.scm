@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -83,30 +83,9 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages textutils)
   #:use-module (guix download)
   #:use-module (guix git-download))
-
-(define-public libconfuse
-  (package
-    (name "libconfuse")
-    (version "3.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/martinh/libconfuse/"
-                                  "releases/download/v" version
-                                  "/confuse-" version ".tar.xz"))
-              (sha256
-               (base32
-                "02r1mmzik2m0iigbc2da3y754vj24i18r3ml5p2wzs027mjhn959"))))
-    (build-system gnu-build-system)
-    (home-page "https://github.com/martinh/libconfuse")
-    (synopsis "Configuration file parser library")
-    (description "libconfuse is a configuration file parser library.  It
-supports sections and (lists of) values (strings, integers, floats, booleans
-or other sections), as well as some other features (such as
-single/double-quoted strings, environment variable expansion, functions and
-nested include statements).")
-    (license license:isc)))
 
 (define-public bspwm
   (package
@@ -504,15 +483,15 @@ desktop environment.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.14.2")
+    (version "0.15")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmonad/"
-                                  name "-" version ".tar.gz"))
+                                  "xmonad-" version ".tar.gz"))
               (sha256
                (base32
-                "0gqyivpw8z1x73p1l1fpyq1wc013a1c07r6xn1a82liijs91b949"))))
+                "0a7rh21k9y6g8fwkggxdxjns2grvvsd5hi2ls4klmqz5xvk4hyaa"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
@@ -597,15 +576,14 @@ Haskell, no knowledge of the language is required to install and use it.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://hackage/package/xmonad-contrib/"
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
-        (base32
-         "1660w3xhbfrlq8b8s1rviq2mcn1vyqpypli4023gqxwry52brk6y"))))
+        (base32 "0r9yzgy67j4mi3dyxx714f0ssk5qzca5kh4zw0fhiz1pf008cxms"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-old-time" ,ghc-old-time)

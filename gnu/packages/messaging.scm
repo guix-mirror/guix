@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -211,16 +211,16 @@ identi.ca and status.net).")
 (define-public bitlbee-discord
   (package
     (name "bitlbee-discord")
-    (version "0.4.1")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/sm00th/bitlbee-discord/"
-                              "archive/" version ".tar.gz"))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1bwqxlg6fwj3749y7w69n9jwsdzf5nl9xqiszbpv9k8x1422i1y1"))))
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sm00th/bitlbee-discord.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02pigk2vbz0jdz11f96sygdvp1j762yjn62h124fkcsc070g7a2f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -243,7 +243,7 @@ identi.ca and status.net).")
                      ("automake" ,automake)
                      ("texinfo" ,texinfo)
                      ("libtool" ,libtool)
-                     ("bitlbee" ,bitlbee)         ;needs bitlbee headers
+                     ("bitlbee" ,bitlbee) ; needs bitlbee headers
                      ("bash" ,bash)))
     (synopsis "Discord plugin for Bitlbee")
     (description "Bitlbee-discord is a plugin for Bitlbee witch provides
@@ -306,14 +306,14 @@ dictionaries.  HexChat can be extended with multiple addons.")
 (define-public ngircd
   (package
     (name "ngircd")
-    (version "24")
+    (version "25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthur.barton.de/pub/ngircd/ngircd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "020h9d1awyxqr0l42x1fhs47q7cmm17fdxzjish8p2kq23ma0gqp"))
+                "0kpf5qi98m9f833r4rx9n6h9p31biwk798jwc1mgzmix7sp7r6f4"))
               (patches (search-patches "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
@@ -683,7 +683,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.27")
+    (version "2.6.28")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -691,7 +691,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "1zy8a6pp8q9qjjxwsa4s2r9h20vs077xk59ycwy9lrfd8x79zw69"))))
+                "1xy9yyd4416my151kj41nc62xwgmnwpagrmw49bniv09y78cqysg"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

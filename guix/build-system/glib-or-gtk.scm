@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;;
@@ -129,7 +129,8 @@
                             (system (%current-system))
                             (imported-modules %glib-or-gtk-build-system-modules)
                             (modules %default-modules)
-                            allowed-references)
+                            allowed-references
+                            disallowed-references)
   "Build SOURCE with INPUTS.  See GNU-BUILD for more details."
   (define canonicalize-reference
     (match-lambda
@@ -190,6 +191,10 @@
                                 (and allowed-references
                                      (map canonicalize-reference
                                           allowed-references))
+                                #:disallowed-references
+                                (and disallowed-references
+                                     (map canonicalize-reference
+                                          disallowed-references))
                                 #:guile-for-build guile-for-build))
 
 (define glib-or-gtk-build-system

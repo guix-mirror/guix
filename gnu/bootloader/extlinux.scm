@@ -91,11 +91,9 @@ TIMEOUT ~a~%"
         (for-each (lambda (file)
                     (install-file file install-dir))
                   (find-files syslinux-dir "\\.c32$"))
-        (unless
-            (and (zero? (system* extlinux "--install" install-dir))
-                 (write-file-on-device
-                  (string-append syslinux-dir "/" #$mbr) 440 device 0))
-          (error "failed to install SYSLINUX")))))
+        (invoke/quiet extlinux "--install" install-dir)
+        (write-file-on-device (string-append syslinux-dir "/" #$mbr)
+                              440 device 0))))
 
 (define install-extlinux-mbr
   (install-extlinux "mbr.bin"))

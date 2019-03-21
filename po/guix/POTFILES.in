@@ -72,4 +72,6 @@ guix/channels.scm
 guix/profiles.scm
 guix/git.scm
 guix/deprecation.scm
+gnu/build/bootloader.scm
 nix/nix-daemon/guix-daemon.cc
+

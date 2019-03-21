@@ -226,18 +226,21 @@ matching URIs given in SOURCES."
          obj)))))
 
 (define (evaluate-replacement-specs specs proc)
-  "Parse SPECS, a list of strings like \"guile=guile@2.1\", and invoke PROC on
-each package pair specified by SPECS.  Return the resulting list.  Raise an
-error if an element of SPECS uses invalid syntax, or if a package it refers to
-could not be found."
+  "Parse SPECS, a list of strings like \"guile=guile@2.1\" and return a list
+of package spec/procedure pairs as expected by 'package-input-rewriting/spec'.
+PROC is called with the package to be replaced and its replacement according
+to SPECS.  Raise an error if an element of SPECS uses invalid syntax, or if a
+package it refers to could not be found."
   (define not-equal
     (char-set-complement (char-set #\=)))
 
   (map (lambda (spec)
          (match (string-tokenize spec not-equal)
-           ((old new)
-            (proc (specification->package old)
-                  (specification->package new)))
+           ((spec new)
+            (cons spec
+                  (let ((new (specification->package new)))
+                    (lambda (old)
+                      (proc old new)))))
            (x
             (leave (G_ "invalid replacement specification: ~s~%") spec))))
        specs))
@@ -248,8 +251,10 @@ dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
 strings like \"guile=guile@2.1\" meaning that, any dependency on a package
 called \"guile\" must be replaced with a dependency on a version 2.1 of
 \"guile\"."
-  (let* ((replacements (evaluate-replacement-specs replacement-specs cons))
-         (rewrite      (package-input-rewriting replacements)))
+  (let* ((replacements (evaluate-replacement-specs replacement-specs
+                                                   (lambda (old new)
+                                                     new)))
+         (rewrite      (package-input-rewriting/spec replacements)))
     (lambda (store obj)
       (if (package? obj)
           (rewrite obj)
@@ -260,41 +265,47 @@ called \"guile\" must be replaced with a dependency on a version 2.1 of
 dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
 strings like \"gnutls=gnutls@3.5.4\" meaning that packages are built using the
 current 'gnutls' package, after which version 3.5.4 is grafted onto them."
-  (define (replacement-pair old new)
-    (cons old
-          (package (inherit old) (replacement new))))
+  (define (set-replacement old new)
+    (package (inherit old) (replacement new)))
 
   (let* ((replacements (evaluate-replacement-specs replacement-specs
-                                                   replacement-pair))
-         (rewrite      (package-input-rewriting replacements)))
+                                                   set-replacement))
+         (rewrite      (package-input-rewriting/spec replacements)))
     (lambda (store obj)
       (if (package? obj)
           (rewrite obj)
           obj))))
+
+(define %not-equal
+  (char-set-complement (char-set #\=)))
+
+(define (package-git-url package)
+  "Return the URL of the Git repository for package, or raise an error if
+the source of PACKAGE is not fetched from a Git repository."
+  (let ((source (package-source package)))
+    (cond ((and (origin? source)
+                (git-reference? (origin-uri source)))
+           (git-reference-url (origin-uri source)))
+          ((git-checkout? source)
+           (git-checkout-url source))
+          (else
+           (leave (G_ "the source of ~a is not a Git reference~%")
+                  (package-full-name package))))))
 
 (define (evaluate-git-replacement-specs specs proc)
   "Parse SPECS, a list of strings like \"guile=stable-2.2\", and return a list
 of package pairs, where (PROC PACKAGE URL BRANCH-OR-COMMIT) returns the
 replacement package.  Raise an error if an element of SPECS uses invalid
 syntax, or if a package it refers to could not be found."
-  (define not-equal
-    (char-set-complement (char-set #\=)))
-
   (map (lambda (spec)
-         (match (string-tokenize spec not-equal)
-           ((name branch-or-commit)
-            (let* ((old    (specification->package name))
-                   (source (package-source old))
-                   (url    (cond ((and (origin? source)
-                                       (git-reference? (origin-uri source)))
-                                  (git-reference-url (origin-uri source)))
-                                 ((git-checkout? source)
-                                  (git-checkout-url source))
-                                 (else
-                                  (leave (G_ "the source of ~a is not a Git \
-reference~%")
-                                         (package-full-name old))))))
-              (cons old (proc old url branch-or-commit))))
+         (match (string-tokenize spec %not-equal)
+           ((spec branch-or-commit)
+            (define (replace old)
+              (let* ((source (package-source old))
+                     (url    (package-git-url old)))
+                (proc old url branch-or-commit)))
+
+            (cons spec replace))
            (x
             (leave (G_ "invalid replacement specification: ~s~%") spec))))
        specs))
@@ -307,13 +318,16 @@ strings like \"guile-next=stable-3.0\" meaning that packages are built using
   (define (replace old url branch)
     (package
       (inherit old)
-      (version (string-append "git." branch))
+      (version (string-append "git." (string-map (match-lambda
+                                                   (#\/ #\-)
+                                                   (chr chr))
+                                                 branch)))
       (source (git-checkout (url url) (branch branch)
                             (recursive? #t)))))
 
   (let* ((replacements (evaluate-git-replacement-specs replacement-specs
                                                        replace))
-         (rewrite      (package-input-rewriting replacements)))
+         (rewrite      (package-input-rewriting/spec replacements)))
     (lambda (store obj)
       (if (package? obj)
           (rewrite obj)
@@ -331,15 +345,41 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
                               (if (< (string-length commit) 7)
                                   commit
                                   (string-take commit 7))))
-      (source (git-checkout (url url) (commit commit)))))
+      (source (git-checkout (url url) (commit commit)
+                            (recursive? #t)))))
 
   (let* ((replacements (evaluate-git-replacement-specs replacement-specs
                                                        replace))
-         (rewrite      (package-input-rewriting replacements)))
+         (rewrite      (package-input-rewriting/spec replacements)))
     (lambda (store obj)
       (if (package? obj)
           (rewrite obj)
           obj))))
+
+(define (transform-package-source-git-url replacement-specs)
+  "Return a procedure that, when passed a package, replaces its dependencies
+according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of strings like
+\"guile-json=https://gitthing.com/…\" meaning that packages are built using
+a checkout of the Git repository at the given URL."
+  (define replacements
+    (map (lambda (spec)
+           (match (string-tokenize spec %not-equal)
+             ((spec url)
+              (cons spec
+                    (lambda (old)
+                      (package
+                        (inherit old)
+                        (source (git-checkout (url url)
+                                              (recursive? #t)))))))))
+         replacement-specs))
+
+  (define rewrite
+    (package-input-rewriting/spec replacements))
+
+  (lambda (store obj)
+    (if (package? obj)
+        (rewrite obj)
+        obj)))
 
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
@@ -350,7 +390,8 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
     (with-input  . ,transform-package-inputs)
     (with-graft  . ,transform-package-inputs/graft)
     (with-branch . ,transform-package-source-branch)
-    (with-commit . ,transform-package-source-commit)))
+    (with-commit . ,transform-package-source-commit)
+    (with-git-url . ,transform-package-source-git-url)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -368,7 +409,9 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
           (option '("with-branch") #t #f
                   (parser 'with-branch))
           (option '("with-commit") #t #f
-                  (parser 'with-commit)))))
+                  (parser 'with-commit))
+          (option '("with-git-url") #t #f
+                  (parser 'with-git-url)))))
 
 (define (show-transformation-options-help)
   (display (G_ "
@@ -385,23 +428,32 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
                          build PACKAGE from the latest commit of BRANCH"))
   (display (G_ "
       --with-commit=PACKAGE=COMMIT
-                         build PACKAGE from COMMIT")))
+                         build PACKAGE from COMMIT"))
+  (display (G_ "
+      --with-git-url=PACKAGE=URL
+                         build PACKAGE from the repository at URL")))
 
 
 (define (options->transformation opts)
   "Return a procedure that, when passed an object to build (package,
 derivation, etc.), applies the transformations specified by OPTS."
   (define applicable
-    ;; List of applicable transformations as symbol/procedure pairs.
+    ;; List of applicable transformations as symbol/procedure pairs in the
+    ;; order in which they appear on the command line.
     (filter-map (match-lambda
-                  ((key . transform)
-                   (match (filter-map (match-lambda
-                                        ((k . arg)
-                                         (and (eq? k key) arg)))
-                                      opts)
-                     (()   #f)
-                     (args (cons key (transform args))))))
-                %transformations))
+                  ((key . value)
+                   (match (any (match-lambda
+                                 ((k . proc)
+                                  (and (eq? k key) proc)))
+                               %transformations)
+                     (#f
+                      #f)
+                     (transform
+                      ;; XXX: We used to pass TRANSFORM a list of several
+                      ;; arguments, but we now pass only one, assuming that
+                      ;; transform composes well.
+                      (cons key (transform (list value)))))))
+                (reverse opts)))
 
   (lambda (store obj)
     (fold (match-lambda*

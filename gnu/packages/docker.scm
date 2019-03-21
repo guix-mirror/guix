@@ -43,7 +43,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "18.09.2")
+(define %docker-version "18.09.3")
 
 (define-public python-docker-py
   (package
@@ -162,7 +162,7 @@ Python without keeping their credentials in a Docker configuration file.")
 (define-public containerd
   (package
     (name "containerd")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
      (origin
       (method git-fetch)
@@ -171,7 +171,7 @@ Python without keeping their credentials in a Docker configuration file.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1rw7f0y3iv0mapxid1rgpns80dcy8nhgmxmw27x8qzrzic5viivy"))))
+       (base32 "0npbzixf3c0jvzm159vygvkydrr8h36c9sq50yv0mdinrys2bvg0"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/containerd/containerd"
@@ -239,8 +239,7 @@ network attachments.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "1zfpk2n8j6gnwbrxrh6d6pj24y60dhbanpf55shrm2yxz54ka36c"))
+       (base32 "06yr5xwr181lalh8z1lk07nxlp7hn38aq8cyqjk617dfy4lz0ixx"))
       (patches
        (search-patches "docker-engine-test-noinstall.patch"
                        "docker-fix-tests.patch"))))
@@ -249,9 +248,11 @@ network attachments.")
      `(#:modules
        ((guix build gnu-build-system)
         ((guix build go-build-system) #:prefix go:)
+        (guix build union)
         (guix build utils))
        #:imported-modules
        (,@%gnu-build-system-modules
+        (guix build union)
         (guix build go-build-system))
        #:phases
        (modify-phases %standard-phases
@@ -412,8 +413,8 @@ network attachments.")
              ;; Make build faster
              (setenv "GOCACHE" "/tmp")
              #t))
-         (add-before 'build 'setup-environment
-           (assoc-ref go:%standard-phases 'setup-environment))
+         (add-before 'build 'setup-go-environment
+           (assoc-ref go:%standard-phases 'setup-go-environment))
          (replace 'build
            (lambda _
              ;; Our LD doesn't like the statically linked relocatable things
@@ -483,8 +484,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "0jzcqh1kqbfyj6ax7z67gihaqgjiz6ddz6rq6k458l68v7zn77r8"))))
+       (base32 "09j1i668p330gjz5vw5pss8ghxh1mz7rl2q9ykp02q9p112zhy4j"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"

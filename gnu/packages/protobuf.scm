@@ -23,6 +23,8 @@
 (define-module (gnu packages protobuf)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
@@ -159,6 +161,29 @@ that implements protobuf encoding and decoding, and @code{protoc-c}, a code
 generator that converts Protocol Buffer @code{.proto} files to C descriptor
 code.")
     (license license:bsd-2)))
+
+(define-public protozero
+  (package
+    (name "protozero")
+    (version "1.6.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mapbox/protozero.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ryvn3iwxiaih3mvyy45nbwxnhzfc8vby0xh9m6d6fpakhcpf6s3"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/mapbox/protozero")
+    (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
+    (description "Protozero is a minimalistic protocol buffer decoder and
+encoder in C++.  The developer using protozero has to manually translate the
+@file{.proto} description into code.")
+    (license (list
+              license:asl2.0            ; for folly
+              license:bsd-2))))
 
 (define-public python-protobuf
   (package

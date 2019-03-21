@@ -118,15 +118,17 @@ are already there.")
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:modules ((guix build gnu-build-system)
                   ((guix build go-build-system) #:prefix go:)
+                  (guix build union)
                   (guix build utils))
        #:imported-modules (,@%gnu-build-system-modules
+                            (guix build union)
                             (guix build go-build-system))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          ;; Help the build scripts find the Go language dependencies.
-         (add-after 'unpack 'setup-go-environment
-           (assoc-ref go:%standard-phases 'setup-environment)))))
+         (add-before 'unpack 'setup-go-environment
+           (assoc-ref go:%standard-phases 'setup-go-environment)))))
     (inputs
      `(("go" ,go)
        ("go-github-com-burntsushi-toml" ,go-github-com-burntsushi-toml)

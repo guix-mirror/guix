@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
@@ -2067,7 +2067,7 @@ securely.  It will not store any data unencrypted unless explicitly requested.")
 (define-public qwt
   (package
     (name "qwt")
-    (version "6.1.3")
+    (version "6.1.4")
     (source
       (origin
         (method url-fetch)
@@ -2075,7 +2075,7 @@ securely.  It will not store any data unencrypted unless explicitly requested.")
          (string-append "mirror://sourceforge/qwt/qwt/"
                         version "/qwt-" version ".tar.bz2"))
         (sha256
-         (base32 "0cwp63s03dw351xavb3pzbjlqvx7kj88wv7v4a2b18m9f97d7v7k"))))
+         (base32 "1navkcnmn0qz8kzsyqmk32d929zl72l0b580w1ica7z5559j2a8m"))))
   (build-system gnu-build-system)
   (inputs
    `(("qtbase" ,qtbase)

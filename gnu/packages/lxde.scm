@@ -1,13 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ison111 <ison111@protonmail.com>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +56,7 @@
 (define-public libfm
   (package
     (name "libfm")
-    (version "1.3.0.2")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -63,7 +64,7 @@
                                   "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wkwbi1nyvqza3r1dhrq846axiiq0fy0dqgngnagh76fjrwnzl0q"))))
+                "1r6gl49xrykldwz8y4h2s7gjarxigg3bbkrj0gphxjj1vr5j9ccn"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+-2)))
@@ -190,7 +191,7 @@ performance, all instances of the terminal are sharing a single process.")
 (define-public menu-cache
   (package
     (name "menu-cache")
-    (version "1.0.2")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/" name "/"
@@ -198,7 +199,7 @@ performance, all instances of the terminal are sharing a single process.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1m8j40npykfcfqs43kc0fmksal2jfmfi8lnb3mq3xy1lvvrfv0vg"))))
+                "1iry4zlpppww8qai2cw4zid4081hh7fz8nzsp5lqyffbkm2yn0pd"))))
     (build-system gnu-build-system)
     (inputs `(("glib"  ,glib)
               ("libfm" ,libfm-extra)))
@@ -212,15 +213,15 @@ speed up the access to freedesktop.org defined application menus.")
 (define-public pcmanfm
   (package
     (name "pcmanfm")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/"
+              (uri (string-append "mirror://sourceforge/pcmanfm/"
                                   "PCManFM%20%2B%20Libfm%20%28tarball%20release"
-                                  "%29/PCManFM/" name "-" version ".tar.xz"))
+                                  "%29/PCManFM/pcmanfm-" version ".tar.xz"))
               (sha256
                (base32
-                "1ywgfyklms5hqkapsbjps4kyx20ac0d1qk16ww74yagkyfdkwsas"))))
+                "0mb8hg76x1z0szdyl0w7jpz0bdblc6a29is1vvnh79z37qxh8138"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+"   ,gtk+-2)
               ("gvfs"   ,gvfs)          ; for trash and mount support

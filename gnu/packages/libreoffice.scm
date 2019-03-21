@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -176,8 +176,8 @@ spreadsheets and presentations.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                          name "-" version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpd/libwpd/"
+                          "libwpd-" version "/libwpd-" version ".tar.xz"))
       (sha256 (base32
                "0436gnidx45a9vx114hhh216jrh57mqb9zyssyjfadagmyz6hgrj"))))
     (build-system gnu-build-system)
@@ -263,14 +263,14 @@ way--presentation and vector drawing interfaces.")
 (define-public libwpg
   (package
     (name "libwpg")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                          name "-" version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpg/libwpg/"
+                          "libwpg-" version "/libwpg-" version ".tar.xz"))
       (sha256 (base32
-               "0cwc5zkp210c661l0bvk6q21jg9ak5g8gmy578w5fgfnjymz3yjp"))))
+               "074x159immf139szkswv2zapnq75p7xk10dbha2p9193hgwggcwr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -527,24 +527,18 @@ Microsoft Publisher documents of all versions.")
 (define-public libnumbertext
   (package
     (name "libnumbertext")
-    (version "1.0")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/numbertext/" name
-                           "/archive/" version ".tar.gz"))
+       (uri (string-append "https://github.com/Numbertext/libnumbertext/"
+                           "releases/download/" version
+                           "/libnumbertext-" version ".tar.xz"))
        (sha256
-        (base32
-         "0wnsn4911fdd2na8jxkcvmk04a6xw6qlviic9w4qwg9fcym6866v"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1xzlwhwwhvr76kfdsw5gvfjfdayz803z65h331gv5dpc9imhijg1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/Numbertext/libnumbertext")
     (synopsis "Language-neutral @code{NUMBERTEXT} and @code{MONEYTEXT} functions")
     (description
@@ -903,14 +897,14 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libqxp
   (package
     (name "libqxp")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dev-www.libreoffice.org/src/libqxp/"
                                   "libqxp-" version ".tar.xz"))
               (sha256
                (base32
-                "0wswz49y0lqwqw2nj9j7jaj5ag88hapcz8czgkxax57zhihpy9cc"))))
+                "0p4lb84m05wqd8qr8ni9sp80ivlm83ffn0nxiv4m42hj22qvcdz1"))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)

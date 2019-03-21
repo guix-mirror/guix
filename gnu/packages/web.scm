@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
@@ -749,33 +749,34 @@ current version of any major web browser.")
     (name "rapidjson")
     (version "1.1.0")
     (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/Tencent/rapidjson.git")
-                   (commit (string-append "v" version))))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Remove code using the problematic JSON license (see
-                 ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
-                 (delete-file-recursively "bin/jsonchecker")
-                 #t))))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Tencent/rapidjson.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove code using the problematic JSON license (see
+                  ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
+                  (delete-file-recursively "bin/jsonchecker")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
-     `(,@(if (string-prefix? "aarch64" (or (%current-target-system)
-                                           (%current-system)))
-           '(#:phases
-             (modify-phases %standard-phases
-               (add-after 'unpack 'patch-aarch-march-detection
-                 (lambda _
-                   (substitute* (find-files "." "^CMakeLists\\.txt$")
-                     (("native") "armv8-a"))
-                   #t))))
-           '())))
+     (if (string-prefix? "aarch64" (or (%current-target-system)
+                                       (%current-system)))
+         '(#:phases
+           (modify-phases %standard-phases
+             (add-after 'unpack 'patch-aarch-march-detection
+               (lambda _
+                 (substitute* (find-files "." "^CMakeLists\\.txt$")
+                   (("native") "armv8-a"))
+                 #t))))
+         ;; Disable CPU optimization for reproducibility.
+         '(#:configure-flags '("-DRAPIDJSON_ENABLE_INSTRUMENTATION_OPT=OFF"))))
     (home-page "https://github.com/Tencent/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
     (description
@@ -1337,25 +1338,24 @@ language known as SASS.")
 (define-public perl-apache-logformat-compiler
   (package
     (name "perl-apache-logformat-compiler")
-    (version "0.33")
+    (version "0.35")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
                            "Apache-LogFormat-Compiler-" version ".tar.gz"))
        (sha256
-        (base32
-         "17blk3zhp05azgypn25ydxf3d7fyfgr9bxyiv7xkchhqma96vwqv"))))
+        (base32 "06i70ydxk2wa2rcqn16842kra2qz3jwk0vk1abq8lah4180c0m0n"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-http-message" ,perl-http-message)
-       ("perl-module-build" ,perl-module-build)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
        ("perl-test-mocktime" ,perl-test-mocktime)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-uri" ,perl-uri)))
     (propagated-inputs
      `(("perl-posix-strftime-compiler" ,perl-posix-strftime-compiler)))
-    (arguments `(#:tests? #f))          ;TODO: Timezone test failures
+    (arguments `(#:tests? #f))          ; TODO: Timezone test failures
     (home-page "https://metacpan.org/release/Apache-LogFormat-Compiler")
     (synopsis "Compile a log format string to perl-code")
     (description "This module provides methods to compile a log format string
@@ -1420,14 +1420,14 @@ action, which will forward to the first available view.")
 (define-public perl-catalyst-action-rest
   (package
     (name "perl-catalyst-action-rest")
-    (version "1.20")
+    (version "1.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                                   "Catalyst-Action-REST-" version ".tar.gz"))
               (sha256
                (base32
-                "1mpa64p61f3dp24xnhdraswch4sqj5vyv1iivcvvh5h0xi0haiy0"))))
+                "086bykggzalbjfk0islac4b48g9s2ypj7y81d6ns1lq0aax1py6c"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)
@@ -1780,15 +1780,14 @@ formats.")
 (define-public perl-catalyst-plugin-session
   (package
     (name "perl-catalyst-plugin-session")
-    (version "0.40")
+    (version "0.41")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                            "Catalyst-Plugin-Session-" version ".tar.gz"))
        (sha256
-        (base32
-         "171vi9xcl775scjaw4fcfdmqvz0rb1nr0xxg2gb3ng6bjzpslhgv"))))
+        (base32 "0a451997zc2vjx7rvndgx1ldbrpic8sfbddyvncynh0zr8bhlqc5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
@@ -3406,16 +3405,15 @@ already set.")
 (define-public perl-plack-middleware-methodoverride
   (package
     (name "perl-plack-middleware-methodoverride")
-    (version "0.11")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DW/DWHEELER/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                            "Plack-Middleware-MethodOverride-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1hb8dx7i4vs74n0p737wrvpdnnw6argxrjpr6kj6432zabp8325z"))))
+        (base32 "1wdmmav3rbhv49zpw311zrxxqmg1fz3f3q9src0ypgs8zcp5myyv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -3706,14 +3704,14 @@ methods for WebSocket URIs as it does for HTTP URIs.")
 (define-public perl-uri-template
   (package
     (name "perl-uri-template")
-    (version "0.23")
+    (version "0.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/URI-Template-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nnijyv4n5qfg7l94j7fmvqy9cbq3gl9sz9anmgsiprmkmpk419j"))))
+                "1phibcmam2hklrddzj79l43va1gcqpyszbw21ynxq53ynmhjvbk8"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-uri" ,perl-uri)))
@@ -4812,13 +4810,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.1.1")
+    (version "6.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "0gf9hzzrr1lndbbqi8cwlfasi7l517cy3nbgna88i78lm247rvp0"))))
+                "0lwfk2gq99c653h5f51fs3j37r0gh2pf0p4w5z986nm2mi9z6yn3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -4826,10 +4824,6 @@ deployments.")
                                (string-append "PTHREAD_CC="
                                               (assoc-ref %build-inputs "gcc")
                                               "/bin/gcc")
-                               ;; XXX: Disable PCRE-JIT to work around a segmentation
-                               ;; fault when using jemalloc 5.x:
-                               ;; <https://github.com/varnishcache/varnish-cache/issues/2817>
-                               "--disable-pcre-jit"
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
@@ -4841,6 +4835,8 @@ deployments.")
                (("/bin/sh") (which "sh")))
              (substitute* "bin/varnishd/mgt/mgt_shmem.c"
                (("rm -rf") (string-append (which "rm") " -rf")))
+             (substitute* "bin/varnishtest/vtc_main.c"
+               (("/bin/rm") (which "rm")))
              #t))
          (add-before 'install 'patch-Makefile
            (lambda _
@@ -6200,24 +6196,25 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
 (define-public geomyidae
   (package
     (name "geomyidae")
-    (version "0.31")
+    (version "0.34")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://git.r-36.net/geomyidae/snapshot/"
-                           "geomyidae-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://r-36.net/geomyidae")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1ih7220c6mgq4r7blm4kx3pxbl53sph58lqgwci6cmi3c0sq5c3x"))))
+        (base32 "02afgrk36wkdkflyqr2xgh49v9zq6ma454jshk7igvhpxfb5l3ks"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
-       #:tests? #f                                ;no tests
+       #:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
-    (home-page "http://git.r-36.net/geomyidae")
+    (home-page "http://r-36.net/scm/geomyidae/file/README.html")
     (synopsis "Small Gopher server")
     (description
      "Geomyidae is a server for distributed hypertext protocol Gopher.  Its

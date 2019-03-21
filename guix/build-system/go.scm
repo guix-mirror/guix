@@ -39,6 +39,7 @@
 (define %go-build-system-modules
   ;; Build-side modules imported and used by default.
   `((guix build go-build-system)
+    (guix build union)
     ,@%gnu-build-system-modules))
 
 (define (default-go)
@@ -87,6 +88,7 @@
                    (guile #f)
                    (imported-modules %go-build-system-modules)
                    (modules '((guix build go-build-system)
+                              (guix build union)
                               (guix build utils))))
   (define builder
    `(begin

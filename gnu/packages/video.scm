@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
@@ -377,6 +377,7 @@ H.264 (MPEG-4 AVC) video streams.")
                                "lib/utf8-cpp"))
                    #t))))
     (build-system gnu-build-system)
+    (outputs '("out" "gui")) ; "mkvtoolnix-gui" brings the closure size from ~300 MB to 1.5+ GB.
     (inputs
      `(("boost" ,boost)
        ("bzip2" ,bzip2)
@@ -432,7 +433,34 @@ H.264 (MPEG-4 AVC) video streams.")
              (invoke "rake" "tests/unit")))
          (replace 'install
            (lambda _
-             (invoke "rake" "install"))))))
+             (invoke "rake" "install")))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Move the Qt interface to "gui".
+             (let* ((out (assoc-ref outputs "out"))
+                    (gui (assoc-ref outputs "gui"))
+                    (strip-store-dir (lambda (path)
+                                       (substring path (string-prefix-length out path)))))
+               (for-each
+                (lambda (file)
+                  (mkdir-p (string-append gui (dirname file)))
+                  (rename-file (string-append out file)
+                               (string-append gui file)))
+                (append '("/bin/mkvtoolnix-gui"
+                          "/share/applications/org.bunkus.mkvtoolnix-gui.desktop"
+                          "/share/metainfo/org.bunkus.mkvtoolnix-gui.appdata.xml"
+                          "/share/mime/packages/org.bunkus.mkvtoolnix-gui.xml")
+                        (map strip-store-dir (find-files out "\\.ogg$"))
+                        (map strip-store-dir (find-files out "mkvtoolnix-gui\\.png$"))
+                        (map strip-store-dir (find-files out "mkvtoolnix-gui\\.1"))))
+               (for-each
+                (lambda (file)
+                  (delete-file-recursively (string-append out file)))
+                '("/share/applications"
+                  "/share/metainfo"
+                  "/share/mime"
+                  "/share/mkvtoolnix")))
+             #t)))))
     (home-page "https://mkvtoolnix.download")
     (synopsis "Tools to create, alter and inspect Matroska files")
     (description
@@ -642,15 +670,14 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.4.9")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
-                           name "/" name "-" version ".tar.xz"))
+                           "libmatroska/libmatroska-" version ".tar.xz"))
        (sha256
-        (base32
-         "1j4mjzx6mjzfjf9hz8g4w84krf5jccmr5cyynll0j1vwv3aiv9iq"))))
+        (base32 "07md2gvy3x92ym2k449740mdji6mhknlajkndnhi507s4wcdrvzh"))))
     (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
@@ -1412,7 +1439,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.03.09")
+    (version "2019.03.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1420,7 +1447,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1g46mrmzr31b2r6x0g6wmg3j00qc8l6cbzmdik0l5vwjfcrdvghf"))))
+                "0r31q7j3gg2zfw3b45jancxl7mmr2gin8dyfx5dgyyp92ss8hih7"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2193,7 +2220,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "22.0.3")
+    (version "23.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2202,10 +2229,10 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ri9qkqk3h71b1a5bwpjzqdr21bbmfqbykg48l779d20zln23n1i"))))
+                "1c0a5vy4h3qwz69qw3bydyk7r651ib5a9jna4yj6c25p3p9isdvp"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; no tests
+     `(#:tests? #f))                    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -3384,7 +3411,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
       (origin
         (method url-fetch)
@@ -3396,8 +3423,7 @@ transitions, and effects and then export your film to many common formats.")
                    (string-append "https://code.videolan.org/videolan/dav1d/-/"
                                   "archive/" version "/dav1d-" version ".tar.bz2")))
         (sha256
-         (base32
-          "0q0dbbl91syjnkygz268gh4b7mdcgl6hldj300a4cbqidsadpl5p"))))
+         (base32 "0cp7harg2gf61v35hyki2ddk9yr0xli9bkk3smxblabmq9rv5cs3"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")
@@ -3434,3 +3460,72 @@ speed and correctness.")
       (description "Wlstream is a screen capture tool for recording audio and
 video from a Wayland session.")
       (license license:lgpl2.1+))))
+
+(define-public gaupol
+  (package
+    (name "gaupol")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/otsaloma/gaupol/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dk44fmcs86ymfxfbpdbrr4x5nn5hnv57wkqjyw61g779xjhlrd2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python-pygobject" ,python-pygobject)
+       ("gtk+" ,gtk+)
+       ("python-pycairo" ,python-pycairo) ; Required or else clicking on a subtitle line fails.
+       ("python-chardet" ,python-chardet) ; Optional: Character encoding detection.
+       ("gtkspell3" ,gtkspell3)           ; Optional: Inline spell-checking.
+       ("iso-codes" ,iso-codes)           ; Optional: Translations.
+       ("gstreamer" ,gstreamer)
+       ("gst-libav" ,gst-libav)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)))
+    (arguments
+     `(#:tests? #f                      ; Tests seem to require networking.
+       #:phases
+       (modify-phases %standard-phases
+         ;; gaupol's setup.py script does not support one of the Python build
+         ;; system's default flags, "--single-version-externally-managed".
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/")))
+         (add-after 'install 'wrap-gaupol
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/gaupol")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t))
+         (add-after 'unpack 'patch-data-dir
+           ;; Fix some path variables that setup.py seems to garble.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "setup.py"
+                 (("DATA_DIR = \\{!r\\}\"\\.format\\(data_dir\\)")
+                  (string-append "DATA_DIR = '" out "/share/gaupol'\""))
+                 (("LOCALE_DIR = \\{!r\\}\"\\.format\\(locale_dir\\)")
+                  (string-append "LOCALE_DIR = '" out "/share/locale'\"")))
+               #t))))))
+    (synopsis "Editor for text-based subtitles")
+    (description
+     "Gaupol supports multiple subtitle file formats and provides means of
+creating subtitles, editing texts and timing subtitles to match video.  The
+user interface features a builtin video player and is designed with attention
+to convenience of translating and batch processing of multiple documents.")
+    (home-page "https://otsaloma.io/gaupol/")
+    (license license:gpl3+)))

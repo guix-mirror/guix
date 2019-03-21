@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
@@ -179,7 +179,7 @@ program.")
                        "install_manpage"
                        "install_bash_completion"
                        "install_launcher"))))))
-      (synopsis "Auto-detect connected displays and load appropiate setup")
+      (synopsis "Auto-detect connected displays and load appropriate setup")
       (description "Autorandr wraps around xrandr to help with X11
 multi-screen configuration management.  It allows the user to create profiles
 for various multi-screen setups.  Autorandr automatically detects the profiles
@@ -810,7 +810,7 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.5.9")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -818,8 +818,7 @@ Guile will work for XBindKeys.")
              (url "https://github.com/baskerville/sxhkd")
              (commit version)))
        (sha256
-        (base32
-         "0cw547x7vky55k3ksrmzmrra4zhslqcwq9xw0y4cmbvy4s1qf64v"))))
+        (base32 "1cz4vkm7fqd51ly9qjkf5q76kdqdzfhaajgvrs4anz5dyzrdpw68"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)

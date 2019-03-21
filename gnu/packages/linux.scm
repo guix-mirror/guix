@@ -18,7 +18,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -414,8 +415,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0.1")
-(define %linux-libre-hash "0izbdpml170g5jg87ccnf2q1hc01gsyiy1gqxnqzzi3pri00dfyz")
+(define %linux-libre-version "5.0.3")
+(define %linux-libre-hash "1ivdqr3y8r2hmv3a1g0a641cr2ckl3x4arapw0j6nwd0sbcyncam")
 
 (define %linux-libre-5.0-patches
   (list %boot-logo-patch
@@ -428,8 +429,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.28")
-(define %linux-libre-4.19-hash "0j65gp9z3qrygx67mkhm4ri3pj1pz0gdwcdlds2ypg53rh12jc0a")
+(define %linux-libre-4.19-version "4.19.30")
+(define %linux-libre-4.19-hash "1i15cs7zb53hagllgga8jaz0j1p9b22j93iczwc2w587zzhzlvng")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -442,8 +443,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.105")
-(define %linux-libre-4.14-hash "06pp13d2g0j2v8jy8fh20b4ismzg9wn3i7bnx2hpyvslz256rrgg")
+(define %linux-libre-4.14-version "4.14.107")
+(define %linux-libre-4.14-hash "19i17b8sjjvi99vya1vncjalysdy027hp35rrla68gjs28dyas7r")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -452,8 +453,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.162"
-                    "07swv6xvjsl5nv5y3sc2nfdnmqdz9gjy8hgrjvi0bljwzf1fbxmy"
+  (make-linux-libre "4.9.164"
+                    "06bbynvijqlk92bpppmnjijyfwr0sk01krqdw4hpgbrvlg3wdlbk"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -972,7 +973,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.26")
+    (version "5.0")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -980,7 +981,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "070yz8xii8gnb4psiz628zwm5srh266sfb06f7f1qzagxzz2ykbw"))))
+               "1nj7wvsdmhpp53yffj1pnrkjn96mxrbcraa6h03wc7dqn9zdfyiv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1260,7 +1261,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.20.0")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1268,10 +1269,11 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1a7xyvqjxfnm7rk21amm0xgxa38clg7q7cmc4dmlg27q81mambf8"))))
+                "1fi03lb8dqr8hq633gcqsf6228vsvysxms075j1yyl4nlc17616z"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                                ; no test suite
+     `( ;; There is a test suite, but it wants network namespaces and sudo.
+       #:tests? #f
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "DESTDIR="
                             (string-append "BASH_COMPDIR=" out
@@ -1291,12 +1293,15 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                         (("^.*ARPDDIR.*$") ""))
                       #t)))))
     (inputs
-     `(("iptables" ,iptables)
-       ("db4" ,bdb)))
+     `(("db4" ,bdb)
+       ("iptables" ,iptables)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("bison" ,bison)
        ("flex" ,flex)
-       ("bison" ,bison)))
+       ("pkg-config" ,pkg-config)))
+    ;; For tests.
+    ;; ("libmnl" ,libmnl)
+    ;; ("util-linux" ,util-linux)
     (home-page
      "https://wiki.linuxfoundation.org/networking/iproute2")
     (synopsis
@@ -4061,7 +4066,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.3.3")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -4069,7 +4074,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0mdiyfljrkfl50q1m3ws8yfcyfjwf1zgkvcva8ffcwncji18zhkz"))))
+                "0paj1szszpf8plykrd66jqg1x3kmqs395rbjskahld2bnplcfx1f"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -5073,7 +5078,11 @@ management tools in userspace.")
                 "0ss0r6jlxxinf9fhpc0fgf7b89n9mzirpa85xxjmi1ix9l6cls6x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; kernel/user integration tests are in package "xfstests"
+     `(#:tests? #f    ;kernel/user integration tests are in package "xfstests"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-headers
+                    (lambda _
+                      (invoke "make" "install-dev"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("util-linux" ,util-linux)))
@@ -5191,3 +5200,45 @@ the correct permissions and ownership, and then pack them up, or one would
 have to construct the archives directly, without using the archiver.")
     (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
     (license license:gpl3+)))
+
+(define-public inputattach
+  (package
+    (name "inputattach")
+    (version "0.42.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linuxwacom/input-wacom.git")
+                    (commit (string-append "input-wacom-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "04lnn7v0rm4ppbya140im5d4igcl6c1nrqpgbsr0i8wkral0nv7j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inputattach"
+               (invoke (string-append (assoc-ref inputs "gcc")
+                                      "/bin/gcc")
+                       "-O2" "-o" "inputattach" "inputattach.c"))
+             #t))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target-dir (string-append
+                                (assoc-ref outputs "out")
+                                "/bin/")))
+               (mkdir-p target-dir)
+               (copy-file "inputattach/inputattach"
+                          (string-append target-dir
+                                         "inputattach"))
+               #t))))))
+    (home-page "https://linuxwacom.github.io/")
+    (synopsis "Dispatch input peripherals events to a device file")
+    (description "inputattach dispatches input events from several device
+types and interfaces and translates so that the X server can use them.")
+    (license license:gpl2+)))

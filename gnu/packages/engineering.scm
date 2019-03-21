@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;;
@@ -1003,7 +1003,8 @@ interface to select the best such procedures to use on a given system.")
                 "0w1n4d249vlpda0hi6z1v13qp21vlbp3ykn0m8qg4rd5132j7fg1"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--enable-shared")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-tests
            (lambda _
@@ -1027,17 +1028,19 @@ determines the frequencies, decay constants, amplitudes, and phases of those sin
 (define-public guile-libctl
   (package
     (name "guile-libctl")
-    (version "3.2.2")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "http://ab-initio.mit.edu/libctl/libctl-"
-                version ".tar.gz"))
+                "https://github.com/NanoComp/libctl/releases/download/v"
+                version "/libctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1g7gqybq20jhdnw5vg18bgbj9jz0408gfmjvs8b4xs30pic8pgca"))))
+                "0x8r56lpfq83kfbq28vr25icl19xpfd6fjrxzcpdmv30l9pash83"))))
     (build-system gnu-build-system)
+    (arguments
+      `(#:configure-flags '("--enable-shared")))
     (native-inputs
      `(("fortran" ,gfortran)))
     (inputs
@@ -1052,22 +1055,23 @@ for scientific simulations.")
 (define-public mpb
   (package
     (name "mpb")
-    (version "1.5")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "http://ab-initio.mit.edu/mpb/mpb-"
-                version ".tar.gz"))
+                "https://github.com/NanoComp/mpb/releases/download/v"
+                version "/mpb-" version ".tar.gz"))
               (sha256
                (base32
-                "1mqb2d8jq957nksayjygq58iy8i42vjryzg9iy5fpfay31wzxsix"))))
+                "1jgrb7dd6qs6j6y1gnxmdgrh79l2bvqa6nk60a4pw1annsks4brd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "--with-libctl="
                             (assoc-ref %build-inputs "libctl")
-                            "/share/libctl"))))
+                            "/share/libctl")
+             "--enable-shared")))
     (native-inputs
      `(("fortran" ,gfortran)
        ("pkg-config" ,pkg-config)
@@ -1093,16 +1097,16 @@ fully-vectorial and three-dimensional methods.")
 (define-public meep
   (package
     (name "meep")
-    (version "1.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "http://ab-initio.mit.edu/meep/meep-"
-                version ".tar.gz"))
+                "https://github.com/NanoComp/meep/releases/download/v"
+                version "/meep-" version ".tar.gz"))
               (sha256
                (base32
-                "0f6lbw2hrksg7xscwdqs78jc9nmzx9fs8j0hz1y4i8qknkqiyk2n"))))
+                "14zyxmm3p80j5fz5b89sl7hgkgcisqjny5hjh4pi274ziqjqz8bm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1116,7 +1120,7 @@ fully-vectorial and three-dimensional methods.")
     (inputs
      `(("fftw" ,fftw)
        ("gsl" ,gsl)
-       ("guile" ,guile-2.0)             ; doesn't build with guile-2.2
+       ("guile" ,guile-2.2)
        ("harminv" ,harminv)
        ("hdf5" ,hdf5)
        ("lapack" ,lapack)

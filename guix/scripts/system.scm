@@ -808,8 +808,17 @@ and TARGET arguments."
                  #~(begin
                      (use-modules (gnu build bootloader)
                                   (guix build utils)
-                                  (ice-9 binary-ports))
-                     (#$installer #$bootloader #$device #$target)))))
+                                  (ice-9 binary-ports)
+                                  (srfi srfi-34)
+                                  (srfi srfi-35))
+
+                     (guard (c ((message-condition? c) ;XXX: i18n
+                                (format (current-error-port) "error: ~a~%"
+                                        (condition-message c))
+                                (exit 1)))
+                       (#$installer #$bootloader #$device #$target)
+                       (format #t "bootloader successfully installed on '~a'~%"
+                               #$device))))))
 
 (define* (perform-action action os
                          #:key skip-safety-checks?
