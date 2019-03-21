@@ -4530,14 +4530,14 @@ documents and fragments.  It's built on top of Nokogiri and libxml2.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.2.2")
+    (version "5.2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "1iya7vxqwxysr74s7b4z1x19gmnx5advimzip3cbmsd5bd43wfgz"))))
+         "161bp4p01v1a1lvszrhd1a02zf9x1p1l1yhw79a3rix1kvzkkdqb"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
