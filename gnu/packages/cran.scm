@@ -2704,30 +2704,29 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "0bwijw4427v2k5z3qci2kyr5dyzql8b3lvf88rwy16p741jckjsn"))))
+         "056zv4vhayyy8q9izcdknbb9hff2gxivg21g5mkssia78vw8g3mg"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-broom" ,r-broom)
-       ("r-ddalpha" ,r-ddalpha)
-       ("r-dimred" ,r-dimred)
-       ("r-dplyr" ,r-dplyr)
+     `(("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
+       ("r-glue" ,r-glue)
        ("r-gower" ,r-gower)
        ("r-ipred" ,r-ipred)
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
-       ("r-pls" ,r-pls)
        ("r-purrr" ,r-purrr)
        ("r-rcpproll" ,r-rcpproll)
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
        ("r-tidyselect" ,r-tidyselect)
        ("r-timedate" ,r-timedate)
        ("r-withr" ,r-withr)))
