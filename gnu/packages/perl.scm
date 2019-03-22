@@ -823,7 +823,7 @@ Perl.")
 (define-public perl-carp-clan
   (package
     (name "perl-carp-clan")
-    (version "6.06")
+    (version "6.07")
     (source
      (origin
        (method url-fetch)
@@ -831,7 +831,7 @@ Perl.")
                            "Carp-Clan-" version ".tar.gz"))
        (sha256
         (base32
-         "1m6902n6s627nsvyn2vyrk29q7lh6808hsdk7ka5cirm27vchjpa"))))
+         "0gaa4ygd9q8lp2fn5d9s7miiwxz92a2lqs7j6smwmifq6w3mc20a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
