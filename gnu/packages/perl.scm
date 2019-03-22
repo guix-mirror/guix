@@ -2626,7 +2626,7 @@ the appropriate objects.")
 (define-public perl-devel-checkbin
   (package
     (name "perl-devel-checkbin")
-    (version "0.02")
+    (version "0.04")
     (source
      (origin
        (method url-fetch)
@@ -2634,7 +2634,7 @@ the appropriate objects.")
                            "Devel-CheckBin-" version ".tar.gz"))
        (sha256
         (base32
-         "0g71sma9jy0fjm619hcrcsb9spg2y03vjxx36y8k1xpa2553sr7m"))))
+         "1r735yzgvsxkj4m6ks34xva5m21cfzp9qiis2d4ivv99kjskszqm"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/Devel-CheckBin")
