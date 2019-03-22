@@ -604,7 +604,7 @@ Standard Book Numbers, including ISBN-10 and ISBN-13.")
 (define-public perl-business-issn
   (package
     (name "perl-business-issn")
-    (version "0.91")
+    (version "1.003")
     (source
      (origin
        (method url-fetch)
@@ -612,7 +612,7 @@ Standard Book Numbers, including ISBN-10 and ISBN-13.")
                            "Business-ISSN-" version ".tar.gz"))
        (sha256
         (base32
-         "1dfnm7h7lbqj356700ldlmgbr51v6hyjn1qig2bb4ysl1wn1jnzi"))))
+         "1lcr9dabwqssjpff97ki6w8mjhvh8kfbj3csbyy28ylk35n4awhj"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Business-ISSN")
     (synopsis "Work with International Standard Serial Numbers")
