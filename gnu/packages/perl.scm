@@ -4532,15 +4532,14 @@ versa.")
 (define-public perl-log-any
   (package
     (name "perl-log-any")
-    (version "1.040")
+    (version "1.707")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/Log-Any-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0r1q7cclgwl24gzdnjzvd8y0r7j17dngjk492x35w198zhdj2ncp"))))
+        (base32 "1wb55ib4gvk8h5pjb6hliqg7li1xjk420q3w5r33f9p1ps60ylbl"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Log-Any")
     (synopsis "Bringing loggers and listeners together")
