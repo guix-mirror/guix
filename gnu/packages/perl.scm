@@ -5768,7 +5768,7 @@ Parameterized roles offer a solution to these (and other) kinds of problems.")
 (define-public perl-moosex-role-withoverloading
   (package
     (name "perl-moosex-role-withoverloading")
-    (version "0.16")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
@@ -5776,7 +5776,7 @@ Parameterized roles offer a solution to these (and other) kinds of problems.")
                            "MooseX-Role-WithOverloading-" version ".tar.gz"))
        (sha256
         (base32
-         "0kfs203ip44vsxh282kshia8wqkwklz4i7fs2ngsbj6frv00nqdv"))))
+         "0rb8k0dp1a55bm2pr6r0vsi5msvjl1dslfidxp1gj80j7zbrbc4j"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-aliased" ,perl-aliased)
