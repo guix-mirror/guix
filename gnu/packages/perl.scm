@@ -383,15 +383,14 @@ error when it would have happened.")
 (define-public perl-base
   (package
     (name "perl-base")
-    (version "2.18")
+    (version "2.23")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RG/RGARCIA/"
                            "base-" version ".tar.gz"))
        (sha256
-        (base32
-         "01n3l5ifmn2wd0aadpnzya27b75imibj9zdivkfzcpnviqgx5c2m"))))
+        (base32 "1pjxcbbcpwlgzm0fzsbqd58zn8cj9vwril1wn3xfd7ws550mixa0"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/base")
     (synopsis "Establish an ISA relationship with base classes at compile time")
