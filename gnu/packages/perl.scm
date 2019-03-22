@@ -800,7 +800,7 @@ library assert.h.")
 (define-public perl-carp-assert-more
   (package
     (name "perl-carp-assert-more")
-    (version "1.14")
+    (version "1.16")
     (source
      (origin
        (method url-fetch)
@@ -808,7 +808,7 @@ library assert.h.")
                            "Carp-Assert-More-" version ".tar.gz"))
        (sha256
         (base32
-         "0cq7qk4qbhqppm4raby5k24b5mx5qjgy1884nrddhxillnzlq01z"))))
+         "1x9jd6s3lq97na6gz7g0zaq62l8z297xsfpdj2v42p3ijpfirl4f"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
