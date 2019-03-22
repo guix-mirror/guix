@@ -7978,7 +7978,7 @@ error encouraging the user to seek support.")
 (define-public perl-template-toolkit
   (package
     (name "perl-template-toolkit")
-    (version "2.26")
+    (version "2.28")
     (source
      (origin
        (method url-fetch)
@@ -7986,7 +7986,7 @@ error encouraging the user to seek support.")
                            "Template-Toolkit-" version ".tar.gz"))
        (sha256
         (base32
-         "1gknrm8hdci5ryg67p4y23lsy7lynczqmq9kh9nzj7kg08vczqg7"))))
+         "1msxg3j1hx5wsc7vr81x5gs9gdbn4y0x6cvyj3pq4dgi1603dbvi"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-appconfig" ,perl-appconfig)
