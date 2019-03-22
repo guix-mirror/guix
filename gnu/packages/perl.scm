@@ -9213,7 +9213,7 @@ neither visible nor modifiable from Perl space).")
 (define-public perl-yaml
   (package
     (name "perl-yaml")
-    (version "1.24")
+    (version "1.27")
     (source
      (origin
        (method url-fetch)
@@ -9221,7 +9221,7 @@ neither visible nor modifiable from Perl space).")
                            "YAML-" version ".tar.gz"))
        (sha256
         (base32
-         "1dpzgnjbd8yvf94vf45cmyj5bc6vrm6bchhx9xqwxqd5f9d093dm"))))
+         "1yc2yqjyrcdlhp209f3a63f9xx6v5klisli25fv221yy43la34n9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-yaml" ,perl-test-yaml)))
