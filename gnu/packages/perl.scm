@@ -8619,7 +8619,7 @@ $object->TIEHASH are avoided.")
 (define-public perl-time-duration
   (package
     (name "perl-time-duration")
-    (version "1.1")
+    (version "1.20")
     (source
      (origin
        (method url-fetch)
@@ -8627,7 +8627,7 @@ $object->TIEHASH are avoided.")
                            "Time-Duration-" version ".tar.gz"))
        (sha256
         (base32
-         "0klg33yzb7pr9ra76s6gj5k7nravqnw2lbh022x1xwlj92f43756"))))
+         "1f5vkid4pl5iq3hal01hk1zjbbzrqpx4m1djawbp93l152shb0j5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
