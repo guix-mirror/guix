@@ -6814,15 +6814,14 @@ function call parameters to an arbitrary level of specificity.")
 (define-public perl-params-validationcompiler
   (package
     (name "perl-params-validationcompiler")
-    (version "0.27")
+    (version "0.30")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                             "Params-ValidationCompiler-" version ".tar.gz"))
         (sha256
-         (base32
-          "1cpr188c2xm0kkmdir6slcsgv7v6ibqff4lax8s0whwx6ml9kaah"))))
+         (base32 "1jqn1l4m4i341g14kmjsf3a1kn7vv6z89cix0xjjgr1v70iywnyw"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.
