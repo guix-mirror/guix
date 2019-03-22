@@ -146,7 +146,8 @@ and BOOTP/TFTP for network booting of diskless machines.")
                 "/share/man/man1/dig.1"
                 "/share/man/man1/host.1"
                 "/share/man/man1/nslookup.1"
-                "/share/man/man1/nsupdate.1"))))
+                "/share/man/man1/nsupdate.1"))
+             #t))
          ;; When and if guix provides user namespaces for the build process,
          ;; then the following can be uncommented and the subsequent "force-test"
          ;; will not be necessary.
@@ -156,8 +157,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
          ;;          (system "bin/tests/system/ifconfig.sh up")))
          (replace 'check
            (lambda _
-             (invoke "make" "force-test")
-             #t)))))
+             (invoke "make" "force-test"))))))
     (synopsis "An implementation of the Domain Name System")
     (description "BIND is an implementation of the @dfn{Domain Name System}
 (DNS) protocols for the Internet.  It is a reference implementation of those
