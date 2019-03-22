@@ -1139,6 +1139,12 @@ videoformats depend on the configuration flags of ffmpeg.")
                (substitute* "modules/gui/qt/components/simple_preferences.cpp"
                  (("#include <QFont>") "#include <QFont>
 #include <QButtonGroup>"))
+
+               ;; Fix build with libssh2 > 1.8.0:
+               ;; <https://trac.videolan.org/vlc/ticket/22060>
+               ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=11449b5cd8b415768e010d9b7c1d6ba3cea21f82>
+               (substitute* "modules/access/sftp.c"
+                 (("010801") "010900"))
                #t)))
          (add-after 'strip 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
