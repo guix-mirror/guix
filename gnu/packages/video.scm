@@ -1132,14 +1132,6 @@ videoformats depend on the configuration flags of ffmpeg.")
                (substitute* "modules/text_renderer/freetype/text_layout.c"
                  (("# define FRIBIDI_NO_DEPRECATED 1") ""))
 
-               ;; Fix build against Qt 5.11.
-               (substitute* "modules/gui/qt/actions_manager.cpp"
-                 (("#include <vlc_keys.h>") "#include <vlc_keys.h>
-#include <QAction>"))
-               (substitute* "modules/gui/qt/components/simple_preferences.cpp"
-                 (("#include <QFont>") "#include <QFont>
-#include <QButtonGroup>"))
-
                ;; Fix build with libssh2 > 1.8.0:
                ;; <https://trac.videolan.org/vlc/ticket/22060>
                ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=11449b5cd8b415768e010d9b7c1d6ba3cea21f82>
