@@ -1,3 +1,21 @@
+This provides a Guile reimplementation of clar's "generate.py".
+It makes it possible for us to remove Python from libgit2's build-time
+dependencies.
+libgit2 is used in order to fetch a lot of sources for guix packages.
+Both Python2 and Python3 builds acted up in the past.
+Hence this patch which makes the number of libgit2 dependencies very
+small.
+The reimplementation tries to keep as close as possible to the original
+in both structure and runtime effect.  Some things are thus overly
+convoluted just to make them the same as in the original.
+
+Both implementations basically do:
+
+grep -r 'test_.*__.*' . > clar.suite
+
+It is important that the directory traversal order of the original and
+the reimplementation stay the same.
+
 diff -ruN orig/libgit2-0.27.7/tests/CMakeLists.txt libgit2-0.27.7/tests/CMakeLists.txt
 --- orig/libgit2-0.27.7/tests/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
 +++ libgit2-0.27.7/tests/CMakeLists.txt	2019-03-04 11:13:06.640118979 +0100
