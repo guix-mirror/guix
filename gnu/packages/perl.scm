@@ -8441,7 +8441,7 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-template
   (package
     (name "perl-text-template")
-    (version "1.54")
+    (version "1.55")
     (source
      (origin
        (method url-fetch)
@@ -8451,7 +8451,7 @@ algorism to indicate multiplication by 1000.")
              ".tar.gz"))
        (sha256
         (base32
-         "0s56jgak9ccbbbybf5v8hvvhyplbfhzl6p6v1751inly80rlj1kv"))))
+         "12zi08mwmlbfbnsialmppk75s6dkg765dvmay3wif3158plqp554"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-more-utf8" ,perl-test-more-utf8)
