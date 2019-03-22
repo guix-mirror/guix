@@ -3661,15 +3661,14 @@ the installation.")
 (define-public perl-file-sharedir-dist
   (package
     (name "perl-file-sharedir-dist")
-    (version "0.05")
+    (version "0.07")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
                            "File-ShareDir-Dist-" version ".tar.gz"))
        (sha256
-        (base32
-         "1xkmrckp1qfi9ik098n2vz0r8g7wfwp2y05zjd100w6wcqwfzcpn"))))
+        (base32 "0vg8kxzgz4hf6221jb4v5bx1zhsnplnw5bcmxx0iyd92xv8fazwd"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-ShareDir-Dist")
     (synopsis "Locate per-dist shared files")
