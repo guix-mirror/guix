@@ -181,7 +181,7 @@
   (groups operating-system-groups                 ; list of user groups
           (default %base-groups))
 
-  (skeletons operating-system-skeletons           ; list of name/monadic value
+  (skeletons operating-system-skeletons           ; list of name/file-like value
              (default (default-skeletons)))
   (issue operating-system-issue                   ; string
          (default %default-issue))
@@ -199,7 +199,7 @@
   (name-service-switch operating-system-name-service-switch ; <name-service-switch>
                        (default %default-nss))
 
-  (services operating-system-user-services        ; list of monadic services
+  (services operating-system-user-services        ; list of services
             (default %base-services))
 
   (pam-services operating-system-pam-services     ; list of PAM services
