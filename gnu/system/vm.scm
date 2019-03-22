@@ -58,6 +58,7 @@
   #:use-module (gnu bootloader grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
+  #:use-module (gnu system linux-container)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -473,9 +474,9 @@ should set REGISTER-CLOSURES? to #f."
          (local-file (search-path %load-path
                                   "guix/store/schema.sql"))))
 
-  (mlet %store-monad ((os-drv (operating-system-derivation os #:container? #t))
-                      (name -> (string-append name ".tar.gz"))
-                      (graph -> "system-graph"))
+  (let ((os    (containerized-operating-system os '()))
+        (name  (string-append name ".tar.gz"))
+        (graph "system-graph"))
     (define build
       (with-extensions (cons guile-json           ;for (guix docker)
                              gcrypt-sqlite3&co)   ;for (guix store database)
@@ -505,7 +506,7 @@ should set REGISTER-CLOSURES? to #f."
                      (initialize (root-partition-initializer
                                   #:closures '(#$graph)
                                   #:register-closures? #$register-closures?
-                                  #:system-directory #$os-drv
+                                  #:system-directory #$os
                                   ;; De-duplication would fail due to
                                   ;; cross-device link errors, so don't do it.
                                   #:deduplicate? #f))
@@ -523,7 +524,7 @@ should set REGISTER-CLOSURES? to #f."
                              (call-with-input-file
                                  (string-append "/xchg/" #$graph)
                                read-reference-graph)))
-                 #$os-drv
+                 #$os
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)
                  #:transformations `((,root-directory -> "")))
@@ -534,7 +535,7 @@ should set REGISTER-CLOSURES? to #f."
      name build
      #:make-disk-image? #f
      #:single-file-output? #t
-     #:references-graphs `((,graph ,os-drv)))))
+     #:references-graphs `((,graph ,os)))))
 
 
 ;;;

@@ -10531,6 +10531,13 @@ details.
 @item @code{services} (default: @var{%base-services})
 A list of service objects denoting system services.  @xref{Services}.
 
+@cindex essential services
+@item @code{essential-services} (default: ...)
+The list of ``essential services''---i.e., things like instances of
+@code{system-service-type} and @code{host-name-service-type} (@pxref{Service
+Reference}), which are derived from the operating system definition itself.
+As a user you should @emph{never} need to touch this field.
+
 @item @code{pam-services} (default: @code{(base-pam-services)})
 @cindex PAM
 @cindex pluggable authentication modules
