@@ -8969,7 +8969,7 @@ common serialisation formats such as JSON or CBOR.")
 (define-public perl-unicode-normalize
   (package
     (name "perl-unicode-normalize")
-    (version "1.25")
+    (version "1.26")
     (source
      (origin
        (method url-fetch)
@@ -8977,7 +8977,7 @@ common serialisation formats such as JSON or CBOR.")
                            "Unicode-Normalize-" version ".tar.gz"))
        (sha256
         (base32
-         "0v04bcyjfcfap4kfpc8q3ikq3j7s68nym4ckw3iasmmksdskmcq0"))))
+         "0gvpmrfrvb3sxqq4pnqfmbpf9q0q2an6a2ba4ara95cvx1s6zpms"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
