@@ -8979,15 +8979,14 @@ common serialisation formats such as JSON or CBOR.")
 (define-public perl-unicode-collate
   (package
     (name "perl-unicode-collate")
-    (version "1.18")
+    (version "1.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SA/SADAHIRO/"
                            "Unicode-Collate-" version ".tar.gz"))
        (sha256
-        (base32
-         "1lq4p3mqqljhhy8wyiyahris33j4m5qfzpi6iacmcqjzw5g4afbm"))))
+        (base32 "12df4n46yri6via4x9jb918v1hk6yrlzqk9srq6fnz5kviylnxbf"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
