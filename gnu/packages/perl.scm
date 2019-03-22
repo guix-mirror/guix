@@ -6721,15 +6721,14 @@ compiler.")
 (define-public perl-padwalker
   (package
     (name "perl-padwalker")
-    (version "2.0")
+    (version "2.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RO/ROBIN/"
                            "PadWalker-" version ".tar.gz"))
        (sha256
-        (base32
-         "058l78rkr6px3rqcv2sdf9sqimdq1nc6py5yb9rrg3wmva7crw84"))))
+        (base32 "1kw8cnfyh6jbngm9q1kn003g08gis6l82h77d12yaq88c3xl8v1a"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/PadWalker")
     (synopsis "Play with other peoples' lexical variables")
