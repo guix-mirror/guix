@@ -5934,8 +5934,7 @@ with coercions, designed to work with the DateTime suite of objects.")
                            "MooseX-Types-DateTime-MoreCoercions-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "15ip1rgaana2p4vww355jb5jxyawim0k58gadkdqx20rfxckmfr1"))))
+        (base32 "15ip1rgaana2p4vww355jb5jxyawim0k58gadkdqx20rfxckmfr1"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
@@ -9674,7 +9673,7 @@ till 5pm\" and \"on the second Tuesday of the month\" and \"between 4pm and
 (define-public perl-path-iterator-rule
   (package
     (name "perl-path-iterator-rule")
-    (version "1.012")
+    (version "1.014")
     (source
      (origin
        (method url-fetch)
@@ -9682,8 +9681,7 @@ till 5pm\" and \"on the second Tuesday of the month\" and \"between 4pm and
              "mirror://cpan/authors/id/D/DA/DAGOLDEN/Path-Iterator-Rule-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "1z76avwvwgv4bw28kzx79mmb4449s5l345sn0wljq3dbf4wqigd1"))))
+        (base32 "19mik0r5v1cmxfxm0h4lwqyj0nmq6jgnvvq96hqcjgylpvc02x1z"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-pushd" ,perl-file-pushd)
