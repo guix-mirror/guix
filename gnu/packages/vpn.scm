@@ -119,10 +119,10 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (home-page "http://www.unix-ag.uni-kl.de/~massar/vpnc/")))
 
 (define-public vpnc-scripts
-  (let ((commit "07c3518dd6b8dc424e9c3650a62bed994a4dcbe1"))
+  (let ((commit "1000e0f6dd7d6bff163169a46359211c1fc3a6d2"))
     (package
       (name "vpnc-scripts")
-      (version (string-append "20180226." (string-take commit 7)))
+      (version (string-append "20190116." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri
@@ -132,7 +132,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "02d29nrmnj6kfa889cavqn1pkn9ssb5gyp4lz1v47spwx7abpdi7"))))
+                  "1g41yarz2bl0f73kbjqnywr485ghanbp7nmspklfb0n07yp0z6ak"))))
       (build-system gnu-build-system)
       (inputs `(("coreutils" ,coreutils)
                 ("grep" ,grep)
