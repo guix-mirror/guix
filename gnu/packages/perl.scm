@@ -6956,7 +6956,7 @@ with file paths.")
 (define-public perl-perlio-utf8_strict
   (package
     (name "perl-perlio-utf8-strict")
-    (version "0.006")
+    (version "0.007")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6964,7 +6964,7 @@ with file paths.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0qnmiflirfq10jkmrxyy81ch6hzyndfzxqf8maif0fy44kk1004q"))))
+                "1jw1ri8nkm4ck73arbsld1y2qgj2b9ir01y8mzb3mjs6w0pkz8w3"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
