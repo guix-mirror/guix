@@ -937,15 +937,14 @@ different getters and setters.")
 (define-public perl-class-c3
   (package
     (name "perl-class-c3")
-    (version "0.27")
+    (version "0.34")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Class-C3-" version ".tar.gz"))
        (sha256
-        (base32
-         "185jdpr4applrkvh71ks9ildx5kdymhqr4hilsqxwqny1wr56qss"))))
+        (base32 "1dcibc31v5jwmi6hsdzi7c5ag1sb4wp3kxkibc889qrdj7jm12sd"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-c3" ,perl-algorithm-c3)))
