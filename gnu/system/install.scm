@@ -379,8 +379,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                   (group "users")
                   (supplementary-groups '("wheel")) ; allow use of sudo
                   (password "")
-                  (comment "Guest of GNU")
-                  (home-directory "/home/guest"))))
+                  (comment "Guest of GNU"))))
 
     (issue %issue)
     (services %installation-services)

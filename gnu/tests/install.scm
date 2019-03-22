@@ -74,8 +74,7 @@
                   (name "alice")
                   (comment "Bob's sister")
                   (group "users")
-                  (supplementary-groups '("wheel" "audio" "video"))
-                  (home-directory "/home/alice"))
+                  (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type
                              (marionette-configuration
@@ -357,8 +356,7 @@ per %test-installed-os, this test is expensive in terms of CPU and storage.")
                   (name "alice")
                   (comment "Bob's sister")
                   (group "users")
-                  (supplementary-groups '("wheel" "audio" "video"))
-                  (home-directory "/home/alice"))
+                  (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type
                              (marionette-configuration
@@ -435,12 +433,10 @@ reboot\n")
                          %base-file-systems))
     (users (cons* (user-account
                    (name "alice")
-                   (group "users")
-                   (home-directory "/home/alice"))
+                   (group "users"))
                   (user-account
                    (name "charlie")
-                   (group "users")
-                   (home-directory "/home/charlie"))
+                   (group "users"))
                   %base-user-accounts))
     (services (cons (service marionette-service-type
                              (marionette-configuration
@@ -655,7 +651,6 @@ by 'mdadm'.")
     (users (cons (user-account
                   (name "charlie")
                   (group "users")
-                  (home-directory "/home/charlie")
                   (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type
@@ -776,7 +771,6 @@ build (current-guix) and then store a couple of full system images.")
     (users (cons (user-account
                   (name "charlie")
                   (group "users")
-                  (home-directory "/home/charlie")
                   (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type

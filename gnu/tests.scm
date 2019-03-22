@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -219,8 +219,7 @@ the system under test."
                   (name "alice")
                   (comment "Bob's sister")
                   (group "users")
-                  (supplementary-groups '("wheel" "audio" "video"))
-                  (home-directory "/home/alice"))
+                  (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))))
 
 (define-syntax-rule (simple-operating-system user-services ...)

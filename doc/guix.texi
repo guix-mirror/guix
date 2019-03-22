@@ -10927,7 +10927,6 @@ this field must contain the encrypted password, as a string.  You can use the
 @example
 (user-account
   (name "charlie")
-  (home-directory "/home/charlie")
   (group "users")
 
   ;; Specify a SHA-512-hashed initial password.
