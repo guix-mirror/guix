@@ -6233,15 +6233,14 @@ generate a command line tool.")
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
-    (version "0.28")
+    (version "0.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MATEU/"
                            "MooX-Types-MooseLike-" version ".tar.gz"))
        (sha256
-        (base32
-         "15af2xmpari4vwjwxn1m9yzjfffkr2aiisqqfij31gxcdk15fpk3"))))
+        (base32 "1d6jg9x3p7gm2r0xmbcag374a44gf5pcga2swvxhlhzakfm80dqx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-moo" ,perl-moo)
