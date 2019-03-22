@@ -1127,7 +1127,8 @@ compresses it.")
               ("mime-info" ,shared-mime-info)))
     (arguments
       '(#:configure-flags
-        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")
+        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant"
+          "--enable-ldap")
         #:make-flags
         ;; Disable updating icon cache since it's done by the profile hook.
         ;; Conflict with other packages in the profile would be inevitable
