@@ -1292,14 +1292,14 @@ arrays for their internal representation.")
 (define-public perl-clone
   (package
     (name "perl-clone")
-    (version "0.39")
+    (version "0.41")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
                                   "Clone-" version ".tar.gz"))
               (sha256
                (base32
-                "0bgsidb96gxzf3zhy6v1ksj1c200vxbwykk32fqm1mj97rl4dc5c"))))
+                "060mlm31lacirpnp5fl9jqk4m9cl07vjlh89k83qk25wykf5dh78"))))
     (build-system perl-build-system)
     (synopsis "Recursively copy Perl datatypes")
     (description
