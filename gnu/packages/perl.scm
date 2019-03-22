@@ -8665,7 +8665,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
 (define-public perl-time-hires
   (package
     (name "perl-time-hires")
-    (version "1.9758")
+    (version "1.9760")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8673,7 +8673,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "07jbydcdzpjm6i4nidci0rlklx4kla210fsl6zishw0yq5di9yjv"))))
+                "0avh25m5ffsqc2xnfczvlnlbfbisw5wjq9d3w0j01h9byjzrif1c"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Time-HiRes")
     (synopsis "High resolution alarm, sleep, gettimeofday, interval timers")
