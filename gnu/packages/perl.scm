@@ -8839,15 +8839,14 @@ else.")
 (define-public perl-type-tie
   (package
     (name "perl-type-tie")
-    (version "0.009")
+    (version "0.014")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
                            "Type-Tie-" version ".tar.gz"))
        (sha256
-        (base32
-         "1wv32kd7gx4kfyvzs13y029f49qbbji991wawvarac7rlz09wpan"))))
+        (base32 "1ri23xb3rdb59lk984hnjqi4pb97zqnv4ppn0zpd70pfp0a9addm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
