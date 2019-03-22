@@ -8192,15 +8192,14 @@ into tables.")
 (define-public perl-text-aligner
   (package
     (name "perl-text-aligner")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                            "Text-Aligner-" version ".tar.gz"))
        (sha256
-        (base32
-         "0a6zkchc0apvzkch6z18cx6h97xfiv50r7n4xhg90x8dvk75qzcs"))))
+        (base32 "1vry21jrh91l2pkajnrps83bnr1fn6zshbzi80mcrnggrn9iq776"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/Text-Aligner")
