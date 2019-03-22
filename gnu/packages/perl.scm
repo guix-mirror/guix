@@ -6694,15 +6694,14 @@ of that behind a simple API.")
 (define-public perl-package-stash-xs
   (package
     (name "perl-package-stash-xs")
-    (version "0.28")
+    (version "0.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
                            "Package-Stash-XS-" version ".tar.gz"))
        (sha256
-        (base32
-         "11nl69n8i56p91pd0ia44ip0vpv2cxwpbfakrv01vvv8az1cbn13"))))
+        (base32 "1akqk10qxwk798qppajqbczwmhy4cs9g0lg961m3vq218slnnryk"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
