@@ -9097,7 +9097,7 @@ UNIVERSAL::can() as a function, which it is not.")
 (define-public perl-universal-isa
   (package
     (name "perl-universal-isa")
-    (version "1.20140927")
+    (version "1.20171012")
     (source
      (origin
        (method url-fetch)
@@ -9105,7 +9105,7 @@ UNIVERSAL::can() as a function, which it is not.")
                            "UNIVERSAL-isa-" version ".tar.gz"))
        (sha256
         (base32
-         "0ryqk58nkzhdq26si7mh49h8wand1wlmyf4m78qgiyn8ib6989bb"))))
+         "0avzv9j32aab6l0rd63n92v0pgliz1p4yabxxjfq275hdh1mcsfi"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)))
