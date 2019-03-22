@@ -6661,15 +6661,14 @@ one or more modules.")
 (define-public perl-package-stash
   (package
     (name "perl-package-stash")
-    (version "0.37")
+    (version "0.38")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
                            "Package-Stash-" version ".tar.gz"))
        (sha256
-        (base32
-         "0b3vg2nbzmz1m5qla4123rmfzmpfmwxkw78fghvwsc4iiww0baq6"))))
+        (base32 "0zrs4byhlpq5ybnl0fd3y6pfzair6i2dyvzn7f7a7pgj9n2fi3n5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
