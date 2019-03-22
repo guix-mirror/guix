@@ -2324,7 +2324,7 @@ or \"every day\".  You can also create more complicated recurrences, such as
 (define-public perl-datetime-format-builder
   (package
     (name "perl-datetime-format-builder")
-    (version "0.81")
+    (version "0.82")
     (source
      (origin
        (method url-fetch)
@@ -2332,7 +2332,7 @@ or \"every day\".  You can also create more complicated recurrences, such as
                            "DateTime-Format-Builder-" version ".tar.gz"))
        (sha256
         (base32
-         "1vrkzw7kmxnyy403ykxgbg2kvgs99nggi4n9gi09ixivnn68mmbw"))))
+         "18qw5rn1qbji3iha8gmpgldbjv9gvn97j9d5cp57fb4r5frawgrq"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-class-factory-util" ,perl-class-factory-util)
