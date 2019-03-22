@@ -6347,6 +6347,28 @@ sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
 
+(define-public starlong
+  (package (inherit star)
+    (name "starlong")
+    (arguments
+     (substitute-keyword-arguments (package-arguments star)
+       ((#:make-flags flags)
+        `(list "STARlong"))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; Allow extra long sequence reads.
+           (add-after 'unpack 'make-extra-long
+             (lambda _
+               (substitute* "source/IncludeDefine.h"
+                 (("(#define DEF_readNameLengthMax ).*" _ match)
+                  (string-append match "900000\n")))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+                 (install-file "STARlong" bin))
+               #t))))))))
+
 (define-public subread
   (package
     (name "subread")
