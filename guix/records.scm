@@ -25,6 +25,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
   #:export (define-record-type*
+            this-record
+
             alist->record
             object->fields
             recutils->alist
@@ -93,6 +95,17 @@ interface\" (ABI) for TYPE is equal to COOKIE."
            (()
             #t)))))))
 
+(define-syntax-parameter this-record
+  (lambda (s)
+    "Return the record being defined.  This macro may only be used in the
+context of the definition of a thunked field."
+    (syntax-case s ()
+      (id
+       (identifier? #'id)
+       (syntax-violation 'this-record
+                         "cannot be used outside of a record instantiation"
+                         #'id)))))
+
 (define-syntax make-syntactic-constructor
   (syntax-rules ()
     "Make the syntactic constructor NAME for TYPE, that calls CTOR, and
@@ -148,7 +161,14 @@ of TYPE matches the expansion-time ABI."
 
          (define (wrap-field-value f value)
            (cond ((thunked-field? f)
-                  #`(lambda () #,value))
+                  #`(lambda (x)
+                      (syntax-parameterize ((this-record
+                                             (lambda (s)
+                                               (syntax-case s ()
+                                                 (id
+                                                  (identifier? #'id)
+                                                  #'x)))))
+                        #,value)))
                  ((delayed-field? f)
                   #`(delay #,value))
                  (else value)))
@@ -308,7 +328,7 @@ inherited."
          (with-syntax ((real-get (wrapped-field-accessor-name field)))
            #'(define-inlinable (get x)
                ;; The real value of that field is a thunk, so call it.
-               ((real-get x)))))))
+               ((real-get x) x))))))
 
     (define (delayed-field-accessor-definition field)
       ;; Return the real accessor for FIELD, which is assumed to be a
