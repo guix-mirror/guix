@@ -9757,7 +9757,7 @@ lookup in %INC or by assuming it is $0 if the caller is @code{main}
 (define-public perl-regexp-pattern
   (package
     (name "perl-regexp-pattern")
-    (version "0.1.4")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
@@ -9765,8 +9765,7 @@ lookup in %INC or by assuming it is $0 if the caller is @code{main}
              "mirror://cpan/authors/id/P/PE/PERLANCAR/Regexp-Pattern-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "0rwpl6dxd1yl2ng3d4jdy68jz3mggmdl35rphrw1x619sm1aa876"))))
+        (base32 "064igp2wxgsz4yb33v1r90i8clwjzs2xnpvw9niqlqrbzzrd4q1l"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
