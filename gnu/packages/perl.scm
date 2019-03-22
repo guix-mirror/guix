@@ -4416,7 +4416,7 @@ commands.")
 (define-public perl-json
   (package
     (name "perl-json")
-    (version "4.01")
+    (version "4.02")
     (source
      (origin
        (method url-fetch)
@@ -4424,7 +4424,7 @@ commands.")
                            "JSON-" version ".tar.gz"))
        (sha256
         (base32
-         "1vdiw095g5rf51q8d0ipf8020jx371pma0k4sxp0wlfl76lr65b3"))))
+         "0z32x2lijij28c9fhmzgxc41i9nw24fyvd2a8ajs5zw9b9sqhjj4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-json-xs" ,perl-json-xs))) ;recommended
