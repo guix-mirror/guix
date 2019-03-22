@@ -9517,7 +9517,7 @@ File::Find replacement in Perl.")
 (define-public perl-file-find-object-rule
  (package
   (name "perl-file-find-object-rule")
-  (version "0.0305")
+  (version "0.0309")
   (source
     (origin
       (method url-fetch)
@@ -9526,8 +9526,7 @@ File::Find replacement in Perl.")
              version
              ".tar.gz"))
       (sha256
-        (base32
-          "0hs4n3w99q4ylkhg3qhzcwkxqn7zblfj1zjdgl06ca30afkk4cv6"))))
+        (base32 "1qr1rrp9gn0bpsixsrkan710sxc7bnhirh0anjsw2ihn4wdy3151"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)))
