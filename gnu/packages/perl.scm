@@ -5927,7 +5927,7 @@ with coercions, designed to work with the DateTime suite of objects.")
 (define-public perl-moosex-types-datetime-morecoercions
   (package
     (name "perl-moosex-types-datetime-morecoercions")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
@@ -5936,7 +5936,7 @@ with coercions, designed to work with the DateTime suite of objects.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0888ns6fmvpcj5vh86n8mra9anq8jak7gf0b1z5hvww4birki6dn"))))
+         "15ip1rgaana2p4vww355jb5jxyawim0k58gadkdqx20rfxckmfr1"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
