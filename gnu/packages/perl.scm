@@ -977,15 +977,14 @@ supporting the same interface, but using Class::C3 to do the hard work.")
 (define-public perl-class-c3-componentised
   (package
     (name "perl-class-c3-componentised")
-    (version "1.001000")
+    (version "1.001002")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
                            "Class-C3-Componentised-" version ".tar.gz"))
        (sha256
-        (base32
-         "1nzav8arxll0rya7r2vp032s3acliihbb9mjlfa13rywhh77bzvl"))))
+        (base32 "14wn1g45z3b5apqq7dcai5drk01hfyqydsd2m6hsxzhyvi3b2l9h"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
