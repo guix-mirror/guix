@@ -3285,6 +3285,33 @@ and popup menus.")
      "This package permits automated installation of tools written in Python.")
     (license license:gpl3+)))
 
+(define-public emacs-jedi
+  (package
+    (name "emacs-jedi")
+    (version "0.2.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tkf/emacs-jedi/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xbp9fcxgbf298w05hvf52z41kk7r52975ailgdn8sg60xc98fa7"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-mocker" ,emacs-mocker)))
+    (propagated-inputs
+     `(("emacs-auto-complete" ,emacs-auto-complete)
+       ("emacs-python-environment" ,emacs-python-environment)
+       ("emacs-epc" ,emacs-epc)))
+    (home-page "https://github.com/tkf/emacs-jedi")
+    (synopsis "Provides Python completion in Emacs")
+    (description
+     "This package provides completion in Python buffers and also helps find
+the locations of docstrings, arguments, and functions.")
+    (license license:gpl3+)))
+
 (define-public emacs-puppet-mode
   (let ((commit "b3ed5057166a4f49dfa9be638523a348b55a2fd2")
         (revision "1"))
