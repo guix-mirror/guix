@@ -5718,15 +5718,14 @@ manually setting up a subclass.")
 (define-public perl-moosex-role-parameterized
   (package
     (name "perl-moosex-role-parameterized")
-    (version "1.08")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "MooseX-Role-Parameterized-" version ".tar.gz"))
        (sha256
-        (base32
-         "12s2nmq13ri126yv02bx9h30j760zpal27i470z85ayw9s7il4jq"))))
+        (base32 "0plx25n80mv9qwhix52z79md0qil616nbcryk2f4216kghpw2ij8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
