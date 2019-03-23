@@ -8140,15 +8140,14 @@ the job on behalf of @code{Term::Size::Any}.")
 (define-public perl-term-size-perl
   (package
     (name "perl-term-size-perl")
-    (version "0.029")
+    (version "0.031")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/"
                            "Term-Size-Perl-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rvm91bhdlxfwx5zka023p7szf2s7gm16wl27qiivvj66svsl6lc"))))
+        (base32 "17i05y186l977bhp32b24c8rqasmg1la934dizf5sc0vrd36g6mf"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Term-Size-Perl")
     (synopsis "Perl extension for retrieving terminal size (Perl version)")
