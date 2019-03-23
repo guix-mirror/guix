@@ -3630,15 +3630,14 @@ that.  It also accepts wildcards, * and ?, as arguments for file names.")
 (define-public perl-file-sharedir
   (package
     (name "perl-file-sharedir")
-    (version "1.104")
+    (version "1.116")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "File-ShareDir-" version ".tar.gz"))
        (sha256
-        (base32
-         "1bqwhk3qfg60bkpi5b83bh93sng8jx20i3ka5sixc0prrppjidh7"))))
+        (base32 "0a43rfb0a1fpxh4d2dayarkdxw4cx9a2krkk87zmcilcz7yhpnar"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-sharedir-install" ,perl-file-sharedir-install)))
