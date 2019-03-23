@@ -908,15 +908,14 @@ the same mk_accessors interface.")
 (define-public perl-class-accessor-grouped
   (package
     (name "perl-class-accessor-grouped")
-    (version "0.10012")
+    (version "0.10014")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
                            "Class-Accessor-Grouped-" version ".tar.gz"))
        (sha256
-        (base32
-         "1zp74yv023q3macrf4rv3i82z8pkffqyhh7xk9xg8fbr63ikwqf4"))))
+        (base32 "1fy48hx56n5kdn1gz66awg465qf34r0n5jam64x7zxh9zhzb1m9m"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
