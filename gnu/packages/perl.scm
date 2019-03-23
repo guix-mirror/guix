@@ -5432,14 +5432,14 @@ Moose and is optimised for rapid startup.")
 (define-public perl-moose
   (package
     (name "perl-moose")
-    (version "2.2004")
+    (version "2.2011")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                                   "Moose-" version ".tar.gz"))
               (sha256
                (base32
-                "1c6jx2lnrh2mi9wlj2c0sirj6345xmbpr34ax8d85mcginzq3j74"))))
+                "10ndq6jwj2iwhwqjs23g6nb1yrf3brgw41jjphxzk6zkv4shlgcp"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
