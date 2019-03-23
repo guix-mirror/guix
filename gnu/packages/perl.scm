@@ -8423,8 +8423,7 @@ evaluate the little programs and replace them with their values.")
        (uri (string-append "mirror://cpan/authors/id/S/SB/SBURKE/"
                            "Text-Unidecode-" version ".tar.gz"))
        (sha256
-        (base32
-         "1imii0p6wvhrxsr5z2zhazpx5vl4l4ybf1y2c5hy480xvi6z293c"))))
+        (base32 "1imii0p6wvhrxsr5z2zhazpx5vl4l4ybf1y2c5hy480xvi6z293c"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-Unidecode")
     (synopsis "Provide plain ASCII transliterations of Unicode text")
@@ -8967,14 +8966,14 @@ Unicode data.")
 (define-public perl-unicode-linebreak
   (package
     (name "perl-unicode-linebreak")
-    (version "2016.003")
+    (version "2019.001")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
                                   "Unicode-LineBreak-" version ".tar.gz"))
               (sha256
                (base32
-                "096wf5x99swx7l7yd8pm2aw50g596nf50rkq7250zjcc1acjskp6"))))
+                "12iinva5gqc9g7qzxrvmh45n714z0ad9g7wq2dxwgp6drbj64rs8"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-mime-charset" ,perl-mime-charset)))
