@@ -3065,6 +3065,33 @@ to a key in your preferred mode.")
 SuperCollider is a platform for audio synthesis and algorithmic composition.")
       (license license:gpl2+))))
 
+(define-public emacs-company-auctex
+  (let ((commit "48c42c58ce2f0e693301b0cb2d085055410c1b25")
+        (revision "1"))
+    (package
+      (name "emacs-company-auctex")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alexeyr/company-auctex")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "10qn7frn5wcmrlci3v6iliqzj7r9dls87h9zp3xkgrgn4bqprfp8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-yasnippet" ,emacs-yasnippet)
+         ("emacs-auctex" ,emacs-auctex)
+         ("emacs-company" ,emacs-company)))
+      (home-page "https://github.com/alexeyr/company-auctex/")
+      (synopsis "Completion for @code{AUCTeX}")
+      (description
+       "This package provides a group of backends permitting auto-completion
+for @code{AUCTeX}.")
+      (license license:gpl3+))))
+
 (define-public emacs-mit-scheme-doc
   (package
     (name "emacs-mit-scheme-doc")
