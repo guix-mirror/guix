@@ -6840,15 +6840,14 @@ distributions.")
 (define-public perl-parent
   (package
     (name "perl-parent")
-    (version "0.228")
+    (version "0.237")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CO/CORION/"
                            "parent-" version ".tar.gz"))
        (sha256
-        (base32
-         "0w0i02y4z8465z050kml57mvhv7c5gl8w8ivplhr3cms0zbaq87b"))))
+        (base32 "1bnaadzf51g6zrpq6pvvgds2cc9d4w1vck7sapkd3hb5hmjdk28h"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/parent")
     (synopsis "Establish an ISA relationship with base classes at compile time")
