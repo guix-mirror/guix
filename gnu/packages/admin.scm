@@ -2918,7 +2918,8 @@ Logitech Unifying Receiver.")
 (define-public lynis
   (package
     (name "lynis")
-    (version "2.7.2")
+    ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
+    (version "2.7.3")
     (source
      (origin
        (method git-fetch)
@@ -2927,7 +2928,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dbbfk47dpxx7zpb98n4w3ls3z5di57qnr2nsgxjvp49gk9j3f6k"))
+        (base32 "0md1w86i3fy9l78i98ijr5136nbhdiik2dxyw9qnzmvdlvkqmw70"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2944,11 +2945,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "3310aef4f2b3dd97d166c96ad0253c89c4ad390d")))
+                 (commit "c166b6a67a53b24f5c1fecd4eb5033f54279a5b3")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32
-             "0sqsrm5wal742yrwps8bqb8a8lxd93n4b93n3kkm1b30nbs25g7y"))))))
+            (base32 "0wa2azcmx6pj9axvq1jmwmz7826rj1c214asmmn1hq7pxmfw62zr"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
