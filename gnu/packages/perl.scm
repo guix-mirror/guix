@@ -8876,15 +8876,14 @@ so other data validation frameworks might also consider using it.")
 (define-public perl-types-path-tiny
   (package
     (name "perl-types-path-tiny")
-    (version "0.005")
+    (version "0.006")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                            "Types-Path-Tiny-" version ".tar.gz"))
        (sha256
-        (base32
-         "09nf167ssi4rgj8hhzylwp3zdx61njdpyfri43arcmk9aqn7f0pp"))))
+        (base32 "1072vwcbx2bldfg8xpxc9iqs3rzqd18yik60b432hsdwxpxcjgsr"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-pushd" ,perl-file-pushd)
