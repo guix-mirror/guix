@@ -729,7 +729,7 @@ to test the installed perl for compatibility with his modules.")
 (define-public perl-carp
   (package
     (name "perl-carp")
-    (version "1.38")
+    (version "1.50")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -737,7 +737,7 @@ to test the installed perl for compatibility with his modules.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "00bijwwc0ix27h2ma3lvsf3b56biar96bl9dikxgx7cmpcycxad5"))))
+                "1ngbpjyd9qi7n4h5r3q3qibd8by7rfiv7364jqlv4lbd3973n9zm"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Carp")
     (synopsis "Alternative warn and die for modules")
