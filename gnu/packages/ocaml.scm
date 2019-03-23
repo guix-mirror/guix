@@ -1724,28 +1724,26 @@ immutability.")
 (define-public ocaml-alcotest
   (package
     (name "ocaml-alcotest")
-    (version "0.7.2")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mirage/alcotest/releases/"
                                   "download/" version "/alcotest-" version ".tbz"))
               (sha256
                 (base32
-                  "0g5lzk0gpfx4q8hyhr460gr4lab5wakfxsmhfwvb3yinxwzs95gc"))))
-    (build-system ocaml-build-system)
+                  "0szwjxvaahgynsx0apj81jxj3ki6yz4is9mh2wkcbx66qy7n6fvb"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:build-flags (list "build")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     `(#:package "alcotest"
+       #:test-target "."))
     (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)
-       ("topkg" ,ocaml-topkg)))
+     `(("ocamlbuild" ,ocamlbuild)))
     (propagated-inputs
-     `(("fmt" ,ocaml-fmt)
-       ("astring" ,ocaml-astring)))
+     `(("ocaml-astring" ,ocaml-astring)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-fmt" ,ocaml-fmt)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-uuidm" ,ocaml-uuidm)))
     (home-page "https://github.com/mirage/alcotest")
     (synopsis "Lightweight OCaml test framework")
     (description "Alcotest exposes simple interface to perform unit tests.  It
