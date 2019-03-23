@@ -455,8 +455,8 @@ TCP, not the SSH protocol.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://matt.ucc.asn.au/" name "/releases/"
-                    name "-" version ".tar.bz2"))
+                    "https://matt.ucc.asn.au/dropbear/releases/"
+                    "dropbear-" version ".tar.bz2"))
               (patches (search-patches "dropbear-CVE-2018-15599.patch"))
               (sha256
                (base32
