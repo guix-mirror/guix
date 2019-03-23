@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -48,14 +48,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.10-27")
+    (version "6.9.10-34")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1skngh58lkpa2scc9rhjxvhyn6f7nlwd28hbwrxzlvvb7qil9jcq"))))
+               "1pm1lvbfw67780nch7w80dsvx7v8wbrpj43v3c9217dpz0l89442"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
@@ -170,19 +170,19 @@ script.")
 (define-public graphicsmagick
   (package
     (name "graphicsmagick")
-    (version "1.3.30")
-    (source (origin
-              (method url-fetch)
-              (uri
-                (list
-                  (string-append "mirror://sourceforge/" name "/" name
-                                 "/" version "/GraphicsMagick-" version ".tar.xz")
-                  (string-append "ftp://ftp.graphicsmagick.org/pub/"
-                                 "GraphicsMagick/" (version-major+minor version)
-                                 "/GraphicsMagick-" version ".tar.xz")))
-              (sha256
-               (base32
-                "1warar0731xf94r4bn5x1km85rjabl4iq8r0dk3ywmczap3farfr"))))
+    (version "1.3.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (list
+         (string-append "mirror://sourceforge/graphicsmagick/graphicsmagick"
+                        "/" version "/GraphicsMagick-" version ".tar.xz")
+         (string-append "ftp://ftp.graphicsmagick.org/pub/"
+                        "GraphicsMagick/" (version-major+minor version)
+                        "/GraphicsMagick-" version ".tar.xz")))
+       (sha256
+        (base32 "0y22740f25qxsqqqg26xqlfp920dm57b7hrgaqmx7azksrcvnsq9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

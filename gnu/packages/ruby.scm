@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -51,6 +51,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ragel)
@@ -446,16 +447,16 @@ notebook).")
 ;; RSpec is the dominant testing library for Ruby projects.  Even RSpec's
 ;; dependencies use RSpec for their test suites!  To avoid these circular
 ;; dependencies, we disable tests for all of the RSpec-related packages.
-(define ruby-rspec-support
+(define-public ruby-rspec-support
   (package
     (name "ruby-rspec-support")
-    (version "3.5.0")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-support" version))
               (sha256
                (base32
-                "10vf3k3d472y573mag2kzfsfrf6rv355s13kadnpryk8d36yq5r0"))))
+                "0p3m7drixrlhvj2zpc38b11x145bvm311x6f33jjcxmvcm0wq609"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -467,13 +468,13 @@ notebook).")
 (define-public ruby-rspec-core
   (package
     (name "ruby-rspec-core")
-    (version "3.5.4")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-core" version))
               (sha256
                (base32
-                "1nacs062qbr98fx6czf1vwppn1js956nv2c8vfwj6i65axdfs46i"))))
+                "1p1s5bnbqp3sxk67y0fh0x884jjym527r0vgmhbm81w7aq6b7l4p"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -520,13 +521,13 @@ standard diff-like tool.")
 (define-public ruby-rspec-expectations
   (package
     (name "ruby-rspec-expectations")
-    (version "3.5.0")
+    (version "3.8.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-expectations" version))
               (sha256
                (base32
-                "0bbqfrb1x8gmwf8x2xhhwvvlhwbbafq4isbvlibxi6jk602f09gs"))))
+                "18l21hy1zdc2pgc2yb17k3n2al1khpfr0z6pijlm852iz6vj0dkm"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -612,13 +613,13 @@ eq(1)\\}}.")
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
-    (version "3.5.0")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-mocks" version))
               (sha256
                (base32
-                "0nl3ksivh9wwrjjd47z5dggrwx40v6gpb3a0gzbp1gs06a5dmk24"))))
+                "06y508cjqycb4yfhxmb3nxn0v9xqf17qbd46l1dh4xhncinr4fyp"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -669,13 +670,13 @@ RSpec tests.")
 (define-public ruby-rspec
   (package
     (name "ruby-rspec")
-    (version "3.5.0")
+    (version "3.8.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec" version))
               (sha256
                (base32
-                "16g3mmih999f0b6vcz2c3qsc7ks5zy4lj1rzjh8hf6wk531nvc6s"))))
+                "15ppasvb9qrscwlyjz67ppw1lnxiqnkzx5vkx1bd8x5n3dhikxc3"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -1432,6 +1433,39 @@ features such as multi-language support, auto escaping, auto trimming spaces
 around @code{<% %>}, a changeable embedded pattern, and Ruby on Rails
 support.")
     (home-page "http://www.kuwata-lab.com/erubis/")
+    (license license:expat)))
+
+(define-public ruby-execjs
+  (package
+    (name "ruby-execjs")
+    (version "2.7.0")
+    (source
+     (origin
+       ;; fetch from github as the gem does not contain testing code
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rails/execjs.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0c0vd2mmqq3ar4plbwi2wsbr31vn4h45i19r5km66skydnnbp1y6"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ;; The test suite tests all the available backends. Currenly, this just
+       ;; means the node backend.
+       ;;
+       ;; PASSED: test:node
+       ;; SKIPPED: test:duktape, ;; test:javascriptcore, test:jscript,
+       ;; test:miniracer, test:rubyracer, ;; test:rubyrhino, test:v8
+       ("node" ,node)))
+    (synopsis "Run JavaScript code from Ruby")
+    (description
+     "ExecJS lets you run JavaScript code from Ruby.  It automatically picks a
+runtime to evaluate your JavaScript program, then returns the result to you as
+a Ruby object.")
+    (home-page "https://github.com/rails/execjs")
     (license license:expat)))
 
 (define-public ruby-orderedhash
@@ -2818,6 +2852,30 @@ conversion to (X)HTML.")
     (home-page "https://github.com/vmg/redcarpet")
     (license license:expat)))
 
+(define-public ruby-rerun
+  (package
+  (name "ruby-rerun")
+  (version "0.13.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "rerun" version))
+      (sha256
+        (base32
+          "1cskvxk8z8vmfail8na7hj91hs0qnvds9nydj04zi3dbddgnbmvz"))))
+  (build-system ruby-build-system)
+  (arguments
+   '(#:tests? #f)) ; No included tests
+  (propagated-inputs
+   `(("ruby-listen" ,ruby-listen)))
+  (synopsis "Run a process, and restart when some monitored files change")
+  (description
+    "Rerun is a tool to launch programs, then monitor the filesystem, and
+restart the program when any of the monitored files change.  It's written in
+Ruby, but can be used for all programs.")
+  (home-page "https://github.com/alexch/rerun/")
+  (license license:expat)))
+
 (define-public ruby-mocha
   (package
     (name "ruby-mocha")
@@ -3788,6 +3846,27 @@ rate.")
     (home-page "https://github.com/paul/progress_bar")
     (license license:wtfpl2)))
 
+(define-public ruby-dep
+  (package
+    (name "ruby-dep")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby_dep" version))
+       (sha256
+        (base32
+         "1c1bkl97i9mkcvkn1jks346ksnvnnp84cs22gwl0vd7radybrgy5"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (synopsis "Creates a version constraint of supported Rubies")
+    (description
+     "This package helps create a version constraint of supported Rubies,
+suitable for a gemspec file.")
+    (home-page "https://github.com/e2/ruby_dep")
+    (license license:expat)))
+
 (define-public ruby-progressbar
   (package
     (name "ruby-progressbar")
@@ -4462,32 +4541,49 @@ a native C extension.")
     (version "3.1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (rubygems-uri "listen" version))
+       ;; The gem does not include a Rakefile, so fetch from the Git
+       ;; repository.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/guard/listen.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01v5mrnfqm6sgm8xn2v5swxsn1wlmq7rzh2i48d4jzjsc7qvb6mx"))))
+         "1hqmkfa9f2xb5jlvqbafdxjd5ax75jm8gqj5nh3k22xq0kacsvgg"))))
     (build-system ruby-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-files-in-gemspec
+           (lambda _
+             (substitute* "listen.gemspec"
+               (("`git ls-files -z`") "`find . -type f -printf '%P\\\\0' |sort -z`"))
+             #t))
+         (add-before 'check 'remove-unnecessary-dependencies'
+           (lambda _
+             (substitute* "Rakefile"
+               ;; Rubocop is for code linting, and is unnecessary for running
+               ;; the tests.
+               ((".*rubocop.*") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(;; ruby-thor is used for the command line interface, and is referenced
+       ;; in the wrapper, and therefore just needs to be an input.
+       ("ruby-thor" ,ruby-thor)))
     (propagated-inputs
-     `(("ruby-rb-inotify" ,ruby-rb-inotify)
-       ("ruby-rb-fsevent" ,ruby-rb-fsevent)))
+     `(("ruby-rb-fsevent" ,ruby-rb-fsevent)
+       ("ruby-rb-inotify" ,ruby-rb-inotify)
+       ("ruby-dep" ,ruby-dep)))
     (synopsis "Listen to file modifications")
     (description "The Listen gem listens to file modifications and notifies
 you about the changes.")
     (home-page "https://github.com/guard/listen")
     (license license:expat)))
-
-(define-public ruby-listen-3.0
-  (package
-    (inherit ruby-listen)
-    (version "3.0.8")
-    (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "listen" version))
-              (sha256
-               (base32
-                "1l0y7hbyfiwpvk172r28hsdqsifq1ls39hsfmzi1vy4ll0smd14i"))))))
 
 (define-public ruby-loofah
   (package
@@ -4530,14 +4626,14 @@ documents and fragments.  It's built on top of Nokogiri and libxml2.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "5.2.2")
+    (version "5.2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "1iya7vxqwxysr74s7b4z1x19gmnx5advimzip3cbmsd5bd43wfgz"))))
+         "161bp4p01v1a1lvszrhd1a02zf9x1p1l1yhw79a3rix1kvzkkdqb"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -5550,6 +5646,31 @@ boolean expression used by Cucumber.")
     (home-page "https://github.com/cucumber/tag-expressions-ruby")
     (license license:expat)))
 
+(define-public ruby-bindex
+  (package
+    (name "ruby-bindex")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bindex" version))
+       (sha256
+        (base32
+         "1wvhf4v8sk5x8li03pcc0v0wglmyv7ikvvg05bnms83dfy7s4k8i"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "default"))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Provides access for bindings relating to Ruby exceptions")
+    (description
+     "@code{bindex} provides a way to access the bindings that relate to
+exceptions in Ruby, providing more information about the context in which the
+exception occurred.")
+    (home-page "https://github.com/gsamokovarov/bindex")
+    (license license:expat)))
+
 (define-public ruby-bio-logger
   (package
     (name "ruby-bio-logger")
@@ -5915,14 +6036,14 @@ definitions.")
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
-    (version "1.3.6")
+    (version "1.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "fivemat" version))
        (sha256
         (base32
-         "006n7b09vviv5bs5hv2ccmjxw9iw3brcsm3xh3dhzfncsknz4jp7"))))
+         "0pzlycasvwmg4bbx7plllpqnhd9zlmmff8l2w3yii86nrm2nvf9n"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests
@@ -7710,16 +7831,16 @@ in Jekyll.")
 (define-public ruby-jekyll-watch
   (package
     (name "ruby-jekyll-watch")
-    (version "2.0.0")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll-watch" version))
               (sha256
                (base32
-                "0m7scvj3ki8bmyx5v8pzibpg6my10nycnc28lip98dskf8iakprp"))))
+                "1s9ly83sp8albvgdff12xy2h4xd8lm6z2fah4lzmk2yvp85jzdzv"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-listen-3.0" ,ruby-listen-3.0)))
+     `(("ruby-listen" ,ruby-listen)))
     (arguments
      ;; No rakefile
      `(#:tests? #f))
@@ -8266,13 +8387,13 @@ Pathname.")
 (define-public jekyll
   (package
     (name "jekyll")
-    (version "3.8.3")
+    (version "3.8.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll" version))
               (sha256
                (base32
-                "1iw90wihk9dscgmppf5v6lysg3kjmnx50mjyl4gghkdb4spw97xk"))))
+                "1nn2sc308l2mz0yiall4r90l6vy67qp4sy9zapi73a948nd4a5k3"))))
     (build-system ruby-build-system)
     (arguments
      ;; No rakefile, but a test subdirectory

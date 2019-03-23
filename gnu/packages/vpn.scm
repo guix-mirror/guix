@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages autotools)
@@ -118,10 +119,10 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (home-page "http://www.unix-ag.uni-kl.de/~massar/vpnc/")))
 
 (define-public vpnc-scripts
-  (let ((commit "07c3518dd6b8dc424e9c3650a62bed994a4dcbe1"))
+  (let ((commit "1000e0f6dd7d6bff163169a46359211c1fc3a6d2"))
     (package
       (name "vpnc-scripts")
-      (version (string-append "20180226." (string-take commit 7)))
+      (version (string-append "20190116." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri
@@ -131,7 +132,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "02d29nrmnj6kfa889cavqn1pkn9ssb5gyp4lz1v47spwx7abpdi7"))))
+                  "1g41yarz2bl0f73kbjqnywr485ghanbp7nmspklfb0n07yp0z6ak"))))
       (build-system gnu-build-system)
       (inputs `(("coreutils" ,coreutils)
                 ("grep" ,grep)
@@ -516,4 +517,32 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
 retrieving configuration of WireGuard network tunnel interfaces, and a patch
 that can be applied to a Linux kernel source tree in order to build it with
 WireGuard support.")
+    (license license:gpl2)))
+
+(define-public xl2tpd
+  (package
+    (name "xl2tpd")
+    (version "1.3.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/xelerance/xl2tpd")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1nzkmhi9arwd4smhr07l0sssx46w48z0cblv7xcz25wg4hw86mcd"))
+              (file-name (string-append "xl2tpd-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "DESTDIR=" %output)
+                          "CC=gcc")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:tests? #f)) ;; no tests provided
+    (inputs `(("libpcap" ,libpcap)))
+    (home-page "https://www.xelerance.com/software/xl2tpd/")
+    (synopsis "Layer 2 Tunnelling Protocol Daemon (RFC 2661)")
+    (description
+     "xl2tpd is an implementation of the Layer 2 Tunnelling Protocol (RFC 2661).
+L2TP allows you to tunnel PPP over UDP.")
     (license license:gpl2)))

@@ -12,7 +12,8 @@
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright @ 2018 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,9 +48,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1)
-  #:export (go-github-com-gogo-protobuf-union)
-  #:export (go-golang-org-x-crypto-union))
+  #:use-module (srfi srfi-1))
 
 ;; According to https://golang.org/doc/install/gccgo, gccgo-4.8.2 includes a
 ;; complete go-1.1.2 implementation, gccgo-4.9 includes a complete go-1.2
@@ -223,11 +222,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
     (license license:bsd-3)))
 
-(define-public go-1.9
+(define-public go-1.11
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.7")
+    (version "1.11.6")
     (source
      (origin
        (method url-fetch)
@@ -235,206 +234,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "08kpy874x0rx43zpyv5kwd8xj2ma91xm33i0ka2v1v788px18a2q"))))
+         "0cz1sdhxf9283p1p4jxb020pym0ncd0qlfh36r3hkv6bbm1a2vd9"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
         `(modify-phases ,phases
-           (replace 'prebuild
-             ;; TODO: Most of this could be factorized with Go 1.4.
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
-                      (ld (string-append (assoc-ref inputs "libc") "/lib"))
-                      (loader (car (find-files ld "^ld-linux.+")))
-                      (net-base (assoc-ref inputs "net-base"))
-                      (tzdata-path
-                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
-                      (output (assoc-ref outputs "out")))
-
-                 ;; Removing net/ tests, which fail when attempting to access
-                 ;; network resources not present in the build container.
-                 (for-each delete-file
-                           '("net/listen_test.go"
-                             "net/parse_test.go"
-                             "net/cgo_unix_test.go"))
-
-                 (substitute* "os/os_test.go"
-                   (("/usr/bin") (getcwd))
-                   (("/bin/pwd") (which "pwd"))
-                   (("/bin/sh") (which "sh")))
-
-                 ;; Add libgcc to runpath
-                 (substitute* "cmd/link/internal/ld/lib.go"
-                   (("!rpath.set") "true"))
-                 (substitute* "cmd/go/internal/work/build.go"
-                   (("cgoldflags := \\[\\]string\\{\\}")
-                    (string-append "cgoldflags := []string{"
-                                   "\"-rpath=" gcclib "\""
-                                   "}"))
-                   (("ldflags = setextld\\(ldflags, compiler\\)")
-                    (string-append
-                     "ldflags = setextld(ldflags, compiler)\n"
-                     "ldflags = append(ldflags, \"-r\")\n"
-                     "ldflags = append(ldflags, \"" gcclib "\")\n"))
-                   (("\"-lgcc_s\", ")
-                    (string-append
-                     "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
-
-                 ;; XXX Commit 65fa2b615b72c1fa61a7 in the Go repo.  We do this
-                 ;; without a patch because ((guix packages) patch-and-repack)
-                 ;; resets file mtimes, and parts of Go's test suite rely on
-                 ;; those timestamps.
-                 ;; <https://github.com/golang/go/issues/26369>
-                 (substitute* "cmd/internal/objfile/elf.go"
-                   (("PT_LOAD")
-                     "PT_LOAD && p.Flags&elf.PF_X != 0"))
-
-                 ;; Disable failing tests: these tests attempt to access
-                 ;; commands or network resources which are neither available
-                 ;; nor necessary for the build to succeed.
-                 (for-each
-                  (match-lambda
-                    ((file regex)
-                     (substitute* file
-                       ((regex all before test_name)
-                        (string-append before "Disabled" test_name)))))
-                  '(("net/net_test.go" "(.+)(TestShutdownUnix.+)")
-                    ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
-                    ("os/os_test.go" "(.+)(TestHostname.+)")
-                    ("time/format_test.go" "(.+)(TestParseInSydney.+)")
-                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCatGoodAndBadFile.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExitStatus.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestPipes.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestStdinClose.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestIgnorePipeErrorOnSuccess.+)")
-                    ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
-                    ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
-                    ("cmd/go/go_test.go" "(.+)(TestTwoPkgConfigs.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
-                    ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
-                    ("syscall/exec_linux_test.go"
-                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
-
-                 (substitute* "../misc/cgo/testsanitizers/test.bash"
-                   (("(CC=)cc" all var) (string-append var "gcc")))
-
-                 ;; fix shebang for testar script
-                 ;; note the target script is generated at build time.
-                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
-                   (("#!/usr/bin/env") (string-append "#!" (which "env"))))
-
-                 (substitute* "net/lookup_unix.go"
-                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
-                 (substitute* "net/port_unix.go"
-                   (("/etc/services") (string-append net-base "/etc/services")))
-                 (substitute* "time/zoneinfo_unix.go"
-                   (("/usr/share/zoneinfo/") tzdata-path))
-                 (substitute* (find-files "cmd" "\\.go")
-                   (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
-                 #t)))
-           (add-before 'build 'set-bootstrap-variables
-             (lambda* (#:key outputs inputs #:allow-other-keys)
-               ;; Tell the build system where to find the bootstrap Go.
-               (let ((go  (assoc-ref inputs "go"))
-                     (out (assoc-ref outputs "out")))
-                 (setenv "GOROOT_BOOTSTRAP" go)
-                 (setenv "PATH"
-                         (string-append out "/bin:"
-                                        (dirname (getcwd)) "/bin:"
-                                        (getenv "PATH")))
-
-                 ;; XXX: The following variables seem unrelated.
-                 (setenv "GOGC" "400")
-                 (setenv "GO_TEST_TIMEOUT_SCALE" "9999")
-                 #t)))
-
-           (replace 'build
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; FIXME: Some of the .a files are not bit-reproducible.
-               (let* ((output (assoc-ref outputs "out")))
-                 (setenv "CC" (which "gcc"))
-                 (setenv "GOOS" "linux")
-                 (setenv "GOROOT" (dirname (getcwd)))
-                 (setenv "GOROOT_FINAL" output)
-                 (setenv "CGO_ENABLED" "1")
-                 (invoke "sh" "all.bash"))))
-
-           (replace 'install
-             ;; TODO: Most of this could be factorized with Go 1.4.
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((output (assoc-ref outputs "out"))
-                      (doc_out (assoc-ref outputs "doc"))
-                      (docs (string-append doc_out "/share/doc/" ,name "-" ,version))
-                      (src (string-append
-                            (assoc-ref outputs "tests") "/share/" ,name "-" ,version)))
-                 (delete-file-recursively "../pkg/bootstrap")
-
-                 (mkdir-p src)
-                 (copy-recursively "../test" (string-append src "/test"))
-                 (delete-file-recursively "../test")
-                 (mkdir-p docs)
-                 (copy-recursively "../api" (string-append docs "/api"))
-                 (delete-file-recursively "../api")
-                 (copy-recursively "../doc" (string-append docs "/doc"))
-                 (delete-file-recursively "../doc")
-
-                 (for-each
-                  (lambda (file)
-                    (let* ((filein (string-append "../" file))
-                           (fileout (string-append docs "/" file)))
-                      (copy-file filein fileout)
-                      (delete-file filein)))
-                  ;; Note the slightly different file names compared to 1.4.
-                  '("README.md" "CONTRIBUTORS" "AUTHORS" "PATENTS"
-                    "LICENSE" "VERSION" "CONTRIBUTING.md" "robots.txt"))
-
-                 (copy-recursively "../" output)
-                 #t)))))))
-    (native-inputs
-     `(("go" ,go-1.4)
-       ,@(match (%current-system)
-           ((or "armhf-linux" "aarch64-linux")
-            `(("gold" ,binutils-gold)))
-           (_ `()))
-       ,@(package-native-inputs go-1.4)))
-    (supported-systems %supported-systems)))
-
-(define-public go-1.11
-  (package
-    (inherit go-1.9)
-    (name "go")
-    (version "1.11.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/golang/"
-                           name version ".src.tar.gz"))
-       (sha256
-        (base32
-         "0gllmbjvp12iszwils8id78mvjxwviwf98lh2gdkb236n4mz07mw"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-1.9)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           ;; XXX Work around the Go 1.11.5 tarbomb.
-           ;; <https://github.com/golang/go/issues/29906>
-           (add-after 'unpack 'tarbomb-workaround
-             (lambda _
-               (chdir "..")
-               (delete-file-recursively "gocache")
-               (delete-file-recursively "tmp")
-               #t))
-           (replace 'chdir
-             (lambda _
-               (chdir "go/src")
-               #t))
            (replace 'prebuild
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
@@ -535,23 +339,254 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (substitute* (find-files "cmd" "\\.go")
                    (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
                  #t)))
-           ;; Prevent installation of the build cache, which contains store
-           ;; references to most of the tools used to build Go and would
-           ;; unnecessarily increase the size of Go's closure if it was
-           ;; installed.
-           ;; TODO This should be moved into the 'install' phase when Go 1.9 is
-           ;; removed.
-           (add-before 'install 'delete-extraneous-files
-             (lambda _
-               (delete-file-recursively "../pkg/obj")
-               #t))
-           (replace 'set-bootstrap-variables
+           (add-before 'build 'set-bootstrap-variables
              (lambda* (#:key outputs inputs #:allow-other-keys)
                ;; Tell the build system where to find the bootstrap Go.
                (let ((go  (assoc-ref inputs "go")))
                  (setenv "GOROOT_BOOTSTRAP" go)
                  (setenv "GOGC" "400")
-                 #t)))))))))
+                 #t)))
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; FIXME: Some of the .a files are not bit-reproducible.
+               (let* ((output (assoc-ref outputs "out")))
+                 (setenv "CC" (which "gcc"))
+                 (setenv "GOOS" "linux")
+                 (setenv "GOROOT" (dirname (getcwd)))
+                 (setenv "GOROOT_FINAL" output)
+                 (setenv "CGO_ENABLED" "1")
+                 (invoke "sh" "all.bash"))))
+
+           (replace 'install
+             ;; TODO: Most of this could be factorized with Go 1.4.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((output (assoc-ref outputs "out"))
+                      (doc_out (assoc-ref outputs "doc"))
+                      (docs (string-append doc_out "/share/doc/" ,name "-" ,version))
+                      (src (string-append
+                            (assoc-ref outputs "tests") "/share/" ,name "-" ,version)))
+                 (delete-file-recursively "../pkg/bootstrap")
+                 ;; Prevent installation of the build cache, which contains
+                 ;; store references to most of the tools used to build Go and
+                 ;; would unnecessarily increase the size of Go's closure if it
+                 ;; was installed.
+                 (delete-file-recursively "../pkg/obj")
+
+                 (mkdir-p src)
+                 (copy-recursively "../test" (string-append src "/test"))
+                 (delete-file-recursively "../test")
+                 (mkdir-p docs)
+                 (copy-recursively "../api" (string-append docs "/api"))
+                 (delete-file-recursively "../api")
+                 (copy-recursively "../doc" (string-append docs "/doc"))
+                 (delete-file-recursively "../doc")
+
+                 (for-each
+                  (lambda (file)
+                    (let* ((filein (string-append "../" file))
+                           (fileout (string-append docs "/" file)))
+                      (copy-file filein fileout)
+                      (delete-file filein)))
+                  ;; Note the slightly different file names compared to 1.4.
+                  '("README.md" "CONTRIBUTORS" "AUTHORS" "PATENTS"
+                    "LICENSE" "VERSION" "CONTRIBUTING.md" "robots.txt"))
+
+                 (copy-recursively "../" output)
+                 #t)))))))
+    (native-inputs
+     `(("go" ,go-1.4)
+       ,@(match (%current-system)
+           ((or "armhf-linux" "aarch64-linux")
+            `(("gold" ,binutils-gold)))
+           (_ `()))
+       ,@(package-native-inputs go-1.4)))
+    (supported-systems %supported-systems)))
+
+
+(define-public go-1.12
+  (package
+    (inherit go-1.4)
+    (name "go")
+    (version "1.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://storage.googleapis.com/golang/"
+                           name version ".src.tar.gz"))
+       (sha256
+        (base32
+         "12l12mmgqvy3nbscy7sz83qj4m6iz5a322aq9sk45f7l9ml2gq8b"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments go-1.4)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'prebuild
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
+                      (ld (string-append (assoc-ref inputs "libc") "/lib"))
+                      (loader (car (find-files ld "^ld-linux.+")))
+                      (net-base (assoc-ref inputs "net-base"))
+                      (tzdata-path
+                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
+                      (output (assoc-ref outputs "out")))
+
+                 ;; A side effect of these test scripts is testing
+                 ;; cgo. Attempts at using cgo flags and directives with these
+                 ;; scripts as specified here (https://golang.org/cmd/cgo/)
+                 ;; have not worked. The tests continue to state that they can
+                 ;; not find object files/headers despite being present.
+                 (for-each
+                  delete-file
+                  '("cmd/go/testdata/script/mod_case_cgo.txt"
+                    "cmd/go/testdata/script/list_find.txt"
+                    "cmd/go/testdata/script/list_compiled_imports.txt"
+                    "cmd/go/testdata/script/cgo_syso_issue29253.txt"))
+
+                 (substitute* "os/os_test.go"
+                   (("/usr/bin") (getcwd))
+                   (("/bin/pwd") (which "pwd"))
+                   (("/bin/sh") (which "sh")))
+
+                 (substitute* "cmd/vendor/golang.org/x/sys/unix/syscall_unix_test.go"
+                   (("/usr/bin") "/tmp"))
+
+                 ;; Add libgcc to runpath
+                 (substitute* "cmd/link/internal/ld/lib.go"
+                   (("!rpath.set") "true"))
+                 (substitute* "cmd/go/internal/work/gccgo.go"
+                   (("cgoldflags := \\[\\]string\\{\\}")
+                    (string-append "cgoldflags := []string{"
+                                   "\"-rpath=" gcclib "\""
+                                   "}"))
+                   (("\"-lgcc_s\", ")
+                    (string-append
+                     "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
+                 (substitute* "cmd/go/internal/work/gc.go"
+                   (("ldflags = setextld\\(ldflags, compiler\\)")
+                    (string-append
+                     "ldflags = setextld(ldflags, compiler)\n"
+                     "ldflags = append(ldflags, \"-r\")\n"
+                     "ldflags = append(ldflags, \"" gcclib "\")\n")))
+
+                 ;; Disable failing tests: these tests attempt to access
+                 ;; commands or network resources which are neither available
+                 ;; nor necessary for the build to succeed.
+                 (for-each
+                  (match-lambda
+                    ((file regex)
+                     (substitute* file
+                       ((regex all before test_name)
+                        (string-append before "Disabled" test_name)))))
+                  '(("net/net_test.go" "(.+)(TestShutdownUnix.+)")
+                    ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPort.+)")
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPortWithCancel.+)")
+                    ;; 127.0.0.1 doesn't exist
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPTR.+)")
+                    ;; 127.0.0.1 doesn't exist
+                    ("net/cgo_unix_test.go" "(.+)(TestCgoLookupPTRWithCancel.+)")
+                    ;; /etc/services doesn't exist
+                    ("net/parse_test.go" "(.+)(TestReadLine.+)")
+                    ("os/os_test.go" "(.+)(TestHostname.+)")
+                    ;; The user's directory doesn't exist
+                    ("os/os_test.go" "(.+)(TestUserHomeDir.+)")
+                    ("time/format_test.go" "(.+)(TestParseInSydney.+)")
+                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestCatGoodAndBadFile.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExitStatus.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestPipes.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestStdinClose.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestIgnorePipeErrorOnSuccess.+)")
+                    ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestTwoPkgConfigs.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
+                    ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
+                    ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
+                    ("syscall/exec_linux_test.go"
+                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
+
+                 ;; fix shebang for testar script
+                 ;; note the target script is generated at build time.
+                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
+                   (("#!/usr/bin/env") (string-append "#!" (which "env"))))
+
+                 (substitute* "net/lookup_unix.go"
+                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
+                 (substitute* "net/port_unix.go"
+                   (("/etc/services") (string-append net-base "/etc/services")))
+                 (substitute* "time/zoneinfo_unix.go"
+                   (("/usr/share/zoneinfo/") tzdata-path))
+                 (substitute* (find-files "cmd" "\\.go")
+                   (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
+                 #t)))
+           (add-before 'build 'set-bootstrap-variables
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               ;; Tell the build system where to find the bootstrap Go.
+               (let ((go  (assoc-ref inputs "go")))
+                 (setenv "GOROOT_BOOTSTRAP" go)
+                 (setenv "GOGC" "400")
+                 #t)))
+           (replace 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; FIXME: Some of the .a files are not bit-reproducible.
+               (let* ((output (assoc-ref outputs "out")))
+                 (setenv "CC" (which "gcc"))
+                 (setenv "GOOS" "linux")
+                 (setenv "GOROOT" (dirname (getcwd)))
+                 (setenv "GOROOT_FINAL" output)
+                 (setenv "CGO_ENABLED" "1")
+                 (invoke "sh" "all.bash"))))
+
+           (replace 'install
+             ;; TODO: Most of this could be factorized with Go 1.4.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((output (assoc-ref outputs "out"))
+                      (doc_out (assoc-ref outputs "doc"))
+                      (docs (string-append doc_out "/share/doc/" ,name "-" ,version))
+                      (src (string-append
+                            (assoc-ref outputs "tests") "/share/" ,name "-" ,version)))
+                 (delete-file-recursively "../pkg/bootstrap")
+                 ;; Prevent installation of the build cache, which contains
+                 ;; store references to most of the tools used to build Go and
+                 ;; would unnecessarily increase the size of Go's closure if it
+                 ;; was installed.
+                 (delete-file-recursively "../pkg/obj")
+
+                 (mkdir-p src)
+                 (copy-recursively "../test" (string-append src "/test"))
+                 (delete-file-recursively "../test")
+                 (mkdir-p docs)
+                 (copy-recursively "../api" (string-append docs "/api"))
+                 (delete-file-recursively "../api")
+                 (copy-recursively "../doc" (string-append docs "/doc"))
+                 (delete-file-recursively "../doc")
+
+                 (for-each
+                  (lambda (file)
+                    (let* ((filein (string-append "../" file))
+                           (fileout (string-append docs "/" file)))
+                      (copy-file filein fileout)
+                      (delete-file filein)))
+                  ;; Note the slightly different file names compared to 1.4.
+                  '("README.md" "CONTRIBUTORS" "AUTHORS" "PATENTS"
+                    "LICENSE" "VERSION" "CONTRIBUTING.md" "robots.txt"))
+
+                 (copy-recursively "../" output)
+                 #t)))))))
+    (native-inputs
+     `(("go" ,go-1.4)
+       ,@(match (%current-system)
+           ((or "armhf-linux" "aarch64-linux")
+            `(("gold" ,binutils-gold)))
+           (_ `()))
+       ,@(package-native-inputs go-1.4)))
+    (supported-systems %supported-systems)))
 
 (define-public go go-1.11)
 
@@ -740,8 +775,8 @@ expressing configuration which is easy for both humans and machines to read.")
       (license license:mpl2.0))))
 
 (define-public go-golang-org-x-crypto-bcrypt
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-bcrypt")
       (version (git-version "0.0.0" revision commit))
@@ -754,22 +789,11 @@ expressing configuration which is easy for both humans and machines to read.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/bcrypt"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Bcrypt in Go")
       (description "This package provides a Go implementation of the bcrypt
 password hashing function.")
@@ -777,8 +801,8 @@ password hashing function.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-blowfish
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-blowfish")
       (version (git-version "0.0.0" revision commit))
@@ -791,22 +815,11 @@ password hashing function.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/blowfish"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Blowfish in Go")
       (description "This package provides a Go implementation of the Blowfish
 symmetric-key block cipher.")
@@ -814,8 +827,8 @@ symmetric-key block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-pbkdf2
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-pbkdf2")
       (version (git-version "0.0.0" revision commit))
@@ -828,22 +841,11 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/pbkdf2"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "PBKDF2 in Go")
       (description "This package provides a Go implementation of the PBKDF2 key
 derivation function.")
@@ -851,8 +853,8 @@ derivation function.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-tea
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-tea")
       (version (git-version "0.0.0" revision commit))
@@ -865,22 +867,11 @@ derivation function.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/tea"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Tiny Encryption Algorithm (TEA) in Go")
       (description "This packages a Go implementation of the Tiny Encryption
 Algorithm (TEA) block cipher.")
@@ -888,8 +879,8 @@ Algorithm (TEA) block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-salsa20
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-salsa20")
       (version (git-version "0.0.0" revision commit))
@@ -902,22 +893,11 @@ Algorithm (TEA) block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/salsa20"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Salsa20 in Go")
       (description "This packages provides a Go implementation of the Salsa20
 stream cipher.")
@@ -925,8 +905,8 @@ stream cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-cast5
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-cast5")
       (version (git-version "0.0.0" revision commit))
@@ -939,22 +919,11 @@ stream cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/cast5"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Cast5 in Go")
       (description "This packages provides a Go implementation of the Cast5
 symmetric-key block cipher.")
@@ -962,8 +931,8 @@ symmetric-key block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-twofish
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-twofish")
       (version (git-version "0.0.0" revision commit))
@@ -976,22 +945,11 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/twofish"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Twofish in Go")
       (description "This packages provides a Go implementation of the Twofish
 symmetric-key block cipher.")
@@ -999,8 +957,8 @@ symmetric-key block cipher.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-xtea
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
+  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
+        (revision "2"))
     (package
       (name "go-golang-org-x-crypto-xtea")
       (version (git-version "0.0.0" revision commit))
@@ -1013,22 +971,11 @@ symmetric-key block cipher.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/xtea"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "eXtended Tiny Encryption Algorithm (XTEA) in Go")
       (description "This package provides a Go implementation of the eXtended
 Tiny Encryption Algorithm (XTEA) block cipher.")
@@ -1040,9 +987,19 @@ Tiny Encryption Algorithm (XTEA) block cipher.")
     (inherit go-golang-org-x-crypto-bcrypt)
     (name "go-golang-org-x-crypto-ed25519")
     (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/ed25519")))
+     `(#:import-path "golang.org/x/crypto/ed25519"
+       #:unpack-path "golang.org/x/crypto"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (map (lambda (file)
+                    (make-file-writable file))
+                  (find-files
+                    (string-append (assoc-ref outputs "out")
+                                   "/src/golang.org/x/crypto/ed25519/testdata")
+                    ".*\\.gz$"))
+             #t)))))
     (synopsis "ED25519 in Go")
     (description "This package provides a Go implementation of the ED25519
 signature algorithm.")))
@@ -1084,51 +1041,9 @@ hash algorithm.")))
 fixed-output-length hash functions and the SHAKE variable-output-length hash
 functions defined by FIPS-202.")))
 
-;; Go searches for library modules by looking in the GOPATH environment
-;; variable.  This variable is a list of paths.  However, Go does not
-;; keep searching on GOPATH if it tries and fails to import a module.
-;; So, we use a union for packages sharing a namespace.
-(define* (go-golang-org-x-crypto-union #:optional
-                                    (packages (list go-golang-org-x-crypto-blowfish
-                                                    go-golang-org-x-crypto-bcrypt
-                                                    go-golang-org-x-crypto-tea
-                                                    go-golang-org-x-crypto-xtea
-                                                    go-golang-org-x-crypto-pbkdf2
-                                                    go-golang-org-x-crypto-twofish
-                                                    go-golang-org-x-crypto-cast5
-                                                    go-golang-org-x-crypto-salsa20
-                                                    go-golang-org-x-crypto-ed25519
-                                                    go-golang-org-x-crypto-ripemd160
-                                                    go-golang-org-x-crypto-blake2s
-                                                    go-golang-org-x-crypto-sha3)))
-  (package
-    (name "go-golang-org-x-crypto")
-    (version (package-version go-golang-org-x-crypto-bcrypt))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of the Go x crypto libraries")
-    (description "A union of the Golang cryptographic libraries.  A
-union is required because `go build` assumes that all of the headers and
-libraries are in the same directory.")
-    (home-page (package-home-page go-golang-org-x-crypto-bcrypt))
-    (license (package-license go-golang-org-x-crypto-bcrypt))))
-
 (define-public go-golang-org-x-net-ipv4
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-ipv4")
       (version (git-version "0.0.0" revision commit))
@@ -1140,7 +1055,7 @@ libraries are in the same directory.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv4"
@@ -1152,8 +1067,8 @@ socket options for the Internet Protocol version 4.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-bpf
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-bpf")
       (version (git-version "0.0.0" revision commit))
@@ -1166,7 +1081,7 @@ socket options for the Internet Protocol version 4.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/bpf"
@@ -1178,8 +1093,8 @@ Packet Filter (BPF) virtual machine.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-context
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-context")
       (version (git-version "0.0.0" revision commit))
@@ -1192,7 +1107,7 @@ Packet Filter (BPF) virtual machine.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/context"
@@ -1204,9 +1119,59 @@ request-scoped values across API boundaries and between processes.")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-net-internal-socks
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
+    (package
+      (name "go-golang-org-x-net-internal-socks")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/net")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-net-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/net/internal/socks"
+         #:unpack-path "golang.org/x/net"))
+      (synopsis "")
+      (description "")
+      (home-page "https://go.googlesource.com/net/")
+      (license license:bsd-3))))
+
+(define-public go-golang-org-x-net-internal-socket
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
+    (package
+      (name "go-golang-org-x-net-internal-socket")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/net")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-net-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/net/internal/socket"
+         #:unpack-path "golang.org/x/net"))
+      (synopsis "")
+      (description "")
+      (home-page "https://go.googlesource.com/net/")
+      (license license:bsd-3))))
+
 (define-public go-golang-org-x-net-internal-iana
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-internal-iana")
       (version (git-version "0.0.0" revision commit))
@@ -1219,7 +1184,7 @@ request-scoped values across API boundaries and between processes.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/internal/iana"
@@ -1231,8 +1196,8 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-ipv6
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-ipv6")
       (version (git-version "0.0.0" revision commit))
@@ -1245,7 +1210,7 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv6"
@@ -1257,8 +1222,8 @@ IP-level socket options for the Internet Protocol version 6.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-proxy
-  (let ((commit "d866cfc389cec985d6fda2859936a575a55a3ab6")
-        (revision "1"))
+  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
+        (revision "2"))
     (package
       (name "go-golang-org-x-net-proxy")
       (version (git-version "0.0.0" revision commit))
@@ -1271,7 +1236,7 @@ IP-level socket options for the Internet Protocol version 6.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "10iahqcsiih5hgmqw8yfgv5b3fimfwl1skxg5062avcjjks59f03"))))
+                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/proxy"
@@ -1283,8 +1248,8 @@ for a variety of protocols to proxy network data.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys-unix
-  (let ((commit "83801418e1b59fb1880e363299581ee543af32ca")
-        (revision "1"))
+  (let ((commit "4d1cda033e0619309c606fc686de3adcf599539e")
+        (revision "2"))
     (package
       (name "go-golang-org-x-sys-unix")
       (version (git-version "0.0.0" revision commit))
@@ -1296,19 +1261,11 @@ for a variety of protocols to proxy network data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ilykaanvnzb27d42kmbr4i37hcn7hgqbx98z945gy63aa8dskji"))))
+                  "1wgaldbnkmh568v8kkgvnmkskaj96fqrbzhx23yji2kh1432q6gh"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys/unix"
-         #:unpack-path "golang.org/x/sys"
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-tests
-             (lambda _
-               (pk (getcwd))
-               (substitute* "src/golang.org/x/sys/unix/syscall_unix_test.go"
-                 (("/usr/bin") "/tmp"))
-               #t)))))
+         #:unpack-path "golang.org/x/sys"))
       (synopsis "Go support for low-level system interaction")
       (description "This package provides @code{unix}, which offers Go support
 for low-level interaction with the operating system.")
@@ -1417,18 +1374,7 @@ limiting in Go.")
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (arguments
        `(#:import-path "golang.org/x/crypto/ssh/terminal"
-         #:unpack-path "golang.org/x/crypto"
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map (lambda (file)
-                      (make-file-writable file))
-                    (find-files
-                      (string-append (assoc-ref outputs "out")
-                                     "/src/golang.org/x/crypto/ed25519/testdata")
-                      ".*\\.gz$"))
-               #t)))))
+         #:unpack-path "golang.org/x/crypto"))
       (synopsis "Terminal functions for Go")
       (description "This package provides @{terminal}, which implements
 support functions for dealing with terminals, as commonly found on UNIX
@@ -2084,30 +2030,28 @@ values.")
       (license license:asl2.0))))
 
 (define-public go-github-com-mattn-go-isatty
-  (let ((commit "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c")
-        (revision "0"))
-    (package
-      (name "go-github-com-mattn-go-isatty")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mattn/go-isatty")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0zs92j2cqaw9j8qx1sdxpv3ap0rgbs0vrvi72m40mg8aa36gd39w"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/mattn/go-isatty"))
-      (home-page "https://github.com/mattn/go-isatty")
-      (synopsis "Provide @code{isatty} for Golang")
-      (description "This package provides @code{isatty}, a Go module that can
+  (package
+    (name "go-github-com-mattn-go-isatty")
+    (version "0.0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mattn/go-isatty")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0zs92j2cqaw9j8qx1sdxpv3ap0rgbs0vrvi72m40mg8aa36gd39w"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/mattn/go-isatty"))
+    (home-page "https://github.com/mattn/go-isatty")
+    (synopsis "Provide @code{isatty} for Golang")
+    (description "This package provides @code{isatty}, a Go module that can
 tell you whether a file descriptor points to a terminal and the type of the
 terminal.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-mattn-go-colorable
   (let ((commit "efa589957cd060542a26d2dd7832fd6a6c6c3ade")
@@ -2348,32 +2292,6 @@ methods can be called and usual operations such as indexing or arithmetic can
 be performed.")
       (license license:expat))))
 
-(define-public go-github-com-kr-text
-  (let ((commit "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f")
-        (revision "0"))
-    (package
-      (name "go-github-com-kr-text")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url
-                "https://github.com/kr/text")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1gm5bsl01apvc84bw06hasawyqm4q84vx1pm32wr9jnd7a8vjgj1"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/kr/text"))
-      (home-page "https://github.com/kr/text")
-      (synopsis "Go package for manipulating paragraphs of text")
-      (description "Package @code{text} provides manipulation Go functions for
-paragraphs of text.")
-      (license license:expat))))
-
 (define-public go-github-com-michiwend-golang-pretty
   (let ((commit "8ac61812ea3fa540f3f141a444fcb0dd713cdca4")
         (revision "0"))
@@ -2478,56 +2396,25 @@ and lookup requests.  Browse requests are not supported yet.")
       (description "Go wrapper for taglib")
       (license license:unlicense))))
 
-(define* (go-github-com-gogo-protobuf-union
-           #:optional (packages (list go-github-com-gogo-protobuf
-                                      go-github-com-gogo-protobuf-protoc-gen-gogo)))
-  (package
-    (name "go-github-com-gogo-protobuf-union")
-    (version (package-version go-github-com-gogo-protobuf))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (guix build union))
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)
-                      #t)))))
-    (inputs (map (lambda (package)
-                   (list (package-name package) package))
-                 packages))
-    (synopsis "Union of Go protobuf libraries")
-    (description "This is a union of Go protobuf libraries")
-    (home-page (package-home-page go-github-com-gogo-protobuf))
-    (license (package-license go-github-com-gogo-protobuf))))
-
 (define-public go-github-com-gogo-protobuf
-  (let ((commit "160de10b2537169b5ae3e7e221d28269ef40d311")
-        (revision "2"))
-    (package
-      (name "go-github-com-gogo-protobuf")
-      (version (git-version "0.5" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0hxq28sgxym04rv0q40gpwkh4ni359q21hq3g78wwxwx4qfd4zwm"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/proto"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (propagated-inputs
-       `(("go-github-com-gogo-protobuf-protoc-gen-gogo"
-          ,go-github-com-gogo-protobuf-protoc-gen-gogo)))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
+  (package
+    (name "go-github-com-gogo-protobuf")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gogo/protobuf")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/gogo/protobuf/proto"
+       #:unpack-path "github.com/gogo/protobuf"))
+    (synopsis "Protocol Buffers for Go with Gadgets")
+    (description "Gogoprotobuf is a fork of golang/protobuf with extra code
 generation features.  This code generation is used to achieve:
 @itemize
 @item fast marshalling and unmarshalling
@@ -2537,30 +2424,29 @@ generation features.  This code generation is used to achieve:
 @item peace of mind by optionally generating test and benchmark code
 @item other serialization formats
 @end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license license:bsd-3))))
+    (home-page "https://github.com/gogo/protobuf")
+    (license license:bsd-3)))
 
 (define-public go-github-com-gogo-protobuf-protoc-gen-gogo
-  (let ((commit "efccd33a0c20aa078705571d5ddbfa14c8395a63")
-        (revision "0"))
-    (package
-      (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
-      (version (git-version "0.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/gogo/protobuf")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "09kfa3aqmhh7p0rc6wd4fw5cjccidsk9vgcy13albv0g8vnbmmgw"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
-         #:unpack-path "github.com/gogo/protobuf"))
-      (synopsis "Protocol Buffers for Go with Gadgets")
-      (description "Gogoprotobuf is a fork of golang/protobuf with extra code
+  (package
+    (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gogo/protobuf")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
+       #:unpack-path "github.com/gogo/protobuf"
+       #:tests? #f)) ; Requires the unpackaged 'protoc-min-version'
+    (synopsis "Protocol Buffers for Go with Gadgets")
+    (description "Gogoprotobuf is a fork of golang/protobuf with extra code
 generation features.  This code generation is used to achieve:
 @itemize
 @item fast marshalling and unmarshalling
@@ -2570,35 +2456,56 @@ generation features.  This code generation is used to achieve:
 @item peace of mind by optionally generating test and benchmark code
 @item other serialization formats
 @end itemize")
-      (home-page "https://github.com/gogo/protobuf")
-      (license license:bsd-3))))
+    (home-page "https://github.com/gogo/protobuf")
+    (license license:bsd-3)))
+
+(define-public go-github-com-gogo-protobuf-gogoproto
+  (package
+    (name "go-github-com-gogo-protobuf-gogoproto")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/gogo/protobuf.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/gogo/protobuf"
+       #:import-path "github.com/gogo/protobuf/gogoproto"))
+    (home-page "https://github.com/gogo/protobuf")
+    (synopsis "Extensions to protocol buffers")
+    (description "This package provides extensions to the Gogo protocol buffers
+implementation.")
+    (license license:bsd-3)))
 
 (define-public go-github-com-gogo-protobuf-proto
-  (let ((commit
-          "fd322a3c49630fe6d05737e2b7d9426e6680e28d")
-        (revision "0"))
-    (package
-      (name "go-github-com-gogo-protobuf-proto")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/gogo/protobuf.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-            (base32
-              "1zi85584dy91hyrwpanygz1pppi0chn3hzzv128i83i6j45a5fp9"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:unpack-path "github.com/gogo/protobuf"
-         #:import-path "github.com/gogo/protobuf/proto"))
-      (native-inputs `())
-      (home-page "https://github.com/gogo/protobuf")
-      (synopsis "XXX")
-      (description "XXX")
-      (license license:expat))))
+  (package
+    (name "go-github-com-gogo-protobuf-proto")
+    (version "1.2.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/gogo/protobuf.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/gogo/protobuf"
+       #:import-path "github.com/gogo/protobuf/proto"))
+    (home-page "https://github.com/gogo/protobuf")
+    (synopsis "Protocol buffers component")
+    (description "This is a component of the Gogo protocol buffers
+implementation.")
+    (license license:bsd-3)))
 
 (define-public go-github-com-libp2p-go-flow-metrics
   (let ((commit "7e5a55af485341567f98d6847a373eb5ddcdcd43")
@@ -2733,8 +2640,8 @@ needing to use secp256k1 elliptic curve cryptography.")
       (license license:isc))))
 
 (define-public go-github-com-minio-sha256-simd
-  (let ((commit "51976451ce1942acbb55707a983ed232fa027110")
-        (revision "2"))
+  (let ((commit "cc1980cb03383b1d46f518232672584432d7532d")
+        (revision "3"))
     (package
       (name "go-github-com-minio-sha256-simd")
       (version (git-version "0.0.0" revision commit))
@@ -2747,7 +2654,7 @@ needing to use secp256k1 elliptic curve cryptography.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0kaxvpidf6ygkkb06vi95pirll31jnmywhyalfjvf7djhim2wr8f"))))
+           "04fp98nal0wsb26zwhw82spn5camxslc68g3xp8g4af9w6k9g31j"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/minio/sha256-simd"))
@@ -2936,7 +2843,8 @@ required by Go's standard Hash interface.")
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
       (home-page "https://github.com/multiformats/go-multihash")
       (synopsis "Multihash implementation in Go")
       (description "Multihash implementation in Go.")
@@ -2971,7 +2879,9 @@ required by Go's standard Hash interface.")
          ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
          ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
+         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
       (home-page "https://github.com/libp2p/go-libp2p-peer")
       (synopsis "PKI based identities for use in go-libp2p")
       (description "PKI based identities for use in @command{go-libp2p}.")
@@ -3034,7 +2944,9 @@ required by Go's standard Hash interface.")
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
+         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
       (home-page "https://github.com/libp2p/go-libp2p-metrics")
       (synopsis "Connection wrapper for go-libp2p that provides bandwidth metrics")
       (description "A connection wrapper for @command{go-libp2p} that provides bandwidth
@@ -3107,7 +3019,8 @@ cross-compilation.")
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
       (home-page "https://github.com/multiformats/go-multiaddr")
       (synopsis "Composable and future-proof network addresses")
       (description "Multiaddr is a standard way to represent addresses that
@@ -3151,7 +3064,8 @@ does the following:
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-union" ,(go-golang-org-x-crypto-union))))
+         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
+         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
       (home-page "https://github.com/multiformats/go-multiaddr-net")
       (synopsis "Multiaddress net tools")
       (description "This package provides Multiaddr specific versions of
@@ -3245,11 +3159,11 @@ as conversion to and from @command{net.Addr}.")
       (license license:expat))))
 
 (define-public go-github-com-urfave-cli
-  (let ((commit "934abfb2f102315b5794e15ebc7949e4ca253920")
+  (let ((commit "693af58b4d51b8fcc7f9d89576da170765980581")
         (revision "0"))
     (package
       (name "go-github-com-urfave-cli")
-      (version (git-version "1.19.1" revision commit))
+      (version (git-version "1.20.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3259,7 +3173,7 @@ as conversion to and from @command{net.Addr}.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0c5r8pgj3k48dfcwj8lw3cxkwkl8vh0fhvz5snfdwd0bcxdqx1yq"))))
+           "1krq752xgy658an1696vf4dc2zmp541clwjinhn11394sx2qksh6"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/urfave/cli"))
@@ -3394,3 +3308,81 @@ have super fancy logs.")
       (description "This package provides a library for parsing the dotenv
 format in Go.")
       (license license:expat))))
+
+(define-public go-github-com-kr-pretty
+  (package
+    (name "go-github-com-kr-pretty")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kr/pretty.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "18m4pwg2abd0j9cn5v3k2ksk9ig4vlwxmlw9rrglanziv9l967qp"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("go-github-com-kr-text" ,go-github-com-kr-text)))
+    (arguments
+     '(#:import-path "github.com/kr/pretty"))
+    (synopsis "A pretty printer for Go values")
+    (description "This package provides a pretty printer for Go values.")
+    (home-page "https://github.com/kr/pretty")
+    (license license:expat)))
+
+(define-public go-github-com-kr-text
+  (package
+    (name "go-github-com-kr-text")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kr/text.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1gm5bsl01apvc84bw06hasawyqm4q84vx1pm32wr9jnd7a8vjgj1"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/kr/text"))
+    (synopsis "Text formatting in Go")
+    (description "This package provides a text formatting functions in Go.")
+    (home-page "https://github.com/kr/text")
+    (license license:expat)))
+
+(define-public go-github-com-burntsushi-locker
+  (let ((commit "a6e239ea1c69bff1cfdb20c4b73dadf52f784b6a")
+        (revision "0"))
+    (package
+      (name "go-github-com-burntsushi-locker")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BurntSushi/locker")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1xak4aync4klswq5217qvw191asgla51jr42y94vp109lirm5dzg"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/BurntSushi/locker"))
+      (home-page "https://github.com/BurntSushi/locker")
+      (synopsis "Manage named ReadWrite mutexes in Go")
+      (description "Golang package for conveniently using named read/write
+locks.  These appear to be especially useful for synchronizing access to
+session based information in web applications.
+
+The common use case is to use the package level functions, which use a package
+level set of locks (safe to use from multiple goroutines
+simultaneously).  However, you may also create a new separate set of locks
+test.
+
+All locks are implemented with read-write mutexes.  To use them like a regular
+mutex, simply ignore the RLock/RUnlock functions.")
+      (license license:unlicense))))

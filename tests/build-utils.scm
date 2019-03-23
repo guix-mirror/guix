@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,11 +21,14 @@
 (define-module (test-build-utils)
   #:use-module (guix tests)
   #:use-module (guix build utils)
+  #:use-module ((gnu build bootloader)
+                #:select (invoke/quiet))
   #:use-module ((guix utils)
                 #:select (%current-system call-with-temporary-directory))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 popen))
@@ -108,20 +111,39 @@
        ;; it can't know about the bootstrap bash in the store, since it's not
        ;; named "bash".  Help it out a bit by providing a symlink it this
        ;; package's output.
-       (setenv "PATH" (dirname bash))
-       (wrap-program foo `("GUIX_FOO" prefix ("hello")))
-       (wrap-program foo `("GUIX_BAR" prefix ("world")))
+       (with-environment-variable "PATH" (dirname bash)
+         (wrap-program foo `("GUIX_FOO" prefix ("hello")))
+         (wrap-program foo `("GUIX_BAR" prefix ("world")))
 
-       ;; The bootstrap Bash is linked against an old libc and would abort with
-       ;; an assertion failure when trying to load incompatible locale data.
-       (unsetenv "LOCPATH")
+         ;; The bootstrap Bash is linked against an old libc and would abort
+         ;; with an assertion failure when trying to load incompatible locale
+         ;; data.
+         (unsetenv "LOCPATH")
 
-       (let* ((pipe (open-input-pipe foo))
-              (str  (get-string-all pipe)))
-         (with-directory-excursion directory
-           (for-each delete-file '("foo" ".foo-real")))
-         (and (zero? (close-pipe pipe))
-              str))))))
+         (let* ((pipe (open-input-pipe foo))
+                (str  (get-string-all pipe)))
+           (with-directory-excursion directory
+             (for-each delete-file '("foo" ".foo-real")))
+           (and (zero? (close-pipe pipe))
+                str)))))))
+
+(test-assert "invoke/quiet, success"
+  (begin
+    (invoke/quiet "true")
+    #t))
+
+(test-assert "invoke/quiet, failure"
+  (guard (c ((message-condition? c)
+             (string-contains (condition-message c) "This is an error.")))
+    (invoke/quiet "sh" "-c" "echo This is an error. ; false")
+    #f))
+
+(test-assert "invoke/quiet, failure, message on stderr"
+  (guard (c ((message-condition? c)
+             (string-contains (condition-message c)
+                              "This is another error.")))
+    (invoke/quiet "sh" "-c" "echo This is another error. >&2 ; false")
+    #f))
 
 (let ((script-contents "\
 #!/anything/cabbage-bash-1.2.3/bin/sh

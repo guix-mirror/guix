@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -188,7 +188,7 @@ It is the default image viewer on LXDE desktop environment.")
 (define-public sxiv
   (package
     (name "sxiv")
-    (version "24")
+    (version "25")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -197,7 +197,7 @@ It is the default image viewer on LXDE desktop environment.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "020n1bdxbzqncprh8a4rnjzc4frp335yxbqh5w6dr970f7n5qm8d"))))
+                "13s1lfar142hq1j7xld0ri616p4bqs57b17yr4d0b9a9w7liz4hp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -206,7 +206,7 @@ It is the default image viewer on LXDE desktop environment.")
              "CC=gcc"
              ;; Xft.h #includes <ft2build.h> (without ‘freetype2/’).  The sxiv
              ;; Makefile works around this by hard-coding /usr/include instead.
-             (string-append "DEF_CPPFLAGS=-I"
+             (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "freetype")
                             "/include/freetype2")
              "V=1")
@@ -285,17 +285,16 @@ your images.  Among its features are:
 (define-public catimg
   (package
     (name "catimg")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/posva/catimg.git")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1sk74nfc1aklg784pzknr37dyz4k7h9fck3mifpn43rav5qy2zpy"))))
+        (base32 "0n74iczzgxrcq3zpa7ndycb9rinm829yvf81c747q4ngv5q6pzcm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

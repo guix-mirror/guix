@@ -1,0 +1,15 @@
+In the package definition the call to the command 'git' is substituted with
+the full path to the git executable. This change causes the mix formatting tool
+to complain that the line is too long. This workaround reformats the file
+after the substitution is made.
+
+--- a/Makefile
++++ b/Makefile
+@@ -213,6 +213,7 @@
+ TEST_ERLS = $(addprefix $(TEST_EBIN)/, $(addsuffix .beam, $(basename $(notdir $(wildcard $(TEST_ERL)/*.erl)))))
+ 
+ test_formatted: compile
++	bin/elixir bin/mix format lib/mix/lib/mix/scm/git.ex
+ 	bin/elixir bin/mix format --check-formatted
+ 
+ test_erlang: compile $(TEST_ERLS)

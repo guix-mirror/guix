@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +40,7 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8p12")
+   (version "4.2.8p13")
    (source
      (origin
        (method url-fetch)
@@ -53,8 +53,7 @@
                     (version-major+minor version)
                     "/ntp-" version ".tar.gz")))
        (sha256
-        (base32
-         "0m04ndn0674kcf9x0aggjya07a3hlig2nlzzpwk7vmqka0mj56vh"))
+        (base32 "0f1a4fya7v5s0426nim8ydvvlcashb8hicgs9xlm76ndrz7751r8"))
        (modules '((guix build utils)))
        (snippet
         '(begin

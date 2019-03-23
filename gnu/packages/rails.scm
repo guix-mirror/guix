@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages ruby)
   #:use-module (guix build-system ruby))
 
@@ -65,6 +66,33 @@ migration.")
     (home-page "https://github.com/rails/spring")
     (license license:expat)))
 
+(define-public ruby-sass-rails
+  (package
+    (name "ruby-sass-rails")
+    (version "5.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sass-rails" version))
+       (sha256
+        (base32
+         "1wa63sbsimrsf7nfm8h0m1wbsllkfxvd7naph5d1j6pbc555ma7s"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-railties" ,ruby-railties)
+       ("ruby-sass" ,ruby-sass)
+       ("ruby-sprockets" ,ruby-sprockets)
+       ("ruby-sprockets-rails" ,ruby-sprockets-rails)
+       ("ruby-tilt" ,ruby-tilt)))
+    (synopsis "Sass adapter for the Rails asset pipeline")
+    (description
+     "This library integrates the SASS stylesheet language into Ruby on
+Rails.")
+    (home-page "https://github.com/rails/sass-rails")
+    (license license:expat)))
+
 (define-public ruby-debug-inspector
   (package
     (name "ruby-debug-inspector")
@@ -95,17 +123,70 @@ API.")
      "https://github.com/banister/debug_inspector")
     (license license:expat)))
 
+(define-public ruby-autoprefixer-rails
+  (package
+    (name "ruby-autoprefixer-rails")
+    (version "9.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "autoprefixer-rails" version))
+       (sha256
+        (base32
+         "0fxbfl3xrrjj84n98x24yzxbz4nvm6c492dxj41kkrl9z97ga13i"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'remove-unnecessary-dependencies
+           (lambda _
+             ;; Remove the testing of compass, as it's use is deprecated, and
+             ;; it's unpackaged for Guix
+             (substitute* "autoprefixer-rails.gemspec"
+               ((".*%q<compass>.*") "\n")
+               (("\"spec/compass_spec\\.rb\"\\.freeze, ") ""))
+             (delete-file "spec/compass_spec.rb")
+
+             (substitute* "Gemfile"
+               ;; Remove overly strict requirement on sprockets
+               ((", '>= 4\\.0\\.0\\.beta1'") "")
+               ;; The mini_racer gem isn't packaged yet, and it's not directly
+               ;; required, as other backends for ruby-execjs can be used.
+               (("gem 'mini_racer'") "")
+               ;; For some reason, this is required for the gems to be picked
+               ;; up
+               (("gemspec") "gemspec\ngem 'tzinfo-data'\ngem 'sass'"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rails" ,ruby-rails)
+       ("ruby-rspec-rails" ,ruby-rspec-rails)
+       ;; This is needed for a test, but I'm unsure why
+       ("ruby-sass" ,ruby-sass)
+       ;; This is used as the ruby-execjs runtime
+       ("node" ,node)))
+    (propagated-inputs
+     `(("ruby-execjs" ,ruby-execjs)))
+    (synopsis "Parse CSS and add vendor prefixes to CSS rules")
+    (description
+     "This gem provides Ruby and Ruby on Rails integration with Autoprefixer,
+which can parse CSS and add vendor prefixes to CSS rules using values from the
+Can I Use website.")
+    (home-page "https://github.com/ai/autoprefixer-rails")
+    (license license:expat)))
+
 (define-public ruby-activemodel
   (package
    (name "ruby-activemodel")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activemodel" version))
      (sha256
       (base32
-       "1xmwi3mw8g4shbjvkhk72ra3r5jccbdsd4piphqka2y1h8s7sxvi"))))
+       "1idmvqvpgri34k31s44pjb88rc3jad3yxra7fd1kpidpnv5f3v65"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -123,14 +204,14 @@ serialization, internationalization, and testing.")
 (define-public ruby-activerecord
   (package
    (name "ruby-activerecord")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activerecord" version))
      (sha256
       (base32
-       "19a0sns6a5wz2wym25lb1dv4lbrrl5sd1n15s5ky2636znmhz30y"))))
+       "1c5cz9v7ggpqjxf0fqs1xhy1pb9m34cp31pxarhs9aqb71qjl98v"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -145,6 +226,35 @@ serialization, internationalization, and testing.")
 an almost zero-configuration persistence layer for applications.")
    (home-page "https://rubyonrails.org")
    (license license:expat)))
+
+(define-public ruby-rspec-rails
+  (package
+    (name "ruby-rspec-rails")
+    (version "3.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rspec-rails" version))
+       (sha256
+        (base32
+         "1pf6n9l4sw1arlax1bdbm1znsvl8cgna2n6k6yk1bi8vz2n73ls1"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-actionpack" ,ruby-actionpack)
+       ("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-railties" ,ruby-railties)
+       ("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
+       ("ruby-rspec-support" ,ruby-rspec-support)))
+    (synopsis "Use RSpec to test Ruby on Rails applications")
+    (description
+     "This package provides support for using RSpec to test Ruby on Rails
+applications, in pace of the default Minitest testing library.")
+    (home-page "https://github.com/rspec/rspec-rails")
+    (license license:expat)))
 
 (define-public ruby-rails-html-sanitizer
   (package
@@ -201,14 +311,14 @@ useful when writing tests.")
 (define-public ruby-actionview
   (package
    (name "ruby-actionview")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionview" version))
      (sha256
       (base32
-       "1lz04drbi1z0xhvb8jnr14pbf505lilr02arahxq7y3mxiz0rs8z"))))
+       "0832vlx37rly8ryfgi01b20mld8b3bv9cg62n5wax4zpzgn6jdxb"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -229,14 +339,14 @@ Ruby.")
 (define-public ruby-actionpack
   (package
    (name "ruby-actionpack")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionpack" version))
      (sha256
       (base32
-       "0iwhbqqn0cm39dq040iwq8cfyclqk3kyzwlp5k3j5cz8k2668wws"))))
+       "1lxqzxa728dqg42yw0q4hqkaawqagiw1k0392an2ghjfgb16pafx"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -258,14 +368,14 @@ applications.  These work with any Rack-compatible server.")
 (define-public ruby-actioncable
   (package
    (name "ruby-actioncable")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actioncable" version))
      (sha256
       (base32
-       "0826k5ch0l03f9yrkxy69aiv039z4qi00lnahw2rzywd2iz6r68x"))))
+       "1x5fxhsr2mxq5r6258s48xsn7ld081d3qaavppvj7yp7w9vqn871"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -284,14 +394,14 @@ WebSockets it allows for real-time features in web applications.")
 (define-public ruby-activejob
   (package
    (name "ruby-activejob")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "activejob" version))
      (sha256
       (base32
-       "1jjkl62x2aprg55x9rpm0h2c82vr2qr989hg3l9r21l01q4822ir"))))
+       "1zma452lc3qp4a7r10zbdmsci0kv9a3gnk4da2apbdrc8fib5mr3"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -309,14 +419,14 @@ applications.")
 (define-public ruby-activestorage
   (package
     (name "ruby-activestorage")
-    (version "5.2.2")
+    (version "5.2.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activestorage" version))
        (sha256
         (base32
-         "0c72837098sw384vk6dmrb2p7q3wx4swnibk6sw9dp4hn1vc4p31"))))
+         "155xpbzrz0kr0argx0vsh5prvadd2h1g1m61kdiabvfy2iygc02n"))))
     (build-system ruby-build-system)
     (arguments
      '(;; No included tests
@@ -335,14 +445,14 @@ allowing files to be attached to ActiveRecord models..")
 (define-public ruby-actionmailer
   (package
    (name "ruby-actionmailer")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "actionmailer" version))
      (sha256
       (base32
-       "0sfpb8s95cmkpp9ybyp2c88r55r5llscmmnkfwcwgasz9ncjiq5n"))))
+       "10n2v2al68rsq5ghrdp7cpycsc1q0m19fcd8cd5i528n30nl23iw"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -363,14 +473,14 @@ pattern.  Including support for multipart email and attachments.")
 (define-public ruby-railties
   (package
    (name "ruby-railties")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "railties" version))
      (sha256
       (base32
-       "00pnylmbz4c46mxw5lhxi8h39lndfg6fs1hpd0qd6swnjhkqsr1l"))))
+       "0al6mvh2jvr3n7cxkx0yvhgiiarby6gxc93vl5xg1yxkvx27qzd6"))))
    (build-system ruby-build-system)
    (arguments
     '(;; No included tests
@@ -413,6 +523,62 @@ application bootup, plugins, generators, and Rake tasks.")
     "https://github.com/rails/sprockets-rails")
    (license license:expat)))
 
+(define-public ruby-web-console
+  (package
+    (name "ruby-web-console")
+    (version "3.7.0")
+    (source
+     (origin
+       ;; Download from GitHub as test files are not provided in the gem.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rails/web-console.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ir999p8cnm3l3zwbgpwxxcq1vwkj8d0d3r24362cyaf4v1rglq2"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Gemfile
+           (lambda _
+             (substitute* "Gemfile"
+               ;; Remove the github bit from the Gemfile, so that the Guix
+               ;; packages are used.
+               ((", github: .*") "\n")
+               ;; The usual methods of not loading this group don't work, so
+               ;; patch the Gemfile.
+               (("group :development") "[].each")
+               ;; tzinfo-data is propagated by ruby-activesupport, but it
+               ;; needs to be in the Gemfile to become available.
+               (("group :test do") "group :test do\n  gem 'tzinfo-data'"))
+             #t))
+         (add-after 'unpack 'fix-mocha-minitest-require
+           (lambda _
+             (substitute* "test/test_helper.rb"
+               ;; This chanegd in recent versions of Mocha
+               (("mocha/minitest") "mocha/mini_test"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-actionview" ,ruby-actionview)
+       ("ruby-activemodel" ,ruby-activemodel)
+       ("ruby-bindex" ,ruby-bindex)
+       ("ruby-railties" ,ruby-railties)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rails" ,ruby-rails)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "Debugging tool for your Ruby on Rails applications")
+    (description
+     "This package allows you to create an interactive Ruby session in your
+browser.  Those sessions are launched automatically in case of an error and
+can also be launched manually in any page.")
+    (home-page "https://github.com/rails/web-console")
+    (license license:expat)))
+
 (define-public ruby-with-advisory-lock
   (package
     (name "ruby-with-advisory-lock")
@@ -444,14 +610,14 @@ for locks.")
 (define-public ruby-rails
   (package
    (name "ruby-rails")
-   (version "5.2.2")
+   (version "5.2.2.1")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "rails" version))
      (sha256
       (base32
-       "1m9cszds68dsiycciiayd3c9g90s2yzn1izkr3gpgqkfw6dmvzyr"))))
+       "1jxmwrykwgbn116hhmi7h75hcsdifhj89wk12m7ch2f3mn1lrmp9"))))
    (build-system ruby-build-system)
    (arguments
     '(#:phases

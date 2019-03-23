@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -48,6 +48,24 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
+;; XXX A hidden special obsolete libssh2 for temporary use in the curl package.
+;; <https://bugs.gnu.org/34927>
+(define-public libssh2-1.8.0
+  (hidden-package
+    (package
+      (inherit libssh2)
+      (version "1.8.0")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://www.libssh2.org/download/libssh2-"
+                      version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
+                (patches
+                 (search-patches "libssh2-fix-build-failure-with-gcrypt.patch")))))))
+
 (define-public curl
   (package
    (name "curl")
@@ -65,7 +83,11 @@
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
              ("libidn" ,libidn)
-             ("libssh2" ,libssh2)
+             ;; TODO XXX <https://bugs.gnu.org/34927>
+             ;; Curl doesn't actually use or refer to libssh2 because the build
+             ;; is not configured with '--with-libssh2'.  Remove this input when
+             ;; a mass rebuild is appropriate (e.g. core-updates).
+             ("libssh2" ,libssh2-1.8.0)
              ("openldap" ,openldap)
              ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))

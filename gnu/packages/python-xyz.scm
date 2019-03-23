@@ -23,7 +23,7 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -54,10 +54,11 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,6 +143,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -227,6 +229,28 @@ pidof, tty, taskset, pmap.")
     (synopsis "Library for the manipulation and analysis of geometric objects")
     (description "Shapely is a Python package for manipulation and analysis of
 planar geometric objects.  It is based on the @code{GEOS} library.")
+    (license license:bsd-3)))
+
+(define-public python-shortuuid
+  (package
+    (name "python-shortuuid")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "shortuuid" version))
+       (sha256
+        (base32
+         "1f8i4zwj5vmpzbz6b17bljy4399gx5aq7vsyw63sz2qgyjcd73yh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pep8" ,python-pep8)))
+    (home-page "https://github.com/skorokithakis/shortuuid")
+    (synopsis "Generator library for concise, unambiguous and URL-safe UUIDs")
+    (description
+     "@code{shortuuid} is a Python library for generating concise, unambiguous
+and URL-safe UUIDs.  UUIDs are generated using the built-in Python @code{uuid}
+module and then similar looking characters are removed.")
     (license license:bsd-3)))
 
 (define-public python-logwrap
@@ -839,6 +863,73 @@ messages in color.")
 (define-public python2-coloredlogs
   (package-with-python2 python-coloredlogs))
 
+(define-public python-et-xmlfile
+  (package
+    (name "python-et-xmlfile")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "et_xmlfile" version))
+       (sha256
+        (base32
+         "0nrkhcb6jdrlb6pwkvd4rycw34y3s931hjf409ij9xkjsli9fkb1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-lxml" ,python-lxml)))   ;used for the tests
+    (home-page "https://bitbucket.org/openpyxl/et_xmlfile")
+    (synopsis "Low memory implementation of @code{lxml.xmlfile}")
+    (description "This Python library is based upon the @code{xmlfile} module
+from @code{lxml}.  It aims to provide a low memory, compatible implementation
+of @code{xmlfile}.")
+    (license license:expat)))
+
+(define-public python2-et-xmlfile
+  (package-with-python2 python-et-xmlfile))
+
+(define-public python-openpyxl
+  (package
+    (name "python-openpyxl")
+    (version "2.6.0")
+    (source
+     (origin
+       ;; We use the upstream repository, as the tests are not included in the
+       ;; PyPI releases.
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://bitbucket.org/openpyxl/openpyxl")
+             (changeset version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1x47ngn7ybaqdbvg90c8h2x0j6yfdfj25gjfinp2w5rf62gsany7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     ;; For the test suite.
+     `(("python-lxml" ,python-lxml)
+       ("python-pillow" ,python-pillow)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-et-xmlfile" ,python-et-xmlfile)
+       ("python-jdcal" ,python-jdcal)))
+    (home-page "https://openpyxl.readthedocs.io")
+    (synopsis "Python library to read/write Excel 2010 XLSX/XLSM files")
+    (description "This Python library allows reading and writing to the Excel XLSX, XLSM,
+XLTX and XLTM file formats that are defined by the Office Open XML (OOXML)
+standard.")
+    (license license:expat)))
+
 (define-public python-eventlet
   (package
     (name "python-eventlet")
@@ -950,13 +1041,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.23.4")
+    (version "0.24.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1x54pd7hr3y7qahx6b5bf2wzj54xvl8r3s1h4pl254pnmi3wl92v"))))
+        (base32 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -964,6 +1055,13 @@ human-friendly syntax.")
                   (ice-9 ftw)
                   (srfi srfi-26))
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-which
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((which (assoc-ref inputs "which")))
+                        (substitute* "pandas/io/clipboard/__init__.py"
+                          (("^CHECK_CMD = .*")
+                           (string-append "CHECK_CMD = \"" which "\"\n"))))
+                      #t))
                   (replace 'check
                     (lambda _
                       (let ((build-directory
@@ -972,17 +1070,17 @@ human-friendly syntax.")
                               (car (scandir "build"
                                             (cut string-prefix? "lib." <>))))))
                         ;; Disable the "strict data files" option which causes
-                        ;; the build to error out if required data files are not
-                        ;; available (as is the case with PyPI archives).
+                        ;; the build to error out if required data files are
+                        ;; not available (as is the case with PyPI archives).
                         (substitute* "setup.cfg"
                           (("addopts = --strict-data-files") "addopts = "))
                         (with-directory-excursion build-directory
-                          ;; Delete tests that require "moto" which is not yet in Guix.
+                          ;; Delete tests that require "moto" which is not yet
+                          ;; in Guix.
                           (for-each delete-file
                                     '("pandas/tests/io/conftest.py"
                                       "pandas/tests/io/json/test_compression.py"
                                       "pandas/tests/io/parser/test_network.py"
-                                      "pandas/tests/io/test_excel.py"
                                       "pandas/tests/io/test_parquet.py"))
                           (invoke "pytest" "-vv" "pandas" "--skip-slow"
                                   "--skip-network" "-k"
@@ -990,15 +1088,20 @@ human-friendly syntax.")
                                   "not test_read_s3_jsonl"))))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
+       ("python-openpyxl" ,python-openpyxl)
        ("python-pytz" ,python-pytz)
-       ("python-dateutil" ,python-dateutil)))
+       ("python-dateutil" ,python-dateutil)
+       ("python-xlrd" ,python-xlrd)))
+    (inputs
+     `(("which" ,which)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-lxml" ,python-lxml)
        ("python-html5lib" ,python-html5lib)
        ("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://pandas.pydata.org")
     (synopsis "Data structures for data analysis, time series, and statistics")
     (description
@@ -1764,6 +1867,34 @@ version numbers.")
 
 (define-public python2-vcversioner
   (package-with-python2 python-vcversioner))
+
+(define-public python-jdcal
+  (package
+    (name "python-jdcal")
+    (version "1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jdcal" version))
+        (sha256
+          (base32
+            "1ja6j2xq97bsl6rv09mhdx7n0xnrsfx0mj5xqza0mxghqmkm02pa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/phn/jdcal")
+    (synopsis "Functions to convert between Julian dates Gregorian dates")
+    (description "This Python library provides functions for converting
+between Julian dates and Gregorian dates.")
+    (license license:bsd-2)))
+
+(define-public python2-jdcal
+  (package-with-python2 python-jdcal))
 
 (define-public python-jsonschema
   (package
@@ -2641,14 +2772,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.24.0")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "05zmv6jr7qbgnkz0lqh5pr7kr4lm12i8ljm2k5h5kz3q9m8d4mm0"))))
+         "1xabnaqd4n72myrc3mxl2y33vr2p7c9c5a87n77p9k327ckvdx01"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -2660,7 +2791,8 @@ Server (PLS).")
        ("python-pycodestyle" ,python-pycodestyle)
        ("python-mccabe" ,python-mccabe)
        ("python-rope" ,python-rope)
-       ("python-autopep8" ,python-autopep8)))
+       ("python-autopep8" ,python-autopep8)
+       ("python-pylint" ,python-pylint)))
     (home-page "https://github.com/palantir/python-language-server")
     (synopsis "Python implementation of the Language Server Protocol")
     (description
@@ -3393,13 +3525,14 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
     (name "python-colorspacious")
     (version "1.1.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/njsmith/colorspacious/archive/v"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version))
-        (sha256
-         (base32 "1vflh5jm32qb0skza2i8pjacv09w6gq84fqpp2nj77s0rbmzgr4k"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/njsmith/colorspacious.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g0lxqiscy5g5rq9421vv7abg0c90jzy0zmas2z3hya6k2dr5aid"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
@@ -13205,14 +13338,13 @@ such as figshare or Zenodo.")
 (define-public python-pyro4
   (package
     (name "python-pyro4")
-    (version "4.74")
+    (version "4.75")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pyro4" version))
        (sha256
-        (base32
-         "0pzp7c6q3vvkxq0wy9lr6wd5wky40sajz69g697i5rb2q497pvc9"))))
+        (base32 "1dfpp36imddx19yv0kd28gk1l71ckhpqy6jd590wpm2680jw15rq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-serpent" ,python-serpent)))
@@ -13875,14 +14007,13 @@ working with iterables.")
 (define-public python-latexcodec
   (package
     (name "python-latexcodec")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "latexcodec" version))
        (sha256
-        (base32
-         "0zdd1gf24i83ykadx0y30n3001j43scqr2saql3vckk5c39dj1wn"))))
+        (base32 "0s4wdbg0w2l8pj3i0y4510i0s04p8nhxcsa2z41bjsv0k66npb81"))))
     (build-system python-build-system)
     (inputs
      `(("python-six" ,python-six)))
@@ -14936,14 +15067,13 @@ distribution.")
 (define-public python-gast
   (package
     (name "python-gast")
-    (version "0.2.0")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gast" version))
        (sha256
-        (base32
-         "0c296xm1vz9x4w4inmdl0k8mnc0i9arw94si2i7pglpc461r0s3h"))))
+        (base32 "1w5dzdb3gpcfmd2s0b93d8gff40a1s41rv31458z14inb3s9v4zy"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-astunparse" ,python-astunparse)))
@@ -15087,3 +15217,23 @@ and dates in \"human readable\" forms.  For example, it would display
     (description "Txaio provides a compatibility layer between the Python
 @code{asyncio} module and @code{Twisted}.")
     (license license:expat)))
+
+(define-public python-toolshed
+  (package
+    (name "python-toolshed")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toolshed" version))
+       (sha256
+        (base32
+         "14zvz51gzf9i1i3d1sj363ba4rksl6lcf4lz1arl8hpqgcbir8r3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/brentp/toolshed/")
+    (synopsis "Collection of modules and functions for working with data")
+    (description "This is a collection of well-tested, simple modules and
+functions that aim to reduce boilerplate when working with data.")
+    (license license:bsd-2)))

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -429,7 +429,13 @@ safety and thread safety guarantees.")
     (package
       (inherit base-rust)
       (outputs '("out" "doc" "cargo"))
-      (properties '())
+      ;; Since rust-1.19 is local, it's quite probable that Hydra
+      ;; will build rust-1.19 only as a dependency of rust-1.20.
+      ;; But then Hydra will use the wrong properties, the ones here,
+      ;; for rust-1.19.  Therefore, we copied the properties of
+      ;; rust-1.19 here.
+      (properties '((timeout . 72000)               ;20 hours
+                    (max-silent-time . 18000)))     ;5 hours (for armel)
       (arguments
        (substitute-keyword-arguments (package-arguments rust-1.19)
          ((#:phases phases)

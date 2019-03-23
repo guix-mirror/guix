@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
@@ -407,7 +407,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.20")
+    (version "4.21")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -415,7 +415,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "0vjms4j75zvv5b2siyafg7hh924ysx2cwjad8spzp7x87n8n929c"))))
+               "0nkbgk0x31nfm4xl8la0a3vrnpa8gzkh7g4k65p7n880n73k5shm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -443,7 +443,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.42.1")
+    (version "3.43")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -454,7 +454,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "1ihzqspvqjmysp1c15xxr7kqvj3zm9dqnanxhkaxyjgx71yv6z88"))
+                "1jp27w4w9nj5pkzrbc1zqj6pa09h2yy7vhzyx5fvg1q86fvw22zk"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))
@@ -578,7 +578,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "60.5.1-guix1")
+(define %icecat-version "60.6.0-guix1")
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -600,7 +600,7 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "1xbi1gvrrvqby04vx6klxff7h5r87dqgi1fx6i4mbg3ll59gy09z"))))
+              "1mc57dhwyjr6qjm3q617wvj306wi72548wjx7lz1dxkz6hndi03w"))))
 
          (upstream-icecat-base-version "60.3.0") ; maybe older than base-version
          (upstream-icecat-gnu-version "1")
@@ -722,11 +722,15 @@ from forcing GEXP-PROMISE."
                         (string-append old-icecat-dir "/l10n")
                         (string-append old-icecat-dir "/debian"))
 
-                (format #t (string-append "Packing new IceCat tarball...~%"))
+                (format #t "Packing new IceCat tarball...~%")
                 (force-output)
                 (invoke "tar" "cfa" #$output
-                        ;; avoid non-determinism in the archive
-                        "--mtime=@0"
+                        ;; Avoid non-determinism in the archive.  We set the
+                        ;; mtime of files in the archive to early 1980 because
+                        ;; the build process fails if the mtime of source
+                        ;; files is pre-1980, due to the creation of zip
+                        ;; archives.
+                        "--mtime=@315619200" ; 1980-01-02 UTC
                         "--owner=root:0"
                         "--group=root:0"
                         "--sort=name"

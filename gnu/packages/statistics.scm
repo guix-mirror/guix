@@ -548,14 +548,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.2-15")
+    (version "1.2-16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "1mshhyia6imh939p8labxi0wv21lal7csmccxi42klpgdh1j89kv"))))
+         "10fh0y1wd0bvnqbzlyck08pn1vxcd58bskx2lrf9m42v5792ba9p"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -593,14 +593,14 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-27")
+   (version "1.8-28")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "06vx1z52gcdmji0phmphfa0sg62gwxkw590prplxgv4da7xrk2y8"))))
+       "1snkpnkkigwrj9zm31j1nlivv9ls56imz263cv167hnmghiahpmm"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
@@ -916,14 +916,14 @@ Munsell colour system.")
 (define-public r-permute
   (package
    (name "r-permute")
-   (version "0.9-4")
+   (version "0.9-5")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "permute" version))
      (sha256
       (base32
-       "1w8wzk1fg9q7wvisnfp2js70dg0m9wi12gkdhpyngpbdcgssahd5"))))
+       "0ra8p5mf2590azrkas8z2ry7mif77xqxd29n4zgyi5vll225726j"))))
    (build-system r-build-system)
    ;; Tests do not run correctly, but running them properly would entail a
    ;; circular dependency with vegan.
@@ -1021,14 +1021,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.3.1")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "0qn3xy6vnz11vv2prbm55vkbgxr6dl8w5vk5q8d7wlp9nqxndprj"))))
+         "1vbr6g9p1iyzdj7wfw6afyizvnd1a2srfvkl72pq23vhdcwwpkhk"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1234,13 +1234,13 @@ considerably faster, produces smaller files, and leaves text as is.")
 (define-public r-assertthat
   (package
     (name "r-assertthat")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "assertthat" version))
               (sha256
                (base32
-                "1wp5znk3xy338x6hknppk702jn596yr735d9i7c3wabm3sdzfgnp"))))
+                "17wy5bdfzg73sg2clisg1k3zyn1adkj59x56m5nwia2k8z67zkw5"))))
     (build-system r-build-system)
     (home-page "https://github.com/hadley/assertthat")
     (synopsis "Easy pre and post assertions")
@@ -1254,13 +1254,13 @@ wrong.")
 (define-public r-lazyeval
   (package
     (name "r-lazyeval")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lazyeval" version))
               (sha256
                (base32
-                "0q9zx78ncy2ffzrf9sh053069kd3w1xn1ss3gsbyf3y4jhza9cw3"))))
+                "1m10i059csrcqkcn59a8wspn784alxsq3symzhn24mhhl894346n"))))
     (build-system r-build-system)
     (home-page "https://github.com/hadley/lazyeval")
     (synopsis "Lazy (non-standard) evaluation in R")
@@ -1350,13 +1350,13 @@ There is also a Shiny app as a user interface in this package.")
 (define-public r-highr
   (package
     (name "r-highr")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "highr" version))
               (sha256
                (base32
-                "1dzknqk4x7iiiq1jkh9bqm5qcvs7mbqxbkn5955050payavabfya"))))
+                "0my6idnhmmgs4q1vs40y2lh56yij2p59mpwvm53wjs2zk6x1zl2b"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/highr")
     (synopsis "Syntax highlighting for R source code")
@@ -1431,13 +1431,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.21")
+    (version "1.22")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "0xzymi4gkilqaa5b2ay9zk1advavzkwxf7mb064bqfb09y8rak0j"))))
+                "1iks80g1cj25rvgyf0y2jc2pmfvsq4sbgdp788w9016bk71wzdcs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -1635,13 +1635,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.3.1")
+    (version "0.3.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "0lbi66bavca866k26dnpkxj3l106xr4a6khcsfn8i3i8w8mpnhih"))))
+                "13s8dh7nryjacp9jpi092icxf5ffkp16qxv59m923g5nkf8f03hi"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -1653,14 +1653,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "2.0.1")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "04rxf5x9awwa9c00v9p7d3a2lqnn7j2rjg4r219hmw7cbqlwrcks"))))
+         "111jl0hdjhh7hkydxvsr5l19gb0ylxq7xrkc28awnc9pzglpgis5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2375,13 +2375,13 @@ functions make it easy to control additional request components.")
 (define-public r-git2r
   (package
     (name "r-git2r")
-    (version "0.24.0")
+    (version "0.25.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "git2r" version))
               (sha256
                (base32
-                "0vfc25z4j53pc49cnp3zjwzjb72kvc0aq96wgyg10xpgvhl3z0gg"))))
+                "15kpvz6ry2r8ii5hzinjwkggc5kgmkbcpsdwzahsf8gha52w80p0"))))
     (build-system r-build-system)
     ;; This R package contains modified sources of libgit2.  This modified
     ;; version of libgit2 is built as the package is built.  Hence libgit2 is
@@ -2403,13 +2403,13 @@ pure C implementation of the Git core methods.")
 (define-public r-rstudioapi
   (package
     (name "r-rstudioapi")
-    (version "0.9.0")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rstudioapi" version))
               (sha256
                (base32
-                "0gn1pvaxfh2gh2ikvxcr8f6k97ygcfr68iz6dhwlq4z71a1s4jai"))))
+                "15mbw607ncdf53mgga76n3va5zzdcjqz14nb0jcn9axwccqamic0"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rstudioapi")
     (synopsis "Safely access the RStudio API")
@@ -2580,17 +2580,21 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.200.7.0")
+    (version "0.9.200.7.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "11m04yvdh6086567dzzxchbf68fl5hxf2y32acf3f43bjqgwbv2p"))))
+                "1gy3ywzw1cx344a8xihnmflgxphy2fhci7ng85msqd1iv9gzxyk4"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
+    ;; All needed for vignettes
     (native-inputs
-     `(("r-knitr" ,r-knitr)))  ; needed for vignettes
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)))
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/RcppCore/RcppArmadillo")
@@ -2674,14 +2678,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.11")
+    (version "1.12")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0yyjbh891mdqzpjkblz8510ng71i7mxmyiqr69x3rwlwk2vakk79"))))
+            "0milpdaf4nd36kq6sci9wc5dhwswl4w9c9fychfbppgjsgfp6kfv"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3343,14 +3347,14 @@ Stochastic Neighbor Embedding using a Barnes-Hut implementation.")
 (define-public r-e1071
   (package
     (name "r-e1071")
-    (version "1.7-0.1")
+    (version "1.7-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "e1071" version))
        (sha256
         (base32
-         "11fqm4shmksalkazcwvzfknp3amigw7fr8wdwanqa5v5kx7ihyq9"))))
+         "1zlxz3da216q6v6r4ff60il121xwz7g7m639vzdwglhw3jjh8psw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)))
@@ -3778,14 +3782,14 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-purrr
   (package
     (name "r-purrr")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "purrr" version))
        (sha256
         (base32
-         "0fw8nyrwf009fpj3457binw5s02si226yrvn96hdivwj268ck8y2"))))
+         "0ccs78a2ylr60f3z0f7iywi8h1pwr8mz4ga78bs4pwgnwkclvir7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
@@ -4292,13 +4296,13 @@ mechanism.")
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.8-4")
+    (version "1.8-5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "1pywcp86kqijdrvl42qwdy75szrag9pzj0p88zbrj2r1klb8rn5i"))))
+                "09p8gmd5ifz80ahnhiianarsr5xx3nz76jzp90d7v3fjffcrcww7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -4726,14 +4730,14 @@ models, generalized linear models and model-based clustering.")
 (define-public r-mclust
   (package
     (name "r-mclust")
-    (version "5.4.2")
+    (version "5.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mclust" version))
        (sha256
         (base32
-         "09152swfpa3fzhmrq5cwb5kxgvrxvigv1m4v6rhcibrdhfd1x8x4"))))
+         "18x5ych9zi3y87rxi4pf6f23sl2918dp9xxpw1pqa7p7drw817p6"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -4796,16 +4800,16 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.93-3")
+    (version "0.93-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "1nqh1qg1qd1qrxl1w585dqx7ql55qzjny1r4f9hqxpwd7lml07cc"))))
+         "1q56y0iqp7qhavm4xnpzhs64q7l893y7yiq3b20fllpghka077pa"))))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-deoptimr" ,r-deoptimr)))

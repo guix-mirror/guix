@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -187,6 +187,28 @@ libenca and several charset conversion libraries and tools.")
 normalization, case-folding, and other operations for data in the UTF-8
 encoding, supporting Unicode version 9.0.0.")
     (license license:expat)))
+
+(define-public libconfuse
+  (package
+    (name "libconfuse")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/martinh/libconfuse/"
+                           "releases/download/v" version
+                           "/confuse-" version ".tar.xz"))
+       (sha256
+        (base32 "02r1mmzik2m0iigbc2da3y754vj24i18r3ml5p2wzs027mjhn959"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/martinh/libconfuse")
+    (synopsis "Configuration file parser library")
+    (description "libconfuse is a configuration file parser library.  It
+supports sections and (lists of) values (strings, integers, floats, booleans
+or other sections), as well as some other features (such as
+single/double-quoted strings, environment variable expansion, functions and
+nested include statements).")
+    (license license:isc)))
 
 (define-public libgtextutils
   (package

@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -85,7 +85,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.28.1")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -93,17 +93,12 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1z7laf6qwv5zsqcnj222dm5f43c6f3liil0cgx4s4s62xjk1wfnd"))))
-   (build-system gnu-build-system)
-   (outputs '("out" "doc"))
-   (arguments
-    `(#:configure-flags
-      (list (string-append "--with-html-dir="
-                           (assoc-ref %outputs "doc")
-                           "/share/gtk-doc/html"))))
+              "1k4i817bd2w5b9z394f2yyx95591l2746wa40am0vvz4gzdgwhfb"))))
+   (build-system meson-build-system)
    (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
     `(("pkg-config" ,pkg-config)
+      ("gettext" ,gettext-minimal)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME accessibility toolkit")
@@ -402,9 +397,9 @@ printing and other features typical of a source code editor.")
    (version "4.0.2")
    (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
+             (uri (string-append "mirror://gnome/sources/gtksourceview/"
                                  (version-major+minor version) "/"
-                                 name "-" version ".tar.xz"))
+                                 "gtksourceview-" version ".tar.xz"))
              (sha256
               (base32
                "1b2z9c0skxrgw2vh08hv6qxky8jbvamc4rgww82j0kpp533rz0hm"))))
@@ -447,7 +442,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gtksourceview-3
  (package (inherit gtksourceview)
    (name "gtksourceview")
-   (version "3.24.7")
+   (version "3.24.10")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -455,7 +450,7 @@ highlighting and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1rp8zspwyw3mmdgccsas3pa6v7s0hqjaaglg6n4kcls7ccx0vhm5"))))))
+               "16ym7jwiki4s1pilwr4incx0yg7ll94f1cajrnpndkxxs36hcm5b"))))))
 
 (define-public gdk-pixbuf
   (package
@@ -560,20 +555,21 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.28.0")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version)  "/"
                                 name "-" version ".tar.xz"))
+            (patches (search-patches "at-spi2-core-meson-compat.patch"))
             (sha256
              (base32
-              "11qwdxxx4jm0zj04xydlwah41axiz276dckkiql3rr0wn5x4i8j2"))))
+              "083j1v7kdjrpjsv1b9dl3d8xqj39jyp4cfn8i9gbbm7q2g93b923"))))
    (build-system meson-build-system)
    (outputs '("out" "doc"))
    (arguments
     '(#:configure-flags
-      (list "-Denable_docs=true")
+      (list "-Ddocs=true")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'set-documentation-path
@@ -610,9 +606,8 @@ in the GNOME project.")
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
     `(("dbus" ,dbus)
-      ("glib" ,glib)))
-   (inputs
-    `(("libxi" ,libxi)
+      ("glib" ,glib)
+      ("libxi" ,libxi)
       ("libxtst" ,libxtst)))
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
@@ -630,7 +625,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.26.2")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -638,8 +633,8 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0vkan52ab9vrkknnv8y4f1cspk8x7xd10qx92xk9ys71p851z2b1"))))
-   (build-system gnu-build-system)
+              "0p54wx6f6q7s8w0b1j0sgw87pikllp79q5g3lfiwqazs779ycl8b"))))
+   (build-system meson-build-system)
    (arguments
     '(#:phases
       (modify-phases %standard-phases
@@ -647,14 +642,16 @@ is part of the GNOME accessibility project.")
                  ;; Run test-suite under a dbus session.
                  (lambda _
                    (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (invoke "dbus-launch" "make" "check"))))))
+                   (invoke "dbus-launch" "meson" "test"))))))
    (propagated-inputs
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
    (inputs
     `(("atk" ,atk)))
    (native-inputs
-    `(("dbus" ,dbus) ; for testing
-      ("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+      ;; For tests.
+      ("dbus" ,dbus)
+      ("libxml2" ,libxml2)))
    (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
    (description
     "The Assistive Technology Service Provider Interface

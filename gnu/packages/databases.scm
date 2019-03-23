@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -28,7 +28,7 @@
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -1031,14 +1031,14 @@ changes.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.18")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1drnsdh1w0px35r0y7l7g59yvyr67mvcsdrli4wab0mwi07b8mn1"))))
+                "0d9d2f1c83gmmq30bkfs50yb8399mr9xjjzscma4kyq0ajf75861"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2611,6 +2611,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
        #:modules ((srfi srfi-1)
                   (guix build go-build-system)
                   (guix build utils))
+       #:install-source? #f
        #:phases
        (let ((all-tools
               '("bsondump" "mongodump" "mongoexport" "mongofiles"
@@ -2630,8 +2631,6 @@ transforms idiomatic python function calls to well-formed SQL queries.")
                  (("skipping restore of system.profile collection\", db)")
                   "skipping restore of system.profile collection\")"))
                #t))
-           ;; We don't need to install the source code for end-user applications
-           (delete 'install-source)
            (replace 'build
              (lambda _
                (for-each (lambda (tool)
@@ -2711,7 +2710,7 @@ Monitor read/write activity on a mongo server
 (define-public apache-arrow
   (package
     (name "apache-arrow")
-    (version "0.7.0")
+    (version "0.10.0")
     (source
       (origin
         (method git-fetch)
@@ -2720,8 +2719,8 @@ Monitor read/write activity on a mongo server
                (commit (string-append "apache-arrow-" version))))
         (file-name (git-file-name name version))
         (sha256
-          (base32
-            "1x7sdd8lbs3nfqjql1pcgbkjc19bls56zmgjayshkmablvlc4dy3"))))
+         (base32
+          "04xkp922b8qrrnpvv9ixxnvk7151n1plzx6aqdff6frn9651zvxs"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -2765,9 +2764,7 @@ Monitor read/write activity on a mongo server
        ("rapidjson" ,rapidjson)
        ("brotli" ,google-brotli)
        ("flatbuffers" ,flatbuffers)
-       ;; Arrow is not yet compatible with jemalloc >= 5:
-       ;; https://issues.apache.org/jira/browse/ARROW-1141
-       ("jemalloc" ,jemalloc-4.5.0)
+       ("jemalloc" ,jemalloc)
        ("python-3" ,python)
        ("python-numpy" ,python-numpy)))
     (home-page "https://arrow.apache.org/")
@@ -2782,7 +2779,7 @@ algorithm implementations.")
 (define-public python-pyarrow
   (package
     (name "python-pyarrow")
-    (version "0.7.0")
+    (version "0.10.0")
     (source
       (origin
        (method git-fetch)
@@ -2791,14 +2788,14 @@ algorithm implementations.")
              (commit (string-append "apache-arrow-" version))))
        (file-name (git-file-name name version))
        (sha256
-         (base32
-           "1x7sdd8lbs3nfqjql1pcgbkjc19bls56zmgjayshkmablvlc4dy3"))))
+        (base32
+         "04xkp922b8qrrnpvv9ixxnvk7151n1plzx6aqdff6frn9651zvxs"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f ; XXX Test failures related to missing libhdfs, libhdfs3,
-                   ; and "Unsupported numpy type 22".
+     '(#:tests? #f ; XXX There are no tests in the "python" directory
        #:phases
        (modify-phases %standard-phases
+         (delete 'build) ; XXX the build is performed again during the install phase
          (add-after 'unpack 'enter-source-directory
            (lambda _ (chdir "python") #t))
          (add-after 'unpack 'set-env
@@ -2814,6 +2811,7 @@ algorithm implementations.")
      `(("cmake" ,cmake)
        ("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://arrow.apache.org/docs/python/")
     (synopsis "Python bindings for Apache Arrow")

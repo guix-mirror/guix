@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -58,6 +58,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages calendar)
@@ -120,6 +121,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
@@ -1310,6 +1312,72 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
+    (version "2.40.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ay9himvw1l1swcf3h1312d2iqzfl65kpbfgiyfykgvq7cydvx6g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static"
+             "--enable-vala") ; needed for e.g. gnome-mines
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gdk-pixbuf-loader/Makefile.in"
+               ;; By default the gdk-pixbuf loader is installed under
+               ;; gdk-pixbuf's prefix.  Work around that.
+               (("gdk_pixbuf_moduledir = .*$")
+                (string-append "gdk_pixbuf_moduledir = "
+                               "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
+                                "loaders\n"))
+               ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
+               (("gdk_pixbuf_cache_file = .*$")
+                "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
+             #t))
+         (add-before 'check 'remove-failing-tests
+           (lambda _
+             (with-directory-excursion "tests/fixtures/reftests"
+               (for-each delete-file
+                         '(;; This test fails on i686:
+                           "svg1.1/masking-path-04-b.svg"
+                           ;; This test fails on armhf:
+                           "svg1.1/masking-mask-01-b.svg"
+                           ;; This test fails on aarch64:
+                           "bugs/777834-empty-text-children.svg")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
+    (inputs
+     `(("pango" ,pango)
+       ("libcroco" ,libcroco)
+       ("bzip2" ,bzip2)
+       ("libgsf" ,libgsf)
+       ("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; librsvg-2.0.pc refers to all of that.
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)))
+    (home-page "https://wiki.gnome.org/LibRsvg")
+    (synopsis "Render SVG files using Cairo")
+    (description
+     "Librsvg is a C library to render SVG files using the Cairo 2D graphics
+library.")
+    (license license:lgpl2.0+)))
+
+(define-public librsvg-next
+  (package
+    (name "librsvg")
     (version "2.44.12")
     (source (origin
               (method url-fetch)
@@ -2382,7 +2450,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.28.0")
+    (version "0.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2391,7 +2459,7 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hn7v6769xabqz7kvyb2hfm19h46z1whkair7ff752zmbs3b7lv1"))))
+                "1azz4hb9z76yxn34yrrsiib3iqz5z4vpwn5q7cncp55w365ygg38"))))
     (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of dconf.pc.
@@ -2400,7 +2468,8 @@ and RDP protocols.")
      `(("gtk+" ,gtk+)
        ("dbus" ,dbus)))
     (native-inputs
-     `(("libxslt" ,libxslt)                     ;for xsltproc
+     `(("bash-completion" ,bash-completion)
+       ("libxslt" ,libxslt)                     ;for xsltproc
        ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
@@ -3260,15 +3329,15 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.5")
+    (version "3.22.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/aisleriot/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "aisleriot-" version ".tar.xz"))
               (sha256
                (base32
-                "0rl39psr5xi584310pyrgw36ini4wn7yr2m1q5118w3a3v1dkhzh"))))
+                "15pm39679ymxki07sb5nvhycz4z53zwbvascyp5wm4864bn98815"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -3764,7 +3833,8 @@ for application developers.")
        (sha256
         (base32
          "1llyisls3pzf5bwkpxyfyxc2d3gpa09n5pjy7qsjdqrp3ya4k36g"))
-       (patches (search-patches "totem-meson-easy-codec.patch"))))
+       (patches (search-patches "totem-meson-easy-codec.patch"
+                                "totem-meson-compat.patch"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -4772,7 +4842,7 @@ configuration program to choose applications starting on login.")
        ;; For testing
        ("dbus-launch" ,dbus)
        ("uuidgen" ,util-linux)
-       ("xvfb" ,xorg-server)))
+       ("xvfb" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; These are all in the Requires.private field of gjs-1.0.pc.
      `(("cairo" ,cairo)
@@ -5758,13 +5828,21 @@ properties, screen resolution, and other GNOME parameters.")
                    #t))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
+       #:disallowed-references ((,glib "bin")
+                                ,inkscape ,libxslt
+                                ,ruby-sass)
        #:configure-flags
        (list "-Dsystemd=false"
              ;; Otherwise, the RUNPATH will lack the final path component.
              (string-append "-Dc_link_args=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib/gnome-shell"))
+
+       #:modules ((guix build meson-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-keysdir
@@ -5807,7 +5885,16 @@ properties, screen resolution, and other GNOME parameters.")
                     `("PYTHONPATH"      ":" prefix (,python-path))
                     `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
                 '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
-               #t))))))
+               #t)))
+         (replace 'glib-or-gtk-wrap
+           (let ((wrap (assoc-ref %standard-phases 'glib-or-gtk-wrap)))
+             (lambda* (#:key inputs outputs #:allow-other-keys #:rest rest)
+               ;; By default Inkscape et al. would end up in the XDG_DATA_DIRS
+               ;; settings of the wrappers created by the 'glib-or-gtk-wrap'
+               ;; phase.  Fix that since we don't need these.
+               (wrap #:inputs (fold alist-delete inputs
+                                    '("inkscape" "intltool" "glib:bin"))
+                     #:outputs outputs)))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
@@ -5820,7 +5907,7 @@ properties, screen resolution, and other GNOME parameters.")
        ("sassc" ,sassc)
        ("xsltproc" ,libxslt)
        ;; For tests
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("accountsservice" ,accountsservice)
        ("caribou" ,caribou)
@@ -7702,3 +7789,52 @@ underlying library but cannot for various reasons.  In most cases, they are
 wildly out of scope for those libraries.  In other cases, they are not quite
 generic enough to work for everyone.")
     (license license:gpl3+)))
+
+(define-public evolution
+  (package
+    (name "evolution")
+    (version "3.28.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/evolution/"
+                                  (version-major+minor version) "/"
+                                  "evolution-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0sdv5lg2vlz5f4raymz9d8a5jq4j18vbqyigaip6508p3bjnfj8l"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DENABLE_PST_IMPORT=OFF"    ; libpst is not packaged
+             "-DENABLE_LIBCRYPTUI=OFF"))) ; libcryptui hasn't seen a release
+                                          ; in four years and cannot be built.
+    (native-inputs
+     `(("glib" ,glib "bin")               ; glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("evolution-data-server" ,evolution-data-server) ; must be the same version
+       ("gcr" ,gcr)
+       ("gnome-autoar" ,gnome-autoar)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gtkspell3" ,gtkspell3)
+       ("highlight" ,highlight)
+       ("libcanberra" ,libcanberra)
+       ("libgweather" ,libgweather)
+       ("libnotify" ,libnotify)
+       ("libsoup" ,libsoup)
+       ("nss" ,nss)
+       ("openldap" ,openldap)
+       ("webkitgtk" ,webkitgtk)
+       ("ytnef" ,ytnef)))
+    (home-page "https://gitlab.gnome.org/GNOME/evolution")
+    (synopsis "Manage your email, contacts and schedule")
+    (description "Evolution is a personal information management application
+that provides integrated mail, calendaring and address book
+functionality.")
+    ;; See COPYING for details.
+    (license (list license:lgpl2.1 license:lgpl3 ; either one of these
+                   license:openldap2.8 ; addressbook/gui/component/openldap-extract.h
+                   license:lgpl2.1+))))  ; smime/lib/*

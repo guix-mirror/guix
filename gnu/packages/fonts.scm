@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
@@ -267,19 +267,17 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 (define-public font-liberation
   (package
     (name "font-liberation")
-    (version "2.00.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://releases.pagure.org/"
-                                  "liberation-fonts/liberation-fonts-ttf-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "010m4zfqan4w04b6bs9pm3gapn9hsb18bmwwgp2p6y6idj52g43q"))))
+    (version "2.00.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/liberationfonts/liberation-fonts/"
+                           "files/2926169/liberation-fonts-ttf-" version ".tar.gz"))
+       (sha256
+        (base32 "0kdjsbf0y716k1kv0i0ixdpvg7b9b8xkcsg6favaxdc7pshg0kzi"))))
     (build-system font-build-system)
-    (home-page "https://pagure.io/liberation-fonts/")
-    (synopsis
-     "Fonts compatible with Arial, Times New Roman, and Courier New")
+    (home-page "https://github.com/liberationfonts")
+    (synopsis "Fonts compatible with Arial, Times New Roman, and Courier New")
     (description
      "The Liberation font family aims at metric compatibility with
 Arial, Times New Roman, and Courier New.
@@ -353,14 +351,28 @@ Biolinum is available in both Regular and Bold weights.")
        (sha256
         (base32 "15qjcpalcxjiwsjgjg5k88vkwp56cs2nnx4ghya6mqp4i1c206qg"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "pcf-8bit"))
+    (arguments
+     `(#:tests? #f                      ; no test target in tarball
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-more-bits
+           ;; X11 8-bit code pages aren't installed by default (they were
+           ;; until version 4.46).  Build and install them separately.
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "pcf-8bit" make-flags)))
+         (add-after 'install 'install-more-bits
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((pcf-8bit (assoc-ref outputs "pcf-8bit")))
+               (apply invoke "make" "install-pcf-8bit" (string-append "prefix="
+                                                                      pcf-8bit)
+                      make-flags)))))))
     (native-inputs
      `(("bdftopcf" ,bdftopcf)
        ("font-util" ,font-util)
        ("mkfontdir" ,mkfontdir)
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
-    (arguments
-     `(#:tests? #f))                    ; no test target in tarball
     (home-page "http://terminus-font.sourceforge.net/")
     (synopsis "Simple bitmap programming font")
     (description "Terminus Font is a clean, fixed-width bitmap font, designed

@@ -187,8 +187,9 @@ made available under the /xchg CIFS share."
                   ;; When USER-BUILDER succeeds, reboot (indicating a
                   ;; success), otherwise die, which causes a kernel panic
                   ;; ("Attempted to kill init!").
-                  #~(when (zero? (system* #$user-builder))
-                      (reboot))))
+                  #~(if (zero? (system* #$user-builder))
+                        (reboot)
+                        (exit 1))))
 
   (let ((initrd (or initrd
                     (base-initrd file-systems
@@ -525,7 +526,10 @@ should set REGISTER-CLOSURES? to #f."
                  #$os-drv
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)
-                 #:transformations `((,root-directory -> ""))))))))
+                 #:transformations `((,root-directory -> "")))
+
+                ;; Make sure the tarball is fully written before rebooting.
+                (sync))))))
     (expression->derivation-in-linux-vm
      name build
      #:make-disk-image? #f

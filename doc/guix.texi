@@ -28,9 +28,9 @@ Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
-Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018, 2019 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
-Copyright @copyright{} 2016, 2017 Nils Gillmann@*
+Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
@@ -48,7 +48,7 @@ Copyright @copyright{} 2017 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
-Copyright @copyright{} 2017, 2018 Arun Isaac@*
+Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
@@ -4760,14 +4760,24 @@ symlinks, as well as empty mount points for virtual file systems like
 procfs.
 @end table
 
+@cindex relocatable binaries
 @item --relocatable
 @itemx -R
 Produce @dfn{relocatable binaries}---i.e., binaries that can be placed
-anywhere in the file system hierarchy and run from there.  For example,
-if you create a pack containing Bash with:
+anywhere in the file system hierarchy and run from there.
+
+When this option is passed once, the resulting binaries require support for
+@dfn{user namespaces} in the kernel Linux; when passed
+@emph{twice}@footnote{Here's a trick to memorize it: @code{-RR}, which adds
+PRoot support, can be thought of as the abbreviation of ``Really
+Relocatable''.  Neat, isn't it?}, relocatable binaries fall to back to PRoot
+if user namespaces are unavailable, and essentially work anywhere---see below
+for the implications.
+
+For example, if you create a pack containing Bash with:
 
 @example
-guix pack -R -S /mybin=bin bash
+guix pack -RR -S /mybin=bin bash
 @end example
 
 @noindent
@@ -4786,12 +4796,23 @@ In that shell, if you type @code{ls /gnu/store}, you'll notice that
 altogether!  That is probably the simplest way to deploy Guix-built
 software on a non-Guix machine.
 
-There's a gotcha though: this technique relies on the @dfn{user
-namespace} feature of the kernel Linux, which allows unprivileged users
-to mount or change root.  Old versions of Linux did not support it, and
-some GNU/Linux distributions turn it off; on these systems, programs
-from the pack @emph{will fail to run}, unless they are unpacked in the
-root file system.
+@quotation Note
+By default, relocatable binaries rely on the @dfn{user namespace} feature of
+the kernel Linux, which allows unprivileged users to mount or change root.
+Old versions of Linux did not support it, and some GNU/Linux distributions
+turn it off.
+
+To produce relocatable binaries that work even in the absence of user
+namespaces, pass @option{--relocatable} or @option{-R} @emph{twice}.  In that
+case, binaries will try user namespace support and fall back to PRoot if user
+namespaces are not supported.
+
+The @uref{https://proot-me.github.io/, PRoot} program provides the necessary
+support for file system virtualization.  It achieves that by using the
+@code{ptrace} system call on the running program.  This approach has the
+advantage to work without requiring special kernel support, but it incurs
+run-time overhead every time a system call is made.
+@end quotation
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
@@ -5219,6 +5240,29 @@ with @var{libressl}.  Then we use it to define a @dfn{variant} of the
 @var{git} package that uses @var{libressl} instead of @var{openssl}.
 This is exactly what the @option{--with-input} command-line option does
 (@pxref{Package Transformation Options, @option{--with-input}}).
+
+The following variant of @code{package-input-rewriting} can match packages to
+be replaced by name rather than by identity.
+
+@deffn {Scheme Procedure} package-input-rewriting/spec @var{replacements}
+Return a procedure that, given a package, applies the given @var{replacements} to
+all the package graph (excluding implicit inputs).  @var{replacements} is a list of
+spec/procedures pair; each spec is a package specification such as @code{"gcc"} or
+@code{"guile@@2"}, and each procedure takes a matching package and returns a
+replacement for that package.
+@end deffn
+
+The example above could be rewritten this way:
+
+@example
+(define libressl-instead-of-openssl
+  ;; Replace all the packages called "openssl" with LibreSSL.
+  (package-input-rewriting/spec `(("openssl" . ,(const libressl)))))
+@end example
+
+The key difference here is that, this time, packages are matched by spec and
+not by identity.  In other words, any package in the graph that is called
+@code{openssl} will be replaced.
 
 A more generic procedure to rewrite a package dependency graph is
 @code{package-mapping}: it supports arbitrary changes to nodes in the
@@ -5791,8 +5835,8 @@ some cases, you will need to unpack the package's source code to a
 different directory structure than the one indicated by the import path,
 and @code{#:unpack-path} should be used in such cases.
 
-Packages that provide Go libraries should be installed along with their
-source code.  The key @code{#:install-source?}, which defaults to
+Packages that provide Go libraries should install their source code into
+the built output.  The key @code{#:install-source?}, which defaults to
 @code{#t}, controls whether or not the source code is installed.  It can
 be set to @code{#f} for packages that only provide executable files.
 @end defvr
@@ -5956,6 +6000,24 @@ INSTALL --library=/gnu/store/@dots{}} in an environment where
 @code{R_LIBS_SITE} contains the paths to all R package inputs.  Tests
 are run after installation using the R function
 @code{tools::testInstalledPackage}.
+@end defvr
+
+@defvr {Scheme Variable} rakudo-build-system
+This variable is exported by @code{(guix build-system rakudo)} It
+implements the build procedure used by @uref{https://rakudo.org/,
+Rakudo} for @uref{https://perl6.org/, Perl6} packages. It installs the
+package to @code{/gnu/store/@dots{}/NAME-VERSION/share/perl6} and
+installs the binaries, library files and the resources, as well as wrap
+the files under the @code{bin/} directory.  Tests can be skipped by
+passing @code{#f} to the @code{tests?} parameter.
+
+Which rakudo package is used can be specified with @code{rakudo}.
+Which perl6-tap-harness package used for the tests can be specified with
+@code{#:prove6} or removed by passing @code{#f} to the
+@code{with-prove6?} parameter.
+Which perl6-zef package used for tests and installing can be specified
+with @code{#:zef} or removed by passing @code{#f} to the
+@code{with-zef?} parameter.
 @end defvr
 
 @defvr {Scheme Variable} texlive-build-system
@@ -7759,23 +7821,23 @@ must be compatible.  If @var{replacement} is somehow incompatible with
 @var{package}, then the resulting package may be unusable.  Use with
 care!
 
-@item --with-branch=@var{package}=@var{branch}
+@item --with-git-url=@var{package}=@var{url}
 @cindex Git, using the latest commit
 @cindex latest commit, building
-Build @var{package} from the latest commit of @var{branch}.  The @code{source}
-field of @var{package} must be an origin with the @code{git-fetch} method
-(@pxref{origin Reference}) or a @code{git-checkout} object; the repository URL
-is taken from that @code{source}.  Git sub-modules of the repository are
-fetched, recursively.
+Build @var{package} from the latest commit of the @code{master} branch of the
+Git repository at @var{url}.  Git sub-modules of the repository are fetched,
+recursively.
 
-For instance, the following command builds @code{guile-sqlite3} from the
-latest commit of its @code{master} branch, and then builds @code{guix} (which
-depends on it) and @code{cuirass} (which depends on @code{guix}) against this
-specific @code{guile-sqlite3} build:
+For example, the following command builds the NumPy Python library against the
+latest commit of the master branch of Python itself:
 
 @example
-guix build --with-branch=guile-sqlite3=master cuirass
+guix build python-numpy \
+  --with-git-url=python=https://github.com/python/cpython
 @end example
+
+This option can also be combined with @code{--with-branch} or
+@code{--with-commit} (see below).
 
 @cindex continuous integration
 Obviously, since it uses the latest commit of the given branch, the result of
@@ -7787,6 +7849,22 @@ integration (CI).
 Checkouts are kept in a cache under @file{~/.cache/guix/checkouts} to speed up
 consecutive accesses to the same repository.  You may want to clean it up once
 in a while to save disk space.
+
+@item --with-branch=@var{package}=@var{branch}
+Build @var{package} from the latest commit of @var{branch}.  If the
+@code{source} field of @var{package} is an origin with the @code{git-fetch}
+method (@pxref{origin Reference}) or a @code{git-checkout} object, the
+repository URL is taken from that @code{source}.  Otherwise you have to use
+@code{--with-git-url} to specify the URL of the Git repository.
+
+For instance, the following command builds @code{guile-sqlite3} from the
+latest commit of its @code{master} branch, and then builds @code{guix} (which
+depends on it) and @code{cuirass} (which depends on @code{guix}) against this
+specific @code{guile-sqlite3} build:
+
+@example
+guix build --with-branch=guile-sqlite3=master cuirass
+@end example
 
 @item --with-commit=@var{package}=@var{commit}
 This is similar to @code{--with-branch}, except that it builds from
@@ -8781,6 +8859,8 @@ the updater for @uref{https://hackage.haskell.org, Hackage} packages.
 the updater for @uref{https://www.stackage.org, Stackage} packages.
 @item crate
 the updater for @uref{https://crates.io, Crates} packages.
+@item launchpad
+the updater for @uref{https://launchpad.net, Launchpad} packages.
 @end table
 
 For instance, the following command only checks for updates of Emacs
@@ -9228,7 +9308,9 @@ This shows the @emph{reverse} DAG of packages.  For example:
 guix graph --type=reverse-package ocaml
 @end example
 
-...@: yields the graph of packages that depend on OCaml.
+...@: yields the graph of packages that @emph{explicitly} depend on OCaml (if
+you are also interested in cases where OCaml is an implicit dependency, see
+@code{reverse-bag} below.)
 
 Note that for core packages this can yield huge graphs.  If all you want
 is to know the number of packages that depend on a given package, use
@@ -9261,6 +9343,20 @@ dependencies.
 
 @item bag-with-origins
 Similar to @code{bag}, but also showing origins and their dependencies.
+
+@item reverse-bag
+This shows the @emph{reverse} DAG of packages.  Unlike @code{reverse-package},
+it also takes implicit dependencies into account.  For example:
+
+@example
+guix graph -t reverse-bag dune
+@end example
+
+@noindent
+...@: yields the graph of all packages that depend on Dune, directly or
+indirectly.  Since Dune is an @emph{implicit} dependency of many packages
+@i{via} @code{dune-build-system}, this shows a large number of packages,
+whereas @code{reverse-package} would show very few if any.
 
 @item derivation
 This is the most detailed representation: It shows the DAG of
@@ -11077,6 +11173,7 @@ declaration.
 * Telephony Services::          Telephony services.
 * Monitoring Services::         Monitoring services.
 * Kerberos Services::           Kerberos services.
+* LDAP Services::               LDAP services.
 * Web Services::                Web servers.
 * Certificate Services::        TLS certificates via Let's Encrypt.
 * DNS Services::                DNS daemons.
@@ -17623,6 +17720,484 @@ Local accounts with lower values will silently fail to authenticate.
 @end deftp
 
 
+@node LDAP Services
+@subsection LDAP Services
+@cindex LDAP
+@cindex nslcd, LDAP service
+
+The @code{(gnu services authentication)} module provides the
+@code{nslcd-service-type}, which can be used to authenticate against an LDAP
+server.  In addition to configuring the service itself, you may want to add
+@code{ldap} as a name service to the Name Service Switch. @xref{Name Service
+Switch} for detailed information.
+
+Here is a simple operating system declaration with a default configuration of
+the @code{nslcd-service-type} and a Name Service Switch configuration that
+consults the @code{ldap} name service last:
+
+@example
+(use-service-modules authentication)
+(use-modules (gnu system nss))
+...
+(operating-system
+  ...
+  (services
+    (cons*
+      (service nslcd-service-type)
+      (service dhcp-client-service-type)
+      %base-services))
+  (name-service-switch
+   (let ((services (list (name-service (name "db"))
+                         (name-service (name "files"))
+                         (name-service (name "ldap")))))
+     (name-service-switch
+      (inherit %mdns-host-lookup-nss)
+      (password services)
+      (shadow   services)
+      (group    services)
+      (netgroup services)
+      (gshadow  services)))))
+@end example
+
+@c %start of generated documentation for nslcd-configuration
+
+Available @code{nslcd-configuration} fields are:
+
+@deftypevr {@code{nslcd-configuration} parameter} package nss-pam-ldapd
+The @code{nss-pam-ldapd} package to use.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number threads
+The number of threads to start that can handle requests and perform LDAP
+queries.  Each thread opens a separate connection to the LDAP server.
+The default is to start 5 threads.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} string uid
+This specifies the user id with which the daemon should be run.
+
+Defaults to @samp{"nslcd"}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} string gid
+This specifies the group id with which the daemon should be run.
+
+Defaults to @samp{"nslcd"}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} log-option log
+This option controls the way logging is done via a list containing
+SCHEME and LEVEL.  The SCHEME argument may either be the symbols "none"
+or "syslog", or an absolute file name.  The LEVEL argument is optional
+and specifies the log level.  The log level may be one of the following
+symbols: "crit", "error", "warning", "notice", "info" or "debug".  All
+messages with the specified log level or higher are logged.
+
+Defaults to @samp{("/var/log/nslcd" info)}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} list uri
+The list of LDAP server URIs.  Normally, only the first server will be
+used with the following servers as fall-back.
+
+Defaults to @samp{("ldap://localhost:389/")}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string ldap-version
+The version of the LDAP protocol to use.  The default is to use the
+maximum version supported by the LDAP library.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string binddn
+Specifies the distinguished name with which to bind to the directory
+server for lookups.  The default is to bind anonymously.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string bindpw
+Specifies the credentials with which to bind.  This option is only
+applicable when used with binddn.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string rootpwmoddn
+Specifies the distinguished name to use when the root user tries to
+modify a user's password using the PAM module.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string rootpwmodpw
+Specifies the credentials with which to bind if the root user tries to
+change a user's password.  This option is only applicable when used with
+rootpwmoddn
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string sasl-mech
+Specifies the SASL mechanism to be used when performing SASL
+authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string sasl-realm
+Specifies the SASL realm to be used when performing SASL authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string sasl-authcid
+Specifies the authentication identity to be used when performing SASL
+authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string sasl-authzid
+Specifies the authorization identity to be used when performing SASL
+authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-boolean sasl-canonicalize?
+Determines whether the LDAP server host name should be canonicalised.  If
+this is enabled the LDAP library will do a reverse host name lookup.  By
+default, it is left up to the LDAP library whether this check is
+performed or not.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string krb5-ccname
+Set the name for the GSS-API Kerberos credentials cache.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} string base
+The directory search base.
+
+Defaults to @samp{"dc=example,dc=com"}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} scope-option scope
+Specifies the search scope (subtree, onelevel, base or children).  The
+default scope is subtree; base scope is almost never useful for name
+service lookups; children scope is not supported on all servers.
+
+Defaults to @samp{(subtree)}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-deref-option deref
+Specifies the policy for dereferencing aliases.  The default policy is
+to never dereference aliases.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-boolean referrals
+Specifies whether automatic referral chasing should be enabled.  The
+default behaviour is to chase referrals.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} list-of-map-entries maps
+This option allows for custom attributes to be looked up instead of the
+default RFC 2307 attributes.  It is a list of maps, each consisting of
+the name of a map, the RFC 2307 attribute to match and the query
+expression for the attribute as it is available in the directory.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} list-of-filter-entries filters
+A list of filters consisting of the name of a map to which the filter
+applies and an LDAP search filter expression.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number bind-timelimit
+Specifies the time limit in seconds to use when connecting to the
+directory server.  The default value is 10 seconds.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number timelimit
+Specifies the time limit (in seconds) to wait for a response from the
+LDAP server.  A value of zero, which is the default, is to wait
+indefinitely for searches to be completed.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number idle-timelimit
+Specifies the period if inactivity (in seconds) after which the con‐
+nection to the LDAP server will be closed.  The default is not to time
+out connections.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number reconnect-sleeptime
+Specifies the number of seconds to sleep when connecting to all LDAP
+servers fails.  By default one second is waited between the first
+failure and the first retry.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number reconnect-retrytime
+Specifies the time after which the LDAP server is considered to be
+permanently unavailable.  Once this time is reached retries will be done
+only once per this time period.  The default value is 10 seconds.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-ssl-option ssl
+Specifies whether to use SSL/TLS or not (the default is not to).  If
+'start-tls is specified then StartTLS is used rather than raw LDAP over
+SSL.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-tls-reqcert-option tls-reqcert
+Specifies what checks to perform on a server-supplied certificate.  The
+meaning of the values is described in the ldap.conf(5) manual page.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string tls-cacertdir
+Specifies the directory containing X.509 certificates for peer authen‐
+tication.  This parameter is ignored when using GnuTLS.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string tls-cacertfile
+Specifies the path to the X.509 certificate for peer authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string tls-randfile
+Specifies the path to an entropy source.  This parameter is ignored when
+using GnuTLS.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string tls-ciphers
+Specifies the ciphers to use for TLS as a string.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string tls-cert
+Specifies the path to the file containing the local certificate for
+client TLS authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string tls-key
+Specifies the path to the file containing the private key for client TLS
+authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number pagesize
+Set this to a number greater than 0 to request paged results from the
+LDAP server in accordance with RFC2696.  The default (0) is to not
+request paged results.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-ignore-users-option nss-initgroups-ignoreusers
+This option prevents group membership lookups through LDAP for the
+specified users.  Alternatively, the value 'all-local may be used.  With
+that value nslcd builds a full list of non-LDAP users on startup.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number nss-min-uid
+This option ensures that LDAP users with a numeric user id lower than
+the specified value are ignored.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number nss-uid-offset
+This option specifies an offset that is added to all LDAP numeric user
+ids.  This can be used to avoid user id collisions with local users.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-number nss-gid-offset
+This option specifies an offset that is added to all LDAP numeric group
+ids.  This can be used to avoid user id collisions with local groups.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-boolean nss-nested-groups
+If this option is set, the member attribute of a group may point to
+another group.  Members of nested groups are also returned in the higher
+level group and parent groups are returned when finding groups for a
+specific user.  The default is not to perform extra searches for nested
+groups.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-boolean nss-getgrent-skipmembers
+If this option is set, the group member list is not retrieved when
+looking up groups.  Lookups for finding which groups a user belongs to
+will remain functional so the user will likely still get the correct
+groups assigned on login.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-boolean nss-disable-enumeration
+If this option is set, functions which cause all user/group entries to
+be loaded from the directory will not succeed in doing so.  This can
+dramatically reduce LDAP server load in situations where there are a
+great number of users and/or groups.  This option is not recommended for
+most configurations.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string validnames
+This option can be used to specify how user and group names are verified
+within the system.  This pattern is used to check all user and group
+names that are requested and returned from LDAP.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-boolean ignorecase
+This specifies whether or not to perform searches using case-insensitive
+matching.  Enabling this could open up the system to authorization
+bypass vulnerabilities and introduce nscd cache poisoning
+vulnerabilities which allow denial of service.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-boolean pam-authc-ppolicy
+This option specifies whether password policy controls are requested and
+handled from the LDAP server when performing user authentication.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string pam-authc-search
+By default nslcd performs an LDAP search with the user's credentials
+after BIND (authentication) to ensure that the BIND operation was
+successful.  The default search is a simple check to see if the user's
+DN exists.  A search filter can be specified that will be used instead.
+It should return at least one entry.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string pam-authz-search
+This option allows flexible fine tuning of the authorisation check that
+should be performed.  The search filter specified is executed and if any
+entries match, access is granted, otherwise access is denied.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} maybe-string pam-password-prohibit-message
+If this option is set password modification using pam_ldap will be
+denied and the specified message will be presented to the user instead.
+The message can be used to direct the user to an alternative means of
+changing their password.
+
+Defaults to @samp{disabled}.
+
+@end deftypevr
+
+@deftypevr {@code{nslcd-configuration} parameter} list pam-services
+List of pam service names for which LDAP authentication should suffice.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@c %end of generated documentation for nslcd-configuration
+
+
 @node Web Services
 @subsection Web Services
 
@@ -20303,6 +20878,15 @@ The directory to scan for music files.
 @item @code{playlist-dir} (default: @code{"~/.mpd/playlists"})
 The directory to store playlists.
 
+@item @code{db-file} (default: @code{"~/.mpd/tag_cache"})
+The location of the music database.
+
+@item @code{state-file} (default: @code{"~/.mpd/state"})
+The location of the file that stores current MPD's state.
+
+@item @code{sticker-file} (default: @code{"~/.mpd/sticker.sql"})
+The location of the sticker database.
+
 @item @code{port} (default: @code{"6600"})
 The port to run mpd on.
 
@@ -22433,6 +23017,34 @@ Returns a service that runs @url{http://www.spice-space.org,VDAGENT}, a daemon
 that enables sharing the clipboard with a vm and setting the guest display
 resolution when the graphical console window resizes.
 @end deffn
+
+@cindex inputattach
+@subsubheading inputattach Service
+
+@cindex tablet input, for Xorg
+@cindex touchscreen input, for Xorg
+The @uref{https://linuxwacom.github.io/, inputattach} service allows you to
+use input devices such as Wacom tablets, touchscreens, or joysticks with the
+Xorg display server.
+
+@deffn {Scheme Variable} inputattach-service-type
+Type of a service that runs @command{inputattach} on a device and
+dispatches events from it.
+@end deffn
+
+@deftp {Data Type} inputattach-configuration
+@table @asis
+@item @code{device-type} (default: @code{"wacom"})
+The type of device to connect to.  Run @command{inputattach --help}, from the
+@code{inputattach} package, to see the list of supported device types.
+
+@item @code{device} (default: @code{"/dev/ttyS0"})
+The device file to connect to the device.
+
+@item @code{log-file} (default: @code{#f})
+If true, this must be the name of a file to log messages to.
+@end table
+@end deftp
 
 @subsection Dictionary Services
 @cindex dictionary

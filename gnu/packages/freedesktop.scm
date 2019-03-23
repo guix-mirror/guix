@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -230,7 +230,7 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "239.4")
+    (version "241.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -239,7 +239,7 @@ the freedesktop.org XDG Base Directory specification.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "106hld2fa89iz0d17gkmwvbkxc2yspn1klq73nvkj4878wx3vcr9"))))
+                "0a4irq4ycps3xcizjjr0gz3j46dyqvcwa4ncinpqpqlasi8l18nk"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -398,14 +398,14 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.16.0")
+    (version "1.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xajhxad43izq9f7sbww1hlg42nayijy8xnp21kgpk09c6sw4wjf"))))
+                "194ibzwpdcn6fvk4xngr4bf5axpciwg2bj82fdvz88kfmjw13akj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))

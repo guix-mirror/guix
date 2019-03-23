@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
@@ -104,23 +104,21 @@
   ;; License: x11, see COPYING
   (origin
     (method url-fetch)
-    (uri "mirror://xorg/individual/util/xorg-cf-files-1.0.5.tar.bz2")
+    (uri "mirror://xorg/individual/util/xorg-cf-files-1.0.6.tar.bz2")
     (sha256
-     (base32
-      "1m3ypq0xcy46ghxc0svl1rbhpy3zvgmy0aa2mn7w7v7d8d8bh8zd"))))
+     (base32 "0kckng0zs1viz0nr84rdl6dswgip7ndn4pnh5nfwnviwpsfmmksd"))))
 
 (define-public imake
   (package
     (name "imake")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://xorg/individual/util/imake-"
                           version ".tar.bz2"))
       (sha256
-       (base32
-        "0zpk8p044jh14bis838shbf4100bjg7mccd7bq54glpsq552q339"))))
+       (base32 "00m7l90ws72k1qm101sd2rx92ckd50cszyng5d4dd77jncbf9lmq"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -1110,7 +1108,7 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfs
   (package
     (name "libfs")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
@@ -1119,8 +1117,7 @@ synchronization between the X server and direct-rendering clients.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "1wy4km3qwwajbyl8y9pka0zwizn7d9pfiyjgzba02x3a083lr79f"))))
+          (base32 "03xxyvpfa3rhqcld4p2chkil482jn9cp80hj17jdybcv2hkkgqf8"))))
     (build-system gnu-build-system)
     (inputs
       `(("xtrans" ,xtrans)
@@ -1360,7 +1357,7 @@ configuration files.")
 (define-public libxkbfile
   (package
     (name "libxkbfile")
-    (version "1.0.9")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
@@ -1370,7 +1367,7 @@ configuration files.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0smimr14zvail7ar68n7spvpblpdnih3jxrva7cpa6cn602px0ai"))))
+            "1irq9crvscd3yb8sr802dhvvfr35jdy1n2yz094xplmd42mbv3bm"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
@@ -1500,25 +1497,22 @@ treat it as part of their software base when porting.")
 (define-public libxxf86dga
   (package
     (name "libxxf86dga")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/lib/libXxf86dga-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0zn7aqj8x0951d8zb2h2andldvwkzbsc4cs7q023g6nzq6vd9v4f"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/lib/"
+                           "libXxf86dga-" version ".tar.bz2"))
+       (sha256
+        (base32 "00vjvcdlc1sga251jkxn6gkxmx9h5n290ffxxpa40qbca1gvr61b"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("xorgproto" ,xorgproto)))
+     `(("xorgproto" ,xorgproto)))
     (inputs
-      `(("libx11" ,libx11)
-        ("libxext" ,libxext)))
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XFree86-DGA library")
     (description "Client library for the XFree86-DGA extension.")
@@ -1560,7 +1554,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public makedepend
   (package
     (name "makedepend")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -1570,7 +1564,7 @@ input from UTF-8 into the locale's encoding.")
                ".tar.bz2"))
         (sha256
           (base32
-            "09alw99r6y2bbd1dc786n3jfgv4j520apblyn7cw6jkjydshba7p"))))
+            "072h9nzh8s5vqfz35dli4fba36fnr219asjrb7p89n8ph0paan6m"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)))
@@ -1585,7 +1579,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public mkfontscale
   (package
     (name "mkfontscale")
-    (version "1.1.3")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
@@ -1594,8 +1588,7 @@ input from UTF-8 into the locale's encoding.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "0siag28jpm8hj62bgjvw81sjfgrc7vcy2h7127bl4iazxrlxz60y"))))
+          (base32 "1ixsnsm2mn0zy9ksdid0lj6irnhvasfik9mz8bbrs5sajzmra16a"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
@@ -1970,7 +1963,7 @@ server.")
 (define-public x11perf
   (package
     (name "x11perf")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
       (origin
         (method url-fetch)
@@ -1980,7 +1973,7 @@ server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0lb716yfdb8f11h4cz93d1bapqdxf1xplsb21kbp4xclq7g9hw78"))))
+            "0d3wh6z6znwhfdiv0zaggfj0xgish98xa10yy76b9517zj7hnzhw"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
@@ -2636,14 +2629,14 @@ as USB mice.")
 (define-public xf86-video-amdgpu
   (package
     (name "xf86-video-amdgpu")
-    (version "19.0.0")
+    (version "19.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/driver/"
                            "xf86-video-amdgpu-" version ".tar.bz2"))
        (sha256
-        (base32 "0lag9jxd752ja7m7ngz3dmqffb5wbx4crdwjw74qx42m8xyi8dl8"))))
+        (base32 "1mf6s7i423b2xyl469kwnakrpp5fr41sm8hh7vli5jxdd8crg8da"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2703,14 +2696,14 @@ X server.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "19.0.0")
+    (version "19.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/driver/"
                            "xf86-video-ati-" version ".tar.bz2"))
        (sha256
-        (base32 "0mzl7yp3qkvankh22758sgpaw9mg6jxsfbg6wy0nxfw4i0qpv46x"))))
+        (base32 "1c31g5q5p3nk9nscwikh1vvfnhdwsxiw7j8v678nlm34hrfh3djw"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
@@ -4989,7 +4982,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
       (origin
         (method url-fetch)
@@ -4999,7 +4992,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bpffxr5dal90a8miv2w0rif61byqxq2f5angj4z1bnznmws00g5"))))
+            "0bb2c996p0smp2lwckffcfh4701bzv7266xh230ag0x68ka38bja"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
@@ -6021,7 +6014,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.4.3")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
@@ -6029,7 +6022,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0pq2pzmv5fsafp50rzl9nb6ns08rl88fhgdqc2hh27dx7b8ka8n6"))))
+         "0q6c7ijgpp2wk6jlh0pzqki1w60i36wyl2zfwkg0gpdh40ypab3x"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
@@ -6387,6 +6380,15 @@ output.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'patch-file-names
+           (lambda _
+             ;; 'ckbcomp' calls out to 'cat' (!).  Give it the right file
+             ;; name.
+             (substitute* '("Keyboard/ckbcomp")
+               (("\"cat ")
+                (string-append "\"" (which "cat")
+                               " ")))
+             #t))
          (add-before 'build 'make-doubled-bdfs
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "make" "-C" "Fonts"

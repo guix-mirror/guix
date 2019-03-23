@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
@@ -99,7 +99,6 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages web)
-  #:use-module (gnu packages wm)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
@@ -685,13 +684,13 @@ fashion.")
 (define-public gandi.cli
   (package
     (name "gandi.cli")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
-        (base32 "0vfzkw1avybjkf6fwqpf5m4kjz4c0qkkmj62f3jd0zx00vh5ly1d"))))
+        (base32 "1lfvb5npk99nz1lwhr5m67ia1kj35nqd6a2xp9mii28xgzsd5awk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -801,17 +800,31 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public bwm-ng
   (package
     (name "bwm-ng")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://www.gropp.org/bwm-ng/bwm-ng-"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vgropp/bwm-ng.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1w0dwpjjm9pqi613i8glxrgca3rdyqyp3xydzagzr5ndc34z6z02"))))
+        (base32 "0k906wb4pw3dcqpcwnni78lahzi3bva483f8c17sjykic7as4y5n"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-premature-./configure
+           (lambda _
+             (substitute* "autogen.sh"
+               (("\\$srcdir/configure")
+                "true"))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("ncurses" ,ncurses)))
     (synopsis "Console based live network and disk I/O bandwidth monitor")
     (description "Bandwidth Monitor NG is a small and simple console based
 live network and disk I/O bandwidth monitor.")
@@ -1163,18 +1176,17 @@ libproxy only have to specify which proxy to use.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.13")
+    (version "4.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://ftp.barfooze.de/pub/sabotage/tarballs/"
-                           name "-" version ".tar.xz"))
+                           "proxychains-ng-" version ".tar.xz"))
        (sha256
-        (base32
-         "0418fv8hgf43rzrxxlybg49jz2h6w8inndhb6v1184k4cwzjnl3p"))))
+        (base32 "1bmhfbl1bzc87vl0xwr1wh5xvslfyc41nl2hqzhbj258p0sy004x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
+     `(#:tests? #f                      ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-configure-script
@@ -1225,24 +1237,25 @@ library remains flexible, portable, and easily embeddable.")
 (define-public sslh
   (package
     (name "sslh")
-    (version "1.19c")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/yrutschle/sslh/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0pd8hifa9h0rm7vms3k6ic1k29xigrlv2idc5wgcafmb1v1243di"))))
+    (version "1.20")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/yrutschle/sslh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18zhkqlwfh6f5dg1a41a4p7p9g94dgb9nwls1ksy9r5yz174i2fx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Test dependencies.
        ("lcov" ,lcov)
        ("perl" ,perl)
+       ("perl-conf-libconfig" ,perl-conf-libconfig)
        ("perl-io-socket-inet6" ,perl-io-socket-inet6)
        ("perl-socket6" ,perl-socket6)
-       ("psmisc" ,psmisc)
-       ("valgrind" ,valgrind)))
+       ("psmisc" ,psmisc)))             ; for ‘killall’
     (inputs
      `(("libcap" ,libcap)
        ("libconfig" ,libconfig)
@@ -1253,24 +1266,24 @@ library remains flexible, portable, and easily embeddable.")
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
          (add-before 'check 'fix-tests
-                     (lambda _
-                       (substitute* "./t"
-                         (("\"/tmp") "$ENV{\"TMPDIR\"} . \"")
-                         ;; The Guix build environment lacks ‘ip6-localhost’.
-                         (("ip6-localhost") "localhost"))
-                       #t))
+           (lambda _
+             (substitute* "./t"
+               (("\"/tmp") "$ENV{\"TMPDIR\"} . \"")
+               ;; The Guix build environment lacks ‘ip6-localhost’.
+               (("ip6-localhost") "localhost"))
+             #t))
          ;; Many of these files are mentioned in the man page. Install them.
          (add-after 'install 'install-documentation
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (doc (string-append out "/share/doc/sslh")))
-                        (install-file "README.md" doc)
-                        (for-each
-                         (lambda (file)
-                           (install-file file (string-append doc "/examples")))
-                         (append (find-files "." "\\.cfg")
-                                 (find-files "scripts"))))
-                      #t)))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/sslh")))
+               (install-file "README.md" doc)
+               (for-each
+                (lambda (file)
+                  (install-file file (string-append doc "/examples")))
+                (append (find-files "." "\\.cfg")
+                        (find-files "scripts"))))
+             #t)))
        #:make-flags (list "CC=gcc"
                           "USELIBCAP=1"
                           "USELIBWRAP=1"
@@ -1456,13 +1469,13 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
 (define-public python-ipy
   (package
     (name "python-ipy")
-    (version "0.83")
+    (version "1.00")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "IPy" version))
               (sha256
                (base32
-                "1f6sdrxclifky4gvkf4gvyv5hx3fjh8vzspnfrqki6qm5d9mmnk1"))))
+                "08d6kcacj67mvh0b6y765ipccy6gi4w2ndd4v1l3im2qm1cgcarg"))))
     (build-system python-build-system)
     (home-page "https://github.com/autocracy/python-ipy/")
     (synopsis "Python class and tools for handling IP addresses and networks")
@@ -1477,7 +1490,7 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "2.0.2")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -1486,8 +1499,7 @@ networks.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0vv2z37g2kgm2dzkfa4bhri92hs0d1acxi8z66gznsl5148q7sdi"))))
+        (base32 "0swm7nbk99w2xf1cb0l3c8y1vm4rqw6785p5j04alyb0g98vqa4b"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")

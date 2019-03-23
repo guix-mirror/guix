@@ -1,9 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -357,7 +357,7 @@ are implemented as FFI bindings to efficient code from zlib.")
 (define-public ghc-entropy
   (package
     (name "ghc-entropy")
-    (version "0.4.1.1")
+    (version "0.4.1.4")
     (source
      (origin
        (method url-fetch)
@@ -365,8 +365,7 @@ are implemented as FFI bindings to efficient code from zlib.")
                            "entropy-" version "/"
                            "entropy-" version ".tar.gz"))
        (sha256
-        (base32
-         "1ahz5g148l6sax3dy505na2513i99c7bxix68jja5kbx4f271zcf"))))
+        (base32 "1fgf47l9klwn1xssbcbq6by651vikd8hlfxhiwd5bqzxr1jnlgrf"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/TomMD/entropy")
     (synopsis "Provides platform independent entropy source for Haskell")
@@ -462,14 +461,14 @@ libraries, like OpenSSL.")
 (define-public ghc-x509
   (package
     (name "ghc-x509")
-    (version "1.7.3")
+    (version "1.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "x509/x509-" version ".tar.gz"))
               (sha256
                (base32
-                "0mkk29g32fs70bqkikg83v45h9jig9c8aail3mrdqwxpkfa0yx21"))))
+                "1j67c35g8334jx7x32hh6awhr43dplp0qwal5gnlkmx09axzrc5i"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)
@@ -491,7 +490,7 @@ libraries, like OpenSSL.")
 (define-public ghc-x509-store
   (package
     (name "ghc-x509-store")
-    (version "1.6.6")
+    (version "1.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -499,7 +498,7 @@ libraries, like OpenSSL.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dbndqmnmyixxc7308nyq3zlkhz9dff4rbcw2a49c77rbicny9va"))))
+                "1y8yyr1i95jkllg8k0z54k5v4vachp848clc07m33xpxidn3b1lp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-pem" ,ghc-pem)
@@ -520,7 +519,7 @@ collections, certificates, revocation lists, and exception lists.")
 (define-public ghc-x509-validation
   (package
     (name "ghc-x509-validation")
-    (version "1.6.10")
+    (version "1.6.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -528,7 +527,7 @@ collections, certificates, revocation lists, and exception lists.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ms51scawldgyfcim5a2qlgyn3rnrclyh205d6djaa1569vrs73n"))))
+                "16yihzljql3z8w5rgdl95fv3hgk7yd86kbl9b3glllsark5j2hzr"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)

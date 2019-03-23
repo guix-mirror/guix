@@ -16,11 +16,11 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -612,15 +612,14 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.2.4")
+    (version "5.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
                                   version "/gnuplot-"
                                   version ".tar.gz"))
        (sha256
-        (base32
-         "1jvh8xmd2cvrhlsg88kxwh55wkwx31sg50v1n59slfippl0g058m"))))
+        (base32 "1vllgap08nhvdmc03idmkdnk9cfl2bp81hps50q1pqrr640qzp9m"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
@@ -1299,7 +1298,7 @@ online as well as original implementations of various other algorithms.")
 (define-public ipopt
   (package
     (name "ipopt")
-    (version "3.12.5")
+    (version "3.12.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1307,7 +1306,7 @@ online as well as original implementations of various other algorithms.")
                     version".tgz"))
               (sha256
                (base32
-                "09bk2hqy2vgi4yi76xng9zxakddwqy3wij9nx7wf2vfbxxpazrsk"))
+                "07yn9rzdswjk8n246qq6ci9ssf2bcplkifcpsfz9j6cdxw9vgbkv"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -1639,7 +1638,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.10.3")
+    (version "3.10.4")
     (source
      (origin
       (method url-fetch)
@@ -1647,9 +1646,9 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "10p9ap1rp6k8k2g8zdc505kdlsc3976fjymyp393sccjapm50dph"))))
-    (outputs '("out"                    ;libraries and headers
-               "examples"))             ;~30MiB of examples
+       (base32 "0fk16944zh3473ra198kdkxdn08rq7b6ap838hxy1mh1i0hb488r"))))
+    (outputs '("out"                    ; libraries and headers
+               "examples"))             ; ~30MiB of examples
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1662,7 +1661,7 @@ September 2004}")
        ))
     (arguments
      `(#:test-target "test"
-       #:parallel-build? #f             ;build is parallel by default
+       #:parallel-build? #f             ; build is parallel by default
        #:configure-flags
        `("--with-mpi=0"
          "--with-openmp=1"
@@ -3358,7 +3357,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.3")
+    (version "0.9.9.4")
     (source
      (origin
        (method url-fetch)
@@ -3366,7 +3365,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "0yqk5r3qh60d4r2iab5q7wq0fryn8p3pz6s28y1i7amqj1aqavj9"))))
+         "17vxbqzy4pxciq5i39bgpxz54f7ifqqmcqwwq7m6xfgikwqqqawp"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

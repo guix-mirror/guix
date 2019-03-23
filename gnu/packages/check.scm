@@ -23,11 +23,12 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -353,8 +354,8 @@ and it supports a very flexible form of test discovery.")
     (license license:lgpl3+)))
 
 (define-public go-gopkg.in-check.v1
-  (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
-        (revision "0"))
+  (let ((commit "788fd78401277ebd861206a03c884797c6ec5541")
+        (revision "1"))
     (package
       (name "go-gopkg.in-check.v1")
       (version (git-version "0.0.0" revision commit))
@@ -366,10 +367,12 @@ and it supports a very flexible form of test discovery.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np"))))
+                  "0v3bim0j375z81zrpr5qv42knqs0y2qv2vkjiqi5axvb78slki1a"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "gopkg.in/check.v1"))
+      (propagated-inputs
+       `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
       (synopsis "Rich testing extension for Go's testing package")
       (description
        "@code{check} is a rich testing extension for Go's testing package.")
@@ -529,6 +532,27 @@ for every Python test framework.  It supports nose, py.test, and unittest.")
 
 (define-public python2-parameterized
   (package-with-python2 python-parameterized))
+
+(define-public python-minimock
+  (package
+    (name "python-minimock")
+    (version "1.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "MiniMock" version))
+       (sha256
+        (base32
+         "0k2sxb1ibnyg05iblz7zhbv825f1zk9906rab7883iqgvzmdzpsz"))))
+    (build-system python-build-system)
+    (home-page "https://pypi.org/project/MiniMock")
+    (synopsis "Simple Python library for using mock objects")
+    (description "MiniMock is a simple library for building mock objects with
+doctest.")
+    (license license:expat)))
+
+(define-public python2-minimock
+  (package-with-python2 python-minimock))
 
 (define-public python-mock
   (package
@@ -1981,14 +2005,13 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-nose-timer
   (package
     (name "python-nose-timer")
-    (version "0.7.3")
+    (version "0.7.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "nose-timer" version))
         (sha256
-          (base32
-            "0hfz5aqnhf493i9kyb6prm4zm8vx7wmfsyg3nvsnh24lzh2kwx44"))))
+          (base32 "04inck7l1sgkjbiinhifxk45wk2b3czbwh1x2a390hi183fq1q12"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-nose" ,python-nose)
@@ -2010,8 +2033,7 @@ create data based on random numbers and yet remain repeatable.")
        (method url-fetch)
        (uri (pypi-uri "freezegun" version))
        (sha256
-        (base32
-         "1nh0fzqjwg88n57k3qa8mxnmiwrr7lqyd5xvc96qn5g8zcxv8fg8"))))
+        (base32 "1nh0fzqjwg88n57k3qa8mxnmiwrr7lqyd5xvc96qn5g8zcxv8fg8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -2041,13 +2063,13 @@ time by mocking the datetime module.")
 (define-public python-flexmock
   (package
     (name "python-flexmock")
-    (version "0.10.2")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flexmock" version))
               (sha256
                (base32
-                "0arc6njvs6i9v9hgvzk5m50296g7zy5m9d7pyb43vdsdgxrci5gy"))))
+                "031c624pdqm7cc0xh4yz5k69gqxn2bbrjz13s17684q5shn0ik21"))))
     (build-system python-build-system)
     (home-page "https://flexmock.readthedocs.org")
     (synopsis "Testing library for Python")

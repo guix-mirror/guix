@@ -984,6 +984,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
     (arguments
      '(#:import-path "github.com/projectatomic/skopeo"
        #:install-source? #f
+       #:tests? #f ; The tests require Docker
        #:phases
        (modify-phases %standard-phases
          (replace 'build

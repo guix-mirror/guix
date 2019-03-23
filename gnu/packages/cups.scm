@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -51,12 +51,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.22.1")
+    (version "1.22.2")
     (source(origin
               (method url-fetch)
               (uri
@@ -64,7 +65,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "08szgpmac7xlf6vqkvg3pbphnrk2mal3gy382q2y3cm7k4plys3y"))
+                "06gy3wv6p7kswz3mjn17f17mqpadvqj2riwc42kksnvp8x0h08cw"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -185,7 +186,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.2.10")
+    (version "2.2.11")
     (source
      (origin
        (method url-fetch)
@@ -193,7 +194,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "1fq52aw1mini3ld2czv5gg37wbbvh4n7yc7wzzxvbs3zpfrv5j3p"))))
+         "0v5p10lyv8wv48s8ghkhjmdrxg6iwj8hn36v1ilkz46n7y0i107m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -429,12 +430,26 @@ should only be used as part of the Guix cups-pk-helper service.")
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
                '(begin
-                  ;; Delete non-free blobs
-                  (for-each delete-file (find-files "." "\\.so$"))
+                  ;; Delete non-free blobs: .so files, pre-compiled
+                  ;; 'locatedriver' executable, etc.
+                  (for-each delete-file
+                            (find-files "."
+                                        (lambda (file stat)
+                                          (elf-file? file))))
                   (delete-file "prnt/hpcups/ImageProcessor.h")
+
                   ;; Fix type mismatch.
                   (substitute* "prnt/hpcups/genPCLm.cpp"
                     (("boolean") "bool"))
+
+                  ;; Install binaries under libexec/hplip instead of
+                  ;; share/hplip; that'll at least ensure they get stripped.
+                  ;; It's not even clear that they're of any use though...
+                  (substitute* "Makefile.in"
+                    (("^dat2drvdir =.*")
+                     "dat2drvdir = $(pkglibexecdir)\n")
+                    (("^locatedriverdir =.*")
+                     "locatedriverdir = $(pkglibexecdir)\n"))
                   #t))))
     (build-system gnu-build-system)
     (home-page "https://developers.hp.com/hp-linux-imaging-and-printing")
@@ -556,10 +571,19 @@ should only be used as part of the Guix cups-pk-helper service.")
     (arguments
       (substitute-keyword-arguments (package-arguments hplip)
         ((#:configure-flags cf)
-         `(delete "--enable-qt5" ,cf))))
-    (inputs
-     (fold alist-delete (package-inputs hplip)
-           '("python-pygobject" "python-pyqt")))
+         ;; Produce a "light build", meaning that only the printer (CUPS) and
+         ;; scanner (SANE) support gets built, without all the 'hp-*'
+         ;; command-line tools.
+         `(cons "--enable-lite-build"
+                (delete "--enable-qt5" ,cf)))
+        ((#:phases phases)
+         ;; The 'wrap-binaries' is not needed here since the 'hp-*' programs
+         ;; are not installed.
+         `(alist-delete 'wrap-binaries ,phases))))
+    (inputs (remove (match-lambda
+                      ((label . _)
+                       (string-prefix? "python" label)))
+                    (package-inputs hplip)))
     (synopsis "GUI-less version of hplip")))
 
 (define-public foomatic-filters

@@ -1,0 +1,14 @@
+Fix an error that occurs with Meson 0.50.0 and later:
+"ERROR: Subdir keyword must not be an absolute path".
+
+--- a/src/meson.build	2019-03-15 00:10:26.882293850 +0100
++++ b/src/meson.build	2019-03-15 00:10:54.312197229 +0100
+@@ -82,7 +82,7 @@
+ 
+ install_headers(
+   headers,
+-  subdir: join_paths(totem_includedir, totem_api_path)
++  install_dir: join_paths(totem_includedir, totem_api_path)
+ )
+ 
+ libtotem_player_sources = files(

@@ -21,15 +21,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages scanner)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix utils)
-  #:use-module (guix build-system gnu)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download)
   #:use-module ((guix licenses)
-                #:prefix licence:))
+                #:prefix licence:)
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public sane-backends-minimal
   (package

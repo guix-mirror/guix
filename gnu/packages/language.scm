@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,7 +149,7 @@ digits, is a cardinal or ordinal number.")
 (define-public perl-lingua-en-tagger
   (package
     (name "perl-lingua-en-tagger")
-    (version "0.29")
+    (version "0.30")
     (source
      (origin
        (method url-fetch)
@@ -157,7 +157,7 @@ digits, is a cardinal or ordinal number.")
                            "Lingua-EN-Tagger-" version ".tar.gz"))
        (sha256
         (base32
-         "0dssn101kmpkh2ik1430mj2ikk04849vbpgi60382kvh9xn795na"))))
+         "0nrnkvsf9f0a7lp82sanmy89ms2nqq1lvjqicvsagsvzp513bl5b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-memoize-expirelru" ,perl-memoize-expirelru)

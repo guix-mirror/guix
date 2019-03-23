@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +20,11 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix git)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages busybox)
@@ -138,12 +140,15 @@
         (and (not (eq? new p))
              (match (package-inputs new)
                ((("foo" dep1) ("bar" dep2) ("baz" dep3))
-                (and (eq? dep1 busybox)
-                     (eq? dep2 findutils)
+                (and (string=? (package-full-name dep1)
+                               (package-full-name busybox))
+                     (string=? (package-full-name dep2)
+                               (package-full-name findutils))
                      (string=? (package-name dep3) "chbouib")
                      (match (package-native-inputs dep3)
                        ((("x" dep))
-                        (eq? dep findutils)))))))))))
+                        (string=? (package-full-name dep)
+                                  (package-full-name findutils))))))))))))
 
 (test-assert "options->transformation, with-graft"
   (let* ((p (dummy-package "guix.scm"
@@ -163,5 +168,101 @@
                      (match (package-native-inputs dep2)
                        ((("x" dep))
                         (eq? (package-replacement dep) findutils)))))))))))
+
+(test-equal "options->transformation, with-branch"
+  (git-checkout (url "https://example.org")
+                (branch "devel")
+                (recursive? #t))
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (source (origin
+                                            (method git-fetch)
+                                            (uri (git-reference
+                                                  (url "https://example.org")
+                                                  (commit "cabba9e")))
+                                            (sha256 #f)))))))))
+         (t (options->transformation '((with-branch . "chbouib=devel")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-full-name dep1)
+                               (package-full-name grep))
+                     (string=? (package-name dep2) "chbouib")
+                     (package-source dep2)))))))))
+
+(test-equal "options->transformation, with-commit"
+  (git-checkout (url "https://example.org")
+                (commit "abcdef")
+                (recursive? #t))
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (source (origin
+                                            (method git-fetch)
+                                            (uri (git-reference
+                                                  (url "https://example.org")
+                                                  (commit "cabba9e")))
+                                            (sha256 #f)))))))))
+         (t (options->transformation '((with-commit . "chbouib=abcdef")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-full-name dep1)
+                               (package-full-name grep))
+                     (string=? (package-name dep2) "chbouib")
+                     (package-source dep2)))))))))
+
+(test-equal "options->transformation, with-git-url"
+  (let ((source (git-checkout (url "https://example.org")
+                              (recursive? #t))))
+    (list source source))
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (native-inputs `(("x" ,grep)))))))))
+         (t (options->transformation '((with-git-url . "grep=https://example.org")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-full-name dep1)
+                               (package-full-name grep))
+                     (string=? (package-name dep2) "chbouib")
+                     (match (package-native-inputs dep2)
+                       ((("x" dep3))
+                        (map package-source (list dep1 dep3))))))))))))
+
+(test-equal "options->transformation, with-git-url + with-branch"
+  ;; Combine the two options and make sure the 'with-branch' transformation
+  ;; comes after the 'with-git-url' transformation.
+  (let ((source (git-checkout (url "https://example.org")
+                              (branch "BRANCH")
+                              (recursive? #t))))
+    (list source source))
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,grep)
+                        ("bar" ,(dummy-package "chbouib"
+                                  (native-inputs `(("x" ,grep)))))))))
+         (t (options->transformation
+             (reverse '((with-git-url
+                         . "grep=https://example.org")
+                        (with-branch . "grep=BRANCH"))))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2))
+                (and (string=? (package-name dep1) "grep")
+                     (string=? (package-name dep2) "chbouib")
+                     (match (package-native-inputs dep2)
+                       ((("x" dep3))
+                        (map package-source (list dep1 dep3))))))))))))
+
 
 (test-end)

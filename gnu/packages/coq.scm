@@ -211,18 +211,15 @@ provers.")
              #t))
          (replace 'build
            (lambda _
-             (invoke "./remake")
-             #t))
+             (invoke "./remake")))
          (replace 'check
            (lambda _
-             (invoke "./remake" "check")
-             #t))
+             (invoke "./remake" "check")))
              ;; TODO: requires coq-gappa and coq-interval.
              ;(invoke "./remake" "check-more")
          (replace 'install
            (lambda _
-             (invoke "./remake" "install")
-             #t)))))
+             (invoke "./remake" "install"))))))
     (home-page "http://flocq.gforge.inria.fr/")
     (synopsis "Floating-point formalization for the Coq system")
     (description "Flocq (Floats for Coq) is a floating-point formalization for

@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 nee <nee.git@cock.li>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +33,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.6.6")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/elixir-lang/elixir"
@@ -41,7 +41,8 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0c9qz5hasa59a9x1iwpcqpqj6wdbzpijfxqfmzimwj5z8q37nl3l"))))
+                "08lq5p82pnicd49gsj6r2zsbg35wrk6098nrrjb28fcrm5p6736y"))
+	      (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -84,7 +85,7 @@
     (inputs
      `(("erlang" ,erlang)
        ("git" ,git)))
-    (home-page "http://elixir-lang.org/")
+    (home-page "https://elixir-lang.org/")
     (synopsis "Elixir programming language")
     (description "Elixir is a dynamic, functional language used to build
 scalable and maintainable applications.  Elixir leverages the Erlang VM, known

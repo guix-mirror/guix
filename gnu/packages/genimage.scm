@@ -35,8 +35,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mtools)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages virtualization)
-  #:use-module (gnu packages wm))
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages virtualization))
 
 (define-public genimage
   (package

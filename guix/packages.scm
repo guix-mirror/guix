@@ -102,6 +102,7 @@
             package-transitive-supported-systems
             package-mapping
             package-input-rewriting
+            package-input-rewriting/spec
             package-source-derivation
             package-derivation
             package-cross-derivation
@@ -870,6 +871,43 @@ package and returns its new name after rewrite."
       (new new)))
 
   (package-mapping rewrite (cut assq <> replacements)))
+
+(define (package-input-rewriting/spec replacements)
+  "Return a procedure that, given a package, applies the given REPLACEMENTS to
+all the package graph (excluding implicit inputs).  REPLACEMENTS is a list of
+spec/procedures pair; each spec is a package specification such as \"gcc\" or
+\"guile@2\", and each procedure takes a matching package and returns a
+replacement for that package."
+  (define table
+    (fold (lambda (replacement table)
+            (match replacement
+              ((spec . proc)
+               (let-values (((name version)
+                             (package-name->name+version spec)))
+                 (vhash-cons name (list version proc) table)))))
+          vlist-null
+          replacements))
+
+  (define (find-replacement package)
+    (vhash-fold* (lambda (item proc)
+                   (or proc
+                       (match item
+                         ((#f proc)
+                          proc)
+                         ((version proc)
+                          (and (version-prefix? version
+                                                (package-version package))
+                               proc)))))
+                 #f
+                 (package-name package)
+                 table))
+
+  (define (rewrite package)
+    (match (find-replacement package)
+      (#f package)
+      (proc (proc package))))
+
+  (package-mapping rewrite find-replacement))
 
 (define-syntax-rule (package/inherit p overrides ...)
   "Like (package (inherit P) OVERRIDES ...), except that the same

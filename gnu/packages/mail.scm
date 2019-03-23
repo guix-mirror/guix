@@ -15,14 +15,14 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -84,6 +84,7 @@
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -134,14 +135,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.5")
+    (version "3.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1wx275w38fwni2abc8g7g3irbk332vr34byxd72zqfdiznsqgims"))))
+               "07phzpwrnkdclx6jvirljk9zcavl8wh02kpx3mfba9msr99kpqj6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -213,7 +214,11 @@
        ("readline" ,readline)
        ("linux-pam" ,linux-pam)
        ("libltdl" ,libltdl)
-       ("gdbm" ,gdbm)))
+       ("gdbm" ,gdbm)
+
+       ;; Required for SEARCH CHARSET.
+       ("libiconv" ,libiconv)
+       ("libunistring" ,libunistring)))
     (home-page "https://mailutils.org")
     (synopsis "Utilities and library for reading and serving mail")
     (description
@@ -343,14 +348,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.11.3")
+    (version "1.11.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0h8rmcc62n1pagm7mjjccd5fxyhhi4vbvp8m88digkdf5z0g8hm5"))
+               "0098pr4anmq2a0id8wfi2vci3cgcfwf9k4q411w22xn8lrz3aldn"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -619,14 +624,14 @@ repository and Maildir/IMAP as LOCAL repository.")
 (define-public emacs-mew
   (package
     (name "emacs-mew")
-    (version "6.7")
+    (version "6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mew.org/Release/mew-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03fzky2kz73vgx4cbps2psbbnrgqgkk5q7jwfldisymkzr9iz03y"))))
+                "0ixzyq33l6j34410kqav3lwn2wx171zvqd3irvns2jvhrbww8i6g"))))
     (native-inputs
      `(("emacs" ,emacs)))
     (propagated-inputs
@@ -1023,7 +1028,7 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.9.2")
+    (version "1.9.3")
     (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -1031,7 +1036,7 @@ useful features.")
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
-               (base32 "13jiy2ddxbp9f2mk1mip9sk8h97bva5m0pnq2mlvh5xhifs6gza4"))))
+               (base32 "19g4qskg71jv7sxfxsdkjmrxk9mk5kf9b6fhw06g6wvm3205n95f"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -1122,7 +1127,8 @@ compresses it.")
               ("mime-info" ,shared-mime-info)))
     (arguments
       '(#:configure-flags
-        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")
+        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant"
+          "--enable-ldap")
         #:make-flags
         ;; Disable updating icon cache since it's done by the profile hook.
         ;; Conflict with other packages in the profile would be inevitable
@@ -1193,7 +1199,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.90.1")
+    (version "4.92")
     (source
      (origin
        (method url-fetch)
@@ -1202,11 +1208,10 @@ delivery.")
                   (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
-        (base32
-         "1w6blvvrd87c649j8xpag034md2w1ib0db9c4ijqbzc5dh2i1xfq"))))
+        (base32 "127spqn009wa6irp6r1k7a24r8vdwb6mf0raamxn8lbxsnrwy7sl"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bdb" ,bdb)
+     `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
        ("gnutls" ,gnutls)
        ("gzip" ,gzip)
        ("bzip2" ,bzip2)
@@ -1242,7 +1247,7 @@ delivery.")
                  (("(EXIM_USER=).*" all var)
                   (string-append var "nobody\n"))
                  (("(FIXED_NEVER_USERS=).*" all var)
-                  (string-append var "\n"))  ;XXX no root in build environment
+                  (string-append var "\n")) ; XXX no root in build environment
                  (("(COMPRESS_COMMAND=).*" all var)
                   (string-append var gzip "/bin/gzip\n"))
                  (("(ZCAT_COMMAND=).*" all var)
@@ -1482,15 +1487,14 @@ write simple, representation-independent mail handling code.")
 (define-public perl-email-address
   (package
     (name "perl-email-address")
-    (version "1.909")
+    (version "1.912")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "Email-Address-" version ".tar.gz"))
        (sha256
-        (base32
-         "0l7x6sl06j9ffgfz5f9vgms2b5axd4cgp5fj03ivb3kia4km6b3g"))))
+        (base32 "1vzr0vx4zsw4zbc9xdffc31wnkc1raqmyfiyws06fbyck197i8qg"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Email-Address")
     (synopsis "Email address parsing and creation")
@@ -1730,15 +1734,13 @@ compatibility shims for the @command{sendmail}, @command{mailq}, and
 (define-public fdm
   (package
     (name "fdm")
-    (version "1.9")
+    (version "2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/nicm/fdm/releases/download/"
-                                 version "/fdm-"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+                                 version "/fdm-" version ".tar.gz"))
              (sha256
-               (base32 "054rscijahiza5f9qha79rg3siji3bk5mk10f8c2vqx7m4w6qh8n"))))
+               (base32 "196fs1z8y7p12wmqn1bylzz94szl58yv2aby3p30nmwjnyv8rch6"))))
     (build-system gnu-build-system)
     (inputs
      `(("tdb" ,tdb)
@@ -1842,45 +1844,43 @@ Khard can also be used from within the email client @command{mutt}.")
     (license gpl3+)))
 
 (define-public perl-mail-spf
- (package
-  (name "perl-mail-spf")
-  (version "v2.9.0")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/J/JM/JMEHNLE/mail-spf/Mail-SPF-"
+  (package
+    (name "perl-mail-spf")
+    (version "2.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JM/JMEHNLE/mail-spf/Mail-SPF-v"
              version
              ".tar.gz"))
-      (sha256
-        (base32
-          "0qk1rfgfm5drj4iyniiabrasrpqv570vzhgz66lwgb67y4amkjv1"))))
-  (build-system perl-build-system)
-  (native-inputs
-    `(("perl-module-build" ,perl-module-build)
-      ("perl-net-dns-resolver-programmable"
-       ,perl-net-dns-resolver-programmable)))
-  (arguments
-   `(#:phases (modify-phases %standard-phases
-       (add-before 'configure 'modify-Build.PL
-         (lambda* (#:key outputs #:allow-other-keys)
-           (substitute* "Build.PL"
-             (("'/usr/sbin'") (string-append "'"
-                                             (assoc-ref outputs "out")
-                                             "/sbin'")))
+       (sha256
+        (base32 "0qk1rfgfm5drj4iyniiabrasrpqv570vzhgz66lwgb67y4amkjv1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-net-dns-resolver-programmable"
+        ,perl-net-dns-resolver-programmable)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'modify-Build.PL
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Build.PL"
+               (("'/usr/sbin'") (string-append "'"
+                                               (assoc-ref outputs "out")
+                                               "/sbin'")))
              #t)))))
-  (inputs
-    `(("perl-error" ,perl-error)
-      ("perl-net-dns" ,perl-net-dns)
-      ("perl-netaddr-ip" ,perl-netaddr-ip)
-      ("perl-uri" ,perl-uri)))
-  (home-page
-    "https://metacpan.org/release/Mail-SPF")
-  (synopsis
-    "Perl implementation of Sender Policy Framework")
-  (description "Mail::SPF is the Sender Policy Framework implemented
+    (inputs
+     `(("perl-error" ,perl-error)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-netaddr-ip" ,perl-netaddr-ip)
+       ("perl-uri" ,perl-uri)))
+    (home-page "https://metacpan.org/release/Mail-SPF")
+    (synopsis "Perl implementation of Sender Policy Framework")
+    (description "Mail::SPF is the Sender Policy Framework implemented
 in Perl.")
-  (license bsd-3)))
+    (license bsd-3)))
 
 (define-public mb2md
   (package
@@ -1930,15 +1930,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
-                           name "-" version ".tar.xz"))
+                           "mpop-" version ".tar.xz"))
        (sha256
-        (base32
-         "1rx5mhgqkm7swbynrhbsz32v85h0rydb4kqfgfs9jrznd9d14m2d"))))
+        (base32 "1di86frxv4gj8fasni409m87qmv0j0vmj13lawkz1pwv9hbynhjb"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
@@ -2842,3 +2841,27 @@ replacement for the @code{urlview} program.")
       (synopsis "Debbugs web interface")
       (description "Mumi is a Debbugs web interface.")
       (license agpl3+))))
+
+(define-public ytnef
+  (package
+    (name "ytnef")
+    (version "1.9.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Yeraze/ytnef.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07h48s5qf08503pp9kafqbwipdqghiif22ghki7z8j67gyp04l6l"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/Yeraze/ytnef/")
+    (synopsis "TNEF stream reader for winmail.dat files")
+    (description "This package provides a TNEF stream reader library and
+related tools to process winmail.dat files.")
+    (license gpl2+)))

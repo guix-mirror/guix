@@ -4,10 +4,11 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,6 +123,10 @@
             enlightenment-desktop-configuration
             enlightenment-desktop-configuration?
             enlightenment-desktop-service-type
+
+            inputattach-configuration
+            inputattach-configuration?
+            inputattach-service-type
 
             %desktop-services))
 
@@ -1018,6 +1023,47 @@ with the administrator's password."
 profile, and extends dbus with the ability for @code{efl} to generate
 thumbnails and makes setuid the programs which enlightenment needs to function
 as expected.")))
+
+
+;;;
+;;; inputattach-service-type
+;;;
+
+(define-record-type* <inputattach-configuration>
+  inputattach-configuration
+  make-inputattach-configuration
+  inputattach-configuration?
+  (device-type inputattach-configuration-device-type
+               (default "wacom"))
+  (device inputattach-configuration-device
+          (default "/dev/ttyS0"))
+  (log-file inputattach-configuration-log-file
+            (default #f)))
+
+(define inputattach-shepherd-service
+  (match-lambda
+    (($ <inputattach-configuration> type device log-file)
+     (list (shepherd-service
+            (provision '(inputattach))
+            (requirement '(udev))
+            (documentation "inputattach daemon")
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$inputattach
+                                           "/bin/inputattach")
+                            (string-append "--" #$type)
+                            #$device)
+                      #:log-file #$log-file))
+            (stop #~(make-kill-destructor)))))))
+
+(define inputattach-service-type
+  (service-type
+   (name 'inputattach)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             inputattach-shepherd-service)))
+   (default-value (inputattach-configuration))
+   (description "Return a service that runs inputattach on a device and
+dispatches events from it.")))
 
 
 ;;;

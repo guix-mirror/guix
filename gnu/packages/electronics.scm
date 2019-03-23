@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,7 +102,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public sigrok-firmware-fx2lafw
   (package
     (name "sigrok-firmware-fx2lafw")
-    (version "0.1.5")
+    (version "0.1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -110,7 +110,7 @@ to take care of the OS-specific details when writing software that uses serial p
                     "sigrok-firmware-fx2lafw-" version ".tar.gz"))
               (sha256
                (base32
-                "0bbdgy4rpc00jl0l0744m2ibjlqi26bhrkjr7vplivdsjdmhjx6a"))))
+                "18x5zj3xbcylvb651dia6n4zxbdnv0j62r5af60d0l2g68knkjg4"))))
     (native-inputs
      `(("sdcc" ,sdcc)))
     (build-system gnu-build-system)

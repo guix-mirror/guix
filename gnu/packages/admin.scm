@@ -12,7 +12,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
@@ -1598,13 +1598,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.8")
+    (version "2.7.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "11yx7vd0mp5gkq428af141dwnrwf8f9cp3f65243qbs9icjxnrrx"))))
+        (base32 "19vyf60zfmnv7frwm96bzqzvia69dysy9apk8bl84vr03ib9vrbf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2699,7 +2699,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.22-1")
+      (version "3.0.32-1")
       (source
        (origin
          (method git-fetch)
@@ -2708,7 +2708,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "1br392s3xc2nwqmfx4nwb3i97wjwasvkq8ayr8jq72mi5qzsgizn"))))
+          (base32 "171xdip2alkp3g0k0sanaavvdcz6d0wlldj9lgj11xsdbhaaknnv"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

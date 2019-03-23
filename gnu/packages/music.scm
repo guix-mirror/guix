@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
@@ -88,6 +88,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gpodder)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -1306,7 +1307,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1314,7 +1315,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1b9w4cml3cmcg09kh852cahas6l9ks8wl3gzp1az8rzxz4229yg1"))))
+                "1hcngk7mxfrqf8v3r759x3wd0p02nc3q83j8m3k58p408y3mx7nr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1340,7 +1341,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1348,7 +1349,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1azzwqgrrr4zr509sib2jvigfvz5bkwnx82chdadxdwfarai8586"))))
+                "0d0kskr9pzdckw7sz4djjkkkgz1fa83zrq5my6qlxn68wqdj6800"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1375,7 +1376,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1383,7 +1384,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0402rdr46za21w34m7ajzbwiiqcd1h0da3b0ldsr2z5g2mrkzxv8"))))
+                "16a5xix9pn0gl3fr6bv6zl1l9vrzgvy1q7xd8yxzfr3vi5s8x4z9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1410,7 +1411,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1418,7 +1419,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0cd1jfb3ynfrsbz8jwfsbvs5liyddxg4zghrvz931qkkqi117hbh"))))
+                "0ddvlpjlg6zr9ckanqhisw0sgm8rxibvj1aj5dxzs9xb2wlwd8rr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1491,7 +1492,7 @@ reverb effects.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.7")
+    (version "0.8.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1500,10 +1501,10 @@ reverb effects.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r2i8cp0gfzqp6scrxwwf7pn7lk2j9kmf8cx7bqjvgfyn251dw3j"))))
+                "15dr1nyj69wc9jnjq5z8ril90a3c0mcrii4zjyz0z3h7dhia3382"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:tests? #f                      ; no "check" target
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "FONTFILE="
@@ -1519,7 +1520,7 @@ reverb effects.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-CC-variable
-                     (lambda _ (setenv "CC" "gcc") #t))
+           (lambda _ (setenv "CC" "gcc") #t))
          (delete 'configure))))
     (inputs
      `(("jack" ,jack-1)
@@ -2249,14 +2250,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "1zsikhqj5xzhw2x3b6pqlmcwz3hxx07lbbif8v3m3j41snzjic22"))))
+                "06sa4wl8zr0k8dnjiil0gjwnhrkq95h50xv56ih1y8jgyzxchaxp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -4009,36 +4010,6 @@ OSC connections.")
 the electronic or dubstep genre.")
     (license license:gpl3+)))
 
-(define-public libmygpo-qt
-  (package
-    (name "libmygpo-qt")
-    (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://stefan.derkits.at/files/"
-                                  "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
-              (sha256
-               (base32
-                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))
-              (patches (search-patches "libmygpo-qt-fix-qt-5.11.patch"
-                                       "libmygpo-qt-missing-qt5-modules.patch"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("qt" ,qtbase)))
-    (arguments
-     `(#:configure-flags '("-DMYGPO_BUILD_TESTS=ON")
-       ;; TODO: Enable tests when https://github.com/gpodder/gpodder/issues/446
-       ;; is fixed.
-       #:tests? #f))
-    (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
-    (synopsis "Qt/C++ library wrapping the gpodder web service")
-    (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the
-@url{https://gpodder.net} APIs.  It allows applications to discover, manage
-and track podcasts.")
-    (license license:lgpl2.1+)))
-
 (define-public sonivox-eas
   (package
     (name "sonivox-eas")
@@ -4227,7 +4198,7 @@ compact disc (CDDA) identifiers.")
 (define-public perl-webservice-musicbrainz
   (package
     (name "perl-webservice-musicbrainz")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4235,7 +4206,7 @@ compact disc (CDDA) identifiers.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "182z3xjajk6s7k5xm3kssjy3hqx2qbnq4f8864hma098ryy2ph3a"))))
+                "16chs1l58cf000d5kalkyph3p31ci73p1rlyx98mfv10d2cq6fsj"))))
     (build-system perl-build-system)
     (arguments
      ;; Tests try to connect to http://musicbrainz.org.
@@ -4361,7 +4332,7 @@ console music players.")
                                             dir "/sbin"))
                            (list ffmpeg chromaprint))))
                  #t)))
-           (add-after 'install-source 'install-scripts
+           (add-after 'install 'install-scripts
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (root (string-append out "/src/gitlab.com/ambrevar/demlo"))

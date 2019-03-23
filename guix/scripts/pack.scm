@@ -28,6 +28,7 @@
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix grafts)
+  #:autoload   (guix inferior) (inferior-package?)
   #:use-module (guix monads)
   #:use-module (guix modules)
   #:use-module (guix packages)
@@ -305,11 +306,13 @@ added to the pack."
     (with-imported-modules (source-module-closure
                             '((guix build utils)
                               (guix build store-copy)
+                              (guix build union)
                               (gnu build install))
                             #:select? not-config?)
       #~(begin
           (use-modules (guix build utils)
                        (guix build store-copy)
+                       ((guix build union) #:select (relative-file-name))
                        (gnu build install)
                        (srfi srfi-1)
                        (srfi srfi-26)
@@ -358,18 +361,25 @@ added to the pack."
                    ,@(append-map
                       (match-lambda
                         ((source '-> target)
-                         (list "-p"
-                               (string-join
-                                ;; name s mode uid gid symlink
-                                (list source
-                                      "s" "777" "0" "0"
-                                      (string-append #$profile "/" target))))))
+                         ;; Create relative symlinks to work around a bug in
+                         ;; Singularity 2.x:
+                         ;;   https://bugs.gnu.org/34913
+                         ;;   https://github.com/sylabs/singularity/issues/1487
+                         (let ((target (string-append #$profile "/" target)))
+                           (list "-p"
+                                 (string-join
+                                  ;; name s mode uid gid symlink
+                                  (list source
+                                        "s" "777" "0" "0"
+                                        (relative-file-name (dirname source)
+                                                            target)))))))
                       '#$symlinks)
 
                    ;; Create empty mount points.
                    "-p" "/proc d 555 0 0"
                    "-p" "/sys d 555 0 0"
-                   "-p" "/dev d 555 0 0"))
+                   "-p" "/dev d 555 0 0"
+                   "-p" "/home d 555 0 0"))
 
           (when database
             ;; Initialize /var/guix.
@@ -517,9 +527,13 @@ please email '~a'~%")
 ;;;
 
 (define* (wrapped-package package
-                          #:optional (compiler (c-compiler)))
+                          #:optional (compiler (c-compiler))
+                          #:key proot?)
   (define runner
     (local-file (search-auxiliary-file "run-in-namespace.c")))
+
+  (define (proot)
+    (specification->package "proot-static"))
 
   (define build
     (with-imported-modules (source-module-closure
@@ -550,10 +564,19 @@ please email '~a'~%")
               (("@STORE_DIRECTORY@") (%store-directory)))
 
             (let* ((base   (strip-store-prefix program))
-                   (result (string-append #$output "/" base)))
+                   (result (string-append #$output "/" base))
+                   (proot  #$(and proot?
+                                  #~(string-drop
+                                     #$(file-append (proot) "/bin/proot")
+                                     (+ (string-length (%store-directory))
+                                        1)))))
               (mkdir-p (dirname result))
-              (invoke #$compiler "-std=gnu99" "-static" "-Os" "-g0" "-Wall"
-                      "run.c" "-o" result)
+              (apply invoke #$compiler "-std=gnu99" "-static" "-Os" "-g0" "-Wall"
+                     "run.c" "-o" result
+                     (if proot
+                         (list (string-append "-DPROOT_PROGRAM=\""
+                                              proot "\""))
+                         '()))
               (delete-file "run.c")))
 
           (setvbuf (current-output-port) 'line)
@@ -573,7 +596,15 @@ please email '~a'~%")
                             (find-files #$(file-append package "/sbin"))
                             (find-files #$(file-append package "/libexec")))))))
 
-  (computed-file (string-append (package-full-name package "-") "R")
+  (computed-file (string-append
+                  (cond ((package? package)
+                         (package-full-name package "-"))
+                        ((inferior-package? package)
+                         (string-append (inferior-package-name package)
+                                        "-"
+                                        (inferior-package-version package)))
+                        (else "wrapper"))
+                  "R")
                  build))
 
 (define (map-manifest-entries proc manifest)
@@ -646,7 +677,12 @@ please email '~a'~%")
                    (exit 0)))
          (option '(#\R "relocatable") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'relocatable? #t result)))
+                   (match (assq-ref result 'relocatable?)
+                     (#f
+                      (alist-cons 'relocatable? #t result))
+                     (_
+                      (alist-cons 'relocatable? 'proot
+                                  (alist-delete 'relocatable? result))))))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
@@ -821,11 +857,14 @@ Create a bundle of PACKAGE.\n"))
                                           #:graft? (assoc-ref opts 'graft?))))
           (let* ((dry-run?    (assoc-ref opts 'dry-run?))
                  (relocatable? (assoc-ref opts 'relocatable?))
+                 (proot?      (eq? relocatable? 'proot))
                  (manifest    (let ((manifest (manifest-from-args store opts)))
                                 ;; Note: We cannot honor '--bootstrap' here because
                                 ;; 'glibc-bootstrap' lacks 'libc.a'.
                                 (if relocatable?
-                                    (map-manifest-entries wrapped-package manifest)
+                                    (map-manifest-entries
+                                     (cut wrapped-package <> #:proot? proot?)
+                                     manifest)
                                     manifest)))
                  (pack-format (assoc-ref opts 'format))
                  (name        (string-append (symbol->string pack-format)
@@ -851,7 +890,14 @@ Create a bundle of PACKAGE.\n"))
             (run-with-store store
               (mlet* %store-monad ((profile (profile-derivation
                                              manifest
-                                             #:relative-symlinks? relocatable?
+
+                                             ;; Always produce relative
+                                             ;; symlinks for Singularity (see
+                                             ;; <https://bugs.gnu.org/34913>).
+                                             #:relative-symlinks?
+                                             (or relocatable?
+                                                 (eq? 'squashfs pack-format))
+
                                              #:hooks (if bootstrap?
                                                          '()
                                                          %default-profile-hooks)

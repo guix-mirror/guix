@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,11 +32,13 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages code)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages virtualization)
   #:use-module (ice-9 match)
@@ -355,13 +357,38 @@ input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
         (base32
          "17p8sh0rj8yqz36ria5bp48c8523zzw3y9g8sbm2jwq7sc27i7s9"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-gui")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-python
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "gui/GameConqueror.py"
+               (("/usr/bin/env python")
+                (string-append (assoc-ref %build-inputs
+                                          "python-wrapper") "/bin/python")))
+             #t))
+         (add-after 'install 'wrap-gameconqueror
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (python-path       (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/share/gameconqueror/GameConqueror.py")
+                 `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
+                 `("PYTHONPATH"             ":" prefix (,python-path))))
+             #t)))))
     (native-inputs
      `(("libtool" ,libtool)
+       ("python-wrapper" ,python-wrapper)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
        ("intltool" ,intltool)
        ("automake" ,automake)
        ("autoconf" ,autoconf)))
     (inputs
      `(("readline" ,readline)))
+    (propagated-inputs
+     `(("python-pygobject" ,python-pygobject)))
     (home-page "https://github.com/scanmem/scanmem")
     (synopsis "Memory scanner")
     (description "Scanmem is a debugging utility designed to isolate the

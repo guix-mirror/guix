@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -360,7 +361,10 @@
        "https://openbsd.mirror.constant.com/pub/OpenBSD/"
        "https://ftp4.usa.openbsd.org/pub/OpenBSD/"
        "https://ftp5.usa.openbsd.org/pub/OpenBSD/"
-       "https://mirror.esc7.net/pub/OpenBSD/"))))
+       "https://mirror.esc7.net/pub/OpenBSD/")
+      (mate
+       "https://pub.mate-desktop.org/releases/"
+       "http://pub.mate-desktop.org/releases/"))))
 
 (define %mirror-file
   ;; Copy of the list of mirrors to a file.  This allows us to keep a single

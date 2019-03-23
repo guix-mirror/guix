@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 nee <nee-git@hidamari.blue>
+;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
@@ -36,6 +36,8 @@
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,6 +145,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
@@ -256,13 +259,10 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
 (define-public cataclysm-dda
-  (let ((commit "0b2c194e5c6a06f4fbf14a0ec1260e0f3cf2567c")
-        (revision "2"))
+  (let ((commit "9c732a5de48928691ab863d3ab275ca7b0e522fc"))
     (package
       (name "cataclysm-dda")
-      ;; This denotes the version released after the 0.C release.
-      ;; Revert to a normal version number if updating to stable version 0.D.
-      (version (git-version "0.C" revision commit))
+      (version "0.D")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -270,7 +270,7 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1yzsn0y2g27bvbxjvivjyjhkmf2w5na1qqw5qfkswcfqqwym2y33"))
+                  "00zzhx1mh1qjq668cga5nbrxp2qk6b82j5ak65skhgnlr6ii4ysc"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -2335,7 +2335,7 @@ world}, @uref{http://evolonline.org, Evol Online} and
        ("sdl" ,sdl)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (synopsis "Transportation economics simulator")
+    (synopsis "Transportation economics simulator game")
     (description "OpenTTD is a game in which you transport goods and
 passengers by land, water and air.  It is a re-implementation of Transport
 Tycoon Deluxe with many enhancements including multiplayer mode,
@@ -2556,7 +2556,7 @@ Transport Tycoon Deluxe.")
 (define openrct2-objects
   (package
    (name "openrct2-objects")
-   (version "1.0.6")
+   (version "1.0.9")
    (source
     (origin
      (method url-fetch)
@@ -2564,8 +2564,7 @@ Transport Tycoon Deluxe.")
                          version "/objects.zip"))
      (file-name (string-append name "-" version ".zip"))
      (sha256
-      (base32
-       "00kfy95zx6g4ldr6br5p7bwkwfx6pw9v78fd3rvghjnwyvf5fhki"))))
+      (base32 "02apb8h553m7d6jvysgb1zahvxc1yzyygfca2iclb21b3fhpsas4"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
@@ -2597,41 +2596,42 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/OpenRCT2/OpenRCT2/archive/v"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1fxzk037xphpyk7vv5jfrcz739zrj86p43pnf5gjjv9rjxwv7m8f"))
+        (base32 "0yxaphgfq85piaacnnfy6lrvmnqmfj1891rxlkl5ndngq0zh0ysb"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
                                "-DDOWNLOAD_TITLE_SEQUENCES=OFF")
-       #:tests? #f ; Tests require network.
+       #:tests? #f                      ; tests require network access
        #:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'fix-usr-share-paths&add-data
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
-                    (objects (assoc-ref inputs "openrct2-objects")))
-              ;; Fix some references to /usr/share.
-              (substitute* "src/openrct2/platform/Platform.Linux.cpp"
-                (("/usr/share")
-                 (string-append (assoc-ref %outputs "out") "/share")))
-              (copy-recursively (string-append titles
-                                "/share/openrct2/title-sequences") "data/title")
-              (copy-recursively (string-append objects
-                                "/share/openrct2/objects") "data/object"))))
-          (add-before 'configure 'get-rid-of-errors
-            (lambda _
-              ;; Don't treat warnings as errors.
-              (substitute* "CMakeLists.txt"
-                (("-Werror") ""))
-              #t)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-usr-share-paths&add-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
+                   (objects (assoc-ref inputs "openrct2-objects")))
+               ;; Fix some references to /usr/share.
+               (substitute* "src/openrct2/platform/Platform.Linux.cpp"
+                 (("/usr/share")
+                  (string-append (assoc-ref %outputs "out") "/share")))
+               (copy-recursively
+                (string-append titles "/share/openrct2/title-sequences")
+                "data/title")
+               (copy-recursively
+                (string-append objects "/share/openrct2/objects")
+                "data/object"))))
+         (add-before 'configure 'get-rid-of-errors
+           (lambda _
+             ;; Don't treat warnings as errors.
+             (substitute* "CMakeLists.txt"
+               (("-Werror") ""))
+             #t)))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
@@ -4822,6 +4822,8 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
              (("#elif defined(__FreeBSD__)" line)
               (string-append
                line " || defined(__GNUC__)")))
+           (substitute* '("src/tgl.h")
+             (("#include <GL/glext.h>") ""))
            #t))))
     (build-system gnu-build-system)
     (native-inputs
@@ -6272,3 +6274,130 @@ game field is extended to 4D space, which has to filled up by the gamer with
 4D hyper cubes.")
     (license license:gpl3)))
 
+(define-public arx-libertatis
+  (package
+    (name "arx-libertatis")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://arx-libertatis.org/files/arx-libertatis-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0hjfxlsmp8wwqr06snv2dlly2s79ra0d9aw49gkp6rn8m50b9bc2"))))
+    (build-system cmake-build-system)
+    (outputs '("out" "installer"))
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-helper-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((p7zip (assoc-ref inputs "p7zip"))
+                   (innoextract (assoc-ref inputs "innoextract"))
+                   (wget (assoc-ref inputs "wget"))
+                   (zenity (assoc-ref inputs "zenity")))
+               (substitute* "scripts/arx-install-data"
+                 (("have innoextract")
+                  (string-append "have " innoextract "/bin/innoextract"))
+                 (("then innoextract")
+                  (string-append "then " innoextract "/bin/innoextract"))
+                 (("else innoextract")
+                  (string-append "else " innoextract "/bin/innoextract"))
+                 (("for _extract_zip_sz in 7za 7z")
+                  (string-append "for _extract_zip_sz in " p7zip "/bin/7za"))
+                 (("else if have 7z")
+                  (string-append "else if have " p7zip "/bin/7za"))
+                 (("7z x -tiso")
+                  (string-append p7zip "/bin/7z x -tiso"))
+                 (("if have wget")
+                  (string-append "if have " wget "/bin/wget"))
+                 (("wget -O")
+                  (string-append wget "/bin/wget -O"))
+                 (("for backend in \\$preferred zenity")
+                  (string-append "for backend in $preferred " zenity "/bin/zenity"))
+                 (("zenity +--title")
+                  (string-append zenity "/bin/zenity --title"))
+                 (("^zenity\\)")
+                  (string-append zenity "/bin/zenity)"))))
+             #t))
+         (add-after 'install 'move-installer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (installer (assoc-ref outputs "installer")))
+               (mkdir-p (string-append installer "/bin"))
+               (rename-file (string-append out "/bin/arx-install-data")
+                            (string-append installer "/bin/arx-install-data"))))))))
+    (inputs
+     `(("sdl" ,sdl)                     ; Switch to sdl2 in >1.1.2.
+       ("mesa" ,mesa)                   ; Switch to libepoxy in >1.1.2.
+       ("glew" ,glew)
+       ("openal" ,openal)
+       ("zlib" ,zlib)
+       ("boost" ,boost)
+       ("glm" ,glm)
+       ("freetype" ,freetype)
+       ;; The following are only needed by the arx-install-data script.
+       ("p7zip" ,p7zip) ; Install-helper uses it to extract ISO and .cab archives.
+       ("zenity" ,zenity)           ; GUI for install-helper.
+       ("wget" ,wget)     ; Used by the install-helper to download the patch.
+       ;; The install-helper needs it to extract the patch.
+       ("innoextract" ,innoextract)))
+    (home-page "https://arx-libertatis.org/")
+    (synopsis "Port of Arx Fatalis, a first-person role-playing game")
+    (description "Arx Libertatis is a cross-platform, open source port of Arx
+Fatalis, a 2002 first-person role-playing game / dungeon crawler developed by
+Arkane Studios.  This port however does not include the game data, so you need
+to obtain a copy of the original Arx Fatalis or its demo to play Arx
+Libertatis.  Arx Fatalis features crafting, melee and ranged combat, as well
+as a unique casting system where the player draws runes in real time to effect
+the desired spell.")
+    (license license:gpl3+)))
+
+(define-public edgar
+  (package
+    (name "edgar")
+    (version "1.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/riksweeney/edgar/releases/download/"
+                       version "/edgar-" version "-1.tar.gz"))
+       (sha256
+        (base32
+         "0bhbs33dg0nb8wqlh6px1jj41j05f89ngdqwdkffabmjk7wq5isx"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f                    ; there are no tests
+                 #:make-flags
+                 (list "CC=gcc"
+                       (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                       (string-append "BIN_DIR=" (assoc-ref %outputs "out") "/bin/"))
+                 #:phases
+                 (modify-phases %standard-phases
+                   (delete 'configure)
+                   (add-before 'build 'fix-env
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
+                                                      "/include/SDL/"))
+                       #t)))))
+    (inputs `(("sdl" ,sdl)
+              ("sdl-img" ,sdl-image)
+              ("sdl-mixer" ,sdl-mixer)
+              ("sdl-ttf" ,sdl-ttf)
+              ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gnu-gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("which" ,which)))
+    (synopsis "2d action platformer game")
+    (description "The Legend of Edgar is a 2D platform game with a persistent world.
+When Edgar's father fails to return home after venturing out one dark and stormy night,
+Edgar fears the worst: he has been captured by the evil sorcerer who lives in
+a fortress beyond the forbidden swamp.")
+    (home-page "https://www.parallelrealities.co.uk/games/edgar/")
+    (license license:gpl2+)))

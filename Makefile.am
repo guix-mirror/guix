@@ -9,10 +9,11 @@
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-# Copyright © 2018 Nils Gillmann <ng0@n0.is>
+# Copyright © 2018 ng0 <ng0@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+# Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 #
 # This file is part of GNU Guix.
 #
@@ -124,6 +125,7 @@ MODULES =					\
   guix/build-system/ocaml.scm			\
   guix/build-system/waf.scm			\
   guix/build-system/r.scm			\
+  guix/build-system/rakudo.scm			\
   guix/build-system/ruby.scm			\
   guix/build-system/scons.scm			\
   guix/build-system/texlive.scm			\
@@ -164,6 +166,7 @@ MODULES =					\
   guix/build/python-build-system.scm		\
   guix/build/ocaml-build-system.scm		\
   guix/build/r-build-system.scm			\
+  guix/build/rakudo-build-system.scm		\
   guix/build/ruby-build-system.scm		\
   guix/build/scons-build-system.scm		\
   guix/build/texlive-build-system.scm		\
@@ -202,6 +205,7 @@ MODULES =					\
   guix/import/gnu.scm				\
   guix/import/hackage.scm			\
   guix/import/json.scm				\
+  guix/import/launchpad.scm   			\
   guix/import/opam.scm				\
   guix/import/print.scm				\
   guix/import/pypi.scm				\

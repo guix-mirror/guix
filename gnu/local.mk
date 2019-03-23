@@ -10,7 +10,7 @@
 # Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
-# Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
@@ -212,6 +212,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gobby.scm			\
   %D%/packages/golang.scm			\
   %D%/packages/gperf.scm			\
+  %D%/packages/gpodder.scm			\
   %D%/packages/gprolog.scm			\
   %D%/packages/gps.scm				\
   %D%/packages/graph.scm			\
@@ -364,6 +365,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/perl-check.scm			\
   %D%/packages/perl-compression.scm		\
   %D%/packages/perl-web.scm			\
+  %D%/packages/perl6.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/phabricator.scm 			\
   %D%/packages/php.scm				\
@@ -569,6 +571,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/monitoring.scm                      \
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
+  %D%/tests/ldap.scm				\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
@@ -651,6 +654,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aria2-CVE-2019-3500.patch		\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/aspell-gcc-compat.patch			\
+  %D%/packages/patches/at-spi2-core-meson-compat.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
@@ -671,6 +675,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
+  %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
+  %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/boost-fix-icu-build.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
@@ -706,8 +712,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
-  %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
-  %D%/packages/patches/cracklib-fix-buffer-overflow.patch	\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
   %D%/packages/patches/clucene-contribs-lib.patch               \
@@ -726,10 +730,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/docker-fix-tests.patch			\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
-  %D%/packages/patches/dropbear-CVE-2018-15599.patch		\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/efl-mesa-compat.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
+  %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
@@ -933,6 +937,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kio-search-smbd-on-PATH.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
+  %D%/packages/patches/knot-include-system-lmdb-header.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
@@ -968,10 +973,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
-  %D%/packages/patches/libextractor-CVE-2018-20430.patch	\
-  %D%/packages/patches/libextractor-CVE-2018-20431.patch	\
+  %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
-  %D%/packages/patches/libgit2-oom-test.patch			\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgnome-encoding.patch			\
@@ -1178,6 +1181,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
+  %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
@@ -1289,6 +1293,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
+  %D%/packages/patches/totem-meson-compat.patch			\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\

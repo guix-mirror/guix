@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -729,7 +729,7 @@ correct OpenSSL include path.  It is intended for use in your
 (define-public perl-crypt-openssl-random
  (package
   (name "perl-crypt-openssl-random")
-  (version "0.13")
+  (version "0.15")
   (source
     (origin
       (method url-fetch)
@@ -738,8 +738,7 @@ correct OpenSSL include path.  It is intended for use in your
              version
              ".tar.gz"))
       (sha256
-        (base32
-          "0vmvrb3shrzjzri3qn524dzdasbq8zhhbpc1vmq8sx68n4jhizb0"))))
+        (base32 "1x6ffps8q7mnawmcfq740llzy7i10g3319vap0wiw4d33fm6z1zh"))))
   (build-system perl-build-system)
   (native-inputs
    `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))

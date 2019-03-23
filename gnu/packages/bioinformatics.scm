@@ -40,6 +40,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -477,6 +478,169 @@ BED, GFF/GTF, VCF.")
                (base32
                 "0jhavwifnf7lmkb11h9y7dynr8d699h0rd2l52j1pfgircr2zwv5"))))))
 
+(define-public pbbam
+  (package
+    (name "pbbam")
+    (version "0.23.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PacificBiosciences/pbbam.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h9gkrpf2lrxklxp72xfl5bi3h5zcm5hprrya9gf0hr3xwlbpp0x"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; It doesn't find gtest_main because there's no pkg-config file
+             ;; for it.  Find it another way.
+             (substitute* "tests/meson.build"
+               (("pbbam_gtest_dep = dependency\\('gtest_main'.*")
+                (format #f "cpp = meson.get_compiler('cpp')
+pbbam_gtest_dep = cpp.find_library('gtest_main', dirs : '~a')\n"
+                        (assoc-ref inputs "googletest"))))
+             #t)))
+       ;; TODO: tests/pbbam_test cannot be linked
+       ;; ld: tests/59830eb@@pbbam_test@exe/src_test_Accuracy.cpp.o:
+       ;;   undefined reference to symbol '_ZTIN7testing4TestE'
+       ;; ld: /gnu/store/...-googletest-1.8.0/lib/libgtest.so:
+       ;;   error adding symbols: DSO missing from command line
+       #:tests? #f
+       #:configure-flags '("-Dtests=false")))
+    ;; These libraries are listed as "Required" in the pkg-config file.
+    (propagated-inputs
+     `(("htslib" ,htslib)
+       ("zlib" ,zlib)))
+    (inputs
+     `(("boost" ,boost)
+       ("samtools" ,samtools)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper))) ; for tests
+    (home-page "https://github.com/PacificBiosciences/pbbam")
+    (synopsis "Work with PacBio BAM files")
+    (description
+     "The pbbam software package provides components to create, query, and
+edit PacBio BAM files and associated indices.  These components include a core
+C++ library, bindings for additional languages, and command-line utilities.
+This library is not intended to be used as a general-purpose BAM utility - all
+input and output BAMs must adhere to the PacBio BAM format specification.
+Non-PacBio BAMs will cause exceptions to be thrown.")
+    (license license:bsd-3)))
+
+(define-public blasr-libcpp
+  (package
+    (name "blasr-libcpp")
+    (version "5.3.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PacificBiosciences/blasr_libcpp.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0cn5l42zyq67sj0g2imqkhayz2iqvv0a1pgpbmlq0qynjmsrbfd2"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-with-hdf5
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((hdf5 (assoc-ref inputs "hdf5")))
+               (substitute* "meson.build"
+                 (("libblasr_deps = \\[" m)
+                  (string-append
+                   m
+                   (format #f "cpp.find_library('hdf5', dirs : '~a'), \
+cpp.find_library('hdf5_cpp', dirs : '~a'), "
+                           hdf5 hdf5)))))
+             #t))
+         (add-after 'unpack 'find-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; It doesn't find gtest_main because there's no pkg-config file
+             ;; for it.  Find it another way.
+             (substitute* "unittest/meson.build"
+               (("libblasr_gtest_dep = dependency\\('gtest_main'.*")
+                (format #f "cpp = meson.get_compiler('cpp')
+libblasr_gtest_dep = cpp.find_library('gtest_main', dirs : '~a')\n"
+                        (assoc-ref inputs "googletest"))))
+             #t)))
+       ;; TODO: unittest/libblasr_unittest cannot be linked
+       ;; ld: ;; unittest/df08227@@libblasr_unittest@exe/alignment_utils_FileUtils_gtest.cpp.o:
+       ;; undefined reference to symbol
+       ;; '_ZN7testing8internal9DeathTest6CreateEPKcPKNS0_2REES3_iPPS1_'
+       ;; ld: /gnu/store/...-googletest-1.8.0/lib/libgtest.so:
+       ;;   error adding symbols: DSO missing from command line
+       #:tests? #f
+       #:configure-flags '("-Dtests=false")))
+    (inputs
+     `(("boost" ,boost)
+       ("hdf5" ,hdf5)
+       ("pbbam" ,pbbam)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/PacificBiosciences/blasr_libcpp")
+    (synopsis "Library for analyzing PacBio genomic sequences")
+    (description
+     "This package provides three libraries used by applications for analyzing
+PacBio genomic sequences.  This library contains three sub-libraries: pbdata,
+hdf and alignment.")
+    (license license:bsd-3)))
+
+(define-public blasr
+  (package
+    (name "blasr")
+    (version "5.3.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PacificBiosciences/blasr.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1skgy2mvz8gsgfh1gc2nfgwvpyzb1hpmp2cf2773h5wsj8nw22kl"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-with-hdf5
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((hdf5 (assoc-ref inputs "hdf5")))
+               (substitute* "meson.build"
+                 (("blasr_deps = \\[" m)
+                  (string-append
+                   m
+                   (format #f "cpp.find_library('hdf5', dirs : '~a'), \
+cpp.find_library('hdf5_cpp', dirs : '~a'), "
+                           hdf5 hdf5)))))
+             #t)))
+       ;; Tests require "cram" executable, which is not packaged.
+       #:tests? #f
+       #:configure-flags '("-Dtests=false")))
+    (inputs
+     `(("boost" ,boost)
+       ("blasr-libcpp" ,blasr-libcpp)
+       ("hdf5" ,hdf5)
+       ("pbbam" ,pbbam)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/PacificBiosciences/blasr")
+    (synopsis "PacBio long read aligner")
+    (description
+     "Blasr is a genomic sequence aligner for processing PacBio long reads.")
+    (license license:bsd-3)))
+
 (define-public ribotaper
   (package
     (name "ribotaper")
@@ -732,17 +896,27 @@ Python.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rna16lyk5aqhnv0dp77wwaplias93f1vw28ad3jmyw6hwkai05v"))))
+         "1rna16lyk5aqhnv0dp77wwaplias93f1vw28ad3jmyw6hwkai05v"))
+       (modules '((guix build utils)))
+       (snippet '(begin
+                   ;; Delete generated C files.
+                   (for-each delete-file (find-files "." "\\.c"))
+                   #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-cython
            (lambda _ (setenv "USE_CYTHON" "1") #t))
-         (add-after 'unpack 'disable-broken-test
+         (add-after 'unpack 'disable-broken-tests
            (lambda _
              (substitute* "biom/tests/test_cli/test_validate_table.py"
                (("^(.+)def test_invalid_hdf5" m indent)
+                (string-append indent
+                               "@npt.dec.skipif(True, msg='Guix')\n"
+                               m)))
+             (substitute* "biom/tests/test_table.py"
+               (("^(.+)def test_from_hdf5_issue_731" m indent)
                 (string-append indent
                                "@npt.dec.skipif(True, msg='Guix')\n"
                                m)))
@@ -1569,6 +1743,47 @@ based on known biases within the data set.  It is coded as a modification of
 the original BWA alignment program and shares the genome index structure as
 well as many of the command line options.")
     (license license:gpl3+)))
+
+(define-public bwa-meth
+  (package
+    (name "bwa-meth")
+    (version "0.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/brentp/bwa-meth.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17j31i7zws5j7mhsq9x3qgkxly6mlmrgwhfq0qbflgxrmx04yaiz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'keep-references-to-bwa
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "bwameth.py"
+               (("bwa mem")
+                (string-append (which "bwa") " mem"))
+               ;; There's an ill-advised check for "samtools" on PATH.
+               (("^checkX.*") ""))
+             #t)))))
+    (inputs
+     `(("bwa" ,bwa)))
+    (native-inputs
+     `(("python-toolshed" ,python-toolshed)))
+    (home-page "https://github.com/brentp/bwa-meth")
+    (synopsis "Fast and accurante alignment of BS-Seq reads")
+    (description
+     "BWA-Meth works for single-end reads and for paired-end reads from the
+directional protocol (most common).  It uses the method employed by
+methylcoder and Bismark of in silico conversion of all C's to T's in both
+reference and reads.  It recovers the original read (needed to tabulate
+methylation) by attaching it as a comment which BWA appends as a tag to the
+read.  It performs favorably to existing aligners gauged by number of on and
+off-target reads for a capture method that targets CpG-rich region.")
+    (license license:expat)))
 
 (define-public python-bx-python
   (package
@@ -6132,6 +6347,28 @@ sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
 
+(define-public starlong
+  (package (inherit star)
+    (name "starlong")
+    (arguments
+     (substitute-keyword-arguments (package-arguments star)
+       ((#:make-flags flags)
+        `(list "STARlong"))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; Allow extra long sequence reads.
+           (add-after 'unpack 'make-extra-long
+             (lambda _
+               (substitute* "source/IncludeDefine.h"
+                 (("(#define DEF_readNameLengthMax ).*" _ match)
+                  (string-append match "900000\n")))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+                 (install-file "STARlong" bin))
+               #t))))))))
+
 (define-public subread
   (package
     (name "subread")
@@ -6482,14 +6719,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.28.2")
+    (version "1.28.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "134znafy7hn38rp4nia4pglz56fz6nbkxrf7z2k1sajfsgxa1hs6"))))
+         "1wsj1kqfrakmjnlplxmrv17r2spzcdkmwdkhggyjbf8mdhqs3w16"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6603,14 +6840,14 @@ Enrichment Analysis} (GSEA).")
 (define-public r-category
   (package
     (name "r-category")
-    (version "2.48.0")
+    (version "2.48.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Category" version))
        (sha256
         (base32
-         "1jdm83bwdfhpfm1y6hwgvxzj6l83h1bdkqv23799kzywnwm016kv"))))
+         "18rsxlwa1l06i635cnznb9b2zssqcgb71pihky29gl2gwp7a654b"))))
     (properties `((upstream-name . "Category")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7361,13 +7598,13 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.28.11")
+    (version "1.28.13")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "19bxi5b9fzqdjadb8bfm8xsgi6nvrwbgn1xcpk59bnmv9vzjkwrh"))))
+                "1a7b0bg579ynpbfh5dk87fdgl62r9cwk4zmrl61m6zil7881p3gh"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
@@ -7802,13 +8039,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.34.4")
+    (version "1.34.6")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "09gc1vbqszrr3ixv4hsfan2l18fcf3gg58783mrfwjv6ci9c4w0d"))))
+                "1cz7qx324dmsrkzyhm956cfgr08gpily5rpym7hc8zz5kbl6i3ra"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -9068,14 +9305,14 @@ trait.")
 (define-public r-maldiquant
   (package
     (name "r-maldiquant")
-    (version "1.18")
+    (version "1.19.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MALDIquant" version))
        (sha256
         (base32
-         "18nl214xjsxkcpbg79jkmw0yznwm5szyh2qb84n7ip46mm779ha6"))))
+         "11zbvm1vw8zn2vmymvydgdczvwj961s2knvrn1q4gbziwi5gqvlc"))))
     (properties `((upstream-name . "MALDIquant")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/MALDIquant")
@@ -9579,14 +9816,14 @@ Shiny-based display methods for Bioconductor objects.")
 (define-public r-annotationhub
   (package
     (name "r-annotationhub")
-    (version "2.14.4")
+    (version "2.14.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationHub" version))
        (sha256
         (base32
-         "18v2mk395svq3c19wzi6bjwjfnmrvjqkzmj7cmaji7rx4xdgz6ck"))))
+         "0iyrxaijl4614iz5c1j53227xy2g756p3bx7hcwglcybh0k30nki"))))
     (properties `((upstream-name . "AnnotationHub")))
     (build-system r-build-system)
     (propagated-inputs
@@ -12899,14 +13136,14 @@ analyses in addition to large-scale sequence-level searches.")
 (define-public r-diversitree
   (package
     (name "r-diversitree")
-    (version "0.9-10")
+    (version "0.9-11")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "diversitree" version))
         (sha256
          (base32
-          "0gh4rcrp0an3jh8915i1fsxlgyfk7njywgbd5ln5r2jhr085kpz7"))))
+          "1jqfjmmaigq581l4zxysmkhld0xv6izlbr1hihf9zplkix36majc"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -12915,7 +13152,7 @@ analyses in addition to large-scale sequence-level searches.")
      `(("r-ape" ,r-ape)
        ("r-desolve" ,r-desolve)
        ("r-rcpp" ,r-rcpp)
-       ("r-suplex" ,r-subplex)))
+       ("r-subplex" ,r-subplex)))
     (home-page "https://www.zoology.ubc.ca/prog/diversitree")
     (synopsis "Comparative 'phylogenetic' analyses of diversification")
     (description "This package contains a number of comparative \"phylogenetic\"
@@ -14031,7 +14268,12 @@ choosing which reads pass the filter.")
                (recursive? #t)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))))
+          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (delete-file-recursively "htslib")
+             #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:make-flags
@@ -14070,7 +14312,7 @@ choosing which reads pass the filter.")
          ("hdf5" ,hdf5)
          ("htslib" ,htslib)
          ("perl" ,perl)
-         ("python" ,python)
+         ("python" ,python-wrapper)
          ("python-biopython" ,python-biopython)
          ("python-numpy" ,python-numpy)
          ("python-pysam" ,python-pysam)
@@ -14151,6 +14393,82 @@ datasets.  A popular implementation of t-SNE uses the Barnes-Hut algorithm to
 approximate the gradient at each iteration of gradient descent.  This package
 is a Cython wrapper for FIt-SNE.")
     (license license:bsd-4)))
+
+(define-public bbmap
+  (package
+    (name "bbmap")
+    (version "35.82")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/bbmap/BBMap_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q4rfhxcb6z3gm8zg2davjz98w22lkf4hm9ikxz9kdl93pil3wkd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "dist"
+       #:tests? #f ; there are none
+       #:make-flags
+       (list (string-append "-Dmpijar="
+                            (assoc-ref %build-inputs "java-openmpi")
+                            "/lib/mpi.jar"))
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build java-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-jni-library
+           (lambda _
+             (with-directory-excursion "jni"
+               (invoke "make" "-f" "makefile.linux"))))
+         ;; There is no install target
+         (replace 'install (install-jars "dist"))
+         (add-after 'install 'install-scripts-and-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "calcmem.sh"
+               (("\\| awk ") (string-append "| " (which "awk") " ")))
+             (let* ((scripts (find-files "." "\\.sh$"))
+                    (out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/bbmap"))
+                    (jni (string-append out "/lib/jni")))
+               (substitute* scripts
+                 (("\\$DIR\"\"docs") doc)
+                 (("^CP=.*")
+                  (string-append "CP=" out "/share/java/BBTools.jar\n"))
+                 (("^NATIVELIBDIR.*")
+                  (string-append "NATIVELIBDIR=" jni "\n"))
+                 (("CMD=\"java")
+                  (string-append "CMD=\"" (which "java"))))
+               (for-each (lambda (script) (install-file script bin)) scripts)
+
+               ;; Install JNI library
+               (install-file "jni/libbbtoolsjni.so" jni)
+
+               ;; Install documentation
+               (install-file "docs/readme.txt" doc)
+               (copy-recursively "docs/guides" doc))
+             #t)))
+       #:jdk ,openjdk11))
+    (inputs
+     `(("gawk" ,gawk)
+       ("java-eclipse-jdt-core" ,java-eclipse-jdt-core)
+       ("java-eclipse-jdt-compiler-apt" ,java-eclipse-jdt-compiler-apt)
+       ("java-openmpi" ,java-openmpi)))
+    (home-page "http://sourceforge.net/projects/bbmap/")
+    (synopsis "Aligner and other tools for short sequencing reads")
+    (description
+     "This package provides bioinformatic tools to align, deduplicate,
+reformat, filter and normalize DNA and RNA-seq data.  It includes the
+following tools: BBMap, a short read aligner for DNA and RNA-seq data; BBNorm,
+a kmer-based error-correction and normalization tool; Dedupe, a tool to
+simplify assemblies by removing duplicate or contained subsequences that share
+a target percent identity; Reformat, to convert reads between
+fasta/fastq/scarf/fasta+qual/sam, interleaved/paired, and ASCII-33/64, at over
+500 MB/s; and BBDuk, a tool to filter, trim, or mask reads with kmer matches
+to an artifact/contaminant file.")
+    (license license:bsd-3)))
 
 (define-public velvet
   (package
@@ -14240,3 +14558,106 @@ repeated areas between contigs.")
      "Velocyto is a library for the analysis of RNA velocity.  Velocyto
 includes a command line tool and an analysis pipeline.")
     (license license:bsd-2)))
+
+(define-public arriba
+  (package
+    (name "arriba")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/suhrig/arriba/releases/"
+                           "download/v" version "/arriba_v" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jx9656ry766vb8z08m1c3im87b0c82qpnjby9wz4kcz8vn87dx2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((htslib (assoc-ref inputs "htslib")))
+               (substitute* "Makefile"
+                 (("-I\\$\\(HTSLIB\\)/htslib")
+                  (string-append "-I" htslib "/include/htslib"))
+                 ((" \\$\\(HTSLIB\\)/libhts.a")
+                  (string-append " " htslib "/lib/libhts.so"))))
+             (substitute* "run_arriba.sh"
+               (("^STAR ") (string-append (which "STAR") " "))
+               (("samtools --version-only")
+                (string-append (which "samtools") " --version-only"))
+               (("samtools index")
+                (string-append (which "samtools") " index"))
+               (("samtools sort")
+                (string-append (which "samtools") " sort")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "arriba" bin)
+               (install-file "run_arriba.sh" bin)
+               (install-file "draw_fusions.R" bin)
+               (wrap-program (string-append bin "/draw_fusions.R")
+                 `("R_LIBS_SITE" ":" prefix (,(getenv "R_LIBS_SITE")))))
+             #t)))))
+    (inputs
+     `(("htslib" ,htslib)
+       ("r-minimal" ,r-minimal)
+       ("r-circlize" ,r-circlize)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("samtools" ,samtools)
+       ("star" ,star)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/suhrig/arriba")
+    (synopsis "Gene fusion detection from RNA-Seq data ")
+    (description
+     "Arriba is a command-line tool for the detection of gene fusions from
+RNA-Seq data.  It was developed for the use in a clinical research setting.
+Therefore, short runtimes and high sensitivity were important design criteria.
+It is based on the fast STAR aligner and the post-alignment runtime is
+typically just around two minutes.  In contrast to many other fusion detection
+tools which build on STAR, Arriba does not require to reduce the
+@code{alignIntronMax} parameter of STAR to detect small deletions.")
+    ;; All code is under the Expat license with the exception of
+    ;; "draw_fusions.R", which is under GPLv3.
+    (license (list license:expat license:gpl3))))
+
+(define-public adapterremoval
+  (package
+    (name "adapterremoval")
+    (version "2.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MikkelSchubert/adapterremoval.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1nf3ki5pfzalhrx2fr1y6pfqfi133yj2m7q4fj9irf5fb94bapwr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "COLOR_BUILD=no"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://adapterremoval.readthedocs.io/")
+    (synopsis "Rapid sequence adapter trimming, identification, and read merging")
+    (description
+     "This program searches for and removes remnant adapter sequences from
+@dfn{High-Throughput Sequencing} (HTS) data and (optionally) trims low quality
+bases from the 3' end of reads following adapter removal.  AdapterRemoval can
+analyze both single end and paired end data, and can be used to merge
+overlapping paired-ended reads into (longer) consensus sequences.
+Additionally, the AdapterRemoval may be used to recover a consensus adapter
+sequence for paired-ended data, for which this information is not available.")
+    (license license:gpl3+)))

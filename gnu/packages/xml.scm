@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -88,26 +88,14 @@ things the parser might find in the XML document (like start tags).")
 (define-public libebml
   (package
     (name "libebml")
-    (version "1.3.6")
+    (version "1.3.7")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://dl.matroska.org/downloads/"
-                           name "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://dl.matroska.org/downloads/libebml/"
+                           "libebml-" version ".tar.xz"))
        (sha256
-        (base32
-         "17iynkj22rbszaymxiaq6k02qy9w4fs1appkn1iam4y441w7lnhy"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri
-            (string-append "https://github.com/Matroska-Org/libebml/commit/"
-                           "e46906b80e7662fb78d305f576412f9fa4a22218.patch"))
-           (file-name "libebml-use-limits-not-climits.patch")
-           (sha256
-            (base32
-             "1803rcj4kzg385xij8j3fcz8h86z43ivciv512zr7jp9jwrafs58")))))))
+        (base32 "1x79b35dj5d2x7xf7ql83w2cr0v5n2vsd08q6y6grmw4yn3lq973"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -798,14 +786,14 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public perl-xml-feed
   (package
     (name "perl-xml-feed")
-    (version "0.55")
+    (version "0.59")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
                                   "XML-Feed-" version ".tar.gz"))
               (sha256
                (base32
-                "0am345qzy5rxxnzh13l6p18a7drgkzmmlkgrgl4cv3b2j1pwls3i"))))
+                "1z1a88bpy64j42bbyl8acbfl3dn9iaz47gx6clkgy5sbn4kr0kgk"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f))                    ; tests require internet connection

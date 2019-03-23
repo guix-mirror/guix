@@ -980,14 +980,14 @@ precious backup space.
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.0")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/burp/burp-" version
                                   "/burp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0in49c0ir7lb7jli0fcphdq1nh5rclhans4ngm7z7hzyxa4jrgri"))))
+                "1nkkn0nfydn39cl5rxd1wbmzizird6z05j9h2xr7xczdlhhjnaai"))))
     (build-system gnu-build-system)
     (inputs
      `(("librsync" ,librsync)

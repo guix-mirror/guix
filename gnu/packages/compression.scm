@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
@@ -1782,14 +1782,16 @@ non-Windows systems without running the actual installer using wine.")
 (define-public google-brotli
   (package
     (name "google-brotli")
-    (version "1.0.4")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/google/brotli/archive/v"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "1hrpmz162k4x3xm6vmbpm443jlfr1kp536p8962y2dncy7gs6s12"))))
+    (version "1.0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/brotli.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1811b55wdfg4kbsjcgh1kc938g118jpvif97ilgrmbls25dfpvvw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

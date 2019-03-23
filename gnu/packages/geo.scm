@@ -52,6 +52,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sqlite)
@@ -201,15 +202,14 @@ and driving.")
 (define-public libgeotiff
   (package
     (name "libgeotiff")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0vjy3bwfhljjx66p9w999i4mdhsf7vjshx29yc3pn5livf5091xd"))
+        (base32 "0rbjqixi4c8yz19larlzq6jda0px2gpmpp9c52cyhplbjsdhsldq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -740,29 +740,6 @@ to create databases that are optimized for rendering/tile/map-services.")
                license:expat
                license:bsd-2
                license:bsd-3))))
-
-(define-public protozero
-  (package
-    (name "protozero")
-    (version "1.6.5")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/mapbox/protozero.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "10ldzni46cplmkgx1f73yn95qcb71xh9nxpcfdmi107y3kvicv3c"))))
-    (build-system cmake-build-system)
-    (home-page "https://github.com/mapbox/protozero")
-    (synopsis "Minimalistic protocol buffer decoder and encoder in C++")
-    (description "Protozero is a minimalistic protocol buffer decoder and
-encoder in C++.  The developer using protozero has to manually translate the
-@file{.proto} description into code.")
-    (license (list
-              license:asl2.0            ; for folly
-              license:bsd-2))))
 
 (define-public libosmium
   (package
