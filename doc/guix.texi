@@ -9290,7 +9290,9 @@ This shows the @emph{reverse} DAG of packages.  For example:
 guix graph --type=reverse-package ocaml
 @end example
 
-...@: yields the graph of packages that depend on OCaml.
+...@: yields the graph of packages that @emph{explicitly} depend on OCaml (if
+you are also interested in cases where OCaml is an implicit dependency, see
+@code{reverse-bag} below.)
 
 Note that for core packages this can yield huge graphs.  If all you want
 is to know the number of packages that depend on a given package, use
@@ -9323,6 +9325,20 @@ dependencies.
 
 @item bag-with-origins
 Similar to @code{bag}, but also showing origins and their dependencies.
+
+@item reverse-bag
+This shows the @emph{reverse} DAG of packages.  Unlike @code{reverse-package},
+it also takes implicit dependencies into account.  For example:
+
+@example
+guix graph -t reverse-bag dune
+@end example
+
+@noindent
+...@: yields the graph of all packages that depend on Dune, directly or
+indirectly.  Since Dune is an @emph{implicit} dependency of many packages
+@i{via} @code{dune-build-system}, this shows a large number of packages,
+whereas @code{reverse-package} would show very few if any.
 
 @item derivation
 This is the most detailed representation: It shows the DAG of

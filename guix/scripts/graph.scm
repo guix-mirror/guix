@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +43,7 @@
             %bag-node-type
             %bag-with-origins-node-type
             %bag-emerged-node-type
+            %reverse-bag-node-type
             %derivation-node-type
             %reference-node-type
             %referrer-node-type
@@ -219,6 +220,21 @@ GNU-BUILD-SYSTEM have zero dependencies."
                           bag-node-edges-sans-bootstrap)
                  %store-monad))))
 
+(define %reverse-bag-node-type
+  ;; Type for the reverse traversal of package nodes via the "bag"
+  ;; representation, which includes implicit inputs.
+  (let* ((packages   (delay (package-closure (fold-packages cons '()))))
+         (back-edges (delay (run-with-store #f    ;store not actually needed
+                              (node-back-edges %bag-node-type
+                                               (force packages))))))
+    (node-type
+     (name "reverse-bag")
+     (description "the reverse DAG of packages, including implicit inputs")
+     (convert nodes-from-package)
+     (identifier bag-node-identifier)
+     (label node-full-name)
+     (edges (lift1 (force back-edges) %store-monad)))))
+
 
 ;;;
 ;;; Derivation DAG.
@@ -375,6 +391,7 @@ package modules, while attempting to retain user package modules."
         %bag-node-type
         %bag-with-origins-node-type
         %bag-emerged-node-type
+        %reverse-bag-node-type
         %derivation-node-type
         %reference-node-type
         %referrer-node-type
