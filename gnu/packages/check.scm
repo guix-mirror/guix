@@ -684,15 +684,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "4.3.0")
+    (version "4.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
-       (patches (search-patches "python-pytest-pluggy-compat.patch"))
        (sha256
         (base32
-         "077gzimi9xiiyzpc3xjpb5yfgz038xkldg91mmbdvzr7z15isyh6"))))
+         "08q58ad8vaxyb57ll8m611yb4xwzzhp09kxafmyqrrps6cnalbjr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
