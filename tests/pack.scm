@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -206,7 +206,11 @@
                                       (file-exists? "var/guix/db/db.sqlite")
                                       (string=? (string-append #$%bootstrap-guile "/bin")
                                                 (pk 'binlink (readlink bin)))
-                                      (string=? (string-append #$profile "/bin")
+
+                                      ;; This is a relative symlink target.
+                                      (string=? (string-drop
+                                                 (string-append #$profile "/bin")
+                                                 1)
                                                 (pk 'guilelink (readlink "bin"))))
                              (mkdir #$output))))))))
       (built-derivations (list check)))))
