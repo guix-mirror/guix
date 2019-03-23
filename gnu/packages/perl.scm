@@ -5545,15 +5545,14 @@ private methods are not.")
 (define-public perl-moosex-getopt
   (package
     (name "perl-moosex-getopt")
-    (version "0.73")
+    (version "0.74")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "MooseX-Getopt-" version ".tar.gz"))
        (sha256
-        (base32
-         "19zm8brf930p0ymqn3w1y0ix29kb74m8nvhrhjvrg8cgz6vc5fyz"))))
+        (base32 "091crga5gjyhj2lz55w3ba37xq6pmjg5dx5xccsrzghy8cxxzq0x"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
