@@ -3616,6 +3616,31 @@ of sixteen colors suitable for a wide range of applications.  Base16 is not a
 single theme but a set of guidelines with numerous implementations.")
     (license license:expat)))
 
+(define-public emacs-prescient
+  (package
+    (name "emacs-prescient")
+    (version "2.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/raxod502/prescient.el/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ncplx5p3cffyzg9ygzqqxj0vpvwrz9rp2n4z6c375a78fyydrk0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/raxod502/prescient.el/")
+    (synopsis "Library that sorts and filters lists of candidates")
+    (description
+     "This package provides a library for sorting and filtering, as well as
+extensions for @code{ivy-mode} and @code{company-mode} that make use of the
+library.")
+    (license license:gpl3+)))
+
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
