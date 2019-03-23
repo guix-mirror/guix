@@ -7818,15 +7818,14 @@ support for run-time mix-ins and roles.")
 (define-public perl-svg
   (package
     (name "perl-svg")
-    (version "2.63")
+    (version "2.84")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/SVG-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "12cbncsfxbwg1w3p1qmymfbqdb22kmyajxzdnxnxbq5xjl6yncha"))))
+        (base32 "1br8dwh2363s6r0qgy7vv30gv5kj456vj5m6x83savx4wzfnsggc"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/SVG")
     (synopsis "Perl extension for generating SVG documents")
