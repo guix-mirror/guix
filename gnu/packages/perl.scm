@@ -2722,15 +2722,14 @@ equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
 (define-public perl-devel-hide
   (package
     (name "perl-devel-hide")
-    (version "0.0009")
+    (version "0.0010")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/Devel-Hide-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1phnzbw58v6551nhv6sg86m72nx9w5j4msh1hg4jvkakkq5w9pki"))))
+        (base32 "10jyv9nmv513hs75rls5yx2xn82513xnnhjir3dxiwgb1ykfyvvm"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-pod" ,perl-test-pod)
