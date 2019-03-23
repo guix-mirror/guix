@@ -5532,7 +5532,7 @@ sentences.")
 (define-public perl-moosex-emulate-class-accessor-fast
   (package
     (name "perl-moosex-emulate-class-accessor-fast")
-    (version "0.00903")
+    (version "0.009032")
     (source
      (origin
        (method url-fetch)
@@ -5540,8 +5540,7 @@ sentences.")
                            "MooseX-Emulate-Class-Accessor-Fast-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1lkn1h4sxr1483jicsgsgzclbfw63g2i2c3m4v4j9ar75yrb0kh8"))))
+        (base32 "153r30nggcyyx7ai15dbnba2h5145f8jdsh6wj54298d3zpvgvl2"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
