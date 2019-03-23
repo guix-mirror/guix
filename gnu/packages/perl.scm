@@ -756,15 +756,14 @@ but it is a good educated guess.")
 (define-public perl-carp-always
   (package
     (name "perl-carp-always")
-    (version "0.13")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/F/FE/FERREIRA/Carp-Always-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0i2rifkr7ybfcdsqana52487z7vxp2l5qdra0f6ik0ddhn6rzii1"))))
+        (base32 "1wb6b0qjga7kvn4p8df6k4g1pl2yzaqiln1713xidh3i454i3alq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-base" ,perl-test-base)))
