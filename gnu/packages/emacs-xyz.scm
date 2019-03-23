@@ -3312,6 +3312,29 @@ and popup menus.")
 the locations of docstrings, arguments, and functions.")
     (license license:gpl3+)))
 
+(define-public emacs-company-jedi
+  (package
+    (name "emacs-company-jedi")
+    (version "0.04")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/syohex/emacs-company-jedi")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ihqapp4dv92794rsgyq0rmhwika60cmradqd4bn9b72ss6plxs1"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-jedi" ,emacs-jedi)
+       ("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/syohex/emacs-company-jedi")
+    (synopsis "Provides Python completion in @code{company-mode}")
+    (description
+     "This package provides a Company backend for Python.")
+    (license license:gpl3+)))
+
 (define-public emacs-puppet-mode
   (let ((commit "b3ed5057166a4f49dfa9be638523a348b55a2fd2")
         (revision "1"))
