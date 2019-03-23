@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -405,6 +407,39 @@ convenient way to adjust the audio volume of the PulseAudio sound system and
 to an auto mixer tool like pavucontrol.  It can optionally handle multimedia
 keys for controlling the audio volume.")
     (license gpl2+)))
+
+(define-public xfce4-whiskermenu-plugin
+  (package
+    (name "xfce4-whiskermenu-plugin")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1cnas2x7xi53v6ylq44040narhzd828dc0ysz8yk3qn2mmvp5yr2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("xfce4-panel" ,xfce4-panel)
+       ("garcon" ,garcon)
+       ("exo" ,exo)
+       ("gtk+" ,gtk+-2)))
+    (arguments
+      `(#:tests? #f)) ; no tests
+    (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-whiskermenu-plugin")
+    (synopsis "Application menu panel plugin for Xfce")
+    (description
+     "This package provides an alternative to the default application menu
+panel plugin for Xfce4.  It uses separate sections to display categories and
+applications, and includes a search bar to search for applications.")
+    ;; The main plugin code is covered by gpl2, but files in panel-plugin directory
+    ;; are covered by gpl2+.  The SVG icon is covered by gpl2.
+    (license (list gpl2 gpl2+))))
 
 (define-public xfce4-xkb-plugin
   (package
