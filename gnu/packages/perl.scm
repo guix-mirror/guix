@@ -4643,15 +4643,14 @@ one: logging, exceptions, and translations.")
 (define-public perl-libintl-perl
   (package
     (name "perl-libintl-perl")
-    (version "1.29")
+    (version "1.31")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/G/GU/GUIDO/"
                            "libintl-perl-" version ".tar.gz"))
        (sha256
-        (base32
-         "1cgvrgh4axd8jlr6497ndgphgvgnqc1axd306460hskdvc85z4vq"))))
+        (base32 "1afandrl44mq9c32r57xr489gkfswdgc97h8x86k98dz1byv3l6a"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
