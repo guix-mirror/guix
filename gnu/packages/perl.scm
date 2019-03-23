@@ -8869,15 +8869,14 @@ be used with Moose, Mouse and Moo (or none of the above).")
 (define-public perl-type-tiny-xs
   (package
     (name "perl-type-tiny-xs")
-    (version "0.012")
+    (version "0.014")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/Type-Tiny-XS-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "05nbr898cvjjh1wsy55l84zasx65gijdxc6dnn558ihns8zx6gm9"))))
+        (base32 "1bbvghd2wmm9z1jx9qs9yz4l3r4izs8sz87z87sis7n3ydjdx2w2"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Type-Tiny-XS")
     (synopsis "Provides an XS boost for some of Type::Tiny's built-in type constraints")
