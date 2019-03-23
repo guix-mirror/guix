@@ -3491,7 +3491,7 @@ platforms.")
 (define-public perl-file-path
   (package
     (name "perl-file-path")
-    (version "2.13")
+    (version "2.16")
     (source
      (origin
        (method url-fetch)
@@ -3500,8 +3500,7 @@ platforms.")
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "039gc0i5cbdmidl8j8x195yykwcdmzwawmpapnysvljl8l33jqwj"))))
+        (base32 "01gsysg9mjkh1ckk7jhj3y8vs291a5ynkgzhqmcz90f3b6dxdxr1"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Path")
     (synopsis "Create or remove directory trees")
