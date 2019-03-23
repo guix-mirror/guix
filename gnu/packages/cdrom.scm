@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -656,7 +656,7 @@ information is written to standard error.")
 (define-public asunder
   (package
     (name "asunder")
-    (version "2.8")
+    (version "2.9.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -665,7 +665,7 @@ information is written to standard error.")
                               ".tar.bz2"))
               (sha256
                (base32
-                "1nq9kd4rd4k2kibf57gdbm0zw2gxa234vvvdhxkm8g5bhx5h3iyq"))))
+                "1630i1df06y840v3fgdf75jxw1s8kwbfn5bhi0686viah0scccw5"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:out-of-source? #f
