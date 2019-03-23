@@ -451,18 +451,17 @@ TCP, not the SSH protocol.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2018.76")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://matt.ucc.asn.au/dropbear/releases/"
-                    "dropbear-" version ".tar.bz2"))
-              (patches (search-patches "dropbear-CVE-2018-15599.patch"))
-              (sha256
-               (base32
-                "0rgavbzw7jrs5wslxm0dnwx2m409yzxd9hazd92r7kx8xikr3yzj"))))
+    (version "2019.77")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://matt.ucc.asn.au/dropbear/releases/"
+             "dropbear-" version ".tar.bz2"))
+       (sha256
+        (base32 "13a55fcy2mx2pvsfj6dh9107k4wnbd9ybdyi3w3ivgikwvmph7yr"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; there is no "make check" or anything similar
+    (arguments `(#:tests? #f))  ; there is no "make check" or anything similar
     ;; TODO: Investigate unbundling libtommath and libtomcrypt or at least
     ;; cherry-picking important bug fixes from them. See <bugs.gnu.org/24674>
     ;; for more information.
