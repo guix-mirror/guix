@@ -83,14 +83,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.74.0")
+   (version "0.75.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0bvb0yq9zsl2b811j4l4x0vf8g5lgmqbndkb2hvgsrr5639rzq4j"))))
+              "16hr0y3pv66s01bcd4k8xjgd1r038ca9srd06g4wm5r7zaqfvfiv"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
