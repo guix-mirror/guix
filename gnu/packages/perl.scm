@@ -3747,15 +3747,14 @@ slurping and spewing.  All functions are optionally exported.")
 (define-public perl-file-temp
   (package
     (name "perl-file-temp")
-    (version "0.2304")
+    (version "0.2309")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                            "File-Temp-" version ".tar.gz"))
        (sha256
-        (base32
-         "1b11scbw77924awwdf5yw8sk8z0s2hskvpyyxws9yz4gwhim6h8k"))))
+        (base32 "0pr3wrxrk93wy7dz9gsb1sgl77icrs8rh2mah6wms5cdi2ll5ch1"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-parent" ,perl-parent)))
