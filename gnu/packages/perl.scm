@@ -620,15 +620,14 @@ Standard Serial Numbers.")
 (define-public perl-business-ismn
   (package
     (name "perl-business-ismn")
-    (version "1.131")
+    (version "1.201")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
                            "Business-ISMN-" version ".tar.gz"))
        (sha256
-        (base32
-         "1xyc7x4c4xl930rz7grs1l52f1vg4rbiv0c6xlxdsim8qsh7k94g"))))
+        (base32 "1cpcfyaz1fl6fnm076jx2jsphw147wj6aszj2yzqrgsncjhk2cja"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-tie-cycle" ,perl-tie-cycle)))
