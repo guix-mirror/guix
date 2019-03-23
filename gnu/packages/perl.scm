@@ -8351,15 +8351,14 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-simpletable
   (package
     (name "perl-text-simpletable")
-    (version "2.04")
+    (version "2.07")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MR/MRAMBERG/"
                            "Text-SimpleTable-" version ".tar.gz"))
        (sha256
-        (base32
-         "14sjmdcy7s73sk740g3ccmzmwhwd52x5ay3bjmibjlql1cag70ld"))))
+        (base32 "1v8r8qpzg283p2pqqr8dqrak2bxray1b2jmib0qk75jffqw3yv95"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-SimpleTable")
     (synopsis "Simple ASCII tables")
