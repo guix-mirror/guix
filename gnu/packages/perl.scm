@@ -2037,15 +2037,14 @@ necessary later on.")
 (define-public perl-data-tumbler
   (package
     (name "perl-data-tumbler")
-    (version "0.008")
+    (version "0.010")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
                            "Data-Tumbler-" version ".tar.gz"))
        (sha256
-        (base32
-         "13kww2xj30rkk8w9h50h4blypdb689zgils0zyah587kip0z6509"))))
+        (base32 "15pgvmf7mf9fxsg2l4l88xwvs41218d0bvawhlk15sx06qqp0kwb"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-most" ,perl-test-most)))
