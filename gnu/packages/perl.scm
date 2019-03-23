@@ -4204,15 +4204,14 @@ try @code{Capture::Tiny} instead.")
 (define-public perl-io-interactive
   (package
     (name "perl-io-interactive")
-    (version "0.0.6")
+    (version "1.022")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
                            "IO-Interactive-" version ".tar.gz"))
        (sha256
-        (base32
-         "1303q6rbcf2cag5z08pq3d1y91wls5q51jrpw4kh0l2bv75idh4w"))))
+        (base32 "1p7b3z877am99qn9b3n2whgcv77256sbg28divlpgs1sx653pm8f"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IO-Interactive")
     (synopsis "Utilities for interactive I/O")
