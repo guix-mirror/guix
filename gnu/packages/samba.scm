@@ -242,14 +242,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.16")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1aajda08yf7njgvg6r21ccxlvkarb9bwvf4jqh8yn3871a1zcnqr"))))
+                "1g1fqa37xkjp9lp6lrwxrbfgashcink769ll505zvcwnxx2nlvsw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
