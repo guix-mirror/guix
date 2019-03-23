@@ -6872,7 +6872,7 @@ directory specifications in a cross-platform manner.")
 (define-public perl-pathtools
   (package
     (name "perl-pathtools")
-    (version "3.74")
+    (version "3.75")
     (source
      (origin
        (method url-fetch)
@@ -6880,7 +6880,7 @@ directory specifications in a cross-platform manner.")
              "mirror://cpan/authors/id/X/XS/XSAWYERX/PathTools-"
              version ".tar.gz"))
        (sha256
-        (base32 "04bfjdvn5p78hirljcinpxv8djcjn8nyg5gcmnmvz8sr9k2lqwi5"))))
+        (base32 "18j5z71xin9dsqddl6khm838d23p3843jcq7q0kwgy5ilqx50n55"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
