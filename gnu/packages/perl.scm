@@ -8416,7 +8416,7 @@ evaluate the little programs and replace them with their values.")
 (define-public perl-text-unidecode
   (package
     (name "perl-text-unidecode")
-    (version "1.23")
+    (version "1.30")
     (source
      (origin
        (method url-fetch)
@@ -8424,7 +8424,7 @@ evaluate the little programs and replace them with their values.")
                            "Text-Unidecode-" version ".tar.gz"))
        (sha256
         (base32
-         "1mnnq57amh0bs6z2ggkmgnn4hz8mqc9lfhr66xv2bsnlvhg7c7fb"))))
+         "1imii0p6wvhrxsr5z2zhazpx5vl4l4ybf1y2c5hy480xvi6z293c"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-Unidecode")
     (synopsis "Provide plain ASCII transliterations of Unicode text")
