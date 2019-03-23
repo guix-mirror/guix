@@ -87,6 +87,7 @@
                      (build-flags ''())
                      (out-of-source? #t)
                      (jbuild? #f)
+                     (package #f)
                      (tests? #t)
                      (test-flags ''())
                      (test-target "test")
@@ -125,6 +126,7 @@ provides a 'setup.ml' file as its build system."
                    #:build-flags ,build-flags
                    #:out-of-source? ,out-of-source?
                    #:jbuild? ,jbuild?
+                   #:package ,package
                    #:tests? ,tests?
                    #:test-target ,test-target
                    #:install-target ,install-target

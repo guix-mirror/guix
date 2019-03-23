@@ -5816,6 +5816,11 @@ list of flags passed to the @code{dune} command during the build.
 The @code{#:jbuild?} parameter can be passed to use the @code{jbuild}
 command instead of the more recent @code{dune} command while building
 a package.  Its default value is @code{#f}.
+
+The @code{#:package} parameter can be passed to specify a package name, which
+is useful when a package contains multiple packages and you want to build
+only one of them.  This is equivalent to passing the @code{-p} argument to
+@code{dune}.
 @end defvr
 
 @defvr {Scheme Variable} go-build-system
