@@ -6251,7 +6251,7 @@ fields in Moo-based classes.")
 (define-public perl-mouse
   (package
   (name "perl-mouse")
-  (version "2.4.9")
+  (version "2.5.6")
   (source (origin
             (method url-fetch)
             (uri (string-append
@@ -6260,7 +6260,7 @@ fields in Moo-based classes.")
                   ".tar.gz"))
             (sha256
              (base32
-              "1y20sl97x1h4y1iid47hj0w1hb2887dchh4nfffgmqpyggkslh4n"))))
+              "1j3048ip691j91rdig6wrlg6i4jdzhszxmz5pi2g7n355rl2w00l"))))
   (build-system perl-build-system)
   (native-inputs
    `(("perl-module-build" ,perl-module-build)
