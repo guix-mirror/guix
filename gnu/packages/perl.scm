@@ -1105,15 +1105,14 @@ loaded class.")
 (define-public perl-class-load
   (package
     (name "perl-class-load")
-    (version "0.24")
+    (version "0.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Class-Load-" version ".tar.gz"))
        (sha256
-        (base32
-         "0dnacm959vi5819h6cdl5qpi89fr81p6smbsqx7m6in18vd87f8b"))))
+        (base32 "13sz4w8kwljhfcy7yjjgrgg5hv3wccr8n3iqarhyb5sjkdvzlj1a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
