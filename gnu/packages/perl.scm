@@ -3683,7 +3683,7 @@ allows you to locate these files after installation.")
 (define-public perl-file-slurp
   (package
     (name "perl-file-slurp")
-    (version "9999.25")
+    (version "9999.26")
     (source
      (origin
        (method url-fetch)
@@ -3691,7 +3691,7 @@ allows you to locate these files after installation.")
                            "File-Slurp-" version ".tar.gz"))
        (sha256
         (base32
-         "1hg3bhf5m78d77p4174cnldd75ppyrvr5rkc8w289ihvwsx9gsn7"))))
+         "0c09ivl50sg9j75si6cahfp1wgvhqawakb6h5j6hlca6vwjqs9qy"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Slurp")
     (synopsis "Reading/Writing/Modifying of complete files")
