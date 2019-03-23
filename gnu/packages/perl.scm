@@ -1419,15 +1419,14 @@ opportunities to Perl developers as GNU Autoconf does for Shell developers.")
 (define-public perl-config-general
   (package
     (name "perl-config-general")
-    (version "2.56")
+    (version "2.63")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TL/TLINDEN/"
                            "Config-General-" version ".tar.gz"))
        (sha256
-        (base32
-         "0szxxaihz71pr0r2jp9wvbrfc3hrsxi9xrd9vnyrxlrax8sci5h9"))))
+        (base32 "1bbg3wp0xcpj04cmm86j1x0j5968jqi5s2c87qs7dgmap1vzk6qa"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Config-General")
     (synopsis "Generic Config Module")
