@@ -8776,15 +8776,14 @@ simple n-ary tree.")
 (define-public perl-tree-simple-visitorfactory
   (package
     (name "perl-tree-simple-visitorfactory")
-    (version "0.12")
+    (version "0.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RS/RSAVAGE/"
                            "Tree-Simple-VisitorFactory-" version ".tgz"))
        (sha256
-        (base32
-         "1g27xl48q1vr7aikhxg4vvcsj1si8allxz59vmnks61wsw4by7vg"))))
+        (base32 "06y2vazkl307k59hnkp9h5bp3p7711kgmp1qdhb2lgnfwzn84zin"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
