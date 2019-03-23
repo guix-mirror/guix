@@ -5995,15 +5995,14 @@ constraint with coercion to load the class.")
 (define-public perl-moox-cmd
   (package
     (name "perl-moox-cmd")
-    (version "0.015")
+    (version "0.017")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/MooX-Cmd-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0145ha8vnc6sbg82ps96wj716bznq2qamm657bia9ji2yxhbnsam"))))
+        (base32 "1xbhmq07v9z371ygkyghva9aryhc22kwbzn5qwkp72c0ma6z4gwl"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)
