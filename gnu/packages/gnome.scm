@@ -1312,6 +1312,72 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
+    (version "2.40.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ay9himvw1l1swcf3h1312d2iqzfl65kpbfgiyfykgvq7cydvx6g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static"
+             "--enable-vala") ; needed for e.g. gnome-mines
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gdk-pixbuf-loader/Makefile.in"
+               ;; By default the gdk-pixbuf loader is installed under
+               ;; gdk-pixbuf's prefix.  Work around that.
+               (("gdk_pixbuf_moduledir = .*$")
+                (string-append "gdk_pixbuf_moduledir = "
+                               "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
+                                "loaders\n"))
+               ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
+               (("gdk_pixbuf_cache_file = .*$")
+                "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n"))
+             #t))
+         (add-before 'check 'remove-failing-tests
+           (lambda _
+             (with-directory-excursion "tests/fixtures/reftests"
+               (for-each delete-file
+                         '(;; This test fails on i686:
+                           "svg1.1/masking-path-04-b.svg"
+                           ;; This test fails on armhf:
+                           "svg1.1/masking-mask-01-b.svg"
+                           ;; This test fails on aarch64:
+                           "bugs/777834-empty-text-children.svg")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
+    (inputs
+     `(("pango" ,pango)
+       ("libcroco" ,libcroco)
+       ("bzip2" ,bzip2)
+       ("libgsf" ,libgsf)
+       ("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; librsvg-2.0.pc refers to all of that.
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)))
+    (home-page "https://wiki.gnome.org/LibRsvg")
+    (synopsis "Render SVG files using Cairo")
+    (description
+     "Librsvg is a C library to render SVG files using the Cairo 2D graphics
+library.")
+    (license license:lgpl2.0+)))
+
+(define-public librsvg-next
+  (package
+    (name "librsvg")
     (version "2.44.12")
     (source (origin
               (method url-fetch)
