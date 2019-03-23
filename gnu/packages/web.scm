@@ -3451,7 +3451,7 @@ required.")
 (define-public perl-plack-middleware-reverseproxy
   (package
     (name "perl-plack-middleware-reverseproxy")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
@@ -3459,8 +3459,7 @@ required.")
                            "Plack-Middleware-ReverseProxy-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1zmsccdy6wr5hxzj07r1nsmaymyibk87p95z0wzknjw10lwmqs9f"))))
+        (base32 "0a512n62pnk5ayj3zdzyj50iy1qi8nwh6ygks2h7nrh7gp9k2jc7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
