@@ -4287,15 +4287,14 @@ pseudo ttys.")
 (define-public perl-ipc-cmd
   (package
     (name "perl-ipc-cmd")
-    (version "0.96")
+    (version "1.02")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/IPC-Cmd-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0a2v44x70gj9fd5wa8i08f9z6n14qppj1j49m1hc333wh72mzk6i"))))
+        (base32 "0qvh0qpvc22r4kysfy8srxnhni677lvc8hr18kjrdkmb58jjj8ah"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IPC-Cmd")
     (synopsis "Run interactive command-line programs")
