@@ -3539,6 +3539,31 @@ started with 20 minutes.  All values are customizable.")
 organizer.")
     (license license:gpl3+)))
 
+(define-public emacs-company-flow
+  (let ((commit "76ef585c70d2a3206c2eadf24ba61e59124c3a16")
+        (revision "1"))
+    (package
+      (name "emacs-company-flow")
+      (version (git-version "0.1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/aaronjensen/company-flow/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0zs9cblnbkxa0dxw4lyllmybqizxcdx96gv8jlhx20nrjpi78piw"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/aaronjensen/company-flow/")
+      (synopsis "Flow backend for @code{company-mode}")
+      (description
+       "This package provides completion for JavaScript files utilizing Flow.")
+      (license license:gpl3+))))
+
 (define-public emacs-atom-one-dark-theme
   (let ((commit "1f1185bf667a38d3d0d180ce85fd4c131818aae2")
         (revision "0"))
