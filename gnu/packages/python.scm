@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -85,6 +85,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -109,11 +110,19 @@
                                "python-2.7-source-date-epoch.patch"
                                "python-2.7-adjust-tests.patch"))
       (modules '((guix build utils)))
-      ;; suboptimal to delete failing tests here, but if we delete them in the
-      ;; arguments then we need to make sure to strip out that phase when it
-      ;; gets inherited by python and python-minimal.
       (snippet
        '(begin
+          ;; Ensure the bundled copies of these libraries are not used.
+          (for-each delete-file-recursively
+                    '("Modules/_ctypes/libffi" "Modules/expat" "Modules/zlib"))
+
+          (substitute* "Modules/Setup.dist"
+            ;; Link Expat instead of embedding the bundled one.
+            (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+
+          ;; Suboptimal to delete failing tests here, but if we delete them in
+          ;; the arguments then we need to make sure to strip out that phase
+          ;; when it gets inherited by python and python-minimal.
           (for-each delete-file
                     '("Lib/test/test_compileall.py"
                       "Lib/test/test_ctypes.py" ; fails on mips64el
@@ -130,6 +139,7 @@
      `(#:test-target "test"
        #:configure-flags
        (list "--enable-shared"                    ;allow embedding
+             "--with-system-expat"                ;for XML support
              "--with-system-ffi"                  ;build ctypes
              "--with-ensurepip=install"           ;install pip and setuptools
              "--enable-unicode=ucs4"
@@ -258,6 +268,7 @@
                 #t))))))
     (inputs
      `(("bzip2" ,bzip2)
+       ("expat" ,expat)
        ("gdbm" ,gdbm)
        ("libffi" ,libffi)                         ; for ctypes
        ("sqlite" ,sqlite)                         ; for sqlite extension
@@ -311,8 +322,15 @@ data types.")
               (sha256
                (base32
                 "1fzi9d2gibh0wzwidyckzbywsxcsbckgsl05ryxlifxia77fhgyq"))
+              (modules '((guix build utils)))
               (snippet
                '(begin
+                  ;; Delete the bundled copy of libexpat.
+                  (delete-file-recursively "Modules/expat")
+                  (substitute* "Modules/Setup.dist"
+                    ;; Link Expat instead of embedding the bundled one.
+                    (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+
                   (for-each delete-file
                             '(;; This test may hang and eventually run out of
                               ;; memory on some systems:
@@ -379,8 +397,10 @@ data types.")
 
     ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
     ;; is invoked upon 'make install'.  'pip' also expects 'ctypes' and thus
-    ;; libffi.
-    (inputs `(("libffi" ,libffi)
+    ;; libffi.  Expat is needed for XML support which is expected by a lot
+    ;; of libraries out there.
+    (inputs `(("expat" ,expat)
+              ("libffi" ,libffi)
               ("zlib" ,zlib)))))
 
 (define-public python-minimal
@@ -390,8 +410,10 @@ data types.")
 
     ;; Build fails due to missing ctypes without libffi.
     ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
-    ;; zlib is required by 'zipimport', used by pip.
-    (inputs `(("libffi" ,libffi)
+    ;; zlib is required by 'zipimport', used by pip.  Expat is needed
+    ;; for XML support, which is generally expected to be available.
+    (inputs `(("expat" ,expat)
+              ("libffi" ,libffi)
               ("openssl" ,openssl)
               ("zlib" ,zlib)))))
 
