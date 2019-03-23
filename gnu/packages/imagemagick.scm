@@ -48,14 +48,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.10-27")
+    (version "6.9.10-34")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1skngh58lkpa2scc9rhjxvhyn6f7nlwd28hbwrxzlvvb7qil9jcq"))))
+               "1pm1lvbfw67780nch7w80dsvx7v8wbrpj43v3c9217dpz0l89442"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
