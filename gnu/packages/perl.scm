@@ -5949,15 +5949,14 @@ all coercions and constraints are inherited.")
 (define-public perl-moosex-types-loadableclass
   (package
     (name "perl-moosex-types-loadableclass")
-    (version "0.013")
+    (version "0.015")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "MooseX-Types-LoadableClass-" version ".tar.gz"))
        (sha256
-        (base32
-         "13v2hn3xr6adx15qik8b6966fbbw77ik1v4sxx24f766la10w2mq"))))
+        (base32 "1x1vb96hcrd96bzs73w0lb04jr0fvax1ams38qlzkp2kh9vx6dz0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
