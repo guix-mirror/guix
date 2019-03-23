@@ -6426,7 +6426,7 @@ name, but they won't show up as methods on your class or instances.")
 (define-public perl-net-dns-native
   (package
     (name "perl-net-dns-native")
-    (version "0.15")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
@@ -6434,7 +6434,7 @@ name, but they won't show up as methods on your class or instances.")
              "mirror://cpan/authors/id/O/OL/OLEG/Net-DNS-Native-"
              version ".tar.gz"))
        (sha256
-        (base32 "12bsv5jkic3q4arpzk6dda35didkn445v658j87rmi540dpnac85"))))
+        (base32 "0whm9l30frgzcfmlzqrsx3q5rdi8y6dhz33r4msgxrch8h97i8cb"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Net-DNS-Native")
     (synopsis "Non-blocking system DNS resolver")
