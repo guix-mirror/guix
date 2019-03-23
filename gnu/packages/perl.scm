@@ -7302,15 +7302,14 @@ optimized for sets that have long runs of consecutive integers.")
 (define-public perl-set-object
   (package
     (name "perl-set-object")
-    (version "1.35")
+    (version "1.39")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Set-Object-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rqf11274s3h17jgbimmg47k4fmayifajqwaa6lgm0z5qdy4v6hq"))))
+        (base32 "040q819l9x55j0hjhfvc153451syvjffw3d22gs398sd23mwzzsy"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-moose" ,perl-moose)
