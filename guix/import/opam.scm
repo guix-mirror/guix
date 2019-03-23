@@ -292,7 +292,7 @@ package in OPAM."
 (define (opam-package? package)
   "Return true if PACKAGE is an OCaml package from OPAM"
   (and
-    (equal? (build-system-name (package-build-system package)) 'ocaml)
+    (member (build-system-name (package-build-system package)) '(dune ocaml))
     (not (string-prefix? "ocaml4" (package-name package)))))
 
 (define (latest-release package)
