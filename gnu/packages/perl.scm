@@ -3690,8 +3690,7 @@ allows you to locate these files after installation.")
        (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
                            "File-Slurp-" version ".tar.gz"))
        (sha256
-        (base32
-         "0c09ivl50sg9j75si6cahfp1wgvhqawakb6h5j6hlca6vwjqs9qy"))))
+        (base32 "0c09ivl50sg9j75si6cahfp1wgvhqawakb6h5j6hlca6vwjqs9qy"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Slurp")
     (synopsis "Reading/Writing/Modifying of complete files")
@@ -7720,7 +7719,7 @@ return value is the sub.")
 (define-public perl-sub-quote
   (package
     (name "perl-sub-quote")
-    (version "2.005001")
+    (version "2.006003")
     (source
      (origin
        (method url-fetch)
@@ -7728,8 +7727,7 @@ return value is the sub.")
              "mirror://cpan/authors/id/H/HA/HAARG/Sub-Quote-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "01xsvfdpxzimsbrp9mqipsr93y83nhj21q05g8v1bw6yfl3lzayn"))))
+        (base32 "0xl1w55qilqc3xdqvmjzs5vjnjdc0d4633yw7hh1yd9zfxpkl7xy"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
