@@ -5668,15 +5668,14 @@ BUILD methods are called.  It tries to be as non-intrusive as possible.")
 (define-public perl-moosex-params-validate
   (package
     (name "perl-moosex-params-validate")
-    (version "0.19")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "MooseX-Params-Validate-" version ".tar.gz"))
        (sha256
-        (base32
-         "16isvyfsnzp63qr9cwsn094hasb6m7rzldmzav6spk7rih4mxdwk"))))
+        (base32 "1n9ry6gnskkp9ir6s7d5jirn3mh14ydgpmwqz6wcp6d9md358ac8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-moose" ,perl-moose)
