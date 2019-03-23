@@ -3175,15 +3175,14 @@ import(), @@EXPORT and @@EXPORT_OK and not a whole lot else.")
 (define-public perl-exporter-tiny
   (package
     (name "perl-exporter-tiny")
-    (version "0.042")
+    (version "1.002001")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
                            "Exporter-Tiny-" version ".tar.gz"))
        (sha256
-        (base32
-         "0gq2ia8c6n84gdrlc73vab61djs8gs8zf7fqx8cxbg5zxg2j45lg"))))
+        (base32 "13f4sd9n9iyi15r5rbjbmawajxlgfdvvyrvwlyg0yjyf09636b58"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Exporter-Tiny")
     (synopsis "Exporter with the features of Sub::Exporter but only core dependencies")
