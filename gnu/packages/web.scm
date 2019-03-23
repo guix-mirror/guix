@@ -3473,15 +3473,14 @@ and stop fake requests using 'enable_if' directive in your app.psgi.")
 (define-public perl-plack-test-externalserver
   (package
     (name "perl-plack-test-externalserver")
-    (version "0.01")
+    (version "0.02")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
                            "Plack-Test-ExternalServer-" version ".tar.gz"))
        (sha256
-        (base32
-         "1dbg1p3rgvvbkkpvca5jlc2mzx8iqyiybk88al93pvbca65h1g7h"))))
+        (base32 "1l1yj1l25679x7cbpd27ii7s1f1ajpkspif9xqnl21hczrbmrbsv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
