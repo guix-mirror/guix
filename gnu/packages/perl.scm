@@ -8217,15 +8217,14 @@ can combine fields into a CSV string and parse a CSV string into fields.")
 (define-public perl-text-csv-xs
   (package
     (name "perl-text-csv-xs")
-    (version "1.25")
+    (version "1.39")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HM/HMBRAND/"
                            "Text-CSV_XS-" version ".tgz"))
        (sha256
-        (base32
-         "06zlfbqrwbl0g2g3bhk6046yy5pf2rz80fzcp8aj47rnswz2yx5k"))))
+        (base32 "1gcy1bxym6f7qsxivkl3c5p94r1bjhf9csy1x38a1gk8mx744kma"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV_XS")
     (synopsis "Rountines for manipulating CSV files")
