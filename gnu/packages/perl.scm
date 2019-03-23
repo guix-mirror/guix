@@ -4311,15 +4311,14 @@ run interactively.  It also has an option to capture output/error buffers.")
 (define-public perl-ipc-run
   (package
     (name "perl-ipc-run")
-    (version "0.94")
+    (version "20180523.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/"
                            "IPC-Run-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nv0lpw31zaz6vi42q7ihjj3j382j4njicp5k0gsczib3b4kdcrf"))))
+        (base32 "0bvckcs1629ifqfb68xkapd4a74fd5qbg6z9qs8i6rx4z3nxfl1q"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-tty" ,perl-io-tty)))
