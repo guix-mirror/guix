@@ -541,15 +541,14 @@ library can nevertheless be used stand-alone, without Perl.")
 (define-public perl-boolean
   (package
     (name "perl-boolean")
-    (version "0.45")
+    (version "0.46")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
                            "boolean-" version ".tar.gz"))
        (sha256
-        (base32
-         "18hrgldzwnhs0c0r8hxx6r05qvk9p7gwinjwcybixfs2h0n43ypj"))))
+        (base32 "0shmiw8pmshnwj01cz8g94867hjf4vc1dkp61xlbz0rybh48ih4m"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/boolean")
     (synopsis "Boolean support for Perl")
