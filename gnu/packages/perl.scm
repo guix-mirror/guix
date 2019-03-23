@@ -4798,7 +4798,7 @@ commonly needed functionality on lists which is not going to go into
 (define-public perl-list-someutils
   (package
     (name "perl-list-someutils")
-    (version "0.52")
+    (version "0.56")
     (source
      (origin
        (method url-fetch)
@@ -4807,8 +4807,7 @@ commonly needed functionality on lists which is not going to go into
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "1b450jyxaa6q2yl0cdhknr3c2a5s7b9b18ccnwac625c681r130y"))))
+        (base32 "1xw9dzg949997b10y6zgzrmhmk2ap274qivnk0wc1033x2fdk9za"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-leaktrace" ,perl-test-leaktrace)))
