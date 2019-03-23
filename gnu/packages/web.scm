@@ -3428,7 +3428,7 @@ can say what method it actually meant.")
 (define-public perl-plack-middleware-removeredundantbody
   (package
     (name "perl-plack-middleware-removeredundantbody")
-    (version "0.05")
+    (version "0.07")
     (source
      (origin
        (method url-fetch)
@@ -3436,8 +3436,7 @@ can say what method it actually meant.")
                            "Plack-Middleware-RemoveRedundantBody-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1n3wm0zi8dnk54jx937asl951lslj3jvw0fry4jpzsibg4f6wrx0"))))
+        (base32 "1hz3kgb5vw4r02gfk9i911f5ykvz55lrsx45bdcllk2bszal3f34"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
