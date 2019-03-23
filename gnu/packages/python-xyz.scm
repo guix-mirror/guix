@@ -8117,23 +8117,15 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "1bi5gnr8r8dva06qpyx4kgjc6spm2k1y908183nbbaylggjzs0jf"))))
+         "0hr89gcda0y0baz25cm4yq7fbl7cvid4zsns8cgv0jfzq102j284"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-setup.cfg
-                    (lambda _
-                      ;; Adjust setup.cfg for compatibility with Pytest 4.
-                      (substitute* "setup.cfg"
-                        (("\\[pytest\\]") "[tool:pytest]"))
-                      #t)))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (native-inputs
