@@ -7503,15 +7503,14 @@ run from within a source-controlled directory.")
 (define-public perl-string-camelcase
   (package
     (name "perl-string-camelcase")
-    (version "0.02")
+    (version "0.04")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HI/HIO/"
                            "String-CamelCase-" version ".tar.gz"))
        (sha256
-        (base32
-         "17kh8nap2z5g5rqcvw0m7mvbai7wr7h0al39w8l827zhqad8ss42"))))
+        (base32 "1a8i4yzv586svd0pbxls7642vvmyiwzh4x2xyij8gbnfxsydxhw9"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
