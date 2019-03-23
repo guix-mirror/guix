@@ -3085,7 +3085,7 @@ select or poll.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/E/ET/ETHER/libwww-perl-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/libwww-perl-"
                    version ".tar.gz"))
              (sha256
               (base32
