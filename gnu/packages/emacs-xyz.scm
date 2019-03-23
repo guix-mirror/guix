@@ -3263,6 +3263,28 @@ This provides a basic API and common UI widgets such as popup tooltips
 and popup menus.")
     (license license:gpl3+)))
 
+(define-public emacs-python-environment
+  (package
+    (name "emacs-python-environment")
+    (version "0.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tkf/emacs-python-environment/")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0q6bib9nr6xiq6npzbngyfcjk87yyvwzq1zirr3z1h5wadm34lsk"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-deferred" ,emacs-deferred)))
+    (home-page "https://github.com/tkf/emacs-python-environment")
+    (synopsis "Provides a @code{virtualenv} API in Emacs Lisp")
+    (description
+     "This package permits automated installation of tools written in Python.")
+    (license license:gpl3+)))
+
 (define-public emacs-puppet-mode
   (let ((commit "b3ed5057166a4f49dfa9be638523a348b55a2fd2")
         (revision "1"))
