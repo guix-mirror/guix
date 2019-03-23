@@ -2435,15 +2435,14 @@ which can be used to parse directory listings.")
 (define-public perl-finance-quote
   (package
    (name "perl-finance-quote")
-   (version "1.38")
+   (version "1.47")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "https://cpan.metacpan.org/authors/id/E/EC/ECOCODE/"
                           "Finance-Quote-" version ".tar.gz"))
       (sha256
-       (base32
-        "0zhqb27y4vdxn476s2kwm9zl2f970yjcyyybnjm9b406krr2fm59"))
+       (base32 "0gzbq85738f299jaw4nj3ljnka380j2y6yspmyl71rgfypqjvbr7"))
       (patches (search-patches
                 "perl-finance-quote-unuse-mozilla-ca.patch"))))
    (build-system perl-build-system)
