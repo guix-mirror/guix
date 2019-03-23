@@ -2959,6 +2959,34 @@ automatically inserts a Unicode opening or closing quotation mark, depending
 on context.")
     (license license:gpl3+)))
 
+(define-public emacs-company-lsp
+  (package
+    (name "emacs-company-lsp")
+    (version "2.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tigersoldier/company-lsp.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hy1x2w0yp5brm7714d1hziz3rpkywb5jp3yj78ibmi9ifny9vri"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-lsp-mode" ,emacs-lsp-mode)
+       ("emacs-company" ,emacs-company)
+       ("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/tigersoldier/company-lsp")
+    (synopsis "Completion for @code{lsp-mode}")
+    (description
+     "This package provides completion features that are not possible with
+@code{lsp-mode} and @code{company-capf} alone, including support for trigger
+characters and asynchronous fetching of completion candidates.")
+    (license license:gpl3+)))
+
 (define-public emacs-scheme-complete
   (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
     (package
