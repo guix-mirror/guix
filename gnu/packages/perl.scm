@@ -1026,15 +1026,14 @@ subclasses and can be overridden.")
 (define-public perl-class-date
   (package
     (name "perl-class-date")
-    (version "1.1.15")
+    (version "1.1.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
                            "Class-Date-" version ".tar.gz"))
        (sha256
-        (base32
-         "0dd707sq8ix2dqbnp7ga77ba69r3vsn0cd6scnkn13s0gm2g4b00"))))
+        (base32 "1h7dfjxkpqbfymrf1bn7699i4fx6pbv5wvvi5zszfr8sqqkax1yf"))))
     (build-system perl-build-system)
     (arguments `(#:tests? #f))          ;timezone tests in chroot
     (home-page "https://metacpan.org/release/Class-Date")
