@@ -3084,7 +3084,7 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.35")
+    (version "6.37")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3092,7 +3092,7 @@ select or poll.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0lsrr8r61b67f9wrynkhdhldw5yic4d7cd78zi52q59jgf6mg8nx"))))
+               "04a24cx9gs070rvlwf5kanz03y7nnq9k2nmpr01plnm059iprvf6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
