@@ -2572,15 +2572,14 @@ composed of HTML::Element style components.")
 (define-public perl-html-lint
   (package
     (name "perl-html-lint")
-    (version "2.26")
+    (version "2.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
                            "HTML-Lint-" version ".tar.gz"))
        (sha256
-        (base32
-         "02vi1s4sw3hjnndxd6s91cp54iw5pg8n5kl9v0109dfxzn1n9bnl"))))
+        (base32 "0lk02xpfxcg7ij4dvpsa4wjlzhmiizj0jfr3rwmdpbj69nvc93br"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)
