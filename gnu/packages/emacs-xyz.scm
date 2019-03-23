@@ -3311,6 +3311,32 @@ insertion mode.  When enabled all keys are implicitly prefixed with
 sgml/html integration, and indentation (working with sgml).")
     (license license:gpl3+)))
 
+(define-public emacs-company-cabal
+  ;; The latest version is 0.3.0, but no release has been provided after 0.2.1.
+  (let ((commit "62112a7259e24bd6c08885629a185afe512b7d3d")
+        (revision "1"))
+    (package
+      (name "emacs-company-cabal")
+      (version (git-version "0.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/iquiw/company-cabal/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1gf45xwjzdm8i4q6c6khk4dbg1mmp2r0awz2sjr4dcr2dbd1n7mg"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)))
+      (home-page "https://github.com/iquiw/company-cabal/")
+      (synopsis "Company completion for Haskell Cabal files")
+      (description
+       "This package allows for completion of field names, section names,
+field values, and more within @code{haskell-cabal-mode}.")
+      (license license:gpl3+))))
+
 (define-public emacs-rfcview
   (package
     (name "emacs-rfcview")
