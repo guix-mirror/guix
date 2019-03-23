@@ -3517,15 +3517,14 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-www-mechanize
   (package
     (name "perl-test-www-mechanize")
-    (version "1.50")
+    (version "1.52")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
                            "Test-WWW-Mechanize-" version ".tar.gz"))
        (sha256
-        (base32
-         "097pl87vdbxbb56vawzvs6ikrlb8nz3dx223kjjbdn3jlli3jjhg"))))
+        (base32 "1jsywlbxhqw39ij7s8vmgff5vys58vlfaq27072awacnxc65aal4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-carp-assert-more" ,perl-carp-assert-more)
