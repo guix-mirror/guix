@@ -6561,15 +6561,14 @@ number exists in a given range, and to be able to manipulate the range.")
 (define-public perl-object-signature
   (package
     (name "perl-object-signature")
-    (version "1.07")
+    (version "1.08")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
                            "Object-Signature-" version ".tar.gz"))
        (sha256
-        (base32
-         "0c8l7195bjvx0v6zmkgdnxvwg7yj2zq8hi7xd25a3iikd12dc4f6"))))
+        (base32 "12k90c19ly93ib1p6sm3k7sbnr2h5dbywkdmnff2ngm99p4m68c4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
