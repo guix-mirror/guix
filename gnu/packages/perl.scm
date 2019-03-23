@@ -7504,15 +7504,14 @@ run from within a source-controlled directory.")
 (define-public perl-strictures-2
   (package
     (inherit perl-strictures)
-    (version "2.000004")
+    (version "2.000006")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "strictures-" version ".tar.gz"))
        (sha256
-        (base32
-         "0lzp0q6kwk6vgf7zdlvy9zz28fj6n1b776irm556c7gylcq29113"))))))
+        (base32 "0mwd9xqz4n8qfpi5h5581lbm33qhf7agww18h063icnilrs7km89"))))))
 
 (define-public perl-string-camelcase
   (package
