@@ -204,10 +204,13 @@ MTP, and much more.")
     ;; Files are typically under LGPLv2+, but 'COPYING' says GPLv2+.
     (license license:gpl2+)))
 
+;; Note: See <https://metacpan.org/pod/Image::ExifTool> for the latest
+;; release.  The versions at <https://www.sno.phy.queensu.ca/~phil/exiftool/>
+;; are not meant for production use according to the Changes file.
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "11.31")
+    (version "11.30")
     (source
      (origin
        (method url-fetch)
@@ -218,7 +221,7 @@ MTP, and much more.")
              (string-append "https://www.sno.phy.queensu.ca/~phil/exiftool/"
                             "Image-ExifTool-" version ".tar.gz")))
        (sha256
-        (base32 "1kplb7hvhrhqxkr4ddc44q7a3fs0r8svv2jlh325nwkfi7aa5kz5"))))
+        (base32 "0vkjb2c1a3jdlq8rx1jywx4p3f1bmgjn7rzfwx6dxgij2lx76lrs"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
