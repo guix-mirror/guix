@@ -1329,8 +1329,14 @@ score, the more relevant OBJ is to REGEXPS."
   ;; Metrics used to compute the "relevance score" of a package against a set
   ;; of regexps.
   `((,package-name . 4)
-    (,package-synopsis-string . 3)
-    (,package-description-string . 2)
+
+    ;; Match regexps on the raw Texinfo since formatting it is quite expensive
+    ;; and doesn't have much of an effect on search results.
+    (,(lambda (package)
+        (and=> (package-synopsis package) P_)) . 3)
+    (,(lambda (package)
+        (and=> (package-description package) P_)) . 2)
+
     (,(lambda (type)
         (match (and=> (package-location type) location-file)
           ((? string? file) (basename file ".scm"))
