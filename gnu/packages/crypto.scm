@@ -647,7 +647,7 @@ data on your platform, so the seed itself will be as random as possible.
 (define-public libb2
   (package
     (name "libb2")
-    (version "0.98")
+    (version "0.98.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -655,7 +655,7 @@ data on your platform, so the seed itself will be as random as possible.
                     version "/libb2-" version ".tar.gz"))
               (sha256
                (base32
-                "0vq39cvwy05754l565xl11rqr2jvjb6ykjzca886vi9vm71y0sg8"))))
+                "0bn7yrzdixdvzm46shbhpkqbr6zyqyxiqn7a7x54ag3mrvfnyqjk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

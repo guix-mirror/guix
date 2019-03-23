@@ -10,7 +10,7 @@
 # Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
-# Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
@@ -212,6 +212,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gobby.scm			\
   %D%/packages/golang.scm			\
   %D%/packages/gperf.scm			\
+  %D%/packages/gpodder.scm			\
   %D%/packages/gprolog.scm			\
   %D%/packages/gps.scm				\
   %D%/packages/graph.scm			\
@@ -364,6 +365,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/perl-check.scm			\
   %D%/packages/perl-compression.scm		\
   %D%/packages/perl-web.scm			\
+  %D%/packages/perl6.scm			\
   %D%/packages/photo.scm			\
   %D%/packages/phabricator.scm 			\
   %D%/packages/php.scm				\
@@ -729,7 +731,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/docker-fix-tests.patch			\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
-  %D%/packages/patches/dropbear-CVE-2018-15599.patch		\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/efl-mesa-compat.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
@@ -970,6 +971,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libgcrypt-make-yat2m-reproducible.patch	\
+  %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\

@@ -2266,15 +2266,14 @@ HTTP requests.")
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
-    (version "1.15")
+    (version "1.21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                            "CGI-Simple-" version ".tar.gz"))
        (sha256
-        (base32
-         "013dcy9k4sj9alkksk5aqz65ryxw0rxgg71c7w666y941gd8n46q"))))
+        (base32 "1wzc2igs4khmj7zfahvs87c24p9ks8hnqhhsyviyiix53xx2y6sg"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-io-stringy" ,perl-io-stringy) ; for IO::Scalar
@@ -2436,15 +2435,14 @@ which can be used to parse directory listings.")
 (define-public perl-finance-quote
   (package
    (name "perl-finance-quote")
-   (version "1.38")
+   (version "1.47")
    (source
     (origin
       (method url-fetch)
       (uri (string-append "https://cpan.metacpan.org/authors/id/E/EC/ECOCODE/"
                           "Finance-Quote-" version ".tar.gz"))
       (sha256
-       (base32
-        "0zhqb27y4vdxn476s2kwm9zl2f970yjcyyybnjm9b406krr2fm59"))
+       (base32 "0gzbq85738f299jaw4nj3ljnka380j2y6yspmyl71rgfypqjvbr7"))
       (patches (search-patches
                 "perl-finance-quote-unuse-mozilla-ca.patch"))))
    (build-system perl-build-system)
@@ -2572,15 +2570,14 @@ composed of HTML::Element style components.")
 (define-public perl-html-lint
   (package
     (name "perl-html-lint")
-    (version "2.26")
+    (version "2.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
                            "HTML-Lint-" version ".tar.gz"))
        (sha256
-        (base32
-         "02vi1s4sw3hjnndxd6s91cp54iw5pg8n5kl9v0109dfxzn1n9bnl"))))
+        (base32 "0lk02xpfxcg7ij4dvpsa4wjlzhmiizj0jfr3rwmdpbj69nvc93br"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)
@@ -3084,15 +3081,15 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.35")
+    (version "6.37")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/E/ET/ETHER/libwww-perl-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/libwww-perl-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0lsrr8r61b67f9wrynkhdhldw5yic4d7cd78zi52q59jgf6mg8nx"))))
+               "04a24cx9gs070rvlwf5kanz03y7nnq9k2nmpr01plnm059iprvf6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -3430,7 +3427,7 @@ can say what method it actually meant.")
 (define-public perl-plack-middleware-removeredundantbody
   (package
     (name "perl-plack-middleware-removeredundantbody")
-    (version "0.05")
+    (version "0.07")
     (source
      (origin
        (method url-fetch)
@@ -3438,8 +3435,7 @@ can say what method it actually meant.")
                            "Plack-Middleware-RemoveRedundantBody-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1n3wm0zi8dnk54jx937asl951lslj3jvw0fry4jpzsibg4f6wrx0"))))
+        (base32 "1hz3kgb5vw4r02gfk9i911f5ykvz55lrsx45bdcllk2bszal3f34"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
@@ -3453,7 +3449,7 @@ required.")
 (define-public perl-plack-middleware-reverseproxy
   (package
     (name "perl-plack-middleware-reverseproxy")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
@@ -3461,8 +3457,7 @@ required.")
                            "Plack-Middleware-ReverseProxy-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1zmsccdy6wr5hxzj07r1nsmaymyibk87p95z0wzknjw10lwmqs9f"))))
+        (base32 "0a512n62pnk5ayj3zdzyj50iy1qi8nwh6ygks2h7nrh7gp9k2jc7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
@@ -3478,15 +3473,14 @@ and stop fake requests using 'enable_if' directive in your app.psgi.")
 (define-public perl-plack-test-externalserver
   (package
     (name "perl-plack-test-externalserver")
-    (version "0.01")
+    (version "0.02")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
                            "Plack-Test-ExternalServer-" version ".tar.gz"))
        (sha256
-        (base32
-         "1dbg1p3rgvvbkkpvca5jlc2mzx8iqyiybk88al93pvbca65h1g7h"))))
+        (base32 "1l1yj1l25679x7cbpd27ii7s1f1ajpkspif9xqnl21hczrbmrbsv"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
@@ -3500,15 +3494,14 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
-    (version "2.06")
+    (version "2.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
                            "Test-TCP-" version ".tar.gz"))
        (sha256
-        (base32
-         "0acjwm21y2an4f3fasci9qa0isakh9cgp74fk0bzcdi506xmcjbi"))))
+        (base32 "14ahzklq3xgmwj58p9vdcfgpggrmh3nigq5mzqk4wakbb6fjs0fx"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-sharedfork" ,perl-test-sharedfork)))
@@ -3521,15 +3514,14 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-www-mechanize
   (package
     (name "perl-test-www-mechanize")
-    (version "1.50")
+    (version "1.52")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
                            "Test-WWW-Mechanize-" version ".tar.gz"))
        (sha256
-        (base32
-         "097pl87vdbxbb56vawzvs6ikrlb8nz3dx223kjjbdn3jlli3jjhg"))))
+        (base32 "1jsywlbxhqw39ij7s8vmgff5vys58vlfaq27072awacnxc65aal4"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-carp-assert-more" ,perl-carp-assert-more)
@@ -3764,15 +3756,14 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.89")
+    (version "1.91")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
-        (base32
-         "1mxx362vqiniw8vi6k3j7v9b1s7012irhfcblcz1p6jz9cjqi7mh"))))
+        (base32 "0cb14m1vhaf0mgn2fqwi5hm72xhfi77hpq2g57swgy0w83x7m27b"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)

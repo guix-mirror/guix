@@ -28,6 +28,7 @@
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -548,6 +549,27 @@ for every Python test framework.  It supports nose, py.test, and unittest.")
 
 (define-public python2-parameterized
   (package-with-python2 python-parameterized))
+
+(define-public python-minimock
+  (package
+    (name "python-minimock")
+    (version "1.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "MiniMock" version))
+       (sha256
+        (base32
+         "0k2sxb1ibnyg05iblz7zhbv825f1zk9906rab7883iqgvzmdzpsz"))))
+    (build-system python-build-system)
+    (home-page "https://pypi.org/project/MiniMock")
+    (synopsis "Simple Python library for using mock objects")
+    (description "MiniMock is a simple library for building mock objects with
+doctest.")
+    (license license:expat)))
+
+(define-public python2-minimock
+  (package-with-python2 python-minimock))
 
 (define-public python-mock
   (package

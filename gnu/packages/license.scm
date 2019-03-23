@@ -85,7 +85,7 @@ statements and serializes in normalized format.")
 (define-public perl-software-license
   (package
     (name "perl-software-license")
-    (version "0.103013")
+    (version "0.103014")
     (source
      (origin
        (method url-fetch)
@@ -94,7 +94,7 @@ statements and serializes in normalized format.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1wqgh7vdlc966amlrq0b2szz18lnrl9rfh8wlf7v0hqg74vxjh96"))))
+         "128pbm9pf5drakm9bpkifc1zg8f005xabfwzg21nc03m5mhfligb"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-try-tiny" ,perl-try-tiny)))

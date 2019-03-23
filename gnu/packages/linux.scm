@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2016, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -4277,7 +4277,7 @@ Light is the successor of lightscript.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.1")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4287,7 +4287,7 @@ Light is the successor of lightscript.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "068hzmh90x600saynbl7iwg1pm0ywldn4jazyxx5y1fixs8s1qbn"))))
+                "0rcp9i0fisdm4h6799ffr696l1vl661fnwb2dij268nlwwmkr90g"))))
     (inputs `(("bash" ,bash)
               ("dbus" ,dbus)
               ("ethtool" ,ethtool)
@@ -4317,7 +4317,8 @@ Light is the successor of lightscript.")
                (setenv "TLP_NO_PMUTILS" "1")
                (setenv "TLP_SBIN" (string-append out "/bin"))
                (setenv "TLP_BIN" (string-append out "/bin"))
-               (setenv "TLP_TLIB" (string-append out "/share/tlp-pm"))
+               (setenv "TLP_TLIB" (string-append out "/share/tlp"))
+               (setenv "TLP_FLIB" (string-append out "/share/tlp/func.d"))
                (setenv "TLP_ULIB" (string-append out "/lib/udev"))
                (setenv "TLP_CONF" "/etc/tlp")
                (setenv "TLP_SHCPL"
@@ -4371,7 +4372,6 @@ Light is the successor of lightscript.")
 a default configuration already optimized for battery life.  Nevertheless,
 TLP is customizable to fulfil system requirements.  TLP settings are applied
 every time the power supply source is changed.")
-
     ;; 'COPYING' is a custom version that says that one file is GPLv3+ and the
     ;; rest is GPLv2+.
     (license (list license:gpl2+ license:gpl3+))))

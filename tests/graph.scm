@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,6 +190,32 @@ edges."
                            (and (string=? source o*)
                                 (string=? target (derivation-file-name g)))))
                         edges)))))))))
+
+(test-assert "reverse bag DAG"
+  (let-values (((dune bap ocaml-base)
+                (values (specification->package "dune")
+                        (specification->package "bap")
+                        (specification->package "ocaml-base")))
+               ((backend nodes+edges) (make-recording-backend)))
+    (run-with-store %store
+      (export-graph (list dune) 'port
+                    #:node-type %reverse-bag-node-type
+                    #:backend backend))
+
+    (run-with-store %store
+      (mlet %store-monad ((dune-drv       (package->derivation dune))
+                          (bap-drv        (package->derivation bap))
+                          (ocaml-base-drv (package->derivation ocaml-base)))
+        ;; OCAML-BASE uses 'dune-build-system' so DUNE is a direct dependency.
+        ;; BAP is much higher in the stack but it should be there.
+        (let-values (((nodes edges) (nodes+edges)))
+          (return
+           (and (member `(,(derivation-file-name bap-drv)
+                          ,(package-full-name bap))
+                        nodes)
+                (->bool (member (map derivation-file-name
+                                     (list dune-drv ocaml-base-drv))
+                                edges)))))))))
 
 (test-assert "derivation DAG"
   (let-values (((backend nodes+edges) (make-recording-backend)))

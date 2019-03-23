@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +43,7 @@
             %bag-node-type
             %bag-with-origins-node-type
             %bag-emerged-node-type
+            %reverse-bag-node-type
             %derivation-node-type
             %reference-node-type
             %referrer-node-type
@@ -110,11 +111,21 @@ name."
 ;;; Reverse package DAG.
 ;;;
 
+(define (all-packages)            ;XXX: duplicated from (guix scripts refresh)
+  "Return the list of all the distro's packages."
+  (fold-packages (lambda (package result)
+                   ;; Ignore deprecated packages.
+                   (if (package-superseded package)
+                       result
+                       (cons package result)))
+                 '()
+                 #:select? (const #t)))           ;include hidden packages
+
 (define %reverse-package-node-type
   ;; For this node type we first need to compute the list of packages and the
   ;; list of back-edges.  Since we want to do it only once, we use the
   ;; promises below.
-  (let* ((packages   (delay (fold-packages cons '())))
+  (let* ((packages   (delay (all-packages)))
          (back-edges (delay (run-with-store #f    ;store not actually needed
                               (node-back-edges %package-node-type
                                                (force packages))))))
@@ -218,6 +229,21 @@ GNU-BUILD-SYSTEM have zero dependencies."
    (edges (lift1 (compose (cut filter package? <>)
                           bag-node-edges-sans-bootstrap)
                  %store-monad))))
+
+(define %reverse-bag-node-type
+  ;; Type for the reverse traversal of package nodes via the "bag"
+  ;; representation, which includes implicit inputs.
+  (let* ((packages   (delay (package-closure (all-packages))))
+         (back-edges (delay (run-with-store #f    ;store not actually needed
+                              (node-back-edges %bag-node-type
+                                               (force packages))))))
+    (node-type
+     (name "reverse-bag")
+     (description "the reverse DAG of packages, including implicit inputs")
+     (convert nodes-from-package)
+     (identifier bag-node-identifier)
+     (label node-full-name)
+     (edges (lift1 (force back-edges) %store-monad)))))
 
 
 ;;;
@@ -375,6 +401,7 @@ package modules, while attempting to retain user package modules."
         %bag-node-type
         %bag-with-origins-node-type
         %bag-emerged-node-type
+        %reverse-bag-node-type
         %derivation-node-type
         %reference-node-type
         %referrer-node-type

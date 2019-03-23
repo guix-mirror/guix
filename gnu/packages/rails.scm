@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages ruby)
   #:use-module (guix build-system ruby))
 
@@ -65,6 +66,33 @@ migration.")
     (home-page "https://github.com/rails/spring")
     (license license:expat)))
 
+(define-public ruby-sass-rails
+  (package
+    (name "ruby-sass-rails")
+    (version "5.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sass-rails" version))
+       (sha256
+        (base32
+         "1wa63sbsimrsf7nfm8h0m1wbsllkfxvd7naph5d1j6pbc555ma7s"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-railties" ,ruby-railties)
+       ("ruby-sass" ,ruby-sass)
+       ("ruby-sprockets" ,ruby-sprockets)
+       ("ruby-sprockets-rails" ,ruby-sprockets-rails)
+       ("ruby-tilt" ,ruby-tilt)))
+    (synopsis "Sass adapter for the Rails asset pipeline")
+    (description
+     "This library integrates the SASS stylesheet language into Ruby on
+Rails.")
+    (home-page "https://github.com/rails/sass-rails")
+    (license license:expat)))
+
 (define-public ruby-debug-inspector
   (package
     (name "ruby-debug-inspector")
@@ -93,6 +121,59 @@ migration.")
 API.")
     (home-page
      "https://github.com/banister/debug_inspector")
+    (license license:expat)))
+
+(define-public ruby-autoprefixer-rails
+  (package
+    (name "ruby-autoprefixer-rails")
+    (version "9.4.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "autoprefixer-rails" version))
+       (sha256
+        (base32
+         "0fxbfl3xrrjj84n98x24yzxbz4nvm6c492dxj41kkrl9z97ga13i"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'remove-unnecessary-dependencies
+           (lambda _
+             ;; Remove the testing of compass, as it's use is deprecated, and
+             ;; it's unpackaged for Guix
+             (substitute* "autoprefixer-rails.gemspec"
+               ((".*%q<compass>.*") "\n")
+               (("\"spec/compass_spec\\.rb\"\\.freeze, ") ""))
+             (delete-file "spec/compass_spec.rb")
+
+             (substitute* "Gemfile"
+               ;; Remove overly strict requirement on sprockets
+               ((", '>= 4\\.0\\.0\\.beta1'") "")
+               ;; The mini_racer gem isn't packaged yet, and it's not directly
+               ;; required, as other backends for ruby-execjs can be used.
+               (("gem 'mini_racer'") "")
+               ;; For some reason, this is required for the gems to be picked
+               ;; up
+               (("gemspec") "gemspec\ngem 'tzinfo-data'\ngem 'sass'"))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rails" ,ruby-rails)
+       ("ruby-rspec-rails" ,ruby-rspec-rails)
+       ;; This is needed for a test, but I'm unsure why
+       ("ruby-sass" ,ruby-sass)
+       ;; This is used as the ruby-execjs runtime
+       ("node" ,node)))
+    (propagated-inputs
+     `(("ruby-execjs" ,ruby-execjs)))
+    (synopsis "Parse CSS and add vendor prefixes to CSS rules")
+    (description
+     "This gem provides Ruby and Ruby on Rails integration with Autoprefixer,
+which can parse CSS and add vendor prefixes to CSS rules using values from the
+Can I Use website.")
+    (home-page "https://github.com/ai/autoprefixer-rails")
     (license license:expat)))
 
 (define-public ruby-activemodel
@@ -145,6 +226,35 @@ serialization, internationalization, and testing.")
 an almost zero-configuration persistence layer for applications.")
    (home-page "https://rubyonrails.org")
    (license license:expat)))
+
+(define-public ruby-rspec-rails
+  (package
+    (name "ruby-rspec-rails")
+    (version "3.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rspec-rails" version))
+       (sha256
+        (base32
+         "1pf6n9l4sw1arlax1bdbm1znsvl8cgna2n6k6yk1bi8vz2n73ls1"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; No included tests
+    (propagated-inputs
+     `(("ruby-actionpack" ,ruby-actionpack)
+       ("ruby-activesupport" ,ruby-activesupport)
+       ("ruby-railties" ,ruby-railties)
+       ("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
+       ("ruby-rspec-support" ,ruby-rspec-support)))
+    (synopsis "Use RSpec to test Ruby on Rails applications")
+    (description
+     "This package provides support for using RSpec to test Ruby on Rails
+applications, in pace of the default Minitest testing library.")
+    (home-page "https://github.com/rspec/rspec-rails")
+    (license license:expat)))
 
 (define-public ruby-rails-html-sanitizer
   (package
@@ -412,6 +522,62 @@ application bootup, plugins, generators, and Rake tasks.")
    (home-page
     "https://github.com/rails/sprockets-rails")
    (license license:expat)))
+
+(define-public ruby-web-console
+  (package
+    (name "ruby-web-console")
+    (version "3.7.0")
+    (source
+     (origin
+       ;; Download from GitHub as test files are not provided in the gem.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rails/web-console.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ir999p8cnm3l3zwbgpwxxcq1vwkj8d0d3r24362cyaf4v1rglq2"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-Gemfile
+           (lambda _
+             (substitute* "Gemfile"
+               ;; Remove the github bit from the Gemfile, so that the Guix
+               ;; packages are used.
+               ((", github: .*") "\n")
+               ;; The usual methods of not loading this group don't work, so
+               ;; patch the Gemfile.
+               (("group :development") "[].each")
+               ;; tzinfo-data is propagated by ruby-activesupport, but it
+               ;; needs to be in the Gemfile to become available.
+               (("group :test do") "group :test do\n  gem 'tzinfo-data'"))
+             #t))
+         (add-after 'unpack 'fix-mocha-minitest-require
+           (lambda _
+             (substitute* "test/test_helper.rb"
+               ;; This chanegd in recent versions of Mocha
+               (("mocha/minitest") "mocha/mini_test"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-actionview" ,ruby-actionview)
+       ("ruby-activemodel" ,ruby-activemodel)
+       ("ruby-bindex" ,ruby-bindex)
+       ("ruby-railties" ,ruby-railties)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rails" ,ruby-rails)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "Debugging tool for your Ruby on Rails applications")
+    (description
+     "This package allows you to create an interactive Ruby session in your
+browser.  Those sessions are launched automatically in case of an error and
+can also be launched manually in any page.")
+    (home-page "https://github.com/rails/web-console")
+    (license license:expat)))
 
 (define-public ruby-with-advisory-lock
   (package
