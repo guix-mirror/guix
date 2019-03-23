@@ -4610,14 +4610,14 @@ widely popular (Java-based) Log4j logging package in pure Perl.")
 (define-public perl-log-report-optional
   (package
     (name "perl-log-report-optional")
-    (version "1.01")
+    (version "1.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "Log-Report-Optional-" version ".tar.gz"))
               (sha256
                (base32
-                "1f4yi4dgzqjc79vrh4f2phdj57xxgk8hd2psx77214i4m5av408f"))))
+                "11ciiaq8vy186m7mzj8pcncwi8p9qp13wblvk427g1pnqjzlda0g"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-string-print" ,perl-string-print)))
