@@ -1344,7 +1344,11 @@ that parenthetically inclined game developers need to make 2D (and eventually
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "0wpzsbh4zi3931493dnyl5ffmh1b7fj2sx3mzrq304z9zs4d6lqq"))))
+                "0wpzsbh4zi3931493dnyl5ffmh1b7fj2sx3mzrq304z9zs4d6lqq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "3rdparty") #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
