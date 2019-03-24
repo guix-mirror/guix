@@ -1435,6 +1435,33 @@ some enhancements such as here-documents, C-style comments, and multiline
 options.")
     (license (package-license perl))))
 
+(define-public perl-config-gitlike
+  (package
+    (name "perl-config-gitlike")
+    (version "1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AL/ALEXMV/Config-GitLike-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0kp57na9mk6yni693h2fwap6l1ndbcj97l4860r9vkzx2jw0fjk7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-moox-types-mooselike" ,perl-moox-types-mooselike)))
+    (home-page "https://metacpan.org/release/Config-GitLike")
+    (synopsis "Parse Git style configuration files")
+    (description
+     "This module handles parsing, modifying and creating configuration files
+of the style used by the Git version control system.")
+    (license perl-license)))
+
 (define-public perl-config-ini
   (package
     (name "perl-config-ini")
