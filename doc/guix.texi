@@ -21629,7 +21629,7 @@ emulated:
 @example
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm" "aarch64" "ppc"))))
+           (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))))
 @end example
 
 In this example, we enable transparent emulation for the ARM and aarch64
