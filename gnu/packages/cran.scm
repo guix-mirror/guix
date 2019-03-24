@@ -11851,3 +11851,25 @@ can be used with function approximation, eligibility traces (Singh & Sutton,
 of ggplot2, facets that repeat axis lines on all panels, and some knitr
 extensions.")
     (license license:gpl3)))
+
+(define-public r-wgaim
+  (package
+    (name "r-wgaim")
+    (version "1.4-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "wgaim" version))
+       (sha256
+        (base32
+         "1jjyp100dcjjczp61xlvhmy48ynniqcys535vzbgswhr7fvijymg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-qtl" ,r-qtl)))
+    (home-page "https://cran.r-project.org/web/packages/wgaim")
+    (synopsis "Whole genome average interval mapping for QTL detection")
+    (description
+     "This package integrates sophisticated mixed modelling methods with a
+whole genome approach to detecting significant QTL in linkage maps.")
+    (license license:gpl2+)))
