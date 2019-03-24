@@ -7669,6 +7669,32 @@ expanding standard C/Unix-style backslash escapes like \n and \t, wrapping and
 removing double-quotes, and truncating to fit within a desired length.")
     (license (package-license perl))))
 
+(define-public perl-string-formatter
+  (package
+    (name "perl-string-formatter")
+    (version "0.102084")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/String-Formatter-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0mlwm0rirv46gj4h072q8gdync5zxxsxy8p028gdyrhczl942dc3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-params-util" ,perl-params-util)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "https://metacpan.org/release/String-Formatter")
+    (synopsis "Build your own sprintf-like functions")
+    (description
+     "@code{String::Formatter} is a tool for building sprintf-like formatting
+routines.  It supports named or positional formatting, custom conversions,
+fixed string interpolation, and simple width-matching.")
+    (license gpl2)))
+
 (define-public perl-string-rewriteprefix
   (package
     (name "perl-string-rewriteprefix")
