@@ -6635,7 +6635,7 @@ one or more modules.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Package-Stash-" version ".tar.gz"))
        (sha256
         (base32 "0zrs4byhlpq5ybnl0fd3y6pfzair6i2dyvzn7f7a7pgj9n2fi3n5"))))
