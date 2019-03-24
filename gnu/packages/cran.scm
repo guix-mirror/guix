@@ -11954,3 +11954,26 @@ package includes a vignette that gives a step-by-step introduction to using S4
 methods.")
     ;; Any version of the GPL
     (license license:gpl2+)))
+
+(define-public r-untb
+  (package
+    (name "r-untb")
+    (version "1.7-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "untb" version))
+       (sha256
+        (base32
+         "1i7m4vfslsix98dwx4jlrsldm7fhhfp25gr7aapcxqxms7ryaby6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-brobdingnag" ,r-brobdingnag)
+       ("r-partitions" ,r-partitions)
+       ("r-polynom" ,r-polynom)))
+    (home-page "https://github.com/RobinHankin/untb.git")
+    (synopsis "Ecological drift under the UNTB")
+    (description
+     "This package provides numerical simulations, and visualizations, of
+Hubbell's @dfn{Unified Neutral Theory of Biodiversity} (UNTB).")
+    (license license:gpl2+)))
