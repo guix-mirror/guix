@@ -40,6 +40,7 @@
   #:use-module (guix build-system r)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -11873,3 +11874,36 @@ extensions.")
      "This package integrates sophisticated mixed modelling methods with a
 whole genome approach to detecting significant QTL in linkage maps.")
     (license license:gpl2+)))
+
+(define-public r-bedr
+  (package
+    (name "r-bedr")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bedr" version))
+       (sha256
+        (base32
+         "0q790695h8bls0qw284n1zn7lxzym1dnnj095fsbjga2p116z4yv"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-r-utils" ,r-r-utils)
+       ("r-testthat" ,r-testthat)
+       ("r-venndiagram" ,r-venndiagram)
+       ("r-yaml" ,r-yaml)
+       ("bedops" ,bedops)
+       ("bedtools" ,bedtools)
+       ("htslib" ,htslib))) ; for tabix
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://cran.r-project.org/web/packages/bedr")
+    (synopsis "Genomic region processing")
+    (description
+     "This package is for genomic regions processing using command line tools
+such as BEDTools, BEDOPS and Tabix.  These tools offer scalable and efficient
+utilities to perform genome arithmetic e.g indexing, formatting and merging.
+The bedr package's API enhances access to these tools as well as offers
+additional utilities for genomic regions processing.")
+    (license license:gpl2)))
