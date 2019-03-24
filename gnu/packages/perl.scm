@@ -1557,6 +1557,28 @@ data.")
 @file{Changes} files that conform to a common specification.")
     (license perl-license)))
 
+(define-public perl-cpan-distnameinfo
+  (package
+    (name "perl-cpan-distnameinfo")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/G/GB/GBARR/CPAN-DistnameInfo-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0d94kx596w7k328cvq4y96z1gz12hdhn3z1mklkbrb7fyzlzn91g"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/CPAN-DistnameInfo")
+    (synopsis "Extract the name and version from a distribution filename")
+    (description
+     "@code{CPAN::DistnameInfo} uses heuristics to extract the distribution
+name and version from filenames.")
+    (license perl-license)))
+
 (define-public perl-cpan-meta-check
   (package
     (name "perl-cpan-meta-check")
