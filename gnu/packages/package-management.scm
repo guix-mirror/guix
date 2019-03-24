@@ -78,6 +78,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -1018,7 +1019,11 @@ the bootloader configuration.")
      (sha256
       (base32
        "0i0dn3w3545lvmjlzqj3j70lk8yrq64r9frp1rk6a161gwq20ixv"))))
-   (build-system gnu-build-system)
+
+   ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
+   ;; find the TLS backend in glib-networking.
+   (build-system glib-or-gtk-build-system)
+
    (arguments
     '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
       #:configure-flags (list
