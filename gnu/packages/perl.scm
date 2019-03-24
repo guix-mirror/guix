@@ -8149,6 +8149,32 @@ documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
 processing in Perl code.")
     (license (list gpl3 artistic2.0))))
 
+(define-public perl-template-tiny
+  (package
+    (name "perl-template-tiny")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/Template-Tiny-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0jhadxbc8rzbk2v8qvjrbhnvfp0m56iqar6d4nvxyl8bccn0cgh7"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Template-Tiny")
+    (synopsis "Template Toolkit reimplemented in as little code as possible")
+    (description
+     "@code{Template::Tiny} is a reimplementation of a subset of the
+functionality from Template Toolkit in as few lines of code as possible.
+
+It is intended for use in light-usage, low-memory, or low-cpu templating
+situations, where you may need to upgrade to the full feature set in the
+future, or if you want the retain the familiarity of TT-style templates.")
+    (license perl-license)))
+
 (define-public perl-term-encoding
   (package
     (name "perl-term-encoding")
