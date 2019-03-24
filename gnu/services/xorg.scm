@@ -274,8 +274,8 @@ EndSection\n" port)
                                     keyboard-layout-variant))
                   (model   #$(and=> (xorg-configuration-keyboard-layout config)
                                     keyboard-layout-model))
-                  (options '#$(keyboard-layout-options
-                               (xorg-configuration-keyboard-layout config))))
+                  (options '#$(and=> (xorg-configuration-keyboard-layout config)
+                                     keyboard-layout-options)))
               (when layout
                 (display (input-class-section layout variant model options)
                          port)
