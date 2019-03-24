@@ -11907,3 +11907,27 @@ utilities to perform genome arithmetic e.g indexing, formatting and merging.
 The bedr package's API enhances access to these tools as well as offers
 additional utilities for genomic regions processing.")
     (license license:gpl2)))
+
+(define-public r-partitions
+  (package
+    (name "r-partitions")
+    (version "1.9-19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "partitions" version))
+       (sha256
+        (base32
+         "1pklfnjdc094c8nzkqcdvqzdh8v3p5n8jbg4pf9678iw648saiyx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gmp" ,r-gmp)
+       ("r-polynom" ,r-polynom)))
+    (home-page "https://cran.r-project.org/web/packages/partitions")
+    (synopsis "Additive partitions of integers")
+    (description
+     "This package provides tools to enumerates the partitions, unequal
+partitions, and restricted partitions of an integer; the three corresponding
+partition functions are also given.")
+    ;; Any version of the GPL
+    (license license:gpl2+)))
