@@ -8612,7 +8612,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://cpan/authors/id/J/JH/JHI/Time-HiRes-"
+                    "mirror://cpan/authors/id/A/AT/ATOOMIC/Time-HiRes-"
                     version ".tar.gz"))
               (sha256
                (base32
