@@ -5534,14 +5534,14 @@ patterned after functions in the snow package.")
 (define-public r-polynom
   (package
     (name "r-polynom")
-    (version "1.3-9")
+    (version "1.4-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "polynom" version))
        (sha256
         (base32
-         "1s4xxv5rvpigawknvq27v9vzvs83phfsj5h8mim2lmf5bj950nnk"))))
+         "1pflscwc0qzdf0y60j7s0dkglgmz18xajywfbn6s263idyr8idy5"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/polynom/")
     (synopsis "Functions for univariate polynomial manipulations")
