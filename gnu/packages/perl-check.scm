@@ -142,6 +142,30 @@ framework base class.  It concentrates on offering reusable data driven
 patterns, so that you can write tests with a minimum of code.")
     (license perl-license)))
 
+(define-public perl-test-checkdeps
+  (package
+    (name "perl-test-checkdeps")
+    (version "0.010")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LE/LEONT/Test-CheckDeps-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1vjinlixxdx6gfcw8y1dw2rla8bfhi8nmgcqr3nffc7kqskcrz36"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)))
+    (home-page "https://metacpan.org/release/Test-CheckDeps")
+    (synopsis "Check for presence of dependencies")
+    (description
+     "This module provides a test that checks all dependencies have been
+installed properly.")
+    (license perl-license)))
+
 (define-public perl-test-class
   (package
     (name "perl-test-class")
