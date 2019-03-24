@@ -548,6 +548,30 @@ Test::Exception.  It does much less, but should allow greater flexibility in
 testing exception-throwing code with about the same amount of typing.")
     (license perl-license)))
 
+(define-public perl-test-file
+  (package
+    (name "perl-test-file")
+    (version "1.443")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/B/BD/BDFOY/Test-File-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1mdwb3x8d4l24wsymamsnq2c73a637v4q5kmb5xqqz31iymsdd31"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-utf8" ,perl-test-utf8)))
+    (home-page "https://metacpan.org/release/Test-File")
+    (synopsis "Utilities for testing file attributes")
+    (description
+     "@code{Test::File} provides a collection of test utilities for file
+attributes.")
+    (license perl-license)))
+
 (define-public perl-test-file-sharedir-dist
   (package
     (name "perl-test-file-sharedir-dist")
