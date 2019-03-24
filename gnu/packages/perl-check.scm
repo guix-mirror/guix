@@ -385,6 +385,30 @@ functions.")
     ;; license, any version, ..."
     (license gpl3+)))
 
+(define-public perl-test-dir
+  (package
+    (name "perl-test-dir")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MT/MTHURN/"
+                           "Test-Dir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hpafgr93jjl6s8spskhdxhgich4cccmaiq99mla5diyj4iv6ckk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-pod-coverage" ,perl-pod-coverage)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/Test-Dir")
+    (synopsis "Utilities for testing directory attributes")
+    (description
+     "This modules provides a collection of test utilities for directory
+attributes.")
+    (license perl-license)))
+
 (define-public perl-test-directory
   (package
     (name "perl-test-directory")
