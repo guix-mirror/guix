@@ -12266,3 +12266,42 @@ distance and tessellations, for summarizing these objects, and for permitting
 their use in spatial data analysis, including regional aggregation by minimum
 spanning tree.")
     (license license:gpl2+)))
+
+(define-public r-adegenet
+  (package
+    (name "r-adegenet")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "adegenet" version))
+       (sha256
+        (base32
+         "0ynfblp0hbd3dp3k86fn1wyhqr28lk6hs2bg4q7gyf0sfdfzwhrh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ade4" ,r-ade4)
+       ("r-ape" ,r-ape)
+       ("r-boot" ,r-boot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-igraph" ,r-igraph)
+       ("r-mass" ,r-mass)
+       ("r-reshape2" ,r-reshape2)
+       ("r-seqinr" ,r-seqinr)
+       ("r-shiny" ,r-shiny)
+       ("r-spdep" ,r-spdep)
+       ("r-vegan" ,r-vegan)))
+    (home-page "https://github.com/thibautjombart/adegenet")
+    (synopsis "Exploratory analysis of genetic and genomic data")
+    (description
+     "This package provides a toolset for the exploration of genetic and
+genomic data.  Adegenet provides formal (S4) classes for storing and handling
+various genetic data, including genetic markers with varying ploidy and
+hierarchical population structure (@code{genind} class), alleles counts by
+populations (@code{genpop}), and genome-wide SNP data (@code{genlight}).  It
+also implements original multivariate methods (DAPC, sPCA), graphics,
+statistical tests, simulation tools, distance and similarity measures, and
+several spatial methods.  A range of both empirical and simulated datasets is
+also provided to illustrate various methods.")
+    (license license:gpl2+)))
