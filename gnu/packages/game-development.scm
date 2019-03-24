@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -1329,3 +1331,47 @@ that parenthetically inclined game developers need to make 2D (and eventually
 @item REPL-driven development model
 @end enumerate\n")
     (license license:gpl3+)))
+
+(define-public bennu-game-development
+  (package
+    (name "bennu-game-development")
+    (version "348")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "http://svn.code.sf.net/p/bennugd/code")
+                    (revision (string->number version))))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0wpzsbh4zi3931493dnyl5ffmh1b7fj2sx3mzrq304z9zs4d6lqq"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configure-for-x86-64
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "core")
+             (delete-file "configure")
+             (substitute* "configure.in"
+               (("i\\*86\\)")
+                "x86_64)
+                COMMON_CFLAGS=\"$COMMON_CFLAGS -DUSE_OPENSSL\"
+                COMMON_LDFLAGS=\"$COMMON_LDFLAGS\"
+                LIBSSL=\"crypto\"
+                USE_OPENSSL=yes
+                ;;
+
+            i*86)")))))))
+    (inputs `(("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)))
+    (synopsis "Programming language to create games")
+    (description "Bennu Game Development, also known as bennudg, is a
+programming language tailored at game development.  It is the successor of
+Fenix.")
+    (home-page "https://sourceforge.net/projects/bennugd/")
+    (license license:zlib)))
