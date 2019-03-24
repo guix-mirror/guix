@@ -49,6 +49,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages perl-web)
@@ -4304,6 +4305,41 @@ try @code{Capture::Tiny} instead.")
     (description "This module provides three utility subroutines that make it
 easier to develop interactive applications: is_interactive(), interactive(),
 and busy().")
+    (license (package-license perl))))
+
+(define-public perl-io-pager
+  (package
+    (name "perl-io-pager")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JP/JPIERCE/IO-Pager-"
+             version
+             "0.tgz"))
+       (sha256
+        (base32
+         "1vzdypsr7vkj8nnda9ccrksci6pqj5awwmi89l7x3mbpq36gad87"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-less
+           (lambda _
+             (substitute* "lib/IO/Pager.pm"
+               (("/usr/local/bin/less', '/usr/bin/less")
+                (which "less")))
+             #t)))))
+    (propagated-inputs
+     `(("perl-file-which" ,perl-file-which)))
+    (inputs
+     `(("less" ,less)))
+    (home-page "https://metacpan.org/release/IO-Pager")
+    (synopsis "Select a pager and pipe text to it")
+    (description
+     "@code{IO::Pager} can be used to locate an available pager and use it to
+display output if a TTY is in use.")
     (license (package-license perl))))
 
 (define-public perl-io-string
