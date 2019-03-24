@@ -493,13 +493,13 @@ licences therein.")
 specification - the META file data can be read, created, parsed and written in a
 manner that is conformant with the specification.
 
-Where they are known about it also makes allowance for @quot{customary} usage in
+Where they are known about it also makes allowance for customary usage in
 existing software (such as installers and so forth.)
 
-The intent of this is allow the generation and testing of META files for module
-authors, so it can provide meta-information whether the attributes are mandatory
-as per the spec and where known the places that @quot{customary} attributes are
-used.")
+The intent of this is allow the generation and testing of META files for
+module authors, so it can provide meta-information whether the attributes are
+mandatory as per the spec and where known the places that customary attributes
+are used.")
     (license license:artistic2.0)))
 
 (define-public perl6-mime-base64
