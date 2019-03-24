@@ -50,6 +50,33 @@ used are outdated now, the idea behind it is not.  Mojolicious is a new
 endeavor to implement this idea using modern technologies.")
     (license license:artistic2.0)))
 
+(define-public perl-uri-db
+  (package
+    (name "perl-uri-db")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DW/DWHEELER/URI-db-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0n56xxlw7c39pfar0dxckr9mbmp6yrzk53ic0cb24raiykm9v6f4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)
+       ("perl-uri-nested" ,perl-uri-nested)))
+    (home-page "https://metacpan.org/release/URI-db")
+    (synopsis "Handle database URIs")
+    (description
+     "This module defines a format for database URIs, and provides a @{URI}
+class to handle these.")
+    (license license:perl-license)))
+
 (define-public perl-uri-escape
   (package
     (name "perl-uri-escape")
