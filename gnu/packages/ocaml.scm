@@ -4791,7 +4791,7 @@ Atom.")
 (define-public ocaml-gsl
   (package
     (name "ocaml-gsl")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -4801,10 +4801,22 @@ Atom.")
          version "/gsl-" version ".tbz"))
        (sha256
         (base32
-         "17vcswipliq1b2idbzx1z95kskn1a4q4s5v04igilg0f7lnkaarb"))))
-    (build-system ocaml-build-system)
+         "1l5zkkkg8sglsihrbf10ivq9s8xzl1y6ag89i4jqpnmi4m43fy34"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-gsl-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/config/discover.ml"
+               (("/usr") (assoc-ref inputs "gsl")))
+             #t)))))
     (inputs
      `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)))
     (home-page "https://mmottl.github.io/gsl-ocaml")
     (synopsis "Bindings to the GNU Scientific Library")
     (description
