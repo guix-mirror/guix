@@ -1318,6 +1318,29 @@ module, and nothing else.")
     (license license:perl-license)
     (home-page "https://metacpan.org/release/DBD-SQLite")))
 
+(define-public perl-mysql-config
+  (package
+    (name "perl-mysql-config")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DARREN/MySQL-Config-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1svn7ccw2gc4cazvc58j84rxhnc9vs01zpird0l8460598j475qr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/MySQL-Config")
+    (synopsis "Parse and utilize MySQL's /etc/my.cnf and ~/.my.cnf files")
+    (description
+     "@code{MySQL::Config} emulates the @code{load_defaults} function from
+libmysqlclient.  It will fill an aray with long options, ready to be parsed by
+@code{Getopt::Long}.")
+    (license license:perl-license)))
+
 (define-public perl-sql-abstract
   (package
     (name "perl-sql-abstract")
