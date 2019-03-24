@@ -1841,7 +1841,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.7.2")
+    (version "2.7.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1849,7 +1849,7 @@ for use with HTML5 video.")
                    "avidemux_" version ".tar.gz"))
              (sha256
               (base32
-               "07fdz3y4iln7cizikdjj96dqvp2f8zzhs31ncxxwzdkngn5v8138"))
+               "17x2mnnr5h8pp764p55l1xcn2ljnzhbj8cykajlllvk4rc4qwxld"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1878,7 +1878,7 @@ for use with HTML5 video.")
        ("yasm" ,yasm)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
