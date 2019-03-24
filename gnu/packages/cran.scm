@@ -12071,3 +12071,28 @@ classes.")
      "This package provides selected commonly used methods for choosing
 univariate class intervals for mapping or other graphics purposes.")
     (license license:gpl2+)))
+
+(define-public r-spdata
+  (package
+    (name "r-spdata")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spData" version))
+       (sha256
+        (base32
+         "162cqb331ki43jx4r8lpkjpn2l712figd896rnawg9j1jmjyl96y"))))
+    (properties `((upstream-name . "spData")))
+    (build-system r-build-system)
+    (home-page "https://github.com/Nowosad/spData")
+    (synopsis "Datasets for spatial analysis")
+    (description
+     "This a package containing diverse spatial datasets for demonstrating,
+benchmarking and teaching spatial data analysis.  It includes R data of class
+@code{sf}, @code{Spatial}, and @code{nb}.  It also contains data stored in a
+range of file formats including GeoJSON, ESRI Shapefile and GeoPackage.  Some
+of the datasets are designed to illustrate specific analysis techniques.
+@code{cycle_hire()} and @code{cycle_hire_osm()}, for example, are designed to
+illustrate point pattern analysis techniques.")
+    (license license:cc0)))
