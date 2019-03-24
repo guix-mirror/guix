@@ -47,6 +47,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
@@ -12145,3 +12146,37 @@ ways, clips tessellations to sub-windows, calculates perimeters of
 tessellations, and summarizes information about the tiles of the
 tessellation.")
     (license license:gpl2+)))
+
+(define-public r-sf
+  (package
+    (name "r-sf")
+    (version "0.7-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sf" version))
+       (sha256
+        (base32
+         "1b9lbid0hmmz8m5vhg8mi2mi2rclia6qwzd1jr8s81i2l0md828d"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gdal" ,gdal)
+       ("geos" ,geos)
+       ("proj" ,proj.4)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-classint" ,r-classint)
+       ("r-dbi" ,r-dbi)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-units" ,r-units)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/r-spatial/sf/")
+    (synopsis "Simple features for R")
+    (description
+     "This package provides support for simple features, a standardized way to
+encode spatial vector data.  It binds to GDAL for reading and writing data, to
+GEOS for geometrical operations, and to PROJ for projection conversions and
+datum transformations.")
+    ;; Either of these licenses
+    (license (list license:gpl2 license:expat))))
