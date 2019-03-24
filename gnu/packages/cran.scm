@@ -41,6 +41,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bioinformatics)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -12020,3 +12021,29 @@ breakpoints in a genomic sequence alignment.")
 statistics, with applications to @dfn{single-nucleotide polymorphism} (SNP)
 data.")
     (license license:gpl2+)))
+
+(define-public r-units
+  (package
+    (name "r-units")
+    (version "0.6-2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "units" version))
+        (sha256
+          (base32
+            "0w7iwp8c66d5gj4rsb8c87vb0ja39hym6fmfnqaqwb3is1snfa2y"))))
+    (build-system r-build-system)
+    (inputs
+     `(("udunits" ,udunits)))
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/r-quantities/units/")
+    (synopsis "Measurement Units for R Vectors")
+    (description
+      "This package provides support for measurement units in R vectors,
+matrices and arrays: automatic propagation, conversion, derivation and
+simplification of units; raising errors in case of unit incompatibility.  It
+is compatible with the @code{POSIXct}, @code{Date} and @code{difftime}
+classes.")
+    (license license:gpl2)))
