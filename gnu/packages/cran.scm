@@ -11823,3 +11823,31 @@ algorithms as described in Sutton & Barto (1998).  The Q-Learning algorithm
 can be used with function approximation, eligibility traces (Singh & Sutton,
 1996) and experience replay (Mnih et al., 2013).")
     (license license:expat)))
+
+(define-public r-lemon
+  (package
+    (name "r-lemon")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lemon" version))
+       (sha256
+        (base32
+         "0wsn5bfg10wq4dnrgpyraz2bzx9p19c7hf1pwj3h4zmpqfgsdbpw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gtable" ,r-gtable)
+       ("r-knitr" ,r-knitr)
+       ("r-lattice" ,r-lattice)
+       ("r-plyr" ,r-plyr)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/stefanedwards/lemon")
+    (synopsis "Freshen up your ggplot2 plots")
+    (description
+     "This package provides functions for working with legends and axis lines
+of ggplot2, facets that repeat axis lines on all panels, and some knitr
+extensions.")
+    (license license:gpl3)))
