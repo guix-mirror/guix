@@ -12305,3 +12305,29 @@ statistical tests, simulation tools, distance and similarity measures, and
 several spatial methods.  A range of both empirical and simulated datasets is
 also provided to illustrate various methods.")
     (license license:gpl2+)))
+
+(define-public r-pegas
+  (package
+    (name "r-pegas")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pegas" version))
+       (sha256
+        (base32
+         "0l21bapzbjcvblbvks3jh9rpy9hng1ccd7f0glhqw695lc737bpx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-adegenet" ,r-adegenet)
+       ("r-ape" ,r-ape)))
+    (home-page "http://ape-package.ird.fr/pegas.html")
+    (synopsis "Population and evolutionary genetics analysis system")
+    (description
+     "This package provides functions for reading, writing, plotting,
+analysing, and manipulating allelic and haplotypic data, including from VCF
+files, and for the analysis of population nucleotide sequences and
+micro-satellites including coalescent analyses, linkage disequilibrium,
+population structure (Fst, Amova) and equilibrium (HWE), haplotype networks,
+minimum spanning tree and network, and median-joining networks.")
+    (license license:gpl2+)))
