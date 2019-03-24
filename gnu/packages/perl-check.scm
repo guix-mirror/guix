@@ -1375,6 +1375,32 @@ check if a string is valid and not corrupt, whereas the characteristics tests
 will check that string has a given set of characteristics.")
     (license perl-license)))
 
+(define-public perl-test-version
+  (package
+    (name "perl-test-version")
+    (version "2.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/P/PL/PLICEASE/Test-Version-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1q1qradaf7r2rb3jhpv01wl8z3bxymkfqrl9gwdhxwx5jwldvqcw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-file-find-rule-perl" ,perl-file-find-rule-perl)))
+    (home-page "https://metacpan.org/release/Test-Version")
+    (synopsis "Check versions in modules")
+    (description
+     "@code{Test::Version} checks to ensure that all modules have a version
+defined, and that the version is valid.")
+    (license artistic2.0)))
+
 (define-public perl-test-warn
   (package
     (name "perl-test-warn")
