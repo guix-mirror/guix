@@ -1254,7 +1254,9 @@ coverage information.")
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                                         "/lib/ocaml/site-lib"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
