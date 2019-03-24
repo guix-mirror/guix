@@ -3010,6 +3010,33 @@ simple requests without the overhead of a large framework like LWP::UserAgent.
 It supports proxies and redirection.  It also correctly resumes after EINTR.")
     (license l:perl-license)))
 
+(define-public perl-http-tinyish
+  (package
+    (name "perl-http-tinyish")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MI/MIYAGAWA/HTTP-Tinyish-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "199sa722amvwhq0czjfb7psj3hbqmvni5vxkrm579r5943pg0rax"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-which" ,perl-file-which)
+       ("perl-ipc-run3" ,perl-ipc-run3)))
+    (home-page "https://metacpan.org/release/HTTP-Tinyish")
+    (synopsis "@code{HTTP::Tiny} compatible HTTP client wrappers")
+    (description
+     "@code{HTTP::Tinyish} is a wrapper module for @acronym{LWP,libwww-perl},
+@code{HTTP::Tiny}, curl and wget.
+
+It provides an API compatible to HTTP::Tiny.")
+    (license l:perl-license)))
+
 (define-public perl-io-html
   (package
     (name "perl-io-html")
