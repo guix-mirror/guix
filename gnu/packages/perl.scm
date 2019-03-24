@@ -8654,6 +8654,28 @@ can also be set to any arbitrary supplied order.  The familiar perl array
 operations can also be performed on the IxHash.")
   (license (package-license perl))))
 
+(define-public perl-tie-handle-offset
+  (package
+    (name "perl-tie-handle-offset")
+    (version "0.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Tie-Handle-Offset-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "17m8s8314wi4g0wasdxk15rf12vzsgzmcbr598jam5f6bl2kk7zf"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Tie-Handle-Offset")
+    (synopsis "Special file handle that hides the beginning of a file")
+    (description
+     "This modules provides a file handle that hides the beginning of a file,
+by modifying the @code{seek()} and @code{tell()} calls.")
+    (license asl2.0)))
+
 (define-public perl-tie-toobject
   (package
     (name "perl-tie-toobject")
