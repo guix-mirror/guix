@@ -1353,20 +1353,21 @@ that parenthetically inclined game developers need to make 2D (and eventually
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-configure-for-x86-64
+         (add-after 'unpack 'patch-configure-to-use-openssl
            (lambda* (#:key outputs #:allow-other-keys)
              (chdir "core")
              (delete-file "configure")
              (substitute* "configure.in"
                (("i\\*86\\)")
-                "x86_64)
+                "*)
                 COMMON_CFLAGS=\"$COMMON_CFLAGS -DUSE_OPENSSL\"
                 COMMON_LDFLAGS=\"$COMMON_LDFLAGS\"
                 LIBSSL=\"crypto\"
                 USE_OPENSSL=yes
                 ;;
 
-            i*86)")))))))
+            i*86)"))
+               #t)))))
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
     (native-inputs `(("pkg-config" ,pkg-config)
