@@ -55,7 +55,7 @@ endeavor to implement this idea using modern technologies.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/URI-"
+       (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/URI-"
                            version ".tar.gz"))
        (sha256
         (base32
