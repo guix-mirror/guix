@@ -10861,14 +10861,14 @@ memory usage and processing time is minimized.")
 (define-public r-phangorn
   (package
     (name "r-phangorn")
-    (version "2.4.0")
+    (version "2.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "phangorn" version))
        (sha256
         (base32
-         "0xc8k552nxczy19jr0xjjagrzc8x6lafasgk2c099ls8bc1yml1i"))))
+         "1bv86yfk5r015s7ij6v4zz7bagwrw9m13yfs5853drxb19d5h1m3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
