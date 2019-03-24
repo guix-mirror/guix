@@ -12121,3 +12121,27 @@ distributions defined by the user.  It also contains functions for regression
 models, hierarchical models, Bayesian tests, and illustrations of Gibbs
 sampling.")
     (license license:gpl2+)))
+
+(define-public r-deldir
+  (package
+    (name "r-deldir")
+    (version "0.1-16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "deldir" version))
+       (sha256
+        (base32
+         "0549kj0hlkdyvm5axsm3np30wg53fm2pxybijzw0avlgsd2y2n2q"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/deldir")
+    (synopsis "Delaunay triangulation and Dirichlet (Voronoi) tessellation")
+    (description
+     "This package provides tools for calculating the Delaunay triangulation
+and the Dirichlet or Voronoi tessellation (with respect to the entire plane)
+of a planar point set.  It plots triangulations and tessellations in various
+ways, clips tessellations to sub-windows, calculates perimeters of
+tessellations, and summarizes information about the tiles of the
+tessellation.")
+    (license license:gpl2+)))
