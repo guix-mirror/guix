@@ -2014,14 +2014,14 @@ file system and is independent from any system library.")
 (define-public ocaml-bos
   (package
     (name "ocaml-bos")
-    (version "0.1.4")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/bos/releases/"
                                   "bos-" version ".tbz"))
               (sha256
                 (base32
-                  "1ly66lysk4w6mdy4k1n3ynlpfpq7lw4wshcpzgx58v6x613w5s7q"))))
+                  "1s10iqx8rgnxr5n93lf4blwirjf8nlm272yg5sipr7lsr35v49wc"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
