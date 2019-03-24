@@ -82,6 +82,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
@@ -982,6 +983,92 @@ for example from a shell script.")
     ;; Some files (like scan-sparql.c) contain a GPLv3+ license header, while
     ;; others (like sparql-query.c) contain a GPLv2+ license header.
     (license (list license:gpl3+))))
+
+(define-public sqitch
+  (package
+    (name "sqitch")
+    (version "0.9999")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1cvj8grs3bzc4g7dw1zc26g4biv1frav18sq0fkvi2kk0q1aigzm"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-check-environment
+           (lambda _
+             (setenv "TZ" "UTC")
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PERL5LIB")))
+               (wrap-program (string-append out "/bin/sqitch")
+                 `("PERL5LIB" ":" prefix
+                   (,(string-append out "/lib/perl5/site_perl"
+                                    ":"
+                                    path)))))
+             #t)))))
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-io-pager" ,perl-io-pager)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-dir" ,perl-test-dir)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-file" ,perl-test-file)
+       ("perl-test-file-contents" ,perl-test-file-contents)
+       ("perl-test-mockmodule" ,perl-test-mockmodule)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-warn" ,perl-test-warn)))
+    (inputs
+     `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
+       ("perl-clone" ,perl-clone)
+       ("perl-config-gitlike" ,perl-config-gitlike)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-dbd-pg" ,perl-dbd-pg)
+       ("perl-dbi" ,perl-dbi)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-encode-locale" ,perl-encode-locale)
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-ipc-run3" ,perl-ipc-run3)
+       ("perl-ipc-system-simple" ,perl-ipc-system-simple)
+       ("perl-libintl-perl" ,perl-libintl-perl)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-moo" ,perl-moo)
+       ("perl-mysql-config" ,perl-mysql-config)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
+       ("perl-string-formatter" ,perl-string-formatter)
+       ("perl-string-shellquote" ,perl-string-shellquote)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-template-tiny" ,perl-template-tiny)
+       ("perl-template-toolkit" ,perl-template-toolkit)
+       ("perl-throwable" ,perl-throwable)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-type-tiny" ,perl-type-tiny)
+       ("perl-type-tiny-xs" ,perl-type-tiny-xs)
+       ("perl-uri" ,perl-uri)
+       ("perl-uri-db" ,perl-uri-db)))
+    (home-page "https://sqitch.org/")
+    (synopsis "Database change management tool")
+    (description
+     "Sqitch is a standalone change management system for database schemas,
+which uses SQL to describe changes.")
+    (license license:x11)))
 
 (define-public sqlcrush
   ;; Unfortunately, there is no proper upstream release and may never be.
