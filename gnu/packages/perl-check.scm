@@ -572,6 +572,34 @@ testing exception-throwing code with about the same amount of typing.")
 attributes.")
     (license perl-license)))
 
+(define-public perl-test-file-contents
+  (package
+    (name "perl-test-file-contents")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DW/DWHEELER/Test-File-Contents-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0g8zgfyw84181snw7ghahnl9r4lrmlfj7zwi76sv8d0bj7xssvyd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-text-diff" ,perl-text-diff)))
+    (home-page "https://metacpan.org/release/Test-File-Contents")
+    (synopsis "Test routines for examining the contents of files")
+    (description
+     "@{Test::File::Contents} provides functions for testing the contents of
+files.")
+    (license perl-license)))
+
 (define-public perl-test-file-sharedir-dist
   (package
     (name "perl-test-file-sharedir-dist")
