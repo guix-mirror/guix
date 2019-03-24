@@ -1080,7 +1080,7 @@ of use.")
        (method url-fetch)
        (uri
         (string-append "https://github.com/OpenMW/openmw/archive/"
-                       name "-" version ".tar.gz"))
+                       "openmw-" version ".tar.gz"))
        (sha256
         (base32
          "03fgm2f2r7y0aqlgp038pdlnllgvm3jimrp968p4nhz1sffvjzcy"))))
