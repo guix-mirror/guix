@@ -1375,3 +1375,27 @@ programming language tailored at game development.  It is the successor of
 Fenix.")
     (home-page "https://sourceforge.net/projects/bennugd/")
     (license license:zlib)))
+
+(define-public bennu-game-development-modules
+  (package
+    (inherit bennu-game-development)
+    (name "bennu-game-development-modules")
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-conflicting-definitions
+           (lambda _
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "core/include/fmath.h"
+                 (("extern fixed fmul\\( int x, int y \\);") "")
+                 (("extern fixed fdiv\\( int x, int y \\);") "")))
+             (chdir "modules"))))))
+    (inputs `(("zlib" ,zlib)
+              ("libpng" ,libpng)
+              ("openssl" ,openssl)
+              ("sdl-mixer" ,sdl-mixer)
+              ("bennu-game-development" ,bennu-game-development)))
+    (synopsis "Modules for the Bennu Game Developement programming language")
+    (description "This package contains a collection of modules for the Bennu
+Game Developement programming language, from CD handling through SDL to
+joystick support.")))
