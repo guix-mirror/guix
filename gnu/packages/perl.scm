@@ -7716,6 +7716,28 @@ fixed string interpolation, and simple width-matching.")
 known prefixes.")
     (license (package-license perl))))
 
+(define-public perl-string-shellquote
+  (package
+    (name "perl-string-shellquote")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RO/ROSCH/String-ShellQuote-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0dfxhr6hxc2majkkrm0qbx3qcbykzpphbj2ms93dc86f7183c1p6"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/String-ShellQuote")
+    (synopsis "Quote strings for passing through a shell")
+    (description
+     "@code{shell-quote} lets you pass arbitrary strings through the shell so
+that they won't be changed.")
+    (license (package-license perl))))
+
 (define-public perl-string-print
   (package
     (name "perl-string-print")
