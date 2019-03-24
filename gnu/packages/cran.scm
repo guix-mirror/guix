@@ -11977,3 +11977,22 @@ methods.")
      "This package provides numerical simulations, and visualizations, of
 Hubbell's @dfn{Unified Neutral Theory of Biodiversity} (UNTB).")
     (license license:gpl2+)))
+
+(define-public r-stepwise
+  (package
+    (name "r-stepwise")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stepwise" version))
+       (sha256
+        (base32
+         "1lbx1bxwkf9dw6q46w40pp7h5nkxgghmx8rkpaymm6iybc7gyir2"))))
+    (build-system r-build-system)
+    (home-page "http://stat.sfu.ca/statgen/research/stepwise.html")
+    (synopsis "Stepwise detection of recombination breakpoints")
+    (description
+     "This package provides a stepwise approach to identifying recombination
+breakpoints in a genomic sequence alignment.")
+    (license license:gpl2+)))
