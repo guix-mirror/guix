@@ -12180,3 +12180,38 @@ GEOS for geometrical operations, and to PROJ for projection conversions and
 datum transformations.")
     ;; Either of these licenses
     (license (list license:gpl2 license:expat))))
+
+(define-public r-spdep
+  (package
+    (name "r-spdep")
+    (version "1.0-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "spdep" version))
+       (sha256
+        (base32
+         "1ciqn5xslm4ryad10nm6fqy1qhq3qhd4hx9bj94kphfm8x1zm7kg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-boot" ,r-boot)
+       ("r-coda" ,r-coda)
+       ("r-deldir" ,r-deldir)
+       ("r-expm" ,r-expm)
+       ("r-gmodels" ,r-gmodels)
+       ("r-learnbayes" ,r-learnbayes)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-nlme" ,r-nlme)
+       ("r-sf" ,r-sf)
+       ("r-sp" ,r-sp)
+       ("r-spdata" ,r-spdata)))
+    (home-page "https://github.com/r-spatial/spdep/")
+    (synopsis "Spatial dependence: weighting schemes, statistics and models")
+    (description
+     "This package provides a collection of functions to create spatial
+weights matrix objects from polygon contiguities, from point patterns by
+distance and tessellations, for summarizing these objects, and for permitting
+their use in spatial data analysis, including regional aggregation by minimum
+spanning tree.")
+    (license license:gpl2+)))
