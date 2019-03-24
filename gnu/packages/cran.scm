@@ -11996,3 +11996,27 @@ Hubbell's @dfn{Unified Neutral Theory of Biodiversity} (UNTB).")
      "This package provides a stepwise approach to identifying recombination
 breakpoints in a genomic sequence alignment.")
     (license license:gpl2+)))
+
+(define-public r-snpmaxsel
+  (package
+    (name "r-snpmaxsel")
+    (version "1.0-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "SNPmaxsel" version))
+       (sha256
+        (base32
+         "0pjvixwqzjd3jwccc8yqq9c76afvbmfq0z1w0cwyj8bblrjpx13z"))))
+    (properties `((upstream-name . "SNPmaxsel")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-combinat" ,r-combinat)
+       ("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://cran.r-project.org/web/packages/SNPmaxsel/index.html")
+    (synopsis "Maximally selected statistics for SNP data")
+    (description
+     "This package implements asymptotic methods related to maximally selected
+statistics, with applications to @dfn{single-nucleotide polymorphism} (SNP)
+data.")
+    (license license:gpl2+)))
