@@ -1795,21 +1795,22 @@ simple (yet expressive) query language to select the tests to run.")
 (define-public ocaml-react
   (package
     (name "ocaml-react")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/react/releases/react-"
                             version ".tbz"))
         (sha256 (base32
-                  "0knhgbngphv5sp1yskfd97crf169qhpc0igr6w7vqw0q36lswyl8"))))
+                  "1aj8w79gdd9xnrbz7s5p8glcb4pmimi8jp9f439dqnf6ih3mqb3v"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)))
+       ("opam" ,opam)
+       ("ocaml-topkg" ,ocaml-topkg)))
     (arguments
      `(#:tests? #f
-       #:build-flags (list "native=true" "native-dynlink=true")
+       #:build-flags (list "build")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
