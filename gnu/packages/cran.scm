@@ -12096,3 +12096,28 @@ of the datasets are designed to illustrate specific analysis techniques.
 @code{cycle_hire()} and @code{cycle_hire_osm()}, for example, are designed to
 illustrate point pattern analysis techniques.")
     (license license:cc0)))
+
+(define-public r-learnbayes
+  (package
+    (name "r-learnbayes")
+    (version "2.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "LearnBayes" version))
+       (sha256
+        (base32
+         "0ch54v2zz2yyyk0lvn5rfikdmyz1qh9j1wk3585wl8v58mc0h4cv"))))
+    (properties `((upstream-name . "LearnBayes")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/LearnBayes")
+    (synopsis "Functions for learning Bayesian inference")
+    (description
+     "This package provides a collection of functions helpful in learning the
+basic tenets of Bayesian statistical inference.  It contains functions for
+summarizing basic one and two parameter posterior distributions and predictive
+distributions.  It contains MCMC algorithms for summarizing posterior
+distributions defined by the user.  It also contains functions for regression
+models, hierarchical models, Bayesian tests, and illustrations of Gibbs
+sampling.")
+    (license license:gpl2+)))
