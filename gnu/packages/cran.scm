@@ -11931,3 +11931,26 @@ partitions, and restricted partitions of an integer; the three corresponding
 partition functions are also given.")
     ;; Any version of the GPL
     (license license:gpl2+)))
+
+(define-public r-brobdingnag
+  (package
+    (name "r-brobdingnag")
+    (version "1.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Brobdingnag" version))
+       (sha256
+        (base32
+         "1m3ajvcksqfck5l5hj5xiflj4ry6d896ybv4f0xxks8chgnwmv0r"))))
+    (properties `((upstream-name . "Brobdingnag")))
+    (build-system r-build-system)
+    (home-page "https://github.com/RobinHankin/Brobdingnag.git")
+    (synopsis "Very large numbers in R")
+    (description
+     "This package handles very large numbers in R.  Real numbers are held
+using their natural logarithms, plus a logical flag indicating sign.  The
+package includes a vignette that gives a step-by-step introduction to using S4
+methods.")
+    ;; Any version of the GPL
+    (license license:gpl2+)))
