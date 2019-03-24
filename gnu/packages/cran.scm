@@ -12049,6 +12049,31 @@ use multiple corrections.  Visualization of data can be done either by
 barplots or heatmaps.")
     (license license:gpl2+)))
 
+(define-public r-seqinr
+  (package
+    (name "r-seqinr")
+    (version "3.4-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "seqinr" version))
+       (sha256
+        (base32
+         "17zv0n5cji17izwmwg0jcbxbjl3w5rls91w15svcnlpxjms38ahn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ade4" ,r-ade4)
+       ("r-segmented" ,r-segmented)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://seqinr.r-forge.r-project.org/")
+    (synopsis "Biological sequences retrieval and analysis")
+    (description
+     "This package provides tools for exploratory data analysis and data
+visualization of biological sequence (DNA and protein) data.  It also includes
+utilities for sequence data management under the ACNUC system.")
+    (license license:gpl2+)))
+
 (define-public r-units
   (package
     (name "r-units")
