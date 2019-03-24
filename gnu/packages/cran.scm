@@ -12047,3 +12047,27 @@ simplification of units; raising errors in case of unit incompatibility.  It
 is compatible with the @code{POSIXct}, @code{Date} and @code{difftime}
 classes.")
     (license license:gpl2)))
+
+(define-public r-classint
+  (package
+    (name "r-classint")
+    (version "0.3-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "classInt" version))
+       (sha256
+        (base32
+         "1fcjrb593bzvx1z57hq1sjs2gp6g7sm4d4xrhasfrps4nmbzirp2"))))
+    (properties `((upstream-name . "classInt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-class" ,r-class)
+       ("r-e1071" ,r-e1071)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://github.com/r-spatial/classInt/")
+    (synopsis "Choose univariate class intervals")
+    (description
+     "This package provides selected commonly used methods for choosing
+univariate class intervals for mapping or other graphics purposes.")
+    (license license:gpl2+)))
