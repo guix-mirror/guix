@@ -569,7 +569,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public physfs
   (package
     (name "physfs")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -578,7 +578,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1wgj2zqpnfbnyyi1i7bq5pshcc9n5cvwlpzp8im67nb8662ryyxp"))))
+                "0qzqz4r88gvd8m7sh2z5hvqcr0jfr4wb2f77c19xycyn0rigfk9h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
