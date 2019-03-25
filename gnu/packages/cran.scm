@@ -12824,3 +12824,24 @@ functions are developed primarily for data collected in cohort or
 cross-sectional studies.  They can accommodate uncertain haplotype phase and
 handle missing genotypes at some SNPs.")
     (license license:gpl2)))
+
+(define-public r-sampling
+  (package
+    (name "r-sampling")
+    (version "2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sampling" version))
+       (sha256
+        (base32
+         "06pj7dan0mknpsblmlnk7am78qrnwgnql5vvx7vmbfvib7rj6s9m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lpsolve" ,r-lpsolve)
+       ("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/sampling/")
+    (synopsis "Survey sampling")
+    (description
+     "This package provides functions for drawing and calibrating samples.")
+    (license license:gpl2+)))
