@@ -911,7 +911,7 @@ the same mk_accessors interface.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Class-Accessor-Grouped-" version ".tar.gz"))
        (sha256
         (base32 "1fy48hx56n5kdn1gz66awg465qf34r0n5jam64x7zxh9zhzb1m9m"))))
