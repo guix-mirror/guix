@@ -733,7 +733,7 @@ to test the installed perl for compatibility with his modules.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://cpan/authors/id/R/RJ/RJBS/Carp-"
+                    "mirror://cpan/authors/id/X/XS/XSAWYERX/Carp-"
                     version ".tar.gz"))
               (sha256
                (base32
