@@ -5516,7 +5516,7 @@ sentences.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "MooseX-Emulate-Class-Accessor-Fast-"
                            version ".tar.gz"))
        (sha256
