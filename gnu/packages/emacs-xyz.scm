@@ -4406,6 +4406,30 @@ The purpose of this library is to wrap all the quirks and hassle of
 @code{package.el} into a sane API.")
     (license license:gpl3+)))
 
+(define-public emacs-counsel-projectile
+  (package
+    (name "emacs-counsel-projectile")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ericdanan/counsel-projectile")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1inc4ndl0ysfwvxk4avbgpj4qi9rc93da6476a5c81xmwpsv8wmq"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)
+       ("emacs-projectile" ,emacs-projectile)))
+    (home-page "https://github.com/ericdanan/counsel-projectile")
+    (synopsis "Enhance Projectile with Ivy")
+    (description
+     "This package uses Ivy to provide additional actions for Projectile
+commands and replacements for existing functions.")
+    (license license:gpl3+)))
+
 (define-public emacs-queue
   (package
     (name "emacs-queue")
