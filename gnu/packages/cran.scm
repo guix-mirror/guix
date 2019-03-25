@@ -12434,3 +12434,47 @@ either PDF/EPS files.")
 routines hazard regression, hazard estimation with flexible tails, logspline,
 lspec, polyclass, and polymars.")
     (license license:gpl2+)))
+
+(define-public r-rms
+  (package
+    (name "r-rms")
+    (version "5.1-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rms" version))
+       (sha256
+        (base32
+         "1sw9a0iqiips580jpbk7yiqgyiswihvaqbnq4ybsmd4ki86i5isz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)
+       ("r-htmltable" ,r-htmltable)
+       ("r-htmltools" ,r-htmltools)
+       ("r-lattice" ,r-lattice)
+       ("r-multcomp" ,r-multcomp)
+       ("r-nlme" ,r-nlme)
+       ("r-polspline" ,r-polspline)
+       ("r-quantreg" ,r-quantreg)
+       ("r-rpart" ,r-rpart)
+       ("r-sparsem" ,r-sparsem)
+       ("r-survival" ,r-survival)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://biostat.mc.vanderbilt.edu/rms")
+    (synopsis "Regression modeling strategies")
+    (description
+     "This is a package for regression modeling, testing, estimation,
+validation, graphics, prediction, and typesetting by storing enhanced model
+design attributes in the fit.  The rms package is a collection of functions
+that assist with and streamline modeling.  It also contains functions for
+binary and ordinal logistic regression models, ordinal models for continuous Y
+with a variety of distribution families, and the Buckley-James multiple
+regression model for right-censored responses, and implements penalized
+maximum likelihood estimation for logistic and ordinary linear models.  The
+package works with almost any regression model, but it was especially written
+to work with binary or ordinal regression models, Cox regression, accelerated
+failure time models, ordinary linear models, the Buckley-James model,
+generalized least squares for serially or spatially correlated observations,
+generalized linear models, and quantile regression.")
+    (license license:gpl2+)))
