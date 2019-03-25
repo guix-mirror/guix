@@ -12776,3 +12776,29 @@ and dimensionality reduction.  Among other methods @code{kernlab} includes
 Support Vector Machines, Spectral Clustering, Kernel PCA, Gaussian Processes
 and a QP solver.")
     (license license:gpl2)))
+
+(define-public r-hierfstat
+  (package
+    (name "r-hierfstat")
+    (version "0.04-22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hierfstat" version))
+       (sha256
+        (base32
+         "1fav2v2996v5kb1ffa6v5wxfm921syxg6as034vd3j4jfhdibyfx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ade4" ,r-ade4)
+       ("r-adegenet" ,r-adegenet)
+       ("r-gtools" ,r-gtools)))
+    (home-page "https://cran.r-project.org/web/packages/hierfstat/")
+    (synopsis "Estimation and tests of hierarchical F-statistics")
+    (description
+     "This package allows the estimation of hierarchical F-statistics from
+haploid or diploid genetic data with any numbers of levels in the hierarchy,
+following the algorithm of Yang (Evolution, 1998, 52(4):950-956).  Functions
+are also given to test via randomisations the significance of each F and
+variance components, using the likelihood-ratio statistics G.")
+    (license license:gpl2+)))
