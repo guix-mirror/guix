@@ -4515,7 +4515,7 @@ versa.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/Log-Any-"
+       (uri (string-append "mirror://cpan/authors/id/P/PR/PREACTION/Log-Any-"
                            version ".tar.gz"))
        (sha256
         (base32 "1wb55ib4gvk8h5pjb6hliqg7li1xjk420q3w5r33f9p1ps60ylbl"))))
