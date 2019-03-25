@@ -6540,7 +6540,7 @@ number exists in a given range, and to be able to manipulate the range.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Object-Signature-" version ".tar.gz"))
        (sha256
         (base32 "12k90c19ly93ib1p6sm3k7sbnr2h5dbywkdmnff2ngm99p4m68c4"))))
