@@ -2555,3 +2555,27 @@ surface of a flowcell.")
 for DNA and protein sequences.  This package supports several sequence
 kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
     (license license:gpl2+)))
+
+(define-public r-triform
+  (package
+    (name "r-triform")
+    (version "1.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "triform" version))
+       (sha256
+        (base32
+         "12ca24pv1r5vbw3rq345jqg7x3prrbsxk6445zikpzfblwmw0b4s"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://bioconductor.org/packages/triform/")
+    (synopsis "Find enriched regions in transcription factor ChIP-sequencing data")
+    (description
+     "The Triform algorithm uses model-free statistics to identify peak-like
+distributions of TF ChIP sequencing reads, taking advantage of an improved
+peak definition in combination with known profile characteristics.")
+    (license license:gpl2)))
