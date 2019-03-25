@@ -1027,7 +1027,7 @@ subclasses and can be overridden.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+       (uri (string-append "mirror://cpan/authors/id/Y/YA/YANICK/"
                            "Class-Date-" version ".tar.gz"))
        (sha256
         (base32 "1h7dfjxkpqbfymrf1bn7699i4fx6pbv5wvvi5zszfr8sqqkax1yf"))))
