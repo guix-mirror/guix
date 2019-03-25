@@ -8533,39 +8533,6 @@ bound and non bound genomic regions to accurately identify transcription
 factors bound at the specific regions.")
     (license license:gpl2+)))
 
-(define-public r-gkmsvm
-  (package
-    (name "r-gkmsvm")
-    (version "0.79.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "gkmSVM" version))
-       (sha256
-        (base32
-         "04dakbgfvfalz4rm4fvvybp506dn5fbj5g86ybfhrc6wywjllsz3"))))
-    (properties `((upstream-name . "gkmSVM")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biostrings" ,r-biostrings)
-       ("r-genomeinfodb" ,r-genomeinfodb)
-       ("r-genomicranges" ,r-genomicranges)
-       ("r-iranges" ,r-iranges)
-       ("r-kernlab" ,r-kernlab)
-       ("r-rcpp" ,r-rcpp)
-       ("r-rocr" ,r-rocr)
-       ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-seqinr" ,r-seqinr)))
-    (home-page "https://cran.r-project.org/web/packages/gkmSVM")
-    (synopsis "Gapped-kmer support vector machine")
-    (description
-     "This R package provides tools for training gapped-kmer SVM classifiers
-for DNA and protein sequences.  This package supports several sequence
-kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
-    (license license:gpl2+)))
-
 (define-public r-tximport
   (package
     (name "r-tximport")
