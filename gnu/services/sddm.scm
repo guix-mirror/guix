@@ -140,7 +140,7 @@ SessionDir="           (sddm-configuration-sessions-directory config)          "
 
 [X11]
 ServerPath="           (xorg-configuration-server
-                        (sddm-configuration-xorg config))            "
+                        (sddm-configuration-xorg config)) "/bin/X"             "
 XauthPath="            (sddm-configuration-xauth-path config)                  "
 XephyrPath="           (sddm-configuration-xephyr-path config)                 "
 DisplayCommand="       (sddm-configuration-xdisplay-start config)              "
