@@ -2644,3 +2644,30 @@ of the matrix are sorted according to a hierarchical clustering, and the
 corresponding dendrogram is plotted.  Optionally, panels with additional
 information about samples and features can be added to the plot.")
     (license license:gpl2+)))
+
+(define-public r-gosemsim
+  (package
+    (name "r-gosemsim")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GOSemSim" version))
+       (sha256
+        (base32
+         "0ckihpy8jmgn2np1avprz76v9z7i5hqm2gj514c6dmmq3csbc7ib"))))
+    (properties `((upstream-name . "GOSemSim")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-go-db" ,r-go-db)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://guangchuangyu.github.io/software/GOSemSim")
+    (synopsis "GO-terms semantic similarity measures")
+    (description
+     "The semantic comparisons of @dfn{Gene Ontology} (GO) annotations provide
+quantitative ways to compute similarities between genes and gene groups, and
+have became important basis for many bioinformatics analysis approaches.
+GOSemSim is an R package for semantic similarity computation among GO terms,
+sets of GO terms, gene products and gene clusters.")
+    (license license:artistic2.0)))
