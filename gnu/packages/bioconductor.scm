@@ -2619,3 +2619,28 @@ alignments (BAM files) or datasets of called variants.  The user is expected
 to have already aligned the reads with a separate tool, e.g., GSNAP via
 gmapR.")
     (license license:artistic2.0)))
+
+(define-public r-heatplus
+  (package
+    (name "r-heatplus")
+    (version "2.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Heatplus" version))
+       (sha256
+        (base32
+         "0drspjzgb23ra2kdvpxhsd8mdifsf97fcf668llyz2hr0r39fc48"))))
+    (properties `((upstream-name . "Heatplus")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://github.com/alexploner/Heatplus")
+    (synopsis "Heatmaps with row and/or column covariates and colored clusters")
+    (description
+     "This package provides tools to display a rectangular heatmap (intensity
+plot) of a data matrix.  By default, both samples (columns) and features (row)
+of the matrix are sorted according to a hierarchical clustering, and the
+corresponding dendrogram is plotted.  Optionally, panels with additional
+information about samples and features can be added to the plot.")
+    (license license:gpl2+)))
