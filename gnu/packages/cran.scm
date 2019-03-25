@@ -12548,3 +12548,34 @@ by regression methods with response IBD sharing for relative pairs.  Account
 for correlations of IBD statistics and covariates for relative pairs within
 the same pedigree.")
     (license license:gpl2+)))
+
+(define-public r-dlmap
+  (package
+    (name "r-dlmap")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dlmap" version))
+       (sha256
+        (base32
+         "0s6wlkggkm3qndwyvw72xv1n0mcjb7ss3ajbq2ll6rv30splq0db"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ibdreg" ,r-ibdreg)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nlme" ,r-nlme)
+       ("r-qtl" ,r-qtl)
+       ("r-wgaim" ,r-wgaim)))
+    (home-page "https://cran.r-project.org/web/packages/dlmap/")
+    (synopsis "Detection localization mapping for QTL")
+    (description
+     "This is package for QTL mapping in a mixed model framework with separate
+detection and localization stages.  The first stage detects the number of QTL
+on each chromosome based on the genetic variation due to grouped markers on
+the chromosome; the second stage uses this information to determine the most
+likely QTL positions.  The mixed model can accommodate general fixed and
+random effects, including spatial effects in field trials and pedigree
+effects.  It is applicable to backcrosses, doubled haploids, recombinant
+inbred lines, F2 intercrosses, and association mapping populations.")
+    (license license:gpl2)))
