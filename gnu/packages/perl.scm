@@ -821,7 +821,7 @@ Perl.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/K/KE/KENTNL/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Carp-Clan-" version ".tar.gz"))
        (sha256
         (base32
