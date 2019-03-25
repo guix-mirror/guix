@@ -2671,3 +2671,34 @@ have became important basis for many bioinformatics analysis approaches.
 GOSemSim is an R package for semantic similarity computation among GO terms,
 sets of GO terms, gene products and gene clusters.")
     (license license:artistic2.0)))
+
+(define-public r-anota
+  (package
+    (name "r-anota")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "anota" version))
+       (sha256
+        (base32
+         "182fp6dpws516y0igvwn6936higfqvy25haa0xs273f8aczr9cf0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-multtest" ,r-multtest)
+       ("r-qvalue" ,r-qvalue)))
+    (home-page "https://bioconductor.org/packages/anota/")
+    (synopsis "Analysis of translational activity")
+    (description
+     "Genome wide studies of translational control is emerging as a tool to
+study verious biological conditions.  The output from such analysis is both
+the mRNA level (e.g. cytosolic mRNA level) and the levl of mRNA actively
+involved in translation (the actively translating mRNA level) for each mRNA.
+The standard analysis of such data strives towards identifying differential
+translational between two or more sample classes - i.e.  differences in
+actively translated mRNA levels that are independent of underlying differences
+in cytosolic mRNA levels.  This package allows for such analysis using partial
+variances and the random variance model.  As 10s of thousands of mRNAs are
+analyzed in parallell the library performs a number of tests to assure that
+the data set is suitable for such analysis.")
+    (license license:gpl3)))
