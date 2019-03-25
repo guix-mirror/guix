@@ -1258,7 +1258,11 @@ from (gnu system mapped-devices) and return it."
              `((bootloader grub-efi-bootloader)
                (target ,(default-esp-mount-point)))
              `((bootloader grub-bootloader)
-               (target ,root-partition-disk)))))))
+               (target ,root-partition-disk)))
+
+       ;; XXX: Assume we defined the 'keyboard-layout' field of
+       ;; <operating-system> right above.
+       (keyboard-layout keyboard-layout)))))
 
 (define (user-partitions->configuration user-partitions)
   "Return the configuration field for USER-PARTITIONS."

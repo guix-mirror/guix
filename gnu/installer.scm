@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -156,7 +157,8 @@ selected keymap."
                (lambda (models layouts)
                  ((installer-keymap-page current-installer)
                   layouts)))))
-        (#$apply-keymap result))))
+        (#$apply-keymap result)
+        result)))
 
 (define (installer-steps)
   (let ((locale-step (compute-locale-step
@@ -208,7 +210,8 @@ selected keymap."
           (id 'keymap)
           (description (G_ "Keyboard mapping selection"))
           (compute (lambda _
-                     (#$keymap-step current-installer))))
+                     (#$keymap-step current-installer)))
+          (configuration-formatter keyboard-layout->configuration))
 
          ;; Run a partitioning tool allowing the user to modify
          ;; partition tables, partitions and their mount points.
@@ -313,6 +316,8 @@ selected keymap."
                          (gnu installer timezone)
                          (gnu installer user)
                          (gnu installer newt)
+                         ((gnu installer newt keymap)
+                          #:select (keyboard-layout->configuration))
                          (guix i18n)
                          (guix build utils)
                          (ice-9 match))
