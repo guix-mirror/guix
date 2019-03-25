@@ -7266,30 +7266,6 @@ categorize packages in a Bioconductor package repository according to keywords,
 also known as views, in a controlled vocabulary.")
     (license license:artistic2.0)))
 
-(define-public r-bookdown
-  (package
-    (name "r-bookdown")
-    (version "0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "bookdown" version))
-              (sha256
-               (base32
-                "0vg1s1w0l9pm95asqb21yf39mfk1nc9rdhmlys9xwr7p7i7rsz32"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-htmltools" ,r-htmltools)
-       ("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("r-tinytex" ,r-tinytex)
-       ("r-yaml" ,r-yaml)
-       ("r-xfun" ,r-xfun)))
-    (home-page "https://github.com/rstudio/bookdown")
-    (synopsis "Authoring books and technical documents with R markdown")
-    (description "This package provides output formats and utilities for
-authoring books and technical documents with R Markdown.")
-    (license license:gpl3)))
-
 (define-public r-biocstyle
   (package
     (name "r-biocstyle")
