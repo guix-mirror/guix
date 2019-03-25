@@ -12845,3 +12845,29 @@ handle missing genotypes at some SNPs.")
     (description
      "This package provides functions for drawing and calibrating samples.")
     (license license:gpl2+)))
+
+(define-public r-r2html
+  (package
+    (name "r-r2html")
+    (version "2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "R2HTML" version))
+       (sha256
+        (base32
+         "00kxny7hajs9r2kw63qk7d03ggdxx2j1g8vbrmzp806y8aczvik9"))))
+    (properties `((upstream-name . "R2HTML")))
+    (build-system r-build-system)
+    (home-page "https://github.com/nalimilan/R2HTML")
+    (synopsis "HTML export for R objects")
+    (description
+     "This package includes HTML functions and methods to write in an HTML
+file.  Thus, making HTML reports is easy.  It includes a function that allows
+redirection on the fly, which appears to be very useful for teaching purposes,
+as the student can keep a copy of the produced output to keep all that they
+did during the course.  The package comes with a vignette describing how to
+write HTML reports for statistical analysis.  Finally, a driver for Sweave
+allows to parse HTML flat files containing R code and to automatically write
+the corresponding outputs (tables and graphs).")
+    (license license:gpl2+)))
