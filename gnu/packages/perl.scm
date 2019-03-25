@@ -981,7 +981,7 @@ supporting the same interface, but using Class::C3 to do the hard work.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Class-C3-Componentised-" version ".tar.gz"))
        (sha256
         (base32 "14wn1g45z3b5apqq7dcai5drk01hfyqydsd2m6hsxzhyvi3b2l9h"))))
