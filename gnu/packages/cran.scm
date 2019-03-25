@@ -12626,3 +12626,23 @@ terms are available that account for first order interactions between loci.
 It also implements, for a single locus in a single population, a conditional
 exact test for Hardy-Weinberg equilibrium.")
     (license license:gpl2+)))
+
+(define-public r-tdthap
+  (package
+    (name "r-tdthap")
+    (version "1.1-9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tdthap" version))
+       (sha256
+        (base32
+         "0y01x0hcf0rw06cpn4pk17b0shf4v2c9was7vfs0zhsbq8qcwx7r"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/tdthap/")
+    (synopsis "TDT tests for extended haplotypes")
+    (description
+     "Functions and examples are provided for transmission/disequilibrium
+tests for extended marker haplotypes, as in Clayton, D. and Jones, H. (1999)
+\"Transmission/disequilibrium tests for extended marker haplotypes\".")
+    (license license:artistic2.0)))
