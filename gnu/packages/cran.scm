@@ -12506,3 +12506,23 @@ markers).  The main functions are: @code{haplo.em()}, @code{haplo.glm()},
 @code{haplo.score()}, and @code{haplo.power()}; all of which have detailed
 examples in the vignette.")
     (license license:gpl2+)))
+
+(define-public r-bqtl
+  (package
+    (name "r-bqtl")
+    (version "1.0-32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bqtl" version))
+       (sha256
+        (base32
+         "0jjqgsm9fmvz5nkgz608xfljjpmaf4rs4f7kxvpqn4b1l9s5lhci"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://famprevmed.ucsd.edu/faculty/cberry/bqtl/")
+    (synopsis "Bayesian QTL mapping toolkit")
+    (description
+     "This is a QTL mapping toolkit for inbred crosses and recombinant inbred
+lines.  It includes maximum likelihood and Bayesian tools.")
+    (license license:gpl2+)))
