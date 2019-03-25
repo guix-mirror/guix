@@ -387,7 +387,7 @@ error when it would have happened.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RG/RGARCIA/"
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                            "base-" version ".tar.gz"))
        (sha256
         (base32 "1pjxcbbcpwlgzm0fzsbqd58zn8cj9vwril1wn3xfd7ws550mixa0"))))
