@@ -54,8 +54,10 @@
   #:use-module (gnu packages graph)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages machine-learning)
@@ -63,6 +65,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -12871,3 +12874,50 @@ write HTML reports for statistical analysis.  Finally, a driver for Sweave
 allows to parse HTML flat files containing R code and to automatically write
 the corresponding outputs (tables and graphs).")
     (license license:gpl2+)))
+
+(define-public r-rjava
+  (package
+    (name "r-rjava")
+    (version "0.9-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rJava" version))
+       (sha256
+        (base32
+         "0y7yg70i3zwbwl4g36js4dqpl51cmwss5ymrsk24d1z07bflp4y9"))))
+    (properties `((upstream-name . "rJava")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (ice-9 match))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-JAVA_HOME
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jdk (assoc-ref inputs "jdk")))
+               (setenv "JAVA_HOME" jdk)
+               (setenv "JAVA" (which "java"))
+               (setenv "JAR" (which "jar"))
+               (setenv "JAVAC" (which "javac"))
+               (setenv "JAVAH" (which "javah"))
+               (setenv "JAVA_CPPFLAGS"
+                       (string-append "-I" jdk "/include "
+                                      "-I" jdk "/include/linux"))
+               (match (find-files (string-append jdk "/jre/lib/") "libjvm.so")
+                 ((lib) (setenv "JAVA_LIBS" lib))
+                 (_ (error "Could not find libjvm.so"))))
+             #t)))))
+    (inputs
+     `(("icu4c" ,icu4c)
+       ("jdk" ,icedtea-8 "jdk")
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)))
+    (home-page "http://www.rforge.net/rJava/")
+    (synopsis "Low-Level R to Java interface")
+    (description
+     "This package provides a low-level interface to the Java VM very much
+like .C/.Call and friends.  It allows the creation of objects, calling methods
+and accessing fields.")
+    (license license:gpl2)))
