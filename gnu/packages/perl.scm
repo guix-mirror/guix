@@ -7790,7 +7790,7 @@ support for run-time mix-ins and roles.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/SVG-"
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/SVG-"
                            version ".tar.gz"))
        (sha256
         (base32 "1br8dwh2363s6r0qgy7vv30gv5kj456vj5m6x83savx4wzfnsggc"))))
