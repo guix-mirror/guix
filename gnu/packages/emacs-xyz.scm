@@ -44,6 +44,7 @@
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
+;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1139,6 +1140,34 @@ within a specified width.  It is useful for displaying long track titles.")
 ;;;
 ;;; Miscellaneous.
 ;;;
+
+(define-public emacs-ace-link
+  (package
+    (name "emacs-ace-link")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/ace-link.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "147dz79vg4ym5wg3d544bw2khdb2j3hr73rw4qfm64wf0q2dj0vk"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-avy" ,emacs-avy)))
+    (home-page "https://github.com/abo-abo/ace-link")
+    (synopsis "Quickly follow links in Emacs")
+    (description
+     "Currently, to jump to a link in a @code{Info-mode}, @code{help-mode},
+@code{woman-mode}, @code{org-mode}, @code{eww-mode}, @code{compilation-mode},
+@code{goto-address-mode} buffer, you can tab through the links to select the
+one you want.  This is an O(N) operation, where the N is the amount of links.
+This package turns this into an O(1) operation.  It does so by assigning a
+letter to each link using avy.")
+    (license license:gpl3+)))
 
 (define-public emacs-bbdb
   (package
