@@ -12413,3 +12413,24 @@ datasets simultaneously.  Plots can be created using global and/or individual
 haplotype p-values along with single SNP p-values.  Images are created as
 either PDF/EPS files.")
     (license license:gpl2+)))
+
+(define-public r-polspline
+  (package
+    (name "r-polspline")
+    (version "1.1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "polspline" version))
+       (sha256
+        (base32
+         "0g4s5nwi13yfs6b169yw8vrs48nvjyc014k2v7ybcxarl8z81va0"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/polspline/")
+    (synopsis "Polynomial spline routines")
+    (description
+     "This package provides routines for the polynomial spline fitting
+routines hazard regression, hazard estimation with flexible tails, logspline,
+lspec, polyclass, and polymars.")
+    (license license:gpl2+)))
