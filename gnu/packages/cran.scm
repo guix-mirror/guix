@@ -12921,3 +12921,25 @@ the corresponding outputs (tables and graphs).")
 like .C/.Call and friends.  It allows the creation of objects, calling methods
 and accessing fields.")
     (license license:gpl2)))
+
+(define-public r-svmisc
+  (package
+    (name "r-svmisc")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "svMisc" version))
+       (sha256
+        (base32
+         "01r2a73wx2sh1njky961fxabx5wgddqqjqba6vjg0f3h8r3abmn2"))))
+    (properties `((upstream-name . "svMisc")))
+    (build-system r-build-system)
+    (home-page "https://github.com/SciViews/svMisc")
+    (synopsis "Miscellaneous functions for SciViews")
+    (description
+     "This package provides miscellaneous functions for SciViews or general
+use, including tools to manage a temporary environment attached to the search
+path for temporary variables you do not want to @code{save()} or
+@code{load()}; test the current platform; showing progress bars, etc.")
+    (license license:gpl2)))
