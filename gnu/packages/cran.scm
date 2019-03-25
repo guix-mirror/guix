@@ -12579,3 +12579,28 @@ random effects, including spatial effects in field trials and pedigree
 effects.  It is applicable to backcrosses, doubled haploids, recombinant
 inbred lines, F2 intercrosses, and association mapping populations.")
     (license license:gpl2)))
+
+(define-public r-ldheatmap
+  (package
+    (name "r-ldheatmap")
+    (version "0.99-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "LDheatmap" version))
+       (sha256
+        (base32
+         "0il3g3n3bzv74lz7dlhyiwc2x2417v6yhx2g47pahxdzqa09kf4s"))))
+    (properties `((upstream-name . "LDheatmap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genetics" ,r-genetics)
+       ("r-snpstats" ,r-snpstats)))
+    (home-page "http://stat.sfu.ca/statgen/research/ldheatmap.html")
+    (synopsis "Graphical display of pairwise linkage disequilibria between SNPs")
+    (description
+     "This package provides tools to produce a graphical display, as a heat
+map, of measures of pairwise linkage disequilibria between SNPs.  Users may
+optionally include the physical locations or genetic map distances of each SNP
+on the plot.")
+    (license license:gpl3)))
