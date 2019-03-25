@@ -7014,29 +7014,6 @@ annotation infrastructure.")
      "This package provides a pipeline for the analysis of GRO-seq data.")
     (license license:gpl3+)))
 
-(define-public r-sparql
-  (package
-  (name "r-sparql")
-  (version "1.16")
-  (source (origin
-           (method url-fetch)
-           (uri (cran-uri "SPARQL" version))
-           (sha256
-            (base32
-             "0gak1q06yyhdmcxb2n3v0h9gr1vqd0viqji52wpw211qp6r6dcrc"))))
-  (properties `((upstream-name . "SPARQL")))
-  (build-system r-build-system)
-  (propagated-inputs
-   `(("r-rcurl" ,r-rcurl)
-     ("r-xml" ,r-xml)))
-  (home-page "https://cran.r-project.org/web/packages/SPARQL")
-  (synopsis "SPARQL client for R")
-  (description "This package provides an interface to use SPARQL to pose
-SELECT or UPDATE queries to an end-point.")
-  ;; The only license indication is found in the DESCRIPTION file,
-  ;; which states GPL-3.  So we cannot assume GPLv3+.
-  (license license:gpl3)))
-
 (define-public vsearch
   (package
     (name "vsearch")
