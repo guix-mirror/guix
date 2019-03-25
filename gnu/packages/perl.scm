@@ -3747,7 +3747,7 @@ slurping and spewing.  All functions are optionally exported.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "File-Temp-" version ".tar.gz"))
        (sha256
         (base32 "0pr3wrxrk93wy7dz9gsb1sgl77icrs8rh2mah6wms5cdi2ll5ch1"))))
