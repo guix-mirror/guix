@@ -12604,3 +12604,25 @@ map, of measures of pairwise linkage disequilibria between SNPs.  Users may
 optionally include the physical locations or genetic map distances of each SNP
 on the plot.")
     (license license:gpl3)))
+
+(define-public r-hwde
+  (package
+    (name "r-hwde")
+    (version "0.67")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hwde" version))
+       (sha256
+        (base32
+         "0wb2f9i5qi7w77ygh8bvydfpr7j5x8dyvnnhdkajaz0wdcpkyaqy"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/hwde/")
+    (synopsis "Models and tests for departure from Hardy-Weinberg equilibrium")
+    (description
+     "This package fits models for genotypic disequilibria, as described in
+Huttley and Wilson (2000), Weir (1996) and Weir and Wilson (1986).  Contrast
+terms are available that account for first order interactions between loci.
+It also implements, for a single locus in a single population, a conditional
+exact test for Hardy-Weinberg equilibrium.")
+    (license license:gpl2+)))
