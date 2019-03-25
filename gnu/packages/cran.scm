@@ -12754,3 +12754,25 @@ networks, module identification and functions for relating both variables and
 modules to sample traits.  It also includes a number of utility functions for
 data manipulation and visualization.")
     (license license:gpl2+)))
+
+(define-public r-kernlab
+  (package
+    (name "r-kernlab")
+    (version "0.9-27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kernlab" version))
+       (sha256
+        (base32
+         "1m0xqf6gyvwayz7w3c83y32ayvnlz0jicj8ijk808zq9sh7dbbgn"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/kernlab")
+    (synopsis "Kernel-based machine learning tools")
+    (description
+     "This package provides kernel-based machine learning methods for
+classification, regression, clustering, novelty detection, quantile regression
+and dimensionality reduction.  Among other methods @code{kernlab} includes
+Support Vector Machines, Spectral Clustering, Kernel PCA, Gaussian Processes
+and a QP solver.")
+    (license license:gpl2)))
