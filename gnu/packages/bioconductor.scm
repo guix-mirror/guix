@@ -2702,3 +2702,25 @@ variances and the random variance model.  As 10s of thousands of mRNAs are
 analyzed in parallell the library performs a number of tests to assure that
 the data set is suitable for such analysis.")
     (license license:gpl3)))
+
+(define-public r-sigpathway
+  (package
+    (name "r-sigpathway")
+    (version "1.50.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (bioconductor-uri "sigPathway" version))
+        (sha256
+          (base32
+            "0pygrla2q2151981gshzv51jnj60h1df3vby5gsxqvxn2pdr4bv3"))))
+    (properties `((upstream-name . "sigPathway")))
+    (build-system r-build-system)
+    (home-page "https://www.pnas.org/cgi/doi/10.1073/pnas.0506577102")
+    (synopsis "Pathway analysis")
+    (description
+     "This package is used to conduct pathway analysis by calculating the NT_k
+and NE_k statistics in a statistical framework for determining whether a
+specified group of genes for a pathway has a coordinated association with a
+phenotype of interest.")
+    (license license:gpl2)))
