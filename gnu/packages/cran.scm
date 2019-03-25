@@ -8803,14 +8803,14 @@ parametrizations of Nolan.")
 (define-public r-gsl
   (package
     (name "r-gsl")
-    (version "2.1-5")
+    (version "2.1-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gsl" version))
        (sha256
         (base32
-         "18kzgwmyfqg570gn2b33fm6mj87fiaa4a3bx954yrj8iq28im71v"))))
+         "0p4rh7npp6qbfc5sxjq86xjn7c9ivf3pd60qf1hldwckjqin7m7m"))))
     (build-system r-build-system)
     (inputs
      `(("gsl" ,gsl)))
