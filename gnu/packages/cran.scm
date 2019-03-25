@@ -12802,3 +12802,25 @@ following the algorithm of Yang (Evolution, 1998, 52(4):950-956).  Functions
 are also given to test via randomisations the significance of each F and
 variance components, using the likelihood-ratio statistics G.")
     (license license:gpl2+)))
+
+(define-public r-hapassoc
+  (package
+    (name "r-hapassoc")
+    (version "1.2-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hapassoc" version))
+       (sha256
+        (base32
+         "0qs5jl0snzfchgpp6pabncwywxcmi743g91jvjiyyzw0lw85yv4s"))))
+    (build-system r-build-system)
+    (home-page "http://stat.sfu.ca/statgen/research/hapassoc.html")
+    (synopsis "Inference of trait associations with SNP haplotypes")
+    (description
+     "Hapassoc performs likelihood inference of trait associations with
+haplotypes and other covariates in @dfn{generalized linear models} (GLMs). The
+functions are developed primarily for data collected in cohort or
+cross-sectional studies.  They can accommodate uncertain haplotype phase and
+handle missing genotypes at some SNPs.")
+    (license license:gpl2)))
