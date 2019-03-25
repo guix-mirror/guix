@@ -3477,7 +3477,7 @@ and stop fake requests using 'enable_if' directive in your app.psgi.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Plack-Test-ExternalServer-" version ".tar.gz"))
        (sha256
         (base32 "1l1yj1l25679x7cbpd27ii7s1f1ajpkspif9xqnl21hczrbmrbsv"))))
