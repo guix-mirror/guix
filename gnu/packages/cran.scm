@@ -12526,3 +12526,25 @@ examples in the vignette.")
      "This is a QTL mapping toolkit for inbred crosses and recombinant inbred
 lines.  It includes maximum likelihood and Bayesian tools.")
     (license license:gpl2+)))
+
+(define-public r-ibdreg
+  (package
+    (name "r-ibdreg")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ibdreg" version))
+       (sha256
+        (base32
+         "1kaa5q1byi30wzr0mw4w2cv1ssxprzcwf91wrpqwkgcsdy7dkh2g"))))
+    (build-system r-build-system)
+    (home-page "https://www.mayo.edu/research/labs/\
+statistical-genetics-genetic-epidemiology/software")
+    (synopsis "Regression methods for IBD linkage with covariates")
+    (description
+     "This package provides a method to test genetic linkage with covariates
+by regression methods with response IBD sharing for relative pairs.  Account
+for correlations of IBD statistics and covariates for relative pairs within
+the same pedigree.")
+    (license license:gpl2+)))
