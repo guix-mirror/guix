@@ -7339,29 +7339,6 @@ functionality.")
 checks on R packages that are to be submitted to the Bioconductor repository.")
     (license license:artistic2.0)))
 
-(define-public r-optparse
-  (package
-    (name "r-optparse")
-    (version "1.6.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "optparse" version))
-       (sha256
-        (base32
-         "04vyb6dhcga30mvghsg1p052jmf69xqxkvh3hzqz7dscyppy76w1"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-getopt" ,r-getopt)))
-    (home-page
-     "https://github.com/trevorld/optparse")
-    (synopsis "Command line option parser")
-    (description
-     "This package provides a command line parser inspired by Python's
-@code{optparse} library to be used with Rscript to write shebang scripts
-that accept short and long options.")
-    (license license:gpl2+)))
-
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
