@@ -12358,3 +12358,33 @@ Metasim 1.0: an individual-based environment for simulating population
 genetics of complex population dynamics.")
     ;; Any GPL version
     (license license:gpl2+)))
+
+(define-public r-genetics
+  (package
+    (name "r-genetics")
+    (version "1.3.8.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "genetics" version))
+       (sha256
+        (base32
+         "0p59r4vxhy68d7cv2s2k4vbgnkxji21naz9jmdry9wxclrg7fw28"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-combinat" ,r-combinat)
+       ("r-gdata" ,r-gdata)
+       ("r-gtools" ,r-gtools)
+       ("r-mass" ,r-mass)
+       ("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://cran.r-project.org/web/packages/genetics/")
+    (synopsis "Population genetics")
+    (description
+     "This package provides classes and methods for handling genetic data.
+It includes classes to represent genotypes and haplotypes at single markers up
+to multiple markers on multiple chromosomes.  Function include allele
+frequencies, flagging homo/heterozygotes, flagging carriers of certain
+alleles, estimating and testing for Hardy-Weinberg disequilibrium, estimating
+and testing for linkage disequilibrium, ...")
+    ;; Any GPL version.
+    (license license:gpl2+)))
