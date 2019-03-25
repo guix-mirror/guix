@@ -8466,45 +8466,6 @@ characterization and visualization of a wide range of mutational patterns
 in SNV base substitution data.")
     (license license:expat)))
 
-(define-public r-wgcna
-  (package
-    (name "r-wgcna")
-    (version "1.66")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "WGCNA" version))
-       (sha256
-        (base32
-         "0rhnyhzfn93yp24jz9v6dzrmyizwzdw070a7idm0k33w1cm8sjqv"))))
-    (properties `((upstream-name . "WGCNA")))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-doparallel" ,r-doparallel)
-       ("r-dynamictreecut" ,r-dynamictreecut)
-       ("r-fastcluster" ,r-fastcluster)
-       ("r-foreach" ,r-foreach)
-       ("r-go-db" ,r-go-db)
-       ("r-hmisc" ,r-hmisc)
-       ("r-impute" ,r-impute)
-       ("r-rcpp" ,r-rcpp)
-       ("r-robust" ,r-robust)
-       ("r-survival" ,r-survival)
-       ("r-matrixstats" ,r-matrixstats)
-       ("r-preprocesscore" ,r-preprocesscore)))
-    (home-page
-     "http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/")
-    (synopsis "Weighted correlation network analysis")
-    (description
-     "This package provides functions necessary to perform Weighted
-Correlation Network Analysis on high-dimensional data.  It includes functions
-for rudimentary data cleaning, construction and summarization of correlation
-networks, module identification and functions for relating both variables and
-modules to sample traits.  It also includes a number of utility functions for
-data manipulation and visualization.")
-    (license license:gpl2+)))
-
 (define-public r-chipkernels
   (let ((commit "c9cfcacb626b1221094fb3490ea7bac0fd625372")
         (revision "1"))
