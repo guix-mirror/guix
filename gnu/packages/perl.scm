@@ -2216,7 +2216,7 @@ time before its creation (in 1582).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/P/PI/PIJLL/"
+       (uri (string-append "mirror://cpan/authors/id/W/WY/WYANT/"
                            "DateTime-Calendar-Julian-" version ".tar.gz"))
        (sha256
         (base32 "0gbw7rh706qk5jlmmz3yzsm0ilzp39kyar28g4j6d57my8cwaipx"))))
