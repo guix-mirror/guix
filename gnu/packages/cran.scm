@@ -12478,3 +12478,31 @@ failure time models, ordinary linear models, the Buckley-James model,
 generalized least squares for serially or spatially correlated observations,
 generalized linear models, and quantile regression.")
     (license license:gpl2+)))
+
+(define-public r-haplo-stats
+  (package
+    (name "r-haplo-stats")
+    (version "1.7.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "haplo.stats" version))
+       (sha256
+        (base32
+         "19kxascqq5qz0zdxx0w837ji207y1z2ggxkl4vmlbay03k2dw2mx"))))
+    (properties `((upstream-name . "haplo.stats")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rms" ,r-rms)))
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ; for vignettes
+    (home-page "https://www.mayo.edu/research/labs/statistical-genetics-genetic-epidemiology/software")
+    (synopsis "Analysis of haplotypes when linkage phase is ambiguous")
+    (description
+     "This package provides routines for the analysis of indirectly measured
+haplotypes.  The statistical methods assume that all subjects are unrelated
+and that haplotypes are ambiguous (due to unknown linkage phase of the genetic
+markers).  The main functions are: @code{haplo.em()}, @code{haplo.glm()},
+@code{haplo.score()}, and @code{haplo.power()}; all of which have detailed
+examples in the vignette.")
+    (license license:gpl2+)))
