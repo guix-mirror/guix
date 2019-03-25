@@ -2579,3 +2579,43 @@ kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
 distributions of TF ChIP sequencing reads, taking advantage of an improved
 peak definition in combination with known profile characteristics.")
     (license license:gpl2)))
+
+(define-public r-varianttools
+  (package
+    (name "r-varianttools")
+    (version "1.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "VariantTools" version))
+       (sha256
+        (base32
+         "1ml3pl7xnxvzr6zkypr80xzw6nffswk29gzxycn42473sc4ixn7j"))))
+    (properties `((upstream-name . "VariantTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/VariantTools/")
+    (synopsis "Tools for exploratory analysis of variant calls")
+    (description
+     "Explore, diagnose, and compare variant calls using filters.  The
+VariantTools package supports a workflow for loading data, calling single
+sample variants and tumor-specific somatic mutations or other sample-specific
+variant types (e.g., RNA editing).  Most of the functions operate on
+alignments (BAM files) or datasets of called variants.  The user is expected
+to have already aligned the reads with a separate tool, e.g., GSNAP via
+gmapR.")
+    (license license:artistic2.0)))
