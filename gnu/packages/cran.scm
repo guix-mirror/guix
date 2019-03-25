@@ -12388,3 +12388,28 @@ alleles, estimating and testing for Hardy-Weinberg disequilibrium, estimating
 and testing for linkage disequilibrium, ...")
     ;; Any GPL version.
     (license license:gpl2+)))
+
+(define-public r-snp-plotter
+  (package
+    (name "r-snp-plotter")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "snp.plotter" version))
+       (sha256
+        (base32
+         "16apsqvkah5l0d5qcwp3lq2jspkb6n62wzr0wskmj84jblx483vv"))))
+    (properties `((upstream-name . "snp.plotter")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-genetics" ,r-genetics)))
+    (home-page "https://cran.r-project.org/web/packages/snp.plotter/")
+    (synopsis "Plot p-values using single SNP and/or haplotype data")
+    (description
+     "This package helps you create plots of p-values using single SNP and/or
+haplotype data.  Main features of the package include options to display a
+@dfn{linkage disequilibrium} (LD) plot and the ability to plot multiple
+datasets simultaneously.  Plots can be created using global and/or individual
+haplotype p-values along with single SNP p-values.  Images are created as
+either PDF/EPS files.")
+    (license license:gpl2+)))
