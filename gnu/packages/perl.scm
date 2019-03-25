@@ -6226,7 +6226,7 @@ fields in Moo-based classes.")
   (source (origin
             (method url-fetch)
             (uri (string-append
-                  "mirror://cpan/authors/id/S/SY/SYOHEX/Mouse-v"
+                  "mirror://cpan/authors/id/S/SK/SKAJI/Mouse-v"
                   version
                   ".tar.gz"))
             (sha256
