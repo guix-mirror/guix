@@ -1270,10 +1270,10 @@ from (gnu system mapped-devices) and return it."
          (swap-devices (map user-partition-file-name swap-user-partitions))
          (encrypted-partitions
           (filter user-partition-crypt-label user-partitions)))
-    `(,@(if (null? swap-devices)
+    `((bootloader ,@(bootloader-configuration user-partitions))
+      ,@(if (null? swap-devices)
             '()
             `((swap-devices (list ,@swap-devices))))
-      (bootloader ,@(bootloader-configuration user-partitions))
       ,@(if (null? encrypted-partitions)
             '()
             `((mapped-devices
