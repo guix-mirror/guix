@@ -577,8 +577,7 @@ entries, photos, book chapters, or anything else.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (zero? (system* "./test_project/manage.py" "test")))))))
+           (lambda _ (invoke "./test_project/manage.py" "test"))))))
     (propagated-inputs
      `(("python-django" ,python-django)))
     (native-inputs
