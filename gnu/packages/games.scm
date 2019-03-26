@@ -6428,9 +6428,9 @@ as a unique casting system where the player draws runes in real time to effect
 the desired spell.")
     (license license:gpl3+)))
 
-(define-public edgar
+(define-public the-legend-of-edgar
   (package
-    (name "edgar")
+    (name "the-legend-of-edgar")
     (version "1.30")
     (source
      (origin
@@ -6474,3 +6474,6 @@ Edgar fears the worst: he has been captured by the evil sorcerer who lives in
 a fortress beyond the forbidden swamp.")
     (home-page "https://www.parallelrealities.co.uk/games/edgar/")
     (license license:gpl2+)))
+
+(define-public edgar
+  (deprecated-package "edgar" the-legend-of-edgar))
