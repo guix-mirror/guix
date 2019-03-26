@@ -4716,11 +4716,11 @@ fight against their plot and save his fellow rabbits from slavery.")
                (setenv "JOBS" (string-append "-j" jobs))
                (setenv "CC" "gcc")
                (with-directory-excursion "build/workspaces"
-                 (zero? (system* "./update-workspaces.sh"
-                                 (string-append "--libdir=" lib)
-                                 (string-append "--datadir=" data)
-                                 ;; TODO: "--with-system-nvtt"
-                                 "--with-system-mozjs38"))))))
+                 (invoke "./update-workspaces.sh"
+                         (string-append "--libdir=" lib)
+                         (string-append "--datadir=" data)
+                         ;; TODO: "--with-system-nvtt"
+                         "--with-system-mozjs38")))))
          (delete 'check)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -4754,7 +4754,7 @@ fight against their plot and save his fellow rabbits from slavery.")
          (add-after 'install 'check
            (lambda _
              (with-directory-excursion "system"
-               (zero? (system* "./test"))))))))
+               (invoke "./test")))))))
     (home-page "https://play0ad.com")
     (synopsis "3D real-time strategy game of ancient warfare")
     (description "0 A.D. is a real-time strategy (RTS) game of ancient
