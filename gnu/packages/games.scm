@@ -2151,10 +2151,10 @@ next campaign.")
 (define-public wesnoth
   (deprecated-package "wesnoth" the-battle-for-wesnoth))
 
-(define-public wesnoth-server
+(define-public the-battle-for-wesnoth-server
   (package
-    (inherit wesnoth)
-    (name "wesnoth-server")
+    (inherit the-battle-for-wesnoth)
+    (name "the-battle-for-wesnoth-server")
     (inputs
      `(("boost" ,boost)
        ("icu4c" ,icu4c)
@@ -2166,6 +2166,9 @@ next campaign.")
     (synopsis "Dedicated @emph{Battle for Wesnoth} server")
     (description "This package contains a dedicated server for @emph{The
 Battle for Wesnoth}.")))
+
+(define-public wesnoth-server
+  (deprecated-package "wesnoth-server" the-battle-for-wesnoth-server))
 
 (define-public gamine
   (package
