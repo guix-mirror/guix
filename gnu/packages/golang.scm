@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -775,8 +775,8 @@ expressing configuration which is easy for both humans and machines to read.")
       (license license:mpl2.0))))
 
 (define-public go-golang-org-x-crypto-bcrypt
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
+  (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
+        (revision "3"))
     (package
       (name "go-golang-org-x-crypto-bcrypt")
       (version (git-version "0.0.0" revision commit))
@@ -789,7 +789,7 @@ expressing configuration which is easy for both humans and machines to read.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
+                  "1jqfh81mhgwcc6b9l0bs6rb0707s01qpvn7896i5bsmig46lc7zm"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/crypto/bcrypt"
@@ -801,186 +801,81 @@ password hashing function.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-blowfish
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
-    (package
-      (name "go-golang-org-x-crypto-blowfish")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/blowfish"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Blowfish in Go")
-      (description "This package provides a Go implementation of the Blowfish
-symmetric-key block cipher.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-blowfish")
+    (arguments
+     `(#:import-path "golang.org/x/crypto/blowfish"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "Blowfish in Go")
+    (description "This package provides a Go implementation of the Blowfish
+symmetric-key block cipher.")))
 
 (define-public go-golang-org-x-crypto-pbkdf2
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
-    (package
-      (name "go-golang-org-x-crypto-pbkdf2")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/pbkdf2"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "PBKDF2 in Go")
-      (description "This package provides a Go implementation of the PBKDF2 key
-derivation function.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-pbkdf2")
+    (arguments
+     `(#:import-path "golang.org/x/crypto/pbkdf2"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "PBKDF2 in Go")
+    (description "This package provides a Go implementation of the PBKDF2 key
+derivation function.")))
 
 (define-public go-golang-org-x-crypto-tea
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
-    (package
-      (name "go-golang-org-x-crypto-tea")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/tea"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Tiny Encryption Algorithm (TEA) in Go")
-      (description "This packages a Go implementation of the Tiny Encryption
-Algorithm (TEA) block cipher.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-tea")
+    (arguments
+     `(#:import-path "golang.org/x/crypto/tea"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "Tiny Encryption Algorithm (TEA) in Go")
+    (description "This packages a Go implementation of the Tiny Encryption
+Algorithm (TEA) block cipher.")))
 
 (define-public go-golang-org-x-crypto-salsa20
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
-    (package
-      (name "go-golang-org-x-crypto-salsa20")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/salsa20"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Salsa20 in Go")
-      (description "This packages provides a Go implementation of the Salsa20
-stream cipher.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-salsa20")
+    (arguments
+     `(#:import-path "golang.org/x/crypto/salsa20"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "Salsa20 in Go")
+    (description "This packages provides a Go implementation of the Salsa20
+stream cipher.")))
 
 (define-public go-golang-org-x-crypto-cast5
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
-    (package
-      (name "go-golang-org-x-crypto-cast5")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/cast5"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Cast5 in Go")
-      (description "This packages provides a Go implementation of the Cast5
-symmetric-key block cipher.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-cast5")
+    (arguments
+     `(#:import-path "golang.org/x/crypto/cast5"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "Cast5 in Go")
+    (description "This packages provides a Go implementation of the Cast5
+symmetric-key block cipher.")))
 
 (define-public go-golang-org-x-crypto-twofish
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
-    (package
-      (name "go-golang-org-x-crypto-twofish")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/twofish"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Twofish in Go")
-      (description "This packages provides a Go implementation of the Twofish
-symmetric-key block cipher.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-twofish")
+    (arguments
+     `(#:import-path "golang.org/x/crypto/twofish"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "Twofish in Go")
+    (description "This packages provides a Go implementation of the Twofish
+symmetric-key block cipher.")))
 
 (define-public go-golang-org-x-crypto-xtea
-  (let ((commit "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8")
-        (revision "2"))
-    (package
-      (name "go-golang-org-x-crypto-xtea")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "033ghifvrxmqr54nm8gmgxz7qxlqgw9z7z976kp88yf1rmxm2kjr"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/xtea"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "eXtended Tiny Encryption Algorithm (XTEA) in Go")
-      (description "This package provides a Go implementation of the eXtended
-Tiny Encryption Algorithm (XTEA) block cipher.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-xtea")
+    (arguments
+     `(#:import-path "golang.org/x/crypto/xtea"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "eXtended Tiny Encryption Algorithm (XTEA) in Go")
+    (description "This package provides a Go implementation of the eXtended
+Tiny Encryption Algorithm (XTEA) block cipher.")))
 
 (define-public go-golang-org-x-crypto-ed25519
   (package
@@ -1024,6 +919,8 @@ hash algorithm.")))
      (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
        ((#:import-path _)
         "golang.org/x/crypto/blake2s")))
+    (propagated-inputs
+     `(("go-golang-org-x-sys-cpu" ,go-golang-org-x-sys-cpu)))
     (synopsis "BLAKE2s in Go")
     (description "This package provides a Go implementation of the BLAKE2s
 hash algorithm.")))
@@ -1365,33 +1262,17 @@ limiting in Go.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto-ssh-terminal
-  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
-        (revision "1"))
-    (package
-      (name "go-golang-org-x-crypto-ssh-terminal")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
-      (build-system go-build-system)
-      (inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (arguments
-       `(#:import-path "golang.org/x/crypto/ssh/terminal"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Terminal functions for Go")
-      (description "This package provides @{terminal}, which implements
-support functions for dealing with terminals, as commonly found on UNIX
-systems.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-crypto-bcrypt)
+    (name "go-golang-org-x-crypto-ssh-terminal")
+    (inputs
+     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+    (arguments
+     `(#:import-path "golang.org/x/crypto/ssh/terminal"
+       #:unpack-path "golang.org/x/crypto"))
+    (synopsis "Terminal functions for Go")
+    (description "This package provides @{terminal}, which implements support
+functions for dealing with terminals, as commonly found on UNIX systems.")))
 
 (define-public go-github-com-burntsushi-toml
   (package
