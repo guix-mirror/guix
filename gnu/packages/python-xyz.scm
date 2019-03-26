@@ -14595,14 +14595,14 @@ tool).")
 (define-public python-anndata
   (package
     (name "python-anndata")
-    (version "0.6.9")
+    (version "0.6.18")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "anndata" version))
        (sha256
         (base32
-         "1fh461xyyc7pcrjfgd013bdc2alf53r46ss3gfw3431mbb1gappi"))))
+         "03x83yjaccbqszj7x4fwwmpil0ai59yx64d1zmf2691za3j03w73"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
