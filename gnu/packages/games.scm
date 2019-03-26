@@ -4840,9 +4840,9 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 \"adventure 2.5\" and \"430-point adventure\".")
       (license license:bsd-2))))
 
-(define-public tome4
+(define-public tales-of-maj-eyal
   (package
-    (name "tome4")
+    (name "tales-of-maj-eyal")
     (version "1.5.10")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
@@ -4962,6 +4962,9 @@ abilities and powers.  With a modern graphical and customisable interface,
 intuitive mouse control, streamlined mechanics and deep, challenging combat,
 Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
     (license license:gpl3+)))
+
+(define-public tome4
+  (deprecated-package "tome4" tales-of-maj-eyal))
 
 (define-public quakespasm
   (package
