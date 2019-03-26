@@ -4045,9 +4045,9 @@ over 100 user-created campaigns.")
                    license:cc-by3.0
                    license:cc-by-sa3.0))))
 
-(define-public kiki
+(define-public kiki-the-nano-bot
   (package
-    (name "kiki")
+    (name "kiki-the-nano-bot")
     (version "1.0.2")
     (source (origin
               (method url-fetch)
@@ -4140,6 +4140,9 @@ small robot living in the nano world, repair its maker.")
     ;; kiki-the-nano-bot/kiki-the-nano-bot_1.0.2+dfsg1-4_copyright>
     ;; for a statement from the author.
     (license license:public-domain)))
+
+(define-public kiki
+  (deprecated-package "kiki" kiki-the-nano-bot))
 
 (define-public teeworlds
   (package
