@@ -4816,7 +4816,7 @@ at their peak of economic growth and military prowess.
                (substitute* "Makefile"
                  ((".adoc.6:" line)
                   (string-append line " advent.adoc")))
-               (zero? (system* "make" ".adoc.6"))))
+               (invoke "make" ".adoc.6")))
            ;; There is no install target
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
