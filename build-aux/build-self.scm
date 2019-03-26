@@ -313,7 +313,11 @@ interface (FFI) of Guile.")
                           (cons (string-append #$guile-gcrypt "/lib/guile/"
                                                (effective-version)
                                                "/site-ccache")
-                                %load-compiled-path)))
+                                %load-compiled-path))
+
+                        ;; Disable position recording to save time and space
+                        ;; when loading the package modules.
+                        (read-disable 'positions))
 
                       (use-modules (guix store)
                                    (guix self)
