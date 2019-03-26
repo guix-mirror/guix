@@ -519,9 +519,9 @@ project aims to bulk update given objects using one query over Django ORM.")
          (replace 'check
            (lambda _
              ;; the next version will need "make test"
-             (and (zero? (system* "flake8" "contact_form"))
-                  (zero? (system* "coverage" "run" "contact_form/runtests.py"))
-                  (zero? (system* "coverage" "report" "-m" "--fail-under" "0"))))))))
+             (invoke "flake8" "contact_form")
+             (invoke "coverage" "run" "contact_form/runtests.py")
+             (invoke "coverage" "report" "-m" "--fail-under" "0"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-flake8" ,python-flake8)))
