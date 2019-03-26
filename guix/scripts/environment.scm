@@ -469,6 +469,9 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
                          (directory (if user
                                         (string-append "/home/" user)
                                         (passwd:dir pwd))))))
+            (groups   (list (group-entry (name "users") (gid 0))
+                            (group-entry (gid 65534) ;the overflow GID
+                                         (name "overflow"))))
             (home-dir (password-entry-directory passwd))
             ;; Bind-mount all requisite store items, user-specified mappings,
             ;; /bin/sh, the current working directory, and possibly networking
@@ -528,6 +531,7 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             ;; sharing the host's network namespace.
             (mkdir-p "/etc")
             (write-passwd (list passwd))
+            (write-group groups)
 
             ;; For convenience, start in the user's current working
             ;; directory rather than the root directory.
