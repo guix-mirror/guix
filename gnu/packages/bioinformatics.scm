@@ -10880,17 +10880,17 @@ with narrow binding events such as transcription factor ChIP-seq.")
 (define-public trim-galore
   (package
     (name "trim-galore")
-    (version "0.4.5")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/FelixKrueger/TrimGalore.git")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0x5892l48c816pf00wmnz5vq0zq6170d3xc8zrxncd4jcz7h1p71"))))
+         "1y31wbxwkm9xqzr5zv1pk5q418whnmlmgmfyxxpnl12h83m2i9iv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -10905,10 +10905,10 @@ with narrow binding events such as transcription factor ChIP-seq.")
                 (string-append "$path_to_cutadapt = '"
                                (assoc-ref inputs "cutadapt")
                                "/bin/cutadapt'"))
-               (("\\| gzip")
-                (string-append "| "
+               (("\\$compression_path = \"gzip\"")
+                (string-append "$compression_path = \""
                                (assoc-ref inputs "gzip")
-                               "/bin/gzip"))
+                               "/bin/gzip\""))
                (("\"gunzip")
                 (string-append "\""
                                (assoc-ref inputs "gzip")
