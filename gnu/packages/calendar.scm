@@ -96,13 +96,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.9.10")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "khal" version))
              (sha256
               (base32
-               "03h0j0d3xyqh98x5v2gv63wv3g91hip3vsaxvybsn5iz331d23h4"))))
+               "1p49f3g25x900vk32spjbr2aipj12kcbhayny2vwhdpkjlv6k396"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -122,22 +122,14 @@ data units.")
             (setenv "TZ"
                     (string-append (assoc-ref inputs "tzdata")
                                    "/share/zoneinfo/Zulu"))
-            (invoke "py.test" "tests" "-k"
-                    (string-append
-                     ;; These tests are known to fail in when not
-                     ;; running in a TTY:
-                     ;; https://github.com/pimutils/khal/issues/683
-                     "not test_printics_read_from_stdin "
-                     "and not test_import_from_stdin "
-                     ;; https://github.com/pimutils/khal/issues/825
-                     "and not test_description_and_location_and_categories")))))))
+            (invoke "py.test" "tests"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-setuptools-scm" ,python-setuptools-scm)
        ;; Required for tests
        ("python-freezegun" ,python-freezegun)
-       ("tzdata" ,tzdata)
+       ("tzdata" ,tzdata-for-tests)
        ("vdirsyncer" ,vdirsyncer)
        ;; Required to build manpage
        ("python-sphinxcontrib-newsfeed" ,python-sphinxcontrib-newsfeed)
