@@ -51,7 +51,7 @@ See <https://github.com/moby/moby/pull/38930>.
 -	// proc/filesystems for when overlay is supported
 -	exec.Command("modprobe", "overlay").Run()
 +	// Access overlay filesystem so that Linux loads it (if possible).
-+	mountTarget, err := ioutil.TempDir("", "supportsOverlay")
++	mountTarget, err := ioutil.TempDir("", "supportsOverlay2")
 +	if err != nil {
 +		logrus.WithField("storage-driver", "overlay2").Error("Could not create temporary directory, so assuming that 'overlay' is not supported.")
 +		return graphdriver.ErrNotSupported
@@ -71,14 +71,14 @@ See <https://github.com/moby/moby/pull/38930>.
  
 -	// Check if kernel supports xfs filesystem or not.
 -	exec.Command("modprobe", "xfs").Run()
-+        mountTarget, err := ioutil.TempDir("", "supportsOverlay")
-+        if err != nil {
++	mountTarget, err := ioutil.TempDir("", "supportsXFS")
++	if err != nil {
 +		return errors.Wrapf(err, "error checking for xfs support")
-+        } else {
-+                /* The mounting will fail--after the module has been loaded.*/
-+                defer os.RemoveAll(mountTarget)
-+                unix.Mount("none", mountTarget, "xfs", 0, "")
-+        }
++	} else {
++		/* The mounting will fail--after the module has been loaded.*/
++		defer os.RemoveAll(mountTarget)
++		unix.Mount("none", mountTarget, "xfs", 0, "")
++	}
  
  	f, err := os.Open("/proc/filesystems")
  	if err != nil {
