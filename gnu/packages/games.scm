@@ -3186,9 +3186,9 @@ tactics.")
                    license:gpl2+
                    license:lgpl2.1+))))
 
-(define-public starfighter
+(define-public project-starfighter
   (package
-    (name "starfighter")
+    (name "project-starfighter")
     (version "1.7")
     (source (origin
               (method url-fetch)
@@ -3220,6 +3220,9 @@ in strikes against the evil corporation.")
                    license:cc-by-sa3.0
                    license:cc0
                    license:public-domain))))
+
+(define-public starfighter
+  (deprecated-package "starfighter" project-starfighter))
 
 (define-public chromium-bsu
   (package
