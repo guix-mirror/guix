@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,10 @@
   #:use-module ((gnu build file-systems)
                 #:select (read-partition-uuid
                           read-luks-partition-uuid))
+  #:use-module ((gnu build linux-modules)
+                #:select (missing-modules))
+  #:use-module ((gnu system linux-initrd)
+                #:select (%base-initrd-modules))
   #:use-module (guix build syscalls)
   #:use-module (guix build utils)
   #:use-module (guix records)
@@ -1243,15 +1248,16 @@ from (gnu system mapped-devices) and return it."
       (target ,label)
       (type luks-device-mapping))))
 
+(define (root-user-partition? partition)
+  "Return true if PARTITION is the root partition."
+  (let ((mount-point (user-partition-mount-point partition)))
+    (and mount-point
+         (string=? mount-point "/"))))
+
 (define (bootloader-configuration user-partitions)
   "Return the bootloader configuration field for USER-PARTITIONS."
-  (let* ((root-partition
-          (find (lambda (user-partition)
-                  (let ((mount-point
-                         (user-partition-mount-point user-partition)))
-                    (and mount-point
-                         (string=? mount-point "/"))))
-                user-partitions))
+  (let* ((root-partition (find root-user-partition?
+                               user-partitions))
          (root-partition-disk (user-partition-disk-file-name root-partition)))
     `((bootloader-configuration
        ,@(if (efi-installation?)
@@ -1264,6 +1270,30 @@ from (gnu system mapped-devices) and return it."
        ;; <operating-system> right above.
        (keyboard-layout keyboard-layout)))))
 
+(define (user-partition-missing-modules user-partitions)
+  "Return the list of kernel modules missing from the default set of kernel
+modules to access USER-PARTITIONS."
+  (let ((devices (filter user-partition-crypt-label user-partitions))
+        (root    (find root-user-partition? user-partitions)))
+    (delete-duplicates
+     (append-map (lambda (device)
+                   (catch 'system-error
+                     (lambda ()
+                       (missing-modules device %base-initrd-modules))
+                     (const '())))
+                 (delete-duplicates
+                  (map user-partition-file-name
+                       (cons root devices)))))))
+
+(define (initrd-configuration user-partitions)
+  "Return an 'initrd-modules' field with everything needed for
+USER-PARTITIONS, or return nothing."
+  (match (user-partition-missing-modules user-partitions)
+    (()
+     '())
+    ((modules ...)
+     `((initrd-modules ',modules)))))
+
 (define (user-partitions->configuration user-partitions)
   "Return the configuration field for USER-PARTITIONS."
   (let* ((swap-user-partitions (find-swap-user-partitions user-partitions))
@@ -1271,6 +1301,7 @@ from (gnu system mapped-devices) and return it."
          (encrypted-partitions
           (filter user-partition-crypt-label user-partitions)))
     `((bootloader ,@(bootloader-configuration user-partitions))
+      ,@(initrd-configuration user-partitions)
       ,@(if (null? swap-devices)
             '()
             `((swap-devices (list ,@swap-devices))))

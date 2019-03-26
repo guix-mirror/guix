@@ -43,13 +43,17 @@
   #:use-module (srfi srfi-1)
   #:export (installer-program))
 
-(define not-config?
-  ;; Select (guix …) and (gnu …) modules, except (guix config).
+(define module-to-import?
+  ;; Return true for modules that should be imported.  For (gnu system …) and
+  ;; (gnu packages …) modules, we simply add the whole 'guix' package via
+  ;; 'with-extensions' (to avoid having to rebuild it all), which is why these
+  ;; modules are excluded here.
   (match-lambda
     (('guix 'config) #f)
-    (('guix rest ...) #t)
-    (('gnu rest ...) #t)
-    (rest #f)))
+    (('gnu 'installer _ ...) #t)
+    (('gnu 'build _ ...) #t)
+    (('guix 'build _ ...) #t)
+    (_ #f)))
 
 (define* (build-compiled-file name locale-builder)
   "Return a file-like object that evalutes the gexp LOCALE-BUILDER and store
@@ -296,13 +300,15 @@ selected keymap."
      "gnu/installer"))
 
   (define installer-builder
+    ;; Note: Include GUIX as an extension to get all the (gnu system …), (gnu
+    ;; packages …), etc. modules.
     (with-extensions (list guile-gcrypt guile-newt
                            guile-parted guile-bytestructures
-                           guile-json)
+                           guile-json guile-git guix)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
                                     (guix build utils))
-                                  #:select? not-config?)
+                                  #:select? module-to-import?)
                                ((guix config) => ,(make-config.scm)))
         #~(begin
             (use-modules (gnu installer record)
