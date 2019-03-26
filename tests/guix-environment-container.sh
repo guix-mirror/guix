@@ -44,6 +44,12 @@ else
     test $? = 42
 fi
 
+if test "x$USER" = "x"; then USER="`id -un`"; fi
+
+# Check whether /etc/passwd is valid.
+guix environment -C --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c "(exit (string=? \"$USER\" (passwd:name (getpwuid (getuid)))))"
+
 # Make sure file-not-found errors in mounts are reported.
 if guix environment --container --ad-hoc --bootstrap guile-bootstrap \
 	--expose=/does-not-exist -- guile -c 1 2> "$tmpdir/error"
