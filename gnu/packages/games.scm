@@ -165,9 +165,9 @@
   #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26))
 
-(define-public armagetronad
+(define-public armagetron-advanced
   (package
-    (name "armagetronad")
+    (name "armagetron-advanced")
     (version "0.2.8.3.4")
     (source (origin
               (method url-fetch)
@@ -186,13 +186,16 @@
        ("libjpeg-turbo" ,libjpeg-turbo)))
     (home-page "http://www.armagetronad.org")
     (synopsis "Tron clone in 3D")
-    (description "Armagetron is a multiplayer game in 3d that attempts to
-emulate and expand on the lightcycle sequence from the movie Tron.  It's
-an old school arcade game slung into the 21st century.  Highlights include
-a customizable playing arena, HUD, unique graphics, and AI bots.  For the
-more advanced player there are new game modes and a wide variety of physics
-settings to tweak as well.")
+    (description "Armagetron Advanced is a multiplayer game in 3d that
+attempts to emulate and expand on the lightcycle sequence from the movie Tron.
+It's an old school arcade game slung into the 21st century.  Highlights
+include a customizable playing arena, HUD, unique graphics, and AI bots.  For
+the more advanced player there are new game modes and a wide variety of
+physics settings to tweak as well.")
     (license license:gpl2+)))
+
+(define-public armagetronad
+  (deprecated-package "armagetronad" armagetron-advanced))
 
 (define-public bastet
   (package
