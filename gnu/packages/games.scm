@@ -6185,9 +6185,9 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
     (home-page "https://www.stepmania.com")
     (license license:expat)))
 
-(define-public btanks
+(define-public battle-tanks
   (package
-    (name "btanks")
+    (name "battle-tanks")
     (version "0.9.8083")
     (source
      (origin
@@ -6261,14 +6261,18 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
        ("zip" ,zip)))
     (home-page "http://btanks.sourceforge.net")
     (synopsis "Multiplayer tank battle game")
-    (description "Battle Tanks is a funny battle game, where you can choose
-one of three vehicles and eliminate your enemy using the whole arsenal of
-weapons.  It has original cartoon-like graphics and cool music, it’s fun and
-dynamic, it has several network modes for deathmatch and cooperative.")
+    (description "Battle Tanks (also known as \"btanks\") is a funny battle
+game, where you can choose one of three vehicles and eliminate your enemy
+using the whole arsenal of weapons.  It has original cartoon-like graphics and
+cool music, it’s fun and dynamic, it has several network modes for deathmatch
+and cooperative.")
     ;; Some parts (e.g. mrt/b64.cpp) are LGPLv2.1+, but the whole package is
     ;; released under GPLv2 or later.  It comes with extra exceptions for the
     ;; developers.
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public btanks
+  (deprecated-package "btanks" battle-tanks))
 
 (define-public slingshot
   (package
