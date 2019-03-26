@@ -10836,16 +10836,17 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.3.3")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "1a0wbil552wsmklwd89ssmgz3pjd86qa9i7jh8wqb9wslc8a2qjr"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+           "17xbrgi23l87yg6h0qcknssp2q812miiy33qw6v45v5gx0jwv5xh"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/marcelm/xopen/")
     (synopsis "Open compressed files transparently")
     (description "This module provides an @code{xopen} function that works like
