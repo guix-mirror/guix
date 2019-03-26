@@ -662,9 +662,9 @@ destroying an ancient book using a special wand.")
     ;; license.  The whole package is released under GPLv3+.
     (license license:gpl3+)))
 
-(define-public gnubg
+(define-public gnubackgammon
   (package
-    (name "gnubg")
+    (name "gnubackgammon")
     (version "1.06.002")
     (source
      (origin
@@ -687,12 +687,15 @@ destroying an ancient book using a special wand.")
                      ("pkg-config" ,pkg-config)))
     (home-page "http://gnubg.org")
     (synopsis "Backgammon game")
-    (description "The GNU backgammon application can be used for playing,
-analyzing and teaching the game.  It has an advanced evaluation engine based on
-artificial neural networks suitable for both beginners and advanced players.  In
-addition to a command-line interface, it also features an attractive, 3D
-representation of the playing board.")
+    (description "The GNU backgammon application (also known as \"gnubg\") can
+be used for playing, analyzing and teaching the game.  It has an advanced
+evaluation engine based on artificial neural networks suitable for both
+beginners and advanced players.  In addition to a command-line interface, it
+also features an attractive, 3D representation of the playing board.")
     (license license:gpl3+)))
+
+(define-public gnubg
+  (deprecated-package "gnubg" gnubackgammon))
 
 (define-public gnubik
   (package
