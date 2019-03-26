@@ -1188,9 +1188,9 @@ can be explored and changed freely.")
     ;; state "GNU General Public Licence" without specifying a version.
     (license license:gpl1+)))
 
-(define-public abbaye
+(define-public l-abbaye-des-morts
   (package
-    (name "abbaye")
+    (name "l-abbaye-des-morts")
     (version "2.0.1")
     (source
      (origin
@@ -1241,6 +1241,9 @@ expelled by the Catholic Church out of the Languedoc region in France.  One of
 them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
     (license license:gpl3)))
+
+(define-public abbaye
+  (deprecated-package "abbaye" l-abbaye-des-morts))
 
 (define-public angband
   (package
