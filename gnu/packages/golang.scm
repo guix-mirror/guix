@@ -1272,6 +1272,17 @@ for low-level interaction with the operating system.")
       (home-page "https://go.googlesource.com/sys")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-sys-cpu
+  (package
+    (inherit go-golang-org-x-sys-unix)
+    (name "go-golang-org-x-sys-cpu")
+    (arguments
+     '(#:import-path "golang.org/x/sys/cpu"
+       #:unpack-path "golang.org/x/sys"))
+    (synopsis "CPU feature detection")
+    (description "Thi spackage provides @code{cpu}, which offers tools for CPU
+feature detection in Go.")))
+
 (define-public go-golang-org-x-text-transform
   (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
         (revision "1"))
