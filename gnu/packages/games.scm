@@ -2108,9 +2108,9 @@ the higher you go.  The game features multiplayer, unlimited FPS, smooth floor
 falling, themeable graphics and sounds, and replays.")
     (license license:gpl3+)))
 
-(define-public wesnoth
+(define-public the-battle-for-wesnoth
   (package
-    (name "wesnoth")
+    (name "the-battle-for-wesnoth")
     (version "1.14.6")
     (source (origin
               (method url-fetch)
@@ -2147,6 +2147,9 @@ advantages and disadvantages against different types of attacks.  Units gain
 experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
+
+(define-public wesnoth
+  (deprecated-package "wesnoth" the-battle-for-wesnoth))
 
 (define-public wesnoth-server
   (package
