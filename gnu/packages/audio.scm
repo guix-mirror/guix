@@ -2130,11 +2130,7 @@ different audio devices such as ALSA or PulseAudio.")
                 "0wlmbb9m7cf3wr7c2h2hji18592x2b119m7mx85wksjs6rjaq2mj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
-       ;; Disable xunique to prevent X hanging when starting qjackctl in
-       ;; tiling window managers such as StumpWM or i3
-       ;; (see https://github.com/rncbc/qjackctl/issues/13).
-       #:configure-flags '("--disable-xunique")))
+     '(#:tests? #f))                    ; no check target
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)
