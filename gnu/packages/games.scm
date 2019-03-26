@@ -4436,9 +4436,9 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public fillets-ng
   (deprecated-package "fillets-ng" fish-fillets-ng))
 
-(define-public crawl
+(define-public dungeon-crawl-stone-soup
   (package
-    (name "crawl")
+    (name "dungeon-crawl-stone-soup")
     (version "0.23.1")
     (source
      (origin
@@ -4504,9 +4504,9 @@ fish.  The whole game is accompanied by quiet, comforting music.")
                     ;; Force command line build for test cases.
                     (append make-flags '("GAME=crawl" "TILES="))))))))
     (synopsis "Roguelike dungeon crawler game")
-    (description "Dungeon Crawl Stone Soup is a roguelike adventure through
-dungeons filled with dangerous monsters in a quest to find the mystifyingly
-fabulous Orb of Zot.")
+    (description "Dungeon Crawl Stone Soup (also known as \"Crawl\" or DCSS
+for short) is a roguelike adventure through dungeons filled with dangerous
+monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
     (home-page "https://crawl.develz.org")
     (license (list license:gpl2+
                    license:bsd-2
@@ -4515,6 +4515,9 @@ fabulous Orb of Zot.")
                    license:expat
                    license:zlib
                    license:asl2.0))))
+
+(define-public crawl
+  (deprecated-package "crawl" dungeon-crawl-stone-soup))
 
 ;; The linter here claims that patch file names should start with the package
 ;; name. But, in this case, the patches are inherited from crawl with the
