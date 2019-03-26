@@ -4522,10 +4522,10 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
 ;; The linter here claims that patch file names should start with the package
 ;; name. But, in this case, the patches are inherited from crawl with the
 ;; "crawl-" prefix instead of "crawl-tiles-".
-(define-public crawl-tiles
+(define-public dungeon-crawl-stone-soup-tiles
   (package
-    (inherit crawl)
-    (name "crawl-tiles")
+    (inherit dungeon-crawl-stone-soup)
+    (name "dungeon-crawl-stone-soup-tiles")
     (arguments
      (substitute-keyword-arguments
          (package-arguments crawl)
@@ -4554,6 +4554,9 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
        ("pngcrush" ,pngcrush)
        ("which" ,which)))
     (synopsis "Graphical roguelike dungeon crawler game")))
+
+(define-public crawl-tiles
+  (deprecated-package "crawl-tiles" dungeon-crawl-stone-soup-tiles))
 
 (define-public lugaru
   (package
