@@ -4364,9 +4364,9 @@ shapes are arranged in a series of increasingly complex patterns, forming
  becoming difficult enough to tax even the brightest of minds.")
     (license license:gpl2+)))
 
-(define-public fillets-ng
+(define-public fish-fillets-ng
   (package
-    (name "fillets-ng")
+    (name "fish-fillets-ng")
     (version "1.0.1")
     (source (origin
               (method url-fetch)
@@ -4432,6 +4432,9 @@ utter witty remarks about their surroundings, the various inhabitants of their
 underwater realm quarrel among themselves or comment on the efforts of your
 fish.  The whole game is accompanied by quiet, comforting music.")
     (license license:gpl2+)))
+
+(define-public fillets-ng
+  (deprecated-package "fillets-ng" fish-fillets-ng))
 
 (define-public crawl
   (package
