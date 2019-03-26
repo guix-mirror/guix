@@ -261,7 +261,7 @@ Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
-(define-public cataclysm-dda
+(define-public cataclysm-dark-days-ahead
   (let ((commit "9c732a5de48928691ab863d3ab275ca7b0e522fc"))
     (package
       (name "cataclysm-dda")
@@ -316,14 +316,18 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
       (home-page "http://en.cataclysmdda.com/")
       (synopsis "Survival horror roguelike video game")
       (description
-       "Cataclysm: Dark Days Ahead is a roguelike set in a post-apocalyptic
-world.  Struggle to survive in a harsh, persistent, procedurally generated
-world.  Scavenge the remnants of a dead civilization for food, equipment, or,
-if you are lucky, a vehicle with a full tank of gas to get you out of Dodge.
-Fight to defeat or escape from a wide variety of powerful monstrosities, from
-zombies to giant insects to killer robots and things far stranger and deadlier,
-and against the others like yourself, that want what you have.")
+       "Cataclysm: Dark Days Ahead (or \"DDA\" for short) is a roguelike set
+in a post-apocalyptic world.  Struggle to survive in a harsh, persistent,
+procedurally generated world.  Scavenge the remnants of a dead civilization
+for food, equipment, or, if you are lucky, a vehicle with a full tank of gas
+to get you out of Dodge.  Fight to defeat or escape from a wide variety of
+powerful monstrosities, from zombies to giant insects to killer robots and
+things far stranger and deadlier, and against the others like yourself, that
+want what you have.")
       (license license:cc-by-sa3.0))))
+
+(define-public cataclysm-dda
+  (deprecated-package "cataclysm-dda" cataclysm-dark-days-ahead))
 
 (define-public cowsay
   (package
