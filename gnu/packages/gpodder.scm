@@ -69,6 +69,13 @@
                (substitute* "src/gpodder/util.py"
                  (("xdg-open") (string-append xdg-utils "/bin/xdg-open")))
                #t)))
+         ;; 'msgmerge' introduces non-determinism by resetting the
+         ;; POT-Creation-Date in .po files.
+         (add-before 'install 'do-not-run-msgmerge
+           (lambda _
+             (substitute* "makefile"
+               (("msgmerge") "true"))
+             #t))
          (add-before 'install 'make-po-files-writable
            (lambda _
              (for-each
