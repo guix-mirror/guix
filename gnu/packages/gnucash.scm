@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module ((guix records) #:select (this-record))
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -165,14 +166,14 @@
                                         ,@(transitive-input-references
                                            'inputs
                                            (map (lambda (l)
-                                                  (assoc l (inputs)))
+                                                  (assoc l (package-inputs this-record)))
                                                 '("perl-finance-quote"
                                                   "perl-date-manip"))))
                                        (list
                                         ,@(transitive-input-references
                                            'inputs
                                            (map (lambda (l)
-                                                  (assoc l (inputs)))
+                                                  (assoc l (package-inputs this-record)))
                                                 '("perl-finance-quote")))))))))
                        '("gnucash"
                          "gnc-fq-check"

@@ -1025,9 +1025,10 @@ and return it."
             (match (if graft?
                        (or (package-replacement package) package)
                        package)
-              (($ <package> name version source build-system
-                            args inputs propagated-inputs native-inputs
-                            self-native-input? outputs)
+              ((and self
+                    ($ <package> name version source build-system
+                                 args inputs propagated-inputs native-inputs
+                                 self-native-input? outputs))
                ;; Even though we prefer to use "@" to separate the package
                ;; name from the package version in various user-facing parts
                ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
@@ -1036,15 +1037,15 @@ and return it."
                              #:system system
                              #:target target
                              #:source source
-                             #:inputs (append (inputs)
-                                              (propagated-inputs))
+                             #:inputs (append (inputs self)
+                                              (propagated-inputs self))
                              #:outputs outputs
                              #:native-inputs `(,@(if (and target
                                                           self-native-input?)
-                                                     `(("self" ,package))
+                                                     `(("self" ,self))
                                                      '())
-                                               ,@(native-inputs))
-                             #:arguments (args))
+                                               ,@(native-inputs self))
+                             #:arguments (args self))
                    (raise (if target
                               (condition
                                (&package-cross-build-system-error
