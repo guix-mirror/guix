@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,7 +80,8 @@
             slim-configuration-xauth
             slim-configuration-shepherd
             slim-configuration-auto-login-session
-            slim-configuration-startx
+            slim-configuration-xorg
+            slim-configuration-sessreg
 
             slim-service-type
             slim-service
