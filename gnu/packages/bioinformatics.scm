@@ -2325,23 +2325,21 @@ files.  The code was previously part of the cutadapt tool.")
 (define-public cutadapt
   (package
     (name "cutadapt")
-    (version "1.18")
+    (version "2.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/marcelm/cutadapt.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (pypi-uri "cutadapt" version))
               (sha256
                (base32
-                "08bbfwyc0kvcd95jf2s95xiv9s3cbsxm39ydl0qck3fw3cviwxpg"))))
+                "1vqmsfkm6llxzmsz9wcfcvzx9a9f8iabvwik2rbyn7nc4wm25z89"))))
     (build-system python-build-system)
     (inputs
      `(("python-dnaio" ,python-dnaio)
        ("python-xopen" ,python-xopen)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://cutadapt.readthedocs.io/en/stable/")
     (synopsis "Remove adapter sequences from nucleotide sequencing reads")
     (description
