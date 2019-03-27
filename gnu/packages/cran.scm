@@ -13303,3 +13303,38 @@ This focus has led to a lack of facilities for composing specialized plots.
 Thi package aims to be a collection of mainly new statistics and geometries
 that fills this gap.")
     (license license:expat)))
+
+(define-public r-europepmc
+  (package
+    (name "r-europepmc")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "europepmc" version))
+       (sha256
+        (base32
+         "1ngqs1sqzkbwv98dd5z4cxj8bnz41wyd0g060a2vpqi3s99s4i2h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-purrr" ,r-purrr)
+       ("r-urltools" ,r-urltools)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/ropensci/europepmc/")
+    (synopsis "R Interface to the Europe PubMed Central RESTful Web Service")
+    (description
+     "This package provides an R Client for the
+@url{https://europepmc.org/RestfulWebService,Europe PubMed Central RESTful Web
+Service}.  It gives access to both metadata on life science literature and
+open access full texts.  Europe PMC indexes all PubMed content and other
+literature sources including Agricola, a bibliographic database of citations
+to the agricultural literature, or Biological Patents.  In addition to
+bibliographic metadata, the client allows users to fetch citations and
+reference lists.  Links between life-science literature and other EBI
+databases, including ENA, PDB or ChEMBL are also accessible.")
+    (license license:gpl3)))
