@@ -10896,7 +10896,15 @@ with narrow binding events such as transcription factor ChIP-seq.")
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (replace 'configure
+           (lambda _
+             ;; Trim Galore tries to figure out what version of Python
+             ;; cutadapt is using by looking at the shebang.  Of course that
+             ;; doesn't work, because cutadapt is wrapped in a shell script.
+             (substitute* "trim_galore"
+               (("my \\$python_return.*")
+                "my $python_return = \"Python 3.999\";\n"))
+             #t))
          (delete 'build)
          (add-after 'unpack 'hardcode-tool-references
            (lambda* (#:key inputs #:allow-other-keys)
