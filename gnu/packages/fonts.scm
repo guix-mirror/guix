@@ -384,14 +384,14 @@ for long periods of working with computers (8 or more hours per day).")
     (name "font-adobe-source-han-sans")
     (version "1.004")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-han-sans/archive/"
-                    version "R.tar.gz"))
-              (file-name (string-append "source-han-sans-" version "R.tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/adobe-fonts/source-han-sans.git")
+                     (commit (string-append version "R"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ssx0fw90sy6mj8fv8fv4dgzszpqwbmwpjnlx16g4pvaqzdmybbz"))))
+                "0zm884d8fp5gvirq324050kqv7am9khyqhs9kk4r4rr3jzn61jpk"))))
     (outputs '("out"                 ; OpenType/CFF Collection (OTC), 121 MiB.
                "cn" "jp" "kr" "tw")) ; Region-specific Subset OpenType/CFF.
     (build-system trivial-build-system)
@@ -400,20 +400,12 @@ for long periods of working with computers (8 or more hours per day).")
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let ((tar  (string-append (assoc-ref %build-inputs
-                                               "tar")
-                                    "/bin/tar"))
-               (PATH (string-append (assoc-ref %build-inputs
-                                               "gzip")
-                                    "/bin"))
-               (install-opentype-fonts
+         (let ((install-opentype-fonts
                 (lambda (fonts-dir out)
                   (copy-recursively fonts-dir
                                     (string-append (assoc-ref %outputs out)
                                                    "/share/fonts/opentype")))))
-           (setenv "PATH" PATH)
-           (invoke tar "xvf" (assoc-ref %build-inputs "source"))
-           (chdir (string-append "source-han-sans-" ,version "R"))
+           (chdir (assoc-ref %build-inputs "source"))
            (install-opentype-fonts "OTC" "out")
            (install-opentype-fonts "SubsetOTF/CN" "cn")
            (install-opentype-fonts "SubsetOTF/JP" "jp")
@@ -421,9 +413,6 @@ for long periods of working with computers (8 or more hours per day).")
            (install-opentype-fonts "SubsetOTF/TW" "tw")
            (for-each delete-file (find-files %output "\\.zip$"))
            #t))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
     (home-page "https://github.com/adobe-fonts/source-han-sans")
     (synopsis "Pan-CJK fonts")
     (description
