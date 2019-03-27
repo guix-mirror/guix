@@ -1552,7 +1552,7 @@ diagrams.")
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")
-    (version "0.5.5")
+    (version "0.5.7")
     (source
      (origin
        (method git-fetch)
@@ -1562,7 +1562,7 @@ diagrams.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1nrrccsy9qhjvjrlrjkzkmaa4mfzxv8ahnipqg4szz4n0hxnb1aa"))))
+         "0lxd55yhz0ag7v1ydff55bg4h8snq5lbk8cjwxqpyq6gh4v7md1h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
