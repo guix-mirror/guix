@@ -321,7 +321,10 @@ INPUTS is a list of inputs (as for packages)."
 
    #:make-disk-image? #f
    #:single-file-output? #t
-   #:references-graphs inputs))
+   #:references-graphs inputs
+
+   ;; Xorriso seems to be quite memory-hungry, so increase the VM's RAM size.
+   #:memory-size 512))
 
 (define* (qemu-image #:key
                      (name "qemu-image")
