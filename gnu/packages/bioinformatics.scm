@@ -10920,7 +10920,11 @@ with narrow binding events such as transcription factor ChIP-seq.")
                (("\"gunzip")
                 (string-append "\""
                                (assoc-ref inputs "gzip")
-                               "/bin/gunzip")))
+                               "/bin/gunzip"))
+               (("\"pigz")
+                (string-append "\""
+                               (assoc-ref inputs "pigz")
+                               "/bin/pigz")))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -10932,6 +10936,7 @@ with narrow binding events such as transcription factor ChIP-seq.")
     (inputs
      `(("gzip" ,gzip)
        ("perl" ,perl)
+       ("pigz" ,pigz)
        ("cutadapt" ,cutadapt)))
     (native-inputs
      `(("unzip" ,unzip)))
