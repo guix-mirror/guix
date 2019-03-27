@@ -13221,3 +13221,28 @@ data that can be used as basis for animation.  Furthermore it adds a number of
 vectorized interpolaters for common R data types such as numeric, date and
 color.")
     (license license:expat)))
+
+(define-public r-polyclip
+  (package
+    (name "r-polyclip")
+    (version "1.10-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "polyclip" version))
+       (sha256
+        (base32
+         "0jyk4maqiblvj095jd59dr76kbniyli3v3xvy0a72ljszq6vrnkl"))))
+    (build-system r-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.angusj.com/delphi/clipper.php")
+    (synopsis "Polygon clipping")
+    (description
+     "This package provides an R port of the library Clipper.  It performs
+polygon clipping operations (intersection, union, set minus, set difference)
+for polygonal regions of arbitrary complexity, including holes.  It computes
+offset polygons (spatial buffer zones, morphological dilations, Minkowski
+dilations) for polygonal regions and polygonal lines.  It computes the
+Minkowski Sum of general polygons.  There is a function for removing
+self-intersections from polygon data.")
+    (license license:boost1.0)))
