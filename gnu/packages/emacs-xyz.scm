@@ -1186,14 +1186,14 @@ than @code{electric-indent-mode}.")
     (name "emacs-ag")
     (version "0.47")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Wilfred/ag.el/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/Wilfred/ag.el.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rlmp6wnyhqfg86dbz17r914msp58favn4kd4yrdwyia265a4lar"))))
+                "15kp99vwyi7hb1jkq3lwvqzw3v62ycixsq6y4pd1x0nn2v5p5m5r"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
