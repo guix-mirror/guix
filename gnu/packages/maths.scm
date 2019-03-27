@@ -937,7 +937,7 @@ extremely large and complex data collections.")
       #:phases
       (modify-phases %standard-phases
         (add-before 'configure 'chdir-to-source
-          (lambda _ (chdir ,(string-append "hdfjava-" version))))
+          (lambda _ (chdir ,(string-append "hdfjava-" version)) #t))
         (add-before 'configure 'patch-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (substitute* "configure"
@@ -986,8 +986,8 @@ extremely large and complex data collections.")
             #t))
         (add-before 'check 'build-examples
           (lambda _
-            (zero? (apply system* `("javac"
-                                    ,@(find-files "examples" ".*\\.java")))))))
+            (apply invoke `("javac"
+                            ,@(find-files "examples" ".*\\.java"))))))
 
       #:parallel-build? #f
 
