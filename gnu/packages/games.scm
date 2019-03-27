@@ -237,6 +237,56 @@ enemy, ally, weapon and mission types.  Features include simulated 4D texturing,
 mouse and joystick control, and original music.")
     (license license:gpl2)))
 
+(define-public alex4
+  (package
+    (name "alex4")
+    (version "1.2-alpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/carstene1ns/alex4/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0jj1g3v1a6lyfwp5g2ly0n9z65ryqck8jxvzr01kaqjj3lsfkrhg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:make-flags
+       (list "-Csrc"
+             "CC=gcc"
+             "CFLAGS=-D_FILE_OFFSET_BITS=64"
+             (string-append "DATADIR=" (assoc-ref %outputs "out")
+                            "/share/" ,name)
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* '("src/main.c"
+                            "src/shooter.c")
+               (("fcos") "fixcos")
+               (("fmul") "fixmul")
+               (("fsin") "fixsin"))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/" ,name)))
+               (install-file "alex4.ini" share)
+               #t))))))
+    (inputs
+     `(("allegro" ,allegro-4)
+       ("dumb" ,dumb-allegro4)))
+    (home-page "http://allegator.sourceforge.net/")
+    (synopsis "Retro platform game")
+    (description
+     "Guide Alex the Allegator through the jungle in order to save his
+girlfriend Lola from evil humans who want to make a pair of shoes out of her.
+Plenty of classic platforming in four nice colors guaranteed!
+
+The game includes a built-in editor so you can design and share your own maps.")
+    (license license:gpl2+)))
+
 (define-public armagetron-advanced
   (package
     (name "armagetron-advanced")
