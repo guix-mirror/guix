@@ -745,6 +745,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
+  %D%/packages/patches/emacs-zones-called-interactively.patch	\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\

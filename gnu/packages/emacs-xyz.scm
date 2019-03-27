@@ -6037,7 +6037,10 @@ customizable by the user.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0gwnw2giii2a14nlh62xp45f47cw6ikqphhzpmcw6c7mn9x5z2ar"))))
+           "0gwnw2giii2a14nlh62xp45f47cw6ikqphhzpmcw6c7mn9x5z2ar"))
+         (patches
+          (search-patches
+           "emacs-zones-called-interactively.patch"))))
       (build-system emacs-build-system)
       (home-page "https://www.emacswiki.org/emacs/Zones")
       (synopsis "Define and act on multiple zones of buffer text")

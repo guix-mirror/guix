@@ -1,0 +1,43 @@
+From fb56fbb706804215ef9af0cc575db97c373046c6 Mon Sep 17 00:00:00 2001
+From: Brian Leung <bkleung89@gmail.com>
+Date: Sun, 17 Mar 2019 01:32:04 +0100
+Subject: [PATCH] This patch silences the byte-compiler.
+
+---
+ zones.el | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/zones.el b/zones.el
+index 1bf94f0..94fa9a6 100644
+--- a/zones.el
++++ b/zones.el
+@@ -1031,7 +1031,7 @@ You can use `C-x n x' to widen to a previous buffer restriction.
+ 
+ This is a destructive operation. The list structure of the variable
+ value can be modified."
+-  (zz-narrow-advice (interactive-p)))
++  (zz-narrow-advice (called-interactively-p)))
+ 
+ (defadvice narrow-to-defun (after zz-add-zone--defun activate)
+   "Push the defun limits to the current `zz-izones-var'.
+@@ -1039,7 +1039,7 @@ You can use `C-x n x' to widen to a previous buffer restriction.
+ 
+ This is a destructive operation. The list structure of the variable
+ value can be modified."
+-  (zz-narrow-advice (interactive-p)))
++  (zz-narrow-advice (called-interactively-p)))
+ 
+ ;; Call `zz-add-zone' if interactive or `zz-add-zone-anyway-p'.
+ ;;
+@@ -1049,7 +1049,7 @@ You can use `C-x n x' to widen to a previous buffer restriction.
+ 
+ This is a destructive operation. The list structure of the variable
+ value can be modified."
+-  (zz-narrow-advice (interactive-p)))
++  (zz-narrow-advice (called-interactively-p)))
+ 
+ ;;(@* "General Commands")
+ 
+-- 
+2.21.0
+
