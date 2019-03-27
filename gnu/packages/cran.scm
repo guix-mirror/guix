@@ -13010,3 +13010,36 @@ interaction search in high-dimensional data.")
     (description
      "This package holds the database for the @code{extrafont} package.")
     (license license:gpl2)))
+
+(define-public r-extrafont
+  (package
+    (name "r-extrafont")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "extrafont" version))
+       (sha256
+        (base32
+         "0b9k2n9sk23bh45hjgnkxpjyvpdrz1hx7kmxvmb4nhlhm1wpsv9g"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-extrafontdb" ,r-extrafontdb)
+       ("r-rttf2pt1" ,r-rttf2pt1)))
+    (home-page "https://github.com/wch/extrafont")
+    (synopsis "Tools for using fonts in R")
+    (description
+     "The extrafont package makes it easier to use fonts other than the basic
+PostScript fonts that R uses.  Fonts that are imported into extrafont can be
+used with PDF or PostScript output files.  There are two hurdles for using
+fonts in PDF (or Postscript) output files:
+
+@enumerate
+@item Making R aware of the font and the dimensions of the characters.
+@item Embedding the fonts in the PDF file so that the PDF can be displayed
+  properly on a device that doesn't have the font.  This is usually needed if
+  you want to print the PDF file or share it with others.
+@end enumerate
+
+The extrafont package makes both of these things easier.")
+    (license license:gpl2)))
