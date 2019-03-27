@@ -13145,3 +13145,30 @@ conversion and comparisons implemented in C++, and offers 100-fold speed
 improvements over the @code{convertColor} function in the @code{grDevices}
 package.")
     (license license:expat)))
+
+(define-public r-ggplotify
+  (package
+    (name "r-ggplotify")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggplotify" version))
+       (sha256
+        (base32
+         "14hqlpvnaq5psz1ljcpw9isa06827rg3fm5c1dx159rsjfi56yby"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridgraphics" ,r-gridgraphics)
+       ("r-rvcheck" ,r-rvcheck)))
+    (home-page "https://github.com/GuangchuangYu/ggplotify")
+    (synopsis "Convert plots to @code{grob} or @code{ggplot} object")
+    (description
+     "This package provides tools to convert plot function calls (using
+expression or formula) to @code{grob} or @code{ggplot} objects that are
+compatible with the @code{grid} and @code{ggplot2} environment.  With this
+package, we are able to e.g. use @code{cowplot} to align plots produced by
+@code{base} graphics, @code{grid}, @code{lattice}, @code{vcd} etc. by
+converting them to @code{ggplot} objects.")
+    (license license:artistic2.0)))
