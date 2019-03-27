@@ -333,7 +333,7 @@ warn about packages that have no matching updater."
                  (upstream-source-input-changes source))
                 (let ((hash (call-with-input-file tarball
                               port-sha256)))
-                  (update-package-source package version hash)))
+                  (update-package-source package source hash)))
               (warning (G_ "~a: version ~a could not be \
 downloaded and authenticated; not updating~%")
                        (package-name package) version))))
