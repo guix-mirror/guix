@@ -1485,13 +1485,14 @@ written in the Go programming language.")
     (name "emacs-google-maps")
     (version "1.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jd/google-maps.el/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jd/google-maps.el.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "014bxapm4d8vjxbzrfjdpsavxyfx981mlcb10aq5rmigr6il8ybs"))))
+                "183igr5lp20zcqi7rc01fk76sfxdhksd74i11v16gdsifdkjimd0"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/jd/google-maps.el")
     (synopsis "Access Google Maps from Emacs")
