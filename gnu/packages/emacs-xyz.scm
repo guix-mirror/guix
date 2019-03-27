@@ -14055,3 +14055,26 @@ C-f} to advance by #xa4 characters.
        "This package provides an Emacs Helm interface for search suggestions
 and article extracts for Wikipedia.")
       (license license:gpl3+))))
+
+(define-public emacs-webfeeder
+  (package
+  (name "emacs-webfeeder")
+  (version "1.0.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://elpa.gnu.org/packages/webfeeder-"
+             version
+             ".tar"))
+      (sha256
+        (base32
+          "06y5vxw9m6pmbrzb8v2i3w9dnhgqxz06vyx1knmgi9cczlrj4a64"))))
+  (build-system emacs-build-system)
+  (home-page "https://gitlab.com/Ambrevar/emacs-webfeeder")
+  (synopsis "Build RSS and Atom webfeeds from HTML files")
+  (description
+    "Webfeeder is an Emacs library to generate RSS and Atom feeds from HTML
+files.  The various elements of the HTML input are parsed with customizable
+functions (e.g. @code{webfeeder-title-function}).")
+  (license license:gpl3+)))
