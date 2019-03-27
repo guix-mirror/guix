@@ -38,7 +38,7 @@
   (list
    (desktop-environment
     (name "GNOME")
-    (snippet '(gnome-desktop-service)))
+    (snippet '(service gnome-desktop-service-type)))
    (desktop-environment
     (name "Xfce")
     (snippet '(xfce-desktop-service)))

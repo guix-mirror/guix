@@ -57,7 +57,7 @@
   ;; screen with F1.  Use the "desktop" services, which
   ;; include the X11 log-in service, networking with
   ;; NetworkManager, and more.
-  (services (append (list (gnome-desktop-service)
+  (services (append (list (service gnome-desktop-service-type)
                           (xfce-desktop-service))
                     %desktop-services))
 

@@ -14420,7 +14420,7 @@ The @var{%desktop-services} variable can be used as the @code{services}
 field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
-Additionally, the @code{gnome-desktop-service},
+Additionally, the @code{gnome-desktop-service-type},
 @code{xfce-desktop-service}, @code{mate-desktop-service-type} and
 @code{enlightenment-desktop-service-type} procedures can add GNOME, XFCE, MATE
 and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
@@ -14428,7 +14428,7 @@ services like the backlight adjustment helpers and the power management
 utilities are added to the system, extending @code{polkit} and @code{dbus}
 appropriately, allowing GNOME to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
-adding a service made by @code{gnome-desktop-service} adds the GNOME
+adding a service made by @code{gnome-desktop-service-type} adds the GNOME
 metapackage to the system profile.  Likewise, adding the XFCE service
 not only adds the @code{xfce} metapackage to the system profile, but it
 also gives the Thunar file manager the ability to open a ``root-mode''
@@ -14452,11 +14452,23 @@ also try starting GNOME on Wayland manually from a TTY with the
 command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
 gnome-session``.  Currently only GNOME has support for Wayland.
 
-@deffn {Scheme Procedure} gnome-desktop-service
-Return a service that adds the @code{gnome} package to the system
-profile, and extends polkit with the actions from
-@code{gnome-settings-daemon}.
-@end deffn
+@defvr {Scheme Variable} gnome-desktop-service-type
+This is the type of the service that adds the @uref{https://www.gnome.org,
+GNOME} desktop environment.  Its value is a @code{gnome-desktop-configuration}
+object (see below.)
+
+This service adds the @code{gnome} package to the system profile, and extends
+polkit with the actions from @code{gnome-settings-daemon}.
+@end defvr
+
+@deftp {Data Type} gnome-desktop-configuration
+Configuration record for the GNOME desktop environment.
+
+@table @asis
+@item @code{gnome} (default @code{gnome})
+The GNOME package to use.
+@end table
+@end deftp
 
 @deffn {Scheme Procedure} xfce-desktop-service
 Return a service that adds the @code{xfce} package to the system profile,
@@ -14508,7 +14520,7 @@ them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
 (operating-system
   ...
   ;; cons* adds items to the list given as its last argument.
-  (services (cons* (gnome-desktop-service)
+  (services (cons* (service gnome-desktop-service-type)
                    (xfce-desktop-service)
                    %desktop-services))
   ...)
