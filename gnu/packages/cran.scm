@@ -2482,20 +2482,20 @@ to access PostgreSQL database systems.")
 (define-public r-geometry
   (package
     (name "r-geometry")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "geometry" version))
        (sha256
         (base32
-         "0lpih1a93jz021krdv78zf6fq95g8i0xw4r9aj5gq36a0vzc3i0y"))))
+         "0v3ivaw8vbjyxg08dd573qk3kqfyknj5hli9503dza6p6xz0dzmm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magic" ,r-magic)
        ("r-lpsolve" ,r-lpsolve)
        ("r-rcpp" ,r-rcpp)
-       ("r-cppprogress" ,r-rcppprogress)))
+       ("r-rcppprogress" ,r-rcppprogress)))
     (home-page "http://geometry.r-forge.r-project.org/")
     (synopsis "Mesh generation and surface tesselation")
     (description
