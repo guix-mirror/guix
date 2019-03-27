@@ -41,6 +41,8 @@
     (snippet '(service gnome-desktop-service-type)))
    (desktop-environment
     (name "Xfce")
+    ;; TODO: Use 'xfce-desktop-service-type' when the 'guix' package provides
+    ;; it with a default value.
     (snippet '(xfce-desktop-service)))
    (desktop-environment
     (name "MATE")

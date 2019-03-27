@@ -945,10 +945,13 @@ and extends polkit with the actions from @code{mate-settings-daemon}."
                                        "thunar")
                                       xfce-package))
           (service-extension profile-service-type
-                             (compose list
-                                      xfce-package))))))
+                             (compose list xfce-package))))
+   (default-value (xfce-desktop-configuration))
+   (description "Run the Xfce desktop environment.")))
 
-(define* (xfce-desktop-service #:key (config (xfce-desktop-configuration)))
+(define-deprecated (xfce-desktop-service #:key (config
+                                                (xfce-desktop-configuration)))
+  xfce-desktop-service-type
   "Return a service that adds the @code{xfce} package to the system profile,
 and extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated

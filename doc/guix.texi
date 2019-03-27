@@ -14395,7 +14395,7 @@ The @code{(gnu services desktop)} module provides services that are
 usually useful in the context of a ``desktop'' setup---that is, on a
 machine running a graphical display server, possibly with graphical user
 interfaces, etc.  It also defines services that provide specific desktop
-environments like GNOME, XFCE or MATE.
+environments like GNOME, Xfce or MATE.
 
 To simplify things, the module defines a variable containing the set of
 services that users typically expect on a machine with a graphical
@@ -14422,14 +14422,14 @@ Reference, @code{services}}).
 
 Additionally, the @code{gnome-desktop-service-type},
 @code{xfce-desktop-service}, @code{mate-desktop-service-type} and
-@code{enlightenment-desktop-service-type} procedures can add GNOME, XFCE, MATE
+@code{enlightenment-desktop-service-type} procedures can add GNOME, Xfce, MATE
 and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
 services like the backlight adjustment helpers and the power management
 utilities are added to the system, extending @code{polkit} and @code{dbus}
 appropriately, allowing GNOME to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
 adding a service made by @code{gnome-desktop-service-type} adds the GNOME
-metapackage to the system profile.  Likewise, adding the XFCE service
+metapackage to the system profile.  Likewise, adding the Xfce service
 not only adds the @code{xfce} metapackage to the system profile, but it
 also gives the Thunar file manager the ability to open a ``root-mode''
 file management window, if the user authenticates using the
@@ -14470,12 +14470,25 @@ The GNOME package to use.
 @end table
 @end deftp
 
-@deffn {Scheme Procedure} xfce-desktop-service
-Return a service that adds the @code{xfce} package to the system profile,
-and extends polkit with the ability for @code{thunar} to manipulate the
-file system as root from within a user session, after the user has
-authenticated with the administrator's password.
-@end deffn
+@defvr {Scheme Variable} xfce-desktop-service-type
+This is the type of a service to run the @uref{Xfce, https://xfce.org/}
+desktop environment.  Its value is an @code{xfce-desktop-configuration} object
+(see below.)
+
+This service that adds the @code{xfce} package to the system profile, and
+extends polkit with the ability for @code{thunar} to manipulate the file
+system as root from within a user session, after the user has authenticated
+with the administrator's password.
+@end defvr
+
+@deftp {Data Type} xfce-desktop-configuration
+Configuration record for the Xfce desktop environment.
+
+@table @asis
+@item @code{xfce} (default @code{xfce})
+The Xfce package to use.
+@end table
+@end deftp
 
 @deffn {Scheme Variable} mate-desktop-service-type
 This is the type of the service that runs the @uref{https://mate-desktop.org/,
@@ -14508,9 +14521,9 @@ The enlightenment package to use.
 @end table
 @end deftp
 
-Because the GNOME, XFCE and MATE desktop services pull in so many packages,
+Because the GNOME, Xfce and MATE desktop services pull in so many packages,
 the default @code{%desktop-services} variable doesn't include any of
-them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
+them by default.  To add GNOME, Xfce or MATE, just @code{cons} them onto
 @code{%desktop-services} in the @code{services} field of your
 @code{operating-system}:
 
@@ -14521,7 +14534,7 @@ them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
   ...
   ;; cons* adds items to the list given as its last argument.
   (services (cons* (service gnome-desktop-service-type)
-                   (xfce-desktop-service)
+                   (service xfce-desktop-service)
                    %desktop-services))
   ...)
 @end example
