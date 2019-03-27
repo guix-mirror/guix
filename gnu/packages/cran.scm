@@ -12992,3 +12992,21 @@ interaction search in high-dimensional data.")
     ;; the LICENSE file.
     (license (list license:bsd-3 license:expat
                    (license:non-copyleft "file://LICENSE")))))
+
+(define-public r-extrafontdb
+  (package
+    (name "r-extrafontdb")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "extrafontdb" version))
+       (sha256
+        (base32
+         "115n42hfvv5h4nn4cfkfmkmn968py4lpy8zd0d6w5yylwpzbm8gs"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/wch/extrafontdb")
+    (synopsis "Database for the extrafont package")
+    (description
+     "This package holds the database for the @code{extrafont} package.")
+    (license license:gpl2)))
