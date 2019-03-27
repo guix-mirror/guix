@@ -8729,13 +8729,14 @@ Anzu.zim.")
     (name "emacs-emmet-mode")
     (version "1.0.8")
     (source (origin
-	      (method url-fetch)
-	      (uri (string-append "https://github.com/smihica/emmet-mode"
-				  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-	      (sha256
-	       (base32
-		"0g3p22yabfcp98cfv9dgl9il2m2pd53isq2q11vb3s7qyn31f7zj"))))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/smihica/emmet-mode.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1dsa85bk33j90h1ypaz1ylqh9yp2xvlga237h3kwa5y3sb0d5ydi"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/smihica/emmet-mode")
     (synopsis "Unofficial Emmet's support for Emacs")
