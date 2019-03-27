@@ -1555,14 +1555,14 @@ diagrams.")
     (version "0.5.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/purcell/mmm-mode/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/purcell/mmm-mode.git")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0c5ing3hcr74k78hqhrfwiv6m3n8hqfrw89j2x34vf60f4iyqzqc"))))
+         "1nrrccsy9qhjvjrlrjkzkmaa4mfzxv8ahnipqg4szz4n0hxnb1aa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
