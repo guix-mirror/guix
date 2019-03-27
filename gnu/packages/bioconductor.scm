@@ -2813,3 +2813,39 @@ including hypergeometric model and gene set enrichment analysis are also
 implemented for discovering disease associations of high-throughput biological
 data.")
     (license license:artistic2.0)))
+
+(define-public r-enrichplot
+  (package
+    (name "r-enrichplot")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "enrichplot" version))
+       (sha256
+        (base32
+         "0cxqfpy6py4k3z3lnlkiwx89r4ymfpdc4hm25dfpazqgjflz5is7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-cowplot" ,r-cowplot)
+       ("r-dose" ,r-dose)
+       ("r-europepmc" ,r-europepmc)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggplotify" ,r-ggplotify)
+       ("r-ggraph" ,r-ggraph)
+       ("r-ggridges" ,r-ggridges)
+       ("r-gosemsim" ,r-gosemsim)
+       ("r-gridextra" ,r-gridextra)
+       ("r-igraph" ,r-igraph)
+       ("r-purrr" ,r-purrr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-upsetr" ,r-upsetr)))
+    (home-page "https://github.com/GuangchuangYu/enrichplot")
+    (synopsis "Visualization of functional enrichment result")
+    (description
+     "The enrichplot package implements several visualization methods for
+interpreting functional enrichment results obtained from ORA or GSEA analyses.
+All the visualization methods are developed based on ggplot2 graphics.")
+    (license license:artistic2.0)))
