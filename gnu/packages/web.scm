@@ -6424,9 +6424,9 @@ compressed JSON header blocks.
        `(("guile" ,guile-2.2)
          ("guile-commonmark" ,guile-commonmark)
          ("guile-json" ,guile-json)))
-    (home-page "https://github.com/UMCUGenetics/hpcguix-web")
+      (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
-    (license l:agpl3+))))
+      (license l:agpl3+))))
