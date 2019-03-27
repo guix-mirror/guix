@@ -708,6 +708,32 @@ annotations.")
      "This is a manifest package for Illumina's EPIC methylation arrays.")
     (license license:artistic2.0)))
 
+(define-public r-do-db
+  (package
+    (name "r-do-db")
+    (version "2.9")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "DO.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "10bqqa124l61ivzy4mdd3z3ar9a6537qbxw23pc4y9w8a6dwnavn"))))
+    (properties
+     `((upstream-name . "DO.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/DO.db/")
+    (synopsis "Annotation maps describing the entire Disease Ontology")
+    (description
+     "This package provides a set of annotation maps describing the entire
+Disease Ontology.")
+    (license license:artistic2.0)))
+
 
 ;;; Experiment data
 
