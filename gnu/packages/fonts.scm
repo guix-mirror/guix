@@ -1168,13 +1168,14 @@ resolutions.")
     (version "20160623")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/antijingoist/open-dyslexic/"
-                           "archive/" version "-Stable.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/antijingoist/open-dyslexic.git")
+              (commit (string-append version "-Stable"))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0al0j9kb32kfavcpq1kigsd36yzvf5yhzqhds0jkh7ngbxyxwkx4"))))
+         "0nr7s92nk1kbr459154idnib977ixc70z6g9mbra3lp73nyrmyvz"))))
     (build-system font-build-system)
     (home-page "https://opendyslexic.org")
     (synopsis "Font for dyslexics and high readability")
