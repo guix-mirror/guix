@@ -13097,3 +13097,26 @@ yeast.")
     ;; files are made available under the Creative Commons Attribution 4.0
     ;; International license.
     (license (list license:expat license:cc-by4.0))))
+
+(define-public r-gridgraphics
+  (package
+    (name "r-gridgraphics")
+    (version "0.3-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gridGraphics" version))
+       (sha256
+        (base32
+         "1p94flvq5h3x817pl1m0aj3sim87x6zdbpv9xrgdnqw3rxfzwgqs"))))
+    (properties `((upstream-name . "gridGraphics")))
+    (build-system r-build-system)
+    (home-page "https://github.com/pmur002/gridgraphics")
+    (synopsis "Redraw base graphics using @code{grid} graphics")
+    (description
+     "This package provides functions to convert a page of plots drawn with
+the @code{graphics} package into identical output drawn with the @code{grid}
+package.  The result looks like the original @code{graphics}-based plot, but
+consists of @code{grid} grobs and viewports that can then be manipulated with
+@code{grid} functions (e.g., edit grobs and revisit viewports).")
+    (license license:gpl2+)))
