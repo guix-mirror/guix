@@ -13120,3 +13120,28 @@ package.  The result looks like the original @code{graphics}-based plot, but
 consists of @code{grid} grobs and viewports that can then be manipulated with
 @code{grid} functions (e.g., edit grobs and revisit viewports).")
     (license license:gpl2+)))
+
+(define-public r-farver
+  (package
+    (name "r-farver")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "farver" version))
+       (sha256
+        (base32
+         "1dllgx121al374gyp9pjv1m8ip4imm8zhbgyh1970dsz2c4z71i0"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/thomasp85/farver")
+    (synopsis "Vectorized color conversion and comparison")
+    (description
+     "The encoding of color can be handled in many different ways, using
+different color spaces.  As different color spaces have different uses,
+efficient conversion between these representations are important.  This
+package provides a set of functions that gives access to very fast color space
+conversion and comparisons implemented in C++, and offers 100-fold speed
+improvements over the @code{convertColor} function in the @code{grDevices}
+package.")
+    (license license:expat)))
