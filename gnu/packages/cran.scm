@@ -12968,3 +12968,27 @@ see: G. Thanei, N. Meinshausen and R. Shah (2016).  The xyz algorithm for fast
 interaction search in high-dimensional data.")
     ;; Any version of the GPL.
     (license license:gpl2+)))
+
+(define-public r-rttf2pt1
+  (package
+    (name "r-rttf2pt1")
+    (version "1.3.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rttf2pt1" version))
+       (sha256
+        (base32
+         "12hf9r3mhjr9sawdvf7qhjf1zph2q64f77i81jwvy7awidbm0kja"))))
+    (properties `((upstream-name . "Rttf2pt1")))
+    (build-system r-build-system)
+    (home-page "https://github.com/wch/Rttf2pt1")
+    (synopsis "Font conversion utility")
+    (description
+     "This package contains the program @code{ttf2pt1}, for use with the
+@code{extrafont} package.")
+    ;; Most of the files are covered under the Expat license.  Some files are
+    ;; covered under BSD-3.  Deviations for individual files are recorded in
+    ;; the LICENSE file.
+    (license (list license:bsd-3 license:expat
+                   (license:non-copyleft "file://LICENSE")))))
