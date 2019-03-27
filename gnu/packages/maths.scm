@@ -953,10 +953,19 @@ extremely large and complex data collections.")
             ;; Replace outdated config.sub and config.guess:
             (with-directory-excursion "config"
               (for-each (lambda (file)
-                          (copy-file
+                          (install-file
                            (string-append (assoc-ref inputs "automake")
-                                          "/share/automake-1.15/" file) file))
+                                          "/share/automake-"
+                                          ,(version-major+minor (package-version automake))
+                                          "/" file) "."))
                         '("config.sub" "config.guess")))
+
+            ;; Fix embedded version number
+            (let ((hdf5version (list ,@(string-split (package-version hdf5) #\.))))
+              (substitute* "hdf/hdf5lib/H5.java"
+                (("1, 8, 19")
+                 (string-join hdf5version ", "))))
+
             (mkdir-p (string-append (assoc-ref outputs "out")))
             ;; Set classpath for tests
             (let* ((build-dir (getcwd))
