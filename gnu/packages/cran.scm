@@ -13043,3 +13043,26 @@ fonts in PDF (or Postscript) output files:
 
 The extrafont package makes both of these things easier.")
     (license license:gpl2)))
+
+(define-public r-xkcd
+  (package
+    (name "r-xkcd")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xkcd" version))
+       (sha256
+        (base32
+         "1z2y0ihn68ppay7xkglhw7djki5654g6z4bbpyy41if57z9q554f"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-extrafont" ,r-extrafont)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)))
+    (home-page "https://cran.r-project.org/web/packages/xkcd/")
+    (synopsis "Plot ggplot2 graphics in the XKCD style")
+    (description
+     "This package provides the means to plot ggplot2 graphs in the style of
+the XKCD web comic.")
+    (license license:gpl3)))
