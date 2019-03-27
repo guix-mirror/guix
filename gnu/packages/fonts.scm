@@ -987,13 +987,14 @@ vector graphics.")
     (version "1.11.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/sunaku/tamzen-font/archive/"
-                           "Tamzen-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/sunaku/tamzen-font.git")
+              (commit (string-append "Tamzen-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ryd7gp6qiwaqw73jqbmh4kwlriyd8xykh4j7z90z8xp9fm7lrys"))))
+         "17kgmvg6q32mqhx9g44hjvzv0si0mnpprga4z7na930g2zdd8846"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1001,30 +1002,19 @@ vector graphics.")
        (begin
          (use-modules (guix build utils))
 
-         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
-                                        "/bin/tar"))
-               (PATH     (string-append (assoc-ref %build-inputs "gzip")
-                                        "/bin"))
-               (font-dir (string-append %output "/share/fonts/misc"))
-               (psf-dir (string-append %output "/share/kbd/consolefonts"))
-               (src-pcf-dir (string-append "tamzen-font-Tamzen-"
-                                            ,version "/pcf")))
-           (setenv "PATH" PATH)
-           (invoke tar "xvf" (assoc-ref %build-inputs "source"))
+         (let* ((out      (assoc-ref %outputs "out"))
+                (font-dir (string-append out "/share/fonts/misc"))
+                (psf-dir  (string-append out "/share/kbd/consolefonts")))
+           (chdir (assoc-ref %build-inputs "source"))
            (mkdir-p font-dir)
            (mkdir-p psf-dir)
-           (chdir src-pcf-dir)
            (for-each (lambda (pcf)
                        (install-file pcf font-dir))
-                     (find-files "." "\\.pcf$"))
-           (chdir "../psf")
+                     (find-files "pcf" "\\.pcf$"))
            (for-each (lambda (psf)
                        (install-file psf psf-dir))
-                     (find-files "." "\\.psf$"))
+                     (find-files "psf" "\\.psf$"))
            #t))))
-    (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)))
     (home-page "https://github.com/sunaku/tamzen-font")
     (synopsis "Monospaced bitmap font for console and X11")
     (description
