@@ -44,7 +44,7 @@
     (snippet '(xfce-desktop-service)))
    (desktop-environment
     (name "MATE")
-    (snippet '(mate-desktop-service)))
+    (snippet '(service mate-desktop-service-type)))
    (desktop-environment
     (name "Enlightenment")
     (snippet '(service enlightenment-desktop-service-type)))))
