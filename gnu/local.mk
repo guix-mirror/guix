@@ -1276,9 +1276,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/teeworlds-use-latest-wavpack.patch	\
   %D%/packages/patches/texinfo-perl-compat.patch		\
   %D%/packages/patches/texinfo-5-perl-compat.patch		\
+  %D%/packages/patches/texlive-bin-CVE-2018-17407.patch		\
   %D%/packages/patches/texlive-bin-luatex-poppler-compat.patch	\
-  %D%/packages/patches/texlive-bin-pdftex-poppler-compat.patch	\
-  %D%/packages/patches/texlive-bin-xetex-poppler-compat.patch	\
   %D%/packages/patches/telegram-purple-adjust-test.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
