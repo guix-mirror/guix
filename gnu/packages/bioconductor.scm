@@ -2779,3 +2779,37 @@ analysis.  Using the fast algorithm allows to make more permutations and get
 more fine grained p-values, which allows to use accurate stantard approaches
 to multiple hypothesis correction.")
     (license license:expat)))
+
+(define-public r-dose
+  (package
+    (name "r-dose")
+    (version "3.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DOSE" version))
+       (sha256
+        (base32
+         "1gh7dhvfc71kawxcfx8xqlir7mwvg5mmz4lqrdrvw5knvi2h3mfa"))))
+    (properties `((upstream-name . "DOSE")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-do-db" ,r-do-db)
+       ("r-fgsea" ,r-fgsea)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gosemsim" ,r-gosemsim)
+       ("r-qvalue" ,r-qvalue)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://guangchuangyu.github.io/software/DOSE/")
+    (synopsis "Disease ontology semantic and enrichment analysis")
+    (description
+     "This package implements five methods proposed by Resnik, Schlicker,
+Jiang, Lin and Wang, respectively, for measuring semantic similarities among
+@dfn{Disease ontology} (DO) terms and gene products.  Enrichment analyses
+including hypergeometric model and gene set enrichment analysis are also
+implemented for discovering disease associations of high-throughput biological
+data.")
+    (license license:artistic2.0)))
