@@ -886,130 +886,130 @@ extremely large and complex data collections.")
 
 (define-public hdf-java
   (package
-   (name "hdf-java")
-   (version "3.3.2")
-   (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
-            "http://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
-            version "/src/CMake-hdfjava-" version ".tar.gz"))
-      (sha256
-       (base32 "0m1gp2aspcblqzmpqbdpfp6giskws85ds6p5gz8sx7asyp7wznpr"))
-      (modules '((guix build utils)))
-      (snippet ; Make sure we don't use the bundled sources and binaries.
-       `(begin
-          (for-each delete-file
-                    (list "SZip.tar.gz" "ZLib.tar.gz" "JPEG8d.tar.gz"
-                          "HDF4.tar.gz" "HDF5.tar.gz"))
-          (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))
-          #t))))
-   (build-system gnu-build-system)
-   (native-inputs
-    `(("jdk" ,icedtea "jdk")
-      ("automake" ,automake) ; For up to date 'config.guess' and 'config.sub'.
-      ;; For tests:
-      ("hamcrest-core" ,java-hamcrest-core)
-      ("junit" ,java-junit)
-      ("slf4j-simple" ,java-slf4j-simple)))
-   (inputs
-    `(("hdf4" ,hdf4)
-      ("hdf5" ,hdf5)
-      ("zlib" ,zlib)
-      ("libjpeg" ,libjpeg)
-      ("slf4j-api" ,java-slf4j-api)))
-   (arguments
-    `(#:configure-flags
-      (list (string-append "--target=" ,(or (%current-target-system) (%current-system)))
-            (string-append "--with-jdk=" (assoc-ref %build-inputs "jdk") "/include,"
-                           (assoc-ref %build-inputs "jdk") "/lib" )
-            (string-append "--with-hdf4=" (assoc-ref %build-inputs "hdf4") "/lib")
-            (string-append "--with-hdf5=" (assoc-ref %build-inputs "hdf5") "/lib"))
+    (name "hdf-java")
+    (version "3.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
+             version "/src/CMake-hdfjava-" version ".tar.gz"))
+       (sha256
+        (base32 "0m1gp2aspcblqzmpqbdpfp6giskws85ds6p5gz8sx7asyp7wznpr"))
+       (modules '((guix build utils)))
+       (snippet     ; Make sure we don't use the bundled sources and binaries.
+        `(begin
+           (for-each delete-file
+                     (list "SZip.tar.gz" "ZLib.tar.gz" "JPEG8d.tar.gz"
+                           "HDF4.tar.gz" "HDF5.tar.gz"))
+           (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))
+           #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("jdk" ,icedtea "jdk")
+       ("automake" ,automake) ; For up to date 'config.guess' and 'config.sub'.
+       ;; For tests:
+       ("hamcrest-core" ,java-hamcrest-core)
+       ("junit" ,java-junit)
+       ("slf4j-simple" ,java-slf4j-simple)))
+    (inputs
+     `(("hdf4" ,hdf4)
+       ("hdf5" ,hdf5)
+       ("zlib" ,zlib)
+       ("libjpeg" ,libjpeg)
+       ("slf4j-api" ,java-slf4j-api)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--target=" ,(or (%current-target-system) (%current-system)))
+             (string-append "--with-jdk=" (assoc-ref %build-inputs "jdk") "/include,"
+                            (assoc-ref %build-inputs "jdk") "/lib" )
+             (string-append "--with-hdf4=" (assoc-ref %build-inputs "hdf4") "/lib")
+             (string-append "--with-hdf5=" (assoc-ref %build-inputs "hdf5") "/lib"))
 
-      #:make-flags
-      (list (string-append "HDFLIB=" (assoc-ref %build-inputs "hdf4") "/lib")
-            (string-append "HDF5LIB=" (assoc-ref %build-inputs "hdf5") "/lib")
-            (string-append "ZLIB=" (assoc-ref %build-inputs "zlib") "/lib/libz.so")
-            (string-append "JPEGLIB="
-                           (assoc-ref %build-inputs "libjpeg") "/lib/libjpeg.so")
-            "LLEXT=so")
+       #:make-flags
+       (list (string-append "HDFLIB=" (assoc-ref %build-inputs "hdf4") "/lib")
+             (string-append "HDF5LIB=" (assoc-ref %build-inputs "hdf5") "/lib")
+             (string-append "ZLIB=" (assoc-ref %build-inputs "zlib") "/lib/libz.so")
+             (string-append "JPEGLIB="
+                            (assoc-ref %build-inputs "libjpeg") "/lib/libjpeg.so")
+             "LLEXT=so")
 
-      #:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'chdir-to-source
-          (lambda _ (chdir ,(string-append "hdfjava-" version)) #t))
-        (add-before 'configure 'patch-build
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (substitute* "configure"
-              (("COPT=\"") "COPT=\"-O2 ") ; CFLAGS is ignored in Makefiles
-              (("/bin/cat") (which "cat")))
-            ;; Set classpath for compilation
-            (substitute* '("hdf/hdf5lib/Makefile.in"
-                           "hdf/hdf5lib/exceptions/Makefile.in"
-                           "hdf/hdflib/Makefile.in")
-              (("\\$\\(TOP\\)/lib/slf4j-api-1\\.7\\.5\\.jar")
-               (string-append (assoc-ref inputs "slf4j-api")
-                              "/share/java/slf4j-api.jar")))
-            ;; Replace outdated config.sub and config.guess:
-            (with-directory-excursion "config"
-              (for-each (lambda (file)
-                          (install-file
-                           (string-append (assoc-ref inputs "automake")
-                                          "/share/automake-"
-                                          ,(version-major+minor (package-version automake))
-                                          "/" file) "."))
-                        '("config.sub" "config.guess")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir-to-source
+           (lambda _ (chdir ,(string-append "hdfjava-" version)) #t))
+         (add-before 'configure 'patch-build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("COPT=\"") "COPT=\"-O2 ") ; CFLAGS is ignored in Makefiles
+               (("/bin/cat") (which "cat")))
+             ;; Set classpath for compilation
+             (substitute* '("hdf/hdf5lib/Makefile.in"
+                            "hdf/hdf5lib/exceptions/Makefile.in"
+                            "hdf/hdflib/Makefile.in")
+               (("\\$\\(TOP\\)/lib/slf4j-api-1\\.7\\.5\\.jar")
+                (string-append (assoc-ref inputs "slf4j-api")
+                               "/share/java/slf4j-api.jar")))
+             ;; Replace outdated config.sub and config.guess:
+             (with-directory-excursion "config"
+               (for-each (lambda (file)
+                           (install-file
+                            (string-append (assoc-ref inputs "automake")
+                                           "/share/automake-"
+                                           ,(version-major+minor (package-version automake))
+                                           "/" file) "."))
+                         '("config.sub" "config.guess")))
 
-            ;; Fix embedded version number
-            (let ((hdf5version (list ,@(string-split (package-version hdf5) #\.))))
-              (substitute* "hdf/hdf5lib/H5.java"
-                (("1, 8, 19")
-                 (string-join hdf5version ", "))))
+             ;; Fix embedded version number
+             (let ((hdf5version (list ,@(string-split (package-version hdf5) #\.))))
+               (substitute* "hdf/hdf5lib/H5.java"
+                 (("1, 8, 19")
+                  (string-join hdf5version ", "))))
 
-            (mkdir-p (string-append (assoc-ref outputs "out")))
-            ;; Set classpath for tests
-            (let* ((build-dir (getcwd))
-                   (lib (string-append build-dir "/lib"))
-                   (jhdf (string-append lib "/jhdf.jar"))
-                   (jhdf5 (string-append lib "/jhdf5.jar"))
-                   (testjars
-                    (map (lambda (i)
-                           (string-append (assoc-ref inputs i)
-                                          "/share/java/" i ".jar"))
-                         '("junit" "hamcrest-core" "slf4j-api" "slf4j-simple")))
-                   (class-path
-                    (string-join `("." ,build-dir ,jhdf ,jhdf5 ,@testjars) ":")))
+             (mkdir-p (string-append (assoc-ref outputs "out")))
+             ;; Set classpath for tests
+             (let* ((build-dir (getcwd))
+                    (lib (string-append build-dir "/lib"))
+                    (jhdf (string-append lib "/jhdf.jar"))
+                    (jhdf5 (string-append lib "/jhdf5.jar"))
+                    (testjars
+                     (map (lambda (i)
+                            (string-append (assoc-ref inputs i)
+                                           "/share/java/" i ".jar"))
+                          '("junit" "hamcrest-core" "slf4j-api" "slf4j-simple")))
+                    (class-path
+                     (string-join `("." ,build-dir ,jhdf ,jhdf5 ,@testjars) ":")))
 
-              (substitute* '("test/hdf5lib/Makefile.in"
-                             "test/hdf5lib/junit.sh.in"
-                             "examples/runExample.sh.in")
-                (("/usr/bin/test")
-                 (string-append (assoc-ref inputs "coreutils")
-                                "/bin/test"))
-                (("/usr/bin/uname")
-                 (string-append (assoc-ref inputs "coreutils")
-                                "/bin/uname"))
-                (("CLASSPATH=[^\n]*")
-                 (string-append "CLASSPATH=" class-path)))
-              (setenv "CLASSPATH" class-path))
-            #t))
-        (add-before 'check 'build-examples
-          (lambda _
-            (apply invoke `("javac"
-                            ,@(find-files "examples" ".*\\.java"))))))
+               (substitute* '("test/hdf5lib/Makefile.in"
+                              "test/hdf5lib/junit.sh.in"
+                              "examples/runExample.sh.in")
+                 (("/usr/bin/test")
+                  (string-append (assoc-ref inputs "coreutils")
+                                 "/bin/test"))
+                 (("/usr/bin/uname")
+                  (string-append (assoc-ref inputs "coreutils")
+                                 "/bin/uname"))
+                 (("CLASSPATH=[^\n]*")
+                  (string-append "CLASSPATH=" class-path)))
+               (setenv "CLASSPATH" class-path))
+             #t))
+         (add-before 'check 'build-examples
+           (lambda _
+             (apply invoke `("javac"
+                             ,@(find-files "examples" ".*\\.java"))))))
 
-      #:parallel-build? #f
+       #:parallel-build? #f
 
-      #:parallel-tests? #f ))
-   (home-page "https://support.hdfgroup.org/products/java")
-   (synopsis "Java interface for the HDF4 and HDF5 libraries")
-   (description "Java HDF Interface (JHI) and Java HDF5 Interface (JHI5) use
+       #:parallel-tests? #f ))
+    (home-page "https://support.hdfgroup.org/products/java")
+    (synopsis "Java interface for the HDF4 and HDF5 libraries")
+    (description "Java HDF Interface (JHI) and Java HDF5 Interface (JHI5) use
 the Java Native Interface to wrap the HDF4 and HDF5 libraries, which are
 implemented in C.")
 
-   ;; BSD-style license:
-   (license (license:x11-style
-             "https://support.hdfgroup.org/ftp/HDF5/hdf-java\
+    ;; BSD-style license:
+    (license (license:x11-style
+              "https://support.hdfgroup.org/ftp/HDF5/hdf-java\
 /current/src/unpacked/COPYING"))))
 
 (define-public hdf-eos2
