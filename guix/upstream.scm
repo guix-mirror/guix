@@ -344,10 +344,10 @@ values: the item from LST1 and the item from LST2 that match PRED."
 
 (define* (package-update/url-fetch store package source
                                    #:key key-download)
-  "Return the version, tarball, and input changes needed to update PACKAGE to
+  "Return the version, tarball, and SOURCE, to update PACKAGE to
 SOURCE, an <upstream-source>."
   (match source
-    (($ <upstream-source> _ version urls signature-urls changes)
+    (($ <upstream-source> _ version urls signature-urls)
      (let*-values (((archive-type)
                     (match (and=> (package-source package) origin-uri)
                       ((? string? uri)
@@ -371,7 +371,7 @@ SOURCE, an <upstream-source>."
                            (or signature-urls (circular-list #f)))))
        (let ((tarball (download-tarball store url signature-url
                                         #:key-download key-download)))
-         (values version tarball changes))))))
+         (values version tarball source))))))
 
 (define %method-updates
   ;; Mapping of origin methods to source update procedures.

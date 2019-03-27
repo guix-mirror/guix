@@ -297,7 +297,7 @@ KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
 values: 'interactive' (default), 'always', and 'never'.  When WARN? is true,
 warn about packages that have no matching updater."
   (if (lookup-updater package updaters)
-      (let-values (((version tarball changes)
+      (let-values (((version tarball source)
                     (package-update store package updaters
                                     #:key-download key-download))
                    ((loc)
@@ -330,7 +330,7 @@ warn about packages that have no matching updater."
                               (G_ "~a: consider removing this propagated input: ~a~%")))
                            (package-name package)
                            (upstream-input-change-name change)))
-                 (changes))
+                 (upstream-source-input-changes source))
                 (let ((hash (call-with-input-file tarball
                               port-sha256)))
                   (update-package-source package version hash)))
