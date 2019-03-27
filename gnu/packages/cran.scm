@@ -12943,3 +12943,28 @@ use, including tools to manage a temporary environment attached to the search
 path for temporary variables you do not want to @code{save()} or
 @code{load()}; test the current platform; showing progress bars, etc.")
     (license license:gpl2)))
+
+(define-public r-xyz
+  (package
+    (name "r-xyz")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xyz" version))
+       (sha256
+        (base32
+         "13w4sb4pvgciwr8wsz785dafj2k2kpx7znz46r5d32wx88vkycp4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/xyz/")
+    (synopsis "Algorithm for fast interaction search in high-dimensional data")
+    (description
+     "High dimensional interaction search by brute force requires a quadratic
+computational cost in the number of variables.  The xyz algorithm provably
+finds strong interactions in almost linear time.  For details of the algorithm
+see: G. Thanei, N. Meinshausen and R. Shah (2016).  The xyz algorithm for fast
+interaction search in high-dimensional data.")
+    ;; Any version of the GPL.
+    (license license:gpl2+)))
