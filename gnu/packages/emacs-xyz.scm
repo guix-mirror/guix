@@ -1346,14 +1346,14 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
     (version "1.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/kiwanami/emacs-calfw/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/kiwanami/emacs-calfw.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zr91xr0f1xfcv78yxka8vs5ximmq2ixmqf2pkb57kwwnxlypq4i"))))
+         "0r42cagvmvvib76kd15nd9ix55ys6i549vxnls4z16s864695zpa"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-howm" ,emacs-howm)))
