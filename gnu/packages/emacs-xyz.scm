@@ -1564,12 +1564,6 @@ diagrams.")
         (base32
          "1nrrccsy9qhjvjrlrjkzkmaa4mfzxv8ahnipqg4szz4n0hxnb1aa"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
