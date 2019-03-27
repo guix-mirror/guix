@@ -777,6 +777,29 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
 
+(define-public emacs-relint
+  (package
+    (name "emacs-relint")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/relint-" version ".el"))
+       (sha256
+        (base32
+         "0y7lki2vndpkmzg4k0yh2722hp01qr77vm337xnm8wp3bmwn8s1f"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-xr" ,emacs-xr)))
+    (home-page "https://github.com/mattiase/relint")
+    (synopsis "Elisp regexp mistake finder")
+    (description
+     "Relint (regular expression lint) scans Elisp files for mistakes in
+regexps, including deprecated syntax and bad practice.  It also checks the
+regexp-like arguments to @code{skip-chars-forward} and
+@code{skip-chars-backward}.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Web browsing.
