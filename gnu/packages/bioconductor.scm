@@ -2849,3 +2849,36 @@ data.")
 interpreting functional enrichment results obtained from ORA or GSEA analyses.
 All the visualization methods are developed based on ggplot2 graphics.")
     (license license:artistic2.0)))
+
+(define-public r-clusterprofiler
+  (package
+    (name "r-clusterprofiler")
+    (version "3.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "clusterProfiler" version))
+       (sha256
+        (base32
+         "1v4fh8ll7zk8yhbaa0nq9xvqrb05kyvbpwkqpnjf07s873805rxm"))))
+    (properties
+     `((upstream-name . "clusterProfiler")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-dose" ,r-dose)
+       ("r-enrichplot" ,r-enrichplot)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-go-db" ,r-go-db)
+       ("r-gosemsim" ,r-gosemsim)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-qvalue" ,r-qvalue)
+       ("r-rvcheck" ,r-rvcheck)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://guangchuangyu.github.io/software/clusterProfiler/")
+    (synopsis "Analysis and visualization of functional profiles for gene clusters")
+    (description
+     "This package implements methods to analyze and visualize functional
+profiles (GO and KEGG) of gene and gene clusters.")
+    (license license:artistic2.0)))
