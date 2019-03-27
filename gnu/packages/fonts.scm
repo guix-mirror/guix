@@ -1142,14 +1142,14 @@ monospace, slab-serif fonts.")
     (name "font-google-material-design-icons")
     (version "3.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/google/material-design-icons/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/material-design-icons.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "018i3za9r6kf6svci33z09lc5pr5yz4164m8gzzwjzzqcrng0p5j"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "17q5brcqyyc8gbjdgpv38p89s60cwxjlwy2ljnrvas5cj0s62np0"))))
     (build-system font-build-system)
     (home-page "http://google.github.io/material-design-icons")
     (synopsis "Icon font of Google Material Design icons")
