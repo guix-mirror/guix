@@ -1285,13 +1285,14 @@ or XEmacs.")
     (version "0.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/sebastiansturm/autothemer/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/sebastiansturm/autothemer.git")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rd28r9wfrbll212am4ih9hrvypx785aff76va2cbfxdwm9kixsa"))))
+         "0cd2pqh6k32sjidkcd8682y4l6mx52xw4a05f38kk8nsrk28m74k"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
