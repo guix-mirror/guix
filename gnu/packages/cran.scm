@@ -13246,3 +13246,29 @@ dilations) for polygonal regions and polygonal lines.  It computes the
 Minkowski Sum of general polygons.  There is a function for removing
 self-intersections from polygon data.")
     (license license:boost1.0)))
+
+(define-public r-urltools
+  (package
+    (name "r-urltools")
+    (version "1.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "urltools" version))
+       (sha256
+        (base32
+         "18lp66f2l504b8q3j4xy8j9pyzzlljw9f112sn6qii1cg83072wm"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-triebeard" ,r-triebeard)))
+    (home-page "https://github.com/Ironholds/urltools/")
+    (synopsis "Vectorized tools for URL handling and parsing")
+    (description
+     "This package provides a toolkit for all URL-handling needs, including
+encoding and decoding, parsing, parameter extraction and modification.  All
+functions are designed to be both fast and entirely vectorized.  It is
+intended to be useful for people dealing with web-related datasets, such as
+server-side logs, although may be useful for other situations involving large
+sets of URLs.")
+    (license license:expat)))
