@@ -13172,3 +13172,25 @@ package, we are able to e.g. use @code{cowplot} to align plots produced by
 @code{base} graphics, @code{grid}, @code{lattice}, @code{vcd} etc. by
 converting them to @code{ggplot} objects.")
     (license license:artistic2.0)))
+
+(define-public r-triebeard
+  (package
+    (name "r-triebeard")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "triebeard" version))
+       (sha256
+        (base32
+         "1hqyz57gph02c9fdc07lxz113bbklif3g18sw8jan6pakhhdc7dz"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/Ironholds/triebeard/")
+    (synopsis "Radix trees in Rcpp")
+    (description
+     "Radix trees, or tries, are key-value data structures optimized for
+efficient lookups, similar in purpose to hash tables.  This package provides
+an implementation of radix trees for use in R programming and in developing
+packages with Rcpp.")
+    (license license:expat)))
