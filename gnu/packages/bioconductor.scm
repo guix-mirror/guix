@@ -2724,3 +2724,32 @@ and NE_k statistics in a statistical framework for determining whether a
 specified group of genes for a pathway has a coordinated association with a
 phenotype of interest.")
     (license license:gpl2)))
+
+(define-public r-fgsea
+  (package
+    (name "r-fgsea")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "fgsea" version))
+       (sha256
+        (base32
+         "0cxxvlmg340l5l5fz4abbwppiri0ibg4navvq5k3wg511mz8ma2q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-data-table" ,r-data-table)
+       ("r-fastmatch" ,r-fastmatch)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/ctlab/fgsea/")
+    (synopsis "Fast gene set enrichment analysis")
+    (description
+     "The package implements an algorithm for fast gene set enrichment
+analysis.  Using the fast algorithm allows to make more permutations and get
+more fine grained p-values, which allows to use accurate stantard approaches
+to multiple hypothesis correction.")
+    (license license:expat)))
