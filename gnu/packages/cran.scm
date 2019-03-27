@@ -13338,3 +13338,38 @@ bibliographic metadata, the client allows users to fetch citations and
 reference lists.  Links between life-science literature and other EBI
 databases, including ENA, PDB or ChEMBL are also accessible.")
     (license license:gpl3)))
+
+(define-public r-ggraph
+  (package
+    (name "r-ggraph")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggraph" version))
+       (sha256
+        (base32
+         "0fpmp326mryd1k1qvacjadksrnhbla8h960i18lmrimzrag7692c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggforce" ,r-ggforce)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-gtable" ,r-gtable)
+       ("r-igraph" ,r-igraph)
+       ("r-mass" ,r-mass)
+       ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-scales" ,r-scales)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://cran.r-project.org/web/packages/ggraph/")
+    (synopsis "Implementation of grammar of graphics for graphs and networks")
+    (description
+     "The grammar of graphics as implemented in ggplot2 is a poor fit for
+graph and network visualizations due to its reliance on tabular data input.
+The ggraph package is an extension of the ggplot2 API tailored to graph
+visualizations and provides the same flexible approach to building up plots
+layer by layer.")
+    (license license:gpl3)))
