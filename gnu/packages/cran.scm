@@ -13066,3 +13066,34 @@ The extrafont package makes both of these things easier.")
      "This package provides the means to plot ggplot2 graphs in the style of
 the XKCD web comic.")
     (license license:gpl3)))
+
+(define-public r-msigdbr
+  (package
+    (name "r-msigdbr")
+    (version "6.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "msigdbr" version))
+       (sha256
+        (base32
+         "1264j1hs74kq7hyh68vfynadfi6mdpq46qm1hnwzkzzhmbzpb9cg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/igordot/msigdbr")
+    (synopsis "MSigDB gene sets for multiple organisms")
+    (description
+     "This package provides the @dfn{Molecular Signatures Database} (MSigDB)
+gene sets typically used with the @dfn{Gene Set Enrichment Analysis} (GSEA)
+software in a standard R data frame with key-value pairs.  Included are the
+original human gene symbols and Entrez IDs as well as the equivalents for
+various frequently studied model organisms such as mouse, rat, pig, fly, and
+yeast.")
+    ;; The package is covered under the Expat license, but the upstream MSigDB
+    ;; files are made available under the Creative Commons Attribution 4.0
+    ;; International license.
+    (license (list license:expat license:cc-by4.0))))
