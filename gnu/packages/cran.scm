@@ -895,14 +895,14 @@ work well on small screens.")
 (define-public r-feather
   (package
     (name "r-feather")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "feather" version))
        (sha256
         (base32
-         "138vnlwhkwayyim4rbx6rnf91kzhfij6v2f91ppx2174ky5611h6"))))
+         "0ls8lmygyjq60467s88h66d7fczjp1d3a2106rfq4dx9lyfvdfsa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-hms" ,r-hms)
