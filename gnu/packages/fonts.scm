@@ -922,13 +922,14 @@ Sans Pro family.")
     (name "font-fira-sans")
     (version "4.202")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mozilla/Fira/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mozilla/Fira.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r6zdnqqp4bgq5nmgqbj0vvj7x1h9w912851ggbl9wc7fdjnjqnq"))))
+                "116j26gdj5g1r124b4669372f7490vfjqw7apiwp2ggl0am5xd0w"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's Fira Sans Font")
