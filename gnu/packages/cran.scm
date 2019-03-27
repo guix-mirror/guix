@@ -13194,3 +13194,30 @@ efficient lookups, similar in purpose to hash tables.  This package provides
 an implementation of radix trees for use in R programming and in developing
 packages with Rcpp.")
     (license license:expat)))
+
+(define-public r-tweenr
+  (package
+    (name "r-tweenr")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tweenr" version))
+       (sha256
+        (base32
+         "0sq90pbln6lkc2q3zflhkxxwpqdw5dd7igrxhdnlynkdrmi83mpg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-farver" ,r-farver)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://github.com/thomasp85/tweenr")
+    (synopsis "Interpolate data for smooth animations")
+    (description
+     "In order to create smooth animation between states of data, tweening is
+necessary.  This package provides a range of functions for creating tweened
+data that can be used as basis for animation.  Furthermore it adds a number of
+vectorized interpolaters for common R data types such as numeric, date and
+color.")
+    (license license:expat)))
