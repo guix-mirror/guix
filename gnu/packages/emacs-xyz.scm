@@ -1370,14 +1370,14 @@ Emacs buffer.")
     (version "1.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/wbolster/emacs-direnv/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/wbolster/emacs-direnv.git")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0m9nxawklhiiysyibzzhh2zkxgq1fskqvaqb06f7r8dnhabfy9fr"))))
+         "172jyl8v4zy9bbha8nndq63x8svn9xqkafkj3q17z289na8iaylh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("dash" ,emacs-dash)
