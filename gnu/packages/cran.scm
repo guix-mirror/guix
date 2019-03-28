@@ -13586,3 +13586,27 @@ using the three.js visualization library.")
 learning benchmark problems, including, e.g., several data sets from the UCI
 repository.")
     (license license:gpl2)))
+
+(define-public r-mpm
+  (package
+    (name "r-mpm")
+    (version "1.0-22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mpm" version))
+       (sha256
+        (base32
+         "0wijw8v0wmbfrda5564cmnp788qmlkk21yn5cp5qk8aprm9l1fnk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-kernsmooth" ,r-kernsmooth)
+       ("r-mass" ,r-mass)))
+    (home-page "http://mpm.r-forge.r-project.org")
+    (synopsis "Multivariate projection methods")
+    (description
+     "This is a package for exploratory graphical analysis of multivariate
+data, specifically gene expression data with different projection methods:
+principal component analysis, correspondence analysis, spectral map
+analysis.")
+    (license license:gpl2+)))
