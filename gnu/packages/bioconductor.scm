@@ -2882,3 +2882,44 @@ All the visualization methods are developed based on ggplot2 graphics.")
      "This package implements methods to analyze and visualize functional
 profiles (GO and KEGG) of gene and gene clusters.")
     (license license:artistic2.0)))
+
+(define-public r-mlinterfaces
+  (package
+    (name "r-mlinterfaces")
+    (version "1.62.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MLInterfaces" version))
+       (sha256
+        (base32
+         "12bgplyzfh0hkwmdp5w4cs5zw3ygdhzmiqzm8vhjyni6m9nrxwy8"))))
+    (properties `((upstream-name . "MLInterfaces")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-cluster" ,r-cluster)
+       ("r-fpc" ,r-fpc)
+       ("r-gbm" ,r-gbm)
+       ("r-gdata" ,r-gdata)
+       ("r-genefilter" ,r-genefilter)
+       ("r-ggvis" ,r-ggvis)
+       ("r-hwriter" ,r-hwriter)
+       ("r-mass" ,r-mass)
+       ("r-mlbench" ,r-mlbench)
+       ("r-pls" ,r-pls)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rda" ,r-rda)
+       ("r-rpart" ,r-rpart)
+       ("r-sfsmisc" ,r-sfsmisc)
+       ("r-shiny" ,r-shiny)
+       ("r-threejs" ,r-threejs)))
+    (home-page "https://bioconductor.org/packages/MLInterfaces/")
+    (synopsis "Interfaces to R machine learning procedures")
+    (description
+     "This package provides uniform interfaces to machine learning code for
+data in R and Bioconductor containers.")
+    ;; Any version of the LGPL.
+    (license license:lgpl2.1+)))
