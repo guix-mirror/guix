@@ -2923,3 +2923,39 @@ profiles (GO and KEGG) of gene and gene clusters.")
 data in R and Bioconductor containers.")
     ;; Any version of the LGPL.
     (license license:lgpl2.1+)))
+
+(define-public r-annaffy
+  (package
+    (name "r-annaffy")
+    (version "1.54.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "annaffy" version))
+       (sha256
+        (base32
+         "16c6allp4vlx0g3nffanrm0mkkf8s2n31dccw4bflnx2pr81bmd5"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-reference-to-non-free-data
+           (lambda _
+             (substitute* "DESCRIPTION"
+               ((", KEGG.db") ""))
+             #t)))))
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-dbi" ,r-dbi)
+       ("r-go-db" ,r-go-db)))
+    (home-page "https://bioconductor.org/packages/annaffy/")
+    (synopsis "Annotation tools for Affymetrix biological metadata")
+    (description
+     "This package provides functions for handling data from Bioconductor
+Affymetrix annotation data packages.  It produces compact HTML and text
+reports including experimental data and URL links to many online databases.
+It allows searching of biological metadata using various criteria.")
+    ;; Any version of the LGPL according to the DESCRIPTION file.  A copy of
+    ;; the LGPL 2.1 is included.
+    (license license:lgpl2.1+)))
