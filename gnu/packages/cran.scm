@@ -13442,3 +13442,32 @@ microarrays.")
      "This package provides tools for shrunken centroids regularized
 discriminant analysis for the purpose of classifying high dimensional data.")
     (license license:gpl2+)))
+
+(define-public r-ggvis
+  (package
+    (name "r-ggvis")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggvis" version))
+       (sha256
+        (base32
+         "1bxggjr2313kfy895j0fvrv4bg7yh2z87907lk48i1kn5c9flchk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-dplyr" ,r-dplyr)
+       ("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://ggvis.rstudio.com/")
+    (synopsis "Interactive grammar of graphics")
+    (description
+     "This package is a data visualization package for R providing an
+implementation of an interactive grammar of graphics, taking the best parts of
+ggplot2, combining them with the reactive framework of Shiny and drawing web
+graphics using Vega.")
+    (license license:gpl2)))
