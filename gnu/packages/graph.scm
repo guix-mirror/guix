@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml))
 
@@ -322,3 +324,51 @@ clustering of dense vectors.  It contains algorithms that search in sets of
 vectors of any size, up to ones that possibly do not fit in RAM.  It also
 contains supporting code for evaluation and parameter tuning.")
     (license license:bsd-3)))
+
+(define-public python-faiss
+  (package (inherit faiss)
+    (name "python-faiss")
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "python") #t))
+         (add-after 'chdir 'build-swig
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-output-to-file "../makefile.inc"
+               (lambda ()
+                 (let ((python-version ,(version-major+minor (package-version python))))
+                   (format #t "\
+PYTHONCFLAGS =-I~a/include/python~am/ -I~a/lib/python~a/site-packages/numpy/core/include
+LIBS = -lpython~am -lfaiss
+SHAREDFLAGS = -shared -fopenmp
+CXXFLAGS = -fpermissive -std=c++11 -fopenmp -fPIC
+CPUFLAGS = ~{~a ~}~%"
+                           (assoc-ref inputs "python*") python-version
+                           (assoc-ref inputs "python-numpy") python-version
+                           python-version
+                           (cons "-mpopcnt"
+                                 (list ,@(let ((system (or (%current-target-system)
+                                                           (%current-system))))
+                                           (cond
+                                            ((string-prefix? "x86_64" system)
+                                             '("-mavx" "-msse2"))
+                                            ((string-prefix? "i686" system)
+                                             '("-msse2"))
+                                            (else
+                                             '())))))))))
+             (substitute* "Makefile"
+               (("../libfaiss.a") ""))
+             (invoke "make" "cpu"))))))
+    (inputs
+     `(("faiss" ,faiss)
+       ("openblas" ,openblas)
+       ("python*" ,python)
+       ("swig" ,swig)))
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)))
+    (description "Faiss is a library for efficient similarity search and
+clustering of dense vectors.  This package provides Python bindings to the
+Faiss library.")))
