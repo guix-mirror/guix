@@ -177,7 +177,11 @@ requirement names."
           ;; (extra) requirements.  Non-optional requirements must appear
           ;; before any section is defined.
           (if (or (eof-object? line) (section-header? line))
-              (reverse result)
+              ;; Duplicates can occur, since the same requirement can be
+              ;; listed multiple times with different conditional markers, e.g.
+              ;; pytest >= 3 ; python_version >= "3.3"
+              ;; pytest < 3 ; python_version < "3.3"
+              (reverse (delete-duplicates result))
               (cond
                ((or (string-null? line) (comment? line))
                 (loop result))
