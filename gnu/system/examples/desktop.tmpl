@@ -58,7 +58,7 @@
   ;; include the X11 log-in service, networking with
   ;; NetworkManager, and more.
   (services (append (list (service gnome-desktop-service-type)
-                          (service xfce-desktop-service))
+                          (service xfce-desktop-service-type))
                     %desktop-services))
 
   ;; Allow resolution of '.local' host names with mDNS.
