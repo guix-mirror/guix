@@ -872,8 +872,9 @@ watch your CPU playing while enjoying a cup of tea!")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://www.nethack.org/download/"
-                            version "/" name "-361-src.tgz"))
+        (uri
+         (string-append "https://www.nethack.org/download/" version "/nethack-"
+                        (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
           (base32 "1dha0ijvxhx7c9hr0452h93x81iiqsll8bc9msdnp7xdqcfbz32b"))))
     (inputs
