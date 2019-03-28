@@ -3269,7 +3269,7 @@ tactics.")
               (uri (string-append
                     "mirror://savannah/starfighter/"
                     (version-major+minor version) "/"
-                    name "-" version "-src.tar.gz"))
+                    "starfighter-" version "-src.tar.gz"))
               (sha256
                (base32
                 "1646hpjq8bz2fkfkja1dah511hn7zd2r7da4w9c9blhad3p5732v"))))
