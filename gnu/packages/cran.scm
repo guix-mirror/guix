@@ -13373,3 +13373,30 @@ The ggraph package is an extension of the ggplot2 API tailored to graph
 visualizations and provides the same flexible approach to building up plots
 layer by layer.")
     (license license:gpl3)))
+
+(define-public r-varselrf
+  (package
+    (name "r-varselrf")
+    (version "0.7-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "varSelRF" version))
+       (sha256
+        (base32
+         "0h49rl1j13yfh97rsfsyh9s2c4wajny4rzms2qw77d0cavxqg53i"))))
+    (properties `((upstream-name . "varSelRF")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-randomforest" ,r-randomforest)))
+    (home-page "http://ligarto.org/rdiaz/Software/Software.html")
+    (synopsis "Variable selection using random forests")
+    (description
+     "This package provides tools for the variable selection from random
+forests using both backwards variable elimination (for the selection of small
+sets of non-redundant variables) and selection based on the importance
+spectrum (somewhat similar to scree plots; for the selection of large,
+potentially highly-correlated variables).  The main applications are in
+high-dimensional data (e.g., microarray data, and other genomics and
+proteomics applications).")
+    (license license:gpl2+)))
