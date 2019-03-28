@@ -3010,3 +3010,25 @@ arrays.")
      "This is the classification package for the automated analysis of
 Affymetrix arrays.")
     (license license:gpl3)))
+
+(define-public r-a4preproc
+  (package
+    (name "r-a4preproc")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "a4Preproc" version))
+       (sha256
+        (base32
+         "1dd3fqcc7nr2zbi46k0mnqkh42mfxk894ixfpqg7i9np2523p5gp"))))
+    (properties `((upstream-name . "a4Preproc")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://bioconductor.org/packages/a4Preproc/")
+    (synopsis "Automated Affymetrix array analysis preprocessing package")
+    (description
+     "This is a package for the automated analysis of Affymetrix arrays.  It
+is used for preprocessing the arrays.")
+    (license license:gpl3)))
