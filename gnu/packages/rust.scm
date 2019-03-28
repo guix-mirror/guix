@@ -877,7 +877,13 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    ;; these for now
                    (("fn include") "#[ignore]\nfn include")
                    (("fn exclude") "#[ignore]\nfn exclude"))
-                   #t)))))))))
+                   #t))
+             ;; The test has been moved elsewhere.
+             (replace 'disable-amd64-avx-test
+               (lambda _
+                 (substitute* "src/test/ui/run-pass/issues/issue-44056.rs"
+                  (("only-x86_64") "ignore-test"))
+                  #t)))))))))
 
 (define-public rust
   (let ((base-rust
@@ -908,6 +914,12 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                      ((" Command::new\\(\"echo\"\\)")
                       (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
                    #t)))
+              ;; The test has been moved elsewhere.
+              (replace 'disable-amd64-avx-test
+                (lambda _
+                  (substitute* "src/test/ui/issues/issue-44056.rs"
+                   (("only-x86_64") "ignore-test"))
+                  #t))
              (add-after 'patch-tests 'patch-process-docs-rev-cmd
                (lambda* _
                  ;; Disable some doc tests which depend on the "rev" command
