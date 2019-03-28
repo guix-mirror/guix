@@ -354,13 +354,14 @@ exception-handling library.")
     (version "1.10.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/OGRECave/" name
-                           "/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/OGRECave/ogre.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "13bdh9v4026qf8w8rbfln2rmwf0rby1a8fz55zpdvpy105i6cbpz"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "072rzw9mxymbiypgkrbkk9h10rgly6gczik4dlmssk6xkpqckaqr"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
