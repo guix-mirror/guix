@@ -13471,3 +13471,30 @@ implementation of an interactive grammar of graphics, taking the best parts of
 ggplot2, combining them with the reactive framework of Shiny and drawing web
 graphics using Vega.")
     (license license:gpl2)))
+
+(define-public r-gbm
+  (package
+    (name "r-gbm")
+    (version "2.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gbm" version))
+       (sha256
+        (base32
+         "0vs6ljaqhwwpgr8wlbhmm4v147rd82kl16rpaijqiylxcc8dxyq6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gridextra" ,r-gridextra)
+       ("r-lattice" ,r-lattice)
+       ("r-survival" ,r-survival)))
+    (home-page "https://github.com/gbm-developers/gbm")
+    (synopsis "Generalized boosted regression models")
+    (description
+     "This package is an implementation of extensions to Freund and Schapire's
+AdaBoost algorithm and Friedman's gradient boosting machine.  It includes
+regression methods for least squares, absolute loss, t-distribution loss,
+quantile regression, logistic, multinomial logistic, Poisson, Cox proportional
+hazards partial likelihood, AdaBoost exponential loss, Huberized hinge loss,
+and Learning to Rank measures (LambdaMart).")
+    (license license:gpl2+)))
