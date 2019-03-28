@@ -382,6 +382,11 @@ of packages upgraded in ALIST2."
   "Given the two package name/version alists ALIST1 and ALIST2, display the
 list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
 and ALIST2 differ, display HEADING upfront."
+  (define (pretty str column)
+    (indented-string (fill-paragraph str (- (%text-width) 4)
+                                     column)
+                     4))
+
   (let-values (((new upgraded) (new/upgraded-packages alist1 alist2)))
     (unless (and (null? new) (null? upgraded))
       (display heading))
@@ -392,21 +397,17 @@ and ALIST2 differ, display HEADING upfront."
        (format #t (N_ "  ~h new package: ~a~%"
                       "  ~h new packages: ~a~%" count)
                count
-               (indented-string
-                (fill-paragraph (string-join (sort (map first new) string<?)
-                                             ", ")
-                                (- (%text-width) 4) 30)
-                4))))
+               (pretty (string-join (sort (map first new) string<?)
+                                    ", ")
+                       30))))
     (match (length upgraded)
       (0 #t)
       (count
        (format #t (N_ "  ~h package upgraded: ~a~%"
                       "  ~h packages upgraded: ~a~%" count)
                count
-               (indented-string
-                (fill-paragraph (string-join (sort upgraded string<?) ", ")
-                                (- (%text-width) 4) 35)
-                4))))))
+               (pretty (string-join (sort upgraded string<?) ", ")
+                       35))))))
 
 (define (display-profile-content-diff profile gen1 gen2)
   "Display the changes in PROFILE GEN2 compared to generation GEN1."
