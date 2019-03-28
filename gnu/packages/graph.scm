@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
@@ -30,6 +31,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bioconductor)
   #:use-module (gnu packages bioinformatics)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages graphviz)
@@ -239,3 +241,84 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
 
 (define-public python2-plotly
   (package-with-python2 python-plotly))
+
+(define-public faiss
+  (package
+    (name "faiss")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/facebookresearch/faiss.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pk15jfa775cy2pqmzq62nhd6zfjxmpvz5h731197c28aq3zw39w"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DBUILD_WITH_GPU=OFF"  ; thanks, but no thanks, CUDA.
+             "-DBUILD_TUTORIAL=OFF") ; we don't need those
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-build
+           (lambda _
+             (let ((features (list ,@(let ((system (or (%current-target-system)
+                                                       (%current-system))))
+                                       (cond
+                                        ((string-prefix? "x86_64" system)
+                                         '("-mavx" "-msse2"))
+                                        ((string-prefix? "i686" system)
+                                         '("-msse2"))
+                                        (else
+                                         '()))))))
+               (substitute* "CMakeLists.txt"
+                 (("-msse4")
+                  (string-append
+                   (string-join features)
+                   " -I" (getcwd)))
+                 ;; Build also the shared library
+                 (("ARCHIVE DESTINATION lib")
+                  "LIBRARY DESTINATION lib")
+                 (("add_library.*" m)
+                  "\
+add_library(objlib OBJECT ${faiss_cpu_headers} ${faiss_cpu_cpp})
+set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+add_library(${faiss_lib}_static STATIC $<TARGET_OBJECTS:objlib>)
+add_library(${faiss_lib} SHARED $<TARGET_OBJECTS:objlib>)
+install(TARGETS ${faiss_lib}_static ARCHIVE DESTINATION lib)
+\n")))
+
+             ;; See https://github.com/facebookresearch/faiss/issues/520
+             (substitute* "IndexScalarQuantizer.cpp"
+               (("#define USE_AVX") ""))
+
+             ;; Make header files available for compiling tests.
+             (mkdir-p "faiss")
+             (for-each (lambda (file)
+                         (mkdir-p (string-append "faiss/" (dirname file)))
+                         (copy-file file (string-append "faiss/" file)))
+                       (find-files "." "\\.h$"))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "make" "-C" "tests"
+                     (format #f "-j~a" (parallel-job-count)))))
+         (add-after 'install 'remove-tests
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/test"))
+             #t)))))
+    (inputs
+     `(("openblas" ,openblas)))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://github.com/facebookresearch/faiss")
+    (synopsis "Efficient similarity search and clustering of dense vectors")
+    (description "Faiss is a library for efficient similarity search and
+clustering of dense vectors.  It contains algorithms that search in sets of
+vectors of any size, up to ones that possibly do not fit in RAM.  It also
+contains supporting code for evaluation and parameter tuning.")
+    (license license:bsd-3)))
