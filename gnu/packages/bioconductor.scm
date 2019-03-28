@@ -3087,3 +3087,28 @@ provides reporting features.")
      "This package provides basic features for the automated analysis of
 Affymetrix arrays.")
     (license license:gpl3)))
+
+(define-public r-a4
+  (package
+    (name "r-a4")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "a4" version))
+       (sha256
+        (base32
+         "1iqjy35rqx3m2y0dm2bk4cnzdm1qvbi608bfmrid88w6wmwz3qlk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-a4base" ,r-a4base)
+       ("r-a4classif" ,r-a4classif)
+       ("r-a4core" ,r-a4core)
+       ("r-a4preproc" ,r-a4preproc)
+       ("r-a4reporting" ,r-a4reporting)))
+    (home-page "https://bioconductor.org/packages/a4/")
+    (synopsis "Automated Affymetrix array analysis umbrella package")
+    (description
+     "This package provides a software suite for the automated analysis of
+Affymetrix arrays.")
+    (license license:gpl3)))
