@@ -832,7 +832,7 @@ Chess).  It is similar to standard chess but this variant is far more complicate
      (origin
        (method url-fetch)
        (uri (string-append "http://prdownloads.sourceforge.net/lgames/"
-                           name "-" version ".tar.gz"))
+                           "ltris-" version ".tar.gz"))
        (sha256
         (base32
          "1895wv1fqklrj4apkz47rnkcfhfav7zjknskw6p0886j35vrwslg"))))
