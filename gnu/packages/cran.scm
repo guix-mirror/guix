@@ -13400,3 +13400,26 @@ potentially highly-correlated variables).  The main applications are in
 high-dimensional data (e.g., microarray data, and other genomics and
 proteomics applications).")
     (license license:gpl2+)))
+
+(define-public r-pamr
+  (package
+    (name "r-pamr")
+    (version "1.56")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pamr" version))
+       (sha256
+        (base32
+         "03h1m5fkw76jjln1psdb7x913a499ghf7n48rcd8damr5vdyf961"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-survival" ,r-survival)))
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/pamr/")
+    (synopsis "Prediction Analysis for Microarrays")
+    (description
+     "This package provides some functions for sample classification in
+microarrays.")
+    (license license:gpl2)))
