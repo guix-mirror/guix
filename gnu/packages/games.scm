@@ -444,81 +444,82 @@ tired of cows, a variety of other ASCII-art messengers are available.")
 
 (define-public freedoom
   (package
-   (name "freedoom")
-   (version "0.11.3")
-   (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/freedoom/freedoom.git")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "0k4dlgr82qk6i7dchp3nybq6awlfag2ivy3zzl1v6vhcrnbvssgl"))))
-   (build-system gnu-build-system)
-   (arguments
-    '(#:make-flags `(,(string-append "prefix=" (assoc-ref %outputs "out")))
-      #:parallel-build? #f
-      #:tests? #f ; no check target
-      #:phases
-      (modify-phases %standard-phases
-        (delete 'bootstrap)
-        (replace 'configure
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let* ((dejavu (assoc-ref inputs "font-dejavu"))
-                          (freedoom (assoc-ref outputs "out"))
-                          (wad-dir (string-append freedoom "/share/games/doom")))
-                     ;; Replace the font-searching function in a shell
-                     ;; script with a direct path to the required font.
-                     ;; This is necessary because ImageMagick can only find the
-                     ;; most basic fonts while in the build environment.
-                     (substitute* "graphics/titlepic/create_caption"
-                       (("font=\\$\\(find_font.*$")
-                        (string-append
-                         "font=" dejavu
-                         "/share/fonts/truetype/DejaVuSansCondensed-Bold.ttf\n")))
-                     ;; Make icon creation reproducible.
-                     (substitute* "dist/Makefile"
-                       (("freedm.png")
-                        "-define png:exclude-chunks=date freedm.png")
-                       (("freedoom1.png")
-                        "-define png:exclude-chunks=date freedoom1.png")
-                       (("freedoom2.png")
-                        "-define png:exclude-chunks=date freedoom2.png"))
-                     ;; Make sure that the install scripts know where to find
-                     ;; the appropriate WAD files.
-                     (substitute* "dist/freedoom"
-                       (("IWAD=freedm.wad")
-                        (string-append "IWAD=" wad-dir "/freedm.wad"))
-                       (("IWAD=freedoom1.wad")
-                        (string-append "IWAD=" wad-dir "/freedoom1.wad"))
-                       (("IWAD=freedoom2.wad")
-                        (string-append "IWAD=" wad-dir "/freedoom2.wad")))
-                     #t))))))
-   (native-inputs
-    `(("asciidoc" ,asciidoc)
-      ("deutex" ,deutex)
-      ("font-dejavu" ,font-dejavu)
-      ("imagemagick" ,imagemagick)
-      ("python" ,python-2)))
-   (inputs
-    `(("prboom-plus" ,prboom-plus)))
-   (home-page "https://freedoom.github.io/")
-   (synopsis "Free content game based on the Doom engine")
-   (native-search-paths
-    (list (search-path-specification
-           (variable "DOOMWADDIR")
-           (files '("share/games/doom")))
-          (search-path-specification
-           (variable "DOOMWADPATH")
-           (files '("share/games/doom")))))
-   (description
-    "The Freedoom project aims to create a complete free content first person
+    (name "freedoom")
+    (version "0.11.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/freedoom/freedoom.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0k4dlgr82qk6i7dchp3nybq6awlfag2ivy3zzl1v6vhcrnbvssgl"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:parallel-build? #f
+       #:tests? #f                      ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((dejavu (assoc-ref inputs "font-dejavu"))
+                    (freedoom (assoc-ref outputs "out"))
+                    (wad-dir (string-append freedoom "/share/games/doom")))
+               ;; Replace the font-searching function in a shell
+               ;; script with a direct path to the required font.
+               ;; This is necessary because ImageMagick can only find the
+               ;; most basic fonts while in the build environment.
+               (substitute* "graphics/titlepic/create_caption"
+                 (("font=\\$\\(find_font.*$")
+                  (string-append
+                   "font=" dejavu
+                   "/share/fonts/truetype/DejaVuSansCondensed-Bold.ttf\n")))
+               ;; Make icon creation reproducible.
+               (substitute* "dist/Makefile"
+                 (("freedm.png")
+                  "-define png:exclude-chunks=date freedm.png")
+                 (("freedoom1.png")
+                  "-define png:exclude-chunks=date freedoom1.png")
+                 (("freedoom2.png")
+                  "-define png:exclude-chunks=date freedoom2.png"))
+               ;; Make sure that the install scripts know where to find
+               ;; the appropriate WAD files.
+               (substitute* "dist/freedoom"
+                 (("IWAD=freedm.wad")
+                  (string-append "IWAD=" wad-dir "/freedm.wad"))
+                 (("IWAD=freedoom1.wad")
+                  (string-append "IWAD=" wad-dir "/freedoom1.wad"))
+                 (("IWAD=freedoom2.wad")
+                  (string-append "IWAD=" wad-dir "/freedoom2.wad")))
+               #t))))))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("deutex" ,deutex)
+       ("font-dejavu" ,font-dejavu)
+       ("imagemagick" ,imagemagick)
+       ("python" ,python-2)))
+    (inputs
+     `(("prboom-plus" ,prboom-plus)))
+    (home-page "https://freedoom.github.io/")
+    (synopsis "Free content game based on the Doom engine")
+    (native-search-paths
+     (list (search-path-specification
+            (variable "DOOMWADDIR")
+            (files '("share/games/doom")))
+           (search-path-specification
+            (variable "DOOMWADPATH")
+            (files '("share/games/doom")))))
+    (description
+     "The Freedoom project aims to create a complete free content first person
 shooter game.  Freedoom by itself is just the raw material for a game: it must
 be paired with a compatible game engine (such as @code{prboom-plus}) to be
 played.  Freedoom complements the Doom engine with free levels, artwork, sound
 effects and music to make a completely free game.")
-   (license license:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public freedroidrpg
   (package
