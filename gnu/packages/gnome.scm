@@ -4994,6 +4994,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (sha256
                (base32
                 "12b9lfgwd57rzn9394xrbvl9ym5aqldpz9v7c9a421dsv8dgq13b"))))
+    (outputs '("out" "libedataserverui"))
     (build-system cmake-build-system)
     (arguments
      '(;; XXX FIXME: 11/85 tests are failing.
@@ -5034,7 +5035,40 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                ;; CMakeLists.txt hard-codes runpath to just the libdir.
                ;; Remove it so the configure flag is respected.
                (("SET\\(CMAKE_INSTALL_RPATH .*") ""))
-             #t)))))
+             #t))
+         (add-before 'configure 'factor-webkit
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("webkit2gtk-4\\.0>=\\$[{]webkit2gtk_minimum_version[}]") "")
+               (("if[(]ENABLE_OAUTH2[)]")
+                (string-append
+                 "if(ENABLE_OAUTH2)\n"
+                 "\tpkg_check_modules(OAUTH2_UI REQUIRED "
+                 "webkit2gtk-4.0>=${webkit2gtk_minimum_version})")))
+             (substitute* "src/libedataserverui/CMakeLists.txt"
+               (("\\$[{]OAUTH2_([A-Z_]+)[}]" all part)
+                (string-append all " ${OAUTH2_UI_" part "}")))))
+         (add-after 'install 'split
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (libedsui (assoc-ref outputs "libedataserverui")))
+               (for-each (lambda (file)
+                           (mkdir-p (dirname (string-append libedsui file)))
+                           (rename-file (string-append out file)
+                                        (string-append libedsui file)))
+                         '("/lib/pkgconfig/libedataserverui-1.2.pc"
+                           "/lib/libedataserverui-1.2.so"
+                           "/lib/libedataserverui-1.2.so.2"
+                           "/lib/libedataserverui-1.2.so.2.0.0"
+                           "/lib/girepository-1.0/EDataServerUI-1.2.typelib"
+                           "/include/evolution-data-server/libedataserverui"
+                           "/share/gir-1.0/EDataServerUI-1.2.gir"
+                           "/share/vala/vapi/libedataserverui-1.2.vapi"
+                           "/share/vala/vapi/libedataserverui-1.2.deps"))
+               (substitute* (string-append libedsui "/lib/pkgconfig/"
+                                           "libedataserverui-1.2.pc")
+                 ((out) libedsui))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -6391,7 +6425,8 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
     (inputs
      `(("evolution-data-server" ,evolution-data-server)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libedataserverui" ,evolution-data-server "libedataserverui")))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
     (synopsis "GNOME's calendar application")
     (description
@@ -6438,6 +6473,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
     (inputs
      `(("rest" ,rest)                   ; For Todoist plugin
        ("json-glib" ,json-glib)         ; For Todoist plugin
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libical" ,libical)
        ("libpeas" ,libpeas)
        ("python-pygobject" ,python-pygobject)
@@ -7608,6 +7644,7 @@ generic enough to work for everyone.")
        ("gtkspell3" ,gtkspell3)
        ("highlight" ,highlight)
        ("libcanberra" ,libcanberra)
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libgweather" ,libgweather)
        ("libnotify" ,libnotify)
        ("libsoup" ,libsoup)
