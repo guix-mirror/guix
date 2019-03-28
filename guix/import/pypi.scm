@@ -206,34 +206,25 @@ cannot determine package dependencies"))
           (call-with-temporary-directory
            (lambda (dir)
              (let* ((pypi-name (string-take dirname (string-rindex dirname #\-)))
-                    (req-files (list (string-append dirname "/requirements.txt")
-                                     (string-append dirname "/" pypi-name ".egg-info"
-                                                    "/requires.txt")))
-                    (exit-codes (map (lambda (file-name)
-                                       (parameterize ((current-error-port (%make-void-port "rw+"))
-                                                      (current-output-port (%make-void-port "rw+")))
-                                         (system* "tar" "xf" tarball "-C" dir file-name)))
-                                     req-files)))
-               ;; Only one of these files needs to exist.
-               (if (any zero? exit-codes)
-                   (match (find-files dir)
-                     ((file . _)
-                      (read-requirements file))
-                     (()
-                      (warning (G_ "No requirements file found.\n"))))
+                    (requires.txt (string-append dirname "/" pypi-name
+                                                 ".egg-info" "/requires.txt"))
+                    (exit-code (parameterize ((current-error-port (%make-void-port "rw+"))
+                                              (current-output-port (%make-void-port "rw+")))
+                                 (system* "tar" "xf" tarball "-C" dir requires.txt))))
+               (if (zero? exit-code)
+                   (read-requirements (string-append dir "/" requires.txt))
                    (begin
-                     (warning (G_ "Failed to extract requirements files\n"))
+                     (warning
+                      (G_ "Failed to extract file: ~a from source.~%")
+                      requires.txt)
                      '())))))
           '())))
 
-  ;; First, try to compute the requirements using the wheel, since that is the
-  ;; most reliable option. If a wheel is not provided for this package, try
-  ;; getting them by reading either the "requirements.txt" file or the
-  ;; "requires.txt" from the egg-info directory from the source tarball. Note
-  ;; that "requirements.txt" is not mandatory, so this is likely to fail.
+  ;; First, try to compute the requirements using the wheel, else, fallback to
+  ;; reading the "requires.txt" from the egg-info directory from the source
+  ;; tarball.
   (or (guess-requirements-from-wheel)
       (guess-requirements-from-source)))
-
 
 (define (compute-inputs source-url wheel-url tarball)
   "Given the SOURCE-URL of an already downloaded TARBALL, return a list of

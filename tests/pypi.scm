@@ -23,7 +23,7 @@
   #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module (guix build-system python)
-  #:use-module ((guix build utils) #:select (delete-file-recursively which))
+  #:use-module ((guix build utils) #:select (delete-file-recursively which mkdir-p))
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -55,11 +55,12 @@
 (define test-source-hash
   "")
 
-(define test-requirements
-"# A comment
+(define test-requires.txt "\
+# A comment
  # A comment after a space
 bar
-baz > 13.37")
+baz > 13.37
+")
 
 (define test-metadata
   "{
@@ -107,10 +108,10 @@ baz > 13.37")
              (match url
                ("https://example.com/foo-1.0.0.tar.gz"
                 (begin
-                  (mkdir "foo-1.0.0")
-                  (with-output-to-file "foo-1.0.0/requirements.txt"
+                  (mkdir-p "foo-1.0.0/foo.egg-info/")
+                  (with-output-to-file "foo-1.0.0/foo.egg-info/requires.txt"
                     (lambda ()
-                      (display test-requirements)))
+                      (display test-requires.txt)))
                   (system* "tar" "czvf" file-name "foo-1.0.0/")
                   (delete-file-recursively "foo-1.0.0")
                   (set! test-source-hash
@@ -157,11 +158,11 @@ baz > 13.37")
          (lambda (url file-name)
            (match url
              ("https://example.com/foo-1.0.0.tar.gz"
-               (begin
-                 (mkdir "foo-1.0.0")
-                 (with-output-to-file "foo-1.0.0/requirements.txt"
+              (begin
+                (mkdir-p "foo-1.0.0/foo.egg-info/")
+                (with-output-to-file "foo-1.0.0/foo.egg-info/requires.txt"
                    (lambda ()
-                     (display test-requirements)))
+                     (display test-requires.txt)))
                  (system* "tar" "czvf" file-name "foo-1.0.0/")
                  (delete-file-recursively "foo-1.0.0")
                  (set! test-source-hash
