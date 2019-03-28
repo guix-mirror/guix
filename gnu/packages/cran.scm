@@ -13423,3 +13423,22 @@ proteomics applications).")
      "This package provides some functions for sample classification in
 microarrays.")
     (license license:gpl2)))
+
+(define-public r-rda
+  (package
+    (name "r-rda")
+    (version "1.0.2-2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rda" version))
+       (sha256
+        (base32
+         "1y4fawslr3i6crjaxhsdb47kfsqkyszdx6avq3r5far5a4pvc639"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rda/")
+    (synopsis "Shrunken centroids regularized discriminant analysis")
+    (description
+     "This package provides tools for shrunken centroids regularized
+discriminant analysis for the purpose of classifying high dimensional data.")
+    (license license:gpl2+)))
