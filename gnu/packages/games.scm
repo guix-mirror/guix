@@ -1036,11 +1036,10 @@ Every puzzle has a complete solution, although there may be more than one.")
    (version "2.5.1.4")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/" name "/" name "/"
-                                version "/" name "-" version ".tar.gz"))
+            (uri (string-append "mirror://sourceforge/prboom-plus/prboom-plus/"
+                                version "/prboom-plus-" version ".tar.gz"))
             (sha256
-             (base32
-              "151v6nign86m1a2vqz27krsccpc9m4d1jax4y43v2fa82wfj9qp0"))
+             (base32 "151v6nign86m1a2vqz27krsccpc9m4d1jax4y43v2fa82wfj9qp0"))
             (modules '((guix build utils)))
             (snippet
              '(begin
