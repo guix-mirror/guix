@@ -48,6 +48,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:export (parse-requires.txt
+            specification->requirement-name
             guix-package->pypi-name
             pypi-recursive-import
             pypi->guix-package
@@ -118,22 +119,47 @@ package definition."
     ((package-inputs ...)
      `((propagated-inputs (,'quasiquote ,package-inputs))))))
 
-(define (clean-requirement s)
-  ;; Given a requirement LINE, as can be found in a setuptools requires.txt
-  ;; file, remove everything other than the actual name of the required
-  ;; package, and return it.
-  (cond
-   ((string-index s (char-set #\space #\> #\= #\<)) => (cut string-take s <>))
-   (else s)))
+(define %requirement-name-regexp
+  ;; Regexp to match the requirement name in a requirement specification.
+
+  ;; Some grammar, taken from PEP-0508 (see:
+  ;; https://www.python.org/dev/peps/pep-0508/).
+
+  ;; Using this grammar makes the PEP-0508 regexp easier to understand for
+  ;; humans.  The use of a regexp is preferred to more primitive string
+  ;; manipulations because we can more directly match what upstream uses
+  ;; (again, per PEP-0508).  The regexp approach is also easier to extend,
+  ;; should we want to implement more completely the grammar of PEP-0508.
+
+  ;; The unified rule can be expressed as:
+  ;; specification = wsp* ( url_req | name_req ) wsp*
+
+  ;; where url_req is:
+  ;; url_req = name wsp* extras? wsp* urlspec wsp+ quoted_marker?
+
+  ;; and where name_req is:
+  ;; name_req = name wsp* extras? wsp* versionspec? wsp* quoted_marker?
+
+  ;; Thus, we need only matching NAME, which is expressed as:
+  ;; identifer_end = letterOrDigit | (('-' | '_' | '.' )* letterOrDigit)
+  ;; identifier    = letterOrDigit identifier_end*
+  ;; name          = identifier
+  (let* ((letter-or-digit "[A-Za-z0-9]")
+         (identifier-end (string-append "(" letter-or-digit "|"
+                                        "[-_.]*" letter-or-digit ")"))
+         (identifier (string-append "^" letter-or-digit identifier-end "*"))
+         (name identifier))
+    (make-regexp name)))
+
+(define (specification->requirement-name spec)
+  "Given a specification SPEC, return the requirement name."
+  (match:substring
+   (or (regexp-exec %requirement-name-regexp spec)
+       (error (G_ "Could not extract requirement name in spec:") spec))))
 
 (define (parse-requires.txt requires.txt)
   "Given REQUIRES.TXT, a Setuptools requires.txt file, return a list of
 requirement names."
-  ;; This is a very incomplete parser, whose job is to select the non-optional
-  ;; dependencies and strip them out of any version information.
-  ;; Alternatively, we could implement a PEG parser with the (ice-9 peg)
-  ;; library and the requirements grammar defined by PEP-0508
-  ;; (https://www.python.org/dev/peps/pep-0508/).
 
   (define (comment? line)
     ;; Return #t if the given LINE is a comment, #f otherwise.
@@ -156,7 +182,7 @@ requirement names."
                ((or (string-null? line) (comment? line))
                 (loop result))
                (else
-                (loop (cons (clean-requirement line)
+                (loop (cons (specification->requirement-name line)
                             result))))))))))
 
 (define (guess-requirements source-url wheel-url tarball)
@@ -198,7 +224,7 @@ cannot determine package dependencies"))
                                             (hash-ref (list-ref run_requires 0)
                                                        "requires")
                                             '())))
-                     (map clean-requirement requirements)))))
+                     (map specification->requirement-name requirements)))))
              (lambda ()
                (delete-file json-file)
                (rmdir dirname))))))

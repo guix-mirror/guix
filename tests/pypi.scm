@@ -55,6 +55,14 @@
 (define test-source-hash
   "")
 
+(define test-specifications
+  '("Fizzy [foo, bar]"
+    "PickyThing<1.6,>1.9,!=1.9.6,<2.0a0,==2.4c1"
+    "SomethingWithMarker[foo]>1.0;python_version<\"2.7\""
+    "requests [security,tests] >= 2.8.1, == 2.8.* ; python_version < \"2.7\""
+    "pip @ https://github.com/pypa/pip/archive/1.3.1.zip#\
+sha1=da9234ee9982d4bbb3c72346a6de940a148ea686"))
+
 (define test-requires.txt "\
 # A comment
  # A comment after a space
@@ -108,6 +116,10 @@ pytest (>=2.5.0)
                    (dummy-origin
                     (uri (list "https://bitheap.org/cram/cram-0.7.tar.gz"
                                (pypi-uri "cram" "0.7"))))))))
+
+(test-equal "specification->requirement-name"
+  '("Fizzy" "PickyThing" "SomethingWithMarker" "requests" "pip")
+  (map specification->requirement-name test-specifications))
 
 (test-equal "parse-requires.txt, with sections"
   '("foo" "bar")
