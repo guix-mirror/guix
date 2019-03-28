@@ -39,7 +39,8 @@
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-package-name->name+version)
-                          find-files))
+                          find-files
+                          invoke))
   #:use-module (guix import utils)
   #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import json)
@@ -189,27 +190,10 @@ requirement names."
                 (loop (cons (specification->requirement-name line)
                             result))))))))))
 
-(define (guess-requirements source-url wheel-url tarball)
-  "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list
-of the required packages specified in the requirements.txt file.  TARBALL will
+(define (guess-requirements source-url wheel-url archive)
+  "Given SOURCE-URL, WHEEL-URL and a ARCHIVE of the package, return a list
+of the required packages specified in the requirements.txt file.  ARCHIVE will
 be extracted in a temporary directory."
-
-  (define (tarball-directory url)
-    ;; Given the URL of the package's tarball, return the name of the directory
-    ;; that will be created upon decompressing it. If the filetype is not
-    ;; supported, return #f.
-    ;; TODO: Support more archive formats.
-    (let ((basename (substring url (+ 1 (string-rindex url #\/)))))
-      (cond
-       ((string-suffix? ".tar.gz" basename)
-        (string-drop-right basename 7))
-       ((string-suffix? ".tar.bz2" basename)
-        (string-drop-right basename 8))
-       (else
-        (begin
-          (warning (G_ "Unsupported archive format: \
-cannot determine package dependencies"))
-          #f)))))
 
   (define (read-wheel-metadata wheel-archive)
     ;; Given WHEEL-ARCHIVE, a ZIP Python wheel archive, return the package's
@@ -239,29 +223,34 @@ cannot determine package dependencies"))
     (call-with-temporary-output-file
      (lambda (temp port)
        (if wheel-url
-         (and (url-fetch wheel-url temp)
-              (read-wheel-metadata temp))
-         #f))))
+           (and (url-fetch wheel-url temp)
+                (read-wheel-metadata temp))
+           #f))))
 
   (define (guess-requirements-from-source)
     ;; Return the package's requirements by guessing them from the source.
-    (let ((dirname (tarball-directory source-url)))
-      (if (string? dirname)
-          (call-with-temporary-directory
-           (lambda (dir)
-             (let* ((pypi-name (string-take dirname (string-rindex dirname #\-)))
-                    (requires.txt (string-append dirname "/" pypi-name
-                                                 ".egg-info" "/requires.txt"))
-                    (exit-code (parameterize ((current-error-port (%make-void-port "rw+"))
-                                              (current-output-port (%make-void-port "rw+")))
-                                 (system* "tar" "xf" tarball "-C" dir requires.txt))))
-               (if (zero? exit-code)
-                   (parse-requires.txt (string-append dir "/" requires.txt))
-                   (begin
-                     (warning
-                      (G_ "Failed to extract file: ~a from source.~%")
-                      requires.txt)
-                     '())))))
+    (if (compressed-file? source-url)
+        (call-with-temporary-directory
+         (lambda (dir)
+           (parameterize ((current-error-port (%make-void-port "rw+"))
+                          (current-output-port (%make-void-port "rw+")))
+             (if (string=? "zip" (file-extension source-url))
+                 (invoke "unzip" archive "-d" dir)
+                 (invoke "tar" "xf" archive "-C" dir)))
+           (let ((requires.txt-files
+                  (find-files dir (lambda (abs-file-name _)
+		                    (string-match "\\.egg-info/requires.txt$"
+                                                  abs-file-name)))))
+             (match requires.txt-files
+               (()
+                (warning (G_ "Cannot guess requirements from source archive:\
+ no requires.txt file found.~%"))
+                '())
+               (else (parse-requires.txt (first requires.txt-files)))))))
+        (begin
+          (warning (G_ "Unsupported archive format; \
+cannot determine package dependencies from source archive: ~a~%")
+                   (basename source-url))
           '())))
 
   ;; First, try to compute the requirements using the wheel, else, fallback to
@@ -270,13 +259,13 @@ cannot determine package dependencies"))
   (or (guess-requirements-from-wheel)
       (guess-requirements-from-source)))
 
-(define (compute-inputs source-url wheel-url tarball)
-  "Given the SOURCE-URL of an already downloaded TARBALL, return a list of
+(define (compute-inputs source-url wheel-url archive)
+  "Given the SOURCE-URL of an already downloaded ARCHIVE, return a list of
 name/variable pairs describing the required inputs of this package.  Also
 return the unaltered list of upstream dependency names."
   (let ((dependencies
          (remove (cut string=? "argparse" <>)
-                 (guess-requirements source-url wheel-url tarball))))
+                 (guess-requirements source-url wheel-url archive))))
     (values (sort
              (map (lambda (input)
                     (let ((guix-name (python->package-name input)))

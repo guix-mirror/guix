@@ -20,6 +20,7 @@
 (define-module (test-pypi)
   #:use-module (guix import pypi)
   #:use-module (guix base32)
+  #:use-module (guix memoization)
   #:use-module (gcrypt hash)
   #:use-module (guix tests)
   #:use-module (guix build-system python)
@@ -134,8 +135,9 @@ pytest (>=2.5.0)
              (match url
                ("https://example.com/foo-1.0.0.tar.gz"
                 (begin
-                  (mkdir-p "foo-1.0.0/foo.egg-info/")
-                  (with-output-to-file "foo-1.0.0/foo.egg-info/requires.txt"
+                  ;; Unusual requires.txt location should still be found.
+                  (mkdir-p "foo-1.0.0/src/bizarre.egg-info")
+                  (with-output-to-file "foo-1.0.0/src/bizarre.egg-info/requires.txt"
                     (lambda ()
                       (display test-requires.txt)))
                   (parameterize ((current-output-port (%make-void-port "rw+")))
@@ -231,6 +233,52 @@ pytest (>=2.5.0)
                     ('quasiquote
                      (("python-bar" ('unquote 'python-bar))
                       ("python-baz" ('unquote 'python-baz)))))
+                   ('home-page "http://example.com")
+                   ('synopsis "summary")
+                   ('description "summary")
+                   ('license 'license:lgpl2.0))
+                 (string=? (bytevector->nix-base32-string
+                            test-source-hash)
+                           hash))
+                (x
+                 (pk 'fail x #f))))))
+
+(test-assert "pypi->guix-package, no usable requirement file."
+  ;; Replace network resources with sample data.
+  (mock ((guix import utils) url-fetch
+         (lambda (url file-name)
+           (match url
+             ("https://example.com/foo-1.0.0.tar.gz"
+              (mkdir-p "foo-1.0.0/foo.egg-info/")
+              (parameterize ((current-output-port (%make-void-port "rw+")))
+                (system* "tar" "czvf" file-name "foo-1.0.0/"))
+              (delete-file-recursively "foo-1.0.0")
+              (set! test-source-hash
+                (call-with-input-file file-name port-sha256)))
+             ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
+             (_ (error "Unexpected URL: " url)))))
+        (mock ((guix http-client) http-fetch
+               (lambda (url . rest)
+                 (match url
+                   ("https://pypi.org/pypi/foo/json"
+                    (values (open-input-string test-json)
+                            (string-length test-json)))
+                   ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
+                   (_ (error "Unexpected URL: " url)))))
+              ;; Not clearing the memoization cache here would mean returning the value
+              ;; computed in the previous test.
+              (invalidate-memoization! pypi->guix-package)
+              (match (pypi->guix-package "foo")
+                (('package
+                   ('name "python-foo")
+                   ('version "1.0.0")
+                   ('source ('origin
+                              ('method 'url-fetch)
+                              ('uri ('pypi-uri "foo" 'version))
+                              ('sha256
+                               ('base32
+                                (? string? hash)))))
+                   ('build-system 'python-build-system)
                    ('home-page "http://example.com")
                    ('synopsis "summary")
                    ('description "summary")
