@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -23,7 +23,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages screen)
-  #:use-module (srfi srfi-1)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -182,7 +181,6 @@ window manager as well as the Tmux terminal multiplexer.")
 it to a new terminal.  Started a long-running process over @code{ssh}, but have
 to leave and don't want to interrupt it?  Just start a @code{screen}, use
 reptyr to grab it, and then kill the @code{ssh} session and head on home.")
-    ;; Reptyr currently does not support mips or aarch64.
-    (supported-systems (fold delete %supported-systems
-                             '("mips64el-linux" "aarch64-linux")))
+    ;; Reptyr currently does not support mips.
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     (license expat)))
