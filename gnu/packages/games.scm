@@ -245,8 +245,8 @@ mouse and joystick control, and original music.")
     (version "0.2.8.3.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/stable/"
-                                  version "/" name "-" version ".src.tar.gz"))
+              (uri (string-append "mirror://sourceforge/armagetronad/stable/"
+                                  version "/armagetronad-" version ".src.tar.gz"))
               (sha256
                (base32
                 "1pgy0r80z702qdv94aw3ywdn4ynnr4cdi86ml558pljfc5ygasj4"))))
