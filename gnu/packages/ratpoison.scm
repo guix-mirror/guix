@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -30,17 +30,6 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages fontutils))
 
-(define ratpoison.desktop
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://sources.gentoo.org/cgi-bin/viewvc.cgi/"
-                        "gentoo-x86/x11-wm/ratpoison/files/ratpoison.desktop"
-                        "?revision=1.1"))
-    (file-name "ratpoison.desktop")
-    (sha256
-     (base32
-      "1rh3f4c3rhn6q2hmkraam0831xqcqyj3qkqf019ahaxsxaan3553"))))
-
 (define-public ratpoison
   (package
     (name "ratpoison")
@@ -55,17 +44,28 @@
              (patches (search-patches "ratpoison-shell.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:modules ((ice-9 format)
+                  ,@%gnu-build-system-modules)
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-xsession
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((rpd "ratpoison.desktop")
-                            (dst (string-append (assoc-ref outputs "out")
-                                                "/share/xsessions/")))
-                        (mkdir-p dst)
-                        (copy-file (assoc-ref inputs rpd)
-                                   (string-append dst rpd))
-                        #t))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Add a .desktop file to xsessions.
+             (let* ((output    (assoc-ref outputs "out"))
+                    (xsessions (string-append output "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file (string-append xsessions
+                                                     "/ratpoison.desktop")
+                 (lambda (port)
+                   (format port
+                           "[Desktop Entry]~@
+                            Name=ratpoison~@
+                            Comment=Tiling window manager: say goodbye to the rodent!~@
+                            Exec=~a/bin/ratpoison~@
+                            TryExec=~@*~a/bin/ratpoison~@
+                            Type=Application~%"
+                           output)))
+               #t))))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -80,8 +80,7 @@
        ("xorgproto" ,xorgproto)))
     (native-inputs
      `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("ratpoison.desktop" ,ratpoison.desktop)))
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.nongnu.org/ratpoison/")
     (synopsis "Simple mouse-free tiling window manager")
     (description
