@@ -1181,6 +1181,32 @@ always indented.  It reindents after every change, making it more reliable
 than @code{electric-indent-mode}.")
     (license license:gpl2+)))
 
+(define-public emacs-link-hint
+  ;; Last release was in 2015.
+  (let ((commit "d74a483652486260c052941fedeadddb1ea71f88")
+        (revision "1"))
+    (package
+      (name "emacs-link-hint")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/noctuid/link-hint.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0dghxd165fbds6czy9bfwpid3i4irgp3q08n9mg57sfifi0cmij0"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-avy" ,emacs-avy)))
+      (home-page "https://github.com/noctuid/link-hint.el")
+      (synopsis "Vimperator-style link-hinting in Emacs")
+      (description "This package provides commands for visiting and acting on
+links.")
+      (license license:gpl3+))))
+
 (define-public emacs-ag
   (package
     (name "emacs-ag")
