@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -50,6 +52,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mingw)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
@@ -541,3 +544,84 @@ integrated into the main branch.")
     (synopsis "Implementation of the Windows API (staging branch, WoW64
 version)")
     (supported-systems '("x86_64-linux" "aarch64-linux"))))
+
+(define dxvk32
+  ;; This package provides 32-bit dxvk libraries on 64-bit systems.
+  (package
+    (name "dxvk32")
+    (version "1.4.4")
+    (home-page "https://github.com/doitsujin/dxvk/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zr8hqyig18q4wp96cmfrkrgxxbgxida6k8cv6qbbldni29qy20w"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:system "i686-linux"
+       #:configure-flags (list "--cross-file"
+                               (string-append (assoc-ref %build-inputs "source")
+                                              "/build-wine32.txt"))))
+    (native-inputs
+     `(("glslang" ,glslang)
+       ("wine" ,wine)))
+    (synopsis "Vulkan-based D3D11 and D3D10 implementation for Wine")
+    (description "A Vulkan-based translation layer for Direct3D 10/11 which
+allows running complex 3D applications with high performance using Wine.
+
+Use @command{setup_dxvk} to install the required libraries to a Wine prefix.")
+    (supported-systems '("x86_64-linux"))
+    (license license:zlib)))
+
+(define-public dxvk
+  (package
+    (inherit dxvk32)
+    (name "dxvk")
+    (arguments
+     `(#:configure-flags (list "--cross-file"
+                               (string-append (assoc-ref %build-inputs "source")
+                                              "/build-wine"
+                                              (match (%current-system)
+                                                ("x86_64-linux" "64")
+                                                (_ "32"))
+                                              ".txt"))
+       #:phases
+       (modify-phases %standard-phases
+         ,@(if (string=? (%current-system) "x86_64-linux")
+             `((add-after 'unpack 'install-32
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (dxvk32 (assoc-ref inputs "dxvk32")))
+                     (mkdir-p (string-append out "/lib32"))
+                     (copy-recursively (string-append dxvk32 "/lib")
+                                       (string-append out "/lib32"))))))
+             '())
+         (add-after 'install 'install-setup
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/setup_dxvk")))
+               (mkdir-p (string-append out "/bin"))
+               (copy-file "../source/setup_dxvk.sh"
+                          bin)
+               (chmod bin #o755)
+               (substitute* bin
+                 (("wine=\"wine\"")
+                  (string-append "wine=" (assoc-ref inputs "wine") "/bin/wine"))
+                 (("x32") ,(match (%current-system)
+                             ("x86_64-linux" "../lib32")
+                             (_ "../lib")))
+                 (("x64") "../lib"))))))))
+    (native-inputs
+     `(("glslang" ,glslang)
+       ("wine" ,(match (%current-system)
+                  ("x86_64-linux" wine64)
+                  (_ wine)))
+       ,@(match (%current-system)
+           ("x86_64-linux"
+            `(("dxvk32" ,dxvk32)))
+           (_ '()))))
+    (supported-systems '("i686-linux" "x86_64-linux"))))
