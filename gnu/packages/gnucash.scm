@@ -105,8 +105,7 @@
          (add-after 'unpack 'unpack-gmock
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir "gmock")
-             (invoke "tar" "xf" (assoc-ref inputs "googlemock")
-                     "-C" "gmock" "--strip-components=1")
+             (copy-recursively (assoc-ref inputs "googlemock") "gmock")
              (setenv "GMOCK_ROOT" (string-append (getcwd) "/gmock/googlemock"))
              #t))
          (add-after 'unpack 'set-env-vars

@@ -366,21 +366,10 @@ exception-handling library.")
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
-           (lambda _
-             ;; It expects googletest source to be downloaded and
-             ;; be in a specific place.
-             (substitute* "Tests/CMakeLists.txt"
-               (("URL(.*)$" _ suffix)
-                (string-append "URL " suffix
-                               "\t\tURL_HASH "
-                               "MD5=16877098823401d1bf2ed7891d7dce36\n")))
-             #t))
-         (add-before 'build 'pre-build
            (lambda* (#:key inputs #:allow-other-keys)
-             (copy-file (assoc-ref inputs "googletest-source")
-                        (string-append (getcwd)
-                                       "/Tests/googletest-prefix/src/"
-                                       "release-1.8.0.tar.gz"))
+             (substitute* "Tests/CMakeLists.txt"
+               (("URL(.*)$")
+                (string-append "URL " (assoc-ref inputs "googletest-source"))))
              #t)))
        #:configure-flags
        (list "-DOGRE_BUILD_TESTS=TRUE"
