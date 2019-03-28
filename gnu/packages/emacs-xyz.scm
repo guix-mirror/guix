@@ -7460,7 +7460,7 @@ the actual transformations.")
       (license license:gpl2+))))
 
 (define-public emacs-dired-hacks
-  (let ((commit "eda68006ce73bbf6b9b995bfd70d08bec8cade36")
+  (let ((commit "2c1234592aee91dcd9401bcd67213e6a4a464fd9")
         (revision "1"))
     (package
       (name "emacs-dired-hacks")
@@ -7474,7 +7474,7 @@ the actual transformations.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1w7ssl9zssn5rcha6apf4h8drkd02k4xgvs203bdbqyqp9wz9brx"))))
+                  "1g7mky41cahpryzj6frdgzdymknpqq7pidzfjj9304887kijmhj3"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
