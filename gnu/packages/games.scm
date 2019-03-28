@@ -446,14 +446,15 @@ tired of cows, a variety of other ASCII-art messengers are available.")
   (package
    (name "freedoom")
    (version "0.11.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "https://github.com/" name "/" name
-                                "/archive/v" version ".tar.gz"))
-            (file-name (string-append name "-" version ".tar.gz"))
-            (sha256
-             (base32
-              "1bjijdfqhpazyifx1qda7scj7dry1azhjrnl8h8zn2vqfgdmlh0q"))))
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/freedoom/freedoom.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32 "0k4dlgr82qk6i7dchp3nybq6awlfag2ivy3zzl1v6vhcrnbvssgl"))))
    (build-system gnu-build-system)
    (arguments
     '(#:make-flags `(,(string-append "prefix=" (assoc-ref %outputs "out")))
