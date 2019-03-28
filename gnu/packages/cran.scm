@@ -13498,3 +13498,71 @@ quantile regression, logistic, multinomial logistic, Poisson, Cox proportional
 hazards partial likelihood, AdaBoost exponential loss, Huberized hinge loss,
 and Learning to Rank measures (LambdaMart).")
     (license license:gpl2+)))
+
+(define-public r-threejs
+  (package
+    (name "r-threejs")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "threejs" version))
+       (sha256
+        (base32
+         "1s3rdlzy7man6177ycayg6xsh6k8y1r9rdj9yzn3b93j2rs0nxbi"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "js-jquery")
+                         "htmlwidgets/lib/jquery/jquery.min.js")
+                        (,(assoc-ref inputs "js-threejs-85")
+                         "htmlwidgets/lib/threejs-85/three.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (delete-file target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-crosstalk" ,r-crosstalk)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-igraph" ,r-igraph)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-3.3.1.js")
+           (sha256
+            (base32
+             "1b8zxrp6xwzpw25apn8j4qws0f6sr7qr7h2va5h1mjyfqvn29anq"))))
+       ("js-threejs-85"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/mrdoob/three.js/r85/build/three.js")
+           (sha256
+            (base32
+             "17khh3dmijdjw4qb9qih1rqhxgrmm3pc6w8lzdx6rf6a3mrc9xnl"))))))
+    (home-page "https://bwlewis.github.io/rthreejs")
+    (synopsis "Interactive 3D scatter plots, networks and globes")
+    (description
+     "Create interactive 3D scatter plots, network plots, and globes in R
+using the three.js visualization library.")
+    (license license:expat)))
