@@ -882,10 +882,10 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              (replace 'disable-amd64-avx-test
                (lambda _
                  (substitute* "src/test/ui/run-pass/issues/issue-44056.rs"
-                  (("only-x86_64") "ignore-test"))
+	          (("only-x86_64") "ignore-test"))
                   #t)))))))))
 
-(define-public rust
+(define-public rust-1.31
   (let ((base-rust
          (rust-bootstrapped-package-pre-1.32 rust-1.30 "1.31.1"
           "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli"
@@ -914,10 +914,10 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                      ((" Command::new\\(\"echo\"\\)")
                       (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
                    #t)))
-              ;; The test has been moved elsewhere.
-              (replace 'disable-amd64-avx-test
-                (lambda _
-                  (substitute* "src/test/ui/issues/issue-44056.rs"
+	      ;; The test has been moved elsewhere.
+	      (replace 'disable-amd64-avx-test
+	        (lambda _
+	          (substitute* "src/test/ui/issues/issue-44056.rs"
                    (("only-x86_64") "ignore-test"))
                   #t))
              (add-after 'patch-tests 'patch-process-docs-rev-cmd
@@ -927,3 +927,56 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/libstd/process.rs"
                    (("```rust") "```rust,no_run"))
                  #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.31 "1.32.0"
+          "0ji2l9xv53y27xy72qagggvq47gayr5lcv2jwvmfirx029vlqnac"
+          #:patches '("rust-reproducible-builds.patch")
+          ;; the vendor directory has moved to the root of
+          ;; the tarball, so we have to strip an extra prefix
+          #:patch-flags '("-p2"))))
+    (package
+      (inherit base-rust)
+      (inputs
+       ;; Downgrade to LLVM 6, all LTO tests appear to fail with LLVM 7.0.1
+       (alist-replace "llvm" (list llvm-6)
+                      (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Cargo.lock and the vendor/ directory have been moved to the
+             ;; root of the rust tarball
+             (replace 'patch-cargo-checksums
+               (lambda* _
+                 (substitute* "Cargo.lock"
+                   (("(\"checksum .* = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (for-each
+                  (lambda (filename)
+                    (use-modules (guix build cargo-utils))
+                    (delete-file filename)
+                    (let* ((dir (dirname filename)))
+                      (display (string-append
+                                "patch-cargo-checksums: generate-checksums for "
+                                dir "\n"))
+                      (generate-checksums dir ,%cargo-reference-project-file)))
+                  (find-files "vendor" ".cargo-checksum.json"))
+                 #t))
+             (add-after 'enable-codegen-tests 'override-jemalloc
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; The compiler is no longer directly built against jemalloc,
+                 ;; but rather via the jemalloc-sys crate (which vendors the
+                 ;; jemalloc source). To use jemalloc we must enable linking to
+                 ;; it (otherwise it would use the system allocator), and set
+                 ;; an environment variable pointing to the compiled jemalloc.
+                 (substitute* "config.toml"
+                   (("^jemalloc =.*$") "")
+                   (("[[]rust[]]") "\n[rust]\njemalloc=true\n"))
+                 (setenv "JEMALLOC_OVERRIDE" (string-append (assoc-ref inputs "jemalloc")
+                                                            "/lib/libjemalloc_pic.a"))
+                 #t))
+             ;; Remove no longer relevant steps
+             (delete 'remove-flaky-test)
+             (delete 'patch-aarch64-test))))))))
