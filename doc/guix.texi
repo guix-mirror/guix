@@ -11090,8 +11090,8 @@ configuration would look like:
                 (target "/boot/efi")
                 (keyboard-layout keyboard-layout))) ;for GRUB
   (services (modify-services %desktop-services
-              (slim-service-type config =>
-                (slim-configuration
+              (gdm-service-type config =>
+                (gdm-configuration
                   (inherit config)
                   (xorg-configuration
                     (xorg-configuration             ;for Xorg
@@ -13294,7 +13294,13 @@ Package object of the Open vSwitch.
 Support for the X Window graphical display system---specifically
 Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
-started by the @dfn{login manager}, by default SLiM.
+started by the @dfn{login manager}, by default the GNOME Display Manager (GDM).
+
+@cindex GDM
+@cindex GNOME, login manager
+GDM of course allows users to log in into window managers and desktop
+environments other than GNOME; for those using GNOME, GDM is required for
+features such as automatic screen locking.
 
 @cindex window manager
 To use X11, you must install at least one @dfn{window manager}---for
@@ -14406,7 +14412,7 @@ This is a list of services that builds upon @var{%base-services} and
 adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
-@code{slim-service}}), screen lockers, a network management tool
+@code{gdm-service-type}}), screen lockers, a network management tool
 (@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
 management services, the @code{elogind} login and seat manager, the
 Polkit privilege service, the GeoClue location service, the
@@ -14445,8 +14451,8 @@ functionality to work as expetected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
-called Wayland, you need to use the @code{sddm-service} instead of the
-@code{slim-service} for the graphical login manager.  You should then
+called Wayland, you need to use the @code{sddm-service} instead of
+GDM as the graphical login manager.  You should then
 select the ``GNOME (Wayland)'' session in SDDM.  Alternatively you can
 also try starting GNOME on Wayland manually from a TTY with the
 command ``XDG_SESSION_TYPE=wayland exec dbus-run-session

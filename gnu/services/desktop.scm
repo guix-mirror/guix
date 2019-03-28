@@ -1078,7 +1078,7 @@ dispatches events from it.")))
 
 (define %desktop-services
   ;; List of services typically useful for a "desktop" use case.
-  (cons* (service slim-service-type)
+  (cons* (service gdm-service-type)
 
          ;; Screen lockers are a pretty useful thing and these are small.
          (screen-locker-service slock)
