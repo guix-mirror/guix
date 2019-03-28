@@ -411,7 +411,7 @@ want what you have.")
               (method url-fetch)
               (uri (string-append "https://github.com/tnalpgge/"
                                   "rank-amateur-cowsay/archive/"
-                                  name "-" version ".tar.gz"))
+                                  "cowsay-" version ".tar.gz"))
               (sha256
                (base32
                 "12w7apbf6a9qffk92r32b16w22na2fjcqbl32rn0n7zw5hrp3f6q"))))
