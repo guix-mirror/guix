@@ -3055,3 +3055,35 @@ is used for preprocessing the arrays.")
      "This is a package for the automated analysis of Affymetrix arrays.  It
 provides reporting features.")
     (license license:gpl3)))
+
+(define-public r-a4base
+  (package
+    (name "r-a4base")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "a4Base" version))
+       (sha256
+        (base32
+         "0k9k3bv99msbwf2y416cz316ssaha2dxvmaddbl7z9037p8mjr70"))))
+    (properties `((upstream-name . "a4Base")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-a4core" ,r-a4core)
+       ("r-a4preproc" ,r-a4preproc)
+       ("r-annaffy" ,r-annaffy)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-genefilter" ,r-genefilter)
+       ("r-glmnet" ,r-glmnet)
+       ("r-gplots" ,r-gplots)
+       ("r-limma" ,r-limma)
+       ("r-mpm" ,r-mpm)
+       ("r-multtest" ,r-multtest)))
+    (home-page "https://bioconductor.org/packages/a4Base/")
+    (synopsis "Automated Affymetrix array analysis base package")
+    (description
+     "This package provides basic features for the automated analysis of
+Affymetrix arrays.")
+    (license license:gpl3)))
