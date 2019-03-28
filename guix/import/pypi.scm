@@ -21,9 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix import pypi)
-  #:use-module (ice-9 binary-ports)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 pretty-print)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 receive)
   #:use-module ((ice-9 rdelim) #:select (read-line))
@@ -31,9 +29,6 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:use-module (rnrs bytevectors)
-  #:use-module (json)
-  #:use-module (web uri)
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module ((guix build utils)
@@ -49,6 +44,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
   #:export (parse-requires.txt
+            parse-wheel-metadata
             specification->requirement-name
             guix-package->pypi-name
             pypi-recursive-import
@@ -177,18 +173,49 @@ requirement names."
           ;; Stop when a section is encountered, as sections contain optional
           ;; (extra) requirements.  Non-optional requirements must appear
           ;; before any section is defined.
-          (if (or (eof-object? line) (section-header? line))
-              ;; Duplicates can occur, since the same requirement can be
-              ;; listed multiple times with different conditional markers, e.g.
-              ;; pytest >= 3 ; python_version >= "3.3"
-              ;; pytest < 3 ; python_version < "3.3"
-              (reverse (delete-duplicates result))
-              (cond
-               ((or (string-null? line) (comment? line))
-                (loop result))
-               (else
-                (loop (cons (specification->requirement-name line)
-                            result))))))))))
+          (cond
+           ((or (eof-object? line) (section-header? line))
+            ;; Duplicates can occur, since the same requirement can be
+            ;; listed multiple times with different conditional markers, e.g.
+            ;; pytest >= 3 ; python_version >= "3.3"
+            ;; pytest < 3 ; python_version < "3.3"
+            (reverse (delete-duplicates result)))
+           ((or (string-null? line) (comment? line))
+            (loop result))
+           (else
+            (loop (cons (specification->requirement-name line)
+                        result)))))))))
+
+(define (parse-wheel-metadata metadata)
+  "Given METADATA, a Wheel metadata file, return a list of requirement names."
+  ;; METADATA is a RFC-2822-like, header based file.
+
+  (define (requires-dist-header? line)
+    ;; Return #t if the given LINE is a Requires-Dist header.
+    (string-match "^Requires-Dist: " line))
+
+  (define (requires-dist-value line)
+    (string-drop line (string-length "Requires-Dist: ")))
+
+  (define (extra? line)
+    ;; Return #t if the given LINE is an "extra" requirement.
+    (string-match "extra == '(.*)'" line))
+
+  (call-with-input-file metadata
+    (lambda (port)
+      (let loop ((requirements '()))
+        (let ((line (read-line port)))
+          ;; Stop at the first 'Provides-Extra' section: the non-optional
+          ;; requirements appear before the optional ones.
+          (cond
+           ((eof-object? line)
+            (reverse (delete-duplicates requirements)))
+           ((and (requires-dist-header? line) (not (extra? line)))
+            (loop (cons (specification->requirement-name
+                         (requires-dist-value line))
+                        requirements)))
+           (else
+            (loop requirements))))))))
 
 (define (guess-requirements source-url wheel-url archive)
   "Given SOURCE-URL, WHEEL-URL and a ARCHIVE of the package, return a list
@@ -197,25 +224,18 @@ be extracted in a temporary directory."
 
   (define (read-wheel-metadata wheel-archive)
     ;; Given WHEEL-ARCHIVE, a ZIP Python wheel archive, return the package's
-    ;; requirements.
+    ;; requirements, or #f if the metadata file contained therein couldn't be
+    ;; extracted.
     (let* ((dirname (wheel-url->extracted-directory wheel-url))
-           (json-file (string-append dirname "/metadata.json")))
-      (and (zero? (system* "unzip" "-q" wheel-archive json-file))
-           (dynamic-wind
-             (const #t)
-             (lambda ()
-               (call-with-input-file json-file
-                 (lambda (port)
-                   (let* ((metadata (json->scm port))
-                          (run_requires (hash-ref metadata "run_requires"))
-                          (requirements (if run_requires
-                                            (hash-ref (list-ref run_requires 0)
-                                                       "requires")
-                                            '())))
-                     (map specification->requirement-name requirements)))))
-             (lambda ()
-               (delete-file json-file)
-               (rmdir dirname))))))
+           (metadata (string-append dirname "/METADATA")))
+      (call-with-temporary-directory
+       (lambda (dir)
+         (if (zero? (system* "unzip" "-q" wheel-archive "-d" dir metadata))
+             (parse-wheel-metadata (string-append dir "/" metadata))
+             (begin
+               (warning
+                (G_ "Failed to extract file: ~a from wheel.~%") metadata)
+               #f))))))
 
   (define (guess-requirements-from-wheel)
     ;; Return the package's requirements using the wheel, or #f if an error

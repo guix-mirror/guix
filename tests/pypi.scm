@@ -22,6 +22,7 @@
   #:use-module (guix base32)
   #:use-module (guix memoization)
   #:use-module (gcrypt hash)
+  #:use-module (guix memoization)
   #:use-module (guix tests)
   #:use-module (guix build-system python)
   #:use-module ((guix build utils) #:select (delete-file-recursively which mkdir-p))
@@ -79,17 +80,33 @@ bar != 2
 pytest (>=2.5.0)
 ")
 
-(define test-metadata
-  "{
-  \"run_requires\": [
-    {
-      \"requires\": [
-        \"bar\",
-        \"baz (>13.37)\"
-      ]
-    }
-  ]
-}")
+(define test-metadata "\
+Classifier: Programming Language :: Python :: 3.7
+Requires-Dist: baz ~= 3
+Requires-Dist: bar != 2
+Provides-Extra: test
+pytest (>=2.5.0)
+")
+
+(define test-metadata-with-extras "
+Classifier: Programming Language :: Python :: 3.7
+Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*
+Requires-Dist: wrapt (<2,>=1)
+Requires-Dist: bar
+
+Provides-Extra: dev
+Requires-Dist: tox ; extra == 'dev'
+Requires-Dist: bumpversion (<1) ; extra == 'dev'
+")
+
+;;; Provides-Extra can appear before Requires-Dist.
+(define test-metadata-with-extras-jedi "\
+Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*
+Provides-Extra: testing
+Requires-Dist: parso (>=0.3.0)
+Provides-Extra: testing
+Requires-Dist: pytest (>=3.1.0); extra == 'testing'
+")
 
 (test-begin "pypi")
 
@@ -127,6 +144,18 @@ pytest (>=2.5.0)
   (mock ((ice-9 ports) call-with-input-file
          call-with-input-string)
         (parse-requires.txt test-requires-with-sections)))
+
+(test-equal "parse-wheel-metadata, with extras"
+  '("wrapt" "bar")
+  (mock ((ice-9 ports) call-with-input-file
+         call-with-input-string)
+        (parse-wheel-metadata test-metadata-with-extras)))
+
+(test-equal "parse-wheel-metadata, with extras - Jedi"
+  '("parso")
+  (mock ((ice-9 ports) call-with-input-file
+         call-with-input-string)
+        (parse-wheel-metadata test-metadata-with-extras-jedi)))
 
 (test-assert "pypi->guix-package"
   ;; Replace network resources with sample data.
@@ -191,7 +220,7 @@ pytest (>=2.5.0)
                 (mkdir-p "foo-1.0.0/foo.egg-info/")
                 (with-output-to-file "foo-1.0.0/foo.egg-info/requires.txt"
                    (lambda ()
-                     (display test-requires.txt)))
+                     (display "wrong data to make sure we're testing wheels ")))
                 (parameterize ((current-output-port (%make-void-port "rw+")))
                   (system* "tar" "czvf" file-name "foo-1.0.0/"))
                  (delete-file-recursively "foo-1.0.0")
@@ -200,13 +229,13 @@ pytest (>=2.5.0)
              ("https://example.com/foo-1.0.0-py2.py3-none-any.whl"
                (begin
                  (mkdir "foo-1.0.0.dist-info")
-                 (with-output-to-file "foo-1.0.0.dist-info/metadata.json"
+                 (with-output-to-file "foo-1.0.0.dist-info/METADATA"
                    (lambda ()
                      (display test-metadata)))
                  (let ((zip-file (string-append file-name ".zip")))
                    ;; zip always adds a "zip" extension to the file it creates,
                    ;; so we need to rename it.
-                   (system* "zip" zip-file "foo-1.0.0.dist-info/metadata.json")
+                   (system* "zip" zip-file "foo-1.0.0.dist-info/METADATA")
                    (rename-file zip-file file-name))
                  (delete-file-recursively "foo-1.0.0.dist-info")))
              (_ (error "Unexpected URL: " url)))))
@@ -218,6 +247,9 @@ pytest (>=2.5.0)
                             (string-length test-json)))
                    ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
                    (_ (error "Unexpected URL: " url)))))
+              ;; Not clearing the memoization cache here would mean returning the value
+              ;; computed in the previous test.
+              (invalidate-memoization! pypi->guix-package)
               (match (pypi->guix-package "foo")
                 (('package
                    ('name "python-foo")
