@@ -751,6 +751,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
+  %D%/packages/patches/emacs-undohist-ignored.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/emacs-zones-called-interactively.patch	\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
