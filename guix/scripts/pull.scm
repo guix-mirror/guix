@@ -181,6 +181,7 @@ Download and deploy the latest version of Guix.\n"))
            (new (profile-package-alist
                  (generation-file-name profile current))))
        (display-new/upgraded-packages old new
+                                      #:concise? #t
                                       #:heading (G_ "New in this revision:\n"))))
     (_ #t)))
 
@@ -377,15 +378,32 @@ of packages upgraded in ALIST2."
                                alist2)))
     (values new upgraded)))
 
+(define* (ellipsis #:optional (port (current-output-port)))
+  "Return HORIZONTAL ELLIPSIS three dots if PORT's encoding cannot represent
+it."
+  (match (port-encoding port)
+    ("UTF-8" "…")
+    (_       "...")))
+
 (define* (display-new/upgraded-packages alist1 alist2
-                                        #:key (heading ""))
+                                        #:key (heading "") concise?)
   "Given the two package name/version alists ALIST1 and ALIST2, display the
 list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
-and ALIST2 differ, display HEADING upfront."
+and ALIST2 differ, display HEADING upfront.  When CONCISE? is true, do not
+display long package lists that would fill the user's screen."
   (define (pretty str column)
     (indented-string (fill-paragraph str (- (%text-width) 4)
                                      column)
                      4))
+
+  (define list->enumeration
+    (if concise?
+        (lambda* (lst #:optional (max 12))
+          (if (> (length lst) max)
+              (string-append (string-join (take lst max) ", ")
+                             ", " (ellipsis))
+              (string-join lst ", ")))
+        (cut string-join <> ", ")))
 
   (let-values (((new upgraded) (new/upgraded-packages alist1 alist2)))
     (unless (and (null? new) (null? upgraded))
@@ -397,8 +415,7 @@ and ALIST2 differ, display HEADING upfront."
        (format #t (N_ "  ~h new package: ~a~%"
                       "  ~h new packages: ~a~%" count)
                count
-               (pretty (string-join (sort (map first new) string<?)
-                                    ", ")
+               (pretty (list->enumeration (sort (map first new) string<?))
                        30))))
     (match (length upgraded)
       (0 #t)
@@ -406,7 +423,7 @@ and ALIST2 differ, display HEADING upfront."
        (format #t (N_ "  ~h package upgraded: ~a~%"
                       "  ~h packages upgraded: ~a~%" count)
                count
-               (pretty (string-join (sort upgraded string<?) ", ")
+               (pretty (list->enumeration (sort upgraded string<?))
                        35))))))
 
 (define (display-profile-content-diff profile gen1 gen2)
