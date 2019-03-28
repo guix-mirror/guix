@@ -62,6 +62,14 @@ bar
 baz > 13.37
 ")
 
+(define test-requires-with-sections "\
+foo ~= 3
+bar != 2
+
+[test]
+pytest (>=2.5.0)
+")
+
 (define test-metadata
   "{
   \"run_requires\": [
@@ -100,6 +108,12 @@ baz > 13.37
                    (dummy-origin
                     (uri (list "https://bitheap.org/cram/cram-0.7.tar.gz"
                                (pypi-uri "cram" "0.7"))))))))
+
+(test-equal "parse-requires.txt, with sections"
+  '("foo" "bar")
+  (mock ((ice-9 ports) call-with-input-file
+         call-with-input-string)
+        (parse-requires.txt test-requires-with-sections)))
 
 (test-assert "pypi->guix-package"
   ;; Replace network resources with sample data.

@@ -47,7 +47,8 @@
   #:use-module (guix upstream)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
-  #:export (guix-package->pypi-name
+  #:export (parse-requires.txt
+            guix-package->pypi-name
             pypi-recursive-import
             pypi->guix-package
             %pypi-updater))
@@ -117,6 +118,47 @@ package definition."
     ((package-inputs ...)
      `((propagated-inputs (,'quasiquote ,package-inputs))))))
 
+(define (clean-requirement s)
+  ;; Given a requirement LINE, as can be found in a setuptools requires.txt
+  ;; file, remove everything other than the actual name of the required
+  ;; package, and return it.
+  (cond
+   ((string-index s (char-set #\space #\> #\= #\<)) => (cut string-take s <>))
+   (else s)))
+
+(define (parse-requires.txt requires.txt)
+  "Given REQUIRES.TXT, a Setuptools requires.txt file, return a list of
+requirement names."
+  ;; This is a very incomplete parser, whose job is to select the non-optional
+  ;; dependencies and strip them out of any version information.
+  ;; Alternatively, we could implement a PEG parser with the (ice-9 peg)
+  ;; library and the requirements grammar defined by PEP-0508
+  ;; (https://www.python.org/dev/peps/pep-0508/).
+
+  (define (comment? line)
+    ;; Return #t if the given LINE is a comment, #f otherwise.
+    (string-prefix? "#" (string-trim line)))
+
+  (define (section-header? line)
+    ;; Return #t if the given LINE is a section header, #f otherwise.
+    (string-prefix? "[" (string-trim line)))
+
+  (call-with-input-file requires.txt
+    (lambda (port)
+      (let loop ((result '()))
+        (let ((line (read-line port)))
+          ;; Stop when a section is encountered, as sections contain optional
+          ;; (extra) requirements.  Non-optional requirements must appear
+          ;; before any section is defined.
+          (if (or (eof-object? line) (section-header? line))
+              (reverse result)
+              (cond
+               ((or (string-null? line) (comment? line))
+                (loop result))
+               (else
+                (loop (cons (clean-requirement line)
+                            result))))))))))
+
 (define (guess-requirements source-url wheel-url tarball)
   "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list
 of the required packages specified in the requirements.txt file.  TARBALL will
@@ -138,34 +180,6 @@ be extracted in a temporary directory."
           (warning (G_ "Unsupported archive format: \
 cannot determine package dependencies"))
           #f)))))
-
-  (define (clean-requirement s)
-    ;; Given a requirement LINE, as can be found in a Python requirements.txt
-    ;; file, remove everything other than the actual name of the required
-    ;; package, and return it.
-    (string-take s
-      (or (string-index s (lambda (chr) (member chr '(#\space #\> #\= #\<))))
-          (string-length s))))
-
-  (define (comment? line)
-    ;; Return #t if the given LINE is a comment, #f otherwise.
-    (eq? (string-ref (string-trim line) 0) #\#))
-
-  (define (read-requirements requirements-file)
-    ;; Given REQUIREMENTS-FILE, a Python requirements.txt file, return a list
-    ;; of name/variable pairs describing the requirements.
-    (call-with-input-file requirements-file
-      (lambda (port)
-        (let loop ((result '()))
-          (let ((line (read-line port)))
-            (if (eof-object? line)
-                result
-                (cond
-                 ((or (string-null? line) (comment? line))
-                  (loop result))
-                 (else
-                  (loop (cons (clean-requirement line)
-                              result))))))))))
 
   (define (read-wheel-metadata wheel-archive)
     ;; Given WHEEL-ARCHIVE, a ZIP Python wheel archive, return the package's
@@ -212,7 +226,7 @@ cannot determine package dependencies"))
                                               (current-output-port (%make-void-port "rw+")))
                                  (system* "tar" "xf" tarball "-C" dir requires.txt))))
                (if (zero? exit-code)
-                   (read-requirements (string-append dir "/" requires.txt))
+                   (parse-requires.txt (string-append dir "/" requires.txt))
                    (begin
                      (warning
                       (G_ "Failed to extract file: ~a from source.~%")
