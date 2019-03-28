@@ -27,6 +27,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
@@ -156,11 +157,13 @@ window manager as well as the Tmux terminal multiplexer.")
     (version "0.7.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/nelhage/reptyr/archive"
-                           "/reptyr-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nelhage/reptyr.git")
+             (commit (string-append "reptyr-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "10s9blv8xljzfdn4xly5y2q66kd0ldj3wnflymsxb5g6r3s3kidi"))))
+        (base32 "1hnijfz1ab34j2h2cxc3f43rmbclyihgn9x9wxa7jqqgb2xm71hj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
