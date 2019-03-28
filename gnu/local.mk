@@ -1218,7 +1218,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
   %D%/packages/patches/red-eclipse-remove-gamma-name-hack.patch	\
   %D%/packages/patches/reposurgeon-add-missing-docbook-files.patch	\
-  %D%/packages/patches/reptyr-fix-gcc-7.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rtags-separate-rct.patch			\

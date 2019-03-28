@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,23 +153,25 @@ window manager as well as the Tmux terminal multiplexer.")
 (define-public reptyr
   (package
     (name "reptyr")
-    (version "0.6.2")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/nelhage/reptyr/archive"
                            "/reptyr-" version ".tar.gz"))
-       ;; XXX: To be removed on next reptyr release.
-       (patches (search-patches "reptyr-fix-gcc-7.patch"))
        (sha256
-        (base32
-         "07pfl0rkgm8m3f3jy8r9l2yvnhf8lgllpsk3mh57mhzdxq8fagf7"))))
+        (base32 "10s9blv8xljzfdn4xly5y2q66kd0ldj3wnflymsxb5g6r3s3kidi"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+     '(#:tests? #f                      ; no tests
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "BASHCOMPDIR=" (assoc-ref %outputs "out")
+                            "/etc/bash_completion.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/nelhage/reptyr")
     (synopsis "Tool for reparenting a running program to a new terminal")
     (description
