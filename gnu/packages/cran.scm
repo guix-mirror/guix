@@ -13566,3 +13566,23 @@ and Learning to Rank measures (LambdaMart).")
      "Create interactive 3D scatter plots, network plots, and globes in R
 using the three.js visualization library.")
     (license license:expat)))
+
+(define-public r-mlbench
+  (package
+    (name "r-mlbench")
+    (version "2.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mlbench" version))
+       (sha256
+        (base32
+         "1rp035qxfgh5ail92zjh9jh57dj0b8babw3wsg29v8ricpal30bl"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/mlbench/")
+    (synopsis "Machine learning benchmark problems")
+    (description
+     "This package provides a collection of artificial and real-world machine
+learning benchmark problems, including, e.g., several data sets from the UCI
+repository.")
+    (license license:gpl2)))
