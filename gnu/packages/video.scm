@@ -1326,6 +1326,14 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((ytdl (assoc-ref inputs "youtube-dl")))
+              (substitute* "player/lua/ytdl_hook.lua"
+                (("\"youtube-dl\",")
+                 (string-append "\"" ytdl "/bin/youtube-dl\",")))
+              #t)))
          (add-before
           'configure 'setup-waf
           (lambda* (#:key inputs #:allow-other-keys)
