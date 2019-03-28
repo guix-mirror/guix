@@ -2959,3 +2959,26 @@ It allows searching of biological metadata using various criteria.")
     ;; Any version of the LGPL according to the DESCRIPTION file.  A copy of
     ;; the LGPL 2.1 is included.
     (license license:lgpl2.1+)))
+
+(define-public r-a4core
+  (package
+    (name "r-a4core")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "a4Core" version))
+       (sha256
+        (base32
+         "1d62afxkfp9zbp59ijcn4wd1gdynygw013av41wq8bfm3cx6f9zr"))))
+    (properties `((upstream-name . "a4Core")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-glmnet" ,r-glmnet)))
+    (home-page "https://bioconductor.org/packages/a4Core")
+    (synopsis "Automated Affymetrix array analysis core package")
+    (description
+     "This is the core package for the automated analysis of Affymetrix
+arrays.")
+    (license license:gpl3)))
