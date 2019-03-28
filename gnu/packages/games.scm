@@ -5501,6 +5501,8 @@ renderer.  It improves modding support with ZDoom's advanced mapping features
 and the new ZScript language.  In addition to Doom, it supports Heretic, Hexen,
 Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
     (home-page "https://zdoom.org/index")
+    ;; The source uses x86 assembly
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (license (list license:gpl3+         ; gzdoom game
                    license:lgpl3+        ; gzdoom renderer
                    license:expat         ; gdtoa
