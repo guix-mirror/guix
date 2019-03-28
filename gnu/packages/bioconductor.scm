@@ -2982,3 +2982,31 @@ It allows searching of biological metadata using various criteria.")
      "This is the core package for the automated analysis of Affymetrix
 arrays.")
     (license license:gpl3)))
+
+(define-public r-a4classif
+  (package
+    (name "r-a4classif")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "a4Classif" version))
+       (sha256
+        (base32
+         "02l77a59865ly3bydv74ff2l2wfb0x5s283g1nx6g1qrw3ly982j"))))
+    (properties `((upstream-name . "a4Classif")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-a4core" ,r-a4core)
+       ("r-a4preproc" ,r-a4preproc)
+       ("r-glmnet" ,r-glmnet)
+       ("r-mlinterfaces" ,r-mlinterfaces)
+       ("r-pamr" ,r-pamr)
+       ("r-rocr" ,r-rocr)
+       ("r-varselrf" ,r-varselrf)))
+    (home-page "https://bioconductor.org/packages/a4Classif/")
+    (synopsis "Automated Affymetrix array analysis classification package")
+    (description
+     "This is the classification package for the automated analysis of
+Affymetrix arrays.")
+    (license license:gpl3)))
