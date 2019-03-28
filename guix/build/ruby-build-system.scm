@@ -143,13 +143,16 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
          (gem-dir (string-append vendor-dir "/gems/" gem-name)))
     (setenv "GEM_VENDOR" vendor-dir)
 
-    (or (apply invoke "gem" "install" gem-file
-               "--verbose"
-               "--local" "--ignore-dependencies" "--vendor"
-               ;; Executables should go into /bin, not
-               ;; /lib/ruby/gems.
-               "--bindir" (string-append out "/bin")
-               gem-flags)
+    (or (zero?
+          ;; 'zero? system*' allows the custom error handling to function as
+          ;; expected, while 'invoke' raises its own exception.
+         (apply system* "gem" "install" gem-file
+                "--verbose"
+                "--local" "--ignore-dependencies" "--vendor"
+                ;; Executables should go into /bin, not
+                ;; /lib/ruby/gems.
+                "--bindir" (string-append out "/bin")
+                gem-flags))
         (begin
           (let ((failed-output-dir (string-append (getcwd) "/out")))
             (mkdir failed-output-dir)
