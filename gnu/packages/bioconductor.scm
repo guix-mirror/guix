@@ -3914,3 +3914,32 @@ normalization.  YARN leverages many Bioconductor tools and statistical
 techniques to account for the large heterogeneity and sparsity found in very
 large RNA-seq experiments.")
     (license license:artistic2.0)))
+
+(define-public r-roar
+  (package
+    (name "r-roar")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "roar" version))
+       (sha256
+        (base32
+         "15650s9vs7dvmqpvrs4xwn6j4kh14yqsx4daqyhhxxr68kn8mklw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://github.com/vodkatad/roar/")
+    (synopsis "Identify differential APA usage from RNA-seq alignments")
+    (description
+     "This package provides tools for identifying preferential usage of APA
+sites, comparing two biological conditions, starting from known alternative
+sites and alignments obtained from standard RNA-seq experiments.")
+    (license license:gpl3)))
