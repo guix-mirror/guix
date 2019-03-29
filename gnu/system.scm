@@ -66,6 +66,7 @@
   #:use-module (rnrs bytevectors)
   #:export (operating-system
             operating-system?
+            this-operating-system
 
             operating-system-bootloader
             operating-system-services
@@ -152,6 +153,8 @@
 (define-record-type* <operating-system> operating-system
   make-operating-system
   operating-system?
+  this-operating-system
+
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
   (kernel-arguments operating-system-user-kernel-arguments
@@ -204,7 +207,7 @@
 
   (essential-services operating-system-essential-services ; list of services
                       (thunked)
-                      (default (essential-services this-record)))
+                      (default (essential-services this-operating-system)))
   (services operating-system-user-services        ; list of services
             (default %base-services))
 
