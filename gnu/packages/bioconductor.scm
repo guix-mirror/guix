@@ -3551,3 +3551,38 @@ text files).")
      "This package provides a framework for allele-specific expression
 investigation using RNA-seq data.")
     (license license:gpl3)))
+
+(define-public r-aucell
+  (package
+    (name "r-aucell")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AUCell" version))
+       (sha256
+        (base32
+         "1kdrs0521cyb8wlc4i3idfprrcy2f9w6kl56hfa94n0brmx62ya9"))))
+    (properties `((upstream-name . "AUCell")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-gseabase" ,r-gseabase)
+       ("r-mixtools" ,r-mixtools)
+       ("r-r-utils" ,r-r-utils)
+       ("r-shiny" ,r-shiny)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/AUCell/")
+    (synopsis "Analysis of gene set activity in single-cell RNA-seq data")
+    (description
+     "AUCell allows to identify cells with active gene sets (e.g. signatures,
+gene modules, etc) in single-cell RNA-seq data.  AUCell uses the @dfn{Area
+Under the Curve} (AUC) to calculate whether a critical subset of the input
+gene set is enriched within the expressed genes for each cell.  The
+distribution of AUC scores across all the cells allows exploring the relative
+expression of the signature.  Since the scoring method is ranking-based,
+AUCell is independent of the gene expression units and the normalization
+procedure.  In addition, since the cells are evaluated individually, it can
+easily be applied to bigger datasets, subsetting the expression matrix if
+needed.")
+    (license license:gpl3)))
