@@ -4880,3 +4880,44 @@ Long Painful History of Time\".")
 
 (define-public cl-local-time
   (sbcl-package->cl-source-package sbcl-local-time))
+
+(define-public sbcl-lack-response
+  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
+        (revision "1"))
+    (package
+     (name "sbcl-lack-response")
+     (version (git-version "0.1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/lack.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      '(#:asd-file "lack-response.asd"
+        #:asd-system-name "lack-response"
+        ;; XXX: no tests for lack-response.
+        #:tests? #f))
+     (native-inputs
+      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+        ("sbcl-prove" ,sbcl-prove)))
+     (inputs
+      `(("sbcl-quri" ,sbcl-quri)
+        ("sbcl-http-body" ,sbcl-http-body)
+        ("sbcl-circular-streams" ,sbcl-circular-streams)
+        ("sbcl-local-time" ,sbcl-local-time)))
+     (home-page "https://github.com/fukamachi/lack")
+     (synopsis "Lack, the core of Clack")
+     (description
+      "Lack is a Common Lisp library which allows web applications to be
+constructed of modular components.  It was originally a part of Clack, however
+it's going to be rewritten as an individual project since Clack v2 with
+performance and simplicity in mind.")
+     (license license:llgpl))))
+
+(define-public cl-lack-response
+  (sbcl-package->cl-source-package sbcl-lack-response))
