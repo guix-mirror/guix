@@ -29,6 +29,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
@@ -3111,4 +3112,50 @@ Affymetrix arrays.")
     (description
      "This package provides a software suite for the automated analysis of
 Affymetrix arrays.")
+    (license license:gpl3)))
+
+(define-public r-abseqr
+  (package
+    (name "r-abseqr")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "abseqR" version))
+       (sha256
+        (base32
+         "0w0ngxnilcrxlixsz7ls3zm99gyabxwn7w1r3r45n96d4aj075ry"))))
+    (properties `((upstream-name . "abseqR")))
+    (build-system r-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-biocstyle" ,r-biocstyle)
+       ("r-circlize" ,r-circlize)
+       ("r-flexdashboard" ,r-flexdashboard)
+       ("r-ggcorrplot" ,r-ggcorrplot)
+       ("r-ggdendro" ,r-ggdendro)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-knitr" ,r-knitr)
+       ("r-plotly" ,r-plotly)
+       ("r-plyr" ,r-plyr)
+       ("r-png" ,r-png)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-stringr" ,r-stringr)
+       ("r-vegan" ,r-vegan)
+       ("r-venndiagram" ,r-venndiagram)))
+    (home-page "https://github.com/malhamdoosh/abseqR")
+    (synopsis "Reporting and data analysis for Rep-Seq datasets of antibody libraries")
+    (description
+     "AbSeq is a comprehensive bioinformatic pipeline for the analysis of
+sequencing datasets generated from antibody libraries and abseqR is one of its
+packages.  AbseqR empowers the users of abseqPy with plotting and reporting
+capabilities and allows them to generate interactive HTML reports for the
+convenience of viewing and sharing with other researchers.  Additionally,
+abseqR extends abseqPy to compare multiple repertoire analyses and perform
+further downstream analysis on its output.")
     (license license:gpl3)))
