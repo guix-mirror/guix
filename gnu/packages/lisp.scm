@@ -4415,3 +4415,37 @@ Lisp. It is intended to be a replacement of PURI.")
 
 (define-public cl-quri
   (sbcl-package->cl-source-package sbcl-quri))
+
+(define-public sbcl-myway
+  (let ((commit "286230082a11f879c18b93f17ca571c5f676bfb7")
+        (revision "1"))
+    (package
+     (name "sbcl-myway")
+     (version (git-version "0.1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/myway.git")
+             (commit commit)))
+       (sha256
+        (base32 "0briia9bk3lbr0frnx39d1qg6i38dm4j6z9w3yga3d40k6df4a90"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      ;; Tests fail with: Component MYWAY-ASD::MYWAY-TEST not found, required
+      ;; by #<SYSTEM "myway">. Why?
+      '(#:tests? #f))
+     (native-inputs
+      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+        ("sbcl-prove" ,sbcl-prove)))
+     (inputs
+      `(("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+        ("sbcl-quri" ,sbcl-quri)
+        ("sbcl-map-set" ,sbcl-map-set)))
+     (home-page "https://github.com/fukamachi/myway")
+     (synopsis "Sinatra-compatible URL routing library for Common Lisp")
+     (description "My Way is a Sinatra-compatible URL routing library.")
+     (license license:llgpl))))
+
+(define-public cl-myway
+  (sbcl-package->cl-source-package sbcl-myway))
