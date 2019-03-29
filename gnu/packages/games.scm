@@ -3660,7 +3660,7 @@ colors, pictures, and sounds.")
               (method url-fetch)
               (uri (string-append
                     "https://github.com/SimonLarsen/mrrescue/releases/"
-                    "download/" version "/" name version ".love"))
+                    "download/" version "/mrrescue" version ".love"))
               (file-name (string-append name "-" version ".love"))
               (sha256
                (base32
