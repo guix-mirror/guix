@@ -4252,3 +4252,33 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 
 (define-public cl-syntax
   (sbcl-package->cl-source-package sbcl-syntax))
+
+(define-public sbcl-annot
+  (let ((commit "c99e69c15d935eabc671b483349a406e0da9518d")
+        (revision "1"))
+    (package
+      (name "sbcl-annot")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/m2ym/cl-annot.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1wq1gs9jjd5m6iwrv06c2d7i5dvqsfjcljgbspfbc93cg5xahk4n"))))
+      (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-file "cl-annot.asd"
+       #:asd-system-name "cl-annot"))
+      (inputs
+       `(("sbcl-alexandria" ,sbcl-alexandria)))
+      (home-page "https://github.com/m2ym/cl-annot")
+      (synopsis "Python-like Annotation Syntax for Common Lisp.")
+      (description
+       "@code{cl-annot} is an general annotation library for Common Lisp.")
+      (license license:llgpl))))
+
+(define-public cl-annot
+  (sbcl-package->cl-source-package sbcl-annot))
