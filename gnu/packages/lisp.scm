@@ -3963,3 +3963,36 @@ Development into CL+SSL was done by David Lichteblau.")
 
 (define-public cl-cl+ssl
   (sbcl-package->cl-source-package sbcl-cl+ssl))
+
+(define-public sbcl-kmrcl
+  (let ((version "1.109.0")
+        (commit "5260068b2eb735af6796740c2db4955afac21636")
+        (revision "1"))
+    (package
+      (name "sbcl-kmrcl")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/kmrcl.git/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1va7xjgzfv674bpsli674i7zj3f7wg5kxic41kz18r6hh4n52dfv"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Tests fail with: :FORCE and :FORCE-NOT arguments not allowed in a
+       ;; nested call to ASDF/OPERATE:OPERATE unless identically to toplevel
+       '(#:tests? #f))
+      (inputs
+       `(("sbcl-rt" ,sbcl-rt)))
+      (home-page "http://files.kpe.io/kmrcl/")
+      (synopsis "General utilities for Common Lisp programs")
+      (description
+       "KMRCL is a collection of utilities used by a number of Kevin
+Rosenberg's CL packages.")
+      (license license:llgpl))))
+
+(define-public cl-kmrcl
+  (sbcl-package->cl-source-package sbcl-kmrcl))
