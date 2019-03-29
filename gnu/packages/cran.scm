@@ -13795,3 +13795,24 @@ species accumulation curve, or the library complexity curve in high-throughput
 genomic sequencing.  The package includes both parametric and nonparametric
 methods, as described by Deng C, et al. (2018).")
     (license license:gpl3)))
+
+(define-public r-mapplots
+  (package
+    (name "r-mapplots")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mapplots" version))
+       (sha256
+        (base32
+         "18s2y66f8vi8g2r8a25zbgp2xm079r8v8qxv0w71h8krycs6vs9p"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/mapplots/")
+    (synopsis "Data visualization on maps")
+    (description
+     "This package helps you create simple maps; add sub-plots like pie plots
+to a map or any other plot; format, plot and export gridded data.  The package
+was developed for displaying fisheries data but most functions can be used for
+more generic data visualisation.")
+    (license license:gpl2+)))
