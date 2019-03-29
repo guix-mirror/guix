@@ -13657,3 +13657,115 @@ matrix using ggplot2.  It provides a solution for reordering the correlation
 matrix and displays the significance level on the plot.  It also includes a
 function for computing a matrix of correlation p-values.")
     (license license:gpl2)))
+
+(define-public r-flexdashboard
+  (package
+    (name "r-flexdashboard")
+    (version "0.5.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flexdashboard" version))
+       (sha256
+        (base32
+         "0fy3nbrr67zqgd44r2mc850s5sp0hzfcw3zqs15m8kxzj1aw067x"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (ice-9 popen)
+                  (ice-9 textual-ports))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst"
+               ;; Concatenate all components of prism.js
+               (let ((contents (string-join
+                                (map (lambda (name)
+                                       (call-with-input-file
+                                           (assoc-ref inputs name)
+                                         get-string-all))
+                                     (list "js-prism"
+                                           "js-prism-r"
+                                           "js-prism-line-numbers"))
+                                "\n")))
+                 (call-with-output-file "prism-src.js"
+                   (cut display contents <>)))
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `(("www/stickytableheaders/jquery.stickytableheaders.js"
+                         "www/stickytableheaders/jquery.stickytableheaders.min.js")
+                        ("www/sly/sly.js"
+                         "www/sly/sly.min.js")
+                        ("prism-src.js"
+                         "www/prism/prism.js")
+                        (,(assoc-ref inputs "js-raphael")
+                         "htmlwidgets/lib/raphael/raphael-2.1.4.min.js")
+                        (,(assoc-ref inputs "js-featherlight")
+                         "www/featherlight/featherlight.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (delete-file target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-shiny" ,r-shiny)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("js-raphael"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/DmitryBaranovskiy/raphael/v2.1.4/raphael.js")
+           (sha256
+            (base32
+             "1h4c4akrgcj7wra9j1z1rv2406j0yf68y9c0wg8v7w9ibw2iwf1x"))))
+       ("js-prism"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/PrismJS/prism/v1.16.0/prism.js")
+           (sha256
+            (base32
+             "0gqa9irbp9k8p5r3d98cszajzhjnssnl43nrsc5aiy7ki52z500c"))))
+       ("js-prism-r"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/PrismJS/prism/v1.16.0/components/prism-r.js")
+           (sha256
+            (base32
+             "1x31glci7wdgr2305njy0bm2lncb0jyn0j1s2g72rqi29xid9aki"))))
+       ("js-prism-line-numbers"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/PrismJS/prism/v1.16.0/plugins/line-numbers/prism-line-numbers.js")
+           (sha256
+            (base32
+             "1543wgf3iynrilyb27jq8px3h5gvfz5xmdib5ik2ki400c1sl991"))))
+       ("js-featherlight"
+        ,(origin
+           (method url-fetch)
+           (uri "https://raw.githubusercontent.com/noelboss/featherlight/1.3.4/src/featherlight.js")
+           (sha256
+            (base32
+             "14kkhwzvp8rxq2mrck5i0xcm8v5rqwqhwnmncbng8h4qq42zx3sb"))))))
+    (home-page "https://rmarkdown.rstudio.com/flexdashboard")
+    (synopsis "R Markdown format for flexible dashboards")
+    (description
+     "This package provides an R Markdown format for converting an R Markdown
+document to a grid-oriented dashboard.  The dashboard flexibly adapts the size
+of its components to the containing web page.")
+    (license license:expat)))
