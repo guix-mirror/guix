@@ -4654,3 +4654,42 @@ against the last run.")
 
 (define-public cl-checkl
   (sbcl-package->cl-source-package sbcl-checkl))
+
+(define-public sbcl-fast-io
+  (let ((commit "dc3a71db7e9b756a88781ae9c342fe9d4bbab51c")
+        (revision "1"))
+    (package
+     (name "sbcl-fast-io")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rpav/fast-io.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jsp6xvi26ln6fdy5j5zi05xvan8jsqdhisv552dy6xg6ws8i1yq"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      ;; Error while trying to load definition for system fast-io-test from
+      ;; pathname [...]/fast-io-test.asd: The function CHECKL:DEFINE-TEST-OP
+      ;; is undefined.
+      '(#:tests? #f))
+     (native-inputs
+      `(("sbcl-fiveam" ,sbcl-fiveam)
+        ("sbcl-checkl" ,sbcl-checkl)))
+     (inputs
+      `(("sbcl-alexandria" ,sbcl-alexandria)
+        ("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)
+        ("sbcl-static-vectors" ,sbcl-static-vectors)))
+     (home-page "https://github.com/rpav/fast-io")
+     (synopsis "Fast octet-vector/stream I/O for Common Lisp")
+     (description
+      "Fast-io is about improving performance to octet-vectors and octet
+streams (though primarily the former, while wrapping the latter).")
+     ;; Author specifies this as NewBSD which is an alias
+     (license license:bsd-3))))
+
+(define-public cl-fast-io
+  (sbcl-package->cl-source-package sbcl-fast-io))
