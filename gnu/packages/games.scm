@@ -5905,10 +5905,10 @@ ncurses for text display.")
               (method url-fetch)
               (uri (list (string-append
                           "http://www.ifarchive.org/if-archive/infocom/interpreters/"
-                          "frotz" "/" "frotz" "-" version ".tar.gz")
+                          "frotz/frotz-" version ".tar.gz")
                          (string-append
                           "ftp://ftp.ifarchive.org/if-archive/infocom/interpreters/"
-                          "frotz" "/" "frotz" "-" version ".tar.gz")))
+                          "frotz/frotz-" version ".tar.gz")))
               (sha256
                (base32
                 "1v735xr3blznac8fnwa27s1vhllx4jpz7kw7qdw1bsfj6kq21v3k"))))
