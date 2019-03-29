@@ -5208,3 +5208,33 @@ performance and simplicity in mind.")
 
 (define-public cl-ningle
   (sbcl-package->cl-source-package sbcl-ningle))
+
+(define-public sbcl-clack
+  (let ((commit "e3e032843bb1220ab96263c411aa7f2feb4746e0")
+        (revision "1"))
+    (package
+     (name "sbcl-clack")
+     (version (git-version "2.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/clack.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ymzs6qyrwhlj6cgqsnpyn6g5cbp7a3s1vgxwna20y2q7y4iacy0"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("sbcl-lack" ,sbcl-lack)
+        ("sbcl-lack-middleware-backtrace" ,sbcl-lack-middleware-backtrace)
+        ("sbcl-bordeaux-threads" ,sbcl-bordeaux-threads)))
+     (home-page "https://github.com/fukamachi/clack")
+     (synopsis "Web Application Environment for Common Lisp")
+     (description
+      "Clack is a web application environment for Common Lisp inspired by
+Python's WSGI and Ruby's Rack.")
+     (license license:llgpl))))
+
+(define-public cl-clack
+  (sbcl-package->cl-source-package sbcl-clack))
