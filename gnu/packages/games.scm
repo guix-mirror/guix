@@ -6039,9 +6039,9 @@ GameController.")
     (version "3.31.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/quadrapassel/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "quadrapassel-" version ".tar.xz"))
               (sha256
                (base32
                 "08i01nsgfb502xzzrrcxxbs7awb0j1h4c08vmj0j18ipa1sz8vb8"))))
