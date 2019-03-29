@@ -15275,3 +15275,26 @@ and dates in \"human readable\" forms.  For example, it would display
     (description "This is a collection of well-tested, simple modules and
 functions that aim to reduce boilerplate when working with data.")
     (license license:bsd-2)))
+
+(define-public python-annoy
+  (package
+    (name "python-annoy")
+    (version "1.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "annoy" version))
+       (sha256
+        (base32
+         "1rxn6snn0r32r07g45hdjhh8aa1xzx6fjrm8g62d8vzp46z7rzrp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/spotify/annoy/")
+    (synopsis "Approximate nearest neighbors library")
+    (description
+     "Annoy is a C++ library with Python bindings to search for points in
+space that are close to a given query point.  It also creates large read-only
+file-based data structures that are @code{mmap}ped into memory so that many
+processes may share the same data.")
+    (license license:asl2.0)))
