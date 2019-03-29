@@ -182,8 +182,8 @@
              (substitute* "ext/standard/tests/streams/bug60602.phpt"
                (("'ls'") (string-append "'" (which "ls") "'")))
 
-             ,@(if (string-prefix? "armhf" (or (%current-system)
-                                               (%current-target-system)))
+             ,@(if (string-prefix? "arm" (or (%current-system)
+                                             (%current-target-system)))
                    ;; Drop tests known to fail on armhf.
                    '((for-each delete-file
                               (list
@@ -191,7 +191,8 @@
                                 ;; arm can be a lot slower, so a time-related test fails
                                 "ext/fileinfo/tests/cve-2014-3538-nojit.phpt"
                                 "ext/pcre/tests/bug76514.phpt"
-                                "ext/pcre/tests/preg_match_error3.phpt"))))
+                                "ext/pcre/tests/preg_match_error3.phpt")))
+                   '())
 
              ;; Drop tests that are known to fail.
              (for-each delete-file
