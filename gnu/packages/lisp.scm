@@ -4771,3 +4771,37 @@ multipart/form-data.")
 
 (define-public cl-http-body
   (sbcl-package->cl-source-package sbcl-http-body))
+
+(define-public sbcl-circular-streams
+  (let ((commit "e770bade1919c5e8533dd2078c93c3d3bbeb38df")
+        (revision "1"))
+    (package
+     (name "sbcl-circular-streams")
+     (version (git-version "0.1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/circular-streams")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wpw6d5cciyqcf92f7mvihak52pd5s47kk4qq6f0r2z2as68p5rs"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      ;; The tests depend on cl-test-more which is now prove. Prove
+      ;; tests aren't working for some reason.
+      `(#:tests? #f))
+     (inputs
+      `(("sbcl-fast-io" ,sbcl-fast-io)
+        ("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+     (home-page "https://github.com/fukamachi/circular-streams")
+     (synopsis "Circularly readable streams for Common Lisp")
+     (description
+      "Circular-Streams allows you to read streams circularly by wrapping real
+streams. Once you reach end-of-file of a stream, it's file position will be
+reset to 0 and you're able to read it again.")
+     (license license:llgpl))))
+
+(define-public cl-circular-streams
+  (sbcl-package->cl-source-package sbcl-circular-streams))
