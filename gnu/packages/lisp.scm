@@ -4055,3 +4055,35 @@ defined in RFC 2616.")
 
 (define-public cl-chunga
   (sbcl-package->cl-source-package sbcl-chunga))
+
+(define-public sbcl-cl-who
+  (let ((version "1.1.4")
+        (commit "2c08caa4bafba720409af9171feeba3f32e86d32")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-who")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/edicl/cl-who.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0yjb6sr3yazm288m318kqvj9xk8rm9n1lpimgf65ymqv0i5agxsb"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("sbcl-flexi-streams" ,sbcl-flexi-streams)))
+      (home-page "https://edicl.github.io/cl-who/")
+      (synopsis "Yet another Lisp markup language")
+      (description
+       "There are plenty of Lisp Markup Languages out there - every Lisp
+programmer seems to write at least one during his career - and CL-WHO (where
+WHO means \"with-html-output\" for want of a better acronym) is probably just
+as good or bad as the next one.")
+      (license license:bsd-2))))
+
+(define-public cl-cl-who
+  (sbcl-package->cl-source-package sbcl-cl-who))
