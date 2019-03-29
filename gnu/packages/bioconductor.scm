@@ -3430,3 +3430,33 @@ the annotations, and options to take gene-length or spatial clustering of
 genes into account.  It is also possible to provide custom gene coordinates,
 annotations and ontologies.")
     (license license:gpl2+)))
+
+(define-public r-abaenrichment
+  (package
+    (name "r-abaenrichment")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ABAEnrichment" version))
+       (sha256
+        (base32
+         "0bvanqmg1smyckh16m2qn7d68zq4j7n74sgsnbgms5jngbp9158v"))))
+    (properties `((upstream-name . "ABAEnrichment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abadata" ,r-abadata)
+       ("r-data-table" ,r-data-table)
+       ("r-gofuncr" ,r-gofuncr)
+       ("r-gplots" ,r-gplots)
+       ("r-gtools" ,r-gtools)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://bioconductor.org/packages/ABAEnrichment/")
+    (synopsis "Gene expression enrichment in human brain regions")
+    (description
+     "The package ABAEnrichment is designed to test for enrichment of user
+defined candidate genes in the set of expressed genes in different human brain
+regions.  The core function @code{aba_enrich} integrates the expression of the
+candidate gene set (averaged across donors) and the structural information of
+the brain using an ontology, both provided by the Allen Brain Atlas project.")
+    (license license:gpl2+)))
