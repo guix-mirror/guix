@@ -13769,3 +13769,29 @@ function for computing a matrix of correlation p-values.")
 document to a grid-oriented dashboard.  The dashboard flexibly adapts the size
 of its components to the containing web page.")
     (license license:expat)))
+
+(define-public r-preseqr
+  (package
+    (name "r-preseqr")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "preseqR" version))
+       (sha256
+        (base32
+         "1g2rnnmi45649vpy6z45v5i3wxm54s138ajqrzwi3a5r7x3xnhq1"))))
+    (properties `((upstream-name . "preseqR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-polynom" ,r-polynom)))
+    (home-page "https://cran.r-project.org/web/packages/preseqR/")
+    (synopsis "Predicting species accumulation curves")
+    (description
+     "This package can be used to predict the r-species accumulation
+curve (r-SAC), which is the number of species represented at least r times as
+a function of the sampling effort.  When r = 1, the curve is known as the
+species accumulation curve, or the library complexity curve in high-throughput
+genomic sequencing.  The package includes both parametric and nonparametric
+methods, as described by Deng C, et al. (2018).")
+    (license license:gpl3)))
