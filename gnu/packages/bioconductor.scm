@@ -3980,3 +3980,27 @@ expression signals, assuming governed by the negative binomial distribution,
 can be delineated and thus the accurate detection of differential expressed
 genes.")
     (license license:gpl3+)))
+
+(define-public r-massspecwavelet
+  (package
+    (name "r-massspecwavelet")
+    (version "1.48.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MassSpecWavelet" version))
+       (sha256
+        (base32
+         "1xcr568a36b570rldy27wq4a2jn7yf5f6fddlzgx6x944jdn3ckz"))))
+    (properties
+     `((upstream-name . "MassSpecWavelet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-waveslim" ,r-waveslim)))
+    (home-page "https://bioconductor.org/packages/MassSpecWavelet/")
+    (synopsis "Mass spectrum processing by wavelet-based algorithms")
+    (description
+     "The MassSpecWavelet package aims to process @dfn{Mass Spectrometry} (MS)
+data mainly through the use of wavelet transforms.  It supports peak detection
+based on @dfn{Continuous Wavelet Transform} (CWT).")
+    (license license:lgpl2.0+)))
