@@ -4312,3 +4312,45 @@ SLIME.")
 
 (define-public cl-syntax-annot
   (sbcl-package->cl-source-package sbcl-syntax-annot))
+
+(define-public sbcl-utilities
+  (let ((commit "dce2d2f6387091ea90357a130fa6d13a6776884b")
+        (revision "1"))
+    (package
+      (name "sbcl-utilities")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri
+          (string-append
+           "https://gitlab.common-lisp.net/cl-utilities/cl-utilities/-/"
+           "archive/" commit "/cl-utilities-" commit ".tar.gz"))
+         (sha256
+          (base32 "1r46v730yf96nk2vb24qmagv9x96xvd08abqwhf02ghgydv1a7z2"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:asd-file "cl-utilities.asd"
+         #:asd-system-name "cl-utilities"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "rotate-byte.lisp"
+                 (("in-package :cl-utilities)" all)
+                  "in-package :cl-utilities)\n\n#+sbcl\n(require :sb-rotate-byte)")))))))
+      (home-page "http://common-lisp.net/project/cl-utilities")
+      (synopsis "A collection of semi-standard utilities")
+      (description
+       "On Cliki.net <http://www.cliki.net/Common%20Lisp%20Utilities>, there
+is a collection of Common Lisp Utilities, things that everybody writes since
+they're not part of the official standard.  There are some very useful things
+there; the only problems are that they aren't implemented as well as you'd
+like (some aren't implemented at all) and they aren't conveniently packaged
+and maintained.  It takes quite a bit of work to carefully implement utilities
+for common use, commented and documented, with error checking placed
+everywhere some dumb user might make a mistake.")
+      (license license:public-domain))))
+
+(define-public cl-utilities
+  (sbcl-package->cl-source-package sbcl-utilities))
