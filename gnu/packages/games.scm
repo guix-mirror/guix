@@ -2693,12 +2693,13 @@ Transport Tycoon Deluxe.")
     (version "0.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/OpenRCT2/OpenRCT2/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenRCT2/OpenRCT2.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0yxaphgfq85piaacnnfy6lrvmnqmfj1891rxlkl5ndngq0zh0ysb"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1bfqmb6cbmsjcvj77vppy5lw1m4lkvxd1w3f218ah4788xnkysq2"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
