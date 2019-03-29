@@ -13610,3 +13610,27 @@ data, specifically gene expression data with different projection methods:
 principal component analysis, correspondence analysis, spectral map
 analysis.")
     (license license:gpl2+)))
+
+(define-public r-ggcorrplot
+  (package
+    (name "r-ggcorrplot")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggcorrplot" version))
+       (sha256
+        (base32
+         "12sxvd9kjgszpbk35m7fj1wv7x40bp79c0g0by1xax70r3495h93"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "http://www.sthda.com/english/wiki/ggcorrplot")
+    (synopsis "Visualization of a correlation matrix using ggplot2")
+    (description
+     "The ggcorrplot package can be used to visualize easily a correlation
+matrix using ggplot2.  It provides a solution for reordering the correlation
+matrix and displays the significance level on the plot.  It also includes a
+function for computing a matrix of correlation p-values.")
+    (license license:gpl2)))
