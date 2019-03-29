@@ -3209,3 +3209,34 @@ fitting a three-component normal mixture on z-scores.")
      "rGADEM is an efficient de novo motif discovery tool for large-scale
 genomic sequence data.")
     (license license:artistic2.0)))
+
+(define-public r-motiv
+  (package
+    (name "r-motiv")
+    (version "1.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "MotIV" version))
+       (sha256
+        (base32
+         "1qrpydwc5bn8f0843qkyhw6920xk8kvq452ird0ij96g6faiv9a8"))))
+    (properties `((upstream-name . "MotIV")))
+    (build-system r-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-rgadem" ,r-rgadem)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/MotIV/")
+    (synopsis "Motif identification and validation")
+    (description
+     "This package is used for the identification and validation of sequence
+motifs.  It makes use of STAMP for comparing a set of motifs to a given
+database (e.g. JASPAR).  It can also be used to visualize motifs, motif
+distributions, modules and filter motifs.")
+    (license license:gpl2)))
