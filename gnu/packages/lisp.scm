@@ -3842,6 +3842,37 @@ client and server.")
 (define-public ecl-trivial-clipboard
   (sbcl-package->ecl-package sbcl-trivial-clipboard))
 
+(define-public sbcl-trivial-backtrace
+  (let ((commit "ca81c011b86424a381a7563cea3b924f24e6fbeb")
+        (revision "1"))
+    (package
+     (name "sbcl-trivial-backtrace")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gwkkwg/trivial-backtrace.git")
+             (commit commit)))
+       (sha256
+        (base32 "10p41p43skj6cimdg8skjy7372s8v2xpkg8djjy0l8rm45i654k1"))))
+     (build-system asdf-build-system/sbcl)
+     (inputs
+      `(("sbcl-lift" ,sbcl-lift)))
+     (home-page "https://common-lisp.net/project/trivial-backtrace/")
+     (synopsis "Portable simple API to work with backtraces in Common Lisp")
+     (description
+      "On of the many things that didn't quite get into the Common Lisp
+standard was how to get a Lisp to output its call stack when something has
+gone wrong.  As such, each Lisp has developed its own notion of what to
+display, how to display it, and what sort of arguments can be used to
+customize it.  @code{trivial-backtrace} is a simple solution to generating a
+backtrace portably.")
+     (license license:bsd-style))))
+
+(define-public cl-trivial-backtrace
+  (sbcl-package->cl-source-package sbcl-trivial-backtrace))
+
 (define-public sbcl-cl+ssl
   (let ((commit "b81c1135cf5700e870ce2573d5035d249e491788")
         (revision "1"))
