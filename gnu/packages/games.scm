@@ -3307,9 +3307,9 @@ in strikes against the evil corporation.")
     (version "0.9.16.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name
+              (uri (string-append "mirror://sourceforge/chromium-bsu"
                                   "/Chromium B.S.U. source code/"
-                                  name "-" version ".tar.gz"))
+                                  "chromium-bsu-" version ".tar.gz"))
               (sha256
                (base32
                 "0jk2w5b6s6nkzri585bbz16cif2fhqcnl5l1mq3rd98r9nil3hd1"))))
