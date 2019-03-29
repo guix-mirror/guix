@@ -51,7 +51,6 @@
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
-  #:use-module ((guix records) #:select (this-record))
   #:use-module (gnu packages apr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages documentation)
@@ -409,7 +408,7 @@ as well as the classic centralized workflow.")
                          ,@(transitive-input-references
                             'inputs
                             (map (lambda (l)
-                                   (assoc l (package-inputs this-record)))
+                                   (assoc l (package-inputs this-package)))
                                  '("perl-authen-sasl"
                                    "perl-net-smtp-ssl"
                                    "perl-io-socket-ssl")))))))
@@ -422,7 +421,7 @@ as well as the classic centralized workflow.")
                          ,@(transitive-input-references
                             'inputs
                             (map (lambda (l)
-                                   (assoc l (package-inputs this-record)))
+                                   (assoc l (package-inputs this-package)))
                                  '("perl-cgi")))))))
 
               ;; Tell 'git-submodule' where Perl is.

@@ -48,6 +48,7 @@
                search-path-specification)         ;for convenience
   #:export (origin
             origin?
+            this-origin
             origin-uri
             origin-method
             origin-sha256
@@ -63,6 +64,7 @@
 
             package
             package?
+            this-package
             package-name
             package-upstream-name
             package-version
@@ -156,6 +158,7 @@
 (define-record-type* <origin>
   origin make-origin
   origin?
+  this-origin
   (uri       origin-uri)                          ; string
   (method    origin-method)                       ; procedure
   (sha256    origin-sha256)                       ; bytevector
@@ -247,6 +250,7 @@ name of its URI."
 (define-record-type* <package>
   package make-package
   package?
+  this-package
   (name   package-name)                   ; string
   (version package-version)               ; string
   (source package-source)                 ; <origin> instance
