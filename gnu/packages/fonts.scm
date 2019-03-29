@@ -1105,6 +1105,20 @@ programming.  Iosevka is completely generated from its source code.")
     (license (list license:silofl1.1 ; build artifacts (i.e. the fonts)
                    license:bsd-3)))) ; supporting code
 
+(define-public font-iosevka-slab
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-slab")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/ttc-iosevka-slab-" version ".zip"))
+       (sha256
+        (base32 "186d0pl13znysll3hvzm1ixn7ad616g6dhla55sbh6ki2j04b8ml"))))))
+
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
         (revision "1"))
