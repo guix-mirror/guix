@@ -5070,3 +5070,42 @@ mime-type of a file.")
 
 (define-public cl-trivial-mimes
   (sbcl-package->cl-source-package sbcl-trivial-mimes))
+
+(define-public sbcl-lack-middleware-static
+  (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
+        (revision "1"))
+    (package
+     (name "sbcl-lack-middleware-static")
+     (version (git-version "0.1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/lack.git")
+             (commit commit)))
+       (sha256
+        (base32 "1avh4ygcj9xcx4m17nj0wnxxaisk26w4ljs2bibzxaln24x7pi85"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      '(#:asd-file "lack-middleware-static.asd"
+        #:asd-system-name "lack-middleware-static"
+        #:test-asd-file "t-lack-middleware-static.asd"
+        ;; XXX: Component :LACK not found
+        #:tests? #f))
+     (native-inputs
+      `(("prove-asdf" ,sbcl-prove-asdf)))
+     (inputs
+      `(("sbcl-ironclad" ,sbcl-ironclad)
+        ("sbcl-trivial-mimes" ,sbcl-trivial-mimes)
+        ("sbcl-local-time" ,sbcl-local-time)))
+     (home-page "https://github.com/fukamachi/lack")
+     (synopsis "Lack, the core of Clack")
+     (description
+      "Lack is a Common Lisp library which allows web applications to be
+constructed of modular components.  It was originally a part of Clack, however
+it's going to be rewritten as an individual project since Clack v2 with
+performance and simplicity in mind.")
+     (license license:llgpl))))
+
+(define-public cl-lack-middleware-static
+  (sbcl-package->cl-source-package sbcl-lack-middleware-static))
