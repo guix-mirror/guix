@@ -3685,3 +3685,40 @@ dimensional data which are represented as tracks describe different features
 from different aspects.  This package provides high flexibility to arrange
 genomic categories and to add self-defined graphics in the plot.")
     (license license:expat)))
+
+(define-public r-somaticsignatures
+  (package
+    (name "r-somaticsignatures")
+    (version "2.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "SomaticSignatures" version))
+       (sha256
+        (base32
+         "013dslbyq55a41d3n842brjk2bq1kxw0r18mb6drgbxx2sflzc02"))))
+    (properties
+     `((upstream-name . "SomaticSignatures")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-nmf" ,r-nmf)
+       ("r-pcamethods" ,r-pcamethods)
+       ("r-proxy" ,r-proxy)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://github.com/juliangehring/SomaticSignatures")
+    (synopsis "Somatic signatures")
+    (description
+     "This package identifies mutational signatures of @dfn{single nucleotide
+variants} (SNVs).  It provides a infrastructure related to the methodology
+described in Nik-Zainal (2012, Cell), with flexibility in the matrix
+decomposition algorithms.")
+    (license license:expat)))
