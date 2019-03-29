@@ -3159,3 +3159,28 @@ convenience of viewing and sharing with other researchers.  Additionally,
 abseqR extends abseqPy to compare multiple repertoire analyses and perform
 further downstream analysis on its output.")
     (license license:gpl3)))
+
+(define-public r-bacon
+  (package
+    (name "r-bacon")
+    (version "1.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bacon" version))
+       (sha256
+        (base32
+         "1pd3p1cfggiy08458vplsy3s1zm5jqqcwrv4fks8ra2kf97j38df"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocparallel" ,r-biocparallel)
+       ("r-ellipse" ,r-ellipse)
+       ("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://bioconductor.org/packages/bacon/")
+    (synopsis "Controlling bias and inflation in association studies")
+    (description
+     "Bacon can be used to remove inflation and bias often observed in
+epigenome- and transcriptome-wide association studies.  To this end bacon
+constructs an empirical null distribution using a Gibbs Sampling algorithm by
+fitting a three-component normal mixture on z-scores.")
+    (license license:gpl2+)))
