@@ -3271,3 +3271,34 @@ sequence motifs and amino acid sequence motifs.  In addition, it provides the
 flexibility for users to customize the graphic parameters such as the font
 type and symbol colors.")
     (license license:gpl2+)))
+
+(define-public r-genomicscores
+  (package
+    (name "r-genomicscores")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GenomicScores" version))
+       (sha256
+        (base32
+         "0lrhkcblvnki6kncwpavs01gbcz22yza6ma8zvfmbrrkfaxqzh8n"))))
+    (properties `((upstream-name . "GenomicScores")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationhub" ,r-annotationhub)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/rcastelo/GenomicScores/")
+    (synopsis "Work with genome-wide position-specific scores")
+    (description
+     "This package provides infrastructure to store and access genome-wide
+position-specific scores within R and Bioconductor.")
+    (license license:artistic2.0)))
