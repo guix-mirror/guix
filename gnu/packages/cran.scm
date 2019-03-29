@@ -13838,3 +13838,26 @@ comparisons of mean rank sums.  This package is superseded by the novel
 PMCMRplus package.  The PMCMR package is no longer maintained, but kept for
 compatibility of reverse depending packages for some time.")
     (license license:gpl3+)))
+
+(define-public r-downloader
+  (package
+    (name "r-downloader")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "downloader" version))
+       (sha256
+        (base32
+         "1axggnsc27zzgr7snf41j3zd1vp3nfpmq4zj4d01axc709dyg40q"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)))
+    (home-page "https://github.com/wch/downloader")
+    (synopsis "Download files over HTTP and HTTPS")
+    (description
+     "This package provides a wrapper for the @code{download.file} function,
+making it possible to download files over HTTPS across platforms.  The
+@code{RCurl} package provides this functionality (and much more) but has
+external dependencies.  This package has is implemented purely in R.")
+    (license license:gpl2)))
