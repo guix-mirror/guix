@@ -358,16 +358,15 @@ CPUFLAGS = ~{~a ~}~%"
                            (assoc-ref inputs "python*") python-version
                            (assoc-ref inputs "python-numpy") python-version
                            python-version
-                           (cons "-mpopcnt"
-                                 (list ,@(let ((system (or (%current-target-system)
-                                                           (%current-system))))
-                                           (cond
-                                            ((string-prefix? "x86_64" system)
-                                             '("-mavx" "-msse2"))
-                                            ((string-prefix? "i686" system)
-                                             '("-msse2"))
-                                            (else
-                                             '())))))))))
+                           (list ,@(let ((system (or (%current-target-system)
+                                                     (%current-system))))
+                                     (cond
+                                       ((string-prefix? "x86_64" system)
+                                        '("-mavx" "-msse2" "-mpopcnt"))
+                                       ((string-prefix? "i686" system)
+                                        '("-msse2" "-mpopcnt"))
+                                       (else
+                                         '()))))))))
              (substitute* "Makefile"
                (("../libfaiss.a") ""))
              (invoke "make" "cpu"))))))
