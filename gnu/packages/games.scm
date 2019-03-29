@@ -6182,12 +6182,21 @@ civilized than your own.")
                             "/lib/glib-2.0/include"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'ensure-gtk-module-can-be-found
+         (add-after 'unpack 'ensure-application-files-can-be-found
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "src/arch/LoadingWindow/LoadingWindow_Gtk.cpp"
-               (("RageFileManagerUtil::sDirOfExecutable \\+ \"/\" \\+ \"GtkModule.so\"")
-                (string-append "\"" (assoc-ref outputs "out")
-                               "/share/stepmania/GtkModule.so\"")))
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "src/arch/LoadingWindow/LoadingWindow_Gtk.cpp"
+                 (("RageFileManagerUtil::sDirOfExecutable \\+ \"/\" \\+ \"GtkModule.so\"")
+                  (string-append "\"" out
+                                 "/share/stepmania/GtkModule.so\"")))
+               (substitute* "src/arch/ArchHooks/ArchHooks_Unix.cpp"
+                 (("Root = sDirOfExecutable")
+                  (string-append "Root = \"" out "/share/stepmania/\""))
+                 (("sDirOfExecutable \\+ \"/(Packages|Songs)\"" _ dir)
+                  (string-append "\"" out "/share/stepmania/" dir "\"")))
+               (substitute* "src/RageFileManager.cpp"
+                 (("RageFileManagerUtil::sDirOfExecutable \\+ \"/\"")
+                  (string-append "\"" out "/share/stepmania/\""))))
              #t))
          (add-after 'unpack 'fix-install-subdir
            ;; Installation would be done in "%out/stepmania-X.Y", but we
