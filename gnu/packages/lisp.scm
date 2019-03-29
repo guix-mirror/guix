@@ -4693,3 +4693,43 @@ streams (though primarily the former, while wrapping the latter).")
 
 (define-public cl-fast-io
   (sbcl-package->cl-source-package sbcl-fast-io))
+
+(define-public sbcl-jonathan
+  (let ((commit "1f448b4f7ac8265e56e1c02b32ce383e65316300")
+        (revision "1"))
+    (package
+     (name "sbcl-jonathan")
+     (version (git-version "0.1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Rudolph-Miller/jonathan.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14x4iwz3mbag5jzzzr4sb6ai0m9r4q4kyypbq32jmsk2dx1hi807"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      ;; Tests fail with: Component JONATHAN-ASD::JONATHAN-TEST not found,
+      ;; required by #<SYSTEM "jonathan">. Why?
+      `(#:tests? #f))
+     (native-inputs
+      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+        ("sbcl-prove" ,sbcl-prove)))
+     (inputs
+      `(("sbcl-syntax" ,sbcl-syntax)
+        ("sbcl-syntax-annot" ,sbcl-syntax-annot)
+        ("sbcl-fast-io" ,sbcl-fast-io)
+        ("sbcl-proc-parse" ,sbcl-proc-parse)
+        ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)))
+     (home-page "http://rudolph-miller.github.io/jonathan/overview.html")
+     (synopsis "JSON encoder and decoder")
+     (description
+      "High performance JSON encoder and decoder.  Currently support: SBCL,
+CCL.")
+     ;; Author specifies the MIT license
+     (license license:expat))))
+
+(define-public cl-jonathan
+  (sbcl-package->cl-source-package sbcl-jonathan))
