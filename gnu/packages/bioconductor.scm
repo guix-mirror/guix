@@ -3302,3 +3302,47 @@ type and symbol colors.")
      "This package provides infrastructure to store and access genome-wide
 position-specific scores within R and Bioconductor.")
     (license license:artistic2.0)))
+
+(define-public r-atacseqqc
+  (package
+    (name "r-atacseqqc")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ATACseqQC" version))
+       (sha256
+        (base32
+         "1rblvqar11fib6ip2hq0756vqi6qmncf90jw6i5p5lrgzmaxy8hn"))))
+    (properties `((upstream-name . "ATACseqQC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-chippeakanno" ,r-chippeakanno)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomicscores" ,r-genomicscores)
+       ("r-iranges" ,r-iranges)
+       ("r-kernsmooth" ,r-kernsmooth)
+       ("r-limma" ,r-limma)
+       ("r-motifstack" ,r-motifstack)
+       ("r-preseqr" ,r-preseqr)
+       ("r-randomforest" ,r-randomforest)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/ATACseqQC/")
+    (synopsis "ATAC-seq quality control")
+    (description
+     "ATAC-seq, an assay for Transposase-Accessible Chromatin using
+sequencing, is a rapid and sensitive method for chromatin accessibility
+analysis.  It was developed as an alternative method to MNase-seq, FAIRE-seq
+and DNAse-seq.  The ATACseqQC package was developed to help users to quickly
+assess whether their ATAC-seq experiment is successful.  It includes
+diagnostic plots of fragment size distribution, proportion of mitochondria
+reads, nucleosome positioning pattern, and CTCF or other Transcript Factor
+footprints.")
+    (license license:gpl2+)))
