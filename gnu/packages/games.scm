@@ -2880,7 +2880,6 @@ is attributed to Albert Einstein.")
               (uri (string-append
                     "https://www.hoopajoo.net/static/projects/powwow-"
                     version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1gf0jc1vfv05lxij51n3c1dqn3aiiy2kj1v6q14an3wm7yl7cllp"))))
