@@ -4031,3 +4031,27 @@ encoding table that uses only URI-compatible characters.")
 
 (define-public cl-base64
   (sbcl-package->cl-source-package sbcl-cl-base64))
+
+(define-public sbcl-chunga
+  (package
+    (name "sbcl-chunga")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/edicl/chunga/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "0ra17kyc9l7qbaw003ly111r1cbn4zixbfq1ydr9cxw10v30q1n7"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (home-page "https://edicl.github.io/chunga/")
+    (synopsis "Portable chunked streams for Common Lisp")
+    (description
+     "Chunga implements streams capable of chunked encoding on demand as
+defined in RFC 2616.")
+    (license license:bsd-2)))
+
+(define-public cl-chunga
+  (sbcl-package->cl-source-package sbcl-chunga))
