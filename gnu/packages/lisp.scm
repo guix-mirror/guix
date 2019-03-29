@@ -4122,3 +4122,43 @@ the format used by the popular compression tool bzip2.")
 
 (define-public cl-chipz
   (sbcl-package->cl-source-package sbcl-chipz))
+
+(define-public sbcl-drakma
+  (let ((version "2.0.4")
+        (commit "7647c0ae842ff2058624e53979c7f297760c97a7")
+        (revision "1"))
+    (package
+      (name "sbcl-drakma")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/edicl/drakma.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1c4i9wakhj5pxfyyykxshdmv3180sbkrx6fcyynikmc0jd0rh84r"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("sbcl-puri" ,sbcl-puri)
+         ("sbcl-cl-base64" ,sbcl-cl-base64)
+         ("sbcl-chunga" ,sbcl-chunga)
+         ("sbcl-flexi-streams" ,sbcl-flexi-streams)
+         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+         ("sbcl-chipz" ,sbcl-chipz)
+         ("sbcl-usocket" ,sbcl-usocket)
+         ("sbcl-cl+ssl" ,sbcl-cl+ssl)))
+      (native-inputs
+       `(("sbcl-fiveam" ,sbcl-fiveam)))
+      (home-page "https://edicl.github.io/drakma/")
+      (synopsis "HTTP client written in Common Lisp")
+      (description
+       "Drakma is a full-featured HTTP client implemented in Common Lisp.  It
+knows how to handle HTTP/1.1 chunking, persistent connections, re-usable
+sockets, SSL, continuable uploads, file uploads, cookies, and more.")
+      (license license:bsd-2))))
+
+(define-public cl-drakma
+  (sbcl-package->cl-source-package sbcl-drakma))
