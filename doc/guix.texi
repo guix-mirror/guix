@@ -3621,7 +3621,7 @@ Generation 3	Jun 13 2018 23:31:07	(current)
   69 packages upgraded: borg@@1.1.6, cheese@@3.28.0, @dots{}
 @end example
 
-@ref{Invoking guix describe, @command{guix describe}}, for other ways to
+@xref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
 This @code{~/.config/guix/current} profile works like any other profile
@@ -3666,7 +3666,7 @@ is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
 
-@ref{Invoking guix describe}, for a way to display information about the
+@xref{Invoking guix describe}, for a way to display information about the
 current generation only.
 
 @item --profile=@var{profile}
