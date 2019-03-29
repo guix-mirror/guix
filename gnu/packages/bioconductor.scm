@@ -3798,3 +3798,31 @@ affinity is estimated in an NSB experiment in which only NSB but no
 gene-specific bidning is expected.")
     ;; Any version of the LGPL
     (license license:lgpl2.1+)))
+
+(define-public r-simpleaffy
+  (package
+    (name "r-simpleaffy")
+    (version "2.58.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "simpleaffy" version))
+       (sha256
+        (base32
+         "0bry0d2vw0w2rrpnmfm1kl5v4rdclypmy33jvs9l43vd6vx2ra9s"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-gcrma" ,r-gcrma)
+       ("r-genefilter" ,r-genefilter)))
+    (home-page "https://bioconductor.org/packages/simpleaffy/")
+    (synopsis "Very simple high level analysis of Affymetrix data")
+    (description
+     "This package provides high level functions for reading Affy @file{.CEL}
+files, phenotypic data, and then computing simple things with it, such as
+t-tests, fold changes and the like.  It makes heavy use of the @code{affy}
+library.  It also has some basic scatter plot functions and mechanisms for
+generating high resolution journal figures.")
+    (license license:gpl2+)))
