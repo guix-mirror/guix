@@ -3943,3 +3943,40 @@ large RNA-seq experiments.")
 sites, comparing two biological conditions, starting from known alternative
 sites and alignments obtained from standard RNA-seq experiments.")
     (license license:gpl3)))
+
+(define-public r-xbseq
+  (package
+    (name "r-xbseq")
+    (version "1.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "XBSeq" version))
+       (sha256
+        (base32
+         "0na0jiqfy40bzl243gqc2214k4hibv6v4ndiqwq0c5f78cyr6lph"))))
+    (properties `((upstream-name . "XBSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-deseq2" ,r-deseq2)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-locfit" ,r-locfit)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-pracma" ,r-pracma)
+       ("r-roar" ,r-roar)))
+    (home-page "https://github.com/Liuy12/XBSeq")
+    (synopsis "Test for differential expression for RNA-seq data")
+    (description
+     "XBSeq is a novel algorithm for testing RNA-seq @dfn{differential
+expression} (DE), where a statistical model was established based on the
+assumption that observed signals are the convolution of true expression
+signals and sequencing noises.  The mapped reads in non-exonic regions are
+considered as sequencing noises, which follows a Poisson distribution.  Given
+measurable observed signal and background noise from RNA-seq data, true
+expression signals, assuming governed by the negative binomial distribution,
+can be delineated and thus the accurate detection of differential expressed
+genes.")
+    (license license:gpl3+)))
