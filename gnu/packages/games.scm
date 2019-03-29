@@ -6182,6 +6182,13 @@ civilized than your own.")
                             "/lib/glib-2.0/include"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'ensure-gtk-module-can-be-found
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/arch/LoadingWindow/LoadingWindow_Gtk.cpp"
+               (("RageFileManagerUtil::sDirOfExecutable \\+ \"/\" \\+ \"GtkModule.so\"")
+                (string-append "\"" (assoc-ref outputs "out")
+                               "/share/stepmania/GtkModule.so\"")))
+             #t))
          (add-after 'unpack 'fix-install-subdir
            ;; Installation would be done in "%out/stepmania-X.Y", but we
            ;; prefer the more common layout "%out/share/stepmania".
