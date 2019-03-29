@@ -4589,3 +4589,30 @@ memory.")
 
 (define-public cl-static-vectors
   (sbcl-package->cl-source-package sbcl-static-vectors))
+
+(define-public sbcl-marshal
+  (let ((commit "eff1b15f2b0af2f26f71ad6a4dd5c4beab9299ec")
+        (revision "1"))
+    (package
+     (name "sbcl-marshal")
+     (version (git-version "1.3.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wlbr/cl-marshal.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08qs6fhk38xpkkjkpcj92mxx0lgy4ygrbbzrmnivdx281syr0gwh"))))
+     (build-system asdf-build-system/sbcl)
+     (home-page "https://github.com/wlbr/cl-marshal")
+     (synopsis "Simple (de)serialization of Lisp datastructures")
+     (description
+      "Simple and fast marshalling of Lisp datastructures.  Convert any object
+into a string representation, put it on a stream an revive it from there.
+Only minimal changes required to make your CLOS objects serializable.")
+     (license license:expat))))
+
+(define-public cl-marshal
+  (sbcl-package->cl-source-package sbcl-marshal))
