@@ -4449,3 +4449,36 @@ Lisp. It is intended to be a replacement of PURI.")
 
 (define-public cl-myway
   (sbcl-package->cl-source-package sbcl-myway))
+
+(define-public sbcl-xsubseq
+  (let ((commit "5ce430b3da5cda3a73b9cf5cee4df2843034422b")
+        (revision "1"))
+    (package
+     (name "sbcl-xsubseq")
+     (version (git-version "0.0.1" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/xsubseq")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xz79q0p2mclf3sqjiwf6izdpb6xrsr350bv4mlmdlm6rg5r99px"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      ;; Tests fail with: Component XSUBSEQ-ASD::XSUBSEQ-TEST not found,
+      ;; required by #<SYSTEM "xsubseq">. Why?
+      '(#:tests? #f))
+     (native-inputs
+      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+        ("sbcl-prove" ,sbcl-prove)))
+     (home-page "https://github.com/fukamachi/xsubseq")
+     (synopsis "Efficient way to use \"subseq\"s in Common Lisp")
+     (description
+      "XSubseq provides functions to be able to handle \"subseq\"s more
+effieiently.")
+     (license license:bsd-2))))
+
+(define-public cl-xsubseq
+  (sbcl-package->cl-source-package sbcl-xsubseq))
