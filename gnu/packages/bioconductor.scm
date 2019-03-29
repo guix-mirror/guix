@@ -3826,3 +3826,25 @@ t-tests, fold changes and the like.  It makes heavy use of the @code{affy}
 library.  It also has some basic scatter plot functions and mechanisms for
 generating high resolution journal figures.")
     (license license:gpl2+)))
+
+(define-public r-yaqcaffy
+  (package
+    (name "r-yaqcaffy")
+    (version "1.42.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "yaqcaffy" version))
+       (sha256
+        (base32
+         "192n1zvd54nm9q71vyb6dcr7ia6givf4bjwf6542jjig085lwhxk"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-simpleaffy" ,r-simpleaffy)))
+    (home-page "https://bioconductor.org/packages/yaqcaffy/")
+    (synopsis "Affymetrix quality control and reproducibility analysis")
+    (description
+     "This is a package that can be used for quality control of Affymetrix
+GeneChip expression data and reproducibility analysis of human whole genome
+chips with the MAQC reference datasets.")
+    (license license:artistic2.0)))
