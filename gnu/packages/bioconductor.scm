@@ -3510,3 +3510,44 @@ other molecular biology information available as flat file database (plain
 text files).")
     ;; Any version of the GPL.
     (license (list license:gpl2+))))
+
+(define-public r-allelicimbalance
+  (package
+    (name "r-allelicimbalance")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AllelicImbalance" version))
+       (sha256
+        (base32
+         "03524lj6aw9cskbpxzjmi9g708x6p94mf26yz4j941g1d0mc3z91"))))
+    (properties
+     `((upstream-name . "AllelicImbalance")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gviz" ,r-gviz)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-latticeextra" ,r-latticeextra)
+       ("r-nlme" ,r-nlme)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-seqinr" ,r-seqinr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://github.com/pappewaio/AllelicImbalance")
+    (synopsis "Investigate allele-specific expression")
+    (description
+     "This package provides a framework for allele-specific expression
+investigation using RNA-seq data.")
+    (license license:gpl3)))
