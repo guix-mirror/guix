@@ -3879,3 +3879,38 @@ Tumor / Normal status) must also be provided because the test assesses if
 there are global differences in the distributions between the user-defined
 groups.")
     (license license:gpl3+)))
+
+(define-public r-yarn
+  (package
+    (name "r-yarn")
+    (version "1.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "yarn" version))
+       (sha256
+        (base32
+         "0c84x1zq34hadpsyaa873r8kg0jcxp09c2z63377hlmhsll90l7s"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biomart" ,r-biomart)
+       ("r-downloader" ,r-downloader)
+       ("r-edger" ,r-edger)
+       ("r-gplots" ,r-gplots)
+       ("r-limma" ,r-limma)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-quantro" ,r-quantro)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-readr" ,r-readr)))
+    (home-page "https://bioconductor.org/packages/yarn/")
+    (synopsis "Robust multi-condition RNA-Seq preprocessing and normalization")
+    (description
+     "Expedite large RNA-Seq analyses using a combination of previously
+developed tools.  YARN is meant to make it easier for the user in performing
+basic mis-annotation quality control, filtering, and condition-aware
+normalization.  YARN leverages many Bioconductor tools and statistical
+techniques to account for the large heterogeneity and sparsity found in very
+large RNA-seq experiments.")
+    (license license:artistic2.0)))
