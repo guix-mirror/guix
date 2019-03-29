@@ -4558,3 +4558,34 @@ Lisp.")
 
 (define-public cl-fast-http
   (sbcl-package->cl-source-package sbcl-fast-http))
+
+(define-public sbcl-static-vectors
+  (let ((commit "0681eac1f49370cde03e64b077251e8abf47d702")
+        (revision "1"))
+    (package
+     (name "sbcl-static-vectors")
+     (version (git-version "1.8.3" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sionescu/static-vectors.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "138nlsq14hv8785ycjm6jw3i6ablhq8vcwys7q09y80arcgrg6r3"))))
+     (native-inputs
+      `(("sbcl-fiveam" ,sbcl-fiveam)))
+     (inputs
+      `(("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
+        ("sbcl-cffi" ,sbcl-cffi)))
+     (build-system asdf-build-system/sbcl)
+     (home-page "http://common-lisp.net/projects/iolib/")
+     (synopsis "Allocate SIMPLE-ARRAYs in static memory")
+     (description
+      "With @code{static-vectors}, you can create vectors allocated in static
+memory.")
+     (license license:expat))))
+
+(define-public cl-static-vectors
+  (sbcl-package->cl-source-package sbcl-static-vectors))
