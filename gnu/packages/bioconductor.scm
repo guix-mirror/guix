@@ -3383,3 +3383,50 @@ diagnostic plots of fragment size distribution, proportion of mitochondria
 reads, nucleosome positioning pattern, and CTCF or other Transcript Factor
 footprints.")
     (license license:gpl2+)))
+
+(define-public r-gofuncr
+  (package
+    (name "r-gofuncr")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GOfuncR" version))
+       (sha256
+        (base32
+         "021kgcbm8n2yalhzab11cyppwznlkglynnh45wsgy9i2vi2n2znk"))))
+    (properties `((upstream-name . "GOfuncR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-gtools" ,r-gtools)
+       ("r-iranges" ,r-iranges)
+       ("r-mapplots" ,r-mapplots)
+       ("r-rcpp" ,r-rcpp)
+       ("r-vioplot" ,r-vioplot)))
+    (home-page "https://bioconductor.org/packages/GOfuncR/")
+    (synopsis "Gene ontology enrichment using FUNC")
+    (description
+     "GOfuncR performs a gene ontology enrichment analysis based on the
+ontology enrichment software FUNC.  GO-annotations are obtained from
+OrganismDb or OrgDb packages (@code{Homo.sapiens} by default); the GO-graph is
+included in the package and updated regularly.  GOfuncR provides the standard
+candidate vs background enrichment analysis using the hypergeometric test, as
+well as three additional tests:
+
+@enumerate
+@item the Wilcoxon rank-sum test that is used when genes are ranked,
+@item a binomial test that is used when genes are associated with two counts,
+  and
+@item a Chi-square or Fisher's exact test that is used in cases when genes are
+associated with four counts.
+@end enumerate
+
+To correct for multiple testing and interdependency of the tests, family-wise
+error rates are computed based on random permutations of the gene-associated
+variables.  GOfuncR also provides tools for exploring the ontology graph and
+the annotations, and options to take gene-length or spatial clustering of
+genes into account.  It is also possible to provide custom gene coordinates,
+annotations and ontologies.")
+    (license license:gpl2+)))
