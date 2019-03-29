@@ -13816,3 +13816,25 @@ to a map or any other plot; format, plot and export gridded data.  The package
 was developed for displaying fisheries data but most functions can be used for
 more generic data visualisation.")
     (license license:gpl2+)))
+
+(define-public r-pmcmr
+  (package
+    (name "r-pmcmr")
+    (version "4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "PMCMR" version))
+       (sha256
+        (base32
+         "09bvdj2h1086r2cgy3myrhlylplxxlliv8nwx09c8kb1vn02i2ij"))))
+    (properties `((upstream-name . "PMCMR")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/PMCMR/")
+    (synopsis "Calculate pairwise multiple comparisons of mean rank sums")
+    (description
+     "This is a deprecated package for calculating pairwise multiple
+comparisons of mean rank sums.  This package is superseded by the novel
+PMCMRplus package.  The PMCMR package is no longer maintained, but kept for
+compatibility of reverse depending packages for some time.")
+    (license license:gpl3+)))
