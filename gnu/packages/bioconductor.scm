@@ -3460,3 +3460,28 @@ regions.  The core function @code{aba_enrich} integrates the expression of the
 candidate gene set (averaged across donors) and the structural information of
 the brain using an ontology, both provided by the Allen Brain Atlas project.")
     (license license:gpl2+)))
+
+(define-public r-annotationfuncs
+  (package
+    (name "r-annotationfuncs")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AnnotationFuncs" version))
+       (sha256
+        (base32
+         "1x11mfabh7kbp39y5rkmrpjkaawx7ab5anfmciamrmrcw1kddbss"))))
+    (properties
+     `((upstream-name . "AnnotationFuncs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-dbi" ,r-dbi)))
+    (home-page "https://www.iysik.com/r/annotationfuncs")
+    (synopsis "Annotation translation functions")
+    (description
+     "This package provides functions for handling translating between
+different identifieres using the Biocore Data Team data-packages (e.g.
+@code{org.Bt.eg.db}).")
+    (license license:gpl2)))
