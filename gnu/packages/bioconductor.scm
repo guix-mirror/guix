@@ -3240,3 +3240,34 @@ motifs.  It makes use of STAMP for comparing a set of motifs to a given
 database (e.g. JASPAR).  It can also be used to visualize motifs, motif
 distributions, modules and filter motifs.")
     (license license:gpl2)))
+
+(define-public r-motifstack
+  (package
+    (name "r-motifstack")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "motifStack" version))
+       (sha256
+        (base32
+         "1c4w39ilc4ca4wgi1b6iypadkbxvqjw7k2br0d7q03niw9qjkhxf"))))
+    (properties `((upstream-name . "motifStack")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ade4" ,r-ade4)
+       ("r-biostrings" ,r-biostrings)
+       ("r-grimport" ,r-grimport)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-motiv" ,r-motiv)
+       ("r-scales" ,r-scales)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/motifStack/")
+    (synopsis "Plot stacked logos for DNA, RNA and amino acid sequences")
+    (description
+     "The motifStack package is designed for graphic representation of
+multiple motifs with different similarity scores.  It works with both DNA/RNA
+sequence motifs and amino acid sequence motifs.  In addition, it provides the
+flexibility for users to customize the graphic parameters such as the font
+type and symbol colors.")
+    (license license:gpl2+)))
