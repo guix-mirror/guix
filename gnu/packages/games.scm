@@ -3729,8 +3729,8 @@ throwing people around in pseudo-randomly generated buildings.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.roguetemple.com/z/hyper/"
-                    name (string-join (string-split version #\.) "")
+                    "https://www.roguetemple.com/z/hyper/hyperrogue"
+                    (string-join (string-split version #\.) "")
                     "-src.tgz"))
               (sha256
                (base32
