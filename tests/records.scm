@@ -210,6 +210,24 @@
            (= 40 (foo-bar z))
            (= -2 (foo-baz z))))))
 
+(test-assert "define-record-type* & thunked & inherit & custom this"
+  (let ()
+    (define-record-type* <foo> foo make-foo
+      foo? this-foo
+      (thing foo-thing (thunked)))
+    (define-record-type* <bar> bar make-bar
+      bar? this-bar
+      (baz bar-baz (thunked)))
+
+    ;; Nest records and test the two self references.
+    (let* ((x (foo (thing (bar (baz (list this-bar this-foo))))))
+           (y (foo-thing x)))
+      (match (bar-baz y)
+        ((first second)
+         (and (eq? second x)
+              (bar? first)
+              (eq? first y)))))))
+
 (test-assert "define-record-type* & delayed"
   (begin
     (define-record-type* <foo> foo make-foo

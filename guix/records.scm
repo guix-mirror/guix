@@ -118,6 +118,7 @@ of TYPE matches the expansion-time ABI."
     ((_ type name ctor (expected ...)
         #:abi-cookie abi-cookie
         #:thunked thunked
+        #:this-identifier this-identifier
         #:delayed delayed
         #:innate innate
         #:defaults defaults)
@@ -162,7 +163,7 @@ of TYPE matches the expansion-time ABI."
          (define (wrap-field-value f value)
            (cond ((thunked-field? f)
                   #`(lambda (x)
-                      (syntax-parameterize ((this-record
+                      (syntax-parameterize ((#,this-identifier
                                              (lambda (s)
                                                (syntax-case s ()
                                                  (id
@@ -254,6 +255,7 @@ may look like this:
 
   (define-record-type* <thing> thing make-thing
     thing?
+    this-thing
     (name  thing-name (default \"chbouib\"))
     (port  thing-port
            (default (current-output-port)) (thunked))
@@ -273,7 +275,8 @@ default value specified in the 'define-record-type*' form is used:
 
 The 'port' field is \"thunked\", meaning that calls like '(thing-port x)' will
 actually compute the field's value in the current dynamic extent, which is
-useful when referring to fluids in a field's value.
+useful when referring to fluids in a field's value.  Furthermore, that thunk
+can access the record it belongs to via the 'this-thing' identifier.
 
 A field can also be marked as \"delayed\" instead of \"thunked\", in which
 case its value is effectively wrapped in a (delay …) form.
@@ -352,7 +355,9 @@ inherited."
 
     (syntax-case s ()
       ((_ type syntactic-ctor ctor pred
+          this-identifier
           (field get properties ...) ...)
+       (identifier? #'this-identifier)
        (let* ((field-spec #'((field get properties ...) ...))
               (thunked    (filter-map thunked-field? field-spec))
               (delayed    (filter-map delayed-field? field-spec))
@@ -381,15 +386,36 @@ inherited."
                  field-spec* ...)
                (define #,(current-abi-identifier #'type)
                  #,cookie)
+
+               #,@(if (free-identifier=? #'this-identifier #'this-record)
+                      #'()
+                      #'((define-syntax-parameter this-identifier
+                           (lambda (s)
+                             "Return the record being defined.  This macro may
+only be used in the context of the definition of a thunked field."
+                             (syntax-case s ()
+                               (id
+                                (identifier? #'id)
+                                (syntax-violation 'this-identifier
+                                                  "cannot be used outside \
+of a record instantiation"
+                                                  #'id)))))))
                thunked-field-accessor ...
                delayed-field-accessor ...
                (make-syntactic-constructor type syntactic-ctor ctor
                                            (field ...)
                                            #:abi-cookie #,cookie
                                            #:thunked #,thunked
+                                           #:this-identifier #'this-identifier
                                            #:delayed #,delayed
                                            #:innate #,innate
-                                           #:defaults #,defaults))))))))
+                                           #:defaults #,defaults)))))
+      ((_ type syntactic-ctor ctor pred
+          (field get properties ...) ...)
+       ;; When no 'this' identifier was specified, use 'this-record'.
+       #'(define-record-type* type syntactic-ctor ctor pred
+           this-record
+           (field get properties ...) ...)))))
 
 (define* (alist->record alist make keys
                         #:optional (multiple-value-keys '()))
