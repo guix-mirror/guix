@@ -3848,3 +3848,34 @@ generating high resolution journal figures.")
 GeneChip expression data and reproducibility analysis of human whole genome
 chips with the MAQC reference datasets.")
     (license license:artistic2.0)))
+
+(define-public r-quantro
+  (package
+    (name "r-quantro")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "quantro" version))
+       (sha256
+        (base32
+         "1777gjgn855f04yv7hx70h9l8idmjzamkpazaq2cdr8qzhxwy2ib"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iterators" ,r-iterators)
+       ("r-minfi" ,r-minfi)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://bioconductor.org/packages/quantro/")
+    (synopsis "Test for when to use quantile normalization")
+    (description
+     "This package provides a data-driven test for the assumptions of quantile
+normalization using raw data such as objects that inherit eSets (e.g.
+ExpressionSet, MethylSet).  Group level information about each sample (such as
+Tumor / Normal status) must also be provided because the test assesses if
+there are global differences in the distributions between the user-defined
+groups.")
+    (license license:gpl3+)))
