@@ -3184,3 +3184,28 @@ epigenome- and transcriptome-wide association studies.  To this end bacon
 constructs an empirical null distribution using a Gibbs Sampling algorithm by
 fitting a three-component normal mixture on z-scores.")
     (license license:gpl2+)))
+
+(define-public r-rgadem
+  (package
+    (name "r-rgadem")
+    (version "2.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "rGADEM" version))
+       (sha256
+        (base32
+         "1a3mvxabp7yb275cv1wr0rzyvjhnsaysk2hnmll4z4cci171z2j2"))))
+    (properties `((upstream-name . "rGADEM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-iranges" ,r-iranges)
+       ("r-seqlogo" ,r-seqlogo)))
+    (home-page "https://bioconductor.org/packages/rGADEM/")
+    (synopsis "De novo sequence motif discovery")
+    (description
+     "rGADEM is an efficient de novo motif discovery tool for large-scale
+genomic sequence data.")
+    (license license:artistic2.0)))
