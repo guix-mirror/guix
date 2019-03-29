@@ -4518,3 +4518,43 @@ depending on content size.")
 
 (define-public cl-smart-buffer
   (sbcl-package->cl-source-package sbcl-smart-buffer))
+
+(define-public sbcl-fast-http
+  (let ((commit "f9e7597191bae380503e20724fd493a24d024935")
+        (revision "1"))
+    (package
+      (name "sbcl-fast-http")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/fast-http")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qdmwv2zm0sizxdb8nnclgwl0nfjcbjaimbakavikijw7lr9b4jp"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Tests fail with: Component FAST-HTTP-ASD::FAST-HTTP-TEST not found,
+       ;; required by #<SYSTEM "fast-http">. Why?
+       `(#:tests? #f))
+      (native-inputs
+       `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+         ("sbcl-prove" ,sbcl-prove)))
+      (inputs
+       `(("sbcl-alexandria" ,sbcl-alexandria)
+         ("sbcl-proc-parse" ,sbcl-proc-parse)
+         ("sbcl-xsubseq" ,sbcl-xsubseq)
+         ("sbcl-smart-buffer" ,sbcl-smart-buffer)
+         ("sbcl-utilities" ,sbcl-utilities)))
+      (home-page "https://github.com/fukamachi/fast-http")
+      (synopsis "HTTP request/response parser for Common Lisp")
+      (description
+       "@code{fast-http} is a HTTP request/response protocol parser for Common
+Lisp.")
+      ;; Author specified the MIT license
+      (license license:expat))))
+
+(define-public cl-fast-http
+  (sbcl-package->cl-source-package sbcl-fast-http))
