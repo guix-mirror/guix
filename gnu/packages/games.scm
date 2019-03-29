@@ -3914,13 +3914,13 @@ to the Space Age.")
     (version "0.3.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/bartobri/no-more-secrets/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bartobri/no-more-secrets.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1kpx1rirc3i7fb4lymp0hx5rqr0s2ay4za261rw3bcy6d23l1kyg"))))
+        (base32 "1zfv4qabikf8w9winsr4brxrdvs3f0d7xvydksyx8bydadsm2v2h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
