@@ -3899,6 +3899,29 @@ process form data posted with HTTP POST method using enctype
 (define-public cl-rfc2388
   (sbcl-package->cl-source-package sbcl-rfc2388))
 
+(define-public sbcl-md5
+  (package
+    (name "sbcl-md5")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/pmai/md5/archive/release-" version ".tar.gz"))
+       (sha256
+        (base32 "19yl9n0pjdz5gw4qi711lka97xcd9f81ylg434hk7jwn9f2s6w11"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/pmai/md5")
+    (synopsis
+     "Common Lisp implementation of the MD5 Message-Digest Algorithm (RFC 1321)")
+    (description
+     "This package implements The MD5 Message-Digest Algorithm, as defined in
+RFC 1321 by R. Rivest, published April 1992.")
+    (license license:public-domain)))
+
+(define-public cl-md5
+  (sbcl-package->cl-source-package sbcl-md5))
+
 (define-public sbcl-cl+ssl
   (let ((commit "b81c1135cf5700e870ce2573d5035d249e491788")
         (revision "1"))
