@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -256,7 +257,14 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pk15jfa775cy2pqmzq62nhd6zfjxmpvz5h731197c28aq3zw39w"))))
+                "0pk15jfa775cy2pqmzq62nhd6zfjxmpvz5h731197c28aq3zw39w"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "utils.cpp"
+                    (("#include <immintrin.h>")
+                     "#ifdef __SSE__\n#include <immintrin.h>\n#endif"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -270,12 +278,14 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
                                                        (%current-system))))
                                        (cond
                                         ((string-prefix? "x86_64" system)
-                                         '("-mavx" "-msse2"))
+                                         '("-mavx" "-msse2" "-mpopcnt"))
                                         ((string-prefix? "i686" system)
-                                         '("-msse2"))
+                                         '("-msse2" "-mpopcnt"))
                                         (else
                                          '()))))))
                (substitute* "CMakeLists.txt"
+                 (("-m64") "")
+                 (("-mpopcnt") "") ; only some architectures
                  (("-msse4")
                   (string-append
                    (string-join features)
