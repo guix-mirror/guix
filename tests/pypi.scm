@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,11 +69,6 @@ sha1=da9234ee9982d4bbb3c72346a6de940a148ea686"))
 (define test-requires.txt "\
 # A comment
  # A comment after a space
-bar
-baz > 13.37
-")
-
-(define test-requires-with-sections "\
 foo ~= 3
 bar != 2
 
@@ -80,12 +76,25 @@ bar != 2
 pytest (>=2.5.0)
 ")
 
+;; Beaker contains only optional dependencies.
+(define test-requires.txt-beaker "\
+[crypto]
+pycryptopp>=0.5.12
+
+[cryptography]
+cryptography
+
+[testsuite]
+Mock
+coverage
+")
+
 (define test-metadata "\
 Classifier: Programming Language :: Python :: 3.7
 Requires-Dist: baz ~= 3
 Requires-Dist: bar != 2
 Provides-Extra: test
-pytest (>=2.5.0)
+Requires-Dist: pytest (>=2.5.0) ; extra == 'test'
 ")
 
 (define test-metadata-with-extras "
@@ -139,25 +148,31 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
   '("Fizzy" "PickyThing" "SomethingWithMarker" "requests" "pip")
   (map specification->requirement-name test-specifications))
 
-(test-equal "parse-requires.txt, with sections"
-  '("foo" "bar")
+(test-equal "parse-requires.txt"
+  (list '("foo" "bar") '("pytest"))
   (mock ((ice-9 ports) call-with-input-file
          call-with-input-string)
-        (parse-requires.txt test-requires-with-sections)))
+        (parse-requires.txt test-requires.txt)))
+
+(test-equal "parse-requires.txt - Beaker"
+  (list '() '("Mock" "coverage"))
+  (mock ((ice-9 ports) call-with-input-file
+         call-with-input-string)
+        (parse-requires.txt test-requires.txt-beaker)))
 
 (test-equal "parse-wheel-metadata, with extras"
-  '("wrapt" "bar")
+  (list '("wrapt" "bar") '("tox" "bumpversion"))
   (mock ((ice-9 ports) call-with-input-file
          call-with-input-string)
         (parse-wheel-metadata test-metadata-with-extras)))
 
 (test-equal "parse-wheel-metadata, with extras - Jedi"
-  '("parso")
+  (list '("parso") '("pytest"))
   (mock ((ice-9 ports) call-with-input-file
          call-with-input-string)
         (parse-wheel-metadata test-metadata-with-extras-jedi)))
 
-(test-assert "pypi->guix-package"
+(test-assert "pypi->guix-package, no wheel"
   ;; Replace network resources with sample data.
     (mock ((guix import utils) url-fetch
            (lambda (url file-name)
@@ -198,7 +213,10 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                      ('propagated-inputs
                       ('quasiquote
                        (("python-bar" ('unquote 'python-bar))
-                        ("python-baz" ('unquote 'python-baz)))))
+                        ("python-foo" ('unquote 'python-foo)))))
+                     ('native-inputs
+                      ('quasiquote
+                       (("python-pytest" ('unquote 'python-pytest)))))
                      ('home-page "http://example.com")
                      ('synopsis "summary")
                      ('description "summary")
@@ -219,25 +237,25 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
               (begin
                 (mkdir-p "foo-1.0.0/foo.egg-info/")
                 (with-output-to-file "foo-1.0.0/foo.egg-info/requires.txt"
-                   (lambda ()
-                     (display "wrong data to make sure we're testing wheels ")))
+                  (lambda ()
+                    (display "wrong data to make sure we're testing wheels ")))
                 (parameterize ((current-output-port (%make-void-port "rw+")))
                   (system* "tar" "czvf" file-name "foo-1.0.0/"))
-                 (delete-file-recursively "foo-1.0.0")
-                 (set! test-source-hash
-                       (call-with-input-file file-name port-sha256))))
+                (delete-file-recursively "foo-1.0.0")
+                (set! test-source-hash
+                  (call-with-input-file file-name port-sha256))))
              ("https://example.com/foo-1.0.0-py2.py3-none-any.whl"
-               (begin
-                 (mkdir "foo-1.0.0.dist-info")
-                 (with-output-to-file "foo-1.0.0.dist-info/METADATA"
-                   (lambda ()
-                     (display test-metadata)))
-                 (let ((zip-file (string-append file-name ".zip")))
-                   ;; zip always adds a "zip" extension to the file it creates,
-                   ;; so we need to rename it.
-                   (system* "zip" zip-file "foo-1.0.0.dist-info/METADATA")
-                   (rename-file zip-file file-name))
-                 (delete-file-recursively "foo-1.0.0.dist-info")))
+              (begin
+                (mkdir "foo-1.0.0.dist-info")
+                (with-output-to-file "foo-1.0.0.dist-info/METADATA"
+                  (lambda ()
+                    (display test-metadata)))
+                (let ((zip-file (string-append file-name ".zip")))
+                  ;; zip always adds a "zip" extension to the file it creates,
+                  ;; so we need to rename it.
+                  (system* "zip" "-q" zip-file "foo-1.0.0.dist-info/METADATA")
+                  (rename-file zip-file file-name))
+                (delete-file-recursively "foo-1.0.0.dist-info")))
              (_ (error "Unexpected URL: " url)))))
         (mock ((guix http-client) http-fetch
                (lambda (url . rest)
@@ -265,6 +283,9 @@ Requires-Dist: pytest (>=3.1.0); extra == 'testing'
                     ('quasiquote
                      (("python-bar" ('unquote 'python-bar))
                       ("python-baz" ('unquote 'python-baz)))))
+                   ('native-inputs
+                    ('quasiquote
+                     (("python-pytest" ('unquote 'python-pytest)))))
                    ('home-page "http://example.com")
                    ('synopsis "summary")
                    ('description "summary")
