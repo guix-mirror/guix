@@ -5028,3 +5028,45 @@ performance and simplicity in mind.")
 
 (define-public cl-lack-middleware-backtrace
   (sbcl-package->cl-source-package sbcl-lack-middleware-backtrace))
+
+(define-public sbcl-trivial-mimes
+  (let ((commit "303f8ac0aa6ca0bc139aa3c34822e623c3723fab")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-mimes")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/trivial-mimes.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "17jxgl47r695bvsb7wi3n2ws5rp1zzgvw0zii8cy5ggw4b4ayv6m"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after
+               'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((anchor "#p\"/etc/mime.types\""))
+                 (substitute* "mime-types.lisp"
+                   ((anchor all)
+                    (string-append
+                     anchor "\n"
+                     "(asdf:system-relative-pathname :trivial-mimes \"../../share/common-lisp/sbcl-source/trivial-mimes/mime.types\")")))))))))
+      (native-inputs
+       `(("stefil" ,sbcl-hu.dwim.stefil)))
+      (inputs
+       `(("sbcl-cl-fad" ,sbcl-cl-fad)))
+      (home-page "http://shinmera.github.io/trivial-mimes/")
+      (synopsis "Tiny Common Lisp library to detect mime types in files")
+      (description
+       "This is a teensy library that provides some functions to determine the
+mime-type of a file.")
+      (license license:artistic2.0))))
+
+(define-public cl-trivial-mimes
+  (sbcl-package->cl-source-package sbcl-trivial-mimes))
