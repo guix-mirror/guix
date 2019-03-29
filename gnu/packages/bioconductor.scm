@@ -3658,3 +3658,30 @@ metabolomics data aquired using chromatography-mass spectrometry.  These tools
 preprocess data in a way that enables reliable and powerful differential
 analysis.")
     (license license:artistic2.0)))
+
+(define-public r-gtrellis
+  (package
+    (name "r-gtrellis")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gtrellis" version))
+       (sha256
+        (base32
+         "17c43vs6m6hj90x5is0pbcpcv59gg9z98c47hnvlypgcqch38h6v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-circlize" ,r-circlize)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-getoptlong" ,r-getoptlong)
+       ("r-iranges" ,r-iranges)))
+    (home-page "https://github.com/jokergoo/gtrellis")
+    (synopsis "Genome level Trellis layout")
+    (description
+     "Genome level Trellis graph visualizes genomic data conditioned by
+genomic categories (e.g. chromosomes).  For each genomic category, multiple
+dimensional data which are represented as tracks describe different features
+from different aspects.  This package provides high flexibility to arrange
+genomic categories and to add self-defined graphics in the plot.")
+    (license license:expat)))
