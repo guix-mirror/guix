@@ -1755,7 +1755,7 @@ for common mesh file formats, and collision detection.")
                 (uri (git-reference
                       (url "https://github.com/thelaui/M.A.R.S..git")
                       (commit commit)))
-                (file-name (string-append name "-" version))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1r4c5gap1z2zsv4yjd34qriqkxaq4lb4rykapyzkkdf4g36lc3nh"))
