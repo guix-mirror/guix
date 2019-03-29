@@ -4639,7 +4639,7 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/osslugaru/lugaru/downloads/"
-                                  name "-" version ".tar.xz"))
+                                  "lugaru-" version ".tar.xz"))
               (sha256
                (base32
                 "15zgcshy22q51rm72zi6y9z7qlgnz5iw3gczjdlir4bqmxy4gspk"))))
