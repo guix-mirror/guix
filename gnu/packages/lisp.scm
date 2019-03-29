@@ -4482,3 +4482,39 @@ effieiently.")
 
 (define-public cl-xsubseq
   (sbcl-package->cl-source-package sbcl-xsubseq))
+
+(define-public sbcl-smart-buffer
+  (let ((commit "09b9a9a0b3abaa37abe9a730f5aac2643dca4e62")
+        (revision "1"))
+    (package
+      (name "sbcl-smart-buffer")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/smart-buffer")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qz1zzxx0wm5ff7gpgsq550a59p0qj594zfmm2rglj97dahj54l7"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Tests fail with: Component SMART-BUFFER-ASD::SMART-BUFFER-TEST not
+       ;; found, required by #<SYSTEM "smart-buffer">. Why?
+       `(#:tests? #f))
+      (native-inputs
+       `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+         ("sbcl-prove" ,sbcl-prove)))
+      (inputs
+       `(("sbcl-xsubseq" ,sbcl-xsubseq)
+         ("sbcl-flexi-streams" ,sbcl-flexi-streams)))
+      (home-page "https://github.com/fukamachi/smart-buffer")
+      (synopsis "Smart octets buffer")
+      (description
+       "Smart-buffer provides an output buffer which changes the destination
+depending on content size.")
+      (license license:bsd-3))))
+
+(define-public cl-smart-buffer
+  (sbcl-package->cl-source-package sbcl-smart-buffer))
