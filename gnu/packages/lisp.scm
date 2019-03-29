@@ -4087,3 +4087,38 @@ as good or bad as the next one.")
 
 (define-public cl-cl-who
   (sbcl-package->cl-source-package sbcl-cl-who))
+
+(define-public sbcl-chipz
+  (let ((version "0.8")
+        (commit "75dfbc660a5a28161c57f115adf74c8a926bfc4d")
+        (revision "1"))
+    (package
+      (name "sbcl-chipz")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/froydnj/chipz.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0plx4rs39zbs4gjk77h4a2q11zpy75fh9v8hnxrvsf8fnakajhwg"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("sbcl-flexi-streams" ,sbcl-flexi-streams)))
+      (home-page "http://method-combination.net/lisp/chipz/")
+      (synopsis
+       "Common Lisp library for decompressing deflate, zlib, gzip, and bzip2
+data")
+      (description
+       "DEFLATE data, defined in RFC1951, forms the core of popular
+compression formats such as zlib (RFC 1950) and gzip (RFC 1952).  As such,
+Chipz also provides for decompressing data in those formats as well.  BZIP2 is
+the format used by the popular compression tool bzip2.")
+      ;; The author describes it as "MIT-like"
+      (license license:expat))))
+
+(define-public cl-chipz
+  (sbcl-package->cl-source-package sbcl-chipz))
