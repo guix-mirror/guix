@@ -4845,3 +4845,38 @@ performance and simplicity in mind.")
 
 (define-public cl-lack-request
   (sbcl-package->cl-source-package sbcl-lack-request))
+
+(define-public sbcl-local-time
+  (let ((commit "beac054eef428552b63d4ae7820c32ffef9a3015")
+        (revision "1"))
+    (package
+     (name "sbcl-local-time")
+     (version (git-version "1.0.6" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dlowe-net/local-time.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xhkmgxh41dg2wwlsp0h2l41jp144xn4gpxhh0lna6kh0560w2cc"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      ;; TODO: Component :STEFIL not found, required by #<SYSTEM
+      ;; "local-time/test">
+      '(#:tests? #f))
+     (native-inputs
+      `(("stefil" ,sbcl-hu.dwim.stefil)))
+     (inputs
+      `(("sbcl-cl-fad" ,sbcl-cl-fad)))
+     (home-page "https://common-lisp.net/project/local-time/")
+     (synopsis "Time manipulation library for Common Lisp")
+     (description
+      "The LOCAL-TIME library is a Common Lisp library for the manipulation of
+dates and times.  It is based almost entirely upon Erik Naggum's paper \"The
+Long Painful History of Time\".")
+     (license license:expat))))
+
+(define-public cl-local-time
+  (sbcl-package->cl-source-package sbcl-local-time))
