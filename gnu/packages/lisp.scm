@@ -4225,3 +4225,30 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 
 (define-public cl-trivial-types
   (sbcl-package->cl-source-package sbcl-trivial-types))
+
+(define-public sbcl-syntax
+  (package
+    (name "sbcl-syntax")
+    (version "0.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/m2ym/cl-syntax.git")
+             (commit "03f0c329bbd55b8622c37161e6278366525e2ccc")))
+       (sha256
+        (base32 "17ran8xp77asagl31xv8w819wafh6whwfc9p6dgx22ca537gyl4y"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-file "cl-syntax.asd"
+       #:asd-system-name "cl-syntax"))
+    (inputs `(("sbcl-trivial-types" ,sbcl-trivial-types)
+              ("sbcl-named-readtables" ,sbcl-named-readtables)))
+    (home-page "https://github.com/m2ym/cl-syntax")
+    (synopsis "Reader Syntax Coventions for Common Lisp and SLIME")
+    (description
+     "CL-SYNTAX provides Reader Syntax Coventions for Common Lisp and SLIME.")
+    (license license:llgpl)))
+
+(define-public cl-syntax
+  (sbcl-package->cl-source-package sbcl-syntax))
