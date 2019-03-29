@@ -1980,7 +1980,7 @@ reference interpreter, using the Glk API.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://fizmo.spellbreaker.org/source/"
-                                  name "-" version ".tar.gz"))
+                                  "fizmo-" version ".tar.gz"))
               (sha256
                (base32
                 "1amyc4n41jf08kxmdgkk30bzzx54miaxa97w28f417qwn8lrl98w"))))
