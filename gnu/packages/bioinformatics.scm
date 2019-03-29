@@ -13340,6 +13340,38 @@ Python-based implementation efficiently deals with datasets of more than one
 million cells.")
     (license license:bsd-3)))
 
+(define-public python-bbknn
+  (package
+    (name "python-bbknn")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bbknn" version))
+       (sha256
+        (base32
+         "1qgdganvj3lyxj84v7alm23b9vqhwpn8z0115qndpnpy90qxynwz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-annoy" ,python-annoy)
+       ("python-cython" ,python-cython)
+       ("python-faiss" ,python-faiss)
+       ("python-numpy" ,python-numpy)
+       ("python-scanpy" ,python-scanpy)))
+    (home-page "https://github.com/Teichlab/bbknn")
+    (synopsis "Batch balanced KNN")
+    (description "BBKNN is a batch effect removal tool that can be directly
+used in the Scanpy workflow.  It serves as an alternative to
+@code{scanpy.api.pp.neighbors()}, with both functions creating a neighbour
+graph for subsequent use in clustering, pseudotime and UMAP visualisation.  If
+technical artifacts are present in the data, they will make it challenging to
+link corresponding cell types across different batches.  BBKNN actively
+combats this effect by splitting your data into batches and finding a smaller
+number of neighbours for each cell within each of the groups.  This helps
+create connections between analogous cells in different batches without
+altering the counts or PCA space.")
+    (license license:expat)))
+
 (define-public gffcompare
   (let ((commit "be56ef4349ea3966c12c6397f85e49e047361c41")
         (revision "1"))
