@@ -3806,7 +3806,7 @@ throwing people around in pseudo-randomly generated buildings.")
            (method url-fetch)
            (uri
             (string-append
-             "https://www.roguetemple.com/z/hyper/" name
+             "https://www.roguetemple.com/z/hyper/hyperrogue"
              (string-join (string-split version #\.) "")
              "-win.zip"))
            (sha256
