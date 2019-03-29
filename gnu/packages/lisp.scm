@@ -3873,6 +3873,32 @@ backtrace portably.")
 (define-public cl-trivial-backtrace
   (sbcl-package->cl-source-package sbcl-trivial-backtrace))
 
+(define-public sbcl-rfc2388
+  (let ((commit "591bcf7e77f2c222c43953a80f8c297751dc0c4e")
+        (revision "1"))
+    (package
+     (name "sbcl-rfc2388")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jdz/rfc2388.git")
+             (commit commit)))
+       (sha256
+        (base32 "0phh5n3clhl9ji8jaxrajidn22d3f0aq87mlbfkkxlnx2pnw694k"))))
+     (build-system asdf-build-system/sbcl)
+     (home-page "https://github.com/jdz/rfc2388/")
+     (synopsis "An implementation of RFC 2388 in Common Lisp")
+     (description
+      "This package contains an implementation of RFC 2388, which is used to
+process form data posted with HTTP POST method using enctype
+\"multipart/form-data\".")
+     (license license:bsd-2))))
+
+(define-public cl-rfc2388
+  (sbcl-package->cl-source-package sbcl-rfc2388))
+
 (define-public sbcl-cl+ssl
   (let ((commit "b81c1135cf5700e870ce2573d5035d249e491788")
         (revision "1"))
