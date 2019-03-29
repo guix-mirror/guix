@@ -3203,14 +3203,15 @@ fullscreen, use F5 or Alt+Enter.")
   (package
     (name "warzone2100")
     (version "3.2.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name
-                                  "/releases/" version "/" name "-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "10kmpr4cby95zwqsl1zwx95d9achli6khq7flv6xmrq30a39xazw"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/warzone2100/archives/"
+                           "unsupported/Warzone2100-"
+                           (version-major+minor version) "/" version
+                           "/warzone2100-" version ".tar.xz"))
+       (sha256
+        (base32 "10kmpr4cby95zwqsl1zwx95d9achli6khq7flv6xmrq30a39xazw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-distributor=Guix")
