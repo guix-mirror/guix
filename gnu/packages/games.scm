@@ -5547,7 +5547,7 @@ online.")
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/shlomif/fortune-mod")
-             (commit (string-append name "-" version))))
+             (commit (string-append "fortune-mod-" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
