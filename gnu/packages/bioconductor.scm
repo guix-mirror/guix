@@ -738,6 +738,43 @@ Disease Ontology.")
 
 ;;; Experiment data
 
+(define-public r-abadata
+  (package
+    (name "r-abadata")
+    (version "1.12.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/experiment/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "ABAData_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bmj341xcymlrk02gss5vvrqc4ddas0rdw39lnpsj98hq6n11p5z"))))
+    (properties
+     `((upstream-name . "ABAData")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://www.bioconductor.org/packages/ABAData/")
+    (synopsis "Gene expression in human brain regions from Allen Brain Atlas")
+    (description
+     "This package provides the data for the gene expression enrichment
+analysis conducted in the package ABAEnrichment.  The package includes three
+datasets which are derived from the Allen Brain Atlas:
+
+@enumerate
+@item Gene expression data from Human Brain (adults) averaged across donors,
+@item Gene expression data from the Developing Human Brain pooled into five
+  age categories and averaged across donors, and
+@item a developmental effect score based on the Developing Human Brain
+  expression data.
+@end enumerate
+
+All datasets are restricted to protein coding genes.")
+    (license license:gpl2+)))
+
 (define-public r-hsmmsinglecell
   (package
     (name "r-hsmmsinglecell")
