@@ -3485,3 +3485,28 @@ the brain using an ontology, both provided by the Allen Brain Atlas project.")
 different identifieres using the Biocore Data Team data-packages (e.g.
 @code{org.Bt.eg.db}).")
     (license license:gpl2)))
+
+(define-public r-annotationtools
+  (package
+    (name "r-annotationtools")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "annotationTools" version))
+       (sha256
+        (base32
+         "0hqy0mq6pkn05p2dv4pw24p697yvikhdn351adf2ynldy6f3sl9z"))))
+    (properties
+     `((upstream-name . "annotationTools")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/annotationTools/")
+    (synopsis "Annotate microarrays and perform gene expression analyses")
+    (description
+     "This package provides functions to annotate microarrays, find orthologs,
+and integrate heterogeneous gene expression profiles using annotation and
+other molecular biology information available as flat file database (plain
+text files).")
+    ;; Any version of the GPL.
+    (license (list license:gpl2+))))
