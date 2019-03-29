@@ -4354,3 +4354,28 @@ everywhere some dumb user might make a mistake.")
 
 (define-public cl-utilities
   (sbcl-package->cl-source-package sbcl-utilities))
+
+(define-public sbcl-map-set
+  (let ((commit "7b4b545b68b8")
+        (revision "1"))
+    (package
+      (name "sbcl-map-set")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://bitbucket.org/tarballs_are_good/map-set/get/"
+               commit ".tar.gz"))
+         (sha256
+          (base32 "1sx5j5qdsy5fklspfammwb16kjrhkggdavm922a9q86jm5l0b239"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://bitbucket.org/tarballs_are_good/map-set")
+      (synopsis "Set-like data structure")
+      (description
+       "Implementation of a set-like data structure with constant time
+addition, removal, and random selection.")
+      (license license:bsd-3))))
+
+(define-public cl-map-set
+  (sbcl-package->cl-source-package sbcl-map-set))
