@@ -4162,3 +4162,42 @@ sockets, SSL, continuable uploads, file uploads, cookies, and more.")
 
 (define-public cl-drakma
   (sbcl-package->cl-source-package sbcl-drakma))
+
+(define-public sbcl-hunchentoot
+  (package
+    (name "sbcl-hunchentoot")
+    (version "1.2.38")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/edicl/hunchentoot/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "17z8rpd6b5w93jwrdwfwxjha617xnjqw8aq1hw2z76zp1fn8yrmh"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("sbcl-cl-who" ,sbcl-cl-who)
+       ("sbcl-drakma" ,sbcl-drakma)))
+    (inputs
+     `(("sbcl-chunga" ,sbcl-chunga)
+       ("sbcl-cl-base64" ,sbcl-cl-base64)
+       ("sbcl-cl-fad" ,sbcl-cl-fad)
+       ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)
+       ("sbcl-flexi-streams" ,sbcl-flexi-streams)
+       ("sbcl-cl+ssl" ,sbcl-cl+ssl)
+       ("sbcl-md5" ,sbcl-md5)
+       ("sbcl-rfc2388" ,sbcl-rfc2388)
+       ("sbcl-trivial-backtrace" ,sbcl-trivial-backtrace)
+       ("sbcl-usocket" ,sbcl-usocket)))
+    (home-page "https://edicl.github.io/hunchentoot/")
+    (synopsis "Web server written in Common Lisp")
+    (description
+     "Hunchentoot is a web server written in Common Lisp and at the same
+time a toolkit for building dynamic websites.  As a stand-alone web server,
+Hunchentoot is capable of HTTP/1.1 chunking (both directions), persistent
+connections (keep-alive), and SSL.")
+    (license license:bsd-2)))
+
+(define-public cl-hunchentoot
+  (sbcl-package->cl-source-package sbcl-hunchentoot))
