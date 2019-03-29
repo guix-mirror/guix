@@ -3996,3 +3996,38 @@ Rosenberg's CL packages.")
 
 (define-public cl-kmrcl
   (sbcl-package->cl-source-package sbcl-kmrcl))
+
+(define-public sbcl-cl-base64
+  (let ((version "3.3.3"))
+    (package
+      (name "sbcl-cl-base64")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/cl-base64.git")
+               (commit (string-append "v" version))))
+         (sha256
+          (base32 "1dw6j7n6gsd2qa0p0rbsjxj00acxx3i9ca1qkgl0liy8lpnwkypl"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Tests fail with: :FORCE and :FORCE-NOT arguments not allowed
+       ;; in a nested call to ASDF/OPERATE:OPERATE unless identically
+       ;; to toplevel
+       '(#:tests? #f))
+      (inputs
+       `(("sbcl-ptester" ,sbcl-ptester)
+         ("sbcl-kmrcl" ,sbcl-kmrcl)))
+      (home-page "http://files.kpe.io/cl-base64/")
+      (synopsis
+       "Common Lisp package to encode and decode base64 with URI support")
+      (description
+       "This package provides highly optimized base64 encoding and decoding.
+Besides conversion to and from strings, integer conversions are supported.
+Encoding with Uniform Resource Identifiers is supported by using a modified
+encoding table that uses only URI-compatible characters.")
+      (license license:bsd-3))))
+
+(define-public cl-base64
+  (sbcl-package->cl-source-package sbcl-cl-base64))
