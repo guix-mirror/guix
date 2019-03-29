@@ -13611,6 +13611,29 @@ principal component analysis, correspondence analysis, spectral map
 analysis.")
     (license license:gpl2+)))
 
+(define-public r-png
+  (package
+    (name "r-png")
+    (version "0.1-7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "png" version))
+              (sha256
+               (base32
+                "0g2mcp55lvvpx4kd3mn225mpbxqcq73wy5qx8b4lyf04iybgysg2"))))
+    (build-system r-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (home-page "http://www.rforge.net/png/")
+    (synopsis "Read and write PNG images")
+    (description
+     "This package provides an easy and simple way to read, write and display
+bitmap images stored in the PNG format.  It can read and write both files and
+in-memory raw vectors.")
+    ;; Any of these GPL versions.
+    (license (list license:gpl2 license:gpl3))))
+
 (define-public r-ggcorrplot
   (package
     (name "r-ggcorrplot")
