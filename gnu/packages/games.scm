@@ -6010,9 +6010,9 @@ when packaged in Blorb container files or optionally from individual files.")
     (version "0.2.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libmanette/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libmanette-" version ".tar.xz"))
               (sha256
                (base32
                 "1lpprk2qz1lsqf9xj6kj2ciyc1zmjhj5lwd584qkh7jgz2x9y6wb"))))
