@@ -2941,16 +2941,17 @@ http://lavachat.symlynx.com/unix/")
                    release
                    (string-append release "-"
                                   (number->string revision))))
-      (source (origin
-                (method url-fetch)
-                (uri (string-append "https://github.com/red-eclipse/base"
-                                    "/archive/v" release ".tar.gz"))
-                (file-name (string-append name "-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1vs9k6f5fgsiy1n72imlqm8khjwm8cryc08zwd4gr7yxlxv45bs0"))
-                (patches
-                 (search-patches "red-eclipse-remove-gamma-name-hack.patch"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/red-eclipse/base.git")
+               (commit (string-append "v" release))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qy9kmq21wc4bdhwifasxc5dv1y5c53sn7dfmyc5y3zyz8wjyij4"))
+         (patches
+          (search-patches "red-eclipse-remove-gamma-name-hack.patch"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f            ; no check target
