@@ -3762,3 +3762,39 @@ functions to perform a signature analysis with known signatures and a
 signature analysis on @dfn{stratified mutational catalogue} (SMC) are
 provided.")
     (license license:gpl3)))
+
+(define-public r-gcrma
+  (package
+    (name "r-gcrma")
+    (version "2.54.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gcrma" version))
+       (sha256
+        (base32
+         "1v5fi98gdmj002ryq0rgsg2l4x3m3w5pz4h3bx4v8lk15azafgim"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-affyio" ,r-affyio)
+       ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-biostrings" ,r-biostrings)
+       ("r-xvector" ,r-xvector)))
+    (home-page "https://bioconductor.org/packages/gcrma/")
+    (synopsis "Background adjustment using sequence information")
+    (description
+     "Gcrma adjusts for background intensities in Affymetrix array data which
+include optical noise and @dfn{non-specific binding} (NSB).  The main function
+@code{gcrma} converts background adjusted probe intensities to expression
+measures using the same normalization and summarization methods as a
+@dfn{Robust Multiarray Average} (RMA).  Gcrma uses probe sequence information
+to estimate probe affinity to NSB.  The sequence information is summarized in
+a more complex way than the simple GC content.  Instead, the base types (A, T,
+G or C) at each position along the probe determine the affinity of each probe.
+The parameters of the position-specific base contributions to the probe
+affinity is estimated in an NSB experiment in which only NSB but no
+gene-specific bidning is expected.")
+    ;; Any version of the LGPL
+    (license license:lgpl2.1+)))
