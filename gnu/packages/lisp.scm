@@ -4733,3 +4733,41 @@ CCL.")
 
 (define-public cl-jonathan
   (sbcl-package->cl-source-package sbcl-jonathan))
+
+(define-public sbcl-http-body
+  (let ((commit "dd01dc4f5842e3d29728552e5163acce8386eb73")
+        (revision "1"))
+    (package
+     (name "sbcl-http-body")
+     (version (git-version "0.1.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/http-body")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jd06snjvxcprhapgfq8sx0y5lrldkvhf206ix6d5a23dd6zcmr0"))))
+     (build-system asdf-build-system/sbcl)
+     (arguments
+      ;; Tests fail with: Component HTTP-BODY-ASD::HTTP-BODY-TEST not
+      ;; found, required by #<SYSTEM "http-body">. Why?
+      `(#:tests? #f))
+     (native-inputs
+      `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+        ("sbcl-prove" ,sbcl-prove)))
+     (inputs
+      `(("sbcl-fast-http" ,sbcl-fast-http)
+        ("sbcl-jonathan" ,sbcl-jonathan)
+        ("sbcl-quri" ,sbcl-quri)))
+     (home-page "https://github.com/fukamachi/http-body")
+     (synopsis "HTTP POST data parser")
+     (description
+      "HTTP-Body parses HTTP POST data and returns POST parameters.  It
+supports application/x-www-form-urlencoded, application/json, and
+multipart/form-data.")
+     (license license:bsd-2))))
+
+(define-public cl-http-body
+  (sbcl-package->cl-source-package sbcl-http-body))
