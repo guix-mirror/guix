@@ -4282,3 +4282,33 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 
 (define-public cl-annot
   (sbcl-package->cl-source-package sbcl-annot))
+
+(define-public sbcl-syntax-annot
+  (package
+    (name "sbcl-syntax-annot")
+    (version "0.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/m2ym/cl-syntax.git")
+             (commit "03f0c329bbd55b8622c37161e6278366525e2ccc")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17ran8xp77asagl31xv8w819wafh6whwfc9p6dgx22ca537gyl4y"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-file "cl-syntax-annot.asd"
+       #:asd-system-name "cl-syntax-annot"))
+    (inputs
+     `(("sbcl-syntax" ,sbcl-syntax)
+       ("sbcl-annot" ,sbcl-annot)))
+    (home-page "https://github.com/m2ym/cl-syntax")
+    (synopsis "Reader Syntax Coventions for Common Lisp and SLIME")
+    (description
+     "CL-SYNTAX provides Reader Syntax Coventions for Common Lisp and
+SLIME.")
+    (license license:llgpl)))
+
+(define-public cl-syntax-annot
+  (sbcl-package->cl-source-package sbcl-syntax-annot))
