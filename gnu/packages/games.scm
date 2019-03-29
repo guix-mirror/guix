@@ -6553,3 +6553,91 @@ a fortress beyond the forbidden swamp.")
 
 (define-public edgar
   (deprecated-package "edgar" the-legend-of-edgar))
+
+(define-public openclonk
+  (package
+    (name "openclonk")
+    (version "8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.openclonk.org/builds/release/" version "/"
+                    "openclonk-" version "-src.tar.bz2"))
+              (sha256
+               (base32
+                "0imkqjp8lww5p0cnqf4k4mb2v682mnsas63qmiz17rspakr7fxik"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DAudio_TK=OpenAL")
+       #:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-gmock
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir "gmock")
+             (copy-recursively (assoc-ref inputs "googlemock") "gmock")
+             (substitute* "tests/CMakeLists.txt"
+               (("/usr/src/gmock")
+                (string-append (getcwd) "/gmock/googlemock"))
+               (("/usr/src/gtest")
+                (string-append (getcwd) "/gmock/googletest"))
+               (("PATH_SUFFIXES \"src\" \"gtest\"")
+                "PATH_SUFFIXES \"src\""))
+             #t))
+         (add-after 'unpack 'add-libiberty
+           ;; Build fails upon linking executables without this.
+           (lambda _
+             (substitute* "thirdparty/backward-cpp/BackwardConfig.cmake"
+               (("set\\(LIBBFD_LIBRARIES (.*?)\\)" _ libraries)
+                (string-append "set(LIBBFD_LIBRARIES " libraries " iberty)")))
+             #t))
+         (add-after 'add-libiberty 'lax-freealut-requirement
+           ;; TODO: We provide freealut 1.1.0, but pkg-config somehow detects
+           ;; it as 1.0.1.  Force minimal version.
+           (lambda _
+             (substitute* "cmake/FindAudio.cmake"
+               (("freealut>=1.1.0") "freealut>=1.0.1"))
+             #t))
+         (add-after 'lax-freealut-requirement 'fix-directories
+           ;; Prefer "$out/share/openclonk" over
+           ;; "$out/share/games/openclonk". Also install "openclonk"
+           ;; binary in "bin/", not "games/".
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("share/games/openclonk") "share/openclonk")
+               (("TARGETS openclonk DESTINATION games")
+                "TARGETS openclonk DESTINATION bin"))
+             #t)))))
+    (native-inputs
+     `(("googlemock" ,(package-source googletest))
+       ("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freealut" ,freealut)
+       ("freetype" ,freetype)
+       ("glew" ,glew)
+       ("libiberty" ,libiberty)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("miniupnpc" ,miniupnpc)
+       ("openal" ,openal)
+       ("qtbase" ,qtbase)
+       ("readline" ,readline)
+       ("sdl" ,sdl2)
+       ("tinyxml" ,tinyxml)
+       ("zlib" ,zlib)))
+    (home-page "https://www.openclonk.org/")
+    (synopsis
+     "Multiplayer action game where you control small and nimble humanoids")
+    (description "OpenClonk is a multiplayer action/tactics/skill game.  It is
+often referred to as a mixture of The Settlers and Worms.  In a simple 2D
+antfarm-style landscape, the player controls his crew of Clonks, small but
+robust humanoid beings.  The game encourages free play but the normal goal is
+to either exploit valuable resources from the earth by building a mine or
+fight each other on an arena-like map.")
+    ;; Software as a whole is licensed under ISC, artwork under CC-BY.
+    (license (list license:isc license:cc-by3.0))))
