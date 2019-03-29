@@ -5145,3 +5145,66 @@ performance and simplicity in mind.")
 
 (define-public cl-lack
   (sbcl-package->cl-source-package sbcl-lack))
+
+(define-public sbcl-ningle
+  (let ((commit "50bd4f09b5a03a7249bd4d78265d6451563b25ad")
+        (revision "1"))
+    (package
+      (name "sbcl-ningle")
+      (version (git-version "0.3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/ningle.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1bsl8cnxhacb8p92z9n89vhk1ikmij5zavk0m2zvmj7iqm79jzgw"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; TODO: pull in clack-test
+       '(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'cleanup-files)
+           (delete 'cleanup)
+           (add-before 'cleanup 'combine-fasls
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/sbcl"))
+                      (ningle-path (string-append lib "/ningle"))
+                      (fasl-files (find-files out "\\.fasl$")))
+                 (mkdir-p ningle-path)
+                 (let ((fasl-path (lambda (name)
+                                    (string-append ningle-path
+                                                   "/"
+                                                   (basename name)
+                                                   "--system.fasl"))))
+                   (for-each (lambda (file)
+                               (rename-file file
+                                            (fasl-path
+                                             (basename file ".fasl"))))
+                             fasl-files))
+                 fasl-files)
+               #t)))))
+      (native-inputs
+       `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
+         ("sbcl-prove" ,sbcl-prove)))
+      (inputs
+       `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
+         ("sbcl-cl-syntax-annot" ,sbcl-cl-syntax-annot)
+         ("sbcl-myway" ,sbcl-myway)
+         ("sbcl-lack-request" ,sbcl-lack-request)
+         ("sbcl-lack-response" ,sbcl-lack-response)
+         ("sbcl-lack-component" ,sbcl-lack-component)
+         ("sbcl-alexandria" ,sbcl-alexandria)
+         ("sbcl-babel" ,sbcl-babel)))
+      (home-page "http://8arrow.org/ningle/")
+      (synopsis "Super micro framework for Common Lisp")
+      (description
+       "Ningle is a lightweight web application framework for Common Lisp.")
+      (license license:llgpl))))
+
+(define-public cl-ningle
+  (sbcl-package->cl-source-package sbcl-ningle))
