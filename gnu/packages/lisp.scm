@@ -66,6 +66,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages databases)
@@ -3840,3 +3841,45 @@ client and server.")
 
 (define-public ecl-trivial-clipboard
   (sbcl-package->ecl-package sbcl-trivial-clipboard))
+
+(define-public sbcl-cl+ssl
+  (let ((commit "b81c1135cf5700e870ce2573d5035d249e491788")
+        (revision "1"))
+    (package
+      (name "sbcl-cl+ssl")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cl-plus-ssl/cl-plus-ssl.git")
+               (commit commit)))
+         (sha256
+          (base32 "1845i1pafmqb6cdlr53yaqy67kjrhkvbx6c37ca15cw70vhdr3z9"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/reload.lisp"
+                 (("libssl.so" all)
+                  (string-append
+                   (assoc-ref inputs "openssl") "/lib/" all))))))))
+      (inputs
+       `(("openssl" ,openssl)
+         ("sbcl-cffi" ,sbcl-cffi)
+         ("sbcl-trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("sbcl-flexi-streams" ,sbcl-flexi-streams)
+         ("sbcl-bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("sbcl-trivial-garbage" ,sbcl-trivial-garbage)))
+      (home-page "http://common-lisp.net/project/cl-plus-ssl/")
+      (synopsis "Common Lisp bindings to OpenSSL")
+      (description
+       "This library is a fork of SSL-CMUCL.  The original SSL-CMUCL source
+code was written by Eric Marsden and includes contributions by Jochen Schmidt.
+Development into CL+SSL was done by David Lichteblau.")
+      (license license:expat))))
+
+(define-public cl-cl+ssl
+  (sbcl-package->cl-source-package sbcl-cl+ssl))
