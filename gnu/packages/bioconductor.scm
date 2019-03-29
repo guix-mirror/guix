@@ -3722,3 +3722,43 @@ variants} (SNVs).  It provides a infrastructure related to the methodology
 described in Nik-Zainal (2012, Cell), with flexibility in the matrix
 decomposition algorithms.")
     (license license:expat)))
+
+(define-public r-yapsa
+  (package
+    (name "r-yapsa")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "YAPSA" version))
+       (sha256
+        (base32
+         "1agacimdd1m5yja2xbcsb83mns4svpxbjcsfrvm9ydqdj737i10j"))))
+    (properties `((upstream-name . "YAPSA")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-circlize" ,r-circlize)
+       ("r-complexheatmap" ,r-complexheatmap)
+       ("r-corrplot" ,r-corrplot)
+       ("r-dendextend" ,r-dendextend)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-getoptlong" ,r-getoptlong)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gtrellis" ,r-gtrellis)
+       ("r-keggrest" ,r-keggrest)
+       ("r-lsei" ,r-lsei)
+       ("r-pmcmr" ,r-pmcmr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-somaticsignatures" ,r-somaticsignatures)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/YAPSA/")
+    (synopsis "Yet another package for signature analysis")
+    (description
+     "This package provides functions and routines useful in the analysis of
+somatic signatures (cf. L. Alexandrov et al., Nature 2013).  In particular,
+functions to perform a signature analysis with known signatures and a
+signature analysis on @dfn{stratified mutational catalogue} (SMC) are
+provided.")
+    (license license:gpl3)))
