@@ -4004,3 +4004,39 @@ genes.")
 data mainly through the use of wavelet transforms.  It supports peak detection
 based on @dfn{Continuous Wavelet Transform} (CWT).")
     (license license:lgpl2.0+)))
+
+(define-public r-xcms
+  (package
+    (name "r-xcms")
+    (version "3.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "xcms" version))
+       (sha256
+        (base32
+         "073f25m7y8z4560k93d99fv72pr7nrgrp054zssi7jhas4l3ddww"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-lattice" ,r-lattice)
+       ("r-massspecwavelet" ,r-massspecwavelet)
+       ("r-msnbase" ,r-msnbase)
+       ("r-multtest" ,r-multtest)
+       ("r-mzr" ,r-mzr)
+       ("r-plyr" ,r-plyr)
+       ("r-protgenerics" ,r-protgenerics)
+       ("r-rann" ,r-rann)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-robustbase" ,r-robustbase)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/xcms/")
+    (synopsis "LC/MS and GC/MS mass spectrometry data analysis")
+    (description
+     "This package provides a framework for processing and visualization of
+chromatographically separated and single-spectra mass spectral data.  It
+imports from AIA/ANDI NetCDF, mzXML, mzData and mzML files.  It preprocesses
+data for high-throughput, untargeted analyte profiling.")
+    (license license:gpl2+)))
