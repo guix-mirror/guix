@@ -3626,3 +3626,35 @@ environment for signal processing, statistical modeling, machine learning and
 visualization with image data.")
     ;; Any version of the LGPL.
     (license license:lgpl2.1+)))
+
+(define-public r-yamss
+  (package
+    (name "r-yamss")
+    (version "1.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "yamss" version))
+       (sha256
+        (base32
+         "13pln09j08fjsr7bj17apy4j0sr79n7jzshi8jbnz57jil7k6ia9"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-ebimage" ,r-ebimage)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-matrix" ,r-matrix)
+       ("r-mzr" ,r-mzr)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment"
+        ,r-summarizedexperiment)))
+    (home-page "https://github.com/hansenlab/yamss")
+    (synopsis "Tools for high-throughput metabolomics")
+    (description
+     "This package provides tools to analyze and visualize high-throughput
+metabolomics data aquired using chromatography-mass spectrometry.  These tools
+preprocess data in a way that enables reliable and powerful differential
+analysis.")
+    (license license:artistic2.0)))
