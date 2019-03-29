@@ -3577,7 +3577,7 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
      (origin (method url-fetch)
              (uri (string-append
                    "https://github.com/sgimenez/laby/archive/"
-                   name "-" version ".tar.gz"))
+                   "laby-" version ".tar.gz"))
              (sha256
               (base32
                "0gyrfa95l1qka7gbjf7l6mk7mbfvph00l0c995ia272qdw7rjhyf"))
