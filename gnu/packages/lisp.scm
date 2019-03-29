@@ -4201,3 +4201,27 @@ connections (keep-alive), and SSL.")
 
 (define-public cl-hunchentoot
   (sbcl-package->cl-source-package sbcl-hunchentoot))
+
+(define-public sbcl-trivial-types
+  (package
+    (name "sbcl-trivial-types")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/m2ym/trivial-types.git")
+             (commit "ee869f2b7504d8aa9a74403641a5b42b16f47d88")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1s4cp9bdlbn8447q7w7f1wkgwrbvfzp20mgs307l5pxvdslin341"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://github.com/m2ym/trivial-types")
+    (synopsis "Trivial type definitions for Common Lisp")
+    (description
+     "TRIVIAL-TYPES provides missing but important type definitions such as
+PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
+    (license license:llgpl)))
+
+(define-public cl-trivial-types
+  (sbcl-package->cl-source-package sbcl-trivial-types))
