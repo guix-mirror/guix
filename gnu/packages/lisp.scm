@@ -4616,3 +4616,41 @@ Only minimal changes required to make your CLOS objects serializable.")
 
 (define-public cl-marshal
   (sbcl-package->cl-source-package sbcl-marshal))
+
+(define-public sbcl-checkl
+  (let ((commit "80328800d047fef9b6e32dfe6bdc98396aee3cc9")
+        (revision "1"))
+    (package
+      (name "sbcl-checkl")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rpav/CheckL.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0bpisihx1gay44xmyr1dmhlwh00j0zzi04rp9fy35i95l2r4xdlx"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Error while trying to load definition for system checkl-test from
+       ;; pathname [...]/checkl-test.asd: The function CHECKL:DEFINE-TEST-OP
+       ;; is undefined.
+       '(#:tests? #f))
+      (native-inputs
+       `(("sbcl-fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("sbcl-marshal" ,sbcl-marshal)))
+      (home-page "https://github.com/rpav/CheckL/")
+      (synopsis "Dynamic testing for Common Lisp")
+      (description
+       "CheckL lets you write tests dynamically, it checks resulting values
+against the last run.")
+      ;; The author specifies both LLGPL and "BSD", but the "BSD" license
+      ;; isn't specified anywhere, so I don't know which kind.  LLGPL is the
+      ;; stronger of the two and so I think only listing this should suffice.
+      (license license:llgpl))))
+
+(define-public cl-checkl
+  (sbcl-package->cl-source-package sbcl-checkl))
