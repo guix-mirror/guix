@@ -30,6 +30,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
@@ -3586,3 +3587,42 @@ procedure.  In addition, since the cells are evaluated individually, it can
 easily be applied to bigger datasets, subsetting the expression matrix if
 needed.")
     (license license:gpl3)))
+
+(define-public r-ebimage
+  (package
+    (name "r-ebimage")
+    (version "4.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EBImage" version))
+       (sha256
+        (base32
+         "18v2zr7xh0d0xbs7mxa2b6xjqlqiml0hji27gq1351xp5bf2pxvx"))))
+    (properties `((upstream-name . "EBImage")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-fftwtools" ,r-fftwtools)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jpeg" ,r-jpeg)
+       ("r-locfit" ,r-locfit)
+       ("r-png" ,r-png)
+       ("r-rcurl" ,r-rcurl)
+       ("r-tiff" ,r-tiff)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://github.com/aoles/EBImage")
+    (synopsis "Image processing and analysis toolbox for R")
+    (description
+     "EBImage provides general purpose functionality for image processing and
+analysis.  In the context of (high-throughput) microscopy-based cellular
+assays, EBImage offers tools to segment cells and extract quantitative
+cellular descriptors.  This allows the automation of such tasks using the R
+programming language and facilitates the use of other tools in the R
+environment for signal processing, statistical modeling, machine learning and
+visualization with image data.")
+    ;; Any version of the LGPL.
+    (license license:lgpl2.1+)))
