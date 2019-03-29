@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2554,8 +2555,7 @@ which causes everything printed in the body to be displayed with the provided
 color.  It further provides functions which will print the argument with the
 named color.")
       (home-page "https://github.com/pnathan/cl-ansi-text")
-      ;; REVIEW: The actual license is LLGPL.  Should we add it to Guix?
-      (license license:lgpl3+))))
+      (license license:llgpl))))
 
 (define-public cl-ansi-text
   (sbcl-package->cl-source-package sbcl-cl-ansi-text))
