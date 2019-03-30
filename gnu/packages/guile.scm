@@ -103,6 +103,12 @@
                       (substitute* "ice-9/popen.scm"
                         (("/bin/sh") (which "sh")))
                       #t)))))
+
+   ;; When cross-compiling, a native version of Guile itself is needed.
+   (native-inputs (if (%current-target-system)
+                      `(("self" ,this-package))
+                      '()))
+
    (inputs `(("gawk" ,gawk)
              ("readline" ,readline)))
 
@@ -110,9 +116,6 @@
    ;; propagated.
    (propagated-inputs `(("gmp" ,gmp)
                         ("libltdl" ,libltdl)))
-
-   ;; When cross-compiling, a native version of Guile itself is needed.
-   (self-native-input? #t)
 
    (native-search-paths
     (list (search-path-specification
@@ -141,7 +144,12 @@ without requiring the source code to be rewritten.")
              (base32
               "10lxc6l5alf3lzbs3ihnbfy6dfcrsyf8667wa57f26vf4mk2ai78"))))
    (build-system gnu-build-system)
-   (native-inputs `(("pkgconfig" ,pkg-config)))
+
+   ;; When cross-compiling, a native version of Guile itself is needed.
+   (native-inputs `(,@(if (%current-target-system)
+                          `(("self" ,this-package))
+                          '())
+                    ("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
              ,@(libiconv-if-needed)
 
@@ -164,8 +172,6 @@ without requiring the source code to be rewritten.")
       ;; must be propagated.
       ("bdw-gc" ,libgc)
       ("gmp" ,gmp)))
-
-   (self-native-input? #t)
 
    (outputs '("out" "debug"))
 

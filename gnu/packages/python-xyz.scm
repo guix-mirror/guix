@@ -6875,7 +6875,9 @@ Python's @code{ctypes} foreign function interface (FFI).")
                            (string-append "'" file "/lib/libmagic.so'")))
                         #t))))))
     (inputs `(("file" ,file)))
-    (self-native-input? #f)
+    (native-inputs (if (%current-target-system)
+                       `(("self" ,this-package))
+                       '()))
     (synopsis "Python bindings to the libmagic file type guesser.  Note that
 this module and the python-magic module both provide a \"magic.py\" file;
 these two modules, which are different and were developed separately, both
