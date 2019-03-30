@@ -1835,15 +1835,15 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
   (package
     (name "git-annex-remote-hubic")
     (version "0.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Schnouki/" name "/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "196g3jkaybjx11nbr51n0cjps3wjzb145ab76y717diqvvxp5v4r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Schnouki/git-annex-remote-hubic.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16y9sk67hfi17h9n2kkffyabfccksh5rab40hhk69v6cxmbpn2sx"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (native-inputs
