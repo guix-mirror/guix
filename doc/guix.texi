@@ -5361,10 +5361,6 @@ more.  To ensure that libraries written in those languages can find
 library code they depend on at run time, run-time dependencies must be
 listed in @code{propagated-inputs} rather than @code{inputs}.
 
-@item @code{self-native-input?} (default: @code{#f})
-This is a Boolean field telling whether the package should use itself as
-a native input when cross-compiling.
-
 @item @code{outputs} (default: @code{'("out")})
 The list of output names of the package.  @xref{Packages with Multiple
 Outputs}, for typical uses of additional outputs.

@@ -264,9 +264,6 @@ name of its URI."
                      (default '()) (thunked))
   (native-inputs package-native-inputs    ; native input packages/derivations
                  (default '()) (thunked))
-  (self-native-input? package-self-native-input?  ; whether to use itself as
-                                                  ; a native input when cross-
-                      (default #f))               ; compiling
 
   (outputs package-outputs                ; list of strings
            (default '("out")))
@@ -1032,7 +1029,7 @@ and return it."
               ((and self
                     ($ <package> name version source build-system
                                  args inputs propagated-inputs native-inputs
-                                 self-native-input? outputs))
+                                 outputs))
                ;; Even though we prefer to use "@" to separate the package
                ;; name from the package version in various user-facing parts
                ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
@@ -1044,11 +1041,7 @@ and return it."
                              #:inputs (append (inputs self)
                                               (propagated-inputs self))
                              #:outputs outputs
-                             #:native-inputs `(,@(if (and target
-                                                          self-native-input?)
-                                                     `(("self" ,self))
-                                                     '())
-                                               ,@(native-inputs self))
+                             #:native-inputs (native-inputs self)
                              #:arguments (args self))
                    (raise (if target
                               (condition
