@@ -1931,19 +1931,19 @@ allows easily move between them.")
   (package
     (name "emacs-s")
     (version "1.12.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magnars/s.el/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0xbl75863pcm806zg0x1lw7qznzjq2c8320k8js7apyag8q4srvh"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magnars/s.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g8mqd13llj007al4nlxxx4z2lcsg3wk970mgjn0avwrhjjgdmmv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
-       #:emacs ,emacs ; FIXME: tests fail with emacs-minimal
+       #:emacs ,emacs                   ; FIXME: tests fail with emacs-minimal
        #:test-command '("./run-tests.sh")))
     (home-page "https://github.com/magnars/s.el")
     (synopsis "Emacs string manipulation library")
