@@ -6657,3 +6657,95 @@ to either exploit valuable resources from the earth by building a mine or
 fight each other on an arena-like map.")
     ;; Software as a whole is licensed under ISC, artwork under CC-BY.
     (license (list license:isc license:cc-by3.0))))
+
+(define-public flare-engine
+  (package
+    (name "flare-engine")
+    (version "1.09.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/flareteam/flare-engine.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1117nxir0zwz4pipx7sxj64p68ig6gbz94lkkjbgrk44lhs0hz8p"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:configure-flags '("-DBINDIR=bin" "-DDATADIR=share/flare")))
+    (inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("python" ,python-wrapper)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (home-page "http://www.flarerpg.org/")
+    (synopsis "Action Roleplaying Engine")
+    (description "Flare (Free Libre Action Roleplaying Engine) is a simple
+game engine built to handle a very specific kind of game: single-player 2D
+action RPGs.")
+    (license license:gpl3+)))
+
+(define-public flare-game
+  (package
+    (name "flare-game")
+    (version "1.09.01")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/flareteam/flare-game.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1hn2cchqsbvvgzqc6zvblnl3qrr6sp5rqxpsrcvdmbjm7b37x37b"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:configure-flags '("-DDATADIR=share/flare")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Flare expects the mods to be located in the same folder.
+         ;; Yet, "default" mod is in the engine, whereas the others
+         ;; are in the current package.  Merge everything here with
+         ;; a symlink.
+         (add-after 'install 'add-default-mod
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (mods (string-append out "/share/flare/mods")))
+               (with-directory-excursion mods
+                 (symlink (string-append (assoc-ref inputs "flare-engine")
+                                         "/share/flare/mods/default")
+                          "default")))
+             #t))
+         (add-after 'install 'install-executable
+           ;; The package only provides assets for the game, the
+           ;; executable coming from "flare-engine".  Since more than
+           ;; one game may use the engine, we create a new executable,
+           ;; "flare-game", which launches the engine with appropriate
+           ;; parameters.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (string-append (assoc-ref inputs "bash")
+                                         "/bin/bash"))
+                    (flare (string-append (assoc-ref inputs "flare-engine")
+                                          "/bin/flare"))
+                    (script (string-append out "/bin/flare-game")))
+               (mkdir-p (dirname script))
+               (call-with-output-file script
+                 (lambda (port)
+                   (format port
+                           "#!~a
+exec ~a --data-path=~a/share/flare --mods=empyrean_campaign~%"
+                           bash
+                           flare
+                           out)))
+               (chmod script #o755))
+             #t)))))
+    (inputs
+     `(("flare-engine" ,flare-engine)))
+    (home-page "http://www.flarerpg.org/")
+    (synopsis "Fantasy action RPG using the FLARE engine")
+    (description "Flare is a single-player 2D action RPG with
+fast-paced action and a dark fantasy style.")
+    (license license:cc-by-sa3.0)))
