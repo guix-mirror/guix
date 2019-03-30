@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
-;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -738,9 +738,9 @@ destroying an ancient book using a special wand.")
     ;; license.  The whole package is released under GPLv3+.
     (license license:gpl3+)))
 
-(define-public gnubackgammon
+(define-public gnubg
   (package
-    (name "gnubackgammon")
+    (name "gnubg")
     (version "1.06.002")
     (source
      (origin
@@ -770,8 +770,8 @@ beginners and advanced players.  In addition to a command-line interface, it
 also features an attractive, 3D representation of the playing board.")
     (license license:gpl3+)))
 
-(define-public gnubg
-  (deprecated-package "gnubg" gnubackgammon))
+(define-public gnubackgammon
+  (deprecated-package "gnubackgammon" gnubg))
 
 (define-public gnubik
   (package
