@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -694,6 +694,7 @@ application suites.")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
    (version "3.24.2")
+   (replacement gtk+/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -786,6 +787,18 @@ application suites.")
     (list (search-path-specification
            (variable "GUIX_GTK3_PATH")
            (files '("lib/gtk-3.0")))))))
+
+;; Fixes a bug in Gtk that causes crashes in IceCat and Emacs.
+;; See <https://bugs.gnu.org/34454>, <https://bugs.gnu.org/34658>,
+;; and <https://gitlab.gnome.org/GNOME/gtk/issues/1523>.
+(define gtk+/fixed
+  (package
+    (inherit gtk+)
+    (source (origin
+              (inherit (package-source gtk+))
+              (patches
+               (cons (search-patch "gtk3-fix-deprecation-macro-use.patch")
+                     (origin-patches (package-source gtk+))))))))
 
 ;;;
 ;;; Guile bindings.
