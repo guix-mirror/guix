@@ -2098,18 +2098,18 @@ how information about the merge is displayed.")
   (package
     (name "git-imerge")
     (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/mhagger/git-imerge/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0a6ay8fpgz3yd84jc40w41x0rcfpan6bcq4wd1hxiiqwb51jysb2"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mhagger/git-imerge.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vi1w3f0yk4gqhxj2hzqafqq28rihyhyfnp8x7xzib96j2si14a4"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; The are only manual test scripts.
+     `(#:tests? #f                      ; only manual test scripts
        #:make-flags (list (string-append "DESTDIR=" %output)
                           "PREFIX=")
        #:phases
