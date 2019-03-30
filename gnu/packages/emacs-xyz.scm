@@ -1849,15 +1849,15 @@ evaluations.  The entry point is @code{M-x build-farm} command.")
   (package
     (name "emacs-d-mode")
     (version "2.0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode/"
-                    "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "127aa77ix3p7w4g339bx026df9y649dahlr3v359z0hs40zjz3kd"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Emacs-D-Mode-Maintainers/Emacs-D-Mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fzplvi1sm8k2sabfdvrd7j2xypwqh0g9v1mxa75dajdmcd85zpj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-undercover" ,emacs-undercover)))
