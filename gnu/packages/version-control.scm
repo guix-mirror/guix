@@ -1026,14 +1026,15 @@ manipulate them in various ways.")
   (package
     (name "vcsh")
     (version "1.20151229")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/RichiH/vcsh/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ym3swkh738c3vciffvlr96vqzhwmzkb8ajqzap8f0j9n039a1mf"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/RichiH/vcsh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1grpj45nbpv4j60vd2kg4rj53zrm0bc0h9l4pfd3c2mwbvywm6ab"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
