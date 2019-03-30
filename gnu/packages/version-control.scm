@@ -1101,15 +1101,15 @@ also walk each side of a merge and test those changes individually.")
   (package
     (name "gitolite")
     (version "3.6.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/sitaramc/gitolite/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1idxipg0df80bhjcxgwxs3lllqnkvhwpinmfv1xvg1l98fxiapgp"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sitaramc/gitolite.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rmyzr66lxh2ildf3h1nh3hh2ndwk21rjdin50r5vhwbdd7jg8vb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
