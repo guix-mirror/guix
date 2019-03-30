@@ -522,13 +522,14 @@ everything from small to very large projects with speed and efficiency.")
     (name "libgit2")
     (version "0.28.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/libgit2/libgit2/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libgit2/libgit2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0swk2dyq5a4p1jn5wvbcsrxckhh808vifxz5y8w663avg541188c"))
+                "0j5p0hhz2wizvgkf0nbpd8g32mb5bg1vp8ckpbhb0pq38ja4h43r"))
               (patches (search-patches "libgit2-avoid-python.patch"
                                        "libgit2-mtime-0.patch"))
 
@@ -550,6 +551,10 @@ everything from small to very large projects with speed and efficiency.")
              (substitute* "tests/clar/fs.h"
                (("/bin/cp") (which "cp"))
                (("/bin/rm") (which "rm")))
+             #t))
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
              #t))
          ;; Run checks more verbosely.
          (replace 'check
