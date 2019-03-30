@@ -84,7 +84,6 @@
             package-license
             package-home-page
             package-supported-systems
-            package-maintainers
             package-properties
             package-location
             hidden-package
@@ -286,7 +285,6 @@ name of its URI."
   (home-page package-home-page)
   (supported-systems package-supported-systems    ; list of strings
                      (default %supported-systems))
-  (maintainers package-maintainers (default '()))
 
   (properties package-properties (default '()))   ; alist for anything else
 
