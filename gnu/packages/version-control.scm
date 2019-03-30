@@ -577,14 +577,15 @@ write native speed custom Git applications in any language with bindings.")
   (package
     (name "git-crypt")
     (version "0.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/AGWA/git-crypt"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0454fdmgm5f3razkn8n03lfqm5zyzvr4r2528zmlxiwba9518l2i"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AGWA/git-crypt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x9209n3k49k998saadr2d0lmvs01smjinx7gzzyjdwj9l904sii"))))
     (build-system gnu-build-system)
     (inputs
      `(("git" ,git)
