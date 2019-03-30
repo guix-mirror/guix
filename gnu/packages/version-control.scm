@@ -1763,14 +1763,15 @@ output of the @code{git} command.")
   (package
     (name "findnewest")
     (version "0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/0-wiz-0/findnewest/archive/findnewest-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1ydis4y0amkgfr4y60sn076f1l41ya2kn89kfd9fqf44f9ccgb5r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/0-wiz-0/findnewest.git")
+             (commit (string-append "findnewest-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x1cbn2b27h5r0ah5xc06fkalfdci2ngrgd4wibxjw0h88h0nvgq"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
