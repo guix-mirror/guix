@@ -2106,13 +2106,13 @@ This package also includes relevant snippets for yasnippet.")
     (version "1.25.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rejeep/el-mock.el/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rejeep/el-mock.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "16xw94n58xxn3zvgyj72bmzs0k5lkvswjmzs79ws9n7rzdivb38b"))))
+        (base32 "13mv1rhgkwiww2wh5w926jz7idppp492wir1vdl245c5x50dh4f7"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rejeep/el-mock.el")
     (synopsis "Tiny mock and stub framework in Emacs Lisp")
