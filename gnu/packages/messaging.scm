@@ -492,14 +492,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.7.2")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ac2csl5jr56vahnxdynlvrhwlvcc1gqxvyifckc6cn5aj7ygd30"))))
+                "0g8i5hsl4kinpz1wp0a2zniidv3w2sd6awq8676fds516wcc6k0y"))))
     ;; TODO: autotools support has been deprecated, and new features like i18n
     ;; are only supported when building with cmake.
     (build-system gnu-build-system)
