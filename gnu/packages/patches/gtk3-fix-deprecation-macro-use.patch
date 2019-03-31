@@ -1,0 +1,28 @@
+Copied from <https://gitlab.gnome.org/GNOME/gtk/commit/e3a1593a>.
+Fixes upstream bugs <https://gitlab.gnome.org/GNOME/gtk/issues/1523>
+and <https://gitlab.gnome.org/GNOME/gtk/issues/1280>.
+
+diff --git a/gdk/x11/gdkwindow-x11.c b/gdk/x11/gdkwindow-x11.c
+index 97ada6d73919fba3dfe192dd66929e90bc7677bb..764e39495f7edb0c3efe41cca25b8bee4778887d 100644
+--- a/gdk/x11/gdkwindow-x11.c
++++ b/gdk/x11/gdkwindow-x11.c
+@@ -2985,6 +2985,7 @@ gdk_window_x11_set_background (GdkWindow      *window,
+   double r, g, b, a;
+   cairo_surface_t *surface;
+   cairo_matrix_t matrix;
++  cairo_pattern_t *parent_relative_pattern;
+ 
+   if (GDK_WINDOW_DESTROYED (window))
+     return;
+@@ -2997,8 +2998,10 @@ gdk_window_x11_set_background (GdkWindow      *window,
+     }
+ 
+ G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+-  if (pattern == gdk_x11_get_parent_relative_pattern ())
++  parent_relative_pattern = gdk_x11_get_parent_relative_pattern ();
+ G_GNUC_END_IGNORE_DEPRECATIONS
++
++  if (pattern == parent_relative_pattern)
+     {
+       GdkWindow *parent;
+ 

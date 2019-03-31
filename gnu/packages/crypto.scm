@@ -208,9 +208,9 @@ OpenBSD tool of the same name.")
          (add-after 'unpack 'unpack-googletest
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir-p "vendor/github.com/google/googletest")
-             (invoke "tar" "xvf" (assoc-ref inputs "googletest-source")
-                     "-C" "vendor/github.com/google/googletest"
-                     "--strip-components=1")))
+             (copy-recursively (assoc-ref inputs "googletest-source")
+                               "vendor/github.com/google/googletest")
+             #t))
          (add-before 'check 'make-unittests
            (lambda _
              (invoke "make" "unittests"))))))

@@ -38,13 +38,15 @@
   (list
    (desktop-environment
     (name "GNOME")
-    (snippet '(gnome-desktop-service)))
+    (snippet '(service gnome-desktop-service-type)))
    (desktop-environment
     (name "Xfce")
+    ;; TODO: Use 'xfce-desktop-service-type' when the 'guix' package provides
+    ;; it with a default value.
     (snippet '(xfce-desktop-service)))
    (desktop-environment
     (name "MATE")
-    (snippet '(mate-desktop-service)))
+    (snippet '(service mate-desktop-service-type)))
    (desktop-environment
     (name "Enlightenment")
     (snippet '(service enlightenment-desktop-service-type)))))

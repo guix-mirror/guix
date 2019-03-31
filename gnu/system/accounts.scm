@@ -67,7 +67,8 @@
   (supplementary-groups user-account-supplementary-groups
                         (default '()))            ; list of strings
   (comment        user-account-comment (default ""))
-  (home-directory user-account-home-directory)
+  (home-directory user-account-home-directory (thunked)
+                  (default (default-home-directory this-record)))
   (create-home-directory? user-account-create-home-directory? ;Boolean
                           (default #t))
   (shell          user-account-shell              ; gexp
@@ -83,6 +84,10 @@
   (id             user-group-id (default #f))
   (system?        user-group-system?              ; Boolean
                   (default #f)))
+
+(define (default-home-directory account)
+  "Return the default home directory for ACCOUNT."
+  (string-append "/home/" (user-account-name account)))
 
 (define (sexp->user-group sexp)
   "Take SEXP, a tuple as returned by 'user-group->gexp', and turn it into a

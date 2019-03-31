@@ -158,8 +158,8 @@ the @code{zlib} source.")
    (home-page "https://savannah.nongnu.org/projects/fastjar")
    (synopsis "Replacement for Sun's 'jar' utility")
    (description
-    "FastJar is an attempt to create a much faster replacement for Sun's 'jar'
-utility.  Instead of being written in Java, FastJar is written in C.")
+    "FastJar is an attempt to create a much faster replacement for Sun's
+@code{jar} utility.  Instead of being written in Java, FastJar is written in C.")
    (license license:gpl2+)))
 
 (define-public libtar

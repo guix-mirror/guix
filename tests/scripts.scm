@@ -19,6 +19,7 @@
 
 (define-module (test-scripts)
   #:use-module (guix scripts)
+  #:use-module (guix tests)
   #:use-module ((guix scripts build)
                 #:select (%standard-build-options))
   #:use-module (srfi srfi-64))

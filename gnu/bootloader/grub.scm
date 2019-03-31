@@ -27,8 +27,10 @@
   #:use-module (gnu bootloader)
   #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system keyboard)
   #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
+  #:autoload   (gnu packages xorg) (xkeyboard-config)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -219,6 +221,26 @@ fi~%"
 ;;; Configuration file.
 ;;;
 
+(define* (keyboard-layout-file layout
+                               #:key
+                               (grub grub))
+  "Process the X keyboard layout description LAYOUT, a <keyboard-layout> record,
+and return a file in the format for GRUB keymaps.  LAYOUT must be present in
+the 'share/X11/xkb/symbols/' directory of 'xkeyboard-config'."
+  (define builder
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+
+          ;; 'grub-kbdcomp' passes all its arguments but '-o' to 'ckbcomp'
+          ;; (from the 'console-setup' package).
+          (invoke #$(file-append grub "/bin/grub-mklayout")
+                  "-i" #+(keyboard-layout->console-keymap layout)
+                  "-o" #$output))))
+
+  (computed-file (string-append "grub-keymap." (keyboard-layout-name layout))
+                 builder))
+
 (define (grub-setup-io config)
   "Return GRUB commands to configure the input / output interfaces.  The result
 is a string that can be inserted in grub.cfg."
@@ -330,6 +352,18 @@ entries corresponding to old generations of the system."
                #:system system
                #:port #~port))
 
+  (define keyboard-layout-config
+    (let ((layout (bootloader-configuration-keyboard-layout config))
+          (grub   (bootloader-package
+                   (bootloader-configuration-bootloader config))))
+      #~(let ((keymap #$(and layout
+                             (keyboard-layout-file layout #:grub grub))))
+          (when keymap
+            (format port "\
+terminal_input at_keyboard
+insmod keylayouts
+keymap ~a~%" keymap)))))
+
   (define builder
     #~(call-with-output-file #$output
         (lambda (port)
@@ -338,6 +372,7 @@ entries corresponding to old generations of the system."
 # will be lost upon reconfiguration.
 ")
           #$sugar
+          #$keyboard-layout-config
           (format port "
 set default=~a
 set timeout=~a~%"

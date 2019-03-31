@@ -2765,14 +2765,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.25.0")
+    (version "0.26.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1xabnaqd4n72myrc3mxl2y33vr2p7c9c5a87n77p9k327ckvdx01"))))
+         "1vs9ckfmm534n1hq3m871916wsjvi5h4gyj6wlzg13ck6506lx0s"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -5641,7 +5641,7 @@ It is written entirely in Python.")
     (synopsis "Backport of additions to the 'collections.abc' module")
     (description
      "Python-backports-abc provides a backport of additions to the
-'collections.abc' module in Python-3.5.")
+@code{collections.abc} module in Python-3.5.")
     (license license:psfl)))
 
 (define-public python2-backports-abc
@@ -6072,14 +6072,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.0.1")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "0z6v8649sr434d5r5zmrhydka7v7f9yas4bwcgkcs0650jdhybnh"))))
+         "0l62x154r9mgdvfap06gf0nkrmjd7xixlfshsxcdif2nlrlnyjpw"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -6872,7 +6872,9 @@ Python's @code{ctypes} foreign function interface (FFI).")
                            (string-append "'" file "/lib/libmagic.so'")))
                         #t))))))
     (inputs `(("file" ,file)))
-    (self-native-input? #f)
+    (native-inputs (if (%current-target-system)
+                       `(("self" ,this-package))
+                       '()))
     (synopsis "Python bindings to the libmagic file type guesser.  Note that
 this module and the python-magic module both provide a \"magic.py\" file;
 these two modules, which are different and were developed separately, both
@@ -10336,12 +10338,12 @@ Python to manipulate OpenDocument 1.2 files.")
     (description
      "Natsort lets you apply natural sorting on lists instead of
 lexicographical.  If you use the built-in @code{sorted} method in python
-on a list such as @code{['a20', 'a9', 'a1', 'a4', 'a10']}, it would be
-returned as @code{['a1', 'a10', 'a20', 'a4', 'a9']}.  Natsort provides a
-function @code{natsorted} that identifies numbers and sorts them separately
-from strings.  It can also sort version numbers, real numbers, mixed types
-and more, and comes with a shell command @command{natsort} that exposes this
-functionality in the command line.")
+on a list such as @code{[@code{a20}, @code{a9}, @code{a1}, @code{a4},
+@code{a10}]}, it would be returned as @code{[@code{a1}, @code{a10}, @code{a20},
+@code{a4}, @code{a9}]}.  Natsort provides a function @code{natsorted} that
+identifies numbers and sorts them separately from strings.  It can also sort
+version numbers, real numbers, mixed types and more, and comes with a shell
+command @command{natsort} that exposes this functionality in the command line.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-natsort))))))
 
@@ -10833,16 +10835,17 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.3.3")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "1a0wbil552wsmklwd89ssmgz3pjd86qa9i7jh8wqb9wslc8a2qjr"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+           "17xbrgi23l87yg6h0qcknssp2q812miiy33qw6v45v5gx0jwv5xh"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/marcelm/xopen/")
     (synopsis "Open compressed files transparently")
     (description "This module provides an @code{xopen} function that works like
@@ -14591,14 +14594,14 @@ tool).")
 (define-public python-anndata
   (package
     (name "python-anndata")
-    (version "0.6.9")
+    (version "0.6.18")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "anndata" version))
        (sha256
         (base32
-         "1fh461xyyc7pcrjfgd013bdc2alf53r46ss3gfw3431mbb1gappi"))))
+         "03x83yjaccbqszj7x4fwwmpil0ai59yx64d1zmf2691za3j03w73"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
@@ -15271,3 +15274,26 @@ and dates in \"human readable\" forms.  For example, it would display
     (description "This is a collection of well-tested, simple modules and
 functions that aim to reduce boilerplate when working with data.")
     (license license:bsd-2)))
+
+(define-public python-annoy
+  (package
+    (name "python-annoy")
+    (version "1.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "annoy" version))
+       (sha256
+        (base32
+         "1rxn6snn0r32r07g45hdjhh8aa1xzx6fjrm8g62d8vzp46z7rzrp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/spotify/annoy/")
+    (synopsis "Approximate nearest neighbors library")
+    (description
+     "Annoy is a C++ library with Python bindings to search for points in
+space that are close to a given query point.  It also creates large read-only
+file-based data structures that are @code{mmap}ped into memory so that many
+processes may share the same data.")
+    (license license:asl2.0)))

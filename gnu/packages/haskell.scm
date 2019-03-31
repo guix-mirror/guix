@@ -1157,7 +1157,7 @@ them.")
     (synopsis
      "Support for manipulating Haskell source code")
     (description
-     "The 'haskell-src' package provides support for manipulating Haskell
+     "The @code{haskell-src} package provides support for manipulating Haskell
 source code.  The package provides a lexer, parser and pretty-printer, and a
 definition of a Haskell abstract syntax tree (AST).  Common uses of this
 package are to parse or generate Haskell 98 code.")
@@ -2360,11 +2360,11 @@ literals.")
      "Compression and decompression in the gzip and zlib formats")
     (description
      "This package provides a pure interface for compressing and decompressing
-streams of data represented as lazy 'ByteString's.  It uses the zlib C library
-so it has high performance.  It supports the 'zlib', 'gzip' and 'raw'
-compression formats.  It provides a convenient high level API suitable for
-most tasks and for the few cases where more control is needed it provides
-access to the full zlib feature set.")
+streams of data represented as lazy @code{ByteString}s.  It uses the zlib C
+library so it has high performance.  It supports the @code{zlib}, @code{gzip}
+and @code{raw} compression formats.  It provides a convenient high level API
+suitable for most tasks and for the few cases where more control is needed it
+provides access to the full zlib feature set.")
     (license license:bsd-3)))
 
 (define-public ghc-stm
@@ -2467,7 +2467,7 @@ are not exception safe and can be broken by @code{killThread}.")
      "An efficient packed, immutable Unicode text type (both strict and
 lazy), with a powerful loop fusion optimization framework.
 
-The 'Text' type represents Unicode character strings, in a time and
+The @code{Text} type represents Unicode character strings, in a time and
 space-efficient manner.  This package provides text processing
 capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
@@ -3800,10 +3800,10 @@ writing to stdout and other handles.")
      "https://github.com/basvandijk/case-insensitive")
     (synopsis "Case insensitive string comparison")
     (description
-     "The module 'Data.CaseInsensitive' provides the 'CI' type constructor
-which can be parameterised by a string-like type like: 'String', 'ByteString',
-'Text', etc..  Comparisons of values of the resulting type will be insensitive
-to cases.")
+     "The module @code{Data.CaseInsensitive} provides the @code{CI} type
+constructor which can be parameterised by a string-like type like:
+@code{String}, @code{ByteString}, @code{Text}, etc.  Comparisons of values of
+the resulting type will be insensitive to cases.")
     (license license:bsd-3)))
 
 (define-public ghc-syb
@@ -3830,7 +3830,7 @@ to cases.")
     (description "This package contains the generics system described in the
 /Scrap Your Boilerplate/ papers (see
 @uref{http://www.cs.uu.nl/wiki/GenericProgramming/SYB, the website}).  It
-defines the 'Data' class of types permitting folding and unfolding of
+defines the @code{Data} class of types permitting folding and unfolding of
 constructor applications, instances of this class for primitive types, and a
 variety of traversals.")
     (license license:bsd-3)))
@@ -4323,8 +4323,8 @@ interface.")
      "https://github.com/haskell/network-uri")
     (synopsis "Library for URI manipulation")
     (description "This package provides an URI manipulation interface.  In
-'network-2.6' the 'Network.URI' module was split off from the 'network'
-package into this package.")
+@code{network-2.6} the @code{Network.URI} module was split off from the
+@code{network} package into this package.")
     (license license:bsd-3)))
 
 (define-public ghc-ansi-terminal
@@ -5724,7 +5724,7 @@ using a simple box model.")
     (description
      "This package provides a @code{GHC.Generics}-based
 @code{Control.DeepSeq.Generics.genericRnf} function which can be used for
-providing an 'rnf' implementation.")
+providing an @code{rnf} implementation.")
     (license license:bsd-3)))
 
 (define-public ghc-string-qq
@@ -9430,7 +9430,7 @@ the community, with the missing features being added with pull-requests.")
      `(("ghc-rebase" ,ghc-rebase)))
     (home-page "https://github.com/nikita-volkov/rerebase")
     (synopsis "Reexports from ``base'' with many other standard libraries")
-    (description "A rich drop-in replacement for ``base''.  For details and
+    (description "A rich drop-in replacement for @code{base}.  For details and
 documentation please visit @uref{https://github.com/nikita-volkov/rerebase,
 the project's home page}.")
     (license license:expat)))

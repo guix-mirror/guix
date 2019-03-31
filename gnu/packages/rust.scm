@@ -70,7 +70,10 @@
     (_                (nix-system->gnu-triplet system))))
 
 
-(define* (rust-source version hash #:key (patches '()))
+(define* (rust-source-pre-1.32 version hash
+                               #:key
+                               (patches '())
+                               (patch-flags '("-p1")))
   (origin
     (method url-fetch)
     (uri (string-append "https://static.rust-lang.org/dist/"
@@ -78,16 +81,51 @@
     (sha256 (base32 hash))
     (modules '((guix build utils)))
     (snippet '(begin (delete-file-recursively "src/llvm") #t))
-    (patches (map search-patch patches))))
+    (patches (map search-patch patches))
+    (patch-flags patch-flags)))
+
+(define* (rust-bootstrapped-package-pre-1.32 base-rust version checksum
+                                             #:key
+                                             (patches '())
+                                             (patch-flags '("-p1")))
+  "Bootstrap rust VERSION with source checksum CHECKSUM patched with PATCHES using BASE-RUST.
+Specific to rust versions before 1.32."
+  (package
+    (inherit base-rust)
+    (version version)
+    (source
+     (rust-source-pre-1.32 version checksum #:patches patches #:patch-flags patch-flags))
+    (native-inputs
+     (alist-replace "cargo-bootstrap" (list base-rust "cargo")
+                    (alist-replace "rustc-bootstrap" (list base-rust)
+                                   (package-native-inputs base-rust))))))
+
+(define* (rust-source version hash
+                      #:key
+                      (patches '())
+                      (patch-flags '("-p1")))
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://static.rust-lang.org/dist/"
+                        "rustc-" version "-src.tar.gz"))
+    (sha256 (base32 hash))
+    (modules '((guix build utils)))
+    (snippet '(begin (delete-file-recursively "src/llvm")
+                     (delete-file-recursively "vendor/jemalloc-sys/jemalloc")
+                     #t))
+    (patches (map search-patch patches))
+    (patch-flags patch-flags)))
 
 (define* (rust-bootstrapped-package base-rust version checksum
-                                    #:key (patches '()))
+                                    #:key
+                                    (patches '())
+                                    (patch-flags '("-p1")))
   "Bootstrap rust VERSION with source checksum CHECKSUM patched with PATCHES using BASE-RUST."
   (package
     (inherit base-rust)
     (version version)
     (source
-     (rust-source version checksum #:patches patches))
+     (rust-source version checksum #:patches patches #:patch-flags patch-flags))
     (native-inputs
      (alist-replace "cargo-bootstrap" (list base-rust "cargo")
                     (alist-replace "rustc-bootstrap" (list base-rust)
@@ -118,7 +156,7 @@
          ("flex" ,flex)
          ;; Required for the libstd sources.
          ("rustc"
-          ,(rust-source "1.19.0" "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))))
+          ,(rust-source-pre-1.32 "1.19.0" "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))))
       (arguments
        `(#:test-target "local_tests"
          #:make-flags (list (string-append "LLVM_CONFIG="
@@ -191,7 +229,7 @@ safety and thread safety guarantees.")
   (package
     (name "rust")
     (version "1.19.0")
-    (source (rust-source version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"
+    (source (rust-source-pre-1.32 version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"
             #:patches '("rust-1.19-mrustc.patch")))
     (outputs '("out" "cargo"))
     (properties '((timeout . 72000)               ;20 hours
@@ -427,7 +465,7 @@ safety and thread safety guarantees.")
 
 (define-public rust-1.20
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.19 "1.20.0"
+         (rust-bootstrapped-package-pre-1.32 rust-1.19 "1.20.0"
           "0542y4rnzlsrricai130mqyxl8r6rd991frb4qsnwb27yigqg91a")))
     (package
       (inherit base-rust)
@@ -572,7 +610,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    #t))))))))))
 
 (define-public rust-1.21
-  (let ((base-rust (rust-bootstrapped-package rust-1.20 "1.21.0"
+  (let ((base-rust (rust-bootstrapped-package-pre-1.32 rust-1.20 "1.21.0"
                     "1yj8lnxybjrybp00fqhxw8fpr641dh8wcn9mk44xjnsb4i1c21qp")))
     (package
       (inherit base-rust)
@@ -588,7 +626,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  #t)))))))))
 
 (define-public rust-1.22
-  (let ((base-rust (rust-bootstrapped-package rust-1.21 "1.22.1"
+  (let ((base-rust (rust-bootstrapped-package-pre-1.32 rust-1.21 "1.22.1"
                     "1lrzzp0nh7s61wgfs2h6ilaqi6iq89f1pd1yaf65l87bssyl4ylb")))
     (package
       (inherit base-rust)
@@ -604,7 +642,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  #t)))))))))
 
 (define-public rust-1.23
-  (let ((base-rust (rust-bootstrapped-package rust-1.22 "1.23.0"
+  (let ((base-rust (rust-bootstrapped-package-pre-1.32 rust-1.22 "1.23.0"
                     "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l")))
     (package
       (inherit base-rust)
@@ -623,8 +661,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust-1.24
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.23 "1.24.1"
-                                    "1vv10x2h9kq7fxh2v01damdq8pvlp5acyh1kzcda9sfjx12kv99y")))
+         (rust-bootstrapped-package-pre-1.32 rust-1.23 "1.24.1"
+          "1vv10x2h9kq7fxh2v01damdq8pvlp5acyh1kzcda9sfjx12kv99y")))
     (package
       (inherit base-rust)
       (arguments
@@ -645,7 +683,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 ;;; Keep using llvm 3.9.1 until builds become determenistic
 (define-public rust-1.25
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.24 "1.25.0"
+         (rust-bootstrapped-package-pre-1.32 rust-1.24 "1.25.0"
           "0baxjr99311lvwdq0s38bipbnj72pn6fgbk6lcq7j555xq53mxpf"
           #:patches '("rust-1.25-accept-more-detailed-gdb-lines.patch"))))
     (package
@@ -676,7 +714,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust-1.26
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.25 "1.26.2"
+         (rust-bootstrapped-package-pre-1.32 rust-1.25 "1.26.2"
           "0047ais0fvmqvngqkdsxgrzhb0kljg8wy85b01kbbjc88hqcz7pv"
           #:patches '("rust-coresimd-doctest.patch"
                       "rust-1.25-accept-more-detailed-gdb-lines.patch"))))
@@ -731,13 +769,13 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust-1.27
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.26 "1.27.2"
-                                    "0pg1s37bhx9zqbynxyydq5j6q7kij9vxkcv8maz0m25prm88r0cs"
-                                    #:patches
-                                    '("rust-coresimd-doctest.patch"
-                                      "rust-bootstrap-stage0-test.patch"
-                                      "rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-reproducible-builds.patch"))))
+         (rust-bootstrapped-package-pre-1.32 rust-1.26 "1.27.2"
+          "0pg1s37bhx9zqbynxyydq5j6q7kij9vxkcv8maz0m25prm88r0cs"
+          #:patches
+          '("rust-coresimd-doctest.patch"
+            "rust-bootstrap-stage0-test.patch"
+            "rust-1.25-accept-more-detailed-gdb-lines.patch"
+            "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (arguments
@@ -760,13 +798,13 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust-1.28
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.27 "1.28.0"
-                                    "11k4rn77bca2rikykkk9fmprrgjswd4x4kaq7fia08vgkir82nhx"
-                                    #:patches
-                                    '("rust-coresimd-doctest.patch"
-                                      "rust-bootstrap-stage0-test.patch"
-                                      "rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-reproducible-builds.patch"))))
+         (rust-bootstrapped-package-pre-1.32 rust-1.27 "1.28.0"
+          "11k4rn77bca2rikykkk9fmprrgjswd4x4kaq7fia08vgkir82nhx"
+          #:patches
+          '("rust-coresimd-doctest.patch"
+            "rust-bootstrap-stage0-test.patch"
+            "rust-1.25-accept-more-detailed-gdb-lines.patch"
+            "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (inputs
@@ -794,22 +832,22 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust-1.29
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.28 "1.29.2"
-                                    "1jb787080z754caa2w3w1amsygs4qlzj9rs1vy64firfmabfg22h"
-                                    #:patches
-                                    '("rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-reproducible-builds.patch"))))
+         (rust-bootstrapped-package-pre-1.32 rust-1.28 "1.29.2"
+          "1jb787080z754caa2w3w1amsygs4qlzj9rs1vy64firfmabfg22h"
+          #:patches
+          '("rust-1.25-accept-more-detailed-gdb-lines.patch"
+            "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust))))
 
 (define-public rust-1.30
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.29 "1.30.1"
-                                    "0aavdc1lqv0cjzbqwl5n59yd0bqdlhn0zas61ljf38yrvc18k8rn"
-                                    #:patches
-                                    '("rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-1.30-gdb-llvm.patch"
-                                      "rust-reproducible-builds.patch"))))
+         (rust-bootstrapped-package-pre-1.32 rust-1.29 "1.30.1"
+          "0aavdc1lqv0cjzbqwl5n59yd0bqdlhn0zas61ljf38yrvc18k8rn"
+          #:patches
+          '("rust-1.25-accept-more-detailed-gdb-lines.patch"
+            "rust-1.30-gdb-llvm.patch"
+            "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (inputs
@@ -842,18 +880,21 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("fn include") "#[ignore]\nfn include")
                    (("fn exclude") "#[ignore]\nfn exclude"))
                    #t))
-             ;; Appears that this test isn't currently running and has been
-             ;; moved elsewhere, so the patch doesn't apply.
-             (delete 'disable-amd64-avx-test))))))))
+             ;; The test has been moved elsewhere.
+             (replace 'disable-amd64-avx-test
+               (lambda _
+                 (substitute* "src/test/ui/run-pass/issues/issue-44056.rs"
+	          (("only-x86_64") "ignore-test"))
+                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.31
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.30 "1.31.1"
-                                    "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli"
-                                    #:patches
-                                    '("rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                      "rust-1.30-gdb-llvm.patch"
-                                      "rust-reproducible-builds.patch"))))
+         (rust-bootstrapped-package-pre-1.32 rust-1.30 "1.31.1"
+          "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli"
+          #:patches
+          '("rust-1.25-accept-more-detailed-gdb-lines.patch"
+            "rust-1.30-gdb-llvm.patch"
+            "rust-reproducible-builds.patch"))))
     (package
       (inherit base-rust)
       (arguments
@@ -875,6 +916,12 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                      ((" Command::new\\(\"echo\"\\)")
                       (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
                    #t)))
+	      ;; The test has been moved elsewhere.
+	      (replace 'disable-amd64-avx-test
+	        (lambda _
+	          (substitute* "src/test/ui/issues/issue-44056.rs"
+                   (("only-x86_64") "ignore-test"))
+                  #t))
              (add-after 'patch-tests 'patch-process-docs-rev-cmd
                (lambda* _
                  ;; Disable some doc tests which depend on the "rev" command
@@ -882,3 +929,56 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/libstd/process.rs"
                    (("```rust") "```rust,no_run"))
                  #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.31 "1.32.0"
+          "0ji2l9xv53y27xy72qagggvq47gayr5lcv2jwvmfirx029vlqnac"
+          #:patches '("rust-reproducible-builds.patch")
+          ;; the vendor directory has moved to the root of
+          ;; the tarball, so we have to strip an extra prefix
+          #:patch-flags '("-p2"))))
+    (package
+      (inherit base-rust)
+      (inputs
+       ;; Downgrade to LLVM 6, all LTO tests appear to fail with LLVM 7.0.1
+       (alist-replace "llvm" (list llvm-6)
+                      (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Cargo.lock and the vendor/ directory have been moved to the
+             ;; root of the rust tarball
+             (replace 'patch-cargo-checksums
+               (lambda* _
+                 (substitute* "Cargo.lock"
+                   (("(\"checksum .* = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (for-each
+                  (lambda (filename)
+                    (use-modules (guix build cargo-utils))
+                    (delete-file filename)
+                    (let* ((dir (dirname filename)))
+                      (display (string-append
+                                "patch-cargo-checksums: generate-checksums for "
+                                dir "\n"))
+                      (generate-checksums dir ,%cargo-reference-project-file)))
+                  (find-files "vendor" ".cargo-checksum.json"))
+                 #t))
+             (add-after 'enable-codegen-tests 'override-jemalloc
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; The compiler is no longer directly built against jemalloc,
+                 ;; but rather via the jemalloc-sys crate (which vendors the
+                 ;; jemalloc source). To use jemalloc we must enable linking to
+                 ;; it (otherwise it would use the system allocator), and set
+                 ;; an environment variable pointing to the compiled jemalloc.
+                 (substitute* "config.toml"
+                   (("^jemalloc =.*$") "")
+                   (("[[]rust[]]") "\n[rust]\njemalloc=true\n"))
+                 (setenv "JEMALLOC_OVERRIDE" (string-append (assoc-ref inputs "jemalloc")
+                                                            "/lib/libjemalloc_pic.a"))
+                 #t))
+             ;; Remove no longer relevant steps
+             (delete 'remove-flaky-test)
+             (delete 'patch-aarch64-test))))))))

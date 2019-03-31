@@ -33,6 +33,7 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu build linux-container)
+  #:use-module (gnu build accounts)
   #:use-module (gnu system linux-container)
   #:use-module (gnu system file-systems)
   #:use-module (gnu packages)
@@ -458,10 +459,20 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
     (return
      (let* ((cwd      (getcwd))
             (home     (getenv "HOME"))
-            (passwd   (mock-passwd (getpwuid (getuid))
-                                   user
-                                   bash))
-            (home-dir (passwd:dir passwd))
+            (passwd   (let ((pwd (getpwuid (getuid))))
+                        (password-entry
+                         (name (or user (passwd:name pwd)))
+                         (real-name (if user
+                                        ""
+                                        (passwd:gecos pwd)))
+                         (uid 0) (gid 0) (shell bash)
+                         (directory (if user
+                                        (string-append "/home/" user)
+                                        (passwd:dir pwd))))))
+            (groups   (list (group-entry (name "users") (gid 0))
+                            (group-entry (gid 65534) ;the overflow GID
+                                         (name "overflow"))))
+            (home-dir (password-entry-directory passwd))
             ;; Bind-mount all requisite store items, user-specified mappings,
             ;; /bin/sh, the current working directory, and possibly networking
             ;; configuration files within the container.
@@ -519,17 +530,8 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             ;; to read it, such as 'git clone' over SSH, a valid use-case when
             ;; sharing the host's network namespace.
             (mkdir-p "/etc")
-            (call-with-output-file "/etc/passwd"
-              (lambda (port)
-                (display (string-join (list (passwd:name passwd)
-                                            "x" ; but there is no shadow
-                                            "0" "0" ; user is now root
-                                            (passwd:gecos passwd)
-                                            (passwd:dir passwd)
-                                            bash)
-                                      ":")
-                         port)
-                (newline port)))
+            (write-passwd (list passwd))
+            (write-group groups)
 
             ;; For convenience, start in the user's current working
             ;; directory rather than the root directory.
@@ -542,32 +544,6 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
           #:namespaces (if network?
                            (delq 'net %namespaces) ; share host network
                            %namespaces)))))))
-
-(define (mock-passwd passwd user-override shell)
-  "Generate mock information for '/etc/passwd'.  If USER-OVERRIDE is not '#f',
-it is expected to be a string representing the mock username; it will produce
-a user of that name, with a home directory of '/home/USER-OVERRIDE', and no
-GECOS field.  If USER-OVERRIDE is '#f', data will be inherited from PASSWD.
-In either case, the shadow password and UID/GID are cleared, since the user
-runs as root within the container.  SHELL will always be used in place of the
-shell in PASSWD.
-
-The resulting vector is suitable for use with Guile's POSIX user procedures.
-
-See passwd(5) for more information each of the fields."
-  (if user-override
-      (vector
-       user-override
-        "x" "0" "0"  ;; no shadow, user is now root
-        ""           ;; no personal information
-        (user-override-home user-override)
-        shell)
-      (vector
-       (passwd:name passwd)
-        "x" "0" "0"  ;; no shadow, user is now root
-        (passwd:gecos passwd)
-        (passwd:dir passwd)
-        shell)))
 
 (define (user-override-home user)
   "Return home directory for override user USER."

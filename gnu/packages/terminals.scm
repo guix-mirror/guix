@@ -1042,8 +1042,8 @@ comfortably in a pager or editor.
          (add-after 'unpack 'insert-googletests
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((tests (assoc-ref inputs "googletest")))
-               (invoke "tar" "xvf" tests "-C" "external/googletest"
-                       "--strip-components=1"))))
+               (copy-recursively tests "external/googletest"))
+             #t))
          (add-after 'install 'dont-provide-gtest-libraries
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

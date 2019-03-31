@@ -827,7 +827,7 @@ your @code{operating-system} configuration:
 @example
 (service qemu-binfmt-service-type
  (qemu-binfmt-configuration
-   (platforms (lookup-qemu-platforms "arm" "aarch64" "ppc" "mips64el"))
+   (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))
    (guix-support? #t)))
 @end example
 
@@ -835,12 +835,11 @@ Then reconfigure your system.
 
 You can then build packages for different platforms by specifying the
 @code{--system} option.  For example, to build the "hello" package for
-the armhf, aarch64, powerpc, or mips64 architectures, you would run the
-following commands, respectively:
+the armhf, aarch64, or mips64 architectures, you would run the following
+commands, respectively:
 @example
 guix build --system=armhf-linux --rounds=2 hello
 guix build --system=aarch64-linux --rounds=2 hello
-guix build --system=powerpc-linux --rounds=2 hello
 guix build --system=mips64el-linux --rounds=2 hello
 @end example
 

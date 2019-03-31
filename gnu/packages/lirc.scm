@@ -96,10 +96,10 @@
     (synopsis "Linux Infrared Remote Control")
     (description
      "LIRC allows computers to send and receive IR signals of many commonly
-used remote controls.  The most important part of LIRC is the 'lircd' daemon
-that decodes IR signals received by the device drivers.  The second daemon
-program 'lircmd' allows to translate IR signals to mouse movements.  The
-user space applications allow you to control your computer with a remote
+used remote controls.  The most important part of LIRC is the @code{lircd}
+daemon that decodes IR signals received by the device drivers.  The second
+daemon program @code{lircmd} allows to translate IR signals to mouse movements.
+The user space applications allow you to control your computer with a remote
 control: you can send X events to applications, start programs and much more
 on just one button press.")
     (license license:gpl2+)))

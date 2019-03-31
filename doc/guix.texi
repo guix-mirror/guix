@@ -251,6 +251,7 @@ System Configuration
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Keyboard Layout::             How the system interprets key strokes.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
@@ -3620,7 +3621,7 @@ Generation 3	Jun 13 2018 23:31:07	(current)
   69 packages upgraded: borg@@1.1.6, cheese@@3.28.0, @dots{}
 @end example
 
-@ref{Invoking guix describe, @command{guix describe}}, for other ways to
+@xref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
 This @code{~/.config/guix/current} profile works like any other profile
@@ -3665,7 +3666,7 @@ is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
 
-@ref{Invoking guix describe}, for a way to display information about the
+@xref{Invoking guix describe}, for a way to display information about the
 current generation only.
 
 @item --profile=@var{profile}
@@ -5360,10 +5361,6 @@ more.  To ensure that libraries written in those languages can find
 library code they depend on at run time, run-time dependencies must be
 listed in @code{propagated-inputs} rather than @code{inputs}.
 
-@item @code{self-native-input?} (default: @code{#f})
-This is a Boolean field telling whether the package should use itself as
-a native input when cross-compiling.
-
 @item @code{outputs} (default: @code{'("out")})
 The list of output names of the package.  @xref{Packages with Multiple
 Outputs}, for typical uses of additional outputs.
@@ -5816,6 +5813,11 @@ list of flags passed to the @code{dune} command during the build.
 The @code{#:jbuild?} parameter can be passed to use the @code{jbuild}
 command instead of the more recent @code{dune} command while building
 a package.  Its default value is @code{#f}.
+
+The @code{#:package} parameter can be passed to specify a package name, which
+is useful when a package contains multiple packages and you want to build
+only one of them.  This is equivalent to passing the @code{-p} argument to
+@code{dune}.
 @end defvr
 
 @defvr {Scheme Variable} go-build-system
@@ -10127,6 +10129,7 @@ instance to support new system services.
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Keyboard Layout::             How the system interprets key strokes.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
@@ -10400,6 +10403,24 @@ the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{Bootloader Configuration}.
 
+@item @code{keyboard-layout} (default: @code{#f})
+This field specifies the keyboard layout to use in the console.  It can be
+either @code{#f}, in which case the default keyboard layout is used (usually
+US English), or a @code{<keyboard-layout>} record.
+
+This keyboard layout is in effect as soon as the kernel has booted.  For
+instance, it is the keyboard layout in effect when you type a passphrase if
+your root file system is on a @code{luks-device-mapping} mapped device
+(@pxref{Mapped Devices}).
+
+@quotation Note
+This does @emph{not} specify the keyboard layout used by the bootloader, nor
+that used by the graphical display server.  @xref{Bootloader Configuration},
+for information on how to specify the bootloader's keyboard layout.  @xref{X
+Window}, for information on how to specify the keyboard layout used by the X
+Window System.
+@end quotation
+
 @item @code{initrd-modules} (default: @code{%base-initrd-modules})
 @cindex initrd
 @cindex initial RAM disk
@@ -10505,6 +10526,13 @@ details.
 
 @item @code{services} (default: @var{%base-services})
 A list of service objects denoting system services.  @xref{Services}.
+
+@cindex essential services
+@item @code{essential-services} (default: ...)
+The list of ``essential services''---i.e., things like instances of
+@code{system-service-type} and @code{host-name-service-type} (@pxref{Service
+Reference}), which are derived from the operating system definition itself.
+As a user you should @emph{never} need to touch this field.
 
 @item @code{pam-services} (default: @code{(base-pam-services)})
 @cindex PAM
@@ -10902,7 +10930,6 @@ this field must contain the encrypted password, as a string.  You can use the
 @example
 (user-account
   (name "charlie")
-  (home-directory "/home/charlie")
   (group "users")
 
   ;; Specify a SHA-512-hashed initial password.
@@ -10968,6 +10995,108 @@ find on a GNU/Linux system, such as the ``nobody'' account.
 Note that the ``root'' account is not included here.  It is a
 special-case and is automatically added whether or not it is specified.
 @end defvr
+
+@node Keyboard Layout
+@section Keyboard Layout
+
+To specify what each key of your keyboard does, you need to tell the operating
+system what @dfn{keyboard layout} you want to use.  The default, when nothing
+is specified, is the US English QWERTY layout for 105-key PC keyboards.
+However, German speakers will usually prefer the German QWERTZ layout, French
+speakers will want the AZERTY layout, and so on; hackers might prefer Dvorak
+or bépo, and they might even want to further customize the effect of some of
+the keys.  This section explains how to get that done.
+
+@cindex keyboard layout, definition
+There are three components that will want to know about your keyboard layout:
+
+@itemize
+@item
+The @emph{bootloader} may want to know what keyboard layout you want to use
+(@pxref{Bootloader Configuration, @code{keyboard-layout}}).  This is useful if
+you want, for instance, to make sure that you can type the passphrase of your
+encrypted root partition using the right layout.
+
+@item
+The @emph{operating system kernel}, Linux, will need that so that the console
+is properly configured (@pxref{operating-system Reference,
+@code{keyboard-layout}}).
+
+@item
+The @emph{graphical display server}, usually Xorg, also has its own idea of
+the keyboard layout (@pxref{X Window, @code{keyboard-layout}}).
+@end itemize
+
+Guix allows you to configure all three separately but, fortunately, it allows
+you to share the same keyboard layout for all three components.
+
+@cindex XKB, keyboard layouts
+Keyboard layouts are represented by records created by the
+@code{keyboard-layout} procedure of @code{(gnu system keyboard)}.  Following
+the X Keyboard extension (XKB), each layout has four attributes: a name (often
+a language code such as ``fi'' for Finnish or ``jp'' for Japanese), an
+optional variant name, an optional keyboard model name, and a possibly empty
+list of additional options.  In most cases the layout name is all you care
+about.  Here are a few example:
+
+@example
+;; The German QWERTZ layout.  Here we assume a standard
+;; "pc105" keyboard model.
+(keyboard-layout "de")
+
+;; The bépo variant of the French layout.
+(keyboard-layout "fr" "bepo")
+
+;; The Catalan layout.
+(keyboard-layout "es" "cat")
+
+;; The Latin American Spanish layout.  In addition, the
+;; "Caps Lock" key is used as an additional "Ctrl" key,
+;; and the "Menu" key is used as a "Compose" key to enter
+;; accented letters.
+(keyboard-layout "latam"
+                 #:options '("ctrl:nocaps" "compose:menu"))
+
+;; The Russian layout for a ThinkPad keyboard.
+(keyboard-layout "ru" #:model "thinkpad")
+
+;; The "US international" layout, which is the US layout plus
+;; dead keys to enter accented characters.  This is for an
+;; Apple MacBook keyboard.
+(keyboard-layout "us" "intl" #:model "macbook78")
+@end example
+
+See the @file{share/X11/xkb} directory of the @code{xkeyboard-config} package
+for a complete list of supported layouts, variants, and models.
+
+@cindex keyboard layout, configuration
+Let's say you want your system to use the Turkish keyboard layout throughout
+your system---bootloader, console, and Xorg.  Here's what your system
+configuration would look like:
+
+@lisp
+;; Using the Turkish layout for the bootloader, the console,
+;; and for Xorg.
+
+(operating-system
+  ;; ...
+  (keyboard-layout (keyboard-layout "tr"))  ;for the console
+  (bootloader (bootloader-configuration
+                (bootloader grub-efi-bootloader)
+                (target "/boot/efi")
+                (keyboard-layout keyboard-layout))) ;for GRUB
+  (services (modify-services %desktop-services
+              (gdm-service-type config =>
+                (gdm-configuration
+                  (inherit config)
+                  (xorg-configuration
+                    (xorg-configuration             ;for Xorg
+                      (keyboard-layout keyboard-layout))))))))
+@end lisp
+
+In the example above, for GRUB and for Xorg, we just refer to the
+@code{keyboard-layout} field defined above, but we could just as well refer to
+a different layout.
 
 @node Locales
 @section Locales
@@ -13161,7 +13290,13 @@ Package object of the Open vSwitch.
 Support for the X Window graphical display system---specifically
 Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
-started by the @dfn{login manager}, by default SLiM.
+started by the @dfn{login manager}, by default the GNOME Display Manager (GDM).
+
+@cindex GDM
+@cindex GNOME, login manager
+GDM of course allows users to log in into window managers and desktop
+environments other than GNOME; for those using GNOME, GDM is required for
+features such as automatic screen locking.
 
 @cindex window manager
 To use X11, you must install at least one @dfn{window manager}---for
@@ -13169,21 +13304,57 @@ example the @code{windowmaker} or @code{openbox} packages---preferably
 by adding it to the @code{packages} field of your operating system
 definition (@pxref{operating-system Reference, system-wide packages}).
 
-@defvr {Scheme Variable} slim-service-type
-This is the type for the SLiM graphical login manager for X11.
+@defvr {Scheme Variable} gdm-service-type
+This is the type for the @uref{https://wiki.gnome.org/Projects/GDM/, GNOME
+Desktop Manager} (GDM), a program that manages graphical display servers and
+handles graphical user logins.  Its value must be a @code{gdm-configuration}
+(see below.)
 
 @cindex session types (X11)
 @cindex X11 session types
-SLiM looks for @dfn{session types} described by the @file{.desktop} files in
-@file{/run/current-system/profile/share/xsessions} and allows users to
-choose a session from the log-in screen using @kbd{F1}.  Packages such
-as @code{xfce}, @code{sawfish}, and @code{ratpoison} provide
-@file{.desktop} files; adding them to the system-wide set of packages
-automatically makes them available at the log-in screen.
+GDM looks for @dfn{session types} described by the @file{.desktop} files in
+@file{/run/current-system/profile/share/xsessions} and allows users to choose
+a session from the log-in screen.  Packages such as @code{gnome}, @code{xfce},
+and @code{i3} provide @file{.desktop} files; adding them to the system-wide
+set of packages automatically makes them available at the log-in screen.
 
 In addition, @file{~/.xsession} files are honored.  When available,
 @file{~/.xsession} must be an executable that starts a window manager
 and/or other X clients.
+@end defvr
+
+@deftp {Data Type} gdm-configuration
+@table @asis
+@item @code{auto-login?} (default: @code{#f})
+@itemx @code{default-user} (default: @code{#f})
+When @code{auto-login?} is false, GDM presents a log-in screen.
+
+When @code{auto-login?} is true, GDM logs in directly as
+@code{default-user}.
+
+@item @code{gnome-shell-assets} (default: ...)
+List of GNOME Shell assets needed by GDM: icon theme, fonts, etc.
+
+@item @code{xorg-configuration} (default: @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
+
+@item @code{xsession} (default: @code{(xinitrc)})
+Script to run before starting a X session.
+
+@item @code{dbus-daemon} (default: @code{dbus-daemon-wrapper})
+File name of the @code{dbus-daemon} executable.
+
+@item @code{gdm} (default: @code{gdm})
+The GDM package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} slim-service-type
+This is the type for the SLiM graphical login manager for X11.
+
+Like GDM, SLiM looks for session types described by @file{.desktop} files and
+allows users to choose a session from the log-in screen using @kbd{F1}.  It
+also honors @file{~/.xsession} files.
 @end defvr
 
 @deftp {Data Type} slim-configuration
@@ -13218,8 +13389,8 @@ your user profile.  Failing to do that, if @code{auto-login-session} is
 false, you will be unable to log in.
 @end quotation
 
-@item @code{startx} (default: @code{(xorg-start-command)})
-The command used to start the X11 graphical server.
+@item @code{xorg-configuration} (default @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
 
 @item @code{xauth} (default: @code{xauth})
 The XAuth package to use.
@@ -13295,8 +13466,8 @@ Script to run before starting a wayland session.
 @item @code{sessions-directory} (default "/run/current-system/profile/share/wayland-sessions")
 Directory to look for desktop files starting wayland sessions.
 
-@item @code{xorg-server-path} (default @code{xorg-start-command})
-Path to xorg-server.
+@item @code{xorg-configuration} (default @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
 
 @item @code{xauth-path} (default @code{#~(string-append #$xauth "/bin/xauth")})
 Path to xauth.
@@ -13318,9 +13489,6 @@ Directory to look for desktop files starting X sessions.
 
 @item @code{minimum-vt} (default: 7)
 Minimum VT to use.
-
-@item @code{xserver-arguments} (default "-nolisten tcp")
-Arguments to pass to xorg-server.
 
 @item @code{auto-login-user} (default "")
 User to use for auto-login.
@@ -13347,98 +13515,62 @@ type @code{<sddm-configuration>}.
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} xorg-start-command [#:guile] @
-  [#:modules %default-xorg-modules] @
-  [#:fonts %default-xorg-fonts] @
-  [#:configuration-file (xorg-configuration-file @dots{})] @
-  [#:xorg-server @var{xorg-server}]
-  [#:xserver-arguments '("-nolisten" "tcp")]
-Return a @code{startx} script in which @var{modules}, a list of X module
-packages, and @var{fonts}, a list of X font directories, are available.  See
-@code{xorg-wrapper} for more details on the arguments.  The result should be
-used in place of @code{startx}.
+@cindex Xorg, configuration
+@deftp {Data Type} xorg-configuration
+This data type represents the configuration of the Xorg graphical display
+server.  Note that there is not Xorg service; instead, the X server is started
+by a ``display manager'' such as GDM, SDDM, and SLiM.  Thus, the configuration
+of these display managers aggregates an @code{xorg-configuration} record.
+
+@table @asis
+@item @code{modules} (default: @code{%default-xorg-modules})
+This is a list of @dfn{module packages} loaded by the Xorg
+server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
+
+@item @code{fonts} (default: @code{%default-xorg-fonts})
+This is a list of font directories to add to the server's @dfn{font path}.
+
+@item @code{drivers} (default: @code{'()})
+This must be either the empty list, in which case Xorg chooses a graphics
+driver automatically, or a list of driver names that will be tried in this
+order---e.g., @code{("modesetting" "vesa")}.
+
+@item @code{resolutions} (default: @code{'()})
+When @code{resolutions} is the empty list, Xorg chooses an appropriate screen
+resolution.  Otherwise, it must be a list of resolutions---e.g., @code{((1024
+768) (640 480))}.
+
+@cindex keyboard layout, for Xorg
+@cindex keymap, for Xorg
+@item @code{keyboard-layout} (default: @code{#f})
+If this is @code{#f}, Xorg uses the default keyboard layout---usually US
+English (``qwerty'') for a 105-key PC keyboard.
+
+Otherwise this must be a @code{keyboard-layout} object specifying the keyboard
+layout in use when Xorg is running.  @xref{Keyboard Layout}, for more
+information on how to specify the keyboard layout.
+
+@item @code{extra-config} (default: @code{'()})
+This is a list of strings or objects appended to the configuration file.  It
+is used to pass extra text to be added verbatim to the configuration file.
+
+@item @code{server} (default: @code{xorg-server})
+This is the package providing the Xorg server.
+
+@item @code{server-arguments} (default: @code{%default-xorg-server-arguments})
+This is the list of command-line arguments to pass to the X server.  The
+default is @code{-nolisten tcp}.
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} xorg-start-command [@var{config}]
+Return a @code{startx} script in which the modules, fonts, etc. specified
+in @var{config}, are available.  The result should be used in place of
+@code{startx}.
 
 Usually the X server is started by a login manager.
 @end deffn
 
-@cindex @code{-listen tcp}, for X11.
-This procedure is useful to override command line options for the X server,
-such as having it listen to over TCP:
-
-@example
-(operating-system
-  ...
-  (services
-    (modify-services %desktop-services
-      (slim-service-type config =>
-        (slim-configuration
-          (inherit config)
-          (startx (xorg-start-command
-                   #:xserver-arguments '("-listen" "tcp"))))))))
-@end example
-
-@deffn {Scheme Procedure} xorg-configuration-file @
-  [#:modules %default-xorg-modules] @
-  [#:fonts %default-xorg-fonts] @
-  [#:drivers '()] [#:resolutions '()] [#:extra-config '()]
-Return a configuration file for the Xorg server containing search paths for
-all the common drivers.
-
-@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
-server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
-@var{fonts} must be a list of font directories to add to the server's
-@dfn{font path}.
-
-@var{drivers} must be either the empty list, in which case Xorg chooses a
-graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{("modesetting" "vesa")}.
-
-Likewise, when @var{resolutions} is the empty list, Xorg chooses an
-appropriate screen resolution; otherwise, it must be a list of
-resolutions---e.g., @code{((1024 768) (640 480))}.
-
-Last, @var{extra-config} is a list of strings or objects appended to the
-configuration file.  It is used to pass extra text to be
-added verbatim to the configuration file.
-
-@cindex keymap
-@cindex keyboard layout
-This procedure is especially useful to configure a different keyboard layout
-than the default US keymap.  For instance, to use the ``bépo'' keymap by
-default on the display manager:
-
-@example
-(define bepo-evdev
-  "Section \"InputClass\"
-        Identifier \"evdev keyboard catchall\"
-        Driver \"evdev\"
-        MatchIsKeyboard \"on\"
-        Option \"xkb_layout\" \"fr\"
-        Option \"xkb_variant\" \"bepo\"
-EndSection")
-
-(operating-system
-  ...
-  (services
-    (modify-services %desktop-services
-      (slim-service-type config =>
-        (slim-configuration
-          (inherit config)
-          (startx (xorg-start-command
-                   #:configuration-file
-                   (xorg-configuration-file
-                     #:extra-config
-                     (list bepo-evdev)))))))))
-@end example
-
-The @code{MatchIsKeyboard} line specifies that we only apply the configuration
-to keyboards.  Without this line, other devices such as touchpad may not work
-correctly because they will be attached to the wrong driver.  In this example,
-the user typically used @code{setxkbmap fr bepo} to set their favorite keymap
-once logged in.  The first argument corresponds to the layout, while the second
-argument corresponds to the variant.  The @code{xkb_variant} line can be omitted
-to select the default variant.
-@end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{program}]
 Add @var{package}, a package for a screen locker or screen saver whose
@@ -14301,7 +14433,7 @@ The @code{(gnu services desktop)} module provides services that are
 usually useful in the context of a ``desktop'' setup---that is, on a
 machine running a graphical display server, possibly with graphical user
 interfaces, etc.  It also defines services that provide specific desktop
-environments like GNOME, XFCE or MATE.
+environments like GNOME, Xfce or MATE.
 
 To simplify things, the module defines a variable containing the set of
 services that users typically expect on a machine with a graphical
@@ -14312,7 +14444,7 @@ This is a list of services that builds upon @var{%base-services} and
 adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
-@code{slim-service}}), screen lockers, a network management tool
+@code{gdm-service-type}}), screen lockers, a network management tool
 (@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
 management services, the @code{elogind} login and seat manager, the
 Polkit privilege service, the GeoClue location service, the
@@ -14326,16 +14458,16 @@ The @var{%desktop-services} variable can be used as the @code{services}
 field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
-Additionally, the @code{gnome-desktop-service},
+Additionally, the @code{gnome-desktop-service-type},
 @code{xfce-desktop-service}, @code{mate-desktop-service-type} and
-@code{enlightenment-desktop-service-type} procedures can add GNOME, XFCE, MATE
+@code{enlightenment-desktop-service-type} procedures can add GNOME, Xfce, MATE
 and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
 services like the backlight adjustment helpers and the power management
 utilities are added to the system, extending @code{polkit} and @code{dbus}
 appropriately, allowing GNOME to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
-adding a service made by @code{gnome-desktop-service} adds the GNOME
-metapackage to the system profile.  Likewise, adding the XFCE service
+adding a service made by @code{gnome-desktop-service-type} adds the GNOME
+metapackage to the system profile.  Likewise, adding the Xfce service
 not only adds the @code{xfce} metapackage to the system profile, but it
 also gives the Thunar file manager the ability to open a ``root-mode''
 file management window, if the user authenticates using the
@@ -14351,25 +14483,50 @@ functionality to work as expetected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
-called Wayland, you need to use the @code{sddm-service} instead of the
-@code{slim-service} for the graphical login manager.  You should then
+called Wayland, you need to use the @code{sddm-service} instead of
+GDM as the graphical login manager.  You should then
 select the ``GNOME (Wayland)'' session in SDDM.  Alternatively you can
 also try starting GNOME on Wayland manually from a TTY with the
 command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
 gnome-session``.  Currently only GNOME has support for Wayland.
 
-@deffn {Scheme Procedure} gnome-desktop-service
-Return a service that adds the @code{gnome} package to the system
-profile, and extends polkit with the actions from
-@code{gnome-settings-daemon}.
-@end deffn
+@defvr {Scheme Variable} gnome-desktop-service-type
+This is the type of the service that adds the @uref{https://www.gnome.org,
+GNOME} desktop environment.  Its value is a @code{gnome-desktop-configuration}
+object (see below.)
 
-@deffn {Scheme Procedure} xfce-desktop-service
-Return a service that adds the @code{xfce} package to the system profile,
-and extends polkit with the ability for @code{thunar} to manipulate the
-file system as root from within a user session, after the user has
-authenticated with the administrator's password.
-@end deffn
+This service adds the @code{gnome} package to the system profile, and extends
+polkit with the actions from @code{gnome-settings-daemon}.
+@end defvr
+
+@deftp {Data Type} gnome-desktop-configuration
+Configuration record for the GNOME desktop environment.
+
+@table @asis
+@item @code{gnome} (default @code{gnome})
+The GNOME package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} xfce-desktop-service-type
+This is the type of a service to run the @uref{Xfce, https://xfce.org/}
+desktop environment.  Its value is an @code{xfce-desktop-configuration} object
+(see below.)
+
+This service that adds the @code{xfce} package to the system profile, and
+extends polkit with the ability for @code{thunar} to manipulate the file
+system as root from within a user session, after the user has authenticated
+with the administrator's password.
+@end defvr
+
+@deftp {Data Type} xfce-desktop-configuration
+Configuration record for the Xfce desktop environment.
+
+@table @asis
+@item @code{xfce} (default @code{xfce})
+The Xfce package to use.
+@end table
+@end deftp
 
 @deffn {Scheme Variable} mate-desktop-service-type
 This is the type of the service that runs the @uref{https://mate-desktop.org/,
@@ -14402,9 +14559,9 @@ The enlightenment package to use.
 @end table
 @end deftp
 
-Because the GNOME, XFCE and MATE desktop services pull in so many packages,
+Because the GNOME, Xfce and MATE desktop services pull in so many packages,
 the default @code{%desktop-services} variable doesn't include any of
-them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
+them by default.  To add GNOME, Xfce or MATE, just @code{cons} them onto
 @code{%desktop-services} in the @code{services} field of your
 @code{operating-system}:
 
@@ -14414,8 +14571,8 @@ them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
 (operating-system
   ...
   ;; cons* adds items to the list given as its last argument.
-  (services (cons* (gnome-desktop-service)
-                   (xfce-desktop-service)
+  (services (cons* (service gnome-desktop-service-type)
+                   (service xfce-desktop-service)
                    %desktop-services))
   ...)
 @end example
@@ -21624,7 +21781,7 @@ emulated:
 @example
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm" "aarch64" "ppc"))))
+           (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))))
 @end example
 
 In this example, we enable transparent emulation for the ARM and aarch64
@@ -23528,6 +23685,7 @@ here is how to use it and customize it further.
 @cindex initial RAM disk
 @deffn {Scheme Procedure} raw-initrd @var{file-systems} @
        [#:linux-modules '()] [#:mapped-devices '()] @
+       [#:keyboard-layout #f] @
        [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
 Return a derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
@@ -23539,6 +23697,12 @@ the root file system specified on the kernel command line via @code{--root}.
 include @code{e2fsck/static} or other packages needed by the initrd to check
 the root file system.
 
+When true, @var{keyboard-layout} is a @code{<keyboard-layout>} record denoting
+the desired console keyboard layout.  This is done before @var{mapped-devices}
+are set up and before @var{file-systems} are mounted such that, should the
+user need to enter a passphrase or use the REPL, this happens using the
+intended keyboard layout.
+
 When @var{qemu-networking?} is true, set up networking with the standard QEMU
 parameters.  When @var{virtio?} is true, load additional modules so that the
 initrd can be used as a QEMU guest with para-virtualized I/O drivers.
@@ -23548,13 +23712,20 @@ to it are lost.
 @end deffn
 
 @deffn {Scheme Procedure} base-initrd @var{file-systems} @
-       [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
+       [#:mapped-devices '()] [#:keyboard-layout #f] @
+       [#:qemu-networking? #f] [#:volatile-root? #f] @
        [#:linux-modules '()]
 Return as a file-like object a generic initrd, with kernel
 modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
 mappings to realize before @var{file-systems} are mounted.
+
+When true, @var{keyboard-layout} is a @code{<keyboard-layout>} record denoting
+the desired console keyboard layout.  This is done before @var{mapped-devices}
+are set up and before @var{file-systems} are mounted such that, should the
+user need to enter a passphrase or use the REPL, this happens using the
+intended keyboard layout.
 
 @var{qemu-networking?} and @var{volatile-root?} behaves as in @code{raw-initrd}.
 
@@ -23648,6 +23819,19 @@ current system.
 @item @code{timeout} (default: @code{5})
 The number of seconds to wait for keyboard input before booting.  Set to
 0 to boot immediately, and to -1 to wait indefinitely.
+
+@cindex keyboard layout, for the bootloader
+@item @code{keyboard-layout} (default: @code{#f})
+If this is @code{#f}, the bootloader's menu (if any) uses the default keyboard
+layout, usually US@tie{}English (``qwerty'').
+
+Otherwise, this must be a @code{keyboard-layout} object (@pxref{Keyboard
+Layout}).
+
+@quotation Note
+This option is currently ignored by bootloaders other than @code{grub} and
+@code{grub-efi}.
+@end quotation
 
 @item @code{theme} (default: @var{#f})
 The bootloader theme object describing the theme to use.  If no theme

@@ -48,6 +48,7 @@
                search-path-specification)         ;for convenience
   #:export (origin
             origin?
+            this-origin
             origin-uri
             origin-method
             origin-sha256
@@ -63,6 +64,7 @@
 
             package
             package?
+            this-package
             package-name
             package-upstream-name
             package-version
@@ -82,7 +84,6 @@
             package-license
             package-home-page
             package-supported-systems
-            package-maintainers
             package-properties
             package-location
             hidden-package
@@ -156,6 +157,7 @@
 (define-record-type* <origin>
   origin make-origin
   origin?
+  this-origin
   (uri       origin-uri)                          ; string
   (method    origin-method)                       ; procedure
   (sha256    origin-sha256)                       ; bytevector
@@ -247,6 +249,7 @@ name of its URI."
 (define-record-type* <package>
   package make-package
   package?
+  this-package
   (name   package-name)                   ; string
   (version package-version)               ; string
   (source package-source)                 ; <origin> instance
@@ -260,9 +263,6 @@ name of its URI."
                      (default '()) (thunked))
   (native-inputs package-native-inputs    ; native input packages/derivations
                  (default '()) (thunked))
-  (self-native-input? package-self-native-input?  ; whether to use itself as
-                                                  ; a native input when cross-
-                      (default #f))               ; compiling
 
   (outputs package-outputs                ; list of strings
            (default '("out")))
@@ -285,7 +285,6 @@ name of its URI."
   (home-page package-home-page)
   (supported-systems package-supported-systems    ; list of strings
                      (default %supported-systems))
-  (maintainers package-maintainers (default '()))
 
   (properties package-properties (default '()))   ; alist for anything else
 
@@ -1025,9 +1024,10 @@ and return it."
             (match (if graft?
                        (or (package-replacement package) package)
                        package)
-              (($ <package> name version source build-system
-                            args inputs propagated-inputs native-inputs
-                            self-native-input? outputs)
+              ((and self
+                    ($ <package> name version source build-system
+                                 args inputs propagated-inputs native-inputs
+                                 outputs))
                ;; Even though we prefer to use "@" to separate the package
                ;; name from the package version in various user-facing parts
                ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
@@ -1036,15 +1036,11 @@ and return it."
                              #:system system
                              #:target target
                              #:source source
-                             #:inputs (append (inputs)
-                                              (propagated-inputs))
+                             #:inputs (append (inputs self)
+                                              (propagated-inputs self))
                              #:outputs outputs
-                             #:native-inputs `(,@(if (and target
-                                                          self-native-input?)
-                                                     `(("self" ,package))
-                                                     '())
-                                               ,@(native-inputs))
-                             #:arguments (args))
+                             #:native-inputs (native-inputs self)
+                             #:arguments (args self))
                    (raise (if target
                               (condition
                                (&package-cross-build-system-error

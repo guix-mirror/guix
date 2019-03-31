@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,12 @@
     (car result)))
 
 (define (draw-formatting-page)
-  "Draw a page to indicate partitions are being formated."
+  "Draw a page asking for confirmation, and then indicating that partitions
+are being formatted."
+  (run-confirmation-page (G_ "We are about to format your hard disk.  All \
+its data will be lost.  Do you wish to continue?")
+                         (G_ "Format disk?")
+                         #:exit-button-procedure button-exit-action)
   (draw-info-page
    (format #f (G_ "Partition formatting is in progress, please wait."))
    (G_ "Preparing partitions")))

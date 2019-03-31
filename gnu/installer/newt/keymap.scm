@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,9 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:export (run-keymap-page))
+  #:use-module (ice-9 match)
+  #:export (run-keymap-page
+            keyboard-layout->configuration))
 
 (define (run-layout-page layouts layout->text)
   (let ((title (G_ "Layout")))
@@ -120,3 +123,11 @@ names of the selected keyboard layout and variant."
       (list layout (or variant ""))))
   (format-result
    (run-installer-steps #:steps keymap-steps)))
+
+(define (keyboard-layout->configuration keymap)
+  "Return the operating system configuration snippet to install KEYMAP."
+  (match keymap
+    ((name "")
+     `((keyboard-layout (keyboard-layout ,name))))
+    ((name variant)
+     `((keyboard-layout (keyboard-layout ,name ,variant))))))

@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -336,13 +336,15 @@ or @command{xorrisofs} to create ISO 9660 images.")
   (package
     (name "dvdisaster")
     (version "0.79.5")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://dvdisaster.net/downloads/dvdisaster-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "0f8gjnia2fxcbmhl8b3qkr5b7idl8m855dw7xw2fnmbqwvcm6k4w"))))
+    (source
+     (origin
+       (method url-fetch)
+       ;; Update this (and update HOME-PAGE) when/if one reappears.
+       (uri (string-append "https://web.archive.org/web/20180428070843/"
+                           "http://dvdisaster.net/downloads/dvdisaster-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "0f8gjnia2fxcbmhl8b3qkr5b7idl8m855dw7xw2fnmbqwvcm6k4w"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)))
@@ -384,7 +386,8 @@ or @command{xorrisofs} to create ISO 9660 images.")
                (copy-file "contrib/dvdisaster48.xpm"
                           (string-append datadir "/pixmaps/dvdisaster.xpm"))
                #t))))))
-    (home-page "http://dvdisaster.net/en/index.html")
+    (home-page (string-append "https://web.archive.org/web/20180428070843/"
+                              "http://dvdisaster.net/en/index.html"))
     (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
 finite time (typically for many years).  After that time, data loss develops
@@ -656,7 +659,7 @@ information is written to standard error.")
 (define-public asunder
   (package
     (name "asunder")
-    (version "2.8")
+    (version "2.9.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -665,7 +668,7 @@ information is written to standard error.")
                               ".tar.bz2"))
               (sha256
                (base32
-                "1nq9kd4rd4k2kibf57gdbm0zw2gxa234vvvdhxkm8g5bhx5h3iyq"))))
+                "1630i1df06y840v3fgdf75jxw1s8kwbfn5bhi0686viah0scccw5"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:out-of-source? #f

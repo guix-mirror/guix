@@ -227,6 +227,8 @@ network attachments.")
     (home-page "http://containerd.io/")
     (license license:asl2.0)))
 
+;; TODO: Patch out modprobes for ip_vs, nf_conntrack,
+;; brige, nf_conntrack_netlink, aufs.
 (define-public docker
   (package
     (name "docker")
@@ -242,7 +244,8 @@ network attachments.")
        (base32 "06yr5xwr181lalh8z1lk07nxlp7hn38aq8cyqjk617dfy4lz0ixx"))
       (patches
        (search-patches "docker-engine-test-noinstall.patch"
-                       "docker-fix-tests.patch"))))
+                       "docker-fix-tests.patch"
+                       "docker-use-fewer-modprobes.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules

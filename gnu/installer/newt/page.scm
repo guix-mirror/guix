@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
             draw-connecting-page
             run-input-page
             run-error-page
+            run-confirmation-page
             run-listbox-selection-page
             run-scale-page
             run-checkbox-tree-page
@@ -140,6 +142,42 @@ of the page is set to TITLE."
     ;; Restore the background to its original color.
     (newt-set-color COLORSET-ROOT "white" "blue")
     (destroy-form-and-pop form)))
+
+(define* (run-confirmation-page text title
+                                #:key (exit-button-procedure (const #f)))
+  "Run a page to inform the user of an error. The page contains the given TEXT
+to explain the error and an \"OK\" button to acknowledge the error. The title
+of the page is set to TITLE."
+  (let* ((text-box
+          (make-reflowed-textbox -1 -1 text 40
+                                 #:flags FLAG-BORDER))
+         (ok-button (make-button -1 -1 (G_ "Continue")))
+         (exit-button (make-button -1 -1 (G_ "Exit")))
+         (grid (vertically-stacked-grid
+                GRID-ELEMENT-COMPONENT text-box
+                GRID-ELEMENT-SUBGRID
+                (horizontal-stacked-grid
+                 GRID-ELEMENT-COMPONENT ok-button
+                 GRID-ELEMENT-COMPONENT exit-button)))
+         (form (make-form)))
+
+    (add-form-to-grid grid form #t)
+    (make-wrapped-grid-window grid title)
+
+    (receive (exit-reason argument)
+        (run-form form)
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          (case exit-reason
+            ((exit-component)
+             (cond
+              ((components=? argument ok-button)
+               #t)
+              ((components=? argument exit-button)
+               (exit-button-procedure))))))
+        (lambda ()
+          (destroy-form-and-pop form))))))
 
 (define* (run-listbox-selection-page #:key
                                      info-text

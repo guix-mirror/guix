@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -31,10 +31,13 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
+  #:use-module ((gnu packages xorg)
+                #:select (console-setup xkeyboard-config))
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
+  #:use-module (gnu system keyboard)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
@@ -139,6 +142,7 @@ MODULES and taken from LINUX."
                       (linux linux-libre)
                       (linux-modules '())
                       (mapped-devices '())
+                      (keyboard-layout #f)
                       (helper-packages '())
                       qemu-networking?
                       volatile-root?
@@ -151,6 +155,11 @@ modules to be loaded at boot time. MAPPED-DEVICES is a list of device
 mappings to realize before FILE-SYSTEMS are mounted.
 HELPER-PACKAGES is a list of packages to be copied in the initrd. It may include
 e2fsck/static or other packages needed by the initrd to check root partition.
+
+When true, KEYBOARD-LAYOUT is a <keyboard-layout> record denoting the desired
+console keyboard layout.  This is done before MAPPED-DEVICES are set up and
+before FILE-SYSTEMS are mounted such that, should the user need to enter a
+passphrase or use the REPL, this happens using the intended keyboard layout.
 
 When QEMU-NETWORKING? is true, set up networking with the standard QEMU
 parameters.
@@ -206,6 +215,8 @@ upon error."
                                     (and #$@device-mapping-commands))
                       #:linux-modules '#$linux-modules
                       #:linux-module-directory '#$kodir
+                      #:keymap-file #+(and=> keyboard-layout
+                                             keyboard-layout->console-keymap)
                       #:qemu-guest-networking? #$qemu-networking?
                       #:volatile-root? '#$volatile-root?
                       #:on-error '#$on-error)))
@@ -290,6 +301,7 @@ FILE-SYSTEMS."
                       (linux linux-libre)
                       (linux-modules '())
                       (mapped-devices '())
+                      (keyboard-layout #f)
                       qemu-networking?
                       volatile-root?
                       (extra-modules '())         ;deprecated
@@ -299,6 +311,11 @@ modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via '--root'.  MAPPED-DEVICES is a list of device
 mappings to realize before FILE-SYSTEMS are mounted.
+
+When true, KEYBOARD-LAYOUT is a <keyboard-layout> record denoting the desired
+console keyboard layout.  This is done before MAPPED-DEVICES are set up and
+before FILE-SYSTEMS are mounted such that, should the user need to enter a
+passphrase or use the REPL, this happens using the intended keyboard layout.
 
 QEMU-NETWORKING? and VOLATILE-ROOT? behaves as in raw-initrd.
 
@@ -316,13 +333,18 @@ loaded at boot time in the order in which they appear."
       ,@extra-modules))
 
   (define helper-packages
-    (file-system-packages file-systems #:volatile-root? volatile-root?))
+    (append (file-system-packages file-systems
+                                  #:volatile-root? volatile-root?)
+            (if keyboard-layout
+                (list loadkeys-static)
+                '())))
 
   (raw-initrd file-systems
               #:linux linux
               #:linux-modules linux-modules*
               #:mapped-devices mapped-devices
               #:helper-packages helper-packages
+              #:keyboard-layout keyboard-layout
               #:qemu-networking? qemu-networking?
               #:volatile-root? volatile-root?
               #:on-error on-error))

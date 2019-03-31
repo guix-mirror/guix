@@ -475,8 +475,8 @@ login, passwd, su, groupadd, and useradd.")
     (synopsis "Getty for the text console")
     (description
      "Small console getty that is started on the Linux text console,
-asks for a login name and then transfers over to 'login'.  It is extended to
-allow automatic login and starting any app.")
+asks for a login name and then transfers over to @code{login}.  It is extended
+to allow automatic login and starting any app.")
     (license license:gpl2+)))
 
 (define-public net-base
@@ -1140,7 +1140,8 @@ the client stations.  It implements key negotiation with a WPA Authenticator
 and it controls the roaming and IEEE 802.11 authentication/association of the
 WLAN driver.
 
-This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
+This package provides the @code{wpa_supplicant} daemon and the @code{wpa_cli}
+command.")
 
     ;; In practice, this is linked against Readline, which makes it GPLv3+.
     (license license:bsd-3)
@@ -2076,7 +2077,7 @@ a new command using the matched rule, and runs it.")
     (home-page "https://www.gentoo.com/di/")
     (synopsis "Advanced df like disk information utility")
     (description
-     "'di' is a disk information utility, displaying everything that your
+     "@code{di} is a disk information utility, displaying everything that your
 @code{df} command does and more.  It features the ability to display your disk
 usage in whatever format you prefer.  It is designed to be highly portable and
 produce uniform output across heterogeneous networks.")
@@ -2918,7 +2919,8 @@ Logitech Unifying Receiver.")
 (define-public lynis
   (package
     (name "lynis")
-    (version "2.7.2")
+    ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
+    (version "2.7.3")
     (source
      (origin
        (method git-fetch)
@@ -2927,7 +2929,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dbbfk47dpxx7zpb98n4w3ls3z5di57qnr2nsgxjvp49gk9j3f6k"))
+        (base32 "0md1w86i3fy9l78i98ijr5136nbhdiik2dxyw9qnzmvdlvkqmw70"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2944,11 +2946,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "3310aef4f2b3dd97d166c96ad0253c89c4ad390d")))
+                 (commit "c166b6a67a53b24f5c1fecd4eb5033f54279a5b3")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32
-             "0sqsrm5wal742yrwps8bqb8a8lxd93n4b93n3kkm1b30nbs25g7y"))))))
+            (base32 "0wa2azcmx6pj9axvq1jmwmz7826rj1c214asmmn1hq7pxmfw62zr"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

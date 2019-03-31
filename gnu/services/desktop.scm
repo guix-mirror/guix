@@ -884,9 +884,12 @@ rules."
           (service-extension profile-service-type
                              (compose list
                                       gnome-package))))
+   (default-value (gnome-desktop-configuration))
    (description "Run the GNOME desktop environment.")))
 
-(define* (gnome-desktop-service #:key (config (gnome-desktop-configuration)))
+(define-deprecated (gnome-desktop-service #:key (config
+                                                 (gnome-desktop-configuration)))
+  gnome-desktop-service-type
   "Return a service that adds the @code{gnome} package to the system profile,
 and extends polkit with the actions from @code{gnome-settings-daemon}."
   (service gnome-desktop-service-type config))
@@ -942,10 +945,13 @@ and extends polkit with the actions from @code{mate-settings-daemon}."
                                        "thunar")
                                       xfce-package))
           (service-extension profile-service-type
-                             (compose list
-                                      xfce-package))))))
+                             (compose list xfce-package))))
+   (default-value (xfce-desktop-configuration))
+   (description "Run the Xfce desktop environment.")))
 
-(define* (xfce-desktop-service #:key (config (xfce-desktop-configuration)))
+(define-deprecated (xfce-desktop-service #:key (config
+                                                (xfce-desktop-configuration)))
+  xfce-desktop-service-type
   "Return a service that adds the @code{xfce} package to the system profile,
 and extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
@@ -1072,7 +1078,7 @@ dispatches events from it.")))
 
 (define %desktop-services
   ;; List of services typically useful for a "desktop" use case.
-  (cons* (service slim-service-type)
+  (cons* (service gdm-service-type)
 
          ;; Screen lockers are a pretty useful thing and these are small.
          (screen-locker-service slock)

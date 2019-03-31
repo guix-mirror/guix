@@ -415,8 +415,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0.3")
-(define %linux-libre-hash "1ivdqr3y8r2hmv3a1g0a641cr2ckl3x4arapw0j6nwd0sbcyncam")
+(define %linux-libre-version "5.0.5")
+(define %linux-libre-hash "1yivxqprxfzhzid4qv9hpnb5i38kijrj2g2pyzz7niliya1c58li")
 
 (define %linux-libre-5.0-patches
   (list %boot-logo-patch
@@ -429,8 +429,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.30")
-(define %linux-libre-4.19-hash "1i15cs7zb53hagllgga8jaz0j1p9b22j93iczwc2w587zzhzlvng")
+(define %linux-libre-4.19-version "4.19.32")
+(define %linux-libre-4.19-hash "19bryl8nmnnnrfh91pc8q9yiayh5ca2nb6b32qyx6riahc5dy0i9")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -443,8 +443,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.107")
-(define %linux-libre-4.14-hash "19i17b8sjjvi99vya1vncjalysdy027hp35rrla68gjs28dyas7r")
+(define %linux-libre-4.14-version "4.14.109")
+(define %linux-libre-4.14-hash "05xnnyfiypg4sdcnh42wvg7h72ar8xx98dik12sgwysnfldi0gk9")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -453,14 +453,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.164"
-                    "06bbynvijqlk92bpppmnjijyfwr0sk01krqdw4hpgbrvlg3wdlbk"
+  (make-linux-libre "4.9.166"
+                    "1gijzvhky3x0nl0dm9ksg113z7jc1mc1n30qbr6r1dd78lfd050p"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.176"
-                    "0c300zqmsadahs2fpzxh6cn7q3h7jxq69msd17rh8v3wnvql8vzx"
+  (make-linux-libre "4.4.177"
+                    "0vvppw7j6jwn3cd5hhzgj5xfqkmz682zy36iyr6ynd0rbh1j7bhm"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -2003,8 +2003,45 @@ system.")
     (description
      "This package contains keytable files and keyboard utilities compatible
 for systems using the Linux kernel.  This includes commands such as
-'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
+@code{loadkeys}, @code{setfont}, @code{kbdinfo}, and @code{chvt}.")
     (license license:gpl2+)))
+
+(define-public loadkeys-static
+  (package
+    (inherit kbd)
+    (name "loadkeys-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments kbd)
+       ((#:configure-flags flags ''())
+        `(append '("LDFLAGS=-static" "--disable-shared" "--disable-nls"
+                   "--disable-vlock"              ;so we don't need libpam
+                   "--disable-libkeymap")
+                 ,flags))
+       ((#:make-flags flags ''())
+        `(cons "LDFLAGS=-all-static" ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; The binary keeps references to gzip, among other things,
+                 ;; which we don't need in the initrd, so strip references.
+                 (remove-store-references "src/loadkeys")
+
+                 (install-file "src/loadkeys"
+                               (string-append out "/bin"))
+                 #t)))
+           (delete 'post-install)))
+       ((#:strip-flags _ '())
+        ''("--strip-all"))
+       ((#:allowed-references _ '())
+        '())))
+
+    (synopsis "Statically-linked @command{loadkeys} program")
+
+    ;; This package is meant to be used internally in the initrd so don't
+    ;; expose it.
+    (properties '((hidden? . #t)))))
 
 (define-public inotify-tools
   (package
@@ -2272,7 +2309,7 @@ mapper.  Kernel components are part of Linux-libre.")
        #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
     (description "Wireless Tools are used to manipulate the now-deprecated
-Linux Wireless Extensions; consider using 'iw' instead.  The Wireless
+Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless
 Extension was an interface allowing you to set Wireless LAN specific
 parameters and get the specific stats.  It is deprecated in favor the nl80211
 interface.")
@@ -2630,7 +2667,7 @@ in a digital read-out.")
 with support in the Linux kernel.  perf can instrument CPU performance
 counters, tracepoints, kprobes, and uprobes (dynamic tracing).  It is capable
 of lightweight profiling.  This package contains the user-land tools and in
-particular the 'perf' command.")
+particular the @code{perf} command.")
     (license (package-license linux-libre))))
 
 (define-public pflask
@@ -3986,8 +4023,8 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
     (home-page "https://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
     (synopsis "Tools for loading and managing Linux kernel modules")
     (description
-     "Tools for loading and managing Linux kernel modules, such as `modprobe',
-`insmod', `lsmod', and more.")
+     "Tools for loading and managing Linux kernel modules, such as
+@code{modprobe}, @code{insmod}, @code{lsmod}, and more.")
     (license license:gpl2+)))
 
 (define-public mcelog
@@ -4273,6 +4310,45 @@ set the screen to be pitch black at a vaĺue of 0 (or higher).
 
 Light is the successor of lightscript.")
     (license license:gpl3+)))
+
+(define-public brightnessctl
+  (let ((commit "6a791e7694aeeb5d027f71c6098e5182cf03371c"))
+    (package
+      (name "brightnessctl")
+      (version (git-version "0.4" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Hummer12007/brightnessctl/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1n1gb8ldgqv3vs565yhk1w4jfvrviczp94r8wqlkv5q6ab43c8w9"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f                    ; no tests
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" %output)
+                            (string-append "UDEVDIR=" %output "/lib/udev/rules.d/"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'adjust-udev-rules
+             (lambda _
+               (substitute* "90-brightnessctl.rules"
+                 (("/bin/") "/run/current-system/profile/bin/"))
+               #t)))))
+      (home-page "https://github.com/Hummer12007/brightnessctl")
+      (synopsis "Backlight and LED brightness control")
+      (description
+       "This program allows you read and control device brightness.  Devices
+include backlight and LEDs.  It can also preserve current brightness before
+applying the operation, such as on lid close.
+
+The appropriate permissions must be set on the backlight or LED control
+interface in sysfs, which can be accomplished with the included udev rules.")
+      (license license:expat))))
 
 (define-public tlp
   (package

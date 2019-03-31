@@ -178,9 +178,7 @@ port 7, and a dict service on port 2628."
    (static-networking-service "ovs0" "10.1.1.1"
                               #:netmask "255.255.255.252"
                               #:requirement '(openvswitch-configuration))
-   (service openvswitch-service-type
-            (openvswitch-configuration
-             (package openvswitch)))
+   (service openvswitch-service-type)
    openvswitch-configuration-service))
 
 (define (run-openvswitch-test)

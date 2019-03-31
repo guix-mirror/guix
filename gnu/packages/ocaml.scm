@@ -1254,7 +1254,9 @@ coverage information.")
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                                         "/lib/ocaml/site-lib"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -1724,28 +1726,26 @@ immutability.")
 (define-public ocaml-alcotest
   (package
     (name "ocaml-alcotest")
-    (version "0.7.2")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mirage/alcotest/releases/"
                                   "download/" version "/alcotest-" version ".tbz"))
               (sha256
                 (base32
-                  "0g5lzk0gpfx4q8hyhr460gr4lab5wakfxsmhfwvb3yinxwzs95gc"))))
-    (build-system ocaml-build-system)
+                  "0szwjxvaahgynsx0apj81jxj3ki6yz4is9mh2wkcbx66qy7n6fvb"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:build-flags (list "build")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     `(#:package "alcotest"
+       #:test-target "."))
     (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)
-       ("topkg" ,ocaml-topkg)))
+     `(("ocamlbuild" ,ocamlbuild)))
     (propagated-inputs
-     `(("fmt" ,ocaml-fmt)
-       ("astring" ,ocaml-astring)))
+     `(("ocaml-astring" ,ocaml-astring)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-fmt" ,ocaml-fmt)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-uuidm" ,ocaml-uuidm)))
     (home-page "https://github.com/mirage/alcotest")
     (synopsis "Lightweight OCaml test framework")
     (description "Alcotest exposes simple interface to perform unit tests.  It
@@ -1797,21 +1797,22 @@ simple (yet expressive) query language to select the tests to run.")
 (define-public ocaml-react
   (package
     (name "ocaml-react")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://erratique.ch/software/react/releases/react-"
                             version ".tbz"))
         (sha256 (base32
-                  "0knhgbngphv5sp1yskfd97crf169qhpc0igr6w7vqw0q36lswyl8"))))
+                  "1aj8w79gdd9xnrbz7s5p8glcb4pmimi8jp9f439dqnf6ih3mqb3v"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)))
+       ("opam" ,opam)
+       ("ocaml-topkg" ,ocaml-topkg)))
     (arguments
      `(#:tests? #f
-       #:build-flags (list "native=true" "native-dynlink=true")
+       #:build-flags (list "build")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
@@ -2015,14 +2016,14 @@ file system and is independent from any system library.")
 (define-public ocaml-bos
   (package
     (name "ocaml-bos")
-    (version "0.1.4")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/bos/releases/"
                                   "bos-" version ".tbz"))
               (sha256
                 (base32
-                  "1ly66lysk4w6mdy4k1n3ynlpfpq7lw4wshcpzgx58v6x613w5s7q"))))
+                  "1s10iqx8rgnxr5n93lf4blwirjf8nlm272yg5sipr7lsr35v49wc"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
@@ -4790,7 +4791,7 @@ Atom.")
 (define-public ocaml-gsl
   (package
     (name "ocaml-gsl")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -4800,10 +4801,22 @@ Atom.")
          version "/gsl-" version ".tbz"))
        (sha256
         (base32
-         "17vcswipliq1b2idbzx1z95kskn1a4q4s5v04igilg0f7lnkaarb"))))
-    (build-system ocaml-build-system)
+         "1l5zkkkg8sglsihrbf10ivq9s8xzl1y6ag89i4jqpnmi4m43fy34"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-gsl-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/config/discover.ml"
+               (("/usr") (assoc-ref inputs "gsl")))
+             #t)))))
     (inputs
      `(("gsl" ,gsl)))
+    (propagated-inputs
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)))
     (home-page "https://mmottl.github.io/gsl-ocaml")
     (synopsis "Bindings to the GNU Scientific Library")
     (description

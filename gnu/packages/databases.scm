@@ -239,32 +239,19 @@ ElasticSearch server")
 (define-public leveldb
   (package
     (name "leveldb")
-    (version "1.20")
+    (version "1.21")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/leveldb"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/leveldb")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r36bcrj6b2afsp4aw1gjai3jbs1c7734pxpc1jz7hh9nasyiazm"))))
-    (build-system gnu-build-system)
+                "00v0w6883z7a6204894j59nd5v6dazn3c8hvh3sbczv4wiabppw2"))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           ;; There is no install target, so we do it here.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (include (string-append out "/include")))
-               (for-each (lambda (file)
-                           (install-file file lib))
-                         (find-files "out-shared" "^libleveldb\\.so.*$"))
-               (copy-recursively "include" include)
-               #t))))))
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
     (inputs
      `(("snappy" ,snappy)))
     (home-page "http://leveldb.org/")
@@ -987,7 +974,7 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
     (home-page "https://github.com/tialaramex/sparql-query/")
     (synopsis "Command-line tool for accessing SPARQL endpoints over HTTP")
     (description "Sparql-query is a command-line tool for accessing SPARQL
-endpoints over HTTP.  It has been intentionally designed to 'feel' similar to
+endpoints over HTTP.  It has been intentionally designed to @code{feel} similar to
 tools for interrogating SQL databases.  For example, you can enter a query over
 several lines, using a semi-colon at the end of a line to indicate the end of
 your query.  It also supports readline so that you can more easily recall and

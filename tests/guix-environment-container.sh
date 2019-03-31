@@ -44,6 +44,18 @@ else
     test $? = 42
 fi
 
+if test "x$USER" = "x"; then USER="`id -un`"; fi
+
+# Check whether /etc/passwd and /etc/group are valid.
+guix environment -C --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c "(exit (string=? \"$USER\" (passwd:name (getpwuid (getuid)))))"
+guix environment -C --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c '(exit (string? (group:name (getgrgid (getgid)))))'
+guix environment -C --ad-hoc --bootstrap guile-bootstrap \
+     -- guile -c '(use-modules (srfi srfi-1))
+                  (exit (every group:name
+                               (map getgrgid (vector->list (getgroups)))))'
+
 # Make sure file-not-found errors in mounts are reported.
 if guix environment --container --ad-hoc --bootstrap guile-bootstrap \
 	--expose=/does-not-exist -- guile -c 1 2> "$tmpdir/error"

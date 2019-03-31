@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,8 +84,8 @@
   (sessions-directory     sddm-configuration-sessions-directory
                           (default "/run/current-system/profile/share/wayland-sessions"))
   ;; [X11]
-  (xorg-server-path       sddm-configuration-xorg-server-path
-                          (default (xorg-start-command)))
+  (xorg-configuration     sddm-configuration-xorg
+                          (default (xorg-configuration)))
   (xauth-path             sddm-configuration-xauth-path
                           (default (file-append xauth "/bin/xauth")))
   (xephyr-path            sddm-configuration-xephyr-path
@@ -99,8 +100,6 @@
                           (default "/run/current-system/profile/share/xsessions"))
   (minimum-vt             sddm-configuration-minimum-vt
                           (default 7))
-  (xserver-arguments      sddm-configuration-xserver-arguments
-                          (default "-nolisten tcp"))
 
   ;; [Autologin]
   (auto-login-user        sddm-configuration-auto-login-user
@@ -140,7 +139,8 @@ SessionCommand="       (sddm-configuration-session-command config)             "
 SessionDir="           (sddm-configuration-sessions-directory config)          "
 
 [X11]
-ServerPath="           (sddm-configuration-xorg-server-path config)            "
+ServerPath="           (xorg-configuration-server
+                        (sddm-configuration-xorg config)) "/bin/X"             "
 XauthPath="            (sddm-configuration-xauth-path config)                  "
 XephyrPath="           (sddm-configuration-xephyr-path config)                 "
 DisplayCommand="       (sddm-configuration-xdisplay-start config)              "
@@ -148,7 +148,9 @@ DisplayStopCommand="   (sddm-configuration-xdisplay-stop config)               "
 SessionCommand="       (sddm-configuration-xsession-command config)            "
 SessionDir="           (sddm-configuration-xsessions-directory config)         "
 MinimumVT="            (number->string (sddm-configuration-minimum-vt config)) "
-ServerArguments="      (sddm-configuration-xserver-arguments config)           "
+ServerArguments="      (string-join
+                        (xorg-configuration-server-arguments
+                         (sddm-configuration-xorg config)))           "
 
 [Autologin]
 User="                 (sddm-configuration-auto-login-user config)             "

@@ -78,6 +78,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -109,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.16.0")
-        (commit "2637cfd7a4894ef2a2a7da3bb46d8815c43d7e75")
-        (revision 10))
+        (commit "f970946c1d3dc6d20bd48ec6f42c82a43bb7696f")
+        (revision 11))
     (package
       (name "guix")
 
@@ -126,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1m734gm45x9czqspsagdfxfgw5wiiinyq1s6zc9gfv7d3b2w472k"))
+                  "0v7qj2i9n52l1di8vk15nqdrlapfc22pcf5jl56fp4mqpq48ddrj"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -409,10 +410,10 @@ generated file."
   (make-parameter #f))
 
 (define-public current-guix
-  (let* ((repository-root (canonicalize-path
-                           (string-append (current-source-directory)
-                                          "/../..")))
-         (select? (delay (or (git-predicate repository-root)
+  (let* ((repository-root (delay (canonicalize-path
+                                  (string-append (current-source-directory)
+                                                 "/../.."))))
+         (select? (delay (or (git-predicate (force repository-root))
                              source-file?))))
     (lambda ()
       "Return a package representing Guix built from the current source tree.
@@ -422,7 +423,7 @@ out) and returning a package that uses that as its 'source'."
           (package
             (inherit guix)
             (version (string-append (package-version guix) "+"))
-            (source (local-file repository-root "guix-current"
+            (source (local-file (force repository-root) "guix-current"
                                 #:recursive? #t
                                 #:select? (force select?))))))))
 
@@ -1018,7 +1019,11 @@ the bootloader configuration.")
      (sha256
       (base32
        "0i0dn3w3545lvmjlzqj3j70lk8yrq64r9frp1rk6a161gwq20ixv"))))
-   (build-system gnu-build-system)
+
+   ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
+   ;; find the TLS backend in glib-networking.
+   (build-system glib-or-gtk-build-system)
+
    (arguments
     '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
       #:configure-flags (list

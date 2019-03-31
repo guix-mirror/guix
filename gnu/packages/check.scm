@@ -485,13 +485,14 @@ test coverage and has a web user interface that will refresh automatically.")
     (version "1.8.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/google/googletest/archive/"
-                           "release-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/google/googletest.git")
+              (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1n5p1m2m3fjrjdj752lf92f9wq3pl5cbsfrb49jqbg52ghkz99jq"))))
+         "0bjlljmbf8glnd9qjabx73w6pd7ibv43yiyngqvmvgxsabzr8399"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))

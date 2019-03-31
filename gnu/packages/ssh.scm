@@ -111,7 +111,7 @@ applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.8.1")
+   (version "1.8.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -119,7 +119,7 @@ applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "0ngif3ynk6xqzy5nlfjs7bsmfm81g9f145av0z86kf0vbgrigda0"))
+              "0rqd37pc80nm2pz4sa2m9pfc48axys7jwq1l7z0vii5nyvchg0q8"))
             (patches
              (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))
    (build-system gnu-build-system)
@@ -451,7 +451,7 @@ TCP, not the SSH protocol.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2019.77")
+    (version "2019.78")
     (source
      (origin
        (method url-fetch)
@@ -459,7 +459,7 @@ TCP, not the SSH protocol.")
              "https://matt.ucc.asn.au/dropbear/releases/"
              "dropbear-" version ".tar.bz2"))
        (sha256
-        (base32 "13a55fcy2mx2pvsfj6dh9107k4wnbd9ybdyi3w3ivgikwvmph7yr"))))
+        (base32 "19242qlr40pbqfqd0gg6h8qpj38q6lgv03ja6sahj9vj2abnanaj"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))  ; there is no "make check" or anything similar
     ;; TODO: Investigate unbundling libtommath and libtomcrypt or at least

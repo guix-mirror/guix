@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -66,9 +66,11 @@
   #:use-module (rnrs bytevectors)
   #:export (operating-system
             operating-system?
+            this-operating-system
 
             operating-system-bootloader
             operating-system-services
+            operating-system-essential-services
             operating-system-user-services
             operating-system-packages
             operating-system-host-name
@@ -151,12 +153,16 @@
 (define-record-type* <operating-system> operating-system
   make-operating-system
   operating-system?
+  this-operating-system
+
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
   (kernel-arguments operating-system-user-kernel-arguments
                     (default '()))                ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
 
+  (keyboard-layout operating-system-keyboard-layout ;#f | <keyboard-layout>
+                   (default #f))
   (initrd operating-system-initrd                 ; (list fs) -> file-like
           (default base-initrd))
   (initrd-modules operating-system-initrd-modules ; list of strings
@@ -199,6 +205,9 @@
   (name-service-switch operating-system-name-service-switch ; <name-service-switch>
                        (default %default-nss))
 
+  (essential-services operating-system-essential-services ; list of services
+                      (thunked)
+                      (default (essential-services this-operating-system)))
   (services operating-system-user-services        ; list of services
             (default %base-services))
 
@@ -436,27 +445,22 @@ OS."
   (file-append (operating-system-kernel os)
                "/" (system-linux-image-file-name os)))
 
-(define* (operating-system-directory-base-entries os #:key container?)
+(define* (operating-system-directory-base-entries os)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
   (let ((locale (operating-system-locale-directory os)))
-    (with-monad %store-monad
-      (if container?
-          (return `(("locale" ,locale)))
-          (mlet %store-monad
-              ((kernel  ->  (operating-system-kernel os))
-               (initrd  ->  (operating-system-initrd-file os))
-               (params      (operating-system-boot-parameters-file os)))
-            (return `(("kernel" ,kernel)
-                      ("parameters" ,params)
-                      ("initrd" ,initrd)
-                      ("locale" ,locale))))))))   ;used by libc
+    (mlet %store-monad ((kernel -> (operating-system-kernel os))
+                        (initrd -> (operating-system-initrd-file os))
+                        (params    (operating-system-boot-parameters-file os)))
+      (return `(("kernel" ,kernel)
+                ("parameters" ,params)
+                ("initrd" ,initrd)
+                ("locale" ,locale))))))   ;used by libc
 
-(define* (essential-services os #:key container?)
+(define* (essential-services os)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
-bookkeeping.  CONTAINER? determines whether to return the list of services for
-a container or that of a \"bare metal\" system."
+bookkeeping."
   (define known-fs
     (map file-system-mount-point (operating-system-file-systems os)))
 
@@ -466,8 +470,7 @@ a container or that of a \"bare metal\" system."
          (swaps     (swap-services os))
          (procs     (service user-processes-service-type))
          (host-name (host-name-service (operating-system-host-name os)))
-         (entries   (operating-system-directory-base-entries
-                     os #:container? container?)))
+         (entries   (operating-system-directory-base-entries os)))
     (cons* (service system-service-type entries)
            %boot-service
 
@@ -495,20 +498,16 @@ a container or that of a \"bare metal\" system."
            other-fs
            (append mappings swaps
 
-                   ;; Add the firmware service, unless we are building for a
-                   ;; container.
-                   (if container?
-                       (list %containerized-shepherd-service)
-                       (list %linux-bare-metal-service
-                             (service firmware-service-type
-                                      (operating-system-firmware os))))))))
+                   ;; Add the firmware service.
+                   (list %linux-bare-metal-service
+                         (service firmware-service-type
+                                  (operating-system-firmware os)))))))
 
-(define* (operating-system-services os #:key container?)
-  "Return all the services of OS, including \"internal\" services that do not
-explicitly appear in OS."
+(define* (operating-system-services os)
+  "Return all the services of OS, including \"essential\" services."
   (instantiate-missing-services
    (append (operating-system-user-services os)
-           (essential-services os #:container? container?))))
+           (operating-system-essential-services os))))
 
 
 ;;;
@@ -806,20 +805,19 @@ use 'plain-file' instead~%")
 root ALL=(ALL) ALL
 %wheel ALL=(ALL) ALL\n"))
 
-(define* (operating-system-activation-script os #:key container?)
+(define* (operating-system-activation-script os)
   "Return the activation script for OS---i.e., the code that \"activates\" the
 stateful part of OS, including user accounts and groups, special directories,
 etc."
-  (let* ((services   (operating-system-services os #:container? container?))
+  (let* ((services   (operating-system-services os))
          (activation (fold-services services
                                     #:target-type activation-service-type)))
     (activation-service->script activation)))
 
-(define* (operating-system-boot-script os #:key container?)
+(define* (operating-system-boot-script os)
   "Return the boot script for OS---i.e., the code started by the initrd once
-we're running in the final root.  When CONTAINER? is true, skip all
-hardware-related operations as necessary when booting a Linux container."
-  (let* ((services (operating-system-services os #:container? container?))
+we're running in the final root."
+  (let* ((services (operating-system-services os))
          (boot     (fold-services services #:target-type boot-service-type)))
     (service-value boot)))
 
@@ -839,17 +837,17 @@ hardware-related operations as necessary when booting a Linux container."
                               #:target-type
                               shepherd-root-service-type))))
 
-(define* (operating-system-derivation os #:key container?)
+(define* (operating-system-derivation os)
   "Return a derivation that builds OS."
-  (let* ((services (operating-system-services os #:container? container?))
+  (let* ((services (operating-system-services os))
          (system   (fold-services services)))
     ;; SYSTEM contains the derivation as a monadic value.
     (service-value system)))
 
-(define* (operating-system-profile os #:key container?)
+(define* (operating-system-profile os)
   "Return a derivation that builds the system profile of OS."
   (mlet* %store-monad
-      ((services -> (operating-system-services os #:container? container?))
+      ((services -> (operating-system-services os))
        (profile (fold-services services
                                #:target-type profile-service-type)))
     (match profile
@@ -878,7 +876,8 @@ hardware-related operations as necessary when booting a Linux container."
                #:linux (operating-system-kernel os)
                #:linux-modules
                (operating-system-initrd-modules os)
-               #:mapped-devices mapped-devices))
+               #:mapped-devices mapped-devices
+               #:keyboard-layout (operating-system-keyboard-layout os)))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."

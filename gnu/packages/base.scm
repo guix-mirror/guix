@@ -600,9 +600,9 @@ wrapper for the cross-linker for that target, called 'TARGET-ld'."
                        #t)))))
     (synopsis "The linker wrapper")
     (description
-     "The linker wrapper (or 'ld-wrapper') wraps the linker to add any
-missing '-rpath' flags, and to detect any misuse of libraries outside of the
-store.")
+     "The linker wrapper (or @code{ld-wrapper}) wraps the linker to add any
+missing @code{-rpath} flags, and to detect any misuse of libraries outside of
+the store.")
     (home-page "https://www.gnu.org/software/guix//")
     (license gpl3+)))
 
@@ -1019,8 +1019,8 @@ with the Linux kernel.")
     (synopsis "All the locales supported by the GNU C Library")
     (description
      "This package provides all the locales supported by the GNU C Library,
-more than 400 in total.  To use them set the 'LOCPATH' environment variable to
-the 'share/locale' sub-directory of this package.")
+more than 400 in total.  To use them set the @code{LOCPATH} environment variable
+to the @code{share/locale} sub-directory of this package.")
     (outputs '("out"))                            ;110+ MiB
     (native-search-paths '())
     (arguments

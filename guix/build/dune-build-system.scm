@@ -31,27 +31,30 @@
 ;; Code:
 
 (define* (build #:key (build-flags '()) (jbuild? #f)
-                (use-make? #f) #:allow-other-keys)
+                (use-make? #f) (package #f) #:allow-other-keys)
   "Build the given package."
   (let ((program (if jbuild? "jbuilder" "dune")))
-    (apply invoke program "build" "@install" build-flags))
+    (apply invoke program "build" "@install"
+           (append (if package (list "-p" package) '()) build-flags)))
   #t)
 
 (define* (check #:key (test-flags '()) (test-target "test") tests?
-                  (jbuild? #f) #:allow-other-keys)
+                  (jbuild? #f) (package #f) #:allow-other-keys)
   "Test the given package."
   (when tests?
     (let ((program (if jbuild? "jbuilder" "dune")))
-      (apply invoke program "runtest" test-target test-flags)))
+      (apply invoke program "runtest" test-target
+             (append (if package (list "-p" package) '()) test-flags))))
   #t)
 
 (define* (install #:key outputs (install-target "install") (jbuild? #f)
-                  #:allow-other-keys)
+                  (package #f) #:allow-other-keys)
   "Install the given package."
   (let ((out (assoc-ref outputs "out"))
         (program (if jbuild? "jbuilder" "dune")))
-    (invoke program install-target "--prefix" out "--libdir"
-            (string-append out "/lib/ocaml/site-lib")))
+    (apply invoke program install-target "--prefix" out "--libdir"
+           (string-append out "/lib/ocaml/site-lib")
+           (if package (list package) '())))
   #t)
 
 (define %standard-phases

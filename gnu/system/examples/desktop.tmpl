@@ -42,8 +42,7 @@
                 (comment "Alice's brother")
                 (group "users")
                 (supplementary-groups '("wheel" "netdev"
-                                        "audio" "video"))
-                (home-directory "/home/bob"))
+                                        "audio" "video")))
                %base-user-accounts))
 
   ;; This is where we specify system-wide packages.
@@ -58,8 +57,8 @@
   ;; screen with F1.  Use the "desktop" services, which
   ;; include the X11 log-in service, networking with
   ;; NetworkManager, and more.
-  (services (append (list (gnome-desktop-service)
-                          (xfce-desktop-service))
+  (services (append (list (service gnome-desktop-service-type)
+                          (service xfce-desktop-service-type))
                     %desktop-services))
 
   ;; Allow resolution of '.local' host names with mDNS.

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,13 +43,17 @@
   #:use-module (srfi srfi-1)
   #:export (installer-program))
 
-(define not-config?
-  ;; Select (guix …) and (gnu …) modules, except (guix config).
+(define module-to-import?
+  ;; Return true for modules that should be imported.  For (gnu system …) and
+  ;; (gnu packages …) modules, we simply add the whole 'guix' package via
+  ;; 'with-extensions' (to avoid having to rebuild it all), which is why these
+  ;; modules are excluded here.
   (match-lambda
     (('guix 'config) #f)
-    (('guix rest ...) #t)
-    (('gnu rest ...) #t)
-    (rest #f)))
+    (('gnu 'installer _ ...) #t)
+    (('gnu 'build _ ...) #t)
+    (('guix 'build _ ...) #t)
+    (_ #f)))
 
 (define* (build-compiled-file name locale-builder)
   "Return a file-like object that evalutes the gexp LOCALE-BUILDER and store
@@ -156,7 +161,8 @@ selected keymap."
                (lambda (models layouts)
                  ((installer-keymap-page current-installer)
                   layouts)))))
-        (#$apply-keymap result))))
+        (#$apply-keymap result)
+        result)))
 
 (define (installer-steps)
   (let ((locale-step (compute-locale-step
@@ -208,7 +214,8 @@ selected keymap."
           (id 'keymap)
           (description (G_ "Keyboard mapping selection"))
           (compute (lambda _
-                     (#$keymap-step current-installer))))
+                     (#$keymap-step current-installer)))
+          (configuration-formatter keyboard-layout->configuration))
 
          ;; Run a partitioning tool allowing the user to modify
          ;; partition tables, partitions and their mount points.
@@ -293,13 +300,15 @@ selected keymap."
      "gnu/installer"))
 
   (define installer-builder
+    ;; Note: Include GUIX as an extension to get all the (gnu system …), (gnu
+    ;; packages …), etc. modules.
     (with-extensions (list guile-gcrypt guile-newt
                            guile-parted guile-bytestructures
-                           guile-json)
+                           guile-json guile-git guix)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
                                     (guix build utils))
-                                  #:select? not-config?)
+                                  #:select? module-to-import?)
                                ((guix config) => ,(make-config.scm)))
         #~(begin
             (use-modules (gnu installer record)
@@ -313,6 +322,8 @@ selected keymap."
                          (gnu installer timezone)
                          (gnu installer user)
                          (gnu installer newt)
+                         ((gnu installer newt keymap)
+                          #:select (keyboard-layout->configuration))
                          (guix i18n)
                          (guix build utils)
                          (ice-9 match))

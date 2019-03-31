@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -548,7 +548,7 @@ Resources file.")
     (synopsis "Xorg font aliases")
     (description
      "This package provides some common aliases for Xorg fonts.
-For example: '6x10', '9x15bold', etc.")
+For example: @code{6x10}, @code{9x15bold}, etc.")
     (license license:x11)))
 
 
@@ -1600,8 +1600,8 @@ input from UTF-8 into the locale's encoding.")
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of scalable font files for X server")
     (description
-     "MkFontScale creates the 'fonts.scale' and 'fonts.dir' index files used
-by the legacy X11 font system.")
+     "MkFontScale creates the @code{fonts.scale} and @code{fonts.dir} index
+files used by the legacy X11 font system.")
     (license license:x11)))
 
 
@@ -2220,7 +2220,7 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
     (synopsis "Default Xorg cursors")
     (description
      "This package provides a default set of cursor themes for the Xorg
-X server: 'handhelds', 'redglass' and 'whiteglass'.")
+X server: @code{handhelds}, @code{redglass} and @code{whiteglass}.")
     (license license:x11)))
 
 
@@ -3864,7 +3864,7 @@ extension to the X11 protocol.  It includes:
      "xkeyboard-config provides a database for X Keyboard (XKB) Extension.
 There are five components that define a complete keyboard mapping:
 symbols, geometry, keycodes, compat, and types; these five components
-can be combined together using the 'rules' component of this database.")
+can be combined together using the @code{rules} component of this database.")
     (license license:x11)))
 
 
@@ -4746,7 +4746,7 @@ protocol and arbitrary X extension protocol.")
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of X font files in a directory")
     (description
-     "MkFontDir creates the 'fonts.dir' files needed by the legacy X
+     "MkFontDir creates the @code{fonts.dir} files needed by the legacy X
 server core font system.  The current implementation is a simple wrapper
 script around the mkfontscale program.")
     (license license:x11)))
@@ -5671,7 +5671,7 @@ The XCB util-wm module provides the following libraries:
     (description
      "The xinit program is used to start the X Window System server and a
 first client program on systems that are not using a display manager such as
-xdm.  This package also provides the 'startx' command, which provides a
+xdm.  This package also provides the @code{startx} command, which provides a
 user-friendly mechanism to start the X server.")
     (license license:x11)))
 

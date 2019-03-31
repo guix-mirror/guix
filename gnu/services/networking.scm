@@ -1154,7 +1154,8 @@ implements authentication, key negotiation and more for wireless networks.")
    (description
     "Run @uref{http://www.openvswitch.org, Open vSwitch}, a multilayer virtual
 switch designed to enable massive network automation through programmatic
-extension.")))
+extension.")
+   (default-value (openvswitch-configuration))))
 
 ;;;
 ;;; iptables

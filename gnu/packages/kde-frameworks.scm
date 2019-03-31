@@ -418,7 +418,7 @@ documentation.")
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Qt 5 addon providing access to numerous types of archives")
     (description "KArchive provides classes for easy reading, creation and
-manipulation of 'archive' formats like ZIP and TAR.
+manipulation of @code{archive} formats like ZIP and TAR.
 
 It also provides transparent compression and decompression of data, like the
 GZip format, via a subclass of QIODevice.")
@@ -2585,8 +2585,9 @@ in applications using the KDE Frameworks.")
     (synopsis "Library to speed up start of applications on KDE workspaces")
     (description "Kdeinit is a process launcher similar to init used for booting
 UNIX.  It launches processes by forking and then loading a dynamic library which
-contains a 'kdemain(...)' function.  Using kdeinit to launch KDE applications
-makes starting KDE applications faster and reduces memory consumption.")
+contains a @code{kdemain(@dots{})} function.  Using kdeinit to launch KDE
+applications makes starting KDE applications faster and reduces memory
+consumption.")
     ;; dual licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
 

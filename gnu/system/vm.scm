@@ -58,6 +58,7 @@
   #:use-module (gnu bootloader grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
+  #:use-module (gnu system linux-container)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -320,7 +321,10 @@ INPUTS is a list of inputs (as for packages)."
 
    #:make-disk-image? #f
    #:single-file-output? #t
-   #:references-graphs inputs))
+   #:references-graphs inputs
+
+   ;; Xorriso seems to be quite memory-hungry, so increase the VM's RAM size.
+   #:memory-size 512))
 
 (define* (qemu-image #:key
                      (name "qemu-image")
@@ -473,9 +477,9 @@ should set REGISTER-CLOSURES? to #f."
          (local-file (search-path %load-path
                                   "guix/store/schema.sql"))))
 
-  (mlet %store-monad ((os-drv (operating-system-derivation os #:container? #t))
-                      (name -> (string-append name ".tar.gz"))
-                      (graph -> "system-graph"))
+  (let ((os    (containerized-operating-system os '()))
+        (name  (string-append name ".tar.gz"))
+        (graph "system-graph"))
     (define build
       (with-extensions (cons guile-json           ;for (guix docker)
                              gcrypt-sqlite3&co)   ;for (guix store database)
@@ -505,7 +509,7 @@ should set REGISTER-CLOSURES? to #f."
                      (initialize (root-partition-initializer
                                   #:closures '(#$graph)
                                   #:register-closures? #$register-closures?
-                                  #:system-directory #$os-drv
+                                  #:system-directory #$os
                                   ;; De-duplication would fail due to
                                   ;; cross-device link errors, so don't do it.
                                   #:deduplicate? #f))
@@ -523,7 +527,7 @@ should set REGISTER-CLOSURES? to #f."
                              (call-with-input-file
                                  (string-append "/xchg/" #$graph)
                                read-reference-graph)))
-                 #$os-drv
+                 #$os
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)
                  #:transformations `((,root-directory -> "")))
@@ -534,7 +538,7 @@ should set REGISTER-CLOSURES? to #f."
      name build
      #:make-disk-image? #f
      #:single-file-output? #t
-     #:references-graphs `((,graph ,os-drv)))))
+     #:references-graphs `((,graph ,os)))))
 
 
 ;;;
@@ -790,6 +794,7 @@ environment with the store shared with the host.  MAPPINGS is a list of
     ;; force the traditional i386/BIOS method.
     ;; See <https://bugs.gnu.org/28768>.
     (bootloader (bootloader-configuration
+                  (inherit (operating-system-bootloader os))
                   (bootloader grub-bootloader)
                   (target "/dev/vda")))
 

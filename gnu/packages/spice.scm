@@ -217,7 +217,7 @@ which allows users to view a desktop computing environment.")
         #:parallel-tests? #f))
     (synopsis "Server implementation of the SPICE protocol")
     (description "SPICE is a remote display system built for virtual
-environments which allows you to view a computing 'desktop' environment
+environments which allows you to view a computing @code{desktop} environment
 not only on the machine where it is running, but from anywhere on the
 Internet and from a wide variety of machine architectures.")
     (home-page "https://www.spice-space.org")

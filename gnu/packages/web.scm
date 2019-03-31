@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -2900,7 +2900,7 @@ fields in the request.")
     (home-page "https://metacpan.org/release/HTTP-Parser")
     (synopsis "Parse HTTP/1.1 requests")
     (description "This is an HTTP request parser.  It takes chunks of text as
-received and returns a 'hint' as to what is required, or returns the
+received and returns a @code{hint} as to what is required, or returns the
 HTTP::Request when a complete request has been read.  HTTP/1.1 chunking is
 supported.")
     (license l:perl-license)))
@@ -3467,7 +3467,7 @@ required.")
     (synopsis "Supports app to run as a reverse proxy backend")
     (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
 which are changed by reverse-proxy.  You can specify the reverse proxy address
-and stop fake requests using 'enable_if' directive in your app.psgi.")
+and stop fake requests using @code{enable_if} directive in your app.psgi.")
     (license l:perl-license)))
 
 (define-public perl-plack-test-externalserver
@@ -3477,7 +3477,7 @@ and stop fake requests using 'enable_if' directive in your app.psgi.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Plack-Test-ExternalServer-" version ".tar.gz"))
        (sha256
         (base32 "1l1yj1l25679x7cbpd27ii7s1f1ajpkspif9xqnl21hczrbmrbsv"))))
@@ -6424,9 +6424,9 @@ compressed JSON header blocks.
        `(("guile" ,guile-2.2)
          ("guile-commonmark" ,guile-commonmark)
          ("guile-json" ,guile-json)))
-    (home-page "https://github.com/UMCUGenetics/hpcguix-web")
+      (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
-    (license l:agpl3+))))
+      (license l:agpl3+))))

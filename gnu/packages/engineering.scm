@@ -85,6 +85,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xorg))
 
@@ -554,43 +555,65 @@ multipole-accelerated algorithm.")
 (define-public fritzing
   (package
     (name "fritzing")
-    (version "0.9.2b")
+    (version "0.9.3b")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/fritzing/"
-                                  "fritzing-app/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fritzing/fritzing-app.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "15rwjp4xdj9w1z9f709rz9p0k2mi9k9idma9hvzkj5j8p04mg7yd"))))
+                "0hpyc550xfhr6gmnc85nq60w00rm0ljm0y744dp0z88ikl04f4s3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (and (zero? (system* "tar"
-                                  "-xvf" (assoc-ref inputs "fritzing-parts-db")
-                                  "-C" "parts"))
-                  (zero? (system* "qmake"
-                                  (string-append "PREFIX="
-                                                 (assoc-ref outputs "out"))
-                                  "phoenix.pro"))))))))
+             (copy-recursively (assoc-ref inputs "fritzing-parts-db")
+                               "parts")
+             ;; Make compatible with libgit2 > 0.24
+             (substitute* "src/version/partschecker.cpp"
+               (("error = git_remote_connect\\(remote, GIT_DIRECTION_FETCH, &callbacks\\)")
+                "error = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, NULL, NULL)"))
+
+             ;; Use system libgit2 and boost.
+             (substitute* "phoenix.pro"
+               (("^LIBGIT2INCLUDE =.*")
+                (string-append "LIBGIT2INCLUDE="
+                               (assoc-ref inputs "libgit2") "/include\n"))
+               (("^    LIBGIT2LIB =.*")
+                (string-append "    LIBGIT2LIB="
+                               (assoc-ref inputs "libgit2") "/lib\n")))
+             ;; This file checks for old versions of Boost, insisting on
+             ;; having us download the boost sources and placing them in the
+             ;; build directory.
+             (substitute* "pri/utils.pri"
+               (("error\\(") "message("))
+
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "QMAKE_LFLAGS_RPATH=-Wl,-rpath," out "/lib")
+                       (string-append "PREFIX=" out)
+                       "phoenix.pro")))))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtserialport" ,qtserialport)
        ("qtsvg" ,qtsvg)
+       ("libgit2" ,libgit2)
        ("boost" ,boost)
        ("zlib" ,zlib)
        ("fritzing-parts-db"
         ,(origin
-           (method url-fetch)
-           (uri (string-append "https://github.com/fritzing/"
-                               "fritzing-parts/archive/" version ".tar.gz"))
-           (file-name (string-append "fritzing-parts-" version ".tar.gz"))
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/fritzing/fritzing-parts.git")
+                 (commit version)))
+           (file-name (git-file-name "fritzing-parts" version))
            (sha256
             (base32
-             "0jqr8yjg7177f3pk1fcns584r0qavwpr280nggsi2ff3pwk5wpsz"))))))
+             "1d2v8k7p176j0lczx4vx9n9gbg3vw09n2c4b6w0wj5wqmifywhc1"))))))
     (home-page "http://fritzing.org")
     (synopsis "Electronic circuit design")
     (description

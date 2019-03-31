@@ -392,7 +392,7 @@ formats like PNG, SVG, PDF and EPS.")
        ("libsoup" ,libsoup)))
     (propagated-inputs
      `(("gcr" ,gcr)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("liboauth" ,liboauth)
        ("libxml2" ,libxml2)))
     (home-page "https://wiki.gnome.org/Projects/libgdata")
@@ -5064,7 +5064,23 @@ window manager.")
               (sha256
                (base32
                 "035lmm21imr7ddpzffqabv53g3ggjscmqvlzy3j1qkv00zrlxg47"))))
+    (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-libgoa-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (assoc-ref outputs "lib")))
+               (substitute* '("src/goa/Makefile.in" "src/goa/goa-1.0.pc.in")
+                 (("@prefix@") lib)
+                 (("@exec_prefix@") lib)
+                 (("@libdir@") (string-append lib "/lib"))
+                 (("@includedir@") (string-append lib "/include"))
+                 (("@datadir@") (string-append lib "/share")))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -5101,6 +5117,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (sha256
                (base32
                 "11sq795115vrcgxl9svscm6wg8isjj784c3d84qzb6z47zq92zj3"))))
+    (outputs '("out" "libedataserverui"))
     (build-system cmake-build-system)
     (arguments
      '(;; XXX FIXME: 11/85 tests are failing.
@@ -5141,7 +5158,40 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                ;; CMakeLists.txt hard-codes runpath to just the libdir.
                ;; Remove it so the configure flag is respected.
                (("SET\\(CMAKE_INSTALL_RPATH .*") ""))
-             #t)))))
+             #t))
+         (add-before 'configure 'factor-webkit
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("webkit2gtk-4\\.0>=\\$[{]webkit2gtk_minimum_version[}]") "")
+               (("if[(]ENABLE_OAUTH2[)]")
+                (string-append
+                 "if(ENABLE_OAUTH2)\n"
+                 "\tpkg_check_modules(OAUTH2_UI REQUIRED "
+                 "webkit2gtk-4.0>=${webkit2gtk_minimum_version})")))
+             (substitute* "src/libedataserverui/CMakeLists.txt"
+               (("\\$[{]OAUTH2_([A-Z_]+)[}]" all part)
+                (string-append all " ${OAUTH2_UI_" part "}")))))
+         (add-after 'install 'split
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (libedsui (assoc-ref outputs "libedataserverui")))
+               (for-each (lambda (file)
+                           (mkdir-p (dirname (string-append libedsui file)))
+                           (rename-file (string-append out file)
+                                        (string-append libedsui file)))
+                         '("/lib/pkgconfig/libedataserverui-1.2.pc"
+                           "/lib/libedataserverui-1.2.so"
+                           "/lib/libedataserverui-1.2.so.2"
+                           "/lib/libedataserverui-1.2.so.2.0.0"
+                           "/lib/girepository-1.0/EDataServerUI-1.2.typelib"
+                           "/include/evolution-data-server/libedataserverui"
+                           "/share/gir-1.0/EDataServerUI-1.2.gir"
+                           "/share/vala/vapi/libedataserverui-1.2.vapi"
+                           "/share/vala/vapi/libedataserverui-1.2.deps"))
+               (substitute* (string-append libedsui "/lib/pkgconfig/"
+                                           "libedataserverui-1.2.pc")
+                 ((out) libedsui))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -5161,7 +5211,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
     (inputs
      `(("bdb" ,bdb)
        ("gcr" ,gcr)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("json-glib" ,json-glib)
        ("libgweather" ,libgweather)
        ("mit-krb5" ,mit-krb5)
@@ -5777,6 +5827,7 @@ devices using the GNOME desktop.")
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("grilo" ,grilo)
        ("ibus" ,ibus)
@@ -5920,7 +5971,6 @@ properties, screen resolution, and other GNOME parameters.")
        ("gdm" ,gdm)
        ("gjs" ,gjs)
        ("gnome-bluetooth" ,gnome-bluetooth)
-       ("gnome-control-center" ,gnome-control-center)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gst-plugins-base" ,gst-plugins-base)
@@ -6487,7 +6537,7 @@ library.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnome-online-accounts" ,gnome-online-accounts)
+     `(("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("json-glib" ,json-glib)
        ("rest" ,rest)))
     (home-page "https://wiki.gnome.org/Projects/Zapojit")
@@ -6560,9 +6610,10 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("evolution-data-server" ,evolution-data-server)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libdazzle" ,libdazzle)
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libgweather" ,libgweather)
        ("geoclue" ,geoclue)))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
@@ -6610,11 +6661,12 @@ desktop.  It supports multiple calendars, month, week and year view.")
     (inputs
      `(("rest" ,rest)                   ; For Todoist plugin
        ("json-glib" ,json-glib)         ; For Todoist plugin
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libical" ,libical)
        ("libpeas" ,libpeas)
        ("python-pygobject" ,python-pygobject)
        ("evolution-data-server" ,evolution-data-server)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://wiki.gnome.org/Apps/Todo")
     (synopsis "GNOME's ToDo Application")
@@ -6943,7 +6995,7 @@ compiled.")
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
      `(("json-glib" ,json-glib)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("rest" ,rest)))
     (synopsis "GLib/GObject wrapper for the Facebook API")
     (description "This library allows you to use the Facebook API from
@@ -7825,6 +7877,7 @@ generic enough to work for everyone.")
        ("gtkspell3" ,gtkspell3)
        ("highlight" ,highlight)
        ("libcanberra" ,libcanberra)
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libgweather" ,libgweather)
        ("libnotify" ,libnotify)
        ("libsoup" ,libsoup)

@@ -103,12 +103,13 @@ and freshness without requiring additional information from the user.")
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((unpack (lambda (source target)
                                (with-directory-excursion target
-                                 (zero? (system* "tar" "xvf"
-                                                 (assoc-ref inputs source)
-                                                 "--strip-components=1"))))))
-                 (and (unpack "phobos-src" "runtime/phobos")
-                      (unpack "druntime-src" "runtime/druntime")
-                      (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")))))
+                                 (invoke "tar" "xvf"
+                                         (assoc-ref inputs source)
+                                         "--strip-components=1")))))
+                 (unpack "phobos-src" "runtime/phobos")
+                 (unpack "druntime-src" "runtime/druntime")
+                 (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")
+                 #t)))
            (add-after 'unpack-submodule-sources 'patch-dmd2
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "dmd2/root/port.c"
@@ -210,12 +211,12 @@ bootstrapping more recent compilers written in D.")
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((unpack (lambda (source target)
                                (with-directory-excursion target
-                                 (zero? (system* "tar" "xvf"
-                                                 (assoc-ref inputs source)
-                                                 "--strip-components=1"))))))
-                 (and (unpack "phobos-src" "runtime/phobos")
-                      (unpack "druntime-src" "runtime/druntime")
-                      (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")))))
+                                 (invoke "tar" "xvf"
+                                         (assoc-ref inputs source)
+                                         "--strip-components=1")))))
+                 (unpack "phobos-src" "runtime/phobos")
+                 (unpack "druntime-src" "runtime/druntime")
+                 (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite"))))
            (add-after 'unpack-submodule-sources 'patch-phobos
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* '("runtime/phobos/std/process.d"

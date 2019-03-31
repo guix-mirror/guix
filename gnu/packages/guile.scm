@@ -103,6 +103,12 @@
                       (substitute* "ice-9/popen.scm"
                         (("/bin/sh") (which "sh")))
                       #t)))))
+
+   ;; When cross-compiling, a native version of Guile itself is needed.
+   (native-inputs (if (%current-target-system)
+                      `(("self" ,this-package))
+                      '()))
+
    (inputs `(("gawk" ,gawk)
              ("readline" ,readline)))
 
@@ -110,9 +116,6 @@
    ;; propagated.
    (propagated-inputs `(("gmp" ,gmp)
                         ("libltdl" ,libltdl)))
-
-   ;; When cross-compiling, a native version of Guile itself is needed.
-   (self-native-input? #t)
 
    (native-search-paths
     (list (search-path-specification
@@ -141,7 +144,12 @@ without requiring the source code to be rewritten.")
              (base32
               "10lxc6l5alf3lzbs3ihnbfy6dfcrsyf8667wa57f26vf4mk2ai78"))))
    (build-system gnu-build-system)
-   (native-inputs `(("pkgconfig" ,pkg-config)))
+
+   ;; When cross-compiling, a native version of Guile itself is needed.
+   (native-inputs `(,@(if (%current-target-system)
+                          `(("self" ,this-package))
+                          '())
+                    ("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
              ,@(libiconv-if-needed)
 
@@ -164,8 +172,6 @@ without requiring the source code to be rewritten.")
       ;; must be propagated.
       ("bdw-gc" ,libgc)
       ("gmp" ,gmp)))
-
-   (self-native-input? #t)
 
    (outputs '("out" "debug"))
 
@@ -206,20 +212,6 @@ provide a convenient means of extending the functionality of the application
 without requiring the source code to be rewritten.")
    (home-page "https://www.gnu.org/software/guile/")
    (license license:lgpl3+)))
-
-(define-public guile-2.0.13
-  ;; For testing a "minimal" Guix
-  (hidden-package
-   (package (inherit guile-2.0)
-     (name "guile")
-     (version "2.0.13")
-     (source (origin
-               (method url-fetch)
-               (uri (string-append "mirror://gnu/guile/guile-" version
-                                   ".tar.xz"))
-               (sha256
-                (base32
-                 "12yqkr974y91ylgw6jnmci2v90i90s7h9vxa4zk0sai8vjnz4i1p")))))))
 
 (define-public guile-2.2
   (package (inherit guile-2.0)

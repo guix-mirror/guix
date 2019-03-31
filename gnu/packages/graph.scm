@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system r)
@@ -30,6 +33,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bioconductor)
   #:use-module (gnu packages bioinformatics)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages graphviz)
@@ -40,6 +44,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages statistics)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml))
 
@@ -239,3 +244,140 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
 
 (define-public python2-plotly
   (package-with-python2 python-plotly))
+
+(define-public faiss
+  (package
+    (name "faiss")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/facebookresearch/faiss.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pk15jfa775cy2pqmzq62nhd6zfjxmpvz5h731197c28aq3zw39w"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "utils.cpp"
+                    (("#include <immintrin.h>")
+                     "#ifdef __SSE__\n#include <immintrin.h>\n#endif"))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DBUILD_WITH_GPU=OFF"  ; thanks, but no thanks, CUDA.
+             "-DBUILD_TUTORIAL=OFF") ; we don't need those
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-build
+           (lambda _
+             (let ((features (list ,@(let ((system (or (%current-target-system)
+                                                       (%current-system))))
+                                       (cond
+                                        ((string-prefix? "x86_64" system)
+                                         '("-mavx" "-msse2" "-mpopcnt"))
+                                        ((string-prefix? "i686" system)
+                                         '("-msse2" "-mpopcnt"))
+                                        (else
+                                         '()))))))
+               (substitute* "CMakeLists.txt"
+                 (("-m64") "")
+                 (("-mpopcnt") "") ; only some architectures
+                 (("-msse4")
+                  (string-append
+                   (string-join features)
+                   " -I" (getcwd)))
+                 ;; Build also the shared library
+                 (("ARCHIVE DESTINATION lib")
+                  "LIBRARY DESTINATION lib")
+                 (("add_library.*" m)
+                  "\
+add_library(objlib OBJECT ${faiss_cpu_headers} ${faiss_cpu_cpp})
+set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+add_library(${faiss_lib}_static STATIC $<TARGET_OBJECTS:objlib>)
+add_library(${faiss_lib} SHARED $<TARGET_OBJECTS:objlib>)
+install(TARGETS ${faiss_lib}_static ARCHIVE DESTINATION lib)
+\n")))
+
+             ;; See https://github.com/facebookresearch/faiss/issues/520
+             (substitute* "IndexScalarQuantizer.cpp"
+               (("#define USE_AVX") ""))
+
+             ;; Make header files available for compiling tests.
+             (mkdir-p "faiss")
+             (for-each (lambda (file)
+                         (mkdir-p (string-append "faiss/" (dirname file)))
+                         (copy-file file (string-append "faiss/" file)))
+                       (find-files "." "\\.h$"))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "make" "-C" "tests"
+                     (format #f "-j~a" (parallel-job-count)))))
+         (add-after 'install 'remove-tests
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/test"))
+             #t)))))
+    (inputs
+     `(("openblas" ,openblas)))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://github.com/facebookresearch/faiss")
+    (synopsis "Efficient similarity search and clustering of dense vectors")
+    (description "Faiss is a library for efficient similarity search and
+clustering of dense vectors.  It contains algorithms that search in sets of
+vectors of any size, up to ones that possibly do not fit in RAM.  It also
+contains supporting code for evaluation and parameter tuning.")
+    (license license:bsd-3)))
+
+(define-public python-faiss
+  (package (inherit faiss)
+    (name "python-faiss")
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "python") #t))
+         (add-after 'chdir 'build-swig
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-output-to-file "../makefile.inc"
+               (lambda ()
+                 (let ((python-version ,(version-major+minor (package-version python))))
+                   (format #t "\
+PYTHONCFLAGS =-I~a/include/python~am/ -I~a/lib/python~a/site-packages/numpy/core/include
+LIBS = -lpython~am -lfaiss
+SHAREDFLAGS = -shared -fopenmp
+CXXFLAGS = -fpermissive -std=c++11 -fopenmp -fPIC
+CPUFLAGS = ~{~a ~}~%"
+                           (assoc-ref inputs "python*") python-version
+                           (assoc-ref inputs "python-numpy") python-version
+                           python-version
+                           (list ,@(let ((system (or (%current-target-system)
+                                                     (%current-system))))
+                                     (cond
+                                       ((string-prefix? "x86_64" system)
+                                        '("-mavx" "-msse2" "-mpopcnt"))
+                                       ((string-prefix? "i686" system)
+                                        '("-msse2" "-mpopcnt"))
+                                       (else
+                                         '()))))))))
+             (substitute* "Makefile"
+               (("../libfaiss.a") ""))
+             (invoke "make" "cpu"))))))
+    (inputs
+     `(("faiss" ,faiss)
+       ("openblas" ,openblas)
+       ("python*" ,python)
+       ("swig" ,swig)))
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)))
+    (description "Faiss is a library for efficient similarity search and
+clustering of dense vectors.  This package provides Python bindings to the
+Faiss library.")))

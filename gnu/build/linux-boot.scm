@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -437,6 +437,7 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
 (define* (boot-system #:key
                       (linux-modules '())
                       linux-module-directory
+                      keymap-file
                       qemu-guest-networking?
                       volatile-root?
                       pre-mount
@@ -444,7 +445,8 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
                       (on-error 'debug))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES (a list of module names) from
-LINUX-MODULE-DIRECTORY, then setting up QEMU guest networking if
+LINUX-MODULE-DIRECTORY, then installing KEYMAP-FILE with 'loadkeys' (if
+KEYMAP-FILE is true), then setting up QEMU guest networking if
 QEMU-GUEST-NETWORKING? is true, calling PRE-MOUNT, mounting the file systems
 specified in MOUNTS, and finally booting into the new root if any.  The initrd
 supports kernel command-line options '--load', '--root', and '--repl'.
@@ -490,6 +492,15 @@ upon error."
        (for-each (cut load-linux-module* <>
                       #:lookup-module lookup-module)
                  (map lookup-module linux-modules))
+
+       (when keymap-file
+         (let ((status (system* "loadkeys" keymap-file)))
+           (unless (zero? status)
+             ;; Emit a warning rather than abort when we cannot load
+             ;; KEYMAP-FILE.
+             (format (current-error-port)
+                     "warning: 'loadkeys' exited with status ~a~%"
+                     status))))
 
        (when qemu-guest-networking?
          (unless (configure-qemu-networking)
