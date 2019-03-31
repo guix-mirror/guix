@@ -1108,8 +1108,8 @@ offline emulation of DNS.")
   (home-page "https://metacpan.org/release/Geo-IP")
   (synopsis
     "Look up location and network information by IP Address in Perl")
-  (description "The Perl module 'Geo::IP'.  It looks up location and network
-information by IP Address.")
+  (description "The Perl module @code{Geo::IP}.  It looks up location and
+network information by IP Address.")
   (license license:perl-license)))
 
 (define-public perl-io-socket-inet6

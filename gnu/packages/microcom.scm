@@ -46,6 +46,6 @@
     (synopsis "Minimalistic serial line terminal program")
  (description "Microcom is a minimalistic terminal program for accessing
 devices via a serial connection.  It features connection via RS232 serial
-interfaces (including setting of transfer rates) as well as in `telnetmode'
+interfaces (including setting of transfer rates) as well as in @code{telnetmode}
 as specified in rfc2217 and a (Linux specific) CAN mode.")
     (license gpl2+)))

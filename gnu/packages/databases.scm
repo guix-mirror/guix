@@ -986,7 +986,7 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
     (home-page "https://github.com/tialaramex/sparql-query/")
     (synopsis "Command-line tool for accessing SPARQL endpoints over HTTP")
     (description "Sparql-query is a command-line tool for accessing SPARQL
-endpoints over HTTP.  It has been intentionally designed to 'feel' similar to
+endpoints over HTTP.  It has been intentionally designed to @code{feel} similar to
 tools for interrogating SQL databases.  For example, you can enter a query over
 several lines, using a semi-colon at the end of a line to indicate the end of
 your query.  It also supports readline so that you can more easily recall and

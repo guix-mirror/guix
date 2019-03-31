@@ -3416,8 +3416,8 @@ command.")
     (description
      "Identify areas of text to be marked with changebars with the
 @code{\\cbstart} and @code{\\cbend} commands; the bars may be coloured.  The
-package uses 'drivers' to place the bars; the available drivers can work with
-@code{dvitoln03}, @code{dvitops}, @code{dvips}, the emTeX and TeXtures DVI
+package uses @code{drivers} to place the bars; the available drivers can work
+with @code{dvitoln03}, @code{dvitops}, @code{dvips}, the emTeX and TeXtures DVI
 drivers, and VTeX and pdfTeX.")
     (license license:lppl)))
 

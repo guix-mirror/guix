@@ -120,7 +120,7 @@ as ASCII text.")
      "Freeglut is a completely Free/OpenSourced alternative to
 the OpenGL Utility Toolkit (GLUT) library.  GLUT was originally
 written by Mark Kilgard to support the sample programs in the
-second edition OpenGL 'RedBook'.  Since then, GLUT has been used
+second edition OpenGL @code{RedBook}.  Since then, GLUT has been used
 in a wide variety of practical applications because it is simple,
 widely available and highly portable.
 

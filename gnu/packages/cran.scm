@@ -929,8 +929,8 @@ data store designed for maximum speed.")
     (home-page "https://cran.r-project.org/web/packages/maps")
     (synopsis "Draw geographical maps")
     (description "This package provides an R module for display of maps.
-Projection code and larger maps are in separate packages ('mapproj' and
-'mapdata').")
+Projection code and larger maps are in separate packages (@code{mapproj} and
+@code{mapdata}).")
     (license license:gpl2)))
 
 (define-public r-mapproj
@@ -1351,9 +1351,9 @@ a seamless integration of R and C++.  Many R data types and objects can be
 mapped back and forth to C++ equivalents which facilitates both writing of new
 code as well as easier integration of third-party libraries.  Documentation
 about Rcpp is provided by several vignettes included in this package, via the
-'Rcpp Gallery' site at <http://gallery.rcpp.org>, the paper by Eddelbuettel
+@code{Rcpp Gallery} site at <http://gallery.rcpp.org>, the paper by Eddelbuettel
 and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
-'citation(\"Rcpp\")' for details on these last two.")
+@code{citation(\"Rcpp\")} for details on these last two.")
     (license license:gpl2+)))
 
 (define-public r-bindr

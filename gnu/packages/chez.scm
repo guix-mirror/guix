@@ -558,7 +558,7 @@ strings.")
     (synopsis "MIT/GNU Scheme compatibility library for Chez Scheme")
     (description "This package provides a set of MIT/GNU Scheme compatibility
 libraries for Chez Scheme.  The main goal was to provide the functionality
-required to port the program 'Scmutils' to Chez Scheme.")
+required to port the program @code{Scmutils} to Chez Scheme.")
     (license gpl3+)))
 
 (define-public chez-scmutils

@@ -1190,11 +1190,11 @@ write accessor methods for your objects that perform standard tasks.")
        ("perl-test-requires" ,perl-test-requires)))
     (home-page "https://metacpan.org/release/Class-Method-Modifiers")
     (synopsis "Moose-like method modifiers")
-    (description "Class::Method::Modifiers provides three modifiers: 'before',
-'around', and 'after'.  'before' and 'after' are run just before and after the
-method they modify, but can not really affect that original method.  'around'
-is run in place of the original method, with a hook to easily call that
-original method.")
+    (description "Class::Method::Modifiers provides three modifiers:
+@code{before}, @code{around}, and @code{after}.  @code{before} and @code{after}
+are run just before and after the method they modify, but can not really affect
+that original method.  @code{around} is run in place of the original method,
+with a hook to easily call that original method.")
     (license (package-license perl))))
 
 (define-public perl-class-singleton
@@ -2938,7 +2938,7 @@ input a message of arbitrary length and produces as output a
     (build-system perl-build-system)
     (synopsis "Perl implementation of the SHA-1 message digest algorithm")
     (description
-     "This package provides 'Digest::SHA1', an implementation of the NIST
+     "This package provides @code{Digest::SHA1}, an implementation of the NIST
 SHA-1 message digest algorithm for use by Perl programs.")
     (home-page "https://metacpan.org/release/Digest-SHA1")
     (license (package-license perl))))
@@ -3481,7 +3481,7 @@ provide a quick dropin when such functionality is needed.")
     (home-page "https://metacpan.org/release/File-HomeDir")
     (synopsis "Find your home and other directories on any platform")
     (description "File::HomeDir is a module for locating the directories that
-are \"owned\" by a user (typically your user) and to solve the various issues
+are @code{owned} by a user (typically your user) and to solve the various issues
 that arise trying to find them consistently across a wide variety of
 platforms.")
     (license (package-license perl))))
@@ -4266,8 +4266,8 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
     (home-page "https://metacpan.org/release/IO-Tty")
     (synopsis "Perl interface to pseudo ttys")
     (description
-     "This package provides the 'IO::Pty' and 'IO::Tty' Perl interfaces to
-pseudo ttys.")
+     "This package provides the @code{IO::Pty} and @code{IO::Tty} Perl
+interfaces to pseudo ttys.")
     (license (package-license perl))))
 
 (define-public perl-ipc-cmd
@@ -4533,7 +4533,7 @@ application, in turn, may choose one or more logging mechanisms via
 
 @code{Log::Any} has a very tiny footprint and no dependencies beyond Perl
 itself, which makes it appropriate for even small CPAN modules to use.  It
-defaults to 'null' logging activity, so a module can safely log without
+defaults to @code{null} logging activity, so a module can safely log without
 worrying about whether the application has chosen (or will ever choose) a
 logging mechanism.")
     (license (package-license perl))))
@@ -4606,7 +4606,7 @@ widely popular (Java-based) Log4j logging package in pure Perl.")
      "This module allows libraries to have a dependency to a small module
 instead of the full Log-Report distribution.  The full power of
 @code{Log::Report} is only released when the main program uses that module.
-In that case, the module using the 'Optional' will also use the full
+In that case, the module using the @code{Optional} will also use the full
 @code{Log::Report}, otherwise the dressed-down @code{Log::Report::Minimal}
 version.")
     (license (package-license perl))))
@@ -5274,7 +5274,7 @@ examine the contents, and perform some simple tasks.  It can also load the
     (home-page "https://metacpan.org/release/Module-Pluggable")
     (synopsis "Give your Perl module the ability to have plugins")
     (description "This module provides a simple but extensible way of having
-'plugins' for your Perl module.")
+@code{plugins} for your Perl module.")
     (license (package-license perl))))
 
 (define-public perl-module-runtime
@@ -7130,7 +7130,7 @@ of @code{ref}.")
     (build-system perl-build-system)
     (synopsis "Provide commonly requested regular expressions")
     (description
-     "This module exports a single hash (`%RE') that stores or generates
+     "This module exports a single hash (@code{%RE}) that stores or generates
 commonly needed regular expressions.  Patterns currently provided include:
 balanced parentheses and brackets, delimited text (with escapes), integers and
 floating-point numbers in any base (up to 36), comments in 44 languages,

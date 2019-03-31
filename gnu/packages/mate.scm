@@ -1148,7 +1148,7 @@ can be used as backgrounds in the MATE Desktop environment.")
 @item Allows you to set basic rules for a window type, such as maximise|undecorate
 @item Allows exceptions to the rules, based on string matching for window name
 and window class.
-@item Allows 'reversing' of rules when the user manually changes something:
+@item Allows @code{reversing} of rules when the user manually changes something:
 Re-decorates windows on un-maximise.
 @end enumerate\n")
     (license license:gpl3+)))

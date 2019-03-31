@@ -1467,7 +1467,7 @@ compressor.  It works on data produced by @code{parse-js} to generate a
 @item reduce variable names (usually to single letters)
 @item join consecutive @code{var} statements
 @item resolve simple binary expressions
-@item group most consecutive statements using the ``sequence'' operator (comma)
+@item group most consecutive statements using the @code{sequence} operator (comma)
 @item remove unnecessary blocks
 @item convert @code{IF} expressions in various ways that result in smaller code
 @item remove some unreachable code

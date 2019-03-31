@@ -144,7 +144,7 @@ the Linux kernel CIFS client.")
     (home-page "https://github.com/ndevilla/iniparser")
     (synopsis "Standalone ini file parsing library")
     (description
-     "iniparser is a free stand-alone `ini' file parsing library (Windows
+     "iniparser is a free stand-alone @code{ini} file parsing library (Windows
 configuration files).  It is written in portable ANSI C and should compile
 anywhere.")
     (license x11)))

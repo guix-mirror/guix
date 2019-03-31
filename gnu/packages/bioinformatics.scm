@@ -7765,10 +7765,10 @@ biological sequences or sets of sequences.")
     (home-page "https://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
     (synopsis "Interface to samtools, bcftools, and tabix")
     (description
-     "This package provides an interface to the 'samtools', 'bcftools', and
-'tabix' utilities for manipulating SAM (Sequence Alignment / Map), FASTA,
-binary variant call (BCF) and compressed indexed tab-delimited (tabix)
-files.")
+     "This package provides an interface to the @code{samtools},
+@code{bcftools}, and @code{tabix} utilities for manipulating SAM (Sequence
+Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed
+tab-delimited (tabix) files.")
     (license license:expat)))
 
 (define-public r-delayedarray

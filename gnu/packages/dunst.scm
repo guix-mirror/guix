@@ -73,6 +73,6 @@
     (synopsis "Customizable and lightweight notification daemon")
     (description
      "Dunst is a highly configurable and minimalistic notification daemon.
-It provides 'org.freedesktop.Notifications' D-Bus service, so it is
+It provides @code{org.freedesktop.Notifications} D-Bus service, so it is
 started automatically on the first call via D-Bus.")
     (license license:bsd-3)))

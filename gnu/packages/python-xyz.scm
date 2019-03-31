@@ -5644,7 +5644,7 @@ It is written entirely in Python.")
     (synopsis "Backport of additions to the 'collections.abc' module")
     (description
      "Python-backports-abc provides a backport of additions to the
-'collections.abc' module in Python-3.5.")
+@code{collections.abc} module in Python-3.5.")
     (license license:psfl)))
 
 (define-public python2-backports-abc
@@ -10341,12 +10341,12 @@ Python to manipulate OpenDocument 1.2 files.")
     (description
      "Natsort lets you apply natural sorting on lists instead of
 lexicographical.  If you use the built-in @code{sorted} method in python
-on a list such as @code{['a20', 'a9', 'a1', 'a4', 'a10']}, it would be
-returned as @code{['a1', 'a10', 'a20', 'a4', 'a9']}.  Natsort provides a
-function @code{natsorted} that identifies numbers and sorts them separately
-from strings.  It can also sort version numbers, real numbers, mixed types
-and more, and comes with a shell command @command{natsort} that exposes this
-functionality in the command line.")
+on a list such as @code{[@code{a20}, @code{a9}, @code{a1}, @code{a4},
+@code{a10}]}, it would be returned as @code{[@code{a1}, @code{a10}, @code{a20},
+@code{a4}, @code{a9}]}.  Natsort provides a function @code{natsorted} that
+identifies numbers and sorts them separately from strings.  It can also sort
+version numbers, real numbers, mixed types and more, and comes with a shell
+command @command{natsort} that exposes this functionality in the command line.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-natsort))))))
 

@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -802,10 +802,10 @@ effects of different types of color-blindness.")
     (home-page "http://dirk.eddelbuettel.com/code/digest.html")
     (synopsis "Create cryptographic hash digests of R objects")
     (description
-     "This package contains an implementation of a function 'digest()' for the
-creation of hash digests of arbitrary R objects (using the md5, sha-1,
+     "This package contains an implementation of a function @code{digest()} for
+the creation of hash digests of arbitrary R objects (using the md5, sha-1,
 sha-256, crc32, xxhash and murmurhash algorithms) permitting easy comparison
-of R language objects, as well as a function 'hmac()' to create hash-based
+of R language objects, as well as a function @code{hmac()} to create hash-based
 message authentication code.
 
 Please note that this package is not meant to be deployed for cryptographic
@@ -827,7 +827,7 @@ OpenSSL should be used.")
     (home-page "https://cran.r-project.org/web/packages/estimability")
     (synopsis "Tools for assessing estimability of linear predictions")
     (description "Provides tools for determining estimability of linear
-functions of regression coefficients, and 'epredict' methods that handle
+functions of regression coefficients, and @code{epredict} methods that handle
 non-estimable cases correctly.")
     (license license:gpl2+)))
 
@@ -1063,7 +1063,7 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
     (synopsis "Simple, consistent wrappers for common string operations")
     (description
      "Stringr is a consistent, simple and easy to use set of wrappers around
-the fantastic 'stringi' package.  All function and argument names (and
+the fantastic @code{stringi} package.  All function and argument names (and
 positions) are consistent, all functions deal with \"NA\"'s and zero length
 vectors in the same way, and the output from one function is easy to feed into
 the input of another.")
@@ -2274,9 +2274,9 @@ other packages.")
     (synopsis "CommonMark and Github Markdown Rendering in R")
     (description
      "The CommonMark specification defines a rationalized version of markdown
-syntax.  This package uses the 'cmark' reference implementation for converting
-markdown text into various formats including HTML, LaTeX and groff man.  In
-addition, it exposes the markdown parse tree in XML format.  The latest
+syntax.  This package uses the @code{cmark} reference implementation for
+converting markdown text into various formats including HTML, LaTeX and groff
+man.  In addition, it exposes the markdown parse tree in XML format.  The latest
 version of this package also adds support for Github extensions including
 tables, autolinks and strikethrough text.")
     (license license:bsd-2)))
@@ -3165,8 +3165,8 @@ using the multicore functionality of the parallel package.")
     (synopsis "R wrapper of the DataTables JavaScript library")
     (description
      "This package allows for data objects in R to be rendered as HTML tables
-using the JavaScript library 'DataTables' (typically via R Markdown or Shiny).
-The 'DataTables' library has been included in this R package.")
+using the JavaScript library @code{DataTables} (typically via R Markdown or
+Shiny).  The @code{DataTables} library has been included in this R package.")
     ;; The DT package as a whole is distributed under GPLv3.  The DT package
     ;; inludes other software components under different licenses:
     ;;
@@ -3688,13 +3688,14 @@ most common form of color blindness.")
     (home-page "https://github.com/sjmgarnier/viridisLite")
     (synopsis "Default color maps from matplotlib")
     (description
-     "This package is a port of the new @code{matplotlib} color maps ('viridis',
-'magma', 'plasma' and 'inferno') to R.  matplotlib is a popular plotting
-library for Python.  These color maps are designed in such a way that they
-will analytically be perfectly perceptually-uniform, both in regular form and
-also when converted to black-and-white.  They are also designed to be
-perceived by readers with the most common form of color blindness.  This is
-the 'lite' version of the more complete @code{viridis} package.")
+     "This package is a port of the new @code{matplotlib} color maps
+(@code{viridis}, @code{magma}, @code{plasma} and @code{inferno}) to R.
+matplotlib is a popular plotting library for Python.  These color maps are
+designed in such a way that they will analytically be perfectly
+perceptually-uniform, both in regular form and also when converted to
+black-and-white.  They are also designed to be perceived by readers with the
+most common form of color blindness.  This is the @code{lite} version of the
+more complete @code{viridis} package.")
     (license license:expat)))
 
 (define-public r-tidyselect
@@ -5528,7 +5529,7 @@ is supported.")
      "This package provides functions to work with date-times and time-spans:
 fast and user friendly parsing of date-time data, extraction and updating of
 components of a date-time (years, months, days, hours, minutes, and seconds),
-algebraic manipulation on date-time and time-span objects.  The 'lubridate'
+algebraic manipulation on date-time and time-span objects.  The @code{lubridate}
 package has a consistent and memorable syntax that makes working with dates
 easy and fun.")
     (license license:gpl2)))

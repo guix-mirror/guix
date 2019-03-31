@@ -134,9 +134,9 @@ reliability in mind.")
     (synopsis "Command-line File Transfer Protocol (FTP) client")
     (description
      "NcFTP Client (or just NcFTP) is a set of command-line programs to access
-File Transfer Protocol (FTP) servers.  This includes 'ncftp', an interactive
-FTP browser, as well as non-interactive commands such as 'ncftpput' and
-'ncftpget'.")
+File Transfer Protocol (FTP) servers.  This includes @code{ncftp}, an interactive
+FTP browser, as well as non-interactive commands such as @code{ncftpput} and
+@code{ncftpget}.")
     (license clarified-artistic)))
 
 

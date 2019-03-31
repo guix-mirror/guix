@@ -801,9 +801,10 @@ to gmtime,time or localtime.")
     (home-page "https://metacpan.org/release/Test-More-UTF8")
     (synopsis "Enhance Test::More for UTF8-based projects")
     (description "@code{Test::More::UTF8} is a simple extension for the widely
-used @code{Test::More} module.  By default, it will do a @code{binmode ':utf8'}
-on all of @code{Test::Builder}'s output handles thus enabling the easy use
-flagged strings without warnings like \"Wide character in print @dots{}\"")
+used @code{Test::More} module.  By default, it will do a @code{binmode
+@code{:utf8}} on all of @code{Test::Builder}'s output handles thus enabling the
+easy use flagged strings without warnings like \"Wide character in print
+@dots{}\"")
     (license perl-license)))
 
 (define-public perl-test-most

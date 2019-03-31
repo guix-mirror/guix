@@ -1630,7 +1630,7 @@ mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
     (home-page "http://bristol.sourceforge.net/")
     (synopsis "Synthesizer emulator")
     (description
-     "Bristol is an emulation package for a number of different 'classic'
+     "Bristol is an emulation package for a number of different @code{classic}
 synthesizers including additive and subtractive and a few organs.  The
 application consists of the engine, which is called bristol, and its own GUI
 library called brighton that represents all the emulations.  There are

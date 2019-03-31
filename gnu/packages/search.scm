@@ -243,7 +243,7 @@ interfaces, or a C API.")
     (home-page "https://pagure.io/mlocate")
     (synopsis "Locate files on the file system")
     (description
-     "mlocate is a locate/updatedb implementation.  The 'm' stands for
+     "mlocate is a locate/updatedb implementation.  The @code{m} stands for
 \"merging\": @code{updatedb} reuses the existing database to avoid rereading
 most of the file system, which makes it faster and does not trash the system
 caches as much.  The locate(1) utility is intended to be completely compatible

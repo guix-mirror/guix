@@ -1996,7 +1996,7 @@ system.")
     (description
      "This package contains keytable files and keyboard utilities compatible
 for systems using the Linux kernel.  This includes commands such as
-'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
+@code{loadkeys}, @code{setfont}, @code{kbdinfo}, and @code{chvt}.")
     (license license:gpl2+)))
 
 (define-public loadkeys-static
@@ -2302,7 +2302,7 @@ mapper.  Kernel components are part of Linux-libre.")
        #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
     (description "Wireless Tools are used to manipulate the now-deprecated
-Linux Wireless Extensions; consider using 'iw' instead.  The Wireless
+Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless
 Extension was an interface allowing you to set Wireless LAN specific
 parameters and get the specific stats.  It is deprecated in favor the nl80211
 interface.")
@@ -2660,7 +2660,7 @@ in a digital read-out.")
 with support in the Linux kernel.  perf can instrument CPU performance
 counters, tracepoints, kprobes, and uprobes (dynamic tracing).  It is capable
 of lightweight profiling.  This package contains the user-land tools and in
-particular the 'perf' command.")
+particular the @code{perf} command.")
     (license (package-license linux-libre))))
 
 (define-public pflask
@@ -4016,8 +4016,8 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
     (home-page "https://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
     (synopsis "Tools for loading and managing Linux kernel modules")
     (description
-     "Tools for loading and managing Linux kernel modules, such as `modprobe',
-`insmod', `lsmod', and more.")
+     "Tools for loading and managing Linux kernel modules, such as
+@code{modprobe}, @code{insmod}, @code{lsmod}, and more.")
     (license license:gpl2+)))
 
 (define-public mcelog

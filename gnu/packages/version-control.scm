@@ -1366,7 +1366,7 @@ following features:
     (home-page "https://subversion.apache.org/")
     (synopsis "Revision control system")
     (description
-     "Subversion (aka. ``svn'') exists to be recognized and adopted as a
+     "@dfn{Subversion} (svn) exists to be recognized and adopted as a
 centralized version control system characterized by its
 reliability as a safe haven for valuable data; the simplicity of its model and
 usage; and its ability to support the needs of a wide variety of users and

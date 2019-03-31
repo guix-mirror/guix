@@ -216,7 +216,7 @@ refreshed, and more.")
          #:python ,python-2))                    ;not compatible with Python 3
       (synopsis "Patch tracking tool")
       (description
-       "'Patches' is a patch-tracking tool initially written for the QEMU
+       "@code{Patches} is a patch-tracking tool initially written for the QEMU
 project.  It provides commands that build a database of patches from a mailing
 list, and commands that can search that database.  It allows users to track
 the status of a patch, apply patches, and search for patches---all that from

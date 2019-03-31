@@ -943,7 +943,7 @@ gain controls.  There is also a global bypass switch and gain control.
 The 2nd order resonant filters are implemented using a Mitra-Regalia style
 lattice filter, which is stable even while parameters are being changed.
 
-All switches and controls are internally smoothed, so they can be used 'live'
+All switches and controls are internally smoothed, so they can be used @code{live}
 without any clicks or zipper noises.  This makes this plugin suitable for use
 in systems that allow automation of plugin control ports, such as Ardour, or
 for stage use.")
