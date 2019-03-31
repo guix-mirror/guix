@@ -241,13 +241,14 @@ ElasticSearch server")
     (name "leveldb")
     (version "1.20")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/leveldb"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/leveldb")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r36bcrj6b2afsp4aw1gjai3jbs1c7734pxpc1jz7hh9nasyiazm"))))
+                "01kxga1hv4wp94agx5vl3ybxfw5klqrdsrb6p6ywvnjmjxm8322y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc")
