@@ -427,7 +427,12 @@ depends = linux_rooted\n")))
              "use_openh264=true"
              "use_pulseaudio=true"
              "link_pulseaudio=true"
-             "use_vaapi=true"
+
+             ;; VA-API acceleration is currently only supported on x86_64-linux.
+             ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                (%current-system)))
+                   '("use_vaapi=true")
+                   '())
 
              ;; Don't arbitrarily restrict formats supported by system ffmpeg.
              "proprietary_codecs=true"
