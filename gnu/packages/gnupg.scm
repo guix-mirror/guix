@@ -224,14 +224,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.14")
+    (version "2.2.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0yzqrg24j9fc4f8ss5pclyvg70a9z53sv89vl77xii8yvi3fvy8v"))))
+                "0m6lyphbb20i84isdxzfhcbzyc682hdrdv4aqkzmhrdksycf536b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
