@@ -822,18 +822,6 @@ application suites.")
            (variable "GUIX_GTK3_PATH")
            (files '("lib/gtk-3.0")))))))
 
-;; Fixes a bug in Gtk that causes crashes in IceCat and Emacs.
-;; See <https://bugs.gnu.org/34454>, <https://bugs.gnu.org/34658>,
-;; and <https://gitlab.gnome.org/GNOME/gtk/issues/1523>.
-(define gtk+/fixed
-  (package
-    (inherit gtk+)
-    (source (origin
-              (inherit (package-source gtk+))
-              (patches
-               (cons (search-patch "gtk3-fix-deprecation-macro-use.patch")
-                     (origin-patches (package-source gtk+))))))))
-
 ;;;
 ;;; Guile bindings.
 ;;;
