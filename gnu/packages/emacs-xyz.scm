@@ -2382,13 +2382,13 @@ subconsciously blend out the parentheses.")
     (version "0.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/purcell/page-break-lines/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/page-break-lines.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1zzhziq5kbrm9rxk30kx2glz455fp1blqxg8cpcf6l8xl3w8z4pg"))))
+        (base32 "1wp974716ih2cz9kdmdz7xwjy1qnnfzdzlfr9kchknagw8d9nn12"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/page-break-lines")
     (synopsis "Display page breaks as tidy horizontal lines")
