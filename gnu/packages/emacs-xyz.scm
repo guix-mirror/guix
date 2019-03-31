@@ -2025,15 +2025,15 @@ files and directories.")
   (package
     (name "emacs-git-gutter")
     (version "0.90")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/syohex/" name "/archive/"
-                   version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1nmhvhpq1l56mj2yq3ag23rw3x4xgnsy8szp30s26l0yjnkhc4qg"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-git-gutter.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1abagq0psip7cgsqbfjv72qy60ywsny0ibsfcn74ldj6a9v17mz5"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/syohex/emacs-git-gutter")
     (synopsis "See and manage hunks of text in a version control system")
