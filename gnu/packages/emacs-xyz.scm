@@ -2207,13 +2207,13 @@ mode, which displays information about Elasticsearch clusters.")
     (version "0.11.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/magnars/expand-region.el"
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magnars/expand-region.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "08dy1f411sh9wwww53rjw80idcf3vpki6ba2arl4hl5jcw9651g0"))))
+        (base32 "0h40dhc3kn8fq86xnwi5lz7ql8my8737y7wkqr897p15y90swr35"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magnars/expand-region.el")
     (synopsis "Increase selected region by semantic units")
