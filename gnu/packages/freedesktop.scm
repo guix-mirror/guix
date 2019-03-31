@@ -149,21 +149,20 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.12.6")
+    (version "1.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   "libinput-" version ".tar.xz"))
               (sha256
                (base32
-                "0pgla0mc6mvyr1ljy10mcqvfz8i5z6yp7dbx2bcd70y67wx05d0j"))))
+                "0vb11fzd06xbagrnha2bbzmlfg04bbgb5w5rjrxrrz686mfwj9zb"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")))
     (native-inputs
      `(("check" ,check)
-       ("pkg-config" ,pkg-config)
-       ("valgrind" ,valgrind)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
        ("glib" ,glib)
