@@ -2270,13 +2270,13 @@ column by drawing a thin line down the length of the editing window.")
     (version "2.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/nonsequitur/inf-ruby/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nonsequitur/inf-ruby.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0m7323k649ckxql1grsdnf71bjhys7l4qb8wbpphb1mr1q8i4066"))))
+        (base32 "1r452h6cyypqlc59q8dx5smkwhck4qjcg1pf9qdw539cpva5q77z"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/nonsequitur/inf-ruby")
     (synopsis "Provides a REPL buffer connected to a Ruby subprocess in Emacs")
