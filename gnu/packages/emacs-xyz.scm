@@ -2128,13 +2128,13 @@ Expectations, but it can be used in other contexts.")
     (version "0.3.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ecukes/espuds/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ecukes/espuds.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0xv551376pbmh735a3zjwc9z4qdx6ngj1vpq3xqjpn0a1rwjyn4k"))))
+        (base32 "16r4j27j9yfdiy841w9q5ykkc6n3wrm7hvfacagb32mydk821ijg"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
