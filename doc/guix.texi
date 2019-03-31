@@ -13304,21 +13304,57 @@ example the @code{windowmaker} or @code{openbox} packages---preferably
 by adding it to the @code{packages} field of your operating system
 definition (@pxref{operating-system Reference, system-wide packages}).
 
-@defvr {Scheme Variable} slim-service-type
-This is the type for the SLiM graphical login manager for X11.
+@defvr {Scheme Variable} gdm-service-type
+This is the type for the @uref{https://wiki.gnome.org/Projects/GDM/, GNOME
+Desktop Manager} (GDM), a program that manages graphical display servers and
+handles graphical user logins.  Its value must be a @code{gdm-configuration}
+(see below.)
 
 @cindex session types (X11)
 @cindex X11 session types
-SLiM looks for @dfn{session types} described by the @file{.desktop} files in
-@file{/run/current-system/profile/share/xsessions} and allows users to
-choose a session from the log-in screen using @kbd{F1}.  Packages such
-as @code{xfce}, @code{sawfish}, and @code{ratpoison} provide
-@file{.desktop} files; adding them to the system-wide set of packages
-automatically makes them available at the log-in screen.
+GDM looks for @dfn{session types} described by the @file{.desktop} files in
+@file{/run/current-system/profile/share/xsessions} and allows users to choose
+a session from the log-in screen.  Packages such as @code{gnome}, @code{xfce},
+and @code{i3} provide @file{.desktop} files; adding them to the system-wide
+set of packages automatically makes them available at the log-in screen.
 
 In addition, @file{~/.xsession} files are honored.  When available,
 @file{~/.xsession} must be an executable that starts a window manager
 and/or other X clients.
+@end defvr
+
+@deftp {Data Type} gdm-configuration
+@table @asis
+@item @code{auto-login?} (default: @code{#f})
+@itemx @code{default-user} (default: @code{#f})
+When @code{auto-login?} is false, GDM presents a log-in screen.
+
+When @code{auto-login?} is true, GDM logs in directly as
+@code{default-user}.
+
+@item @code{gnome-shell-assets} (default: ...)
+List of GNOME Shell assets needed by GDM: icon theme, fonts, etc.
+
+@item @code{xorg-configuration} (default: @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
+
+@item @code{xsession} (default: @code{(xinitrc)})
+Script to run before starting a X session.
+
+@item @code{dbus-daemon} (default: @code{dbus-daemon-wrapper})
+File name of the @code{dbus-daemon} executable.
+
+@item @code{gdm} (default: @code{gdm})
+The GDM package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} slim-service-type
+This is the type for the SLiM graphical login manager for X11.
+
+Like GDM, SLiM looks for session types described by @file{.desktop} files and
+allows users to choose a session from the log-in screen using @kbd{F1}.  It
+also honors @file{~/.xsession} files.
 @end defvr
 
 @deftp {Data Type} slim-configuration

@@ -791,9 +791,6 @@ makes the good ol' XlockMore usable."
                  "Run the GNOME Desktop Manager (GDM), a program that allows
 you to log in in a graphical session, whether or not you use GNOME.")))
 
-;; This service isn't working yet; it gets as far as starting to run the
-;; greeter from gnome-shell but doesn't get any further.  It is here because
-;; it doesn't hurt anyone and perhaps it inspires someone to fix it :)
 (define-deprecated (gdm-service #:key (gdm gdm)
                                 (allow-empty-passwords? #t)
                                 (x-server (xorg-wrapper)))
