@@ -5159,18 +5159,6 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                ;; Remove it so the configure flag is respected.
                (("SET\\(CMAKE_INSTALL_RPATH .*") ""))
              #t))
-         (add-before 'configure 'factor-webkit
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("webkit2gtk-4\\.0>=\\$[{]webkit2gtk_minimum_version[}]") "")
-               (("if[(]ENABLE_OAUTH2[)]")
-                (string-append
-                 "if(ENABLE_OAUTH2)\n"
-                 "\tpkg_check_modules(OAUTH2_UI REQUIRED "
-                 "webkit2gtk-4.0>=${webkit2gtk_minimum_version})")))
-             (substitute* "src/libedataserverui/CMakeLists.txt"
-               (("\\$[{]OAUTH2_([A-Z_]+)[}]" all part)
-                (string-append all " ${OAUTH2_UI_" part "}")))))
          (add-after 'install 'split
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
