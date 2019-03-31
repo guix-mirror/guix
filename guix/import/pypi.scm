@@ -368,15 +368,20 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                 `(package
                    (name ,(python->package-name name))
                    (version ,version)
-                   (source (origin
-                             (method url-fetch)
-                             ;; Sometimes 'pypi-uri' doesn't quite work due to mixed
-                             ;; cases in NAME, for instance, as is the case with
-                             ;; "uwsgi".  In that case, fall back to a full URL.
-                             (uri (pypi-uri ,(string-downcase name) version))
-                             (sha256
-                              (base32
-                               ,(guix-hash-url temp)))))
+                   (source
+                    (origin
+                      (method url-fetch)
+                      ;; PyPI URL are case sensitive, but sometimes a project
+                      ;; named using mixed case has a URL using lower case, so
+                      ;; we must work around this inconsistency.  For actual
+                      ;; examples, compare the URLs of the "Deprecated" and
+                      ;; "uWSGI" PyPI packages.
+                      (uri ,(if (string-contains source-url name)
+                                `(pypi-uri ,name version)
+                                `(pypi-uri ,(string-downcase name) version)))
+                      (sha256
+                       (base32
+                        ,(guix-hash-url temp)))))
                    (build-system python-build-system)
                    ,@(maybe-inputs required-inputs 'propagated-inputs)
                    ,@(maybe-inputs test-inputs 'native-inputs)
