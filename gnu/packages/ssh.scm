@@ -111,7 +111,7 @@ applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.8.1")
+   (version "1.8.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -119,7 +119,7 @@ applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "0ngif3ynk6xqzy5nlfjs7bsmfm81g9f145av0z86kf0vbgrigda0"))
+              "0rqd37pc80nm2pz4sa2m9pfc48axys7jwq1l7z0vii5nyvchg0q8"))
             (patches
              (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))
    (build-system gnu-build-system)
