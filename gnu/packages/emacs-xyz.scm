@@ -2313,13 +2313,13 @@ IRC bouncer with ERC.")
     (version "0.3.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cask/shut-up/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cask/shut-up.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "09kzrjdkb569iviyg7ydwq44yh84m3f9hkl7jizfrlk0w4gz67d1"))))
+        (base32 "103yvfgkj78i4bnv1fwk76izsa8h4wyj3vwj1vq7xggj607hkxzq"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/cask/shut-up")
     (synopsis "Silence Emacs")
