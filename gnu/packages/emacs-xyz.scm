@@ -1957,13 +1957,13 @@ strings.")
     (version "20160630")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/zk-phi/symon/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zk-phi/symon.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0h4jcgdnq98wc9rj72nwyazq8498yg55jfljiij5qwbn1xf1g5zz"))))
+        (base32 "1q7di9s8k710nx98wnqnbkkhdimrn0jf6z4xkm4c78l6s5idjwlz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/zk-phi/symon")
     (synopsis "Tiny graphical system monitor")
