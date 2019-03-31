@@ -164,16 +164,14 @@ freedesktop.org project.")
      `(("check" ,check)
        ("pkg-config" ,pkg-config)
        ("valgrind" ,valgrind)))
-    (propagated-inputs
-     `(;; In Requires.private of libinput.pc.
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
        ("libevdev" ,libevdev)
        ("libudev" ,eudev)
        ("libwacom" ,libwacom)
        ("mtdev" ,mtdev)))
-    (inputs
-     `(("cairo" ,cairo)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)))
     (home-page "https://www.freedesktop.org/wiki/Software/libinput/")
     (synopsis "Input devices handling library")
     (description
@@ -184,9 +182,9 @@ other applications that need to directly deal with input devices.")
 (define-public libinput-minimal
   (package (inherit libinput)
     (name "libinput-minimal")
-    (inputs '())
-    (propagated-inputs
-     (alist-delete "libwacom" (package-propagated-inputs libinput)))
+    (inputs
+     (fold alist-delete (package-inputs libinput)
+           '("cairo" "glib" "gtk+" "libwacom")))
     (arguments
      (substitute-keyword-arguments (package-arguments libinput)
       ((#:configure-flags flags ''())
