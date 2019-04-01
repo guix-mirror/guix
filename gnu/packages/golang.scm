@@ -1383,31 +1383,27 @@ systems.")
       (license license:bsd-3))))
 
 (define-public go-github-com-burntsushi-toml
-  (let ((commit
-         "a368813c5e648fee92e5f6c30e3944ff9d5e8895")
-        (revision "0"))
-    (package
-      (name "go-github-com-burntsushi-toml")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/BurntSushi/toml.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1sjxs2lwc8jpln80s4rlzp7nprbcljhy5mz4rf9995gq93wqnym5"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/BurntSushi/toml"))
-      (home-page "https://github.com/BurntSushi/toml")
-      (synopsis "Toml parser and encoder for Go")
-      (description "This package is toml parser and encoder for Go.  The
-interface is similar to Go's standard library @code{json} and @code{xml}
-package.")
-      (license license:expat))))
+  (package
+    (name "go-github-com-burntsushi-toml")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/BurntSushi/toml.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fjdwwfzyzllgiwydknf1pwjvy49qxfsczqx5gz3y0izs7as99j6"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/BurntSushi/toml"))
+    (home-page "https://github.com/BurntSushi/toml")
+    (synopsis "Toml parser and encoder for Go")
+    (description "This package is toml parser and encoder for Go.  The interface
+is similar to Go's standard library @code{json} and @code{xml} package.")
+    (license license:expat)))
 
 (define-public go-github-com-getsentry-raven-go
   (let ((commit
