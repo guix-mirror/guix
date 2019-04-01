@@ -5764,6 +5764,13 @@ properties, screen resolution, and other GNOME parameters.")
              ;; Convert the logo from SVG to PNG.
              (invoke "inkscape" "--export-png=data/theme/guix-logo.png"
                      "data/theme/guix-logo.svg")))
+         (add-before 'build 'record-absolute-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "js/misc/ibusManager.js"
+               (("'ibus-daemon'")
+                (string-append "'" (assoc-ref inputs "ibus")
+                               "/bin/ibus-daemon'")))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
