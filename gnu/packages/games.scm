@@ -6749,3 +6749,63 @@ exec ~a --data-path=~a/share/flare --mods=empyrean_campaign~%"
     (description "Flare is a single-player 2D action RPG with
 fast-paced action and a dark fantasy style.")
     (license license:cc-by-sa3.0)))
+
+(define-public meritous
+  (package
+    (name "meritous")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/meritous/meritous.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0n5jm4g0arjllgqmd2crv8h02i6hs3hlh1zyc7ng7yfpg1mbd8p8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-sdl-path
+           ;; XXX: For some reason, `sdl-config' reports stand-alone SDL
+           ;; directory, not SDL-union provided as an input to the package.
+           ;; We force the latter with "--prefix=" option.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("sdl-config" command)
+                (string-append command " --prefix=" (assoc-ref inputs "sdl"))))
+             #t))
+         (add-after 'unpack 'fix-crash
+           ;; XXX: Songs are not present in the repository, due to licensing
+           ;; issues.  Yet, the game tries to load them, and, since it cannot
+           ;; find them, crashes.  Users cannot add them back, the store being
+           ;; read-only, so we turn off background music altogether.
+           (lambda _
+             (substitute* "src/audio.c"
+               (("PlayBackgroundMusic\\(new_track\\);" all)
+                (string-append "// " all)))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer)))
+       ("zlib" ,zlib)))
+    (home-page "https://gitlab.com/meritous/meritous")
+    (synopsis "Action-adventure dungeon crawl game")
+    (description "Far below the surface of the planet is a place of limitless
+power.  Those that seek to control such a utopia will soon bring an end to
+themselves.  Seeking an end to the troubles that plague him, PSI user Merit
+journeys into the hallowed Orcus Dome in search of answers.
+
+Meritous is a action-adventure game with simple controls but a challenge to
+find a balance of power versus recovery time during real-time battles.  Set in
+a procedurally generated world, the player can explore thousands of rooms in
+search of powerful artifacts, tools to help them, and to eventually free the
+Orcus Dome from evil.")
+    (license license:gpl3+)))
