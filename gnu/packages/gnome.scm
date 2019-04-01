@@ -5770,6 +5770,10 @@ properties, screen resolution, and other GNOME parameters.")
                (("'ibus-daemon'")
                 (string-append "'" (assoc-ref inputs "ibus")
                                "/bin/ibus-daemon'")))
+             (substitute* "js/ui/status/keyboard.js"
+               (("'gkbd-keyboard-display'")
+                (string-append "'" (assoc-ref inputs "libgnomekbd")
+                               "/bin/gkbd-keyboard-display'")))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -5827,6 +5831,7 @@ properties, screen resolution, and other GNOME parameters.")
        ("ibus" ,ibus)
        ("libcanberra" ,libcanberra)
        ("libcroco" ,libcroco)
+       ("libgnomekbd" ,libgnomekbd)               ;for gkbd-keyboard-display
        ("libgweather" ,libgweather)
        ("libsoup" ,libsoup)
        ("mesa-headers" ,mesa-headers)
