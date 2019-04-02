@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -2848,7 +2848,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2018.10.17")
+    (version "2019.03.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2856,13 +2856,7 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1s69ipvdc6ldscp0cr1zpsll8xc3qcagr95nl84x7b1rbg4xjs3w"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; As of glibc 2.26, <xlocale.h> no longer is.
-                          (substitute* "liveMedia/include/Locale.hh"
-                            (("xlocale\\.h") "locale.h"))
-                          #t))))
+                "1gasdl95yjabv811knkmy5laj21a54z1jdfq36jdj984k1nw5l0b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
