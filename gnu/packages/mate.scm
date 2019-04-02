@@ -263,7 +263,7 @@ the MATE desktop environment.")
 (define-public mate-terminal
   (package
     (name "mate-terminal")
-    (version "1.18.1")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -272,7 +272,7 @@ the MATE desktop environment.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1zihm609d2d9cw53ry385whshjl1dnkifpk41g1ddm9f58hv4da1"))))
+         "16r492s34la2fs2cj1xr0r93wkjglwy77jyrc66i2ahs9gnivj4g"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
