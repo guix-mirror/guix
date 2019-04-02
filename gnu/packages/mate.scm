@@ -969,7 +969,7 @@ of various aspects of your desktop.")
 (define-public marco
   (package
     (name "marco")
-    (version "1.18.1")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -978,7 +978,7 @@ of various aspects of your desktop.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0lwbp9wyd66hl5d7g272l8g3k1pb9s4s2p9fb04750a58w87d8k5"))))
+         "1i1pi1z9mrb6564mxcwb93jqpdppfv58c2viwmicsixis62hv5wx"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
