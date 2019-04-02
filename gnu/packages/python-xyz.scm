@@ -2797,6 +2797,67 @@ acceptance testing, acceptance test driven development (ATDD), and robotic
 process automation (RPA).")
     (license license:asl2.0)))
 
+(define-public python-robotframework-sshlibrary
+  (package
+    (name "python-robotframework-sshlibrary")
+    (version "3.3.0")
+    ;; There are no tests in the PyPI archive.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robotframework/SSHLibrary.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1mk6dz2jqqndbx4yji09012q6rmadnqdywi7czvj62b0s07dr3r2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-and-install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc-output (assoc-ref outputs "doc"))
+                    (doc (string-append doc-output "/share/"
+                                        ,name "-" ,version "/")))
+               (invoke "chmod" "-R" "+w" "docs")
+               (invoke "invoke" "kw-docs" "project-docs")
+               (mkdir-p doc)
+               (for-each delete-file (find-files "docs" "\\.rst"))
+               (copy-recursively "docs" doc)
+               #t)))
+         (replace 'check
+           (lambda _
+             ;; Some tests require an SSH server; we remove them.
+             (delete-file "utest/test_client_api.py")
+             (delete-file "utest/test_scp.py")
+             (invoke "python" "utest/run.py"))))))
+    (propagated-inputs
+     `(("python-robotframework" ,python-robotframework)
+       ("python-paramiko" ,python-paramiko)
+       ("python-scp" ,python-scp)))
+    (native-inputs
+     `(("openssh" ,openssh)
+       ("which" ,which)
+       ;; To generate the documentation
+       ("python-docutils" ,python-docutils)
+       ("python-invoke" ,python-invoke)
+       ("python-pygments" ,python-pygments)
+       ("python-rellu" ,python-rellu)))
+    (outputs '("out" "doc"))
+    (home-page "https://github.com/robotframework/SSHLibrary")
+    (synopsis "Robot Framework library for SSH and SFTP")
+    (description "SSHLibrary is a Robot Framework library providing support
+for SSH and SFTP.  It has the following main usages:
+@itemize @bullet
+@item Executing commands on the remote machine, either blocking or non-blocking.
+@item Writing and reading in an interactive shell.
+@item Transferring files and directories over SFTP.
+@item Ensuring that files and directories exist on the remote machine.
+@end itemize")
+    (license license:asl2.0)))
+
 (define-public python-scp
   (package
     (name "python-scp")
