@@ -14177,3 +14177,29 @@ and article extracts for Wikipedia.")
 files.  The various elements of the HTML input are parsed with customizable
 functions (e.g. @code{webfeeder-title-function}).")
   (license license:gpl3+)))
+
+(define-public emacs-evil-numbers
+  (let ((commit "6ea1c8c3a9b37bed63d48f1128e9a4910e68187e"))
+    (package
+      (name "emacs-evil-numbers")
+      (version (git-version "0.4" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dieggsy/evil-numbers")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1aq95hj8x13py0pwsnc6wvd8cc5yv5qin8ym9js42y5966vwj4np"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/dieggsy/evil-numbers")
+      (synopsis "Increment and decrement numbers in Emacs")
+      (description "This package increments and decrements binary, octal,
+decimal and hex literals.  It works like C-a/C-x in Vim, i.e. searches for
+number up to EOL and then increments or decrements and keeps zero padding up
+(unlike in Vim).  When a region is active, as in Evil's visual mode, all the
+numbers within that region will be incremented/decremented (unlike in Vim).
+
+It is a fork of https://github.com/cofi/evil-numbers, which is unmaintained.")
+      (license license:gpl3+))))
