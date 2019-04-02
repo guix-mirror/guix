@@ -2683,6 +2683,52 @@ software version simply.")
 to deprecate classes, functions or methods.")
     (license license:expat)))
 
+(define-public python-pygithub
+  (package
+    (name "python-pygithub")
+    (version "1.43.7")
+    (source
+     ;; We fetch from the Git repo because there are no tests in the PyPI
+     ;; archive.
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PyGithub/PyGithub.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ww92zz0ja9w6rw83vphmn8rwmcn6abg16j4q7zxjc0rrg2cfj9i"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ;; Some tests rely on the network.
+                  (add-after 'unpack 'disable-failing-tests
+                    (lambda _
+                      (substitute* "tests/Issue142.py"
+                        (("testDecodeJson") "disabled_testDecodeJson"))
+                      #t))
+                  (add-before 'check 'prepare-for-tests
+                    (lambda _
+                      (for-each (lambda (f)
+                                  (chmod f #o666))
+                                (find-files "./tests"))
+                      (system* "python" "-m" "lib2to3" "-w" "-n" "tests")
+                      (setenv "PYTHONPATH"
+                              (string-append "./tests:" (getenv "PYTHONPATH")))
+                      #t)))))
+    (propagated-inputs
+     `(("python-deprecated" ,python-deprecated)
+       ("python-pyjwt" ,python-pyjwt)
+       ("python-requests" ,python-requests)))
+    (native-inputs `(("python-httpretty" ,python-httpretty)))
+    (home-page "https://pygithub.readthedocs.io/en/latest/")
+    (synopsis "Python library for the GitHub API")
+    (description "This library allows managing GitHub resources such as
+repositories, user profiles, and organizations in your Python applications,
+using version 3 of the GitHub application programming interface (API).")
+    (license license:lgpl3+)))
+
 (define-public python-scp
   (package
     (name "python-scp")
