@@ -2729,6 +2729,29 @@ repositories, user profiles, and organizations in your Python applications,
 using version 3 of the GitHub application programming interface (API).")
     (license license:lgpl3+)))
 
+(define-public python-rellu
+  (package
+    (name "python-rellu")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rellu" version))
+       (sha256
+        (base32
+         "1w0arpj1sm7vh29nrbnca4pnp8sx42l07r17inwqcjjf9bhng66x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-invoke" ,python-invoke)
+       ("python-pygithub" ,python-pygithub)))
+    (home-page "https://github.com/robotframework/rellu")
+    (synopsis "Utilities to create PyPI releases")
+    (description "This collection of utilities contains tooling and templates
+to assist in creating releases on GitHub and publishing them on PyPI.  It is
+designed to be used by Robot Framework and tools and libraries in its
+ecosystem, but can naturally be used also by other projects.")
+    (license license:asl2.0)))
+
 (define-public python-scp
   (package
     (name "python-scp")
