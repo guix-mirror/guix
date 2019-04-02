@@ -117,7 +117,7 @@ MATE applications.")
 (define-public mate-icon-theme-faenza
   (package
     (name "mate-icon-theme-faenza")
-    (version "1.18.1")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pub.mate-desktop.org/releases/"
@@ -125,7 +125,7 @@ MATE applications.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vc3wg9l5yrxm0xmligz4lw2g3nqj1dz8fwv90xvym8pbjds2849"))))
+                "000vr9cnbl2qlysf2gyg1lsjirqdzmwrnh6d3hyrsfc0r2vh4wna"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
