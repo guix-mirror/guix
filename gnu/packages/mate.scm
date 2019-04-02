@@ -690,7 +690,7 @@ infamous 'Wanda the Fish'.")
 (define-public atril
   (package
     (name "atril")
-    (version "1.18.1")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -699,13 +699,12 @@ infamous 'Wanda the Fish'.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1wl332v80c0nzz7nw36d1pfmbiibvl3l0i4d25ihg6mg9wbc0145"))))
+         "1xd49j4qwrlg2nh2zvspf91yk033dp8a58dy9azqg2yz4bcvywxb"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-openjpeg="
                                               (assoc-ref %build-inputs "openjpeg"))
                                "--enable-introspection"
-                               "--with-gtk=3.0"
                                "--disable-schemas-compile"
                                ;; FIXME: Enable build of Caja extensions.
                                "--disable-caja")
