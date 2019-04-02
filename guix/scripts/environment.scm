@@ -459,17 +459,19 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
     (return
      (let* ((cwd      (getcwd))
             (home     (getenv "HOME"))
+            (uid      (if user 1000 (getuid)))
+            (gid      (if user 1000 (getgid)))
             (passwd   (let ((pwd (getpwuid (getuid))))
                         (password-entry
                          (name (or user (passwd:name pwd)))
                          (real-name (if user
                                         ""
                                         (passwd:gecos pwd)))
-                         (uid 0) (gid 0) (shell bash)
+                         (uid uid) (gid gid) (shell bash)
                          (directory (if user
                                         (string-append "/home/" user)
                                         (passwd:dir pwd))))))
-            (groups   (list (group-entry (name "users") (gid 0))
+            (groups   (list (group-entry (name "users") (gid gid))
                             (group-entry (gid 65534) ;the overflow GID
                                          (name "overflow"))))
             (home-dir (password-entry-directory passwd))
@@ -541,6 +543,8 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
              ;; A container's environment is already purified, so no need to
              ;; request it be purified again.
              (launch-environment command profile manifest #:pure? #f)))
+          #:guest-uid uid
+          #:guest-gid gid
           #:namespaces (if network?
                            (delq 'net %namespaces) ; share host network
                            %namespaces)))))))

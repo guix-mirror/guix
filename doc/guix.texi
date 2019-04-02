@@ -4557,9 +4557,11 @@ Run @var{command} within an isolated container.  The current working
 directory outside the container is mapped inside the container.
 Additionally, unless overridden with @code{--user}, a dummy home
 directory is created that matches the current user's home directory, and
-@file{/etc/passwd} is configured accordingly.  The spawned process runs
-as the current user outside the container, but has root privileges in
-the context of the container.
+@file{/etc/passwd} is configured accordingly.
+
+The spawned process runs as the current user outside the container.  Inside
+the container, it has the same UID and GID as the current user, unless
+@option{--user} is passed (see below.)
 
 @item --network
 @itemx -N
@@ -4587,8 +4589,9 @@ the environment.
 @itemx -u @var{user}
 For containers, use the username @var{user} in place of the current
 user.  The generated @file{/etc/passwd} entry within the container will
-contain the name @var{user}; the home directory will be
-@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
+contain the name @var{user}, the home directory will be
+@file{/home/@var{user}}, and no user GECOS data will be copied.  Furthermore,
+the UID and GID inside the container are 1000.  @var{user}
 need not exist on the system.
 
 Additionally, any shared or exposed path (see @code{--share} and
