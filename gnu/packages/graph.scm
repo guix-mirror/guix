@@ -245,6 +245,40 @@ subplots, multiple-axes, polar charts, and bubble charts. ")
 (define-public python2-plotly
   (package-with-python2 python-plotly))
 
+(define-public python-louvain
+  (package
+    (name "python-louvain")
+    (version "0.6.1")
+    ;; The tarball on Pypi does not include the tests.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vtraag/louvain-igraph.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0w31537sifkf65sck1iaip5i6d8g64pa3wdwad83d6p9jwkck57k"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ddt" ,python-ddt)
+       ("python-igraph" ,python-igraph)))
+    (inputs
+     `(("igraph" ,igraph)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/vtraag/louvain-igraph")
+    (synopsis "Algorithm for methods of community detection in large networks")
+    (description
+     "This package provides an implementation of the Louvain algorithm for use
+with igraph.  Louvain is a general algorithm for methods of community
+detection in large networks.
+
+This package has been superseded by the @code{leidenalg} package and should
+not be used for new projects.")
+    (license license:gpl3+)))
+
 (define-public faiss
   (package
     (name "faiss")
