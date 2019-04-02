@@ -359,7 +359,7 @@ configuration program to choose applications starting on login.")
 (define-public mate-settings-daemon
   (package
     (name "mate-settings-daemon")
-    (version "1.18.1")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -368,7 +368,7 @@ configuration program to choose applications starting on login.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "07b2jkxqv07njdrgkdck93d872p6lch1lrvi7ydnpicspg3rfid6"))))
+         "0yr5v6b9hdk20j29smbw1k4fkyg82i5vlflmgly0vi5whgc74gym"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
