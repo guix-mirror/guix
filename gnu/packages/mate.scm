@@ -73,7 +73,7 @@
 (define-public mate-common
   (package
     (name "mate-common")
-    (version "1.18.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -82,7 +82,7 @@
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1005laf3z1h8qczm7pmwr40r842665cv6ykhjg7r93vldra48z6p"))))
+         "11lwckndizawbq993ws8lqp59vsc873zri0m8s1i5zyc4qx9f69z"))))
     (build-system gnu-build-system)
     (home-page "https://mate-desktop.org/")
     (synopsis "Common files for development of MATE packages")
