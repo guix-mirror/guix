@@ -150,46 +150,6 @@
       ((package . _) package))))
 
 
-(define (wrapped-dbus-service service program variable value)
-  "Return a wrapper for @var{service}, a package containing a D-Bus service,
-where @var{program} is wrapped such that environment variable @var{variable}
-is set to @var{value} when the bus daemon launches it."
-  (define wrapper
-    (program-file (string-append (package-name service) "-program-wrapper")
-                  #~(begin
-                      (setenv #$variable #$value)
-                      (apply execl (string-append #$service "/" #$program)
-                             (string-append #$service "/" #$program)
-                             (cdr (command-line))))))
-
-  (define build
-    (with-imported-modules '((guix build utils))
-      #~(begin
-          (use-modules (guix build utils))
-
-          (define service-directory
-            "/share/dbus-1/system-services")
-
-          (mkdir-p (dirname (string-append #$output
-                                           service-directory)))
-          (copy-recursively (string-append #$service
-                                           service-directory)
-                            (string-append #$output
-                                           service-directory))
-          (symlink (string-append #$service "/etc") ;for etc/dbus-1
-                   (string-append #$output "/etc"))
-
-          (for-each (lambda (file)
-                      (substitute* file
-                        (("Exec[[:blank:]]*=[[:blank:]]*([[:graph:]]+)(.*)$"
-                          _ original-program arguments)
-                         (string-append "Exec=" #$wrapper arguments
-                                        "\n"))))
-                    (find-files #$output "\\.service$")))))
-
-  (computed-file (string-append (package-name service) "-wrapper")
-                 build))
-
 
 ;;;
 ;;; Upower D-Bus service.
