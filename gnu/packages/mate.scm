@@ -853,7 +853,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
 (define-public caja-extensions
   (package
     (name "caja-extensions")
-    (version "1.18.1")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -862,7 +862,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0hgala7zkfsa60jflq3s4n9yd11dhfdcla40l83cmgc3r1az7cmw"))))
+         "1h866jmdd3qpjzi7wjj11krwiaadnlf21844g1zqfb4jgrzj773p"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-sendto"
