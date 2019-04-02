@@ -402,7 +402,7 @@ configuration program to choose applications starting on login.")
 (define-public libmatemixer
   (package
     (name "libmatemixer")
-    (version "1.18.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -411,7 +411,7 @@ configuration program to choose applications starting on login.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "09vyxnlnalws318gsafdfi5c6jwpp92pbafn1ddlqqds23ihk4mr"))))
+         "1v0gpr55gj4mj8hzxbhgzrmhaxvs2inxhsmirvjw39sc7iplvrh9"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
