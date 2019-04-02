@@ -304,7 +304,7 @@ configurations (profiles).")
 (define-public mate-session-manager
   (package
     (name "mate-session-manager")
-    (version "1.18.1")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -313,7 +313,7 @@ configurations (profiles).")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0i0xq6041x2qmb26x9bawx0qpfkgjn6x9w3phnm9s7rc4s0z20ll"))))
+         "1kpfmgay01gm74paaxccs3lim4jfb4hsm7i85jfdypr51985pwyj"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-elogind"
