@@ -2600,6 +2600,31 @@ definitions, modules and classes, display method documentation and provide
 method and constant name completion.")
     (license license:gpl3+)))
 
+(define-public emacs-robot-mode
+  (let ((commit "32846e7e80ae3471b7c07f9709dcaa4f9b9ed4a0")
+        (revision "1"))
+    (package
+      (name "emacs-robot-mode")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      ;; A better maintained fork of robot-mode.
+                      (url "https://github.com/jvalkeejarvi/robot-mode.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1i8wf7m0gml8zvvmlgppjzv78b432686p1qdbzgclc7qfcvzag0d"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/jvalkeejarvi/robot-mode")
+      (synopsis "Emacs mode for Robot Framework")
+      (description "This major mode facilitates editing Robot Framework source
+files with features such as syntax highlighting, comments, finding keywords,
+completing keywords and smart indentation.")
+      (license license:gpl3+))))
+
 (define-public emacs-rspec
   (package
     (name "emacs-rspec")
