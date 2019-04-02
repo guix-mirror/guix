@@ -2649,6 +2649,40 @@ and several other projects.")
 software version simply.")
     (license license:expat)))
 
+(define-public python-deprecated
+  (package
+    (name "python-deprecated")
+    (version "1.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tantale/deprecated.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14909glxxwwc4b9qpz2b9jdriwzi5n65ichw85xqppap5f79wcwz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-wrapt" ,python-wrapt)))
+    (native-inputs
+     `(("python-bumpversion" ,python-bumpversion)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx" ,python-sphinx)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/tantale/deprecated")
+    (synopsis "Python decorator to deprecate classes, functions or methods")
+    (description "The @code{deprecated} decorator provides a convenient way to deprecate
+to deprecate classes, functions or methods.")
+    (license license:expat)))
+
 (define-public python-scp
   (package
     (name "python-scp")
