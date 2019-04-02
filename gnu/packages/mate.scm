@@ -1478,7 +1478,7 @@ MATE Desktop to monitor your system resources and usage.")
 (define-public mate-polkit
   (package
     (name "mate-polkit")
-    (version "1.18.1")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -1487,7 +1487,7 @@ MATE Desktop to monitor your system resources and usage.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "15vf2hnyjg8zsw3iiwjwi497yygkmvpnn6w1hik7dfw4a621w0gc"))))
+         "02r8n71xflhvw2hsf6g4svdahzyg3r4n6xamasyzqfhyn0mqmjy0"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
