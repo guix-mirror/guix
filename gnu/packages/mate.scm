@@ -1332,7 +1332,7 @@ can be used as backgrounds in the MATE Desktop environment.")
 (define-public engrampa
   (package
     (name "engrampa")
-    (version "1.18.2")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -1341,7 +1341,7 @@ can be used as backgrounds in the MATE Desktop environment.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0d98zhqqc7qdnxcf0195kd04xmhijc0w2qrn6q61zd0daiswnv98"))))
+         "16yjplfl2sqa7n6404hjn0vwkh0xkdch73q7n5czynihmh3azc7p"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--disable-schemas-compile"
