@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
-;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1iks1a3149gj89yqmqa5iry2ik2sj9sjhlhc6nfh7xq4swqgsrb5"))
+                "0xrlw95yp2p66rlvp2a2czf92m3hb3l8v3p39cwnaiw928y5i5m7"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
