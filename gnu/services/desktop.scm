@@ -217,8 +217,8 @@
 (define (upower-dbus-service config)
   (list (wrapped-dbus-service (upower-configuration-upower config)
                               "libexec/upowerd"
-                              "UPOWER_CONF_FILE_NAME"
-                              (upower-configuration-file config))))
+                              `(("UPOWER_CONF_FILE_NAME"
+                                 ,(upower-configuration-file config))))))
 
 (define (upower-shepherd-service config)
   "Return a shepherd service for UPower with CONFIG."
@@ -349,8 +349,8 @@ users are allowed."
 (define (geoclue-dbus-service config)
   (list (wrapped-dbus-service (geoclue-configuration-geoclue config)
                               "libexec/geoclue"
-                              "GEOCLUE_CONFIG_FILE"
-                              (geoclue-configuration-file config))))
+                              `(("GEOCLUE_CONFIG_FILE"
+                                 ,(geoclue-configuration-file config))))))
 
 (define %geoclue-accounts
   (list (user-group (name "geoclue") (system? #t))
@@ -702,8 +702,8 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
 (define (elogind-dbus-service config)
   (list (wrapped-dbus-service (elogind-package config)
                               "libexec/elogind/elogind"
-                              "ELOGIND_CONF_FILE"
-                              (elogind-configuration-file config))))
+                              `(("ELOGIND_CONF_FILE"
+                                 ,(elogind-configuration-file config))))))
 
 (define (pam-extension-procedure config)
   "Return an extension for PAM-ROOT-SERVICE-TYPE that ensures that all the PAM

@@ -231,14 +231,20 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
            (dbus-configuration (dbus dbus)
                                (services services))))
 
-(define (wrapped-dbus-service service program variable value)
+(define (wrapped-dbus-service service program variables)
   "Return a wrapper for @var{service}, a package containing a D-Bus service,
-where @var{program} is wrapped such that environment variable @var{variable}
-is set to @var{value} when the bus daemon launches it."
+where @var{program} is wrapped such that @var{variables}, a list of name/value
+tuples, are all set as environment variables when the bus daemon launches it."
   (define wrapper
     (program-file (string-append (package-name service) "-program-wrapper")
                   #~(begin
-                      (setenv #$variable #$value)
+                      (use-modules (ice-9 match))
+
+                      (for-each (match-lambda
+                                  ((variable value)
+                                   (setenv variable value)))
+                                '#$variables)
+
                       (apply execl (string-append #$service "/" #$program)
                              (string-append #$service "/" #$program)
                              (cdr (command-line))))))
