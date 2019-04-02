@@ -432,7 +432,7 @@ sound systems.")
 (define-public libmatekbd
   (package
     (name "libmatekbd")
-    (version "1.18.2")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -441,7 +441,7 @@ sound systems.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "030bl18qbjm7l92bp1bhs7v82bp8j3mv7c1j1a4gd89iz4611pq3"))))
+         "1dsr7618c92mhwabwhgxqsfp7gnf9zrz2z790jc5g085dxhg13y8"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
