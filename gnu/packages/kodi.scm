@@ -281,7 +281,8 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
               (sha256
                (base32
                 "1w26aqvzxv4c70gcd1vw1pldapsc2xcacwq9b7dqx5m44j0zx1dc"))
-              (patches (search-patches "kodi-skip-test-449.patch"))
+              (patches (search-patches "kodi-skip-test-449.patch"
+                                       "kodi-set-libcurl-ssl-parameters.patch"))
               (snippet
                '(begin
                   (use-modules (guix build utils))
