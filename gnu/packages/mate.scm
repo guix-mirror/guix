@@ -1437,7 +1437,7 @@ can be used as backgrounds in the MATE Desktop environment.")
 (define-public mate-system-monitor
   (package
     (name "mate-system-monitor")
-    (version "1.18.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -1446,7 +1446,7 @@ can be used as backgrounds in the MATE Desktop environment.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1wcvrl4lfnjkhywb311p29prf1qiab6iynb6q1fgfsl6za8hsz48"))))
+         "0rs0n5ivmvi355fp3ymcp1jj2sz9viw31475aw7zh7s1l7dn969x"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
