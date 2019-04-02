@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (json parser)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -37,81 +39,86 @@
 ;;
 ;; Code:
 
-;; FIXME: Needs to be parsed from url not package name.
-(define (package-name->crate-name name)
-  "Return the crate name of NAME."
-  (match (string-split name #\-)
-    (("rust" rest ...)
-     (string-join rest "-"))
-    (_ #f)))
+(define (manifest-targets)
+  "Extract all targets from the Cargo.toml manifest"
+  (let* ((port (open-input-pipe "cargo read-manifest"))
+         (data (json->scm port))
+         (targets (hash-ref data "targets" '())))
+    (close-port port)
+    targets))
 
-(define* (configure #:key inputs #:allow-other-keys)
-  "Replace Cargo.toml [dependencies] section with guix inputs."
-  ;; Make sure Cargo.toml is writeable when the crate uses git-fetch.
-  (chmod "Cargo.toml" #o644)
+(define (has-executable-target?)
+  "Check if the current cargo project declares any binary targets."
+  (let* ((bin? (lambda (kind) (string=? kind "bin")))
+         (get-kinds (lambda (dep) (hash-ref dep "kind")))
+         (bin-dep? (lambda (dep) (find bin? (get-kinds dep)))))
+    (find bin-dep? (manifest-targets))))
+
+(define* (configure #:key inputs
+                    (vendor-dir "guix-vendor")
+                    #:allow-other-keys)
+  "Vendor Cargo.toml dependencies as guix inputs."
   (chmod "." #o755)
-  (if (not (file-exists? "vendor"))
-    (if (not (file-exists? "Cargo.lock"))
-      (begin
-        (substitute* "Cargo.toml"
-          ((".*32-sys.*") "
-")
-          ((".*winapi.*") "
-")
-          ((".*core-foundation.*") "
-"))
-        ;; Prepare one new directory with all the required dependencies.
-        ;; It's necessary to do this (instead of just using /gnu/store as the
-        ;; directory) because we want to hide the libraries in subdirectories
-        ;;   share/rust-source/... instead of polluting the user's profile root.
-        (mkdir "vendor")
-        (for-each
-          (match-lambda
-            ((name . path)
-             (let ((crate (package-name->crate-name name)))
-               (when (and crate path)
-                 (match (string-split (basename path) #\-)
-                   ((_ ... version)
-                    (symlink (string-append path "/share/rust-source")
-                             (string-append "vendor/" (basename path)))))))))
-          inputs)
-        ;; Configure cargo to actually use this new directory.
-        (mkdir-p ".cargo")
-        (let ((port (open-file ".cargo/config" "w" #:encoding "utf-8")))
-          (display "
+  ;; Prepare one new directory with all the required dependencies.
+  ;; It's necessary to do this (instead of just using /gnu/store as the
+  ;; directory) because we want to hide the libraries in subdirectories
+  ;; share/rust-source/... instead of polluting the user's profile root.
+  (mkdir-p vendor-dir)
+  (for-each
+    (match-lambda
+      ((name . path)
+       (let* ((rust-share (string-append path "/share/rust-source"))
+              (basepath (basename path))
+              (link-dir (string-append vendor-dir "/" basepath)))
+         (and (file-exists? rust-share)
+              ;; Gracefully handle duplicate inputs
+              (not (file-exists? link-dir))
+              (symlink rust-share link-dir)))))
+    inputs)
+  ;; Configure cargo to actually use this new directory.
+  (mkdir-p ".cargo")
+  (let ((port (open-file ".cargo/config" "w" #:encoding "utf-8")))
+    (display "
 [source.crates-io]
-registry = 'https://github.com/rust-lang/crates.io-index'
 replace-with = 'vendored-sources'
 
 [source.vendored-sources]
 directory = '" port)
-          (display (getcwd) port)
-          (display "/vendor" port)
-          (display "'
+    (display (string-append (getcwd) "/" vendor-dir) port)
+    (display "'
 " port)
-          (close-port port)))))
-    (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+    (close-port port))
 
-    ;(setenv "CARGO_HOME" "/gnu/store")
-    ; (setenv "CMAKE_C_COMPILER" cc)
+  ;; Lift restriction on any lints: a crate author may have decided to opt
+  ;; into stricter lints (e.g. #![deny(warnings)]) during their own builds
+  ;; but we don't want any build failures that could be caused later by
+  ;; upgrading the compiler for example.
+  (setenv "RUSTFLAGS" "--cap-lints allow")
+  (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
   #t)
 
-(define* (build #:key (cargo-build-flags '("--release"))
+(define* (build #:key
+                skip-build?
+                (cargo-build-flags '("--release"))
                 #:allow-other-keys)
   "Build a given Cargo package."
-  (zero? (apply system* `("cargo" "build" ,@cargo-build-flags))))
+  (or skip-build?
+      (zero? (apply system* `("cargo" "build" ,@cargo-build-flags)))))
 
-(define* (check #:key tests? #:allow-other-keys)
+(define* (check #:key
+                tests?
+                (cargo-test-flags '("--release"))
+                #:allow-other-keys)
   "Run tests for a given Cargo package."
-  (if (and tests? (file-exists? "Cargo.lock"))
-      (zero? (system* "cargo" "test"))
+  (if tests?
+      (zero? (apply system* `("cargo" "test" ,@cargo-test-flags)))
       #t))
 
 (define (touch file-name)
   (call-with-output-file file-name (const #t)))
 
-(define* (install #:key inputs outputs #:allow-other-keys)
-  "Install a given Cargo package."
+(define* (install-source #:key inputs outputs #:allow-other-keys)
+  "Install the source for a given Cargo package."
   (let* ((out (assoc-ref outputs "out"))
          (src (assoc-ref inputs "source"))
          (rsrc (string-append (assoc-ref outputs "src")
@@ -120,24 +127,36 @@ directory = '" port)
     ;; Rust doesn't have a stable ABI yet. Because of this
     ;; Cargo doesn't have a search path for binaries yet.
     ;; Until this changes we are working around this by
-    ;; distributing crates as source and replacing
-    ;; references in Cargo.toml with store paths.
-    (copy-recursively "src" (string-append rsrc "/src"))
+    ;; vendoring the crates' sources by symlinking them
+    ;; to store paths.
+    (copy-recursively "." rsrc)
     (touch (string-append rsrc "/.cargo-ok"))
-    (generate-checksums rsrc src)
+    (generate-checksums rsrc "/dev/null")
     (install-file "Cargo.toml" rsrc)
-    ;; When the package includes executables we install
-    ;; it using cargo install. This fails when the crate
-    ;; doesn't contain an executable.
-    (if (file-exists? "Cargo.lock")
-        (zero? (system* "cargo" "install" "--root" out))
-        (begin
-          (mkdir out)
-          #t))))
+    #t))
+
+(define* (install #:key inputs outputs skip-build? #:allow-other-keys)
+  "Install a given Cargo package."
+  (let* ((out (assoc-ref outputs "out")))
+    (mkdir-p out)
+
+    ;; Make cargo reuse all the artifacts we just built instead
+    ;; of defaulting to making a new temp directory
+    (setenv "CARGO_TARGET_DIR" "./target")
+    ;; Force cargo to honor our .cargo/config definitions
+    ;; https://github.com/rust-lang/cargo/issues/6397
+    (setenv "CARGO_HOME" ".")
+
+    ;; Only install crates which include binary targets,
+    ;; otherwise cargo will raise an error.
+    (or skip-build?
+        (not (has-executable-target?))
+        (zero? (system* "cargo" "install" "--path" "." "--root" out)))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'bootstrap)
+    (add-before 'configure 'install-source install-source)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
