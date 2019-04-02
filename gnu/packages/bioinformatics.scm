@@ -12038,6 +12038,23 @@ graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
 
+;; pigx-scrnaseq does not work with the latest version of loompy.
+(define-public python-loompy-for-pigx-scrnaseq
+  (package (inherit python-loompy)
+    (name "python-loompy")
+    (version "2.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linnarsson-lab/loompy.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pjyl532pl8sbv71yci6h0agchn0naw2qjcwj50n6afrsahbsag3"))))
+    ;; There are none.
+    (arguments '(#:tests? #f))))
+
 ;; We cannot use the latest commit because it requires Java 9.
 (define-public java-forester
   (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
