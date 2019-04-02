@@ -2752,6 +2752,51 @@ designed to be used by Robot Framework and tools and libraries in its
 ecosystem, but can naturally be used also by other projects.")
     (license license:asl2.0)))
 
+(define-public python-robotframework
+  (package
+    (name "python-robotframework")
+    (version "3.1.1")
+    ;; There are no tests in the PyPI archive.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robotframework/robotframework.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aaiamc9l35m5sf7xl2qc5q9308v7sz3p1qgzcslsjxzddphyn4v"))
+       (patches (search-patches
+                 "python-robotframework-honor-source-date-epoch.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'build-and-install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((doc-output (assoc-ref outputs "doc"))
+                             (doc (string-append doc-output "/share/"
+                                                 ,name "-" ,version "/")))
+                        (invoke "invoke" "library-docs" "all")
+                        (mkdir-p doc)
+                        (copy-recursively "doc/libraries"
+                                          (string-append doc "/libraries"))
+                        #t)))
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "utest/run.py"))))))
+    (native-inputs
+     `(("python-invoke" ,python-invoke)
+       ("python-rellu" ,python-rellu)
+       ("python:tk" ,python "tk")))     ;used when building the HTML doc
+    (outputs '("out" "doc"))
+    (home-page "https://robotframework.org")
+    (synopsis "Generic automation framework")
+    (description "Robot Framework is a generic automation framework for
+acceptance testing, acceptance test driven development (ATDD), and robotic
+process automation (RPA).")
+    (license license:asl2.0)))
+
 (define-public python-scp
   (package
     (name "python-scp")
