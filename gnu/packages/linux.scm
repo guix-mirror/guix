@@ -3641,6 +3641,7 @@ from userspace.")
               (method url-fetch)
               (uri (string-append "https://tuxera.com/opensource/"
                                   "ntfs-3g_ntfsprogs-" version ".tgz"))
+              (patches (search-patches "ntfs-3g-CVE-2019-9755.patch"))
               (sha256
                (base32
                 "1mb228p80hv97pgk3myyvgp975r9mxq56c6bdn1n24kngcfh4niy"))
