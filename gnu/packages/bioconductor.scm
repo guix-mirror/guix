@@ -778,6 +778,30 @@ datasets which are derived from the Allen Brain Atlas:
 All datasets are restricted to protein coding genes.")
     (license license:gpl2+)))
 
+(define-public r-arrmdata
+  (package
+    (name "r-arrmdata")
+    (version "1.18.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/experiment/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "ARRmData_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r1y3zn7ly4k3ngx55vfavn9s6aidbddlv2fbmj7hj3hvpslmyly"))))
+    (properties
+     `((upstream-name . "ARRmData")))
+    (build-system r-build-system)
+    (home-page "https://www.bioconductor.org/packages/ARRmData/")
+    (synopsis "Example dataset for normalization of Illumina 450k methylation data")
+    (description
+     "This package provides raw beta values from 36 samples across 3 groups
+from Illumina 450k methylation arrays.")
+    (license license:artistic2.0)))
+
 (define-public r-hsmmsinglecell
   (package
     (name "r-hsmmsinglecell")
