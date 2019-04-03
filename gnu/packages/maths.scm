@@ -1352,6 +1352,38 @@ large-scale nonlinear optimization.  It provides C++, C, and Fortran
 interfaces.")
     (license license:epl1.0)))
 
+(define-public clp
+  (package
+    (name "clp")
+    (version "1.17.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.coin-or.org/download/source/"
+                                  "Clp/Clp-" version ".tgz"))
+              (sha256
+               (base32
+                "1wdg820g3iikf9344ijwsc8sy6c0m6im42bzzizm6rlmkvnmxhk9"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(begin
+                  (delete-file-recursively "ThirdParty")
+                  #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openblas" ,openblas)))
+    (home-page "https://www.coin-or.org")
+    (synopsis "Linear programming solver")
+    (description
+     "CLP is a high quality linear programming solver.  Its main strengths are
+its dual and primal Simplex algorithms.  It also has a barrier algorithm for
+linear and quadratic objectives.  There are limited facilities for nonlinear
+and quadratic objectives using the Simplex algorithm.")
+    (license license:epl1.0)))
+
 (define-public ceres
   (package
     (name "ceres-solver")
