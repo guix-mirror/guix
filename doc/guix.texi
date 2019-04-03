@@ -11002,6 +11002,8 @@ special-case and is automatically added whether or not it is specified.
 @node Keyboard Layout
 @section Keyboard Layout
 
+@cindex keyboard layout
+@cindex keymap
 To specify what each key of your keyboard does, you need to tell the operating
 system what @dfn{keyboard layout} you want to use.  The default, when nothing
 is specified, is the US English QWERTY layout for 105-key PC keyboards.
@@ -11100,6 +11102,34 @@ In the example above, for GRUB and for Xorg, we just refer to the
 a different layout.  The @code{set-xorg-configuration} procedure communicates
 the desired Xorg configuration to the graphical log-in manager, by default
 GDM.
+
+We've discussed how to specify the @emph{default} keyboard layout of your
+system when it starts, but you can also adjust it at run time:
+
+@itemize
+@item
+If you're using GNOME, its settings panel has a ``Region & Language'' entry
+where you can select one or more keyboard layouts.
+
+@item
+Under Xorg, the @command{setxkbmap} command (from the same-named package)
+allows you to change the current layout.  For example, this is how you would
+change the layout to US Dvorak:
+
+@example
+setxkbmap us dvorak
+@end example
+
+@item
+The @code{loadkeys} command changes the keyboard layout in effect in the Linux
+console.  However, note that @code{loadkeys} does @emph{not} use the XKB
+keyboard layout categorization described above.  The command below loads the
+French bépo layout:
+
+@example
+loadkeys fr-bepo
+@end example
+@end itemize
 
 @node Locales
 @section Locales
