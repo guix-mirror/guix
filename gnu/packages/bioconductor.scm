@@ -4064,3 +4064,35 @@ data for high-throughput, untargeted analyte profiling.")
      "Wrench is a package for normalization sparse genomic count data, like
 that arising from 16s metagenomic surveys.")
     (license license:artistic2.0)))
+
+(define-public r-wiggleplotr
+  (package
+    (name "r-wiggleplotr")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "wiggleplotr" version))
+       (sha256
+        (base32
+         "12fhbskkjwv4d9bdy3gab8n9pcf7qpwiwgx0248as445vfw8dil3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-cowplot" ,r-cowplot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-purrr" ,r-purrr)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/wiggleplotr/")
+    (synopsis "Make read coverage plots from BigWig files")
+    (description
+     "This package provides tools to visualize read coverage from sequencing
+experiments together with genomic annotations (genes, transcripts, peaks).
+Introns of long transcripts can be rescaled to a fixed length for better
+visualization of exonic read coverage.")
+    (license license:asl2.0)))
