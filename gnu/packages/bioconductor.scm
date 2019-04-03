@@ -4040,3 +4040,27 @@ chromatographically separated and single-spectra mass spectral data.  It
 imports from AIA/ANDI NetCDF, mzXML, mzData and mzML files.  It preprocesses
 data for high-throughput, untargeted analyte profiling.")
     (license license:gpl2+)))
+
+(define-public r-wrench
+  (package
+    (name "r-wrench")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Wrench" version))
+       (sha256
+        (base32
+         "12gfdj2p52pah67bimz14xcwmcb4c2snjwswj0fns7v3v1h9rlqg"))))
+    (properties `((upstream-name . "Wrench")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)
+       ("r-matrixstats" ,r-matrixstats)))
+    (home-page "https://github.com/HCBravoLab/Wrench")
+    (synopsis "Wrench normalization for sparse count data")
+    (description
+     "Wrench is a package for normalization sparse genomic count data, like
+that arising from 16s metagenomic surveys.")
+    (license license:artistic2.0)))
