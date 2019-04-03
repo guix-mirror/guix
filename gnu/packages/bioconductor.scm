@@ -4096,3 +4096,24 @@ experiments together with genomic annotations (genes, transcripts, peaks).
 Introns of long transcripts can be rescaled to a fixed length for better
 visualization of exonic read coverage.")
     (license license:asl2.0)))
+
+(define-public r-widgettools
+  (package
+    (name "r-widgettools")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "widgetTools" version))
+       (sha256
+        (base32
+         "0mz69pdr6q69avsvs6r5ncdkdmgwfislpil4v18dsflw4j454gwf"))))
+    (properties `((upstream-name . "widgetTools")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/widgetTools/")
+    (synopsis "Tools for creating interactive tcltk widgets")
+    (description
+     "This packages contains tools to support the construction of tcltk
+widgets in R.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
