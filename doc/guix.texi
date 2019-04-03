@@ -11077,6 +11077,7 @@ Let's say you want your system to use the Turkish keyboard layout throughout
 your system---bootloader, console, and Xorg.  Here's what your system
 configuration would look like:
 
+@findex set-xorg-configuration
 @lisp
 ;; Using the Turkish layout for the bootloader, the console,
 ;; and for Xorg.
@@ -11088,18 +11089,17 @@ configuration would look like:
                 (bootloader grub-efi-bootloader)
                 (target "/boot/efi")
                 (keyboard-layout keyboard-layout))) ;for GRUB
-  (services (modify-services %desktop-services
-              (gdm-service-type config =>
-                (gdm-configuration
-                  (inherit config)
-                  (xorg-configuration
+  (services (cons (set-xorg-configuration
                     (xorg-configuration             ;for Xorg
-                      (keyboard-layout keyboard-layout))))))))
+                      (keyboard-layout keyboard-layout)))
+                  %desktop-services)))
 @end lisp
 
 In the example above, for GRUB and for Xorg, we just refer to the
 @code{keyboard-layout} field defined above, but we could just as well refer to
-a different layout.
+a different layout.  The @code{set-xorg-configuration} procedure communicates
+the desired Xorg configuration to the graphical log-in manager, by default
+GDM.
 
 @node Locales
 @section Locales
@@ -13565,6 +13565,16 @@ This is the list of command-line arguments to pass to the X server.  The
 default is @code{-nolisten tcp}.
 @end table
 @end deftp
+
+@deffn {Scheme Procedure} set-xorg-configuration @var{config} @
+  [@var{login-manager-service-type}]
+Tell the log-in manager (of type @var{login-manager-service-type}) to use
+@var{config}, an <xorg-configuration> record.
+
+Since the Xorg configuration is embedded in the log-in manager's
+configuration---e.g., @code{gdm-configuration}---this procedure provides a
+shorthand to set the Xorg configuration.
+@end deffn
 
 @deffn {Scheme Procedure} xorg-start-command [@var{config}]
 Return a @code{startx} script in which the modules, fonts, etc. specified

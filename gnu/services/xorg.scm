@@ -99,7 +99,8 @@
 
             gdm-configuration
             gdm-service-type
-            gdm-service))
+            gdm-service
+            set-xorg-configuration))
 
 ;;; Commentary:
 ;;;
@@ -875,6 +876,15 @@ the GNOME desktop environment.")
                                            xorg-configuration-keyboard-layout
                                            gdm-configuration-xorg))))
 
+                ;; For convenience, this service can be extended with an
+                ;; <xorg-configuration> record.  Take the first one that
+                ;; comes.
+                (compose first)
+                (extend (lambda (config xorg-configuration)
+                          (gdm-configuration
+                           (inherit config)
+                           (xorg-configuration xorg-configuration))))
+
                 (default-value (gdm-configuration))
                 (description
                  "Run the GNOME Desktop Manager (GDM), a program that allows
@@ -907,5 +917,15 @@ password."
            (gdm-configuration
             (gdm gdm)
             (allow-empty-passwords? allow-empty-passwords?))))
+
+(define* (set-xorg-configuration config
+                                 #:optional
+                                 (login-manager-service-type
+                                  gdm-service-type))
+  "Tell the log-in manager (of type @var{login-manager-service-type}) to use
+@var{config}, an <xorg-configuration> record."
+  (simple-service 'set-xorg-configuration
+                  login-manager-service-type
+                  config))
 
 ;;; xorg.scm ends here
