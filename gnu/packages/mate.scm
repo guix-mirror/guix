@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -337,7 +338,20 @@ configurations (profiles).")
                (("#ifdef HAVE_SYSTEMD") "#if 0"))
              (substitute* "mate-session/gsm-autostart-app.c"
                (("#ifdef HAVE_SYSTEMD") "#if 0"))
-             #t)))))
+             #t))
+         (add-after 'install 'update-xsession-dot-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Record the absolute file name of 'mate-session' in the
+             ;; '.desktop' file.
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsession (string-append
+                               out "/share/xsessions/mate.desktop")))
+               (substitute* xsession
+                 (("^Exec=.*$")
+                  (string-append "Exec=" out "/bin/mate-session\n"))
+                 (("^TryExec=.*$")
+                  (string-append "Exec=" out "/bin/mate-session\n")))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
