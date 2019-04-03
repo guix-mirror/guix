@@ -724,6 +724,16 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           `(modify-phases ,phases
              ;; binaryen was replaced with LLD project from LLVM
              (delete 'dont-build-native)
+             (replace 'check
+               (lambda* _
+                 ;; Enable parallel execution.
+                 (let ((parallel-job-spec
+                        (string-append "-j" (number->string
+                                             (min 4
+                                                  (parallel-job-count))))))
+                   (invoke "./x.py" parallel-job-spec "test" "-vv")
+                   (invoke "./x.py" parallel-job-spec "test"
+                           "src/tools/cargo"))))
              (replace 'remove-unsupported-tests
                (lambda* _
                  ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
