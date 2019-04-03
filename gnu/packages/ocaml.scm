@@ -57,6 +57,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tex)
@@ -390,6 +391,57 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
                license:gpl3+
                ;; With static-linking exception
                license:lgpl2.1+))))
+
+(define-public ocaml-dose3
+  (package
+    (name "ocaml-dose3")
+    (version "5.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri "https://gforge.inria.fr/frs/download.php/file/36063/dose3-5.0.1.tar.gz")
+              (sha256
+               (base32
+                "00yvyfm4j423zqndvgc1ycnmiffaa2l9ab40cyg23pf51qmzk2jm"))
+              (patches
+               (search-patches
+                "ocaml-dose3-Add-unix-as-dependency-to-dose3.common-in-META.in.patch"
+                "ocaml-dose3-Fix-for-ocaml-4.06.patch"
+                "ocaml-dose3-dont-make-printconf.patch"
+                "ocaml-dose3-Install-mli-cmx-etc.patch"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "SHELL="
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/sh"))
+       #:make-flags
+       (list (string-append "LIBDIR="
+                            (assoc-ref %outputs "out")
+                            "/lib/ocaml/site-lib"))))
+    (propagated-inputs
+      `(("ocaml-graph" ,ocaml-graph)
+        ("ocaml-cudf" ,ocaml-cudf)
+        ("ocaml-extlib" ,ocaml-extlib)
+        ("ocaml-re" ,ocaml-re)))
+    (native-inputs
+      `(("perl" ,perl)
+        ("python" ,python-2) ; for a test script
+        ("python2-pyyaml" ,python2-pyyaml) ; for a test script
+        ("ocaml-extlib" ,ocaml-extlib)
+        ("ocamlbuild" ,ocamlbuild)
+        ("ocaml-cppo" ,ocaml-cppo)))
+    (home-page "http://www.mancoosi.org/software/")
+    (synopsis "Package distribution management framework")
+    (description "Dose3 is a framework made of several OCaml libraries for
+managing distribution packages and their dependencies.  Though not tied to
+any particular distribution, dose3 constitutes a pool of libraries which
+enable analyzing packages coming from various distributions.  Besides basic
+functionalities for querying and setting package properties, dose3 also
+implements algorithms for solving more complex problems such as monitoring
+package evolutions, correct and complete dependency resolution and
+repository-wide uninstallability checks.")
+    ;; with static-linking exception
+    (license license:lgpl2.1+)))
 
 (define-public ocaml-opam-file-format
   (package

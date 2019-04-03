@@ -1105,6 +1105,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
   %D%/packages/patches/ocaml-enable-ocamldoc-reproducibility.patch	\
+  %D%/packages/patches/ocaml-dose3-Add-unix-as-dependency-to-dose3.common-in-META.in.patch	\
+  %D%/packages/patches/ocaml-dose3-Fix-for-ocaml-4.06.patch	\
+  %D%/packages/patches/ocaml-dose3-dont-make-printconf.patch	\
+  %D%/packages/patches/ocaml-dose3-Install-mli-cmx-etc.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
