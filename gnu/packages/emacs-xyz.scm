@@ -5374,7 +5374,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.20.0")
+    (version "0.21.0")
     (source
      (origin
        (method git-fetch)
@@ -5384,7 +5384,7 @@ target will call @code{compile} on it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lfhzg9c931jbx27hpshk3l76gwbp6ggf668sqa77xrvymwdlsnw"))))
+         "0lbrwj67fnvynkdkzvnzp3p8vqlz0ldrcs317vg60bqfhx7hvqkj"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
