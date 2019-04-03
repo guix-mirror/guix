@@ -4636,7 +4636,7 @@ to all the other commands, too.")
 (define-public emacs-js2-mode
   (package
     (name "emacs-js2-mode")
-    (version "20180301")
+    (version "20190219")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mooz/js2-mode/archive/"
@@ -4644,7 +4644,7 @@ to all the other commands, too.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13aghgwaqrmbf3pbifcry52kya454wnh1gbdh5805n1n6xgjm5w3"))))
+                "1gv1vinp2avnnn6an8ffcx79vmsdjhhikz7s6cmphligb26qp2vi"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mooz/js2-mode/")
     (synopsis "Improved JavaScript editing mode for Emacs")
