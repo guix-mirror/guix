@@ -8344,6 +8344,7 @@ paired-end data.")
               (sha256
                (base32
                 "0ss5hcg2m7gjji6dd23zxa5bd5a7knwcnada4qs5q2l4clgk39ad"))))
+    (properties `((upstream-name . "RCAS")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
