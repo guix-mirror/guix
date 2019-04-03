@@ -475,28 +475,28 @@ the opam file fomat.")
     (name "opam")
     (version "2.0.3")
     (source (origin
-              (method url-fetch)
-              ;; Use the '-full' version, which includes all the dependencies.
-              (uri (string-append
-                    "https://github.com/ocaml/opam/releases/download/"
-                    version "/opam-full-" version ".tar.gz")
-               ;; (string-append "https://github.com/ocaml/opam/archive/"
-               ;;                    version ".tar.gz")
-               )
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml/opam")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qphm1grxx5j8li7f9qfpih4ylrnjl08b4ym8ma4ln44l56xm285"))))
-    (build-system gnu-build-system)
+                "151zvyijrapi805xm0j88ixlrhdbssfagxr2i1w25aagcd18n5y4"))))
+    (build-system ocaml-build-system)
     (arguments
-     '(;; Sometimes, 'make -jX' would fail right after ./configure with
-       ;; "Fatal error: exception End_of_file".
-       #:parallel-build? #f
+     `(#:configure-flags
+       (list (string-append "SHELL="
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/sh"))
 
        ;; For some reason, 'ocp-build' needs $TERM to be set.
-       #:make-flags `("TERM=screen"
-                      ,(string-append "SHELL="
-                                      (assoc-ref %build-inputs "bash")
-                                      "/bin/sh"))
+       #:make-flags
+       (list "TERM=screen"
+             (string-append "SHELL="
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/sh"))
+
        #:test-target "tests"
 
        ;; FIXME: There's an obscure test failure:
@@ -522,12 +522,10 @@ the opam file fomat.")
                          ;; isolated environment when building with opam.
                          ;; This is necessary for packages to find external
                          ;; dependencies, such as a C compiler, make, etc...
-                         (("^add_mounts ro /usr")
-                          "add_mounts ro /gnu /run/current-system /usr"))
+                         (("^add_sys_mounts /usr")
+                          "add_sys_mounts /gnu /run/current-system /usr"))
                        (substitute* "src/client/opamInitDefaults.ml"
                          (("\"bwrap\"") (string-append "\"" bwrap "\"")))
-                       ;; Build dependencies
-                       (apply invoke "make" "lib-ext" make-flags)
                        #t)))
                  (add-before 'check 'pre-check
                    (lambda _
@@ -536,7 +534,9 @@ the opam file fomat.")
                      (invoke "git" "config" "--global" "user.name" "Guix")
                      #t)))))
     (native-inputs
-     `(("git" ,git)                               ;for the tests
+     `(("dune" ,dune)
+       ("git" ,git)                               ;for the tests
+       ("ocaml-cppo" ,ocaml-cppo)
        ("python" ,python)                         ;for the tests
        ("camlp4" ,camlp4)))
     (inputs
@@ -544,6 +544,12 @@ the opam file fomat.")
        ("ncurses" ,ncurses)
        ("curl" ,curl)
        ("bubblewrap" ,bubblewrap)))
+    (propagated-inputs
+     `(("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-dose3" ,ocaml-dose3)
+       ("ocaml-mccs" ,ocaml-mccs)
+       ("ocaml-opam-file-format" ,ocaml-opam-file-format)
+       ("ocaml-re" ,ocaml-re)))
     (home-page "http://opam.ocamlpro.com/")
     (synopsis "Package manager for OCaml")
     (description
