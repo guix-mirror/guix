@@ -32,6 +32,8 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
@@ -4117,3 +4119,36 @@ visualization of exonic read coverage.")
 widgets in R.")
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
+
+(define-public r-webbioc
+  (package
+    (name "r-webbioc")
+    (version "1.54.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "webbioc" version))
+       (sha256
+        (base32
+         "16n6wc9q51wfpmh9y77p53sqdqdd8pn50c67vf6h4n7gv5wgnpwi"))))
+    (build-system r-build-system)
+    (inputs
+     `(("netpbm" ,netpbm)
+       ("perl" ,perl)))
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-annaffy" ,r-annaffy)
+       ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-gcrma" ,r-gcrma)
+       ("r-multtest" ,r-multtest)
+       ("r-qvalue" ,r-qvalue)
+       ("r-vsn" ,r-vsn)))
+    (home-page "https://www.bioconductor.org/")
+    (synopsis "Bioconductor web interface")
+    (description
+     "This package provides an integrated web interface for doing microarray
+analysis using several of the Bioconductor packages.  It is intended to be
+deployed as a centralized bioinformatics resource for use by many users.
+Currently only Affymetrix oligonucleotide analysis is supported.")
+    (license license:gpl2+)))
