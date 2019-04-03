@@ -302,6 +302,33 @@ functional, imperative and object-oriented styles of programming.")
 for building OCaml library and programs.")
     (license license:lgpl2.1+)))
 
+(define-public ocaml-extlib
+  (package
+    (name "ocaml-extlib")
+    (version "1.7.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ygrek.org.ua/p/release/ocaml-extlib/"
+                                  "extlib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wfs20v1yj5apdbj7214wdsr17ayh0qqq7ihidndvc8nmmwfa1dz"))))
+    (build-system ocaml-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+      `(("ocaml-cppo" ,ocaml-cppo)))
+    (home-page "https://github.com/ygrek/ocaml-extlib")
+    (synopsis "Complete and small extension for OCaml standard library")
+    (description "This library adds new functions to OCaml standard library
+modules, modifies some functions in order to get better performances or
+safety (tail-recursive) and also provides new modules which should be useful
+for day to day programming.")
+    ;; With static-linking exception
+    (license license:lgpl2.1+)))
+
 (define-public ocaml-opam-file-format
   (package
     (name "ocaml-opam-file-format")
