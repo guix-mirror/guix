@@ -329,6 +329,40 @@ for day to day programming.")
     ;; With static-linking exception
     (license license:lgpl2.1+)))
 
+(define-public ocaml-cudf
+  (package
+    (name "ocaml-cudf")
+    (version "0.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri "https://gforge.inria.fr/frs/download.php/36602/cudf-0.9.tar.gz")
+        (sha256
+          (base32
+            "0771lwljqwwn3cryl0plny5a5dyyrj4z6bw66ha5n8yfbpcy8clr"))))
+    (build-system ocaml-build-system)
+    (propagated-inputs `(("ocaml-extlib" ,ocaml-extlib)))
+    (native-inputs
+      `(("perl" ,perl)
+        ("ocamlbuild" ,ocamlbuild)
+        ("ocaml-ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:make-flags
+       (list
+         "all" "opt"
+         (string-append "BINDIR=" (assoc-ref %outputs "out")
+                        "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://www.mancoosi.org/cudf/")
+    (synopsis "CUDF library (part of the Mancoosi tools)")
+    (description "CUDF (for Common Upgradeability Description Format) is a
+format for describing upgrade scenarios in package-based Free and Open Source
+Software distribution.")
+    ;; With static-linking exception
+    (license license:lgpl2.1+)))
+
 (define-public ocaml-opam-file-format
   (package
     (name "ocaml-opam-file-format")
