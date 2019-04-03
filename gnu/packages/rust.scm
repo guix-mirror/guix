@@ -928,7 +928,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("```rust") "```rust,no_run"))
                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.32
   (let ((base-rust
          (rust-bootstrapped-package rust-1.31 "1.32.0"
           "0ji2l9xv53y27xy72qagggvq47gayr5lcv2jwvmfirx029vlqnac"
@@ -980,3 +980,30 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              ;; Remove no longer relevant steps
              (delete 'remove-flaky-test)
              (delete 'patch-aarch64-test))))))))
+
+(define-public rust-1.33
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.32 "1.33.0"
+                                    "152x91mg7bz4ygligwjb05fgm1blwy2i70s2j03zc9jiwvbsh0as"
+                                    #:patches '())))
+    (package
+      (inherit base-rust)
+      (inputs
+       ;; Upgrade to jemalloc@5.1.0
+       (alist-replace "jemalloc" (list jemalloc)
+                      (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'ignore-cargo-package-tests)
+             (add-after 'configure 'configure-test-threads
+               ;; Several rustc and cargo tests will fail if run on one core
+               ;; https://github.com/rust-lang/rust/issues/59122
+               ;; https://github.com/rust-lang/cargo/issues/6746
+               ;; https://github.com/rust-lang/rust/issues/58907
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (setenv "RUST_TEST_THREADS" "2")
+                 #t)))))))))
+
+(define-public rust rust-1.33)
