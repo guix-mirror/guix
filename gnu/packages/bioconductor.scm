@@ -4152,3 +4152,30 @@ analysis using several of the Bioconductor packages.  It is intended to be
 deployed as a centralized bioinformatics resource for use by many users.
 Currently only Affymetrix oligonucleotide analysis is supported.")
     (license license:gpl2+)))
+
+(define-public r-zfpkm
+  (package
+    (name "r-zfpkm")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "zFPKM" version))
+       (sha256
+        (base32
+         "0rvfrjxxvfng9fxxn316gm96v4rahx62vlk3axr2bzjbi1r4s8v5"))))
+    (properties `((upstream-name . "zFPKM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/ronammar/zFPKM/")
+    (synopsis "Functions to facilitate zFPKM transformations")
+    (description
+     "This is a package to perform the zFPKM transform on RNA-seq FPKM data.
+This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID
+24215113).")
+    (license license:gpl3)))
