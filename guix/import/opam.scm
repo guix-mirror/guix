@@ -247,39 +247,55 @@ path to the repository."
              (url-dict (metadata-ref opam-content "url"))
              (source-url (metadata-ref url-dict "src"))
              (requirements (metadata-ref opam-content "depends"))
-             (dependencies (dependency-list->names requirements))
+             (dependencies (filter
+                              (lambda (name)
+                                (not (member name '("dune" "jbuilder"))))
+                              (dependency-list->names requirements)))
+             (native-dependencies (depends->native-inputs requirements))
              (inputs (dependency-list->inputs (depends->inputs requirements)))
-             (native-inputs (dependency-list->inputs (depends->native-inputs requirements))))
-        (call-with-temporary-output-file
-          (lambda (temp port)
-            (and (url-fetch source-url temp)
-                 (values
-                  `(package
-                     (name ,(ocaml-name->guix-name name))
-                     (version ,(if (string-prefix? "v" version)
-                                 (substring version 1)
-                                 version))
-                     (source
-                       (origin
-                         (method url-fetch)
-                         (uri ,source-url)
-                         (sha256 (base32 ,(guix-hash-url temp)))))
-                     (build-system ocaml-build-system)
-                     ,@(if (null? inputs)
-                         '()
-                         `((inputs ,(list 'quasiquote inputs))))
-                     ,@(if (null? native-inputs)
-                         '()
-                         `((native-inputs ,(list 'quasiquote native-inputs))))
-                     ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
-                         '()
-                         `((properties
-                             ,(list 'quasiquote `((upstream-name . ,name))))))
-                     (home-page ,(metadata-ref opam-content "homepage"))
-                     (synopsis ,(metadata-ref opam-content "synopsis"))
-                     (description ,(metadata-ref opam-content "description"))
-                     (license #f))
-                  dependencies))))))
+             (native-inputs (dependency-list->inputs
+                              ;; Do not add dune nor jbuilder since they are
+                              ;; implicit inputs of the dune-build-system.
+                              (filter
+                                (lambda (name)
+                                  (not (member name '("dune" "jbuilder"))))
+                                native-dependencies))))
+        ;; If one of these are required at build time, it means we
+        ;; can use the much nicer dune-build-system.
+        (let ((use-dune? (or (member "dune" native-dependencies)
+                        (member "jbuilder" native-dependencies))))
+          (call-with-temporary-output-file
+            (lambda (temp port)
+              (and (url-fetch source-url temp)
+                   (values
+                    `(package
+                       (name ,(ocaml-name->guix-name name))
+                       (version ,(if (string-prefix? "v" version)
+                                   (substring version 1)
+                                   version))
+                       (source
+                         (origin
+                           (method url-fetch)
+                           (uri ,source-url)
+                           (sha256 (base32 ,(guix-hash-url temp)))))
+                       (build-system ,(if use-dune?
+                                          'dune-build-system
+                                          'ocaml-build-system))
+                       ,@(if (null? inputs)
+                           '()
+                           `((inputs ,(list 'quasiquote inputs))))
+                       ,@(if (null? native-inputs)
+                           '()
+                           `((native-inputs ,(list 'quasiquote native-inputs))))
+                       ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
+                           '()
+                           `((properties
+                               ,(list 'quasiquote `((upstream-name . ,name))))))
+                       (home-page ,(metadata-ref opam-content "homepage"))
+                       (synopsis ,(metadata-ref opam-content "synopsis"))
+                       (description ,(metadata-ref opam-content "description"))
+                       (license #f))
+                    dependencies)))))))
 
 (define (opam-recursive-import package-name)
   (recursive-import package-name #f
