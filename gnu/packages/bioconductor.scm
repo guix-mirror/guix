@@ -4179,3 +4179,26 @@ Currently only Affymetrix oligonucleotide analysis is supported.")
 This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID
 24215113).")
     (license license:gpl3)))
+
+(define-public r-rbowtie2
+  (package
+    (name "r-rbowtie2")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rbowtie2" version))
+       (sha256
+        (base32
+         "045cmfwqzcj4zn6r16hkpmr5sd5y0mxvrs5yynf460fdz2p418cr"))))
+    (properties `((upstream-name . "Rbowtie2")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://bioconductor.org/packages/Rbowtie2/")
+    (synopsis "R wrapper for Bowtie2 and AdapterRemoval")
+    (description
+     "This package provides an R wrapper of the popular @code{bowtie2}
+sequencing reads aligner and @code{AdapterRemoval}, a convenient tool for
+rapid adapter trimming, identification, and read merging.")
+    (license license:gpl3+)))
