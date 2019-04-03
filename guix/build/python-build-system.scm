@@ -250,16 +250,21 @@ installed with setuptools."
   #t)
 
 (define %standard-phases
-  ;; 'configure' phase is not needed.
+  ;; The build phase only builds C extensions and copies the Python sources,
+  ;; while the install phase byte-compiles and copies them to the prefix
+  ;; directory.  The tests are run after the install phase because otherwise
+  ;; the cached .pyc generated during the tests execution seem to interfere
+  ;; with the byte compilation of the install phase.
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
     (add-after 'ensure-no-mtimes-pre-1980 'enable-bytecode-determinism
       enable-bytecode-determinism)
     (delete 'bootstrap)
-    (delete 'configure)
-    (replace 'install install)
-    (replace 'check check)
+    (delete 'configure)                 ;not needed
     (replace 'build build)
+    (delete 'check)                     ;moved after the install phase
+    (replace 'install install)
+    (add-after 'install 'check check)
     (add-after 'install 'wrap wrap)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 
