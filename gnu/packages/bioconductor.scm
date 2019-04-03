@@ -4248,3 +4248,26 @@ expression.  It contains the linear model inferred in the publication
 \"Perturbation-response genes reveal signaling footprints in cancer gene
 expression\".")
     (license license:asl2.0)))
+
+(define-public r-arrmnormalization
+  (package
+    (name "r-arrmnormalization")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ARRmNormalization" version))
+       (sha256
+        (base32
+         "09wfd4vqfvmkpqn9dwqly1dz4h1ckh621jbwj1dab6q4z0dfmzmd"))))
+    (properties
+     `((upstream-name . "ARRmNormalization")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-arrmdata" ,r-arrmdata)))
+    (home-page "https://bioconductor.org/packages/ARRmNormalization/")
+    (synopsis "Adaptive robust regression normalization for methylation data")
+    (description
+     "This is a package to perform the @dfn{Adaptive Robust Regression
+method} (ARRm) for the normalization of methylation data from the Illumina
+Infinium HumanMethylation 450k assay.")
+    (license license:artistic2.0)))
