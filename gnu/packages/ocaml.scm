@@ -1640,32 +1640,28 @@ spans without being subject to operating system calendar time adjustments.")
 (define-public ocaml-cmdliner
   (package
     (name "ocaml-cmdliner")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
                                   "cmdliner-" version ".tbz"))
               (sha256
                (base32
-                "18jqphjiifljlh9jg8zpl6310p3iwyaqphdkmf89acyaix0s4kj1"))))
+                "0g3w4hvc1cx9x2yp5aqn6m2rl8lf9x1dn754hfq8m1sc1102lxna"))))
     (build-system ocaml-build-system)
     (inputs
      `(("ocaml-result" ,ocaml-result)))
     (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)))
+     `(("ocamlbuild" ,ocamlbuild)))
     (arguments
      `(#:tests? #f
-       #:build-flags '("native=true" "native-dynlink=true")
+       #:make-flags (list (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                                         "/lib/ocaml/site-lib/cmdliner"))
        #:phases
        (modify-phases %standard-phases
-         (replace 'install
-           ;; The makefile says 'adjust on cli invocation'
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "make" "install" (string-append "PREFIX=" out))
-               #t)))
          (delete 'configure))))
+    (properties
+     `((ocaml4.02-variant . ,(delay ocaml4.02-cmdliner))))
     (home-page "http://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
     (description "Cmdliner is a module for the declarative definition of command
@@ -1677,7 +1673,17 @@ most of the POSIX and GNU conventions.")
     (license license:bsd-3)))
 
 (define-public ocaml4.02-cmdliner
-  (package-with-ocaml4.02 ocaml-cmdliner))
+  (let ((base (package-with-ocaml4.02 (strip-ocaml4.02-variant ocaml-cmdliner))))
+    (package
+      (inherit base)
+      (version "1.0.2")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "http://erratique.ch/software/cmdliner/releases/"
+                                    "cmdliner-" version ".tbz"))
+                (sha256
+                 (base32
+                  "18jqphjiifljlh9jg8zpl6310p3iwyaqphdkmf89acyaix0s4kj1")))))))
 
 (define-public ocaml-fmt
   (package
