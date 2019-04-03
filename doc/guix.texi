@@ -12023,29 +12023,6 @@ This is the name of the file where some random bytes are saved by
 It defaults to @file{/var/lib/random-seed}.
 @end defvr
 
-@cindex keymap
-@cindex keyboard
-@deffn {Scheme Procedure} console-keymap-service @var{files} ...
-@cindex keyboard layout
-Return a service to load console keymaps from @var{files} using
-@command{loadkeys} command.  Most likely, you want to load some default
-keymap, which can be done like this:
-
-@example
-(console-keymap-service "dvorak")
-@end example
-
-Or, for example, for a Swedish keyboard, you may need to combine
-the following keymaps:
-@example
-(console-keymap-service "se-lat6" "se-fi-lat6")
-@end example
-
-Also you can specify a full file name (or file names) of your keymap(s).
-See @code{man loadkeys} for details.
-
-@end deffn
-
 @cindex mouse
 @cindex gpm
 @defvr {Scheme Variable} gpm-service-type

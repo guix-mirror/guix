@@ -719,7 +719,8 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                                  #$@files))))
       (respawn? #f)))))
 
-(define (console-keymap-service . files)
+(define-deprecated (console-keymap-service #:rest files)
+  #f
   "Return a service to load console keymaps from @var{files}."
   (service console-keymap-service-type files))
 
