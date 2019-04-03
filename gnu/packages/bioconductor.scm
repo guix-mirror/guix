@@ -4202,3 +4202,25 @@ This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID
 sequencing reads aligner and @code{AdapterRemoval}, a convenient tool for
 rapid adapter trimming, identification, and read merging.")
     (license license:gpl3+)))
+
+(define-public r-progeny
+  (package
+    (name "r-progeny")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "progeny" version))
+       (sha256
+        (base32
+         "02z09rbzi305jrwzai8zayxi82563lxcaldp4r9pw564qkbl7pk7"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (home-page "https://github.com/saezlab/progeny")
+    (synopsis "Pathway responsive gene activity inference")
+    (description
+     "This package provides a function to infer pathway activity from gene
+expression.  It contains the linear model inferred in the publication
+\"Perturbation-response genes reveal signaling footprints in cancer gene
+expression\".")
+    (license license:asl2.0)))
