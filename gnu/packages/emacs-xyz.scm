@@ -2554,13 +2554,13 @@ method and constant name completion.")
     (version "1.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/pezra/rspec-mode/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pezra/rspec-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1j0a7ms5516nlg60qfyn730pfxys6acm0rgyxh5xfkpi6jafgpvw"))))
+        (base32 "0hrn5n7aaymwimk511kjij44vqaxbmhly1gwmlmsrnbvvma7f2mp"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/pezra/rspec-mode")
     (synopsis "Provides a rspec mode for working with RSpec")
