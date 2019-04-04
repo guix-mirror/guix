@@ -45,8 +45,6 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages java)
   #:use-module (gnu packages gnuzilla)
-  #:use-module (gnu packages haskell)
-  #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
@@ -61,7 +59,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system haskell)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config))
 
@@ -1989,111 +1986,6 @@ outputting XML data from Java code.")
     (description "XStream is a simple library to serialize Java objects to XML
 and back again.")
     (license license:bsd-3)))
-
-(define-public ghc-hxt-charproperties
-  (package
-    (name "ghc-hxt-charproperties")
-    (version "9.2.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "hxt-charproperties/hxt-charproperties-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1mml8wglvagqq891rchgli6r8rnkwrqhgsxfl6kb5403pzb18rp4"))))
-    (build-system haskell-build-system)
-    (home-page "https://github.com/UweSchmidt/hxt")
-    (synopsis "Character properties and classes for XML and Unicode")
-    (description
-     "The modules provided by this package contain predicates for Unicode
-blocks and char properties and character predicates defined by XML.  The
-supported Unicode version is 7.0.0")
-    (license license:expat)))
-
-(define-public ghc-hxt-unicode
-  (package
-    (name "ghc-hxt-unicode")
-    (version "9.0.2.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hxt-unicode/hxt-unicode-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0rj48cy8z4fl3zpg5bpa458kqr83adav6jnqv4i71dclpprj6n3v"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)))
-    (home-page
-     "http://www.fh-wedel.de/~si/HXmlToolbox/index.html https://github.com/UweSchmidt/hxt")
-    (synopsis
-     "Unicode en-/decoding functions for utf8, iso-latin-* and other encodings")
-    (description
-     "This package provides Unicode encoding and decoding functions for
-encodings used in the Haskell XML Toolbox.  ISO Latin 1-16, utf8, utf16, ASCII
-are supported. Decoding is done with lazy functions, errors may be detected or
-ignored.")
-    (license license:expat)))
-
-(define-public ghc-hxt-regex-xmlschema
-  (package
-    (name "ghc-hxt-regex-xmlschema")
-    (version "9.2.0.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "hxt-regex-xmlschema/hxt-regex-xmlschema-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1c4jr0439f5yc05h7iz53fa47g6l2wrvqp6gvwf01mlqajk3nx7l"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
-       ("ghc-parsec" ,ghc-parsec)
-       ("ghc-text" ,ghc-text)
-       ("ghc-hunit" ,ghc-hunit)))
-    (home-page "http://www.haskell.org/haskellwiki/Regular_expressions_for_XML_Schema")
-    (synopsis "Regular expression library for W3C XML Schema regular expressions")
-    (description
-     "This library supports full W3C XML Schema regular expressions inclusive
-all Unicode character sets and blocks.  It is implemented by the technique of
-derivations of regular expressions.")
-    (license license:expat)))
-
-(define-public ghc-hxt
-  (package
-    (name "ghc-hxt")
-    (version "9.3.1.16")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hxt/hxt-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "1qq3ykgn355rx242xjcbqqksgvwr6k2fdj5phw4iv28qqxff6m8d"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-parsec" ,ghc-parsec)
-       ("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
-       ("ghc-hxt-unicode" ,ghc-hxt-unicode)
-       ("ghc-hxt-regex-xmlschema" ,ghc-hxt-regex-xmlschema)
-       ("ghc-network-uri" ,ghc-network-uri)))
-    (home-page "https://github.com/UweSchmidt/hxt")
-    (synopsis "Collection of tools for processing XML with Haskell")
-    (description
-     "The Haskell XML Toolbox bases on the ideas of HaXml and HXML, but
-introduces a more general approach for processing XML with Haskell.")
-    (license license:expat)))
 
 (define-public xmlrpc-c
   (package
