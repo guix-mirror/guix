@@ -3186,13 +3186,13 @@ identifiers in the MIT-Scheme documentation.")
     (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (source
      (origin
-       (file-name (string-append name "-" version ".tar.gz"))
-       (method url-fetch)
-       (uri (string-append "https://github.com/fedeinthemix/emacs-constants"
-                           "/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fedeinthemix/emacs-constants.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0pnrpmmxq8mh5h2hbrp5vcym0j0fh6dv3s7c5ccn18wllhzg9g7n"))))
+        (base32 "0f5sh6b45a8p9kancjp9jk44ws8ww6x50a0i6zgyyvr7dbvii1a0"))))
     (build-system emacs-build-system)
     (synopsis "Enter definition of constants into an Emacs buffer")
     (description
