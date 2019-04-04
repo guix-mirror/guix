@@ -2579,13 +2579,13 @@ snippets for yasnippet.")
     (version "2.12.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Malabarba/smart-mode-line/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Malabarba/smart-mode-line.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1hn8s6laijmg7w1bgwdfrki6h9vxkbgr8rmmssvd5yqyad5w2sba"))))
+        (base32 "1gs4ay9hdg8gmia4ir74qawk80pqwv99hp4yhy108kpfry5mrq6z"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-rich-minority" ,emacs-rich-minority)))
