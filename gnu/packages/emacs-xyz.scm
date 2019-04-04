@@ -2924,8 +2924,9 @@ irony-mode do the syntax checking.")
        (uri (git-reference
              (url "https://github.com/ikirill/irony-eldoc.git")
              (commit "0df5831eaae264a25422b061eb2792aadde8b3f2")))
-       (sha256 (base32 "1l5qpr66v1l12fb50yh73grb2rr85xxmbj19mm33b5rdrq2bqmmd"))
-       (file-name (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1l5qpr66v1l12fb50yh73grb2rr85xxmbj19mm33b5rdrq2bqmmd"))))
     (build-system emacs-build-system)
     (inputs
      `(("irony-mode" ,emacs-irony-mode)))
