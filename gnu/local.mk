@@ -584,9 +584,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm
 
-if ENABLE_INSTALLER
-
-GNU_SYSTEM_MODULES +=                           \
+INSTALLER_MODULES =                             \
   %D%/installer.scm      			\
   %D%/installer/connman.scm			\
   %D%/installer/final.scm			\
@@ -618,12 +616,18 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/newt/welcome.scm		\
   %D%/installer/newt/wifi.scm	
 
+# Always ship the installer modules but compile them only when
+# ENABLE_INSTALLER is true.
+if ENABLE_INSTALLER
+GNU_SYSTEM_MODULES += $(INSTALLER_MODULES)
+elif !ENABLE_INSTALLER
+MODULES_NOT_COMPILED += $(INSTALLER_MODULES)
+endif
+
 installerdir = $(guilemoduledir)/%D%/installer
 dist_installer_DATA =				\
   %D%/installer/aux-files/logo.txt	        \
   %D%/installer/aux-files/SUPPORTED
-
-endif ENABLE_INSTALLER
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
