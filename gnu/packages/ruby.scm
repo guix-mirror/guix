@@ -2986,12 +2986,13 @@ with processes on remote servers, via SSH2.")
     (version "1.2.2.rc2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/net-ssh/net-scp/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/net-ssh/net-scp.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0xyf17mhgvyz54xjj9ria4wnq3x62bhmkfgzqv8jwiip2bplv1nk"))))
+        (base32 "1nyn17sy71fn7zs3y6wbgcn35318c10flqgc0582409095x4h0sx"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
