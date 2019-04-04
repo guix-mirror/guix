@@ -267,6 +267,96 @@ used to keep a folder in sync between computers.")
     (license (list license:gpl3+
                    license:agpl3+))))
 
+(define-public ghc-sdl2
+  (package
+    (name "ghc-sdl2")
+    (version "2.4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "sdl2/sdl2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p4b12fmxps0sbnkqdfy0qw19s355yrkw7fgw6xz53wzq706k991"))))
+    (build-system haskell-build-system)
+    (arguments '(#:tests? #f)) ; tests require graphical environment
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-linear" ,ghc-linear)
+       ("ghc-statevar" ,ghc-statevar)
+       ("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)
+       ("sdl2" ,sdl2)))
+    (native-inputs
+     `(("ghc-weigh" ,ghc-weigh)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://hackage.haskell.org/package/sdl2")
+    (synopsis "High- and low-level bindings to the SDL library")
+    (description
+     "This package contains bindings to the SDL 2 library, in both high- and
+low-level forms.  The @code{SDL} namespace contains high-level bindings, where
+enumerations are split into sum types, and we perform automatic
+error-checking.  The @code{SDL.Raw} namespace contains an almost 1-1
+translation of the C API into Haskell FFI calls.  As such, this does not
+contain sum types nor error checking.  Thus this namespace is suitable for
+building your own abstraction over SDL, but is not recommended for day-to-day
+programming.")
+    (license license:bsd-3)))
+
+(define-public ghc-sdl2-mixer
+  (package
+    (name "ghc-sdl2-mixer")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/sdl2-mixer/"
+                           "sdl2-mixer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k8avyccq5l9z7bwxigim312yaancxl1sr3q6a96bcm7pnhiak0g"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-vector" ,ghc-vector)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hackage.haskell.org/package/sdl2-mixer")
+    (synopsis "Bindings to SDL2 mixer")
+    (description "This package provides Haskell bindings to
+@code{SDL2_mixer}.")
+    (license license:bsd-3)))
+
+(define-public ghc-sdl2-image
+  (package
+    (name "ghc-sdl2-image")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/sdl2-image/"
+                           "sdl2-image-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pr6dkg73cy9z0w54lrkj9c5bhxj56nl92lxikjy8kz6nyr455rr"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-text" ,ghc-text)
+       ("sdl2-image" ,sdl2-image)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hackage.haskell.org/package/sdl2-image")
+    (synopsis "Bindings to SDL2_image")
+    (description "This package provides Haskell bindings to
+@code{SDL2_image}.")
+    (license license:expat)))
+
 (define-public raincat
   (package
     (name "raincat")
