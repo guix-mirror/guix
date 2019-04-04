@@ -5809,6 +5809,29 @@ pasting into and from @code{tmux} paste buffers.")
 @code{evil-mode}.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-visual-replace
+  (package
+    (name "emacs-evil-visual-replace")
+    (version "0.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/troyp/evil-visual-replace")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1gfyrq7xfzmzh3x8k5f08n027dlbwi0pkkxf9c39fkxp4jngibsz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/troyp/evil-visual-replace")
+    (synopsis "Replacement commands for @code{evil-mode} visual blocks")
+    (description
+     "This package provides versions of @code{query-replace} and
+@code{replace-regexp} that work for @code{evil-mode} visual blocks.")
+    (license license:gpl2+)))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
