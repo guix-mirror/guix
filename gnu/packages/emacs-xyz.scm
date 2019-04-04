@@ -5603,6 +5603,32 @@ go to the second most recent edit, etc.  Negative argument, @kbd{C-u -}, is
 used for reverse direction.")
     (license license:gpl2+)))
 
+(define-public emacs-janpath-evil-numbers
+  (let ((commit "d988041c1fe6e941dc8d591390750b237f71f524")
+        (version "0.5")
+        (revision "1"))
+    (package
+      (name "emacs-janpath-evil-numbers")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/janpath/evil-numbers")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16zixhxxcb83m82f2cfiardfn99j3w41v6vh1qk6j9pplrlfw70v"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/janpath/evil-numbers")
+      (synopsis "Increment and decrement numeric literals")
+      (description
+       "This package provides functionality to search for a number up to the
+end of a line and increment or decrement it.")
+      (license license:gpl3+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
