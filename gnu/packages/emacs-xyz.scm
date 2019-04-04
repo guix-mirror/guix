@@ -5629,6 +5629,32 @@ used for reverse direction.")
 end of a line and increment or decrement it.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-exchange
+  (let ((commit "47691537815150715e64e6f6ec79be7746c96120")
+        (version "0.41")
+        (revision "1"))
+    (package
+      (name "emacs-evil-exchange")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Dewdrops/evil-exchange")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bjpn4yqig17ddym6wqq5fm1b294q74hzcbj9a6gs97fqiwf88xa"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/Dewdrops/evil-exchange")
+      (synopsis "Exchange text easily within Evil")
+      (description
+       "This package, a port of @code{vim-exchange}, provides an Evil operator
+for exchanging text.")
+      (license license:gpl3+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
