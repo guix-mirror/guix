@@ -2990,10 +2990,10 @@ simultaneous cursors.")
               (uri (git-reference
                     (url home-page)
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jhd4grch5iz12gyxwfbsgh4dmz5hj4bg4gnvphccg8dsnni05k2"))
-              (file-name (string-append name "-" version))))
+                "1jhd4grch5iz12gyxwfbsgh4dmz5hj4bg4gnvphccg8dsnni05k2"))))
     (build-system emacs-build-system)
     (synopsis "Minor mode for typographic editing")
     (description
