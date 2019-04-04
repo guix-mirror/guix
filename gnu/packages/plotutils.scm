@@ -237,6 +237,8 @@ colors, styles, options and details.")
            (lambda _
              (substitute* "doc/png/Makefile.in"
                (("(\\$\\(infodir\\))/asymptote" _ infodir) infodir))
+             (substitute* "doc/asymptote.texi"
+               (("asymptote/asymptote") "asymptote"))
              #t))
          (add-before 'build 'patch-pdf-viewer
            (lambda _
