@@ -3039,11 +3039,11 @@ characters and asynchronous fetching of completion candidates.")
       (version (string-append "20151223." (string-take commit 8)))
       (source
        (origin
-         (file-name (string-append name "-" version))
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/ashinn/scheme-complete.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "141wn9l0m33w0g3dqmx8nxbfdny1r5xbr6ak61rsz21bk0qafs7x"))
