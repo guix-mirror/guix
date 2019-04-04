@@ -2506,13 +2506,13 @@ tables.")
     (version "1.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Malabarba/rich-minority/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Malabarba/rich-minority.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1l0cb0q7kyi88nwfqd542psnkgwnjklpzc5rx32gzd3lkwkrbr8v"))))
+        (base32 "11hwf9y5ax207w6rwrsmi3pmn7pn7ap6iys0z8hni2f5zzxjrmx3"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/rich-minority")
     (synopsis "Clean-up and beautify the list of minor modes")
