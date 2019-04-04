@@ -2403,13 +2403,13 @@ as horizontal rules.")
     (version "1.4.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/skeeto/emacs-web-server/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/emacs-web-server.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "01r7h3imnj4qx1m53a2wjafvbylcyz5f9r2rg2cs7ky3chlg220r"))))
+        (base32 "1qmkc0w28l53zzf5yd2grrk1sq222g5qnsm35ph25s1cfvc1qb2g"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/skeeto/emacs-http-server")
     (synopsis "HTTP server in pure Emacs Lisp")
