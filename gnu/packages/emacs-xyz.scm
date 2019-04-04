@@ -2900,9 +2900,9 @@ with irony-mode using clang-tooling.")
               (uri (git-reference
                     (url "https://github.com/Sarcasm/flycheck-irony.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
-               (base32 "0qa5a8wzvzxwqql92ibc9s43k8sj3vwn7skz9hfr8av0skkhx996"))
-              (file-name (string-append name "-" version))))
+               (base32 "0qa5a8wzvzxwqql92ibc9s43k8sj3vwn7skz9hfr8av0skkhx996"))))
     (build-system emacs-build-system)
     (inputs
      `(("irony-mode" ,emacs-irony-mode)
