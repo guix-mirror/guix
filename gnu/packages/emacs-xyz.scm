@@ -5708,6 +5708,31 @@ blocks having the same or higher indentation, including or excluding
 surrounding lines.")
       (license license:gpl2+))))
 
+(define-public emacs-evil-text-object-python
+  (let ((commit "9a064fe6475429145cbcc3b270fcc963b67adb15")
+        (version "1.0.1")
+        (revision "1"))
+    (package
+      (name "emacs-evil-text-object-python")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wbolster/evil-text-object-python")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "074zpm6mmr1wfl6d5xdf8jk1fs4ccpbzf4ahhkwga9g71xiplszv"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/wbolster/evil-text-object-python")
+      (synopsis "Text objects for Python")
+      (description
+       "This package provides @code{evil-mode} text objects for Python.")
+      (license license:gpl3+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
