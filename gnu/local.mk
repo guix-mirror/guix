@@ -231,6 +231,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gxmessage.scm			\
   %D%/packages/hardware.scm			\
   %D%/packages/haskell.scm			\
+  %D%/packages/haskell-apps.scm			\
   %D%/packages/haskell-check.scm		\
   %D%/packages/haskell-crypto.scm		\
   %D%/packages/haskell-web.scm			\
