@@ -13131,7 +13131,7 @@ Emacs.")
   (let ((commit "a0623667b07a4bf60980c97b078e9faed97ace79"))
     (package
       (name "emacs-matrix-client")
-      (version (git-version "0.0.0" "3" commit))
+      (version (git-version "0.0.0" "4" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -13142,6 +13142,18 @@ Emacs.")
                  (base32
                   "1zya8id3y9wzjaj7nplq7br6nhm3lsskv0fkn1xr1y77fzcfgcdb"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'add-missing-require
+             ;; Fix a filter error at runtime due to a missing require.
+             ;; Reported upstream:
+             ;; <https://github.com/alphapapa/matrix-client.el/issues/76>
+             (lambda _
+               (substitute* "matrix-client-room.el"
+                 (("\\(require 'dash-functional\\)" all)
+                  (string-append all "\n" "(require 'anaphora)")))
+               #t)))))
       (propagated-inputs
        `(("a" ,emacs-a)
          ("anaphora" ,emacs-anaphora)
