@@ -2424,13 +2424,13 @@ serve files and directory listings.")
     (version "1.6.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/skeeto/skewer-mode/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/skewer-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "07jpz374j0j964szy3zznrkyja2kpdl3xa87wh7349mzxivqxdx0"))))
+        (base32 "05jndz0c26q60s416vqgvr66axdmxb7qsr2g70fvl5iqavnayhpv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-simple-httpd" ,emacs-simple-httpd)
