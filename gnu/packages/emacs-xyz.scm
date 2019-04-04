@@ -2942,14 +2942,13 @@ for the current function or variable in the minibuffer.")
     (version "2.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/expez/company-quickhelp/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/expez/company-quickhelp.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0xrn2z1dgk5gmkmp2jkn9g83ckk39lqp5pyyv8rl7f6gqvib3qh0"))))
+        (base32 "08ccsfvwdpzpj0gai3xrdb2bv1nl6myjkxsc5774pbvlq9nkfdvr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-pos-tip" ,emacs-pos-tip)
