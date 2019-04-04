@@ -2651,7 +2651,7 @@ the speedbar window.")
               (uri (git-reference
                     (commit "880706469338ab59b5bb7dbe8460016f89755364")
                     (url "https://github.com/gregsexton/ob-ipython.git")))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1scf25snbds9ymagpny30ijbsg479r3nm0ih01dy4m9d0g7qryb7"))))
