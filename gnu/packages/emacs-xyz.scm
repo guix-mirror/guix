@@ -5733,6 +5733,32 @@ surrounding lines.")
        "This package provides @code{evil-mode} text objects for Python.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-lion
+  (let ((commit "6b03593f5dd6e7c9ca02207f9a73615cf94c93ab")
+        (version "0.0.2")
+        (revision "1"))
+    (package
+      (name "emacs-evil-lion")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/edkolev/evil-lion")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1a162hynp0jcsn50c1w5a02mrw9w3q05c7lkqzqd25px3d0p772q"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/edkolev/evil-lion")
+      (synopsis "Align operator for @code{evil-mode}")
+      (description
+       "This package, a port of @code{vim-lion}, provides an operator for
+aligning text objects based on separators.")
+      (license license:gpl3+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
