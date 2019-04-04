@@ -2765,10 +2765,10 @@ for asynchronous tasks.")
               (uri (git-reference
                     (url home-page)
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pii9dw4skq7nr4na6qxqasl36av8cwjp71bf1fgppqpcd9z8skj"))
-              (file-name (string-append name "-" version))))
+                "1pii9dw4skq7nr4na6qxqasl36av8cwjp71bf1fgppqpcd9z8skj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)))
