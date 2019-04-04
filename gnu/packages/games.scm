@@ -113,7 +113,6 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
@@ -156,7 +155,6 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
-  #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system python)
@@ -2290,48 +2288,6 @@ mouse and keyboard.  The child uses the mouse to draw colored dots and lines
 on the screen and keyboard to display letters.")
     ;; Most files under gpl2+ or gpl3+, but eat.wav under gpl3
     (license license:gpl3)))
-
-(define-public raincat
-  (package
-    (name "raincat")
-    (version "1.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
-                           "Raincat-" version ".tar.gz"))
-       (sha256
-        (base32
-         "10y9zi22m6hf13c9h8zd9vg7mljpwbw0r3djb6r80bna701fdf6c"))))
-    (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/raincat")
-                 `("LD_LIBRARY_PATH" ":" =
-                   (,(string-append (assoc-ref inputs "freeglut")
-                                    "/lib"))))
-               #t))))))
-    (inputs
-     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-random" ,ghc-random)
-       ("ghc-glut" ,ghc-glut)
-       ("freeglut" ,freeglut)
-       ("ghc-opengl" ,ghc-opengl)
-       ("ghc-sdl2" ,ghc-sdl2)
-       ("ghc-sdl2-image" ,ghc-sdl2-image)
-       ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
-    (home-page "http://www.bysusanlin.com/raincat/")
-    (synopsis "Puzzle game with a cat in lead role")
-    (description "Project Raincat is a game developed by Carnegie Mellon
-students through GCS during the Fall 2008 semester.  Raincat features game
-play inspired from classics Lemmings and The Incredible Machine.  The project
-proved to be an excellent learning experience for the programmers.  Everything
-is programmed in Haskell.")
-    (license license:bsd-3)))
 
 (define-public manaplus
   (package

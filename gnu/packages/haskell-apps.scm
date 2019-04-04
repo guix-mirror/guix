@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix build-system haskell)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
@@ -36,6 +38,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages version-control))
 
 ;; Darcs has no https support: http://irclog.perlgeek.de/darcs/2016-09-17
@@ -263,3 +266,45 @@ used to keep a folder in sync between computers.")
     ;; The web app is released under the AGPLv3+.
     (license (list license:gpl3+
                    license:agpl3+))))
+
+(define-public raincat
+  (package
+    (name "raincat")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
+                           "Raincat-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10y9zi22m6hf13c9h8zd9vg7mljpwbw0r3djb6r80bna701fdf6c"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/raincat")
+                 `("LD_LIBRARY_PATH" ":" =
+                   (,(string-append (assoc-ref inputs "freeglut")
+                                    "/lib"))))
+               #t))))))
+    (inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-random" ,ghc-random)
+       ("ghc-glut" ,ghc-glut)
+       ("freeglut" ,freeglut)
+       ("ghc-opengl" ,ghc-opengl)
+       ("ghc-sdl2" ,ghc-sdl2)
+       ("ghc-sdl2-image" ,ghc-sdl2-image)
+       ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
+    (home-page "http://www.bysusanlin.com/raincat/")
+    (synopsis "Puzzle game with a cat in lead role")
+    (description "Project Raincat is a game developed by Carnegie Mellon
+students through GCS during the Fall 2008 semester.  Raincat features game
+play inspired from classics Lemmings and The Incredible Machine.  The project
+proved to be an excellent learning experience for the programmers.  Everything
+is programmed in Haskell.")
+    (license license:bsd-3)))
