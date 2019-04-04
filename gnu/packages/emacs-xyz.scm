@@ -2828,10 +2828,10 @@ These are distributed in separate files and can be used individually.")
               (uri (git-reference
                     (url (string-append home-page ".git"))
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nhjrnlmss535jbshjjd30vydbr8py21vkx4p294w6d8vg2rssf8"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0nhjrnlmss535jbshjjd30vydbr8py21vkx4p294w6d8vg2rssf8"))))
     (build-system emacs-build-system)
     (inputs `(("server" ,emacs-irony-mode-server)))
     (arguments `(#:phases
