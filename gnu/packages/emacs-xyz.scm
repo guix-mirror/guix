@@ -2787,13 +2787,13 @@ build jobs.")
     (version "0.9.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/company-mode/company-mode/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/company-mode/company-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "19flv38f2qhxda8lbk2ckywvibd72vbzmn4hchqz6d8acsknh4sb"))))
+        (base32 "1gpapjxs4l6fmmj22q0q1pyhj1yd9j5iqfqnjf1abskkj69lqkpj"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
