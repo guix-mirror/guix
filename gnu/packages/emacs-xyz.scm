@@ -5655,6 +5655,32 @@ end of a line and increment or decrement it.")
 for exchanging text.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-replace-with-register
+  (let ((commit "91cc7bf21a94703c441cc9212214075b226b7f67")
+        (version "0.1")
+        (revision "1"))
+    (package
+      (name "emacs-evil-replace-with-register")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Dewdrops/evil-ReplaceWithRegister")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14rpn76qrf287s3y2agmddcxi27r226i53ixjvd694ss039g0r11"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/Dewdrops/evil-ReplaceWithRegister")
+      (synopsis "Quickly replace text with the contents of a register")
+      (description
+       "This package provides an Evil operator for replacing text with the
+contents of a register.")
+      (license license:gpl3+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
