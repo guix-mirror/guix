@@ -634,6 +634,11 @@ names and file names suitable for the #:allowed-references argument to
                            local-build? (substitutable? #t)
                            (properties '())
 
+                           ;; TODO: This parameter is transitional; it's here
+                           ;; to avoid a full rebuild.  Remove it on the next
+                           ;; rebuild cycle.
+                           (pre-load-modules? #t)
+
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
@@ -738,6 +743,8 @@ The other arguments are as for 'derivation'."
                                                        #:module-path module-path
                                                        #:extensions extensions
                                                        #:guile guile-for-build
+                                                       #:pre-load-modules?
+                                                       pre-load-modules?
                                                        #:deprecation-warnings
                                                        deprecation-warnings)
                                      (return #f)))
@@ -1213,7 +1220,11 @@ last one is created from the given <scheme-file> object."
                            (guile (%guile-for-build))
                            (module-path %load-path)
                            (extensions '())
-                           (deprecation-warnings #f))
+                           (deprecation-warnings #f)
+
+                           ;; TODO: This flag is here to prevent a full
+                           ;; rebuild.  Remove it on the next rebuild cycle.
+                           (pre-load-modules? #t))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
@@ -1246,7 +1257,12 @@ they can refer to each other."
                (let* ((base   (basename entry ".scm"))
                       (output (string-append output "/" base ".go")))
                  (format #t "[~2@a/~2@a] Compiling '~a'...~%"
-                         (+ 1 processed) (ungexp total) entry)
+                         (+ 1 processed
+                              (ungexp-splicing (if pre-load-modules?
+                                                   (gexp ((ungexp total)))
+                                                   (gexp ()))))
+                         (ungexp (* total (if pre-load-modules? 2 1)))
+                         entry)
                  (compile-file entry
                                #:output-file output
                                #:opts %auto-compilation-options)
@@ -1293,6 +1309,33 @@ they can refer to each other."
 
          (mkdir (ungexp output))
          (chdir (ungexp modules))
+
+         (ungexp-splicing
+          (if pre-load-modules?
+              (gexp ((define* (load-from-directory directory
+                                                   #:optional (loaded 0))
+                       "Load all the source files found in DIRECTORY."
+                       ;; XXX: This works around <https://bugs.gnu.org/15602>.
+                       (let ((entries (map (cut string-append directory "/" <>)
+                                           (scandir directory regular?))))
+                         (fold (lambda (file loaded)
+                                 (if (file-is-directory? file)
+                                     (load-from-directory file loaded)
+                                     (begin
+                                       (format #t "[~2@a/~2@a] Loading '~a'...~%"
+                                               (+ 1 loaded)
+                                               (ungexp (* 2 total))
+                                               file)
+                                       (save-module-excursion
+                                        (lambda ()
+                                          (primitive-load file)))
+                                       (+ 1 loaded))))
+                               loaded
+                               entries)))
+
+                     (load-from-directory ".")))
+              (gexp ())))
+
          (process-directory "." (ungexp output) 0))))
 
     ;; TODO: Pass MODULES as an environment variable.
