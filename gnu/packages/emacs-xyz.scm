@@ -5759,6 +5759,33 @@ surrounding lines.")
 aligning text objects based on separators.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-expat
+  (let ((commit "4c344ea19b789002d759a202ffbf594730d2c59a")
+        (version "0.0.1")
+        (revision "1"))
+    (package
+      (name "emacs-evil-expat")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/edkolev/evil-expat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16v7fnldxag6l1lsnrnhdjkga9qi78lbdfbb82k6pmv04991mbkr"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/edkolev/evil-expat")
+      (synopsis "Extra @code{ex} commands for @code{evil-mode}")
+      (description
+       "This package provides additional commands for the @code{ex} command
+line, including functions for version control with Git and for copying and
+pasting into and from @code{tmux} paste buffers.")
+      (license license:gpl3+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
