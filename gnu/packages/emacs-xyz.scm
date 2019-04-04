@@ -2527,13 +2527,13 @@ mode-line.")
     (version "0.8.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dgutov/robe/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dgutov/robe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1vp45y99fwj88z04ah4yppz4z568qcib646az6m9az5ar0f203br"))))
+        (base32 "0ll7ivxqnglfb0i70ly6qq2yfw9cyi3vq3lmj4s6h6c1c7rm3gcq"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "^lib\\/" %default-include)))
