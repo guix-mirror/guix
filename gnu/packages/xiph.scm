@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -235,6 +235,7 @@ It currently supports:
 (define flac
   (package
    (name "flac")
+   (replacement flac/fixed)
    (version "1.3.2")
    (source (origin
             (method url-fetch)
@@ -255,6 +256,14 @@ meaning that audio is compressed in FLAC without any loss in quality.")
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution.")) ; and LGPL and GPL
    (home-page "https://xiph.org/flac/")))
+
+(define flac/fixed
+  (package
+    (inherit flac)
+    (source
+      (origin
+        (inherit (package-source flac))
+        (patches (search-patches "flac-CVE-2017-6888.patch"))))))
 
 (define libkate
   (package
