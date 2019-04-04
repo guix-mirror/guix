@@ -3072,7 +3072,7 @@ to a key in your preferred mode.")
          (uri (git-reference
                (url "https://github.com/supercollider/scel.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0jvmzs1lsjyndqshhii2y4mnr3wghai26i3p75453zrpxpg0zvvw"))))
