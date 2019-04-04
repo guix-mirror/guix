@@ -2485,13 +2485,13 @@ naming style of a symbol.  It supports different naming conventions such as:
     (version "0.2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/sabof/stripe-buffer/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sabof/stripe-buffer.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1p515dq7raly5hw94kiwm3vzsfih0d8af622q4ipvvljsm98aiik"))))
+        (base32 "035ym1c1vzg6hjsnd258z4dkrfc11lj4c0y4gpgybhk54dq3w9dk"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/sabof/stripe-buffer/")
     (synopsis "Add stripes to list buffers")
