@@ -5681,6 +5681,33 @@ for exchanging text.")
 contents of a register.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-indent-plus
+  (let ((commit "0c7501e6efed661242c3a20e0a6c79a6455c2c40")
+        (version "1.0.0")
+        (revision "1"))
+    (package
+      (name "emacs-evil-indent-plus")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/TheBB/evil-indent-plus")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1g6r1ydscwjvmhh1zg4q3nap4avk8lb9msdqrh7dff6pla0r2qs6"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/TheBB/evil-indent-plus")
+      (synopsis "Text objects based on indentation")
+      (description
+       "This package adds new text objects for @code{evil-mode} based on
+blocks having the same or higher indentation, including or excluding
+surrounding lines.")
+      (license license:gpl2+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
