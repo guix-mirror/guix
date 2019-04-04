@@ -7680,14 +7680,15 @@ strings or files.")
   (package
     (name "ruby-sass-spec")
     (version "3.5.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sass/sass-spec/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0nx8lp7c9qa58w489crgqa3c489xsyarn1a8h4np9mwwfqm1h3rr"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sass/sass-spec.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zsw66830w0xlc7kxz6fm4b5nyb44vdsdgm9mgy06s5aixx83pwr"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-command-line-reporter-3" ,ruby-command-line-reporter-3)
