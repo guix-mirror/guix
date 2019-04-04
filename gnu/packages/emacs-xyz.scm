@@ -5786,6 +5786,29 @@ line, including functions for version control with Git and for copying and
 pasting into and from @code{tmux} paste buffers.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-nerd-commenter
+  (package
+    (name "emacs-evil-nerd-commenter")
+    (version "3.3.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/redguardtoo/evil-nerd-commenter")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0074i9lvfs5hkbf63g1xh3n7dbmkax30bppkx2cd394c7zlsvzzk"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/redguardtoo/evil-nerd-commenter")
+    (synopsis "Comment and uncomment lines efficiently")
+    (description
+     "This package provides text objects and operators for comments within
+@code{evil-mode}.")
+    (license license:gpl3+)))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
