@@ -16716,6 +16716,297 @@ variables.
 @end table
 @end deftp
 
+@subsubheading Getmail service
+
+@cindex IMAP
+@cindex POP
+
+@deffn {Scheme Variable} getmail-service-type
+This is the type of the @uref{http://pyropus.ca/software/getmail/, Getmail}
+mail retriever, whose value should be an @code{getmail-configuration}.
+@end deffn
+
+Available @code{getmail-configuration} fields are:
+
+@deftypevr {@code{getmail-configuration} parameter} symbol name
+A symbol to identify the getmail service.
+
+Defaults to @samp{"unset"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} package package
+The getmail package to use.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} string user
+The user to run getmail as.
+
+Defaults to @samp{"getmail"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} string group
+The group to run getmail as.
+
+Defaults to @samp{"getmail"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} string directory
+The getmail directory to use.
+
+Defaults to @samp{"/var/lib/getmail/default"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} getmail-configuration-file rcfile
+The getmail configuration file to use.
+
+Available @code{getmail-configuration-file} fields are:
+
+@deftypevr {@code{getmail-configuration-file} parameter} getmail-retriever-configuration retriever
+What mail account to retrieve mail from, and how to access that account.
+
+Available @code{getmail-retriever-configuration} fields are:
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string type
+The type of mail retriever to use.  Valid values include @samp{passwd}
+and @samp{static}.
+
+Defaults to @samp{"SimpleIMAPSSLRetriever"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string server
+Space separated list of arguments to the userdb driver.
+
+Defaults to @samp{unset}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string username
+Space separated list of arguments to the userdb driver.
+
+Defaults to @samp{unset}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} non-negative-integer port
+Space separated list of arguments to the userdb driver.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string password
+Override fields from passwd.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} list password-command
+Override fields from passwd.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string keyfile
+PEM-formatted key file to use for the TLS negotiation
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string certfile
+PEM-formatted certificate file to use for the TLS negotiation
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string ca-certs
+CA certificates to use
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} parameter-alist extra-parameters
+Extra retriever parameters
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration-file} parameter} getmail-destination-configuration destination
+What to do with retrieved messages.
+
+Available @code{getmail-destination-configuration} fields are:
+
+@deftypevr {@code{getmail-destination-configuration} parameter} string type
+The type of mail destination.  Valid values include @samp{Maildir},
+@samp{Mboxrd} and @samp{MDA_external}.
+
+Defaults to @samp{unset}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-destination-configuration} parameter} string-or-filelike path
+The path option for the mail destination.  The behaviour depends on the
+chosen type.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-destination-configuration} parameter} parameter-alist extra-parameters
+Extra destination parameters
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration-file} parameter} getmail-options-configuration options
+Configure getmail.
+
+Available @code{getmail-options-configuration} fields are:
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer verbose
+If set to @samp{0}, getmail will only print warnings and errors.  A
+value of @samp{1} means that messages will be printed about retrieving
+and deleting messages.  If set to @samp{2}, getmail will print messages
+about each of it's actions.
+
+Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean read-all
+If true, getmail will retrieve all available messages.  Otherwise it
+will only retrieve messages it hasn't seen previously.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean delete
+If set to true, messages will be deleted from the server after
+retrieving and successfully delivering them.  Otherwise, messages will
+be left on the server.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer delete-after
+Getmail will delete messages this number of days after seeing them, if
+they have not been delivered.  This means messages will be left on the
+server this number of days after delivering them.  A value of @samp{0}
+disabled this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer delete-bigger-than
+Delete messages larger than this of bytes after retrieving them, even if
+the delete and delete-after options are disabled.  A value of @samp{0}
+disables this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer max-bytes-per-session
+Retrieve messages totalling up to this number of bytes before closing
+the session with the server.  A value of @samp{0} disables this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer max-message-size
+Don't retrieve messages larger than this number of bytes.  A value of
+@samp{0} disables this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean delivered-to
+If true, getmail will add a Delivered-To header to messages.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean received
+If set, getmail adds a Received header to the messages.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} string message-log
+Getmail will record a log of its actions to the named file.  A value of
+@samp{""} disables this feature.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean message-log-syslog
+If true, getmail will record a log of its actions using the system
+logger.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean message-log-verbose
+If true, getmail will log information about messages not retrieved and
+the reason for not retrieving them, as well as starting and ending
+information lines.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} parameter-alist extra-parameters
+Extra options to include.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} list idle
+A list of mailboxes that getmail should wait on the server for new mail
+notifications.  This depends on the server supporting the IDLE
+extension.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} list environment-variables
+Environment variables to set for getmail.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
 @subsubheading Mail Aliases Service
 
 @cindex email aliases

@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (gnu system)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
+  #:use-module (gnu services getmail)
   #:use-module (gnu services mail)
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
@@ -32,7 +34,8 @@
   #:use-module (ice-9 ftw)
   #:export (%test-opensmtpd
             %test-exim
-            %test-dovecot))
+            %test-dovecot
+            %test-getmail))
 
 (define %opensmtpd-os
   (simple-operating-system
@@ -394,3 +397,176 @@ Subject: Hello Nice to meet you!")
    (name "dovecot")
    (description "Connect to a running Dovecot server.")
    (value (run-dovecot-test))))
+
+(define %getmail-os
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   (service dovecot-service-type
+            (dovecot-configuration
+             (disable-plaintext-auth? #f)
+             (ssl? "no")
+             (auth-mechanisms '("anonymous" "plain"))
+             (auth-anonymous-username "alice")
+             (mail-location
+              (string-append "maildir:~/Maildir"
+                             ":INBOX=~/Maildir/INBOX"
+                             ":LAYOUT=fs"))))
+   (service getmail-service-type
+            (list
+             (getmail-configuration
+              (name 'test)
+              (user "alice")
+              (directory "/var/lib/getmail/alice")
+              (idle '("TESTBOX"))
+              (rcfile
+               (getmail-configuration-file
+                (retriever
+                 (getmail-retriever-configuration
+                  (type "SimpleIMAPRetriever")
+                  (server "localhost")
+                  (username "alice")
+                  (port 143)
+                  (extra-parameters
+                   '((password . "testpass")
+                     (mailboxes . ("TESTBOX"))))))
+                (destination
+                 (getmail-destination-configuration
+                  (type "Maildir")
+                  (path "/home/alice/TestMaildir/")))
+                (options
+                 (getmail-options-configuration
+                  (read-all #f))))))))))
+
+(define (run-getmail-test)
+  "Return a test of an OS running Getmail service."
+  (define vm
+    (virtual-machine
+     (operating-system (marionette-operating-system
+                        %getmail-os
+                        #:imported-modules '((gnu services herd))))
+     (port-forwardings '((8143 . 143)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (ice-9 iconv)
+                       (ice-9 rdelim)
+                       (rnrs base)
+                       (rnrs bytevectors)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette '(#$vm)))
+
+          (define* (message-length message #:key (encoding "iso-8859-1"))
+            (bytevector-length (string->bytevector message encoding)))
+
+          (define message "From: test@example.com\n\
+Subject: Hello Nice to meet you!")
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "getmail")
+
+          ;; Wait for dovecot to be up and running.
+          (test-assert "dovecot running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'dovecot))
+             marionette))
+
+          (test-assert "set password for alice"
+            (marionette-eval
+             '(system "echo -e \"testpass\ntestpass\" | passwd alice")
+             marionette))
+
+          ;; Wait for getmail to be up and running.
+          (test-assert "getmail-test running"
+            (marionette-eval
+             '(let* ((pw (getpw "alice"))
+                     (uid (passwd:uid pw))
+                     (gid (passwd:gid pw)))
+                (use-modules (gnu services herd))
+
+                (for-each
+                 (lambda (dir)
+                   (mkdir dir)
+                   (chown dir uid gid))
+                 '("/home/alice/TestMaildir"
+                   "/home/alice/TestMaildir/cur"
+                   "/home/alice/TestMaildir/new"
+                   "/home/alice/TestMaildir/tmp"
+                   "/home/alice/TestMaildir/TESTBOX"
+                   "/home/alice/TestMaildir/TESTBOX/cur"
+                   "/home/alice/TestMaildir/TESTBOX/new"
+                   "/home/alice/TestMaildir/TESTBOX/tmp"))
+
+                (start-service 'getmail-test))
+             marionette))
+
+          ;; Check Dovecot service's PID.
+          (test-assert "service process id"
+            (let ((pid
+                   (number->string (wait-for-file "/var/run/dovecot/master.pid"
+                                                  marionette))))
+              (marionette-eval `(file-exists? (string-append "/proc/" ,pid))
+                               marionette)))
+
+          (test-assert "accept an email"
+            (let ((imap (socket AF_INET SOCK_STREAM 0))
+                  (addr (make-socket-address AF_INET INADDR_LOOPBACK 8143)))
+              (connect imap addr)
+              ;; Be greeted.
+              (read-line imap) ;OK
+              ;; Authenticate
+              (write-line "a AUTHENTICATE ANONYMOUS" imap)
+              (read-line imap) ;+
+              (write-line "c2lyaGM=" imap)
+              (read-line imap) ;OK
+              ;; Create a TESTBOX mailbox
+              (write-line "a CREATE TESTBOX" imap)
+              (read-line imap) ;OK
+              ;; Append a message to a TESTBOX mailbox
+              (write-line (format #f "a APPEND TESTBOX {~a}"
+                                  (number->string (message-length message)))
+                          imap)
+              (read-line imap) ;+
+              (write-line message imap)
+              (read-line imap) ;OK
+              ;; Logout
+              (write-line "a LOGOUT" imap)
+              (close imap)
+              #t))
+
+          (sleep 1)
+
+          (test-assert "mail arrived"
+            (string-contains
+             (marionette-eval
+              '(begin
+                 (use-modules (ice-9 ftw)
+                              (ice-9 match))
+                 (let ((TESTBOX/new "/home/alice/TestMaildir/new/"))
+                   (match (scandir TESTBOX/new)
+                     (("." ".." message-file)
+                      (call-with-input-file
+                          (string-append TESTBOX/new message-file)
+                        get-string-all)))))
+              marionette)
+             message))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "getmail-test" test))
+
+(define %test-getmail
+  (system-test
+   (name "getmail")
+   (description "Connect to a running Getmail server.")
+   (value (run-getmail-test))))
+
+%getmail-os

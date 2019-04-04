@@ -516,6 +516,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
+  %D%/services/getmail.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
