@@ -343,6 +343,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ninja.scm			\
   %D%/packages/node.scm				\
   %D%/packages/noweb.scm			\
+  %D%/packages/nss.scm				\
   %D%/packages/ntp.scm				\
   %D%/packages/nutrition.scm			\
   %D%/packages/nvi.scm				\
