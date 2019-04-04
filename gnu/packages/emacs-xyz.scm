@@ -5832,6 +5832,32 @@ pasting into and from @code{tmux} paste buffers.")
 @code{replace-regexp} that work for @code{evil-mode} visual blocks.")
     (license license:gpl2+)))
 
+(define-public emacs-evil-visualstar
+  (let ((commit "06c053d8f7381f91c53311b1234872ca96ced752")
+        (version "0.0.2")
+        (revision "1"))
+    (package
+      (name "emacs-evil-visualstar")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bling/evil-visualstar")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0mkbzw12fav945icibc2293m5haxqr3hzkyli2cf4ssk6yvn0x4c"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/bling/evil-visualstar")
+      (synopsis "Instantly search using the visual selection")
+      (description
+       "This package provides @code{evil-mode} functions for using selected text
+to search.")
+      (license license:gpl3+))))
+
 (define-public emacs-monroe
   (package
     (name "emacs-monroe")
