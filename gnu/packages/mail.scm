@@ -1504,6 +1504,28 @@ locates email addresses in strings and returns a list of Email::Address
 objects found.  Alternatively you may construct objects manually.")
     (license perl-license)))
 
+(define-public perl-email-address-xs
+  (package
+    (name "perl-email-address-xs")
+    (version "1.04")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://cpan/authors/id/P/PA/PALI/"
+                          "Email-Address-XS-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0gjrrl81z3sfwavgx5kwjd87gj44mlnbbqsm3dgdv1xllw26spwr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Email-Address-XS")
+    (synopsis "Parse and format RFC 5322 email addresses and groups")
+    (description
+     "Email::Address::XS implements RFC 5322 parser and formatter of email
+addresses and groups.  Unlike Email::Address, this module does not use regular
+expressions for parsing but instead is implemented in XS and uses shared code
+from Dovecot IMAP server.")
+    (license perl-license)))
+
 (define-public perl-email-date-format
   (package
     (name "perl-email-date-format")
