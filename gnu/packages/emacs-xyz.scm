@@ -2965,13 +2965,13 @@ completion candidate when using the Company text completion framework.")
     (version "1.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/magnars/multiple-cursors.el/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magnars/multiple-cursors.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0hihihlvcvzayg5fnqzcg45fhvlmq6xlq58syy00rjwbry9w389k"))))
+        (base32 "1ijgvzv5r44xqvz751fd5drbvrspapw6xwv47582w255j363r6ss"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magnars/multiple-cursors.el")
     (synopsis "Multiple cursors for Emacs")
