@@ -2722,10 +2722,10 @@ framework for Emacs Lisp to be used with @code{ert}.")
               (uri (git-reference
                     (url home-page)
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))
-              (file-name (string-append name "-" version))))
+                "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
