@@ -192,7 +192,7 @@ COMMAND or an interactive shell in that environment.\n"))
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (debug . 0)
-    (verbosity . 2)))
+    (verbosity . 1)))
 
 (define (tag-package-arg opts arg)
   "Return a two-element list with the form (TAG ARG) that tags ARG with either

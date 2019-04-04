@@ -629,7 +629,7 @@ please email '~a'~%")
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (debug . 0)
-    (verbosity . 2)
+    (verbosity . 1)
     (symlinks . ())
     (compressor . ,(first %compressors))))
 

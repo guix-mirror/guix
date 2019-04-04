@@ -1299,8 +1299,7 @@ argument list and OPTS is the option alist."
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
         (with-status-verbosity (or (assoc-ref opts 'verbosity)
-                                   (if (memq command '(init reconfigure))
-                                       1 2))
+                                   (if (eq? command 'build) 2 1))
           (process-command command args opts))))))
 
 ;;; Local Variables:
