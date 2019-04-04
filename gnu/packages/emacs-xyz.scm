@@ -2628,13 +2628,13 @@ the speedbar window.")
     (version "1.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/DamienCassou/shell-switcher"
-                           "/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DamienCassou/shell-switcher.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1c23mfkdqz2g9rixd9smm323vzlvhzz3ng34ambcqjfq309qb2nz"))))
+        (base32 "0ia7sdip4hl27avckv3qpqgm3k4ynvp3xxq1cy53bqfzzx0gcria"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/DamienCassou/shell-switcher")
     (synopsis "Provide fast switching between shell buffers")
