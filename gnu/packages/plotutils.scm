@@ -230,6 +230,14 @@ colors, styles, options and details.")
              (substitute* (find-files "." "\\.in$")
                (("#include <primitives.h>") "#include \"primitives.h\""))
              (invoke "touch" "prc/config.h")))
+         (add-after 'unpack 'move-info-location
+           ;; Build process install info file in the unusual
+           ;; "%out/share/info/asymptote/" location.  Move it to
+           ;; "%out/share/info/" so it appears in the top-level directory.
+           (lambda _
+             (substitute* "doc/png/Makefile.in"
+               (("(\\$\\(infodir\\))/asymptote" _ infodir) infodir))
+             #t))
          (add-before 'build 'patch-pdf-viewer
            (lambda _
              ;; Default to a free pdf viewer.
