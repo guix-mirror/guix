@@ -731,6 +731,31 @@ manage, and delete Internet resources from Gandi.net such as domain names,
 virtual machines, and certificates.")
     (license license:gpl3+)))
 
+(define-public go-netns
+  (let ((commit "13995c7128ccc8e51e9a6bd2b551020a27180abd")
+        (revision "1"))
+    (package
+      (name "go-netns")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/vishvananda/netns.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1zk6w8158qi4niva5rijchbv9ixgmijsgqshh54wdaav4xrhjshn"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/vishvananda/netns"
+         #:tests? #f))                  ;tests require root privileges
+      (home-page "https://github.com/vishvananda/netns")
+      (synopsis "Simple network namespace handling for Go")
+      (description "The netns package provides a simple interface for
+handling network namespaces in Go.")
+      (license license:asl2.0))))
+
 (define-public go-sctp
   ;; docker-libnetwork-cmd-proxy requires this exact commit.
   (let ((commit "07191f837fedd2f13d1ec7b5f885f0f3ec54b1cb")
