@@ -48,16 +48,15 @@
 (define-public flashrom
   (package
     (name "flashrom")
-    ;; XXX: The CFLAGS=... line below can probably be removed when updating.
-    (version "1.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://download.flashrom.org/releases/flashrom-"
+                    "https://download.flashrom.org/releases/flashrom-v"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0r7fkpfc8w51n8ffbhclj4wa3kwrk0ijv1acwpw5myx5bchzl0ip"))))
+                "0i6yrrl69hrqmwd7azj7x3j46m0qpvzmk3b5basym7mnlpfzhyfm"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
@@ -67,9 +66,6 @@
     (arguments
      '(#:make-flags
        (list "CC=gcc"
-             ;; The default includes ‘-Wall -Werror’, causing the build to fail
-             ;; with deprecation warnings against libusb versions >= 1.0.22.
-             "CFLAGS=-Os -Wshadow"
              (string-append "PREFIX=" %output)
              "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
        #:tests? #f                      ; no 'check' target
