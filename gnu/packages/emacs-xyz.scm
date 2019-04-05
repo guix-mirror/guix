@@ -4455,15 +4455,15 @@ be removed from the front.  This type of data structure is sometimes called an
   (package
     (name "emacs-pkg-info")
     (version "0.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/lunaryorn/pkg-info.el/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1gy1jks5mmm02gg1c8gcyr4f8a9s5ggzhk56gv33b9mzjqzi5rd5"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lunaryorn/pkg-info.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nk12dcppdyhav6m6yf7abpywyd7amxd4237zsfd32w4zxsx39k1"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-epl" ,emacs-epl)))
     (home-page "https://github.com/lunaryorn/pkg-info.el")
