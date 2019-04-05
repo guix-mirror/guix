@@ -4227,13 +4227,13 @@ windows.")
     (version "0.9.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/abo-abo/ace-window/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/ace-window.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1p2sgfl5dml4zbd6ldql6lm2m9vmd236ah996ni32x254s48j5pn"))))
+        (base32 "07mcdzjmgrqdvjs94f2n5bkrf5vrq2fwzz256wbm3wzqxqkfy1q6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-avy" ,emacs-avy)))
