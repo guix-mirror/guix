@@ -36,6 +36,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -264,6 +265,28 @@ connecting containers.  The goal of @code{libnetwork} is to deliver a robust
 container network model that provides a consistent programming interface and
 the required network abstractions for applications.")
       (license license:asl2.0))))
+
+(define-public docker-libnetwork-cmd-proxy
+  (package
+    (inherit docker-libnetwork)
+    (name "docker-libnetwork-cmd-proxy")
+    (arguments
+     `(#:import-path "github.com/docker/libnetwork/cmd/proxy"
+       #:unpack-path "github.com/docker/libnetwork"
+       #:install-source? #f))
+    (native-inputs
+     `(("go-sctp" ,go-sctp)
+       ;; For tests.
+       ("logrus" ,go-github-com-sirupsen-logrus)
+       ("go-netlink" ,go-netlink)
+       ("go-netns" ,go-netns)
+       ("go-golang-org-x-crypto-ssh-terminal"
+        ,go-golang-org-x-crypto-ssh-terminal)
+       ("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+    (synopsis "Docker user-space proxy")
+    (description "A proxy running in the user space.  It is used by the
+built-in registry server of Docker.")
+    (license license:asl2.0)))
 
 ;; TODO: Patch out modprobes for ip_vs, nf_conntrack,
 ;; brige, nf_conntrack_netlink, aufs.
