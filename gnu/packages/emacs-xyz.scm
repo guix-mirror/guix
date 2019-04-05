@@ -4173,13 +4173,13 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
     (version "0.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Yevgnen/ivy-rich/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Yevgnen/ivy-rich.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "14r3mx5rkd4wz0ls5pv5w6c7la3z9iy93d3jfind3xyg4kywy95c"))))
+        (base32 "0ayf3dwfhafcbqnckm65zy8nc1rv9ji939qfn53wbhxkrgqdicgz"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))
