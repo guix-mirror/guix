@@ -33,6 +33,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libunwind)
@@ -116,6 +118,7 @@
   #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system linux-module)
@@ -5184,6 +5187,33 @@ infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log,
 nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or
 management tools in userspace.")
     (license license:gpl2)))
+
+(define-public go-netlink
+  (package
+    (name "go-netlink")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vishvananda/netlink.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hpzghf1a4cwawzhkiwdzin80h6hd09fskl77d5ppgc084yvj8x0"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/vishvananda/netlink"))
+    (native-inputs
+     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)
+       ("go-netns" ,go-netns)))
+    (home-page "https://github.com/vishvananda/netlink")
+    (synopsis "Simple netlink library for Go")
+    (description "The netlink package provides a simple netlink library for
+Go.  Netlink is the interface a user-space program in Linux uses to
+communicate with the kernel.  It can be used to add and remove interfaces, set
+IP addresses and routes, and configure IPsec.")
+    (license license:asl2.0)))
 
 (define-public xfsprogs
   (package
