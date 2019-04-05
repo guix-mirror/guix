@@ -4357,15 +4357,15 @@ state and will work even without lispy being enabled.")
   (package
     (name "emacs-clojure-mode")
     (version "5.6.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/clojure-emacs/clojure-mode/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1f4k1hncy5ygh4izn7mqfp744nnisrp9ywn2njknbjxx34ai1q88"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clojure-emacs/clojure-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qadymqzs5fn1sb347xzfw8lqq6s85vvkh4kzm35m61g5i2lm86y"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("emacs-dash" ,emacs-dash)
