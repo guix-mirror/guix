@@ -4495,14 +4495,15 @@ ongoing operations.")
   (package
     (name "emacs-sparql-mode")
     (version "2.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ljos/sparql-mode/archive/"
-                                  "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1s93mkllxnhy7fw616cnnc2danacdlarys0g3cn89drh0llh53cv"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ljos/sparql-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ywhqk6n5k0l85zjwbnrivnvxjzqipqrggv06lify6yv18qmyl6s"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ljos/sparql-mode")
     (synopsis "SPARQL mode for Emacs")
