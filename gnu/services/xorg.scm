@@ -879,11 +879,16 @@ the GNOME desktop environment.")
                 ;; For convenience, this service can be extended with an
                 ;; <xorg-configuration> record.  Take the first one that
                 ;; comes.
-                (compose first)
+                (compose (lambda (extensions)
+                           (match extensions
+                             (() #f)
+                             ((config . _) config))))
                 (extend (lambda (config xorg-configuration)
-                          (gdm-configuration
-                           (inherit config)
-                           (xorg-configuration xorg-configuration))))
+                          (if xorg-configuration
+                              (gdm-configuration
+                               (inherit config)
+                               (xorg-configuration xorg-configuration))
+                              config)))
 
                 (default-value (gdm-configuration))
                 (description
