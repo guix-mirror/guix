@@ -161,12 +161,12 @@ unpacking."
   (let ((dest (string-append (getenv "GOPATH") "/src/" unpack-path)))
     (mkdir-p dest)
     (if (file-is-directory? source)
-      (begin
-        (copy-recursively source dest #:keep-mtime? #t)
-        #t)
-      (if (string-suffix? ".zip" source)
-        (invoke "unzip" "-d" dest source)
-        (invoke "tar" "-C" dest "-xvf" source)))))
+        (begin
+          (copy-recursively source dest #:keep-mtime? #t)
+          #t)
+        (if (string-suffix? ".zip" source)
+            (invoke "unzip" "-d" dest source)
+            (invoke "tar" "-C" dest "-xvf" source)))))
 
 (define (go-package? name)
   (string-prefix? "go-" name))
