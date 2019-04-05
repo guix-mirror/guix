@@ -4252,13 +4252,13 @@ highlighted.  Pressing that character will switch to that window.")
     (version "0.9.9.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/victorhge/iedit/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/victorhge/iedit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1hv8q6pr85ss9g3158l1fqv3m62vsq8rslsi86jicr2dcxyascr0"))))
+        (base32 "1pwkrm98vlpzsy5iwwfksdaz3zzyi7bvdf5fglhsn4ssf47p787g"))))
     (build-system emacs-build-system)
     (home-page "http://www.emacswiki.org/emacs/Iedit")
     (synopsis "Edit multiple regions in the same way simultaneously")
