@@ -3556,14 +3556,13 @@ number.")
     (version "2.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/lolownia/org-pomodoro/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lolownia/org-pomodoro.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1jalsggw3q5kvj353f84x4nl04a5vmq07h75ggppy1627lb31zm4"))))
+        (base32 "0r5shgikm34d66i2hblyknbblpg92lb2zc9x4bcb28xkh7m9d0xv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-alert" ,emacs-alert)))
