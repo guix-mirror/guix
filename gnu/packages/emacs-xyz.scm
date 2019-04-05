@@ -3535,13 +3535,13 @@ number.")
     (version "0.2.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/sabof/org-bullets/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sabof/org-bullets.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1dyxvpb73vj80v8br2q9rf255hfphrgaw91fbvwdcd735np9pcnh"))))
+        (base32 "10nr4sjffnqbllv6gmak6pviyynrb7pi5nvrq331h5alm3xcpq0w"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/sabof/org-bullets")
     (synopsis "Show bullets in org-mode as UTF-8 characters")
