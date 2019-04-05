@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -728,6 +730,31 @@ fashion.")
 manage, and delete Internet resources from Gandi.net such as domain names,
 virtual machines, and certificates.")
     (license license:gpl3+)))
+
+(define-public go-sctp
+  ;; docker-libnetwork-cmd-proxy requires this exact commit.
+  (let ((commit "07191f837fedd2f13d1ec7b5f885f0f3ec54b1cb")
+        (revision "1"))
+    (package
+      (name "go-sctp")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ishidawataru/sctp.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1mk9ncm10gwi5pn5wcw4skbyf4qg7n5qdf1mim4gf3mrckvi6g6h"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/ishidawataru/sctp"))
+      (home-page "https://github.com/ishidawataru/sctp")
+      (synopsis "SCTP library for the Go programming language")
+      (description "This library provides methods for using the stream control
+transmission protocol (SCTP) in a Go application.")
+      (license license:asl2.0))))
 
 (define-public httping
   (package
