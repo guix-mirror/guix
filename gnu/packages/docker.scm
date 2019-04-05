@@ -227,6 +227,44 @@ network attachments.")
     (home-page "http://containerd.io/")
     (license license:asl2.0)))
 
+;;; Private package that shouldn't be used directly; its purposes is to be
+;;; used as a template for the various packages it contains.  It doesn't build
+;;; anyway, as it needs many dependencies that aren't being satisfied.
+(define docker-libnetwork
+  ;; There are no recent release for libnetwork, so choose the last commit of
+  ;; the branch that Docker uses, as can be seen in the Docker source file
+  ;; 'hack/dockerfile/install/proxy.installer'.
+  (let ((commit "4725f2163fb214a6312f3beae5991f838ec36326")
+        (version "18.09")
+        (revision "1"))
+    (package
+      (name "docker-libnetwork")
+      (version (git-version version "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/docker/libnetwork.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1zpnxki8qfzha6ljahpwd3vkzmjhsvkmf73w6crm4ilxxw5vnpfb"))
+                ;; Delete bundled ("vendored") free software source code.
+                (modules '((guix build utils)))
+                (snippet '(begin
+                            (delete-file-recursively "vendor")
+                            #t))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/docker/libnetwork/"))
+      (home-page "https://github.com/docker/libnetwork/")
+      (synopsis "Networking for containers")
+      (description "Libnetwork provides a native Go implementation for
+connecting containers.  The goal of @code{libnetwork} is to deliver a robust
+container network model that provides a consistent programming interface and
+the required network abstractions for applications.")
+      (license license:asl2.0))))
+
 ;; TODO: Patch out modprobes for ip_vs, nf_conntrack,
 ;; brige, nf_conntrack_netlink, aufs.
 (define-public docker
