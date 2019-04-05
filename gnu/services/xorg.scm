@@ -704,7 +704,7 @@ makes the good ol' XlockMore usable."
                        '()
                        `(("GUIX_XKB_OPTIONS"
                           ,(string-join options ","))))))))
-      (localed-configuration-localed config)))
+      '()))
 
 (define localed-service-type
   (let ((package (compose list localed-configuration-localed)))
