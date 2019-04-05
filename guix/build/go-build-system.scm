@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix build union)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
@@ -151,13 +153,31 @@ dependencies, so it should be self-contained."
   #t)
 
 (define* (unpack #:key source import-path unpack-path #:allow-other-keys)
-  "Relative to $GOPATH, unpack SOURCE in the UNPACK-PATH, or the IMPORT-PATH is
-the UNPACK-PATH is unset.  When SOURCE is a directory, copy it instead of
+  "Relative to $GOPATH, unpack SOURCE in UNPACK-PATH, or IMPORT-PATH when
+UNPACK-PATH is unset.  If the SOURCE archive has a single top level directory,
+it is stripped so that the sources appear directly under UNPACK-PATH.  When
+SOURCE is a directory, copy its content into UNPACK-PATH instead of
 unpacking."
-  (if (string-null? import-path)
-      ((display "WARNING: The Go import path is unset.\n")))
-  (if (string-null? unpack-path)
-      (set! unpack-path import-path))
+  (define (unpack-maybe-strip source dest)
+    (let* ((scratch-dir (string-append (or (getenv "TMPDIR") "/tmp")
+                                       "/scratch-dir"))
+           (out (mkdir-p scratch-dir)))
+      (with-directory-excursion scratch-dir
+        (if (string-suffix? ".zip" source)
+            (invoke "unzip" source)
+            (invoke "tar" "-xvf" source))
+        (let ((top-level-files (remove (lambda (x)
+                                         (member x '("." "..")))
+                                       (scandir "."))))
+          (match top-level-files
+            ((top-level-file)
+             (when (file-is-directory? top-level-file)
+               (copy-recursively top-level-file dest #:keep-mtime? #t)))
+            (_
+             (copy-recursively "." dest #:keep-mtime? #t)))
+          #t))
+      (delete-file-recursively scratch-dir)))
+
   (when (string-null? import-path)
     ((display "WARNING: The Go import path is unset.\n")))
   (when (string-null? unpack-path)
@@ -168,9 +188,7 @@ unpacking."
         (begin
           (copy-recursively source dest #:keep-mtime? #t)
           #t)
-        (if (string-suffix? ".zip" source)
-            (invoke "unzip" "-d" dest source)
-            (invoke "tar" "-C" dest "-xvf" source)))))
+        (unpack-maybe-strip source dest))))
 
 (define (go-package? name)
   (string-prefix? "go-" name))
