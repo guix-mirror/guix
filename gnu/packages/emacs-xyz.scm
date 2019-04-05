@@ -4550,7 +4550,9 @@ agree upon.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1c0daw246ky7b1x5b8h55x79pl1pjqk1k348l487bdd8zdj4w9wx"))))
+           "1c0daw246ky7b1x5b8h55x79pl1pjqk1k348l487bdd8zdj4w9wx"))
+         (patches
+          (search-patches "emacs-undohist-ignored.patch"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/m2ym/undohist-el")
       (synopsis "Save undo history between sessions")
