@@ -4386,15 +4386,15 @@ It is recommended to use @code{clojure-mode} with paredit or smartparens.")
   (package
     (name "emacs-epl")
     (version "0.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/cask/epl/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1511n3a3f5gvaf2b4nh018by61ciyzi3y3603fzqma7p9hrckarc"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cask/epl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0sjxd5y5hxhrbgfkpwx6m724r3841b53hgc61a0g5zwispw5pmrr"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/cask/epl")
     (synopsis "Emacs Package Library")
