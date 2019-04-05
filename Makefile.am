@@ -120,6 +120,7 @@ MODULES =					\
   guix/build-system/gnu.scm			\
   guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
+  guix/build-system/linux-module.scm		\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/ocaml.scm			\
@@ -173,6 +174,7 @@ MODULES =					\
   guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
+  guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\

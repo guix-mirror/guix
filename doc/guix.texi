@@ -6210,6 +6210,33 @@ is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
 @end table
 @end defvr
 
+@defvr {Scheme Variable} linux-module-build-system
+@var{linux-module-build-system} allows building Linux kernel modules.
+
+@cindex build phases
+This build system is an extension of @var{gnu-build-system}, but with the
+following phases changed:
+
+@table @code
+
+@item configure
+This phase configures the environment so that the Linux kernel's Makefile
+can be used to build the external kernel module.
+
+@item build
+This phase uses the Linux kernel's Makefile in order to build the external
+kernel module.
+
+@item install
+This phase uses the Linux kernel's Makefile in order to install the external
+kernel module.
+@end table
+
+It is possible and useful to specify the Linux kernel to use for building
+the module (in the "arguments" form of a package using the
+linux-module-build-system, use the key #:linux to specify it).
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,
