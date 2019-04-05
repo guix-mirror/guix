@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2008,3 +2008,57 @@ editors.")
 slicing software to x3g files for standalone 3D printing on common 3D
 printers.")
     (license license:gpl2+)))
+
+(define-public gnucap
+  (package
+    (name "gnucap")
+    (version "20171003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.savannah.gnu.org/cgit/gnucap.git/snapshot/gnucap-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "16m09xa685qhj5fqq3bcgakrwnb74xhf5f7rpqkkf9fg8plzbb1g"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("readline" ,readline)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Set correct rpath so that gnucap finds libgnucap.so.
+               (substitute* (list "apps/configure" "lib/configure"
+                                  "main/configure" "modelgen/configure")
+                 (("LDFLAGS =")
+                  (string-append "LDFLAGS = -Wl,-rpath=" out "/lib")))
+               ;; gnucap uses a hand-written configure script that expects the
+               ;; --prefix argument to be the first argument passed to it.
+               (invoke "./configure" (string-append "--prefix=" out)))))
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (libpath "../lib/O:../apps/O"))
+               (with-directory-excursion "tests"
+                 ;; Make test return non-zero exit code when a test fails.
+                 (substitute* "test"
+                   (("/bin/sh") "/bin/sh -e")
+                   (("\\|\\| echo \"\\*\\*\\*\\* \\$ii fails \\*\\*\\*\\*\"") ""))
+                 ;; Fix expected plugin search path for test c_attach.1.gc
+                 (substitute* "==out/c_attach.1.gc.out"
+                   (("/usr/local/lib/gnucap")
+                    (string-append libpath ":" out "/lib/gnucap")))
+                 ;; Set library path so that gnucap can find libgnucap.so
+                 ;; while running the tests.
+                 (setenv "LD_LIBRARY_PATH" libpath)
+                 (invoke "./test" "../main/O/gnucap" "" "test-output" "==out"))))))))
+    (home-page "https://www.gnu.org/software/gnucap/")
+    (synopsis "Mixed analog and digital circuit simulator")
+    (description "GNUcap is a circuit analysis package.  It offers a general
+purpose circuit simulator and can perform DC and transient analyses, fourier
+analysis and AC analysis.  The engine is designed to do true mixed-mode
+simulation.")
+    (license license:gpl3+)))
