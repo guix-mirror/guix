@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6490,3 +6491,32 @@ compressed JSON header blocks.
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
       (license l:agpl3+))))
+
+(define-public httrack
+  (package
+    (name "httrack")
+    (version "3.49.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://mirror.httrack.com/historical/"
+                                  "httrack-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09a0gm67nml86qby1k1gh7rdxamnrnzwr6l9r5iiq94favjs0xrl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libressl" ,libressl)
+       ("zlib" ,zlib)))
+    (home-page "https://www.httrack.com/")
+    (synopsis "Easy-to-use offline browser utility")
+    (description "HTTrack allows you to download a World Wide Web site from
+the Internet to a local directory, building recursively all directories,
+getting HTML, images, and other files from the server to your computer.
+
+HTTrack arranges the original site's relative link-structure.  Simply open
+a page of the ``mirrored'' website in your browser, and you can browse the
+site from link to link, as if you were viewing it online.  HTTrack can also
+update an existing mirrored site, and resume interrupted downloads.
+
+HTTrack is fully configurable, and has an integrated help system.")
+    (license license:gpl3+)))
