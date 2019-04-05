@@ -4822,14 +4822,15 @@ If you want to mark a folder manually as a project just create an empty
   (package
     (name "emacs-elfeed")
     (version "3.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/skeeto/elfeed/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1wkdrxr6zzqb48czqqv34l87bx8aqjk1739ddqg933aqh241kfvn"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/elfeed.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01x4ww63lvn04c7f3ab5vx2s20xqisvv8213qwswz7vr9nxja5yi"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
