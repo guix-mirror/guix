@@ -3817,15 +3817,15 @@ well as completely new features.")
   (package
     (name "emacs-highlight-symbol")
     (version "1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/nschum/highlight-symbol.el/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1n7k1qns0fn0jsyc0hrjac5nzk21xw48yc30vyrhwvc51h0b9g90"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nschum/highlight-symbol.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09z13kv2g21kjjkkm3iyaz93sdjmdy2d563r8n7r7ng94acrn7f6"))))
     (build-system emacs-build-system)
     (home-page "https://nschum.de/src/emacs/highlight-symbol")
     (synopsis "Automatic and manual symbol highlighting for Emacs")
