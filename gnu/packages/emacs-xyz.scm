@@ -3582,15 +3582,15 @@ started with 20 minutes.  All values are customizable.")
   (package
     (name "emacs-org-trello")
     (version "0.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/org-trello/org-trello/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0549mnf5cgwn8b8jbl38fljbaxmh1605sv9j8f3lsa95jhs1zpa0"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/org-trello/org-trello.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0m5hyhb6211hdmyp1bq6f3fklfgw3957knd96bfdafj727vdnlzm"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
