@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +28,14 @@
 (define-public entr
   (package
     (name "entr")
-    (version "4.1")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://entrproject.org/code/entr-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0y7gvyf0iykpf3gfw09m21hy51m6qn4cpkbrm4nnn7pwrwycj0y5"))))
+                "0w2xkf77jikcjh15fp9g7661ss30pz3jbnh261vqpaqavwah4c17"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
