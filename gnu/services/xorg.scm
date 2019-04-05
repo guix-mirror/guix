@@ -707,7 +707,12 @@ makes the good ol' XlockMore usable."
       '()))
 
 (define localed-service-type
-  (let ((package (compose list localed-configuration-localed)))
+  (let ((package (lambda (config)
+                   ;; Don't bother if the user didn't specify any keyboard
+                   ;; layout.
+                   (if (localed-configuration-keyboard-layout config)
+                       (list (localed-configuration-localed config))
+                       '()))))
     (service-type (name 'localed)
                   (extensions
                    (list (service-extension dbus-root-service-type
@@ -720,7 +725,8 @@ makes the good ol' XlockMore usable."
 
                   ;; This service can be extended, typically by the X login
                   ;; manager, to communicate the chosen Xorg keyboard layout.
-                  (compose first)
+                  (compose (lambda (extensions)
+                             (find keyboard-layout? extensions)))
                   (extend (lambda (config keyboard-layout)
                             (localed-configuration
                              (inherit config)
