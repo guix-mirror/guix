@@ -3440,13 +3440,13 @@ insertion mode.  When enabled all keys are implicitly prefixed with
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/paradoxxxzero/jinja2-mode/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/paradoxxxzero/jinja2-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0cgxjab1kla2zc2fj7bzib6i7snp08zshandmp9kqcm85l262xpn"))))
+        (base32 "0l26wcy496k6xk7q5sf905xir0p73ziy6c44is77854lv3y0z381"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/paradoxxxzero/jinja2-mode")
     (synopsis "Major mode for jinja2")
