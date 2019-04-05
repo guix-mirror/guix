@@ -3786,15 +3786,15 @@ library.")
   (package
     (name "emacs-smartparens")
     (version "1.11.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Fuco1/smartparens/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0q5as813xs8y29i3v2rm97phd6m7xsmmw6hwbvx57gwmi8i1c409"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fuco1/smartparens.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0zij2f2rjjym98w68jkp10n1ckpfprlkk217c3fg16hz5nq4vnm6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
