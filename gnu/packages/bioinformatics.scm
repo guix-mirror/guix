@@ -10158,14 +10158,14 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "0xbf4pmhrk5fnd1iz5wzjvdr75v114bwpznhcig4wiqmxc27sips"))))
+         "01lf74pby7si2g3kgc10qzr6lkcbigqcgqs2j3anc38vzxv0zhwv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
