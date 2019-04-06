@@ -95,6 +95,7 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -110,6 +111,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
@@ -2888,3 +2890,79 @@ replacement for the @code{urlview} program.")
     (description "This package provides a TNEF stream reader library and
 related tools to process winmail.dat files.")
     (license gpl2+)))
+
+(define-public public-inbox
+  (let ((commit "3cf66514aea9e958999973b9f104473b6d800fbe")
+        (revision "0"))
+    (package
+     (name "public-inbox")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin (method git-fetch)
+              (uri (git-reference
+                    (url "https://public-inbox.org")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1sxycwlm2n6p544gn9f0vf3xs6gz8vdswdhs2ha6fka8mgabvmdh"))
+              (file-name (git-file-name name version))))
+     (build-system perl-build-system)
+     (arguments
+      '(#:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'qualify-paths
+            (lambda _
+              ;; Use absolute paths for 'xapian-compact'.
+              (let ((xapian-compact (which "xapian-compact")))
+                (substitute* "script/public-inbox-compact"
+                  (("xapian-compact") xapian-compact)))
+              #t))
+          (add-before 'check 'pre-check
+            (lambda _
+              (substitute* "t/spawn.t"
+                (("\\['env'\\]") (string-append "['" (which "env") "']")))
+              #t))
+          (add-after 'install 'wrap-programs
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (for-each
+                 (lambda (prog)
+                   (wrap-program prog
+                     ;; Let those scripts find their perl modules.
+                     `("PERL5LIB" ":" prefix
+                       (,(string-append out "/lib/perl5/site_perl")
+                        ,(getenv "PERL5LIB")))
+                     ;; 'git' is invoked in various files of the PublicInbox
+                     ;; perl module.
+                     `("PATH" ":" prefix
+                       (,(string-append (assoc-ref inputs "git") "/bin")))))
+                 (find-files (string-append out "/bin"))))
+              #t)))))
+     (native-inputs
+      `(("git" ,git)
+        ("xapian" ,xapian)))
+     (inputs
+      `(("perl-danga-socket" ,perl-danga-socket)
+        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+        ("perl-dbi" ,perl-dbi)
+        ("perl-email-address-xs" ,perl-email-address-xs)
+        ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
+        ("perl-email-mime" ,perl-email-mime)
+        ("perl-email-simple" ,perl-email-simple)
+        ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
+        ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
+        ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
+        ("perl-plack" ,perl-plack)
+        ("perl-search-xapian" ,perl-search-xapian)
+        ("perl-timedate" ,perl-timedate)
+        ("perl-uri-escape" ,perl-uri-escape)
+        ;; For testing.
+        ("perl-ipc-run" ,perl-ipc-run)
+        ("perl-xml-feed" ,perl-xml-feed)))
+     (home-page "https://public-inbox.org/README.html")
+     (synopsis "Archive mailing lists in git repositories")
+     (description
+      "public-inbox implements the sharing of an email inbox via git to
+complement or replace traditional mailing lists.  Readers may read via NNTP,
+Atom feeds or HTML archives.")
+     (license agpl3+))))
