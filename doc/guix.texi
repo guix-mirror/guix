@@ -3438,8 +3438,22 @@ as @code{500MiB}, as described above.
 When @var{free} or more is already available in @file{/gnu/store}, do
 nothing and exit immediately.
 
+@item --delete-generations[=@var{duration}]
+@itemx -d [@var{duration}]
+Before starting the garbage collection process, delete all the generations
+older than @var{duration}, for all the user profiles; when run as root, this
+applies to all the profiles @emph{of all the users}.
+
+For example, this command deletes all the generations of all your profiles
+that are older than 2 months (except generations that are current), and then
+proceeds to free space until at least 10 GiB are available:
+
+@example
+guix gc -d 2m -F 10G
+@end example
+
 @item --delete
-@itemx -d
+@itemx -D
 Attempt to delete all the store files and directories specified as
 arguments.  This fails if some of the files are not in the store, or if
 they are still live.

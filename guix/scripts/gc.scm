@@ -22,6 +22,8 @@
   #:use-module (guix store)
   #:use-module (guix store roots)
   #:autoload   (guix build syscalls) (free-disk-space)
+  #:autoload   (guix profiles) (generation-profile)
+  #:autoload   (guix scripts package) (delete-generations)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -48,7 +50,10 @@ Invoke the garbage collector.\n"))
   (display (G_ "
   -F, --free-space=FREE  attempt to reach FREE available space in the store"))
   (display (G_ "
-  -d, --delete           attempt to delete PATHS"))
+  -d, --delete-generations[=PATTERN]
+                         delete profile generations matching PATTERN"))
+  (display (G_ "
+  -D, --delete           attempt to delete PATHS"))
   (display (G_ "
       --list-roots       list the user's garbage collector roots"))
   (display (G_ "
@@ -98,6 +103,16 @@ Invoke the garbage collector.\n"))
             lst)
           '()))))
 
+(define (delete-old-generations store profile pattern)
+  "Remove the generations of PROFILE that match PATTERN, a duration pattern.
+Do nothing if none matches."
+  (let* ((current (generation-number profile))
+         (numbers (matching-generations pattern profile
+                                        #:duration-relation >)))
+
+    ;; Make sure we don't inadvertently remove the current generation.
+    (delete-generations store profile (delv current numbers))))
+
 (define %options
   ;; Specification of the command-line options.
   (list (option '(#\h "help") #f #f
@@ -123,10 +138,25 @@ Invoke the garbage collector.\n"))
         (option '(#\F "free-space") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'free-space (size->number arg) result)))
-        (option '(#\d "delete") #f #f
+        (option '(#\D "delete") #f #f            ;used to be '-d' (lower case)
                 (lambda (opt name arg result)
                   (alist-cons 'action 'delete
                               (alist-delete 'action result))))
+        (option '(#\d "delete-generations") #f #t
+                (lambda (opt name arg result)
+                  (if (and arg (store-path? arg))
+                      (begin
+                        (warning (G_ "'-d' as an alias for '--delete' \
+is deprecated; use '-D'~%"))
+                        `((action . delete)
+                          (argument . ,arg)
+                          (alist-delete 'action result)))
+                      (begin
+                        (when (and arg (not (string->duration arg)))
+                          (leave (G_ "~s does not denote a duration~%")
+                                 arg))
+                        (alist-cons 'delete-generations (or arg "")
+                                    result)))))
         (option '("optimize") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'optimize
@@ -212,6 +242,14 @@ Invoke the garbage collector.\n"))
             (info (G_ "freeing ~h MiBs~%") (/ to-free 1024. 1024.))
             (collect-garbage store to-free)))))
 
+  (define (delete-generations store pattern)
+    ;; Delete the generations matching PATTERN of all the user's profiles.
+    (let ((profiles (delete-duplicates
+                     (filter-map generation-profile (gc-roots)))))
+      (for-each (lambda (profile)
+                  (delete-old-generations store profile pattern))
+                profiles)))
+
   (define (list-roots)
     ;; List all the user-owned GC roots.
     (let ((roots (filter (if (zero? (getuid)) (const #t) user-owned?)
@@ -245,6 +283,10 @@ Invoke the garbage collector.\n"))
          (assert-no-extra-arguments)
          (let ((min-freed  (assoc-ref opts 'min-freed))
                (free-space (assoc-ref opts 'free-space)))
+           (match (assoc-ref opts 'delete-generations)
+             (#f #t)
+             ((? string? pattern)
+              (delete-generations store pattern)))
            (cond
             (free-space
              (ensure-free-space store free-space))
