@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module (guix store)
+  #:use-module (guix store roots)
   #:autoload   (guix build syscalls) (free-disk-space)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -48,6 +49,8 @@ Invoke the garbage collector.\n"))
   -F, --free-space=FREE  attempt to reach FREE available space in the store"))
   (display (G_ "
   -d, --delete           attempt to delete PATHS"))
+  (display (G_ "
+      --list-roots       list the user's garbage collector roots"))
   (display (G_ "
       --optimize         optimize the store by deduplicating identical files"))
   (display (G_ "
@@ -135,6 +138,10 @@ Invoke the garbage collector.\n"))
                                 (alist-cons 'verify-options options
                                             (alist-delete 'action
                                                           result))))))
+        (option '("list-roots") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'list-roots
+                              (alist-delete 'action result))))
         (option '("list-dead") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-dead
@@ -205,6 +212,15 @@ Invoke the garbage collector.\n"))
             (info (G_ "freeing ~h MiBs~%") (/ to-free 1024. 1024.))
             (collect-garbage store to-free)))))
 
+  (define (list-roots)
+    ;; List all the user-owned GC roots.
+    (let ((roots (filter (if (zero? (getuid)) (const #t) user-owned?)
+                         (gc-roots))))
+      (for-each (lambda (root)
+                  (display root)
+                  (newline))
+                roots)))
+
   (with-error-handling
     (let* ((opts  (parse-options))
            (store (open-connection))
@@ -238,6 +254,9 @@ Invoke the garbage collector.\n"))
             (else
              (let-values (((paths freed) (collect-garbage store)))
               (info (G_ "freed ~h MiBs~%") (/ freed 1024. 1024.)))))))
+        ((list-roots)
+         (assert-no-extra-arguments)
+         (list-roots))
         ((delete)
          (delete-paths store (map direct-store-path paths)))
         ((list-references)

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -34,7 +34,7 @@ unset drv
 unset out
 
 # For some operations, passing extra arguments is an error.
-for option in "" "-C 500M" "--verify" "--optimize"
+for option in "" "-C 500M" "--verify" "--optimize" "--list-roots"
 do
     if guix gc $option whatever; then false; else true; fi
 done
@@ -68,6 +68,8 @@ guix gc --delete "$drv"
 # Add a .drv, register it as a root.
 drv="`guix build --root=guix-gc-root lsh -d`"
 test -f "$drv" && test -L guix-gc-root
+
+guix gc --list-roots | grep "$PWD/guix-gc-root"
 
 guix gc --list-live | grep "$drv"
 if guix gc --delete "$drv";

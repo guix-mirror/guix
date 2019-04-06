@@ -3385,7 +3385,7 @@ deleted.  The set of garbage collector roots (``GC roots'' for short)
 includes default user profiles; by default, the symlinks under
 @file{/var/guix/gcroots} represent these GC roots.  New GC roots can be
 added with @command{guix build --root}, for example (@pxref{Invoking
-guix build}).
+guix build}).  The @command{guix gc --list-roots} command lists them.
 
 Prior to running @code{guix gc --collect-garbage} to make space, it is
 often useful to remove old generations from user profiles; that way, old
@@ -3450,6 +3450,10 @@ List store items corresponding to cached build failures.
 This prints nothing unless the daemon was started with
 @option{--cache-failures} (@pxref{Invoking guix-daemon,
 @option{--cache-failures}}).
+
+@item --list-roots
+List the GC roots owned by the user; when run as root, list @emph{all} the GC
+roots.
 
 @item --clear-failures
 Remove the specified store items from the failed-build cache.
