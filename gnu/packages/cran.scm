@@ -400,13 +400,13 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "19m9514yj5sg0rz1zvi8w1z98srnrql4iirgr794fkaap6bs7i2f"))))
+                "042piypg4c8sqrlcdl3dwajkafkbglsky3x7d0jpjv8s5wxnpfxm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
