@@ -5952,21 +5952,21 @@ functions.")
 (define-public r-flextable
   (package
     (name "r-flextable")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flextable" version))
        (sha256
         (base32
-         "0arxgal67ahsq8v0zbvc767qadn7lg3f7mmqa9gjjz6sri0y6gsx"))))
+         "0sabdvkdlx5i1nr7nz68cappwsibzsjxpmiz3yp948ckbfmkdb27"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-data-table" ,r-data-table)
+     `(("r-base64enc" ,r-base64enc)
+       ("r-data-table" ,r-data-table)
        ("r-gdtools" ,r-gdtools)
        ("r-htmltools" ,r-htmltools)
        ("r-knitr" ,r-knitr)
-       ("r-magick" ,r-magick)
        ("r-officer" ,r-officer)
        ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
