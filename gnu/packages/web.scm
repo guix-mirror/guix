@@ -3374,6 +3374,35 @@ application frameworks.  Plack is like Ruby's Rack or Python's Paste for
 WSGI.")
     (license l:perl-license)))
 
+(define-public perl-plack-middleware-deflater
+  (package
+    (name "perl-plack-middleware-deflater")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/K/KA/KAZEBURO/"
+             "Plack-Middleware-Deflater-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xf2visi16hgwgyp9q0cjr10ikbn474hjia5mj8mb2scvbkrbni8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "https://metacpan.org/release/Plack-Middleware-Deflater")
+    (synopsis "Compress response body with Gzip or Deflate")
+    (description
+     "Plack::Middleware::Deflater is a middleware to encode your response body
+in gzip or deflate, based on \"Accept-Encoding\" HTTP request header.  It
+would save the bandwidth a little bit but should increase the Plack server
+load, so ideally you should handle this on the frontend reverse proxy
+servers.")
+    (license l:perl-license)))
+
 (define-public perl-plack-middleware-fixmissingbodyinredirect
   (package
     (name "perl-plack-middleware-fixmissingbodyinredirect")
