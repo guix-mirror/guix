@@ -7938,6 +7938,28 @@ determining their type and clock speed.")
 of a system.")
     (license (package-license perl))))
 
+(define-public perl-sys-syscall
+  (package
+    (name "perl-sys-syscall")
+    (version "0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BR/BRADFITZ/"
+                           "Sys-Syscall-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r8k4q04dhs191zgdfgiagvbra770hx0bm6x24jsykxn0c6ghi8y"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Sys-Syscall")
+    (synopsis
+     "Access system calls that Perl doesn't normally provide access to")
+    (description
+     "Sys::Syscall allows one to use epoll and sendfile system calls from
+Perl.  Support is mostly Linux-only for now, but other syscalls/OSes are
+planned for the future.")
+    (license perl-license)))
+
 (define-public perl-task-weaken
   (package
     (name "perl-task-weaken")
