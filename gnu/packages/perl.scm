@@ -2738,6 +2738,26 @@ equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
 files/modules are installed or not).")
     (license (package-license perl))))
 
+(define-public perl-devel-leak
+  (package
+    (name "perl-devel-leak")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NI/NI-S/"
+                           "Devel-Leak-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lkj2xwc3lhxv7scl43r8kfmls4am0b98sqf5vmf7d72257w6hkg"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Devel-Leak")
+    (synopsis "Utility for looking for perl objects that are not reclaimed")
+    (description
+     "This module provides a basic way to discover if a piece of perl code is
+allocating perl data and not releasing them again.")
+    (license perl-license)))
+
 (define-public perl-devel-lexalias
   (package
     (name "perl-devel-lexalias")
