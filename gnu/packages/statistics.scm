@@ -1182,23 +1182,23 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "122k9spymawfnfyksxyapwq9cigydy5nrjwhrwrhy3qkax3aycf6"))))
+         "1ayy0s699ghaz34lklvcskfwman3x2n2772s5sa5x9k9xgsnxwcl"))))
     (build-system r-build-system)
     (native-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-withr" ,r-withr)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-withr" ,r-withr)))
     (home-page "https://cran.r-project.org/web/packages/gdtools")
     (synopsis "Utilities for graphical rendering")
     (description
