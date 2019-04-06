@@ -11882,14 +11882,14 @@ whole genome approach to detecting significant QTL in linkage maps.")
 (define-public r-bedr
   (package
     (name "r-bedr")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bedr" version))
        (sha256
         (base32
-         "0q790695h8bls0qw284n1zn7lxzym1dnnj095fsbjga2p116z4yv"))))
+         "0zpqvyjgwyqawxm8qrhcv8zq2b3yxgcqkkc87br29yrl7sjb8h6j"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
