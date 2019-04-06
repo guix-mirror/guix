@@ -894,6 +894,30 @@ attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
 
+(define-public perl-danga-socket
+  (package
+    (name "perl-danga-socket")
+    (version "1.61")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BR/BRADFITZ/"
+                           "Danga-Socket-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nciapvxnc922ms304af0vavz1kgyr45ard8wc659k9srqar4hwf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sys-syscall" ,perl-sys-syscall)))
+    (home-page "https://metacpan.org/release/Danga-Socket")
+    (synopsis "Event loop and event-driven async socket base class")
+    (description
+     "Danga::Socket is an abstract base class for objects backed by a socket
+which provides the basic framework for event-driven asynchronous IO, designed
+to be fast.  Danga::Socket is both a base class for objects, and an event
+loop.")
+    (license license:perl-license)))
+
 (define-public perl-data-validate-ip
   (package
     (name "perl-data-validate-ip")
