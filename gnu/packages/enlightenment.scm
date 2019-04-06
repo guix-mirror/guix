@@ -185,7 +185,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.3.2")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -193,7 +193,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1kclxzadmk272s9spa7n704pcb1c611ixxrq88w5zk22va0i25xm"))
+                "0q1y7fadj42n23aspx9y8hm4w4xlc316wc3415wnf75ibsx08ngd"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               (snippet
