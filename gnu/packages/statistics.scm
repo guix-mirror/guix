@@ -1635,13 +1635,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "13s8dh7nryjacp9jpi092icxf5ffkp16qxv59m923g5nkf8f03hi"))))
+                "1pdlafnijpd2vzy8jxcxwakfi66n4qzrqxvcxi1ja389m066cvbb"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
