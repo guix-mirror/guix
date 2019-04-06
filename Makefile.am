@@ -277,7 +277,8 @@ endif BUILD_DAEMON_OFFLOAD
 # Scheme implementation of the build daemon and related functionality.
 STORE_MODULES =					\
   guix/store/database.scm			\
-  guix/store/deduplication.scm
+  guix/store/deduplication.scm			\
+  guix/store/roots.scm
 
 MODULES += $(STORE_MODULES)
 
@@ -408,7 +409,8 @@ SCM_TESTS =					\
   tests/pypi.scm				\
   tests/import-utils.scm			\
   tests/store-database.scm			\
-  tests/store-deduplication.scm
+  tests/store-deduplication.scm			\
+  tests/store-roots.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
