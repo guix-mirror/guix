@@ -16559,6 +16559,36 @@ the @code{operating-system}'s @code{user-accounts} in order to deliver
 the @code{postmaster} mail to @code{bob} (which subsequently would
 deliver mail to @code{bob@@example.com} and @code{bob@@example2.com}).
 
+@subsubheading GNU Mailutils IMAP4 Daemon
+@cindex GNU Mailutils IMAP4 Daemon
+
+@deffn {Scheme Variable} imap4d-service-type
+This is the type of the GNU Mailutils IMAP4 Daemon (@pxref{(mailutils)
+imap4d}), whose value should be an @code{imap4d-configuration} object as in
+this example:
+
+@example
+(service imap4d-service-type
+         (imap4d-configuration
+           (config-file (local-file "imap4d.conf"))))
+@end example
+@end deffn
+
+@deftp {Data Type} imap4d-configuration
+Data type representing the configuration of @command{imap4d}.
+
+@table @asis
+@item @code{package} (default: @code{mailutils})
+The package that provides @command{imap4d}.
+
+@item @code{config-file} (default: @code{%default-imap4d-config-file})
+File-like object of the configuration file to use, by default it will listen
+on the tcp port 143 of @code{localhost}.  @xref{(mailutils) Conf-imap4d} for
+details.
+
+@end table
+@end deftp
+
 @node Messaging Services
 @subsection Messaging Services
 
