@@ -3823,6 +3823,31 @@ functionality; it returns a list of file names that match the given pattern.
 For instance, it supports the @code{**/*.pm} form.")
     (license (package-license perl))))
 
+(define-public perl-filesys-notify-simple
+  (package
+    (name "perl-filesys-notify-simple")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Filesys-Notify-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18jv96k1pf8wqf4vn2ahs7dv44lc9cyqj0bja9z17qici3dx7qxd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-sharedfork" ,perl-test-sharedfork)))
+    (home-page "https://metacpan.org/release/Filesys-Notify-Simple")
+    (synopsis "Simple and dumb file system watcher")
+    (description
+     "Filesys::Notify::Simple is a simple but unified interface to get
+notifications of changes to a given filesystem path.  It utilizes inotify2 on
+Linux, fsevents on OS X, kqueue on FreeBSD and FindFirstChangeNotification on
+Windows if they're installed, with a fallback to the full directory scan if
+they're not available.")
+    (license perl-license)))
+
 (define-public perl-getopt-long
   (package
     (name "perl-getopt-long")
