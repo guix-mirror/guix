@@ -1926,19 +1926,18 @@ SpatialVx.")
 (define-public r-extremes
   (package
     (name "r-extremes")
-    (version "2.0-9")
+    (version "2.0-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "extRemes" version))
        (sha256
         (base32
-         "0cpvcajk9xyy7662nqkyx333vrxpwsc5nmv0bfnhsbgijz5y0hvm"))))
+         "08fj72gpq2d6695hbm3cgwgal64z009ykrirby7g6r0akfcsx5ic"))))
     (properties `((upstream-name . "extRemes")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-car" ,r-car)
-       ("r-distillery" ,r-distillery)
+     `(("r-distillery" ,r-distillery)
        ("r-lmoments" ,r-lmoments)))
     (home-page "http://www.assessment.ucar.edu/toolkit/")
     (synopsis "Extreme value analysis")
