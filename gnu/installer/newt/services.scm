@@ -32,11 +32,11 @@
 environments."
   (run-checkbox-tree-page
    #:info-text (G_ "Please select the desktop(s) environment(s) you wish to \
-install. If you select multiple desktops environments, we will be able to \
+install. If you select multiple desktops environments, you will be able to \
 choose the one to use on the log-in screen.")
    #:title (G_ "Desktop environment")
-   #:items %desktop-environments
-   #:item->text desktop-environment-name
+   #:items (filter desktop-system-service? %system-services)
+   #:item->text system-service-name
    #:checkbox-tree-height 5
    #:exit-button-callback-procedure
    (lambda ()

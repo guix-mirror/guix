@@ -256,8 +256,7 @@ selected keymap."
           (description (G_ "Services"))
           (compute (lambda _
                      ((installer-services-page current-installer))))
-	  (configuration-formatter
-           desktop-environments->configuration))
+	  (configuration-formatter system-services->configuration))
 
 	 (installer-step
           (id 'final)
