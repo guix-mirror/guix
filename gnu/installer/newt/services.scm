@@ -33,7 +33,7 @@ environments."
   (run-checkbox-tree-page
    #:info-text (G_ "Please select the desktop(s) environment(s) you wish to \
 install. If you select multiple desktops environments, we will be able to \
-choose the one to use on the log-in screen with F1.")
+choose the one to use on the log-in screen.")
    #:title (G_ "Desktop environment")
    #:items %desktop-environments
    #:item->text desktop-environment-name
