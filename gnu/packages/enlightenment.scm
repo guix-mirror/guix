@@ -204,11 +204,24 @@ removable devices or support for multimedia.")
                   #t))))
     (build-system meson-build-system)
     (arguments
-     '(#:phases
+     `(#:configure-flags '("-Dtests=true")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+           (lambda _ (setenv "HOME" "/tmp") #t))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion
+               (string-append "../" ,name "-" ,version "/tests")
+               (invoke "sh" "run_tests.sh" "--verbose"
+                       "-t" "../../build/src/bin/tytest"))))
+         (add-after 'install 'remove-test-binary
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This file is not meant to be installed.
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/bin/tytest"))
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
