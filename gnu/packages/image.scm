@@ -592,8 +592,8 @@ work.")
                 "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
     (build-system cmake-build-system)
     (arguments
-      ;; Trying to run `$ make check' results in a no rule fault.
-      '(#:tests? #f))
+     '(#:tests? #f                   ;TODO: requires a 1.1 GiB data repository
+       #:configure-flags '("-DBUILD_STATIC_LIBS=OFF")))
     (inputs
       `(("lcms" ,lcms)
         ("libpng" ,libpng)
