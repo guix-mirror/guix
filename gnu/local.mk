@@ -958,6 +958,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/kodi-skip-test-449.patch		\
   %D%/packages/patches/laby-make-install.patch			\
+  %D%/packages/patches/lcms-CVE-2018-16435.patch		\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
   %D%/packages/patches/liba52-enable-pic.patch			\
