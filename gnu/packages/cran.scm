@@ -7511,14 +7511,14 @@ observation.")
 (define-public r-sandwich
   (package
     (name "r-sandwich")
-    (version "2.5-0")
+    (version "2.5-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sandwich" version))
        (sha256
         (base32
-         "168kq5kk34xbhfsxsanard9zriyp6cw0s09ralzb57kk42pl9hbc"))))
+         "1mk685b9wq7k566pbml52rj96i5h6b3vf215k9picgmq296nzvyv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-zoo" ,r-zoo)))
