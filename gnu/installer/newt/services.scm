@@ -45,13 +45,20 @@ choose the one to use on the log-in screen.")
       (condition
        (&installer-step-abort))))))
 
-(define (run-networking-cbt-page)
-  "Run a page allowing the user to select networking services."
+(define (run-networking-cbt-page network-management?)
+  "Run a page allowing the user to select networking services.  When
+NETWORK-MANAGEMENT? is true, include network management services like
+NetworkManager."
   (run-checkbox-tree-page
-   #:info-text (G_ "You can now select networking services to run on your
+   #:info-text (G_ "You can now select networking services to run on your \
 system.")
    #:title (G_ "Network service")
-   #:items (filter networking-system-service? %system-services)
+   #:items (filter (let ((types (if network-management?
+                                    '(network-management networking)
+                                    '(networking))))
+                     (lambda (service)
+                       (memq (system-service-type service) types)))
+                   %system-services)
    #:item->text system-service-name
    #:checkbox-tree-height 5
    #:exit-button-callback-procedure
@@ -61,5 +68,8 @@ system.")
        (&installer-step-abort))))))
 
 (define (run-services-page)
-  (append (run-desktop-environments-cbt-page)
-          (run-networking-cbt-page)))
+  (let ((desktop (run-desktop-environments-cbt-page)))
+    ;; When the user did not select any desktop services, and thus didn't get
+    ;; '%desktop-services', offer network management services.
+    (append desktop
+            (run-networking-cbt-page (null? desktop)))))

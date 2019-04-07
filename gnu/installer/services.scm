@@ -69,7 +69,21 @@
      (system-service
       (name "Tor anonymous network router")
       (type 'networking)
-      (snippet '(service tor-service-type))))))
+      (snippet '(service tor-service-type)))
+
+     ;; Network connectivity management.
+     (system-service
+      (name "NetworkManager network connection manager")
+      (type 'network-management)
+      (snippet '(service network-manager-service-type)))
+     (system-service
+      (name "Connman network connection manager")
+      (type 'network-management)
+      (snippet '(service connman-service-type)))
+     (system-service
+      (name "DHCP client")
+      (type 'network-management)
+      (snippet '(service dhcp-client-service))))))
 
 (define (desktop-system-service? service)
   "Return true if SERVICE is a desktop environment service."
