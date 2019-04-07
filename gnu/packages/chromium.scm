@@ -40,7 +40,6 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -51,6 +50,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages node)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -223,7 +223,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "73.0.3683.86")
+(define %chromium-version "73.0.3683.103")
 (define %ungoogled-revision "4c7fb6d1a86602999f30b58ef8b331b2115c5ad8")
 (define %debian-revision "debian/73.0.3683.75-1")
 (define package-revision "0")
@@ -246,7 +246,7 @@ from forcing GEXP-PROMISE."
                                %chromium-version ".tar.xz"))
            (sha256
             (base32
-             "18xzddqi8rgng5vksx23jaiv103prxc38pshwp702nfjfqap7fwy"))))
+             "1bskjr7yiwvdab1b5mp36y6964xqpgks6dqazm4qifwqvqcw80pb"))))
         (ungoogled-source
          (origin
            (method git-fetch)

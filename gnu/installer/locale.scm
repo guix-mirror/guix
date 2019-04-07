@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,24 @@
       (codeset   . ,(match:substring matches 5))
       (modifier  . ,(match:substring matches 7)))))
 
+(define (normalize-codeset codeset)
+  "Compute the \"normalized\" variant of CODESET."
+  ;; info "(libc) Using gettextized software", for the algorithm used to
+  ;; compute the normalized codeset.
+  (letrec-syntax ((-> (syntax-rules ()
+                        ((_ proc value)
+                         (proc value))
+                        ((_ proc rest ...)
+                         (proc (-> rest ...))))))
+    (-> (lambda (str)
+          (if (string-every char-set:digit str)
+              (string-append "iso" str)
+              str))
+        string-downcase
+        (lambda (str)
+          (string-filter char-set:letter+digit str))
+        codeset)))
+
 (define (locale->locale-string locale)
   "Reverse operation of locale-string->locale."
   (let ((language (locale-language locale))
@@ -81,7 +100,7 @@
                    `("_" ,territory)
                    '())
              ,@(if codeset
-                   `("." ,codeset)
+                   `("." ,(normalize-codeset codeset))
                    '())
              ,@(if modifier
                    `("@" ,modifier)

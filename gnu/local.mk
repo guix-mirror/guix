@@ -46,6 +46,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/grub.scm                       \
   %D%/bootloader/extlinux.scm                   \
   %D%/bootloader/u-boot.scm                     \
+  %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
@@ -230,6 +231,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gxmessage.scm			\
   %D%/packages/hardware.scm			\
   %D%/packages/haskell.scm			\
+  %D%/packages/haskell-apps.scm			\
   %D%/packages/haskell-check.scm		\
   %D%/packages/haskell-crypto.scm		\
   %D%/packages/haskell-web.scm			\
@@ -341,6 +343,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ninja.scm			\
   %D%/packages/node.scm				\
   %D%/packages/noweb.scm			\
+  %D%/packages/nss.scm				\
   %D%/packages/ntp.scm				\
   %D%/packages/nutrition.scm			\
   %D%/packages/nvi.scm				\
@@ -583,9 +586,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm
 
-if ENABLE_INSTALLER
-
-GNU_SYSTEM_MODULES +=                           \
+INSTALLER_MODULES =                             \
   %D%/installer.scm      			\
   %D%/installer/connman.scm			\
   %D%/installer/final.scm			\
@@ -617,12 +618,18 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/newt/welcome.scm		\
   %D%/installer/newt/wifi.scm	
 
+# Always ship the installer modules but compile them only when
+# ENABLE_INSTALLER is true.
+if ENABLE_INSTALLER
+GNU_SYSTEM_MODULES += $(INSTALLER_MODULES)
+elif !ENABLE_INSTALLER
+MODULES_NOT_COMPILED += $(INSTALLER_MODULES)
+endif
+
 installerdir = $(guilemoduledir)/%D%/installer
 dist_installer_DATA =				\
   %D%/installer/aux-files/logo.txt	        \
   %D%/installer/aux-files/SUPPORTED
-
-endif ENABLE_INSTALLER
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
@@ -745,6 +752,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
+  %D%/packages/patches/emacs-undohist-ignored.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/emacs-zones-called-interactively.patch	\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
@@ -927,6 +935,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/libziparchive-add-includes.patch		\
+  %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kiki-level-selection-crash.patch		\
   %D%/packages/patches/kiki-makefile.patch			\
   %D%/packages/patches/kiki-missing-includes.patch		\
@@ -946,9 +955,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/kodi-skip-test-449.patch		\
   %D%/packages/patches/laby-make-install.patch			\
+  %D%/packages/patches/lcms-CVE-2018-16435.patch		\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
-  %D%/packages/patches/ledger-fix-uninitialized.patch		\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -1084,6 +1093,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
+  %D%/packages/patches/ntfs-3g-CVE-2019-9755.patch		\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\

@@ -65,7 +65,7 @@
             imlib2
             ipa
             knuth
-            lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
+            lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+ llgpl
             lppl lppl1.0+ lppl1.1+ lppl1.2 lppl1.2+
             lppl1.3 lppl1.3+
             lppl1.3a lppl1.3a+
@@ -416,6 +416,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "LGPL 3+"
            "https://www.gnu.org/licenses/lgpl.html"
            "https://www.gnu.org/licenses/license-list#LGPLv3"))
+
+(define llgpl
+  (license "LLGPL"
+           "https://opensource.franz.com/preamble.html"
+           "Lisp Lesser General Public License"))
 
 (define lppl
   (license "LPPL (any version)"

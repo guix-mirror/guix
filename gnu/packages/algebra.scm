@@ -248,7 +248,7 @@ precision.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.5.0-43")
+    (version "1.5.0-49")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -260,7 +260,7 @@ precision.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "1j58cvpiddzxswfdh4ixyj1xsva7qwk8xjls29nqvryyykdfm4dp"))))
+                "0f4pkand9vmqfayw18jm5qxbhcwi1405qfd7ibzh9lwzz6amkm3l"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))            ;77MiB of documentation
     (arguments

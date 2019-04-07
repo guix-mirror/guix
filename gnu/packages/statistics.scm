@@ -400,14 +400,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-51.1")
+    (version "7.3-51.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "14907ia8418mp3p1rs1i2f1x5b6kk5z998dk353a29j3xqf3ybyq"))))
+         "1dh8cvvdsf9dx29x6va47qdkswmr03k3yjycinq98fnl0ivhw3jv"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -443,14 +443,14 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
 (define-public r-cluster
   (package
     (name "r-cluster")
-    (version "2.0.7-1")
+    (version "2.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cluster" version))
        (sha256
         (base32
-         "1grxbifbc4nwig25dmjgkympnbzb4al0w6k1c0ibdhpk1h4l20di"))))
+         "0jkmlhjknndh0lmyvqz7s7j1hhnarixm6zb39np4ssw47flk0nfc"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
@@ -675,14 +675,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "2.43-3")
+    (version "2.44-1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "0ldrjja1dj4n1ic0lbggm7jvk52sl5h85i8m23nrgndi60acsv4r"))))
+         "1faiwyg7x8y2kfzb66l4yc8br0mdlz4k20znmjrwq96dbzhm3cam"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -1182,23 +1182,23 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "122k9spymawfnfyksxyapwq9cigydy5nrjwhrwrhy3qkax3aycf6"))))
+         "1ayy0s699ghaz34lklvcskfwman3x2n2772s5sa5x9k9xgsnxwcl"))))
     (build-system r-build-system)
     (native-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
        ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-withr" ,r-withr)))
+     `(("r-rcpp" ,r-rcpp)
+       ("r-withr" ,r-withr)))
     (home-page "https://cran.r-project.org/web/packages/gdtools")
     (synopsis "Utilities for graphical rendering")
     (description
@@ -1635,13 +1635,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "13s8dh7nryjacp9jpi092icxf5ffkp16qxv59m923g5nkf8f03hi"))))
+                "1pdlafnijpd2vzy8jxcxwakfi66n4qzrqxvcxi1ja389m066cvbb"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")

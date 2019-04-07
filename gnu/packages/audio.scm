@@ -1307,7 +1307,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.37.3")
+    (version "0.38.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1315,7 +1315,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "1wfm8wrwrnqpb4ihy75n7l9i6vml536jlq9pdx2pblbc4ba3paac"))))
+               "0nv5vm2q86lzsz42kl78jxm6w20al8r7qcnr5f057ria7f8fq2f7"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -3693,7 +3693,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.03")
+    (version "19.04")
     (source
      (origin
        (method git-fetch)
@@ -3702,7 +3702,7 @@ library.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "0v5l67ixr5kd9jz5sza8xgzxamqnlgn3gs1q8gg6ir60g0jvzbd4"))))
+        (base32 "00lqf8bjcwm4k8yky9jmqghkxijcm2lxspb9zyl1270yqmj05kiw"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DFFMPEG=ON")))

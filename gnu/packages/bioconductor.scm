@@ -32,6 +32,8 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
@@ -775,6 +777,30 @@ datasets which are derived from the Allen Brain Atlas:
 
 All datasets are restricted to protein coding genes.")
     (license license:gpl2+)))
+
+(define-public r-arrmdata
+  (package
+    (name "r-arrmdata")
+    (version "1.18.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/experiment/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "ARRmData_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r1y3zn7ly4k3ngx55vfavn9s6aidbddlv2fbmj7hj3hvpslmyly"))))
+    (properties
+     `((upstream-name . "ARRmData")))
+    (build-system r-build-system)
+    (home-page "https://www.bioconductor.org/packages/ARRmData/")
+    (synopsis "Example dataset for normalization of Illumina 450k methylation data")
+    (description
+     "This package provides raw beta values from 36 samples across 3 groups
+from Illumina 450k methylation arrays.")
+    (license license:artistic2.0)))
 
 (define-public r-hsmmsinglecell
   (package
@@ -1595,14 +1621,14 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.12.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "07q5msw9rnamx957mbiawnv3p9kr5ahwawzvv9xzla7d3lkk62xp"))))
+         "1ykkr15b4bc2carwppf9yxzpl2n6lqpc6z6i2qy37vc6xffzgdx4"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2925,14 +2951,14 @@ profiles (GO and KEGG) of gene and gene clusters.")
 (define-public r-mlinterfaces
   (package
     (name "r-mlinterfaces")
-    (version "1.62.0")
+    (version "1.62.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MLInterfaces" version))
        (sha256
         (base32
-         "12bgplyzfh0hkwmdp5w4cs5zw3ygdhzmiqzm8vhjyni6m9nrxwy8"))))
+         "1h0x1p2h8x1h276wxx6kcnb4c4s5sglnmd58iigl81a224x8gxwp"))))
     (properties `((upstream-name . "MLInterfaces")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4040,3 +4066,208 @@ chromatographically separated and single-spectra mass spectral data.  It
 imports from AIA/ANDI NetCDF, mzXML, mzData and mzML files.  It preprocesses
 data for high-throughput, untargeted analyte profiling.")
     (license license:gpl2+)))
+
+(define-public r-wrench
+  (package
+    (name "r-wrench")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Wrench" version))
+       (sha256
+        (base32
+         "12gfdj2p52pah67bimz14xcwmcb4c2snjwswj0fns7v3v1h9rlqg"))))
+    (properties `((upstream-name . "Wrench")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)
+       ("r-matrixstats" ,r-matrixstats)))
+    (home-page "https://github.com/HCBravoLab/Wrench")
+    (synopsis "Wrench normalization for sparse count data")
+    (description
+     "Wrench is a package for normalization sparse genomic count data, like
+that arising from 16s metagenomic surveys.")
+    (license license:artistic2.0)))
+
+(define-public r-wiggleplotr
+  (package
+    (name "r-wiggleplotr")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "wiggleplotr" version))
+       (sha256
+        (base32
+         "12fhbskkjwv4d9bdy3gab8n9pcf7qpwiwgx0248as445vfw8dil3"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-cowplot" ,r-cowplot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-purrr" ,r-purrr)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/wiggleplotr/")
+    (synopsis "Make read coverage plots from BigWig files")
+    (description
+     "This package provides tools to visualize read coverage from sequencing
+experiments together with genomic annotations (genes, transcripts, peaks).
+Introns of long transcripts can be rescaled to a fixed length for better
+visualization of exonic read coverage.")
+    (license license:asl2.0)))
+
+(define-public r-widgettools
+  (package
+    (name "r-widgettools")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "widgetTools" version))
+       (sha256
+        (base32
+         "0mz69pdr6q69avsvs6r5ncdkdmgwfislpil4v18dsflw4j454gwf"))))
+    (properties `((upstream-name . "widgetTools")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/widgetTools/")
+    (synopsis "Tools for creating interactive tcltk widgets")
+    (description
+     "This packages contains tools to support the construction of tcltk
+widgets in R.")
+    ;; Any version of the LGPL.
+    (license license:lgpl3+)))
+
+(define-public r-webbioc
+  (package
+    (name "r-webbioc")
+    (version "1.54.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "webbioc" version))
+       (sha256
+        (base32
+         "16n6wc9q51wfpmh9y77p53sqdqdd8pn50c67vf6h4n7gv5wgnpwi"))))
+    (build-system r-build-system)
+    (inputs
+     `(("netpbm" ,netpbm)
+       ("perl" ,perl)))
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-annaffy" ,r-annaffy)
+       ("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-gcrma" ,r-gcrma)
+       ("r-multtest" ,r-multtest)
+       ("r-qvalue" ,r-qvalue)
+       ("r-vsn" ,r-vsn)))
+    (home-page "https://www.bioconductor.org/")
+    (synopsis "Bioconductor web interface")
+    (description
+     "This package provides an integrated web interface for doing microarray
+analysis using several of the Bioconductor packages.  It is intended to be
+deployed as a centralized bioinformatics resource for use by many users.
+Currently only Affymetrix oligonucleotide analysis is supported.")
+    (license license:gpl2+)))
+
+(define-public r-zfpkm
+  (package
+    (name "r-zfpkm")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "zFPKM" version))
+       (sha256
+        (base32
+         "0rvfrjxxvfng9fxxn316gm96v4rahx62vlk3axr2bzjbi1r4s8v5"))))
+    (properties `((upstream-name . "zFPKM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/ronammar/zFPKM/")
+    (synopsis "Functions to facilitate zFPKM transformations")
+    (description
+     "This is a package to perform the zFPKM transform on RNA-seq FPKM data.
+This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID
+24215113).")
+    (license license:gpl3)))
+
+(define-public r-rbowtie2
+  (package
+    (name "r-rbowtie2")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rbowtie2" version))
+       (sha256
+        (base32
+         "045cmfwqzcj4zn6r16hkpmr5sd5y0mxvrs5yynf460fdz2p418cr"))))
+    (properties `((upstream-name . "Rbowtie2")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://bioconductor.org/packages/Rbowtie2/")
+    (synopsis "R wrapper for Bowtie2 and AdapterRemoval")
+    (description
+     "This package provides an R wrapper of the popular @code{bowtie2}
+sequencing reads aligner and @code{AdapterRemoval}, a convenient tool for
+rapid adapter trimming, identification, and read merging.")
+    (license license:gpl3+)))
+
+(define-public r-progeny
+  (package
+    (name "r-progeny")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "progeny" version))
+       (sha256
+        (base32
+         "02z09rbzi305jrwzai8zayxi82563lxcaldp4r9pw564qkbl7pk7"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (home-page "https://github.com/saezlab/progeny")
+    (synopsis "Pathway responsive gene activity inference")
+    (description
+     "This package provides a function to infer pathway activity from gene
+expression.  It contains the linear model inferred in the publication
+\"Perturbation-response genes reveal signaling footprints in cancer gene
+expression\".")
+    (license license:asl2.0)))
+
+(define-public r-arrmnormalization
+  (package
+    (name "r-arrmnormalization")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ARRmNormalization" version))
+       (sha256
+        (base32
+         "09wfd4vqfvmkpqn9dwqly1dz4h1ckh621jbwj1dab6q4z0dfmzmd"))))
+    (properties
+     `((upstream-name . "ARRmNormalization")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-arrmdata" ,r-arrmdata)))
+    (home-page "https://bioconductor.org/packages/ARRmNormalization/")
+    (synopsis "Adaptive robust regression normalization for methylation data")
+    (description
+     "This is a package to perform the @dfn{Adaptive Robust Regression
+method} (ARRm) for the normalization of methylation data from the Illumina
+Infinium HumanMethylation 450k assay.")
+    (license license:artistic2.0)))

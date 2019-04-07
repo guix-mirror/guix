@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2017, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -171,21 +171,23 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.47")
+    (version "2.49")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/asymptote/"
                                   version "/asymptote-" version ".src.tgz"))
               (sha256
                (base32
-                "0zc24n2vwzxdfmcppqfk3fkqlb4jmvswzi3bz232kxl7dyiyb971"))))
+                "1vljhq68gyc2503l9fj76rk1q4a4db9a1sp3fdfagqqmirnmybp5"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not
     ;; currently useful.
     (native-inputs
-     `(("gs" ,ghostscript)              ;For tests
-       ("texinfo" ,texinfo)             ;For generating documentation
+     `(("emacs" ,emacs-minimal)
+       ("gs" ,ghostscript)              ;For tests
+       ("perl" ,perl)
+       ("texinfo" ,texinfo)           ;For generating documentation
        ;; For the manual and the tests.
        ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
                                         texlive-latex-amsfonts
@@ -193,15 +195,15 @@ colors, styles, options and details.")
                                         texlive-latex-graphics
                                         texlive-latex-oberdiek ; for ifluatex
                                         texlive-latex-parskip
-                                        texlive-tex-texinfo)))
-       ("emacs" ,emacs-minimal)
-       ("perl" ,perl)))
+                                        texlive-tex-texinfo)))))
     (inputs
      `(("fftw" ,fftw)
        ("freeglut" ,freeglut)
+       ("glew" ,glew)
+       ("glm" ,glm)
        ("gsl" ,gsl)
        ("libgc" ,libgc)
-       ("python" ,python-2)
+       ("python" ,python)
        ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
@@ -221,6 +223,23 @@ colors, styles, options and details.")
                             "/share/texmf/tex/context/third"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           ;; XXX: Build process complains about missing "config.h"
+           ;; and "primitives.h" files.
+           (lambda _
+             (substitute* (find-files "." "\\.in$")
+               (("#include <primitives.h>") "#include \"primitives.h\""))
+             (invoke "touch" "prc/config.h")))
+         (add-after 'unpack 'move-info-location
+           ;; Build process install info file in the unusual
+           ;; "%out/share/info/asymptote/" location.  Move it to
+           ;; "%out/share/info/" so it appears in the top-level directory.
+           (lambda _
+             (substitute* "doc/png/Makefile.in"
+               (("(\\$\\(infodir\\))/asymptote" _ infodir) infodir))
+             (substitute* "doc/asymptote.texi"
+               (("asymptote/asymptote") "asymptote"))
+             #t))
          (add-before 'build 'patch-pdf-viewer
            (lambda _
              ;; Default to a free pdf viewer.
@@ -233,12 +252,6 @@ colors, styles, options and details.")
            ;; "failed to create directory /homeless-shelter/.asy" error.
            (lambda _
              (setenv "HOME" "/tmp")
-             ;; The "gs" test fails, complaining about an incompatible
-             ;; Ghostscript version.  Not sure what's going on...  Is this
-             ;; because I've just replaced texlive with texlive-union?
-             (substitute* "tests/Makefile"
-               (("^(TESTDIRS =.*) gs(.*)" begin end)
-                (string-append begin " " end)))
              #t))
          (add-after 'install 'install-Emacs-data
            (lambda* (#:key outputs #:allow-other-keys)

@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -57,7 +57,6 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
@@ -66,6 +65,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
@@ -302,6 +302,152 @@ the freedesktop.org XDG Base Directory specification.")
 extracted out as a separate project.  Elogind integrates with PAM to provide
 the org.freedesktop.login1 interface over the system bus, allowing other parts
 of a the system to know what users are logged in, and where.")
+    (license license:lgpl2.1+)))
+
+(define-public localed
+  ;; XXX: This package is extracted from systemd but we retain so little of it
+  ;; that it would make more sense to maintain a fork of the bits we need.
+  (package
+    (name "localed")
+    (version "241")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/systemd/systemd")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0sy91flzbhpq58k7v0294pa2gxpr0bk27rcnxlbhk2fi6nc51d28"))
+              (file-name (git-file-name name version))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Connect to the right location for our D-Bus daemon.
+                  (substitute* '("src/basic/def.h"
+                                 "src/libsystemd/sd-bus/sd-bus.c"
+                                 "src/stdio-bridge/stdio-bridge.c")
+                    (("/run/dbus/system_bus_socket")
+                     "/var/run/dbus/system_bus_socket"))
+
+                  ;; Don't insist on having systemd as PID 1 (otherwise
+                  ;; 'localectl' would exit without doing anything.)
+                  (substitute* "src/shared/bus-util.c"
+                    (("sd_booted\\(\\)")
+                     "(1)"))
+                  #t))
+              (patches (search-patches "localed-xorg-keyboard.patch"))))
+    (build-system meson-build-system)
+    (arguments
+     ;; Try to build as little as possible (list of components taken from the
+     ;; top-level 'meson.build' file.)
+     (let ((components '("utmp"
+                         "hibernate"
+                         "environment-d"
+                         "binfmt"
+                         "coredump"
+                         "resolve"
+                         "logind"
+                         "hostnamed"
+                         "localed"
+                         "machined"
+                         "portabled"
+                         "networkd"
+                         "timedated"
+                         "timesyncd"
+                         "firstboot"
+                         "randomseed"
+                         "backlight"
+                         "vconsole"
+                         "quotacheck"
+                         "sysusers"
+                         "tmpfiles"
+                         "hwdb"
+                         "rfkill"
+                         "ldconfig"
+                         "efi"
+                         "tpm"
+                         "ima"
+                         "smack"
+                         "gshadow"
+                         "idn"
+                         "nss-myhostname"
+                         "nss-systemd")))
+       `(#:configure-flags ',(map (lambda (component)
+                                    (string-append "-D" component "=false"))
+                                  (delete "localed" components))
+
+         ;; It doesn't make sense to test all of systemd.
+         #:tests? #f
+
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'set-xkeyboard-config-file-name
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        ;; Set the file name to xkeyboard-config and kbd.
+                        ;; This is used by 'localectl list-x11-keymap-layouts'
+                        ;; and similar functions.
+                        (let ((xkb (assoc-ref inputs "xkeyboard-config"))
+                              (kbd (assoc-ref inputs "kbd")))
+                          (substitute* "src/locale/localectl.c"
+                            (("/usr/share/X11/xkb/rules")
+                             (string-append xkb "/share/X11/xkb/rules")))
+                          (substitute* "src/basic/def.h"
+                            (("/usr/share/keymaps")
+                             (string-append kbd "/share/keymaps")))
+                          #t)))
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; Install 'localed', the D-Bus and polkit files, and
+                        ;; 'localectl'.
+                        (let* ((out (assoc-ref outputs "out"))
+                               (libexec (string-append out "/libexec/localed"))
+                               (bin     (string-append out "/bin"))
+                               (lib     (string-append out "/lib"))
+                               (dbus    (string-append out
+                                                       "/share/dbus-1/system-services"))
+                               (conf    (string-append out
+                                                       "/etc/dbus-1/system.d/"))
+                               (polkit  (string-append out
+                                                       "/share/polkit-1/actions"))
+                               (data    (string-append out "/share/systemd")))
+                          (define (source-file regexp)
+                            (car (find-files ".." regexp)))
+
+                          (mkdir-p libexec)
+                          (copy-file "systemd-localed"
+                                     (string-append libexec "/localed"))
+                          (install-file "localectl" bin)
+
+                          (let ((service-file (source-file
+                                               "\\.locale1\\.service$")))
+                            (substitute* service-file
+                              (("^Exec=.*$")
+                               (string-append "Exec=" libexec "/localed\n")))
+                            (install-file service-file dbus))
+                          (install-file (source-file "\\.locale1\\.policy$")
+                                        polkit)
+                          (install-file (source-file "\\.locale1\\.conf$")
+                                        conf)
+                          (for-each (lambda (file)
+                                      (install-file file lib))
+                                    (find-files "src/shared"
+                                                "libsystemd-shared.*\\.so"))
+
+                          (for-each (lambda (map)
+                                      (install-file map data))
+                                    (find-files ".." "^(kbd-model-map|language-fallback-map)$"))
+                          #t)))))))
+    (native-inputs (package-native-inputs elogind))
+    (inputs `(("libmount" ,util-linux)
+              ("xkeyboard-config" ,xkeyboard-config)
+              ("kbd" ,kbd)
+              ,@(package-inputs elogind)))
+    (home-page "https://www.freedesktop.org/wiki/Software/systemd/localed/")
+    (synopsis "Control the system locale and keyboard layout")
+    (description
+     "Localed is a tiny daemon that can be used to control the system locale
+and keyboard mapping from user programs.  It is used among other things by the
+GNOME Shell.  The @command{localectl} command-line tool allows you to interact
+with localed.  This package is extracted from the broader systemd package.")
     (license license:lgpl2.1+)))
 
 (define-public packagekit

@@ -27,6 +27,7 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
   #:use-module (gnu system keyboard)
+  #:use-module (gnu services base)
   #:use-module (gnu services dbus)
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages display-managers)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gnustep)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages admin)
@@ -91,9 +93,14 @@
             screen-locker-service-type
             screen-locker-service
 
+            localed-configuration
+            localed-configuration?
+            localed-service-type
+
             gdm-configuration
             gdm-service-type
-            gdm-service))
+            gdm-service
+            set-xorg-configuration))
 
 ;;; Commentary:
 ;;;
@@ -653,6 +660,88 @@ makes the good ol' XlockMore usable."
                           (file-append package "/bin/" program)
                           allow-empty-passwords?)))
 
+
+;;;
+;;; Locale service.
+;;;
+
+(define-record-type* <localed-configuration>
+  localed-configuration make-localed-configuration
+  localed-configuration?
+  (localed         localed-configuration-localed
+                   (default localed))
+  (keyboard-layout localed-configuration-keyboard-layout
+                   (default #f)))
+
+(define (localed-dbus-service config)
+  "Return the 'localed' D-Bus service for @var{config}, a
+@code{<localed-configuration>} record."
+  (define keyboard-layout
+    (localed-configuration-keyboard-layout config))
+
+  ;; The primary purpose of 'localed' is to tell GDM what the "current" Xorg
+  ;; keyboard layout is.  If 'localed' is missing, or if it's unable to
+  ;; determine the current XKB layout, then GDM forcefully installs its
+  ;; default XKB config (US English).  Here we communicate the configured
+  ;; layout through environment variables.
+
+  (if keyboard-layout
+      (let* ((layout  (keyboard-layout-name keyboard-layout))
+             (variant (keyboard-layout-variant keyboard-layout))
+             (model   (keyboard-layout-model keyboard-layout))
+             (options (keyboard-layout-options keyboard-layout)))
+        (list (wrapped-dbus-service
+               (localed-configuration-localed config)
+               "libexec/localed/localed"
+               `(("GUIX_XKB_LAYOUT" ,layout)
+                 ,@(if variant
+                       `(("GUIX_XKB_VARIANT" ,variant))
+                       '())
+                 ,@(if model
+                       `(("GUIX_XKB_MODEL" ,model))
+                       '())
+                 ,@(if (null? options)
+                       '()
+                       `(("GUIX_XKB_OPTIONS"
+                          ,(string-join options ","))))))))
+      '()))
+
+(define localed-service-type
+  (let ((package (lambda (config)
+                   ;; Don't bother if the user didn't specify any keyboard
+                   ;; layout.
+                   (if (localed-configuration-keyboard-layout config)
+                       (list (localed-configuration-localed config))
+                       '()))))
+    (service-type (name 'localed)
+                  (extensions
+                   (list (service-extension dbus-root-service-type
+                                            localed-dbus-service)
+                         (service-extension udev-service-type package)
+                         (service-extension polkit-service-type package)
+
+                         ;; Add 'localectl' to the profile.
+                         (service-extension profile-service-type package)))
+
+                  ;; This service can be extended, typically by the X login
+                  ;; manager, to communicate the chosen Xorg keyboard layout.
+                  (compose (lambda (extensions)
+                             (find keyboard-layout? extensions)))
+                  (extend (lambda (config keyboard-layout)
+                            (localed-configuration
+                             (inherit config)
+                             (keyboard-layout keyboard-layout))))
+                  (description
+                   "Run the locale daemon, @command{localed}, which can be used
+to control the system locale and keyboard mapping from user programs such as
+the GNOME desktop environment.")
+                  (default-value (localed-configuration)))))
+
+
+;;;
+;;; GNOME Desktop Manager.
+;;;
+
 (define %gdm-accounts
   (list (user-group (name "gdm") (system? #t))
         (user-account
@@ -787,7 +876,26 @@ makes the good ol' XlockMore usable."
                                           gdm-configuration-gnome-shell-assets)
                        (service-extension dbus-root-service-type
                                           (compose list
-                                                   gdm-configuration-gdm))))
+                                                   gdm-configuration-gdm))
+                       (service-extension localed-service-type
+                                          (compose
+                                           xorg-configuration-keyboard-layout
+                                           gdm-configuration-xorg))))
+
+                ;; For convenience, this service can be extended with an
+                ;; <xorg-configuration> record.  Take the first one that
+                ;; comes.
+                (compose (lambda (extensions)
+                           (match extensions
+                             (() #f)
+                             ((config . _) config))))
+                (extend (lambda (config xorg-configuration)
+                          (if xorg-configuration
+                              (gdm-configuration
+                               (inherit config)
+                               (xorg-configuration xorg-configuration))
+                              config)))
+
                 (default-value (gdm-configuration))
                 (description
                  "Run the GNOME Desktop Manager (GDM), a program that allows
@@ -820,5 +928,15 @@ password."
            (gdm-configuration
             (gdm gdm)
             (allow-empty-passwords? allow-empty-passwords?))))
+
+(define* (set-xorg-configuration config
+                                 #:optional
+                                 (login-manager-service-type
+                                  gdm-service-type))
+  "Tell the log-in manager (of type @var{login-manager-service-type}) to use
+@var{config}, an <xorg-configuration> record."
+  (simple-service 'set-xorg-configuration
+                  login-manager-service-type
+                  config))
 
 ;;; xorg.scm ends here

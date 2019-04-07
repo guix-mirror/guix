@@ -1353,6 +1353,38 @@ large-scale nonlinear optimization.  It provides C++, C, and Fortran
 interfaces.")
     (license license:epl1.0)))
 
+(define-public clp
+  (package
+    (name "clp")
+    (version "1.17.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.coin-or.org/download/source/"
+                                  "Clp/Clp-" version ".tgz"))
+              (sha256
+               (base32
+                "1wdg820g3iikf9344ijwsc8sy6c0m6im42bzzizm6rlmkvnmxhk9"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(begin
+                  (delete-file-recursively "ThirdParty")
+                  #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openblas" ,openblas)))
+    (home-page "https://www.coin-or.org")
+    (synopsis "Linear programming solver")
+    (description
+     "CLP is a high quality linear programming solver.  Its main strengths are
+its dual and primal Simplex algorithms.  It also has a barrier algorithm for
+linear and quadratic objectives.  There are limited facilities for nonlinear
+and quadratic objectives using the Simplex algorithm.")
+    (license license:epl1.0)))
+
 (define-public ceres
   (package
     (name "ceres-solver")
@@ -2818,7 +2850,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "19.01.3")
+    (version "19.03.1")
     (source
      (origin
        (method git-fetch)
@@ -2828,7 +2860,7 @@ point numbers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1vwahx3zxkn3qlv4z0fm7v8wh0wspvs026alrh7ff7s0c2dcy95x"))))
+         "1qkf4jg86xnn3wk3782ffmfz12axb92dkjagcz3ffzw2wi1rclml"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3366,7 +3398,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.4")
+    (version "0.9.9.5")
     (source
      (origin
        (method url-fetch)
@@ -3374,7 +3406,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "17vxbqzy4pxciq5i39bgpxz54f7ifqqmcqwwq7m6xfgikwqqqawp"))))
+         "1vmg7hb4xvsa77zpbwiw6lqc7pyaj56dihx6xriny5b9rrh4iqsg"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -4829,3 +4861,54 @@ implemented as callable objects, and bases of finite element spaces.")
 built on top of DUNE, the Distributed and Unified Numerics Environment.")
     ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
     (license (list license:lgpl3+ license:gpl2))))
+
+(define-public mlucas
+  (package
+    (name "mlucas")
+    (version "18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://mersenneforum.org/mayer/src/C/mlucas_v" version ".txz"))
+       (sha256
+        (base32
+         "1ax12qj9lyvnx4vs3gx7l8r3wx5gjbsdswp5f00ik9z0wz7xf297"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python2" ,python-2)))
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "src")
+             (call-with-output-file "Makefile"
+               (lambda (port)
+                 (format port "CC = gcc
+CFLAGS = -O3 ~a -DUSE_THREADS
+LDLIBS = -lm -lpthread -lrt
+Mlucas: $(addsuffix .o,$(basename $(wildcard *.c)))
+"
+                         ,(let ((system (or (%current-target-system)
+                                            (%current-system))))
+                            (cond
+                             ((string-prefix? "x86_64" system) "-DUSE_SSE2")
+                             (else ""))))))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "Mlucas" bin)
+               (install-file "primenet.py" bin))
+             #t)))))
+    (home-page "https://www.mersenne.org")
+    (synopsis "Great Internet Mersenne Prime Search (GIMPS) distributed computing client")
+    (description "Mlucas performs Lucas-Lehmer primality testing of Mersenne
+numbers in search of a world-record prime.  You may use it to test any
+suitable number as you wish, but it is preferable that you do so in a
+coordinated fashion, as part of the Great Internet Mersenne Prime
+Search (GIMPS).  Mlucas also includes a simple Python script for assignment
+management via the GIMPS project's Primenet server.")
+    (license license:gpl2+)))

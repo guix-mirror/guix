@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -47,10 +47,12 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public kdenlive
@@ -531,3 +533,79 @@ cards.")
 Using a plugin system it is possible to create notifications with many
 different notification systems.")
     (license license:lgpl3)))
+
+(define-public kdeconnect
+  (package
+    (name "kdeconnect")
+    (version "1.3.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/kdeconnect/"
+                            version "/src/kdeconnect-kde-"
+                            version ".tar.xz"))
+        (sha256
+         (base32
+          "1vac0mw1myrswr61adv7lgif0c4wzw5wnsj0sqxj6msp4l4pfgsg"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_TESTING=ON")
+       #:tests? #f ; tests fail hard in our build environment
+       #:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                            (guix build qt-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "QT_PLUGIN_PATH"
+                       (string-append out "/lib/qt5/plugins"
+                                      ":" (getenv "QT_PLUGIN_PATH")))
+               (wrap-qt-program out "../lib/libexec/kdeconnectd")
+               (wrap-qt-program out "kdeconnect-cli")
+               (wrap-qt-program out "kdeconnect-handler")
+               (wrap-qt-program out "kdeconnect-indicator"))
+             #t)))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("libxtst" ,libxtst)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("kcmutils" ,kcmutils)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kdbusaddons" ,kdbusaddons)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("knotifications" ,knotifications)
+       ("kwayland" ,kwayland)
+       ("libfakekey" ,libfakekey)
+       ("qca" ,qca)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://community.kde.org/KDEConnect")
+    (synopsis "Enable your devices to communicate with each other")
+    (description "KDE Connect is a project that enables all your devices to
+communicate with each other.  Here's a few things KDE Connect can do:
+@enumerate
+@item Receive your phone notifications on your desktop computer and reply to messages
+@item Control music playing on your desktop from your phone
+@item Use your phone as a remote control for your desktop
+@item Run predefined commands on your PC from connected devices
+@item Check your phones battery level from the desktop
+@item Ring your phone to help finding it
+@item Share files and links between devices
+@item Browse your phone from the desktop
+@item Control the desktop's volume from the phone
+@end enumerate")
+    (license (list license:gpl2 license:gpl3)))) ; dual licensed

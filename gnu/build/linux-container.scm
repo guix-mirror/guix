@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,9 +168,12 @@ for the process."
     (umount "real-root" MNT_DETACH)
     (rmdir "real-root")))
 
-(define (initialize-user-namespace pid host-uids)
+(define* (initialize-user-namespace pid host-uids
+                                    #:key (guest-uid 0) (guest-gid 0))
   "Configure the user namespace for PID.  HOST-UIDS specifies the number of
-host user identifiers to map into the user namespace."
+host user identifiers to map into the user namespace.  GUEST-UID and GUEST-GID
+specify the first UID (respectively GID) that host UIDs (respectively GIDs)
+map to in the namespace."
   (define proc-dir
     (string-append "/proc/" (number->string pid)))
 
@@ -191,10 +194,10 @@ host user identifiers to map into the user namespace."
     ;; within the container.
     (call-with-output-file (scope "/uid_map")
       (lambda (port)
-        (format port "0 ~d ~d" uid host-uids)))
+        (format port "~d ~d ~d" guest-uid uid host-uids)))
     (call-with-output-file (scope "/gid_map")
       (lambda (port)
-        (format port "0 ~d ~d" gid host-uids)))))
+        (format port "~d ~d ~d" guest-gid gid host-uids)))))
 
 (define (namespaces->bit-mask namespaces)
   "Return the number suitable for the 'flags' argument of 'clone' that
@@ -210,13 +213,17 @@ corresponds to the symbols in NAMESPACES."
                ('net  CLONE_NEWNET))
               namespaces)))
 
-(define (run-container root mounts namespaces host-uids thunk)
+(define* (run-container root mounts namespaces host-uids thunk
+                        #:key (guest-uid 0) (guest-gid 0))
   "Run THUNK in a new container process and return its PID.  ROOT specifies
 the root directory for the container.  MOUNTS is a list of <file-system>
 objects that specify file systems to mount inside the container.  NAMESPACES
 is a list of symbols that correspond to the possible Linux namespaces: mnt,
-ipc, uts, user, and net.  HOST-UIDS specifies the number of
-host user identifiers to map into the user namespace."
+ipc, uts, user, and net.
+
+HOST-UIDS specifies the number of host user identifiers to map into the user
+namespace.  GUEST-UID and GUEST-GID specify the first UID (respectively GID)
+that host UIDs (respectively GIDs) map to in the namespace."
   ;; The parent process must initialize the user namespace for the child
   ;; before it can boot.  To negotiate this, a pipe is used such that the
   ;; child process blocks until the parent writes to it.
@@ -254,7 +261,9 @@ host user identifiers to map into the user namespace."
          (pid
           (close-port child)
           (when (memq 'user namespaces)
-            (initialize-user-namespace pid host-uids))
+            (initialize-user-namespace pid host-uids
+                                       #:guest-uid guest-uid
+                                       #:guest-gid guest-gid))
           ;; TODO: Initialize cgroups.
           (write 'ready parent)
           (newline parent)
@@ -271,23 +280,30 @@ host user identifiers to map into the user namespace."
                #f)))))))))
 
 (define* (call-with-container mounts thunk #:key (namespaces %namespaces)
-                              (host-uids 1))
+                              (host-uids 1) (guest-uid 0) (guest-gid 0))
   "Run THUNK in a new container process and return its exit status.
 MOUNTS is a list of <file-system> objects that specify file systems to mount
 inside the container.  NAMESPACES is a list of symbols corresponding to
 the identifiers for Linux namespaces: mnt, ipc, uts, pid, user, and net.  By
-default, all namespaces are used.  HOST-UIDS is the number of host user
-identifiers to map into the container's user namespace, if there is one.  By
-default, only a single uid/gid, that of the current user, is mapped into the
-container.  The host user that creates the container is the root user (uid/gid
-0) within the container.  Only root can map more than a single uid/gid.
+default, all namespaces are used.
+
+HOST-UIDS is the number of host user identifiers to map into the container's
+user namespace, if there is one.  By default, only a single uid/gid, that of
+the current user, is mapped into the container.  The host user that creates
+the container is the root user (uid/gid 0) within the container.  Only root
+can map more than a single uid/gid.
+
+GUEST-UID and GUEST-GID specify the first UID (respectively GID) that host
+UIDs (respectively GIDs) map to in the namespace.
 
 Note that if THUNK needs to load any additional Guile modules, the relevant
 module files must be present in one of the mappings in MOUNTS and the Guile
 load path must be adjusted as needed."
   (call-with-temporary-directory
    (lambda (root)
-     (let ((pid (run-container root mounts namespaces host-uids thunk)))
+     (let ((pid (run-container root mounts namespaces host-uids thunk
+                               #:guest-uid guest-uid
+                               #:guest-gid guest-gid)))
        ;; Catch SIGINT and kill the container process.
        (sigaction SIGINT
          (lambda (signum)

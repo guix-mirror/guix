@@ -59,7 +59,7 @@ Internet and return the selected technology. For now, only technologies with
                (G_ "Internet access")
                (G_ "Continue")
                (G_ "Exit")
-               (G_ "The install process requires an internet access, but no \
+               (G_ "The install process requires Internet access but no \
 network device were found. Do you want to continue anyway?"))
           ((1) (raise
                 (condition
@@ -68,7 +68,7 @@ network device were found. Do you want to continue anyway?"))
                 (condition
                  (&installer-step-abort)))))
         (run-listbox-selection-page
-         #:info-text (G_ "The install process requires an internet access.\
+         #:info-text (G_ "The install process requires Internet access.\
  Please select a network device.")
          #:title (G_ "Internet access")
          #:listbox-items items

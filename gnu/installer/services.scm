@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,44 +19,89 @@
 
 (define-module (gnu installer services)
   #:use-module (guix records)
-  #:export (<desktop-environment>
-            desktop-environment
-            make-desktop-environment
-            desktop-environment-name
-            desktop-environment-snippet
+  #:use-module (srfi srfi-1)
+  #:export (system-service?
+            system-service-name
+            system-service-type
+            system-service-snippet
 
-            %desktop-environments
-            desktop-environments->configuration))
+            desktop-system-service?
+            networking-system-service?
 
-(define-record-type* <desktop-environment>
-  desktop-environment make-desktop-environment
-  desktop-environment?
-  (name            desktop-environment-name) ;string
-  (snippet         desktop-environment-snippet)) ;symbol
+            %system-services
+            system-services->configuration))
+
+(define-record-type* <system-service>
+  system-service make-system-service
+  system-service?
+  (name            system-service-name)           ;string
+  (type            system-service-type)           ;'desktop | 'networking
+  (snippet         system-service-snippet))       ;sexp
 
 ;; This is the list of desktop environments supported as services.
-(define %desktop-environments
-  (list
-   (desktop-environment
-    (name "GNOME")
-    (snippet '(service gnome-desktop-service-type)))
-   (desktop-environment
-    (name "Xfce")
-    ;; TODO: Use 'xfce-desktop-service-type' when the 'guix' package provides
-    ;; it with a default value.
-    (snippet '(xfce-desktop-service)))
-   (desktop-environment
-    (name "MATE")
-    (snippet '(service mate-desktop-service-type)))
-   (desktop-environment
-    (name "Enlightenment")
-    (snippet '(service enlightenment-desktop-service-type)))))
+(define %system-services
+  (let-syntax ((desktop-environment (syntax-rules ()
+                                      ((_ fields ...)
+                                       (system-service
+                                        (type 'desktop)
+                                        fields ...))))
+               (G_ (syntax-rules ()               ;for xgettext
+                     ((_ str) str))))
+    (list
+     (desktop-environment
+      (name "GNOME")
+      (snippet '(service gnome-desktop-service-type)))
+     (desktop-environment
+      (name "Xfce")
+      ;; TODO: Use 'xfce-desktop-service-type' when the 'guix' package provides
+      ;; it with a default value.
+      (snippet '(xfce-desktop-service)))
+     (desktop-environment
+      (name "MATE")
+      (snippet '(service mate-desktop-service-type)))
+     (desktop-environment
+      (name "Enlightenment")
+      (snippet '(service enlightenment-desktop-service-type)))
 
-(define (desktop-environments->configuration desktop-environments)
-  "Return the configuration field for DESKTOP-ENVIRONMENTS."
-  (let ((snippets
-         (map desktop-environment-snippet desktop-environments)))
-    `(,@(if (null? snippets)
-            '()
-            `((services (cons* ,@snippets
-                               %desktop-services)))))))
+     ;; Networking.
+     (system-service
+      (name (G_ "OpenSSH secure shell daemon (sshd)"))
+      (type 'networking)
+      (snippet '(service openssh-service-type)))
+     (system-service
+      (name (G_ "Tor anonymous network router"))
+      (type 'networking)
+      (snippet '(service tor-service-type)))
+
+     ;; Network connectivity management.
+     (system-service
+      (name (G_ "NetworkManager network connection manager"))
+      (type 'network-management)
+      (snippet '(service network-manager-service-type)))
+     (system-service
+      (name (G_ "Connman network connection manager"))
+      (type 'network-management)
+      (snippet '(service connman-service-type)))
+     (system-service
+      (name (G_ "DHCP client (dynamic IP address assignment)"))
+      (type 'network-management)
+      (snippet '(service dhcp-client-service))))))
+
+(define (desktop-system-service? service)
+  "Return true if SERVICE is a desktop environment service."
+  (eq? 'desktop (system-service-type service)))
+
+(define (networking-system-service? service)
+  "Return true if SERVICE is a desktop environment service."
+  (eq? 'networking (system-service-type service)))
+
+(define (system-services->configuration services)
+  "Return the configuration field for SERVICES."
+  (let* ((snippets (map system-service-snippet services))
+         (desktop? (find desktop-system-service? services))
+         (base     (if desktop?
+                       '%desktop-services
+                       '%base-services)))
+    (if (null? snippets)
+        `((services ,base))
+        `((services (cons* ,@snippets ,base))))))

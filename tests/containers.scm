@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,16 @@
      (lambda ()
        ;; The user is root within the new user namespace.
        (assert-exit (and (zero? (getuid)) (zero? (getgid)))))
+     #:namespaces '(user))))
+
+(skip-if-unsupported)
+(test-assert "call-with-container, user namespace, guest UID/GID"
+  (zero?
+   (call-with-container '()
+     (lambda ()
+       (assert-exit (and (= 42 (getuid)) (= 77 (getgid)))))
+     #:guest-uid 42
+     #:guest-gid 77
      #:namespaces '(user))))
 
 (skip-if-unsupported)

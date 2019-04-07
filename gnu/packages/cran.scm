@@ -400,13 +400,13 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "19m9514yj5sg0rz1zvi8w1z98srnrql4iirgr794fkaap6bs7i2f"))))
+                "042piypg4c8sqrlcdl3dwajkafkbglsky3x7d0jpjv8s5wxnpfxm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -1485,14 +1485,14 @@ validation and filtering on the values, making options invisible or private.")
 (define-public r-circlize
   (package
     (name "r-circlize")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "circlize" version))
        (sha256
         (base32
-         "0qhn9jzw7gd0jp9rmqrlbmy5ql6hjsa68pkp0acfz1h215dl8ah9"))))
+         "1yjnb88pnzk5c1p0vjxykc7cr3394ln5axviqcf12ajibvy8rj6f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)
@@ -1905,14 +1905,14 @@ quantile mixture from L-moments and trimmed L-moments.")
 (define-public r-distillery
   (package
     (name "r-distillery")
-    (version "1.0-4")
+    (version "1.0-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "distillery" version))
        (sha256
         (base32
-         "1m0pgmlvk7bsb6q3kxagnq422babk61sf73naavac68v8x2q8fix"))))
+         "1mi3ig9jq0kd7yrwc5m37lmrw04p1b4lirnbsxi10z3n5yay4429"))))
     (build-system r-build-system)
     (home-page "http://www.ral.ucar.edu/staff/ericg")
     (synopsis "Functions for confidence intervals and object information")
@@ -1926,19 +1926,18 @@ SpatialVx.")
 (define-public r-extremes
   (package
     (name "r-extremes")
-    (version "2.0-9")
+    (version "2.0-10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "extRemes" version))
        (sha256
         (base32
-         "0cpvcajk9xyy7662nqkyx333vrxpwsc5nmv0bfnhsbgijz5y0hvm"))))
+         "08fj72gpq2d6695hbm3cgwgal64z009ykrirby7g6r0akfcsx5ic"))))
     (properties `((upstream-name . "extRemes")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-car" ,r-car)
-       ("r-distillery" ,r-distillery)
+     `(("r-distillery" ,r-distillery)
        ("r-lmoments" ,r-lmoments)))
     (home-page "http://www.assessment.ucar.edu/toolkit/")
     (synopsis "Extreme value analysis")
@@ -3618,14 +3617,14 @@ iVAT).")
 (define-public r-xfun
   (package
     (name "r-xfun")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xfun" version))
        (sha256
         (base32
-         "1wkrapc490r9l9z6mz623zn9ijq64mckc17xg2s7n3s9yaxj98lb"))))
+         "123wmnykmlq9prqx1g9ij9vyqx25pib2jnqjrwy39rfmzbsypbx3"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/xfun")
     (synopsis "Miscellaneous functions")
@@ -3751,14 +3750,14 @@ published results; and a routine for graphical display.")
 (define-public r-network
   (package
     (name "r-network")
-    (version "1.14-377")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "network" version))
        (sha256
         (base32
-         "0iiy5n17kysrdfs20zr7qald4lwkvws0axi1qkr8f7vzv7w04g01"))))
+         "1cscw5978fyixhkicf06c4b2g1yf6gyi8vx86cz3dy75d41mrgjw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
@@ -5821,14 +5820,14 @@ other add-on packages.")
 (define-public r-insight
   (package
     (name "r-insight")
-    (version "0.1.2")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "insight" version))
        (sha256
         (base32
-         "0cy00j4m9r690hrjdmv8wzwn8mbnkjd3g527nvsmid64h9jgks5f"))))
+         "0fn9cd5qxqlpjv3d05mk66k5z5ll60x5la51mby5h7k4l6bqmsiz"))))
     (build-system r-build-system)
     (home-page "https://easystats.github.io/insight/")
     (synopsis "Easy access to model information for various model objects")
@@ -5953,21 +5952,21 @@ functions.")
 (define-public r-flextable
   (package
     (name "r-flextable")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flextable" version))
        (sha256
         (base32
-         "0arxgal67ahsq8v0zbvc767qadn7lg3f7mmqa9gjjz6sri0y6gsx"))))
+         "0sabdvkdlx5i1nr7nz68cappwsibzsjxpmiz3yp948ckbfmkdb27"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-data-table" ,r-data-table)
+     `(("r-base64enc" ,r-base64enc)
+       ("r-data-table" ,r-data-table)
        ("r-gdtools" ,r-gdtools)
        ("r-htmltools" ,r-htmltools)
        ("r-knitr" ,r-knitr)
-       ("r-magick" ,r-magick)
        ("r-officer" ,r-officer)
        ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
@@ -7512,14 +7511,14 @@ observation.")
 (define-public r-sandwich
   (package
     (name "r-sandwich")
-    (version "2.5-0")
+    (version "2.5-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sandwich" version))
        (sha256
         (base32
-         "168kq5kk34xbhfsxsanard9zriyp6cw0s09ralzb57kk42pl9hbc"))))
+         "1mk685b9wq7k566pbml52rj96i5h6b3vf215k9picgmq296nzvyv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-zoo" ,r-zoo)))
@@ -9212,14 +9211,14 @@ definiteness of a matrix.")
 (define-public r-rspectra
   (package
     (name "r-rspectra")
-    (version "0.13-1")
+    (version "0.14-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RSpectra" version))
        (sha256
         (base32
-         "1sw80chwyyjzf5px278l6xmp94yhwrlj5xh8d3wlw3dnvdkycca7"))))
+         "12w5vnz39gyciza0fl7fw4f9i9kjw763h3mvk1sxd97c5dsn26jg"))))
     (properties `((upstream-name . "RSpectra")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11883,14 +11882,14 @@ whole genome approach to detecting significant QTL in linkage maps.")
 (define-public r-bedr
   (package
     (name "r-bedr")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bedr" version))
        (sha256
         (base32
-         "0q790695h8bls0qw284n1zn7lxzym1dnnj095fsbjga2p116z4yv"))))
+         "0zpqvyjgwyqawxm8qrhcv8zq2b3yxgcqkkc87br29yrl7sjb8h6j"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
@@ -12238,14 +12237,14 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.0-2")
+    (version "1.1-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spdep" version))
        (sha256
         (base32
-         "1ciqn5xslm4ryad10nm6fqy1qhq3qhd4hx9bj94kphfm8x1zm7kg"))))
+         "06mk81kc1ml2wjc8wwwgr0wasjcr4mwrxpfa8vfc373bmnha635s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -12700,14 +12699,14 @@ authoring books and technical documents with R Markdown.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "04vyb6dhcga30mvghsg1p052jmf69xqxkvh3hzqz7dscyppy76w1"))))
+         "0zrp6jakjhawrwfri270ym83vj5a7nvjk0w6b41z41ahw2da99dm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
@@ -12878,14 +12877,14 @@ the corresponding outputs (tables and graphs).")
 (define-public r-rjava
   (package
     (name "r-rjava")
-    (version "0.9-10")
+    (version "0.9-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rJava" version))
        (sha256
         (base32
-         "0y7yg70i3zwbwl4g36js4dqpl51cmwss5ymrsk24d1z07bflp4y9"))))
+         "0s9cjy1wh7snmbqwznh8f1r4ipylr7mgda4a979z963a8lqy32n2"))))
     (properties `((upstream-name . "rJava")))
     (build-system r-build-system)
     (arguments

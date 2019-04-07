@@ -77,7 +77,6 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libunwind)
@@ -90,6 +89,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -254,6 +254,15 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (file (string-append "linux-libre/" name)))
     (search-auxiliary-file file)))
 
+;; FIXME: merge into kernel-config
+(define* (kernel-config-veyron arch #:key variant)
+  "Return the absolute file name of the Linux-Libre build configuration file
+for ARCH and optionally VARIANT, or #f if there is no such configuration."
+  (let* ((name (string-append (if variant (string-append variant "-") "")
+                              (if (string=? "i386" arch) "i686" arch) "-veyron.conf"))
+         (file (string-append "linux-libre/" name)))
+    (search-auxiliary-file file)))
+
 (define %default-extra-linux-options
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
     ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
@@ -415,8 +424,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0.5")
-(define %linux-libre-hash "1yivxqprxfzhzid4qv9hpnb5i38kijrj2g2pyzz7niliya1c58li")
+(define %linux-libre-version "5.0.6")
+(define %linux-libre-hash "0zznxchsdljw4swnr4i0qlvdww7cxskmil1691baj53xjv3wsh3n")
 
 (define %linux-libre-5.0-patches
   (list %boot-logo-patch
@@ -429,8 +438,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.32")
-(define %linux-libre-4.19-hash "19bryl8nmnnnrfh91pc8q9yiayh5ca2nb6b32qyx6riahc5dy0i9")
+(define %linux-libre-4.19-version "4.19.33")
+(define %linux-libre-4.19-hash "147ksl3ksxdv2ifr18cbzq4647n9d7yr7kbxg02sljia7z3b70cm")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -443,8 +452,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.109")
-(define %linux-libre-4.14-hash "05xnnyfiypg4sdcnh42wvg7h72ar8xx98dik12sgwysnfldi0gk9")
+(define %linux-libre-4.14-version "4.14.110")
+(define %linux-libre-4.14-hash "05cfb1wb4ml5a1vfakq5v6192f584j3701d2mf03mv5fzxb7l2dx")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -453,14 +462,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.166"
-                    "1gijzvhky3x0nl0dm9ksg113z7jc1mc1n30qbr6r1dd78lfd050p"
+  (make-linux-libre "4.9.167"
+                    "16428a6mxxi6k4ag7pj6jl01d3a3yshynn3b9jf3vjip6kcrhw03"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.177"
-                    "0vvppw7j6jwn3cd5hhzgj5xfqkmz682zy36iyr6ynd0rbh1j7bhm"
+  (make-linux-libre "4.4.178"
+                    "1lgsd760md6b32qb5ng3anfq1n754a9d0c4xnf2mjxkimncb1jpp"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -471,6 +480,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-veyron
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-5.0-patches
+                    #:configuration-file kernel-config-veyron
+                    #:extra-version "arm-veyron"))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre %linux-libre-4.19-version
@@ -3631,6 +3648,7 @@ from userspace.")
               (method url-fetch)
               (uri (string-append "https://tuxera.com/opensource/"
                                   "ntfs-3g_ntfsprogs-" version ".tgz"))
+              (patches (search-patches "ntfs-3g-CVE-2019-9755.patch"))
               (sha256
                (base32
                 "1mb228p80hv97pgk3myyvgp975r9mxq56c6bdn1n24kngcfh4niy"))

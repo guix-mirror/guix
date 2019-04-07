@@ -44,6 +44,19 @@ else
     test $? = 42
 fi
 
+# By default, the UID inside the container should be the same as outside.
+uid="`id -u`"
+inner_uid="`guix environment -C --ad-hoc --bootstrap guile-bootstrap \
+  -- guile -c '(display (getuid))'`"
+test $inner_uid = $uid
+
+# When '--user' is passed, the UID should be 1000.  (Note: Use a separate HOME
+# so that we don't run into problems when the test directory is under /home.)
+export tmpdir
+inner_uid="`HOME=$tmpdir guix environment -C --ad-hoc --bootstrap guile-bootstrap \
+  --user=gnu-guix -- guile -c '(display (getuid))'`"
+test $inner_uid = 1000
+
 if test "x$USER" = "x"; then USER="`id -un`"; fi
 
 # Check whether /etc/passwd and /etc/group are valid.
@@ -123,7 +136,7 @@ rm $tmpdir/mounts
 
 # Test that user can be mocked.
 usertest='(exit (and (string=? (getenv "HOME") "/home/foognu")
-                     (string=? (passwd:name (getpwuid 0)) "foognu")
+                     (string=? (passwd:name (getpwuid 1000)) "foognu")
                      (file-exists? "/home/foognu/umock")))'
 touch "$tmpdir/umock"
 HOME="$tmpdir" guix environment --bootstrap --container --user=foognu \

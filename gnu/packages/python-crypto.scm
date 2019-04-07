@@ -336,13 +336,13 @@ password storage.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2018.11.29")
+    (version "2019.3.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1dvccavd2fzq4j37w0sznylp92ps14zi6gvlxzm23in0yhzciya7"))))
+                "1bnpw7hrf9i1l9gfxjnzi45hkrvzz0pyn9ia8m4mw7sxhgb08qdj"))))
     (build-system python-build-system)
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")

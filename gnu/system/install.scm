@@ -212,13 +212,11 @@ the user's target storage device rather than on the RAM disk."
 (define %installation-services
   ;; List of services of the installation system.
   (let ((motd (plain-file "motd" "
-\x1b[1;37mWelcome to the installation of the Guix System Distribution!\x1b[0m
+\x1b[1;37mWelcome to the installation of GNU Guix!\x1b[0m
 
-\x1b[2mThere is NO WARRANTY, to the extent permitted by law.  In particular, you may
-LOSE ALL YOUR DATA as a side effect of the installation process.  Furthermore,
-it is 'beta' software, so it may contain bugs.
-
-You have been warned.  Thanks for being so brave.\x1b[0m
+\x1b[2m\
+Using this shell, you can carry out the installation process \"manually.\"
+Access documentation at any time by pressing Alt-F2.\x1b[0m
 ")))
     (define (normal-tty tty)
       (mingetty-service (mingetty-configuration (tty tty)

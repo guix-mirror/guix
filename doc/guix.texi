@@ -4557,9 +4557,11 @@ Run @var{command} within an isolated container.  The current working
 directory outside the container is mapped inside the container.
 Additionally, unless overridden with @code{--user}, a dummy home
 directory is created that matches the current user's home directory, and
-@file{/etc/passwd} is configured accordingly.  The spawned process runs
-as the current user outside the container, but has root privileges in
-the context of the container.
+@file{/etc/passwd} is configured accordingly.
+
+The spawned process runs as the current user outside the container.  Inside
+the container, it has the same UID and GID as the current user, unless
+@option{--user} is passed (see below.)
 
 @item --network
 @itemx -N
@@ -4587,8 +4589,9 @@ the environment.
 @itemx -u @var{user}
 For containers, use the username @var{user} in place of the current
 user.  The generated @file{/etc/passwd} entry within the container will
-contain the name @var{user}; the home directory will be
-@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
+contain the name @var{user}, the home directory will be
+@file{/home/@var{user}}, and no user GECOS data will be copied.  Furthermore,
+the UID and GID inside the container are 1000.  @var{user}
 need not exist on the system.
 
 Additionally, any shared or exposed path (see @code{--share} and
@@ -10999,6 +11002,8 @@ special-case and is automatically added whether or not it is specified.
 @node Keyboard Layout
 @section Keyboard Layout
 
+@cindex keyboard layout
+@cindex keymap
 To specify what each key of your keyboard does, you need to tell the operating
 system what @dfn{keyboard layout} you want to use.  The default, when nothing
 is specified, is the US English QWERTY layout for 105-key PC keyboards.
@@ -11074,6 +11079,7 @@ Let's say you want your system to use the Turkish keyboard layout throughout
 your system---bootloader, console, and Xorg.  Here's what your system
 configuration would look like:
 
+@findex set-xorg-configuration
 @lisp
 ;; Using the Turkish layout for the bootloader, the console,
 ;; and for Xorg.
@@ -11085,18 +11091,45 @@ configuration would look like:
                 (bootloader grub-efi-bootloader)
                 (target "/boot/efi")
                 (keyboard-layout keyboard-layout))) ;for GRUB
-  (services (modify-services %desktop-services
-              (gdm-service-type config =>
-                (gdm-configuration
-                  (inherit config)
-                  (xorg-configuration
+  (services (cons (set-xorg-configuration
                     (xorg-configuration             ;for Xorg
-                      (keyboard-layout keyboard-layout))))))))
+                      (keyboard-layout keyboard-layout)))
+                  %desktop-services)))
 @end lisp
 
 In the example above, for GRUB and for Xorg, we just refer to the
 @code{keyboard-layout} field defined above, but we could just as well refer to
-a different layout.
+a different layout.  The @code{set-xorg-configuration} procedure communicates
+the desired Xorg configuration to the graphical log-in manager, by default
+GDM.
+
+We've discussed how to specify the @emph{default} keyboard layout of your
+system when it starts, but you can also adjust it at run time:
+
+@itemize
+@item
+If you're using GNOME, its settings panel has a ``Region & Language'' entry
+where you can select one or more keyboard layouts.
+
+@item
+Under Xorg, the @command{setxkbmap} command (from the same-named package)
+allows you to change the current layout.  For example, this is how you would
+change the layout to US Dvorak:
+
+@example
+setxkbmap us dvorak
+@end example
+
+@item
+The @code{loadkeys} command changes the keyboard layout in effect in the Linux
+console.  However, note that @code{loadkeys} does @emph{not} use the XKB
+keyboard layout categorization described above.  The command below loads the
+French bépo layout:
+
+@example
+loadkeys fr-bepo
+@end example
+@end itemize
 
 @node Locales
 @section Locales
@@ -11989,29 +12022,6 @@ This is the name of the file where some random bytes are saved by
 @var{urandom-seed-service} to seed @file{/dev/urandom} when rebooting.
 It defaults to @file{/var/lib/random-seed}.
 @end defvr
-
-@cindex keymap
-@cindex keyboard
-@deffn {Scheme Procedure} console-keymap-service @var{files} ...
-@cindex keyboard layout
-Return a service to load console keymaps from @var{files} using
-@command{loadkeys} command.  Most likely, you want to load some default
-keymap, which can be done like this:
-
-@example
-(console-keymap-service "dvorak")
-@end example
-
-Or, for example, for a Swedish keyboard, you may need to combine
-the following keymaps:
-@example
-(console-keymap-service "se-lat6" "se-fi-lat6")
-@end example
-
-Also you can specify a full file name (or file names) of your keymap(s).
-See @code{man loadkeys} for details.
-
-@end deffn
 
 @cindex mouse
 @cindex gpm
@@ -13562,6 +13572,16 @@ This is the list of command-line arguments to pass to the X server.  The
 default is @code{-nolisten tcp}.
 @end table
 @end deftp
+
+@deffn {Scheme Procedure} set-xorg-configuration @var{config} @
+  [@var{login-manager-service-type}]
+Tell the log-in manager (of type @var{login-manager-service-type}) to use
+@var{config}, an <xorg-configuration> record.
+
+Since the Xorg configuration is embedded in the log-in manager's
+configuration---e.g., @code{gdm-configuration}---this procedure provides a
+shorthand to set the Xorg configuration.
+@end deffn
 
 @deffn {Scheme Procedure} xorg-start-command [@var{config}]
 Return a @code{startx} script in which the modules, fonts, etc. specified
@@ -16538,6 +16558,36 @@ the above example, there doesn't need to be a @code{postmaster} entry in
 the @code{operating-system}'s @code{user-accounts} in order to deliver
 the @code{postmaster} mail to @code{bob} (which subsequently would
 deliver mail to @code{bob@@example.com} and @code{bob@@example2.com}).
+
+@subsubheading GNU Mailutils IMAP4 Daemon
+@cindex GNU Mailutils IMAP4 Daemon
+
+@deffn {Scheme Variable} imap4d-service-type
+This is the type of the GNU Mailutils IMAP4 Daemon (@pxref{imap4d,,,
+mailutils, GNU Mailutils Manual}), whose value should be an
+@code{imap4d-configuration} object as in this example:
+
+@example
+(service imap4d-service-type
+         (imap4d-configuration
+           (config-file (local-file "imap4d.conf"))))
+@end example
+@end deffn
+
+@deftp {Data Type} imap4d-configuration
+Data type representing the configuration of @command{imap4d}.
+
+@table @asis
+@item @code{package} (default: @code{mailutils})
+The package that provides @command{imap4d}.
+
+@item @code{config-file} (default: @code{%default-imap4d-config-file})
+File-like object of the configuration file to use, by default it will listen
+on TCP port 143 of @code{localhost}.  @xref{Conf-imap4d,,, mailutils, GNU
+Mailutils Manual}, for details.
+
+@end table
+@end deftp
 
 @node Messaging Services
 @subsection Messaging Services

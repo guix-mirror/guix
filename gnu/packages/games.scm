@@ -113,7 +113,6 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
@@ -156,7 +155,6 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
-  #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system python)
@@ -2290,48 +2288,6 @@ mouse and keyboard.  The child uses the mouse to draw colored dots and lines
 on the screen and keyboard to display letters.")
     ;; Most files under gpl2+ or gpl3+, but eat.wav under gpl3
     (license license:gpl3)))
-
-(define-public raincat
-  (package
-    (name "raincat")
-    (version "1.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
-                           "Raincat-" version ".tar.gz"))
-       (sha256
-        (base32
-         "10y9zi22m6hf13c9h8zd9vg7mljpwbw0r3djb6r80bna701fdf6c"))))
-    (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/raincat")
-                 `("LD_LIBRARY_PATH" ":" =
-                   (,(string-append (assoc-ref inputs "freeglut")
-                                    "/lib"))))
-               #t))))))
-    (inputs
-     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-random" ,ghc-random)
-       ("ghc-glut" ,ghc-glut)
-       ("freeglut" ,freeglut)
-       ("ghc-opengl" ,ghc-opengl)
-       ("ghc-sdl2" ,ghc-sdl2)
-       ("ghc-sdl2-image" ,ghc-sdl2-image)
-       ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
-    (home-page "http://www.bysusanlin.com/raincat/")
-    (synopsis "Puzzle game with a cat in lead role")
-    (description "Project Raincat is a game developed by Carnegie Mellon
-students through GCS during the Fall 2008 semester.  Raincat features game
-play inspired from classics Lemmings and The Incredible Machine.  The project
-proved to be an excellent learning experience for the programmers.  Everything
-is programmed in Haskell.")
-    (license license:bsd-3)))
 
 (define-public manaplus
   (package
@@ -6749,3 +6705,63 @@ exec ~a --data-path=~a/share/flare --mods=empyrean_campaign~%"
     (description "Flare is a single-player 2D action RPG with
 fast-paced action and a dark fantasy style.")
     (license license:cc-by-sa3.0)))
+
+(define-public meritous
+  (package
+    (name "meritous")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/meritous/meritous.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0n5jm4g0arjllgqmd2crv8h02i6hs3hlh1zyc7ng7yfpg1mbd8p8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-sdl-path
+           ;; XXX: For some reason, `sdl-config' reports stand-alone SDL
+           ;; directory, not SDL-union provided as an input to the package.
+           ;; We force the latter with "--prefix=" option.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("sdl-config" command)
+                (string-append command " --prefix=" (assoc-ref inputs "sdl"))))
+             #t))
+         (add-after 'unpack 'fix-crash
+           ;; XXX: Songs are not present in the repository, due to licensing
+           ;; issues.  Yet, the game tries to load them, and, since it cannot
+           ;; find them, crashes.  Users cannot add them back, the store being
+           ;; read-only, so we turn off background music altogether.
+           (lambda _
+             (substitute* "src/audio.c"
+               (("PlayBackgroundMusic\\(new_track\\);" all)
+                (string-append "// " all)))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer)))
+       ("zlib" ,zlib)))
+    (home-page "https://gitlab.com/meritous/meritous")
+    (synopsis "Action-adventure dungeon crawl game")
+    (description "Far below the surface of the planet is a place of limitless
+power.  Those that seek to control such a utopia will soon bring an end to
+themselves.  Seeking an end to the troubles that plague him, PSI user Merit
+journeys into the hallowed Orcus Dome in search of answers.
+
+Meritous is a action-adventure game with simple controls but a challenge to
+find a balance of power versus recovery time during real-time battles.  Set in
+a procedurally generated world, the player can explore thousands of rooms in
+search of powerful artifacts, tools to help them, and to eventually free the
+Orcus Dome from evil.")
+    (license license:gpl3+)))

@@ -627,6 +627,7 @@ Info manual."
     (scheme-node "guix-system"
                  `((gnu system)
                    (gnu services)
+                   ,@(scheme-modules* source "gnu/bootloader")
                    ,@(scheme-modules* source "gnu/system")
                    ,@(scheme-modules* source "gnu/services"))
                  (list *core-package-modules* *package-modules*

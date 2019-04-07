@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -139,7 +139,7 @@ line client and a client based on Qt.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.1.2")
+    (version "3.1.3")
     (source
      (origin
        (method git-fetch)
@@ -148,8 +148,7 @@ line client and a client based on Qt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hwnipj2m9p95hhyv6kyq54m27g14r58gnsy2my883kxhpcyb2vc"))
-       (patches (search-patches "ledger-fix-uninitialized.patch"))))
+        (base32 "0bfnrqrd6wqgsngfpqi30xh6yy86pwl25iwzrqy44q31r0zl4mm3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -926,7 +925,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.52.0")
+    (version "0.53.0")
     (source
      (origin
        (method git-fetch)
@@ -937,7 +936,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07liba2d21hb8m3n6yccfamq9yq0ryywh18vs9g2sgywfsnv82lh"))))
+         "1km585xlv6dm693s5x6apcnx3ixvz08g8yjfclszhy4jakhpv0ya"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".

@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -755,14 +755,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1.2")
+    (version "4.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0yrl6nij4b1pk1c4nbi80857dsd760gziiss2ls19awq8zj0lpxr"))))
+               "0gdnprc7gk4b7ckq8wbxbrj7i00r76r9a5g9mj7iln40512j0c0c"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -2849,7 +2849,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2018.10.17")
+    (version "2019.03.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2857,13 +2857,7 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1s69ipvdc6ldscp0cr1zpsll8xc3qcagr95nl84x7b1rbg4xjs3w"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; As of glibc 2.26, <xlocale.h> no longer is.
-                          (substitute* "liveMedia/include/Locale.hh"
-                            (("xlocale\\.h") "locale.h"))
-                          #t))))
+                "1gasdl95yjabv811knkmy5laj21a54z1jdfq36jdj984k1nw5l0b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests

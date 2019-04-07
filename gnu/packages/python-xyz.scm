@@ -51,7 +51,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -15297,3 +15297,22 @@ space that are close to a given query point.  It also creates large read-only
 file-based data structures that are @code{mmap}ped into memory so that many
 processes may share the same data.")
     (license license:asl2.0)))
+
+(define-public python-sphinxcontrib-svg2pdfconverter
+  (package
+    (name "python-sphinxcontrib-svg2pdfconverter")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-svg2pdfconverter" version))
+              (sha256
+               (base32
+                "1abvbgkkii13q8nsb10r0gc5lm0p9iq1iwhfhakn5ifn6asa0183"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter/releases")
+    (synopsis "Sphinx SVG to PDF converter extension")
+    (description "A Sphinx extension to convert SVG images to PDF in case the builder does not support
+SVG images natively (e.g. LaTeX).")
+    (license license:bsd-3)))

@@ -34,6 +34,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)

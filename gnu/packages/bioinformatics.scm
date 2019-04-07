@@ -8344,6 +8344,7 @@ paired-end data.")
               (sha256
                (base32
                 "0ss5hcg2m7gjji6dd23zxa5bd5a7knwcnada4qs5q2l4clgk39ad"))))
+    (properties `((upstream-name . "RCAS")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -9831,14 +9832,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.6.7")
+    (version "2.6.8")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "1wqq0m1fgvgkzq5zr2s9cj2s7qkg9lx3dwwsqixzs5fn52p4dn7f"))))
+         "0gijx2l2y00h6gfj3gfr7rd4vva6qf2vkfdfy5gdmvqlxy84ka38"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10157,14 +10158,14 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "0xbf4pmhrk5fnd1iz5wzjvdr75v114bwpznhcig4wiqmxc27sips"))))
+         "01lf74pby7si2g3kgc10qzr6lkcbigqcgqs2j3anc38vzxv0zhwv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -12038,6 +12039,23 @@ graphs.  This library makes it easy to work with @file{.loom} files for
 single-cell RNA-seq data.")
     (license license:bsd-3)))
 
+;; pigx-scrnaseq does not work with the latest version of loompy.
+(define-public python-loompy-for-pigx-scrnaseq
+  (package (inherit python-loompy)
+    (name "python-loompy")
+    (version "2.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linnarsson-lab/loompy.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pjyl532pl8sbv71yci6h0agchn0naw2qjcwj50n6afrsahbsag3"))))
+    ;; There are none.
+    (arguments '(#:tests? #f))))
+
 ;; We cannot use the latest commit because it requires Java 9.
 (define-public java-forester
   (let ((commit "86b07efe302d5094b42deed9260f719a4c4ac2e6")
@@ -12651,7 +12669,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.31")
+    (version "0.0.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12659,7 +12677,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0l3vd9xwqzap3mmyj8xwqp84kj7scbq308diqnwg2albphl75xqs"))))
+                "0y9x62cfwzhsp82imnawyamxp58bcb00yjxdy44spylqnjdlsaj8"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))
@@ -12808,7 +12826,7 @@ methylation and segmentation.")
        ("python-pandas" ,python-pandas)
        ("python-magic" ,python-magic)
        ("python-numpy" ,python-numpy)
-       ("python-loompy" ,python-loompy)
+       ("python-loompy" ,python-loompy-for-pigx-scrnaseq)
        ("ghc-pandoc" ,ghc-pandoc)
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
        ("samtools" ,samtools)
@@ -13301,9 +13319,6 @@ in RNA-seq data.")
              (delete-file-recursively "scanpy/tests/notebooks")
              (delete-file "scanpy/tests/test_clustering.py")
 
-             ;; TODO: No module named 'louvain'
-             (delete-file "scanpy/tests/test_rank_genes_groups_logreg.py")
-
              ;; TODO: I can't get the plotting tests to work, even with Xvfb.
              (delete-file "scanpy/tests/test_plotting.py")
              (delete-file "scanpy/tests/test_preprocessing.py")
@@ -13316,18 +13331,19 @@ in RNA-seq data.")
              #t)))))
     (propagated-inputs
      `(("python-anndata" ,python-anndata)
+       ("python-h5py" ,python-h5py)
        ("python-igraph" ,python-igraph)
-       ("python-numba" ,python-numba)
        ("python-joblib" ,python-joblib)
+       ("python-louvain" ,python-louvain)
+       ("python-matplotlib" ,python-matplotlib)
        ("python-natsort" ,python-natsort)
        ("python-networkx" ,python-networkx)
-       ("python-statsmodels" ,python-statsmodels)
-       ("python-scikit-learn" ,python-scikit-learn)
-       ("python-matplotlib" ,python-matplotlib)
+       ("python-numba" ,python-numba)
        ("python-pandas" ,python-pandas)
+       ("python-scikit-learn" ,python-scikit-learn)
        ("python-scipy" ,python-scipy)
        ("python-seaborn" ,python-seaborn)
-       ("python-h5py" ,python-h5py)
+       ("python-statsmodels" ,python-statsmodels)
        ("python-tables" ,python-tables)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))

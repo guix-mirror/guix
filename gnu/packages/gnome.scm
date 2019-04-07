@@ -112,6 +112,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
@@ -5901,6 +5902,17 @@ properties, screen resolution, and other GNOME parameters.")
              ;; Convert the logo from SVG to PNG.
              (invoke "inkscape" "--export-png=data/theme/guix-logo.png"
                      "data/theme/guix-logo.svg")))
+         (add-before 'configure 'record-absolute-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "js/misc/ibusManager.js"
+               (("'ibus-daemon'")
+                (string-append "'" (assoc-ref inputs "ibus")
+                               "/bin/ibus-daemon'")))
+             (substitute* "js/ui/status/keyboard.js"
+               (("'gkbd-keyboard-display'")
+                (string-append "'" (assoc-ref inputs "libgnomekbd")
+                               "/bin/gkbd-keyboard-display'")))
+             #t))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Tests require a running X server.
@@ -5965,6 +5977,7 @@ properties, screen resolution, and other GNOME parameters.")
        ("ibus" ,ibus)
        ("libcanberra" ,libcanberra)
        ("libcroco" ,libcroco)
+       ("libgnomekbd" ,libgnomekbd)               ;for gkbd-keyboard-display
        ("libgweather" ,libgweather)
        ("libsoup" ,libsoup)
        ("mesa-headers" ,mesa-headers)

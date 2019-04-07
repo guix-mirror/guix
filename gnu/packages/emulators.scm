@@ -1191,7 +1191,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.206")
+    (version "0.208")
     (source
      (origin
        (method git-fetch)
@@ -1201,7 +1201,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0i01h5ars1yd96ndmzhk47931hf261m8frqz1ha7s2gy52f0q86y"))
+         "14j7n4haggqsph0nw69d79z3y9lrdc7rzs2sl1kzggfnd37nh81s"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1339,7 +1339,8 @@ play them on systems for which they were never designed!")
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx)
+       ("sphinx" ,python-sphinx)
+       ("sphinxcontrib-svg2pdfconverter" ,python-sphinxcontrib-svg2pdfconverter)
        ("texinfo" ,texinfo)))
     (inputs
      `(("alsa-lib" ,alsa-lib)

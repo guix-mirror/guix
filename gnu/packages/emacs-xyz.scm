@@ -750,7 +750,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -758,7 +758,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
              "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
         (base32
-         "1mcild3034f4c1x8x05w9q0ps70i1nihvih22cmh3wj4cgllg5w0"))))
+         "16p68rj5h609pnbp7y0jiiq1zkbksh4qqi1q8yby3ldj5x9sfpwc"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -780,7 +780,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
@@ -788,7 +788,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
              "https://elpa.gnu.org/packages/relint-" version ".el"))
        (sha256
         (base32
-         "0y7lki2vndpkmzg4k0yh2722hp01qr77vm337xnm8wp3bmwn8s1f"))))
+         "17nyy3zqpqgs22lrrpdm0k56xnhj5l3y2y3lnmhcqw63xksgbsyk"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -4535,6 +4535,31 @@ Emacs default configuration in uncontroversial ways that nearly everyone can
 agree upon.")
     (license license:gpl3+)))
 
+(define-public emacs-undohist-el
+  (let ((commit "d2239a5f736724ceb9e3b6bcaa86f4064805cda0")
+        (revision "1"))
+    (package
+      (name "emacs-undohist-el")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/m2ym/undohist-el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1c0daw246ky7b1x5b8h55x79pl1pjqk1k348l487bdd8zdj4w9wx"))
+         (patches
+          (search-patches "emacs-undohist-ignored.patch"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/m2ym/undohist-el")
+      (synopsis "Save undo history between sessions")
+      (description "This package allows persistent use of undo history for
+individual file buffers.")
+      (license license:gpl3+))))
+
 (define-public emacs-eprime
   (let ((commit "17a481af26496be91c07139a9bfc05cfe722506f"))
     (package
@@ -4611,7 +4636,7 @@ to all the other commands, too.")
 (define-public emacs-js2-mode
   (package
     (name "emacs-js2-mode")
-    (version "20180301")
+    (version "20190219")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mooz/js2-mode/archive/"
@@ -4619,7 +4644,7 @@ to all the other commands, too.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13aghgwaqrmbf3pbifcry52kya454wnh1gbdh5805n1n6xgjm5w3"))))
+                "1gv1vinp2avnnn6an8ffcx79vmsdjhhikz7s6cmphligb26qp2vi"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mooz/js2-mode/")
     (synopsis "Improved JavaScript editing mode for Emacs")
@@ -5243,28 +5268,26 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-wgrep
-  (let ((commit "414be70bd313e482cd9f0b70fd2daad4ee23497c"))
-    ;; Late commit fixes compatibility issue with Emacs 26+.
-    (package
-      (name "emacs-wgrep")
-      (version (git-version "2.1.10" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/mhayashi1120/Emacs-wgrep")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1sdhd587q3pg92lhiayph87azhalmf1gzrnsprkmqvnphv7mvks9"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
-      (synopsis "Edit a grep buffer and apply those changes to the files")
-      (description
-       "Emacs wgrep allows you to edit a grep buffer and apply those changes
+  (package
+    (name "emacs-wgrep")
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mhayashi1120/Emacs-wgrep/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cssqbg03fjb6xwf7idv1l3jjsh9r5r232ryi11czqlxfiv658bj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
+    (synopsis "Edit a grep buffer and apply those changes to the files")
+    (description
+     "Emacs wgrep allows you to edit a grep buffer and apply those changes
 to the file buffer.  Several backends are supported beside the classic grep:
 ack, ag, helm and pt.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm
   (package
@@ -5374,7 +5397,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.20.0")
+    (version "0.21.0")
     (source
      (origin
        (method git-fetch)
@@ -5384,7 +5407,7 @@ target will call @code{compile} on it.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0lfhzg9c931jbx27hpshk3l76gwbp6ggf668sqa77xrvymwdlsnw"))))
+         "0lbrwj67fnvynkdkzvnzp3p8vqlz0ldrcs317vg60bqfhx7hvqkj"))))
     (build-system emacs-build-system)
     (arguments
      '(#:exclude                        ; Don't exclude 'cider-test.el'.
@@ -5667,14 +5690,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.2.2")
+    (version "9.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "02fq3x4haady2vagg9b363ynsrxzpijfp420qhciy7x8y7m89abw"))))
+                "0hqy4lns9q5p0l1ylgmlckqprn9sbasszhznanmv0rsh0gzhsbyw"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -5688,14 +5711,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20190311")
+    (version "20190402")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "189p0f70j7z3hh72ay8cxa9n8xkcj06dlw765fwnqd2mm72vx0nb"))))
+                "0hbrhhq6sa0gz4ylzr54raxandqs4y953894b0hlr553b8sfl1wk"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -6980,7 +7003,7 @@ It should enable you to implement low-level X11 applications.")
                      Name=~a~@
                      Comment=~a~@
                      Exec=~a~@
-                     TryExec=~@*~a~@
+                     TryExec=~:*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
                (with-output-to-file exwm-executable
@@ -8306,7 +8329,7 @@ Feautures:
 (define-public emacs-evil-matchit
   (package
     (name "emacs-evil-matchit")
-    (version "2.2.6")
+    (version "2.2.9")
     (source
      (origin
        (method url-fetch)
@@ -8316,7 +8339,7 @@ Feautures:
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1yp9sl6542317mn1060ri90zyf6bs6qylagndhqy02p368q31rhi"))))
+         "1i5a7szl0m3xnqyjq6zhg5j68x9fgf9ffxghj918c4brj4436sjb"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
@@ -13131,7 +13154,7 @@ Emacs.")
   (let ((commit "a0623667b07a4bf60980c97b078e9faed97ace79"))
     (package
       (name "emacs-matrix-client")
-      (version (git-version "0.0.0" "3" commit))
+      (version (git-version "0.0.0" "4" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -13142,6 +13165,18 @@ Emacs.")
                  (base32
                   "1zya8id3y9wzjaj7nplq7br6nhm3lsskv0fkn1xr1y77fzcfgcdb"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'add-missing-require
+             ;; Fix a filter error at runtime due to a missing require.
+             ;; Reported upstream:
+             ;; <https://github.com/alphapapa/matrix-client.el/issues/76>
+             (lambda _
+               (substitute* "matrix-client-room.el"
+                 (("\\(require 'dash-functional\\)" all)
+                  (string-append all "\n" "(require 'anaphora)")))
+               #t)))))
       (propagated-inputs
        `(("a" ,emacs-a)
          ("anaphora" ,emacs-anaphora)
@@ -14177,3 +14212,29 @@ and article extracts for Wikipedia.")
 files.  The various elements of the HTML input are parsed with customizable
 functions (e.g. @code{webfeeder-title-function}).")
   (license license:gpl3+)))
+
+(define-public emacs-evil-numbers
+  (let ((commit "6ea1c8c3a9b37bed63d48f1128e9a4910e68187e"))
+    (package
+      (name "emacs-evil-numbers")
+      (version (git-version "0.4" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/dieggsy/evil-numbers")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1aq95hj8x13py0pwsnc6wvd8cc5yv5qin8ym9js42y5966vwj4np"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/dieggsy/evil-numbers")
+      (synopsis "Increment and decrement numbers in Emacs")
+      (description "This package increments and decrements binary, octal,
+decimal and hex literals.  It works like C-a/C-x in Vim, i.e. searches for
+number up to EOL and then increments or decrements and keeps zero padding up
+(unlike in Vim).  When a region is active, as in Evil's visual mode, all the
+numbers within that region will be incremented/decremented (unlike in Vim).
+
+It is a fork of https://github.com/cofi/evil-numbers, which is unmaintained.")
+      (license license:gpl3+))))

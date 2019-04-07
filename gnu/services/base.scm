@@ -719,7 +719,8 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                                  #$@files))))
       (respawn? #f)))))
 
-(define (console-keymap-service . files)
+(define-deprecated (console-keymap-service #:rest files)
+  #f
   "Return a service to load console keymaps from @var{files}."
   (service console-keymap-service-type files))
 
@@ -1515,19 +1516,9 @@ GID."
 (define (hydra-key-authorization keys guix)
   "Return a gexp with code to register KEYS, a list of files containing 'guix
 archive' public keys, with GUIX."
-  (define aaa
-    ;; XXX: Terrible hack to work around <https://bugs.gnu.org/15602>: this
-    ;; forces (guix config) and (guix utils) to be loaded upfront, so that
-    ;; their run-time symbols are defined.
-    (scheme-file "aaa.scm"
-                 #~(define-module (guix aaa)
-                     #:use-module (guix config)
-                     #:use-module (guix memoization))))
-
   (define default-acl
     (with-extensions (list guile-gcrypt)
       (with-imported-modules `(((guix config) => ,(make-config.scm))
-                               ((guix aaa) => ,aaa)
                                ,@(source-module-closure '((guix pki))
                                                         #:select? not-config?))
         (computed-file "acl"

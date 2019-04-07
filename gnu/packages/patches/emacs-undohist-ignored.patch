@@ -1,0 +1,27 @@
+From 52bfd419bf9022726048f818d955b8ea10a16d5c Mon Sep 17 00:00:00 2001
+From: Patrick Mosby <info@schreiblogade.de>
+Date: Mon, 7 Sep 2015 09:05:56 +0200
+Subject: [PATCH] Don't save undo file for ignored files.
+
+This fixes #4.
+---
+ undohist.el | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/undohist.el b/undohist.el
+index b184a26..de60356 100644
+--- a/undohist.el
++++ b/undohist.el
+@@ -164,7 +164,8 @@ To use undohist, you just call this function."
+                 undohist-ignored-files)))
+ 
+ (defun undohist-save-1 ()
+-  (when (consp buffer-undo-list)
++  (when (and (consp buffer-undo-list)
++             (undohist-recover-file-p (buffer-file-name (current-buffer))))
+     (let ((file (make-undohist-file-name (buffer-file-name)))
+           (contents `((digest . ,(md5 (current-buffer)))
+                       (undo-list . ,(undohist-encode buffer-undo-list)))))
+-- 
+2.21.0
+

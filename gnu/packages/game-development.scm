@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
@@ -1074,7 +1074,7 @@ of use.")
 (define-public openmw
   (package
     (name "openmw")
-    (version "0.44.0")
+    (version "0.45.0")
     (source
      (origin
        (method url-fetch)
@@ -1083,7 +1083,7 @@ of use.")
                        "openmw-" version ".tar.gz"))
        (sha256
         (base32
-         "03fgm2f2r7y0aqlgp038pdlnllgvm3jimrp968p4nhz1sffvjzcy"))))
+         "0r0wgvv1faan8z8lbply8lks4hcnppifjrcz04l5zvq6yiqzjg5n"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target

@@ -64,7 +64,12 @@
             exim-configuration
             exim-configuration?
             exim-service-type
-            %default-exim-config-file))
+            %default-exim-config-file
+
+            imap4d-configuration
+            imap4d-configuration?
+            imap4d-service-type
+            %defualt-imap4d-config-file))
 
 ;;; Commentary:
 ;;;
@@ -1776,3 +1781,41 @@ exim_group = exim
           (service-extension activation-service-type exim-activation)
           (service-extension profile-service-type exim-profile)
           (service-extension mail-aliases-service-type (const '()))))))
+
+
+;;;
+;;; GNU Mailutils IMAP4 Daemon.
+;;;
+
+(define %default-imap4d-config-file
+  (plain-file "imap4d.conf" "server localhost {};\n"))
+
+(define-record-type* <imap4d-configuration>
+  imap4d-configuration make-imap4d-configuration imap4d-configuration?
+  (package     imap4d-configuration-package
+               (default mailutils))
+  (config-file imap4d-configuration-config-file
+               (default %default-imap4d-config-file)))
+
+(define imap4d-shepherd-service
+  (match-lambda
+    (($ <imap4d-configuration> package config-file)
+     (list (shepherd-service
+            (provision '(imap4d))
+            (requirement '(networking syslogd))
+            (documentation "Run the imap4d daemon.")
+            (start (let ((imap4d (file-append package "/sbin/imap4d")))
+                     #~(make-forkexec-constructor
+                        (list #$imap4d "--daemon" "--foreground"
+                              "--config-file" #$config-file))))
+            (stop #~(make-kill-destructor)))))))
+
+(define imap4d-service-type
+  (service-type
+   (name 'imap4d)
+   (description
+    "Run the GNU @command{imap4d} to serve e-mail messages through IMAP.")
+   (extensions
+    (list (service-extension
+           shepherd-root-service-type imap4d-shepherd-service)))
+   (default-value (imap4d-configuration))))
