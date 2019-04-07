@@ -16563,9 +16563,9 @@ deliver mail to @code{bob@@example.com} and @code{bob@@example2.com}).
 @cindex GNU Mailutils IMAP4 Daemon
 
 @deffn {Scheme Variable} imap4d-service-type
-This is the type of the GNU Mailutils IMAP4 Daemon (@pxref{(mailutils)
-imap4d}), whose value should be an @code{imap4d-configuration} object as in
-this example:
+This is the type of the GNU Mailutils IMAP4 Daemon (@pxref{imap4d,,,
+mailutils, GNU Mailutils Manual}), whose value should be an
+@code{imap4d-configuration} object as in this example:
 
 @example
 (service imap4d-service-type
@@ -16583,8 +16583,8 @@ The package that provides @command{imap4d}.
 
 @item @code{config-file} (default: @code{%default-imap4d-config-file})
 File-like object of the configuration file to use, by default it will listen
-on the tcp port 143 of @code{localhost}.  @xref{(mailutils) Conf-imap4d} for
-details.
+on TCP port 143 of @code{localhost}.  @xref{Conf-imap4d,,, mailutils, GNU
+Mailutils Manual}, for details.
 
 @end table
 @end deftp
