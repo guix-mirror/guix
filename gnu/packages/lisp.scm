@@ -4226,9 +4226,9 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 (define-public cl-trivial-types
   (sbcl-package->cl-source-package sbcl-trivial-types))
 
-(define-public sbcl-syntax
+(define-public sbcl-cl-syntax
   (package
-    (name "sbcl-syntax")
+    (name "sbcl-cl-syntax")
     (version "0.0.3")
     (source
      (origin
@@ -4251,13 +4251,13 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
     (license license:llgpl)))
 
 (define-public cl-syntax
-  (sbcl-package->cl-source-package sbcl-syntax))
+  (sbcl-package->cl-source-package sbcl-cl-syntax))
 
-(define-public sbcl-annot
+(define-public sbcl-cl-annot
   (let ((commit "c99e69c15d935eabc671b483349a406e0da9518d")
         (revision "1"))
     (package
-      (name "sbcl-annot")
+      (name "sbcl-cl-annot")
       (version (git-version "0.0.0" revision commit))
       (source
        (origin
@@ -4281,11 +4281,11 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
       (license license:llgpl))))
 
 (define-public cl-annot
-  (sbcl-package->cl-source-package sbcl-annot))
+  (sbcl-package->cl-source-package sbcl-cl-annot))
 
-(define-public sbcl-syntax-annot
+(define-public sbcl-cl-syntax-annot
   (package
-    (name "sbcl-syntax-annot")
+    (name "sbcl-cl-syntax-annot")
     (version "0.0.3")
     (source
      (origin
@@ -4301,8 +4301,8 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
      '(#:asd-file "cl-syntax-annot.asd"
        #:asd-system-name "cl-syntax-annot"))
     (inputs
-     `(("sbcl-syntax" ,sbcl-syntax)
-       ("sbcl-annot" ,sbcl-annot)))
+     `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
+       ("sbcl-cl-annot" ,sbcl-cl-annot)))
     (home-page "https://github.com/m2ym/cl-syntax")
     (synopsis "Reader Syntax Coventions for Common Lisp and SLIME")
     (description
@@ -4311,13 +4311,13 @@ SLIME.")
     (license license:llgpl)))
 
 (define-public cl-syntax-annot
-  (sbcl-package->cl-source-package sbcl-syntax-annot))
+  (sbcl-package->cl-source-package sbcl-cl-syntax-annot))
 
-(define-public sbcl-utilities
+(define-public sbcl-cl-utilities
   (let ((commit "dce2d2f6387091ea90357a130fa6d13a6776884b")
         (revision "1"))
     (package
-      (name "sbcl-utilities")
+      (name "sbcl-cl-utilities")
       (version (git-version "0.0.0" revision commit))
       (source
        (origin
@@ -4353,7 +4353,7 @@ everywhere some dumb user might make a mistake.")
       (license license:public-domain))))
 
 (define-public cl-utilities
-  (sbcl-package->cl-source-package sbcl-utilities))
+  (sbcl-package->cl-source-package sbcl-cl-utilities))
 
 (define-public sbcl-map-set
   (let ((commit "7b4b545b68b8")
@@ -4404,7 +4404,7 @@ addition, removal, and random selection.")
                        ("sbcl-prove" ,sbcl-prove)))
       (inputs `(("sbcl-babel" ,sbcl-babel)
                 ("sbcl-split-sequence" ,sbcl-split-sequence)
-                ("sbcl-utilities" ,sbcl-utilities)
+                ("sbcl-cl-utilities" ,sbcl-cl-utilities)
                 ("sbcl-alexandria" ,sbcl-alexandria)))
       (home-page "https://github.com/fukamachi/quri")
       (synopsis "Yet another URI library for Common Lisp")
@@ -4547,7 +4547,7 @@ depending on content size.")
          ("sbcl-proc-parse" ,sbcl-proc-parse)
          ("sbcl-xsubseq" ,sbcl-xsubseq)
          ("sbcl-smart-buffer" ,sbcl-smart-buffer)
-         ("sbcl-utilities" ,sbcl-utilities)))
+         ("sbcl-cl-utilities" ,sbcl-cl-utilities)))
       (home-page "https://github.com/fukamachi/fast-http")
       (synopsis "HTTP request/response parser for Common Lisp")
       (description
@@ -4718,8 +4718,8 @@ streams (though primarily the former, while wrapping the latter).")
       `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
         ("sbcl-prove" ,sbcl-prove)))
      (inputs
-      `(("sbcl-syntax" ,sbcl-syntax)
-        ("sbcl-syntax-annot" ,sbcl-syntax-annot)
+      `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
+        ("sbcl-cl-syntax-annot" ,sbcl-cl-syntax-annot)
         ("sbcl-fast-io" ,sbcl-fast-io)
         ("sbcl-proc-parse" ,sbcl-proc-parse)
         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)))
