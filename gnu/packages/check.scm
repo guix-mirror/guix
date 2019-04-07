@@ -686,14 +686,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "4.3.1")
+    (version "4.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "08q58ad8vaxyb57ll8m611yb4xwzzhp09kxafmyqrrps6cnalbjr"))))
+         "1xcmic8wzaj00rn1lg4ib4prh2f4lzpiaadk35qlv8hcny1j505p"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -707,13 +707,7 @@ standard library.")
                       " and not test_argcomplete"
                       ;; This test tries to override PYTHONPATH, and
                       ;; subsequently fails to locate the test libraries.
-                      " and not test_collection"
-                      ;; These tests fail when run in verbose mode:
-                      ;; <https://github.com/pytest-dev/pytest/issues/4879>.
-                      " and not test_dont_rewrite_if_hasattr_fails"
-                      " and not test_len"
-                      " and not test_custom_repr"
-                      " and not test_name")))))))
+                      " and not test_collection")))))))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-attrs" ,python-attrs-bootstrap)
