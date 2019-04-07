@@ -47,12 +47,13 @@
 (define-public lcms
   (package
    (name "lcms")
-   (replacement lcms/fixed)
    (version "2.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
+
+            (patches (search-patches "lcms-CVE-2018-16435.patch"))
             (sha256 (base32
                      "083xisy6z01zhm7p7rgk4bx9d6zlr8l20qkfv1g29ylnhgwzvij8"))))
    (build-system gnu-build-system)
@@ -67,14 +68,6 @@ Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
    (home-page "http://www.littlecms.com/")
    (properties '((cpe-name . "little_cms_color_engine")))))
-
-(define lcms/fixed
-  (package
-    (inherit lcms)
-    (source
-      (origin
-        (inherit (package-source lcms))
-        (patches (search-patches "lcms-CVE-2018-16435.patch"))))))
 
 (define-public libpaper
   (package
