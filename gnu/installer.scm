@@ -174,14 +174,6 @@ selected keymap."
                                         "/share/zoneinfo/zone.tab")))
     #~(lambda (current-installer)
         (list
-         ;; Welcome the user and ask him to choose between manual
-         ;; installation and graphical install.
-         (installer-step
-          (id 'welcome)
-          (compute (lambda _
-                     ((installer-welcome-page current-installer)
-                      #$(local-file "installer/aux-files/logo.txt")))))
-
          ;; Ask the user to choose a locale among those supported by
          ;; the glibc.  Install the selected locale right away, so that
          ;; the user may benefit from any available translation for the
@@ -192,6 +184,14 @@ selected keymap."
           (compute (lambda _
                      (#$locale-step current-installer)))
           (configuration-formatter locale->configuration))
+
+         ;; Welcome the user and ask them to choose between manual
+         ;; installation and graphical install.
+         (installer-step
+          (id 'welcome)
+          (compute (lambda _
+                     ((installer-welcome-page current-installer)
+                      #$(local-file "installer/aux-files/logo.txt")))))
 
          ;; Ask the user to select a timezone under glibc format.
          (installer-step
