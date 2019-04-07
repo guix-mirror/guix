@@ -2797,6 +2797,42 @@ acceptance testing, acceptance test driven development (ATDD), and robotic
 process automation (RPA).")
     (license license:asl2.0)))
 
+(define-public python-robotframework-lint
+  ;; There is no properly tagged release; the commit below seems to correspond
+  ;; to the 0.9 stable release available from PyPI.  The tests are not
+  ;; included in the PyPI archive, so we fetch the sources from the upstream
+  ;; Git repo.
+  (let ((commit "e851879bab1f63e4e53b34a4dc8a67ed95102830")
+        (revision "1"))
+    (package
+      (name "python-robotframework-lint")
+      (version (git-version "0.9.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/boakley/robotframework-lint.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p6fknqg5sb9qz5857ji4a877657vgfjm5v3zn45994parx6ml1m"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "python" "-m" "robot" "-A"
+                       "tests/conf/default.args" "tests"))))))
+      (propagated-inputs
+       `(("python-robotframework" ,python-robotframework)))
+      (home-page "https://github.com/boakley/robotframework-lint/")
+      (synopsis "Static analysis tool (linter) for Robot Framework")
+      (description "This package provides the @code{rflint} command-line
+utility, a static analysis tool (linter) for Robot Framework source files.")
+      (license license:asl2.0))))
+
 (define-public python-robotframework-sshlibrary
   (package
     (name "python-robotframework-sshlibrary")
