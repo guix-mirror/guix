@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -675,27 +675,27 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/v" version "/mu-"
-                                  version ".tar.xz"))
+                                  "download/" (version-major+minor version) "/"
+                                  "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "04x5azl19gszw2h7argq666gf9xs4hy9q7w9cbqxvy08n56xqsln"))))
+                "0fh5bxvhjqv1p9z783lym8y1k3p4jcc3wg6wf7zl8s6w8krcfd7n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
        ("emacs" ,emacs-minimal)
-       ("tzdata" ,tzdata-for-tests)))   ;for mu/test/test-mu-query.c
+       ("tzdata" ,tzdata-for-tests)))   ; for mu/test/test-mu-query.c
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
        ("guile" ,guile-2.2)
        ("glib" ,glib)
-       ("gmime" ,gmime-2.6)))
+       ("gmime" ,gmime)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
