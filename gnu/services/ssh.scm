@@ -617,7 +617,8 @@ of user-name/file-like tuples."
                  (list (service-extension shepherd-root-service-type
                                           dropbear-shepherd-service)
                        (service-extension activation-service-type
-                                          dropbear-activation)))))
+                                          dropbear-activation)))
+                (default-value (dropbear-configuration))))
 
 (define* (dropbear-service #:optional (config (dropbear-configuration)))
   "Run the @uref{https://matt.ucc.asn.au/dropbear/dropbear.html,Dropbear SSH
