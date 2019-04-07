@@ -168,9 +168,11 @@ freedesktop.org project.")
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("libevdev" ,libevdev)
-       ("libudev" ,eudev)
        ("libwacom" ,libwacom)
        ("mtdev" ,mtdev)))
+    (propagated-inputs
+     `(;; libinput.h requires <libudev.h>, so propagate it.
+       ("udev" ,eudev)))
     (home-page "https://www.freedesktop.org/wiki/Software/libinput/")
     (synopsis "Input devices handling library")
     (description
