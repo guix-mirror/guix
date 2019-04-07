@@ -7005,7 +7005,7 @@ It should enable you to implement low-level X11 applications.")
                      Name=~a~@
                      Comment=~a~@
                      Exec=~a~@
-                     TryExec=~@*~a~@
+                     TryExec=~:*~a~@
                      Type=Application~%" ,name ,synopsis exwm-executable)))
                ;; Add a shell wrapper to bin
                (with-output-to-file exwm-executable
