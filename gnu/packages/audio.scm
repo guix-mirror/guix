@@ -1307,7 +1307,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.37.3")
+    (version "0.38.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1315,7 +1315,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "1wfm8wrwrnqpb4ihy75n7l9i6vml536jlq9pdx2pblbc4ba3paac"))))
+               "0nv5vm2q86lzsz42kl78jxm6w20al8r7qcnr5f057ria7f8fq2f7"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
