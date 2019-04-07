@@ -212,7 +212,7 @@ the user's target storage device rather than on the RAM disk."
 (define %installation-services
   ;; List of services of the installation system.
   (let ((motd (plain-file "motd" "
-\x1b[1;37mWelcome to the installation of the Guix System Distribution!\x1b[0m
+\x1b[1;37mWelcome to the installation of GNU Guix!\x1b[0m
 
 \x1b[2mThere is NO WARRANTY, to the extent permitted by law.  In particular, you may
 LOSE ALL YOUR DATA as a side effect of the installation process.  Furthermore,
