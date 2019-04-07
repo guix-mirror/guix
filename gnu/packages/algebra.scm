@@ -56,6 +56,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -856,6 +857,32 @@ features, and more.")
     ;; Most of the code is MPLv2, with a few files under LGPLv2.1+ or BSD-3.
     ;; See 'COPYING.README' for details.
     (license license:mpl2.0)))
+
+(define-public eigen-for-tensorflow
+  (let ((changeset "fd6845384b86")
+        (revision "1"))
+    (package (inherit eigen)
+      (name "eigen-for-tensorflow")
+      (version (string-append "3.3.5-" revision "." changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://bitbucket.org/eigen/eigen")
+                      (changeset changeset)))
+                (sha256
+                 (base32
+                  "12cwgah63wqwb66xji048hcxc1z5zjg8a7701zlia5zbilnnk1n5"))
+                (file-name (string-append name "-" version "-checkout"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; There are 3 test failures in the "unsupported" directory,
+                 ;; but maintainers say it's a known issue and it's unsupported
+                 ;; anyway, so just skip them.
+                 '(begin
+                    (substitute* "unsupported/CMakeLists.txt"
+                      (("add_subdirectory\\(test.*")
+                       "# Do not build the tests for unsupported features.\n"))
+                    #t)))))))
 
 (define-public xtensor
   (package
