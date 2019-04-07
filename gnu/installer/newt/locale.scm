@@ -33,14 +33,8 @@
   (let ((title (G_ "Locale language")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose the locale's language to be used for the \
-installation process. A locale is a regional variant of your language \
-encompassing number, date and currency format, among other details.
-
-Based on the language you choose, you will possibly be asked to \
-select a locale's territory, codeset and modifier in the next \
-steps. The locale will also be used as the default one for the \
-installed system.")
+     #:info-text (G_ "Choose the language to use for the \
+installation process and for the installed system.")
      #:info-textbox-width 70
      #:listbox-items languages
      #:listbox-item->text language->text
@@ -56,8 +50,7 @@ installed system.")
   (let ((title (G_ "Locale location")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose your locale's location. This is a shortlist of \
-locations based on the language you selected.")
+     #:info-text (G_ "Choose a territory for this language.")
      #:listbox-items territories
      #:listbox-item->text territory->text
      #:button-text (G_ "Back")
@@ -71,8 +64,7 @@ locations based on the language you selected.")
   (let ((title (G_ "Locale codeset")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose your locale's codeset. If UTF-8 is available, \
- it should be preferred.")
+     #:info-text (G_ "Choose the locale encoding.")
      #:listbox-items codesets
      #:listbox-item->text identity
      #:listbox-default-item "UTF-8"
@@ -191,9 +183,11 @@ glibc locale string and return it."
            ;; narrow down the search of a locale.
            (break-on-locale-found locales)
 
-           ;; Otherwise, ask for a codeset.
-           (run-codeset-page
-            (delete-duplicates (map locale-codeset locales)))))))
+           ;; Otherwise, choose a codeset.
+           (let ((codesets (delete-duplicates (map locale-codeset locales))))
+             (if (member "UTF-8" codesets)
+                 "UTF-8"                          ;don't even ask
+                 (run-codeset-page codesets)))))))
      (installer-step
       (id 'modifier)
       (compute
