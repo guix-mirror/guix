@@ -37,7 +37,7 @@ install. If you select multiple desktops environments, you will be able to \
 choose the one to use on the log-in screen.")
    #:title (G_ "Desktop environment")
    #:items (filter desktop-system-service? %system-services)
-   #:item->text system-service-name
+   #:item->text system-service-name               ;no i18n for DE names
    #:checkbox-tree-height 5
    #:exit-button-callback-procedure
    (lambda ()
@@ -59,7 +59,7 @@ system.")
                      (lambda (service)
                        (memq (system-service-type service) types)))
                    %system-services)
-   #:item->text system-service-name
+   #:item->text (compose G_ system-service-name)
    #:checkbox-tree-height 5
    #:exit-button-callback-procedure
    (lambda ()

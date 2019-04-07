@@ -44,7 +44,9 @@
                                       ((_ fields ...)
                                        (system-service
                                         (type 'desktop)
-                                        fields ...)))))
+                                        fields ...))))
+               (G_ (syntax-rules ()               ;for xgettext
+                     ((_ str) str))))
     (list
      (desktop-environment
       (name "GNOME")
@@ -63,25 +65,25 @@
 
      ;; Networking.
      (system-service
-      (name "OpenSSH secure shell daemon (sshd)")
+      (name (G_ "OpenSSH secure shell daemon (sshd)"))
       (type 'networking)
       (snippet '(service openssh-service-type)))
      (system-service
-      (name "Tor anonymous network router")
+      (name (G_ "Tor anonymous network router"))
       (type 'networking)
       (snippet '(service tor-service-type)))
 
      ;; Network connectivity management.
      (system-service
-      (name "NetworkManager network connection manager")
+      (name (G_ "NetworkManager network connection manager"))
       (type 'network-management)
       (snippet '(service network-manager-service-type)))
      (system-service
-      (name "Connman network connection manager")
+      (name (G_ "Connman network connection manager"))
       (type 'network-management)
       (snippet '(service connman-service-type)))
      (system-service
-      (name "DHCP client")
+      (name (G_ "DHCP client (dynamic IP address assignment)"))
       (type 'network-management)
       (snippet '(service dhcp-client-service))))))
 
