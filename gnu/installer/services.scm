@@ -26,6 +26,7 @@
             system-service-snippet
 
             desktop-system-service?
+            networking-system-service?
 
             %system-services
             system-services->configuration))
@@ -34,7 +35,7 @@
   system-service make-system-service
   system-service?
   (name            system-service-name)           ;string
-  (type            system-service-type)           ;symbol
+  (type            system-service-type)           ;'desktop | 'networking
   (snippet         system-service-snippet))       ;sexp
 
 ;; This is the list of desktop environments supported as services.
@@ -58,11 +59,25 @@
       (snippet '(service mate-desktop-service-type)))
      (desktop-environment
       (name "Enlightenment")
-      (snippet '(service enlightenment-desktop-service-type))))))
+      (snippet '(service enlightenment-desktop-service-type)))
+
+     ;; Networking.
+     (system-service
+      (name "OpenSSH secure shell daemon (sshd)")
+      (type 'networking)
+      (snippet '(service openssh-service-type)))
+     (system-service
+      (name "Tor anonymous network router")
+      (type 'networking)
+      (snippet '(service tor-service-type))))))
 
 (define (desktop-system-service? service)
   "Return true if SERVICE is a desktop environment service."
   (eq? 'desktop (system-service-type service)))
+
+(define (networking-system-service? service)
+  "Return true if SERVICE is a desktop environment service."
+  (eq? 'networking (system-service-type service)))
 
 (define (system-services->configuration services)
   "Return the configuration field for SERVICES."

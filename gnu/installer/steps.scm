@@ -215,7 +215,7 @@ found in RESULTS."
                   '())))
           steps))
         (modules '((use-modules (gnu))
-                   (use-service-modules desktop))))
+                   (use-service-modules desktop networking ssh))))
     `(,@modules
       ()
       (operating-system ,@configuration))))

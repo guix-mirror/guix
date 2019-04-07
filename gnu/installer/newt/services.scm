@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,5 +45,21 @@ choose the one to use on the log-in screen.")
       (condition
        (&installer-step-abort))))))
 
+(define (run-networking-cbt-page)
+  "Run a page allowing the user to select networking services."
+  (run-checkbox-tree-page
+   #:info-text (G_ "You can now select networking services to run on your
+system.")
+   #:title (G_ "Network service")
+   #:items (filter networking-system-service? %system-services)
+   #:item->text system-service-name
+   #:checkbox-tree-height 5
+   #:exit-button-callback-procedure
+   (lambda ()
+     (raise
+      (condition
+       (&installer-step-abort))))))
+
 (define (run-services-page)
-  (run-desktop-environments-cbt-page))
+  (append (run-desktop-environments-cbt-page)
+          (run-networking-cbt-page)))
