@@ -9757,13 +9757,13 @@ continue.")
     (version "1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Wilfred/elisp-refs/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Wilfred/elisp-refs.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "02nzcn3v14n7mp7q32j5r4wdlpsw3zixzh6cf0cdyarfir6dly3p"))))
+        (base32 "0w7k91xf69zc0zkjrw8h8sjdjf9xq9qs5zhvajhd718lzf93564b"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
