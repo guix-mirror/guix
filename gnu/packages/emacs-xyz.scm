@@ -6316,14 +6316,13 @@ number on the left margin in Emacs.")
     (version "1.1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/nonsequitur/idle-highlight-mode/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nonsequitur/idle-highlight-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0kdv10hrgqpskjh0zvpnzwlkn5bccnqxas62gkws6njln57bf8nl"))))
+        (base32 "0x4w1ksrw7dicl84zpf4d4scg672dyan9g95jkn6zvri0lr8xciv"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/IdleHighlight")
     (synopsis "Highlights all occurrences of the word the point is on")
