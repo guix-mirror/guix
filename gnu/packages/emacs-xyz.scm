@@ -6024,14 +6024,13 @@ notifications.")
     (version "1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/jwiegley/alert/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jwiegley/alert.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1693kck3k2iz5zhpmxwqyafxm68hr6gzs60lkxd3j1wlp2c9fwyr"))))
+        (base32 "1vpc3q40m6dcrslki4bg725j4kv6c6xfxwjjl1ilg7la49fwwf26"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-gntp" ,emacs-gntp)
