@@ -980,18 +980,19 @@ from other CLXes around the net.")
   (package
     (name "stumpwm")
     (version "18.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/stumpwm/stumpwm/archive/"
-                    version ".tar.gz"))
-              (sha256
-               (base32 "177gxfk4c127i9crghx6fmkipznhgylvzgnjb2pna38g21gg6s39"))
-              (file-name (string-append "stumpwm-" version ".tar.gz"))
-              (patches
-               ;; This patch is included in the post-18.11 git master tree
-               ;; and can be removed when we move to the next release.
-               (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stumpwm/stumpwm.git")
+             (commit version)))
+       (file-name (git-file-name "stumpwm" version))
+       (sha256
+        (base32 "003g1fmh7446ws49866kzny4lrk1wf034dq5fa4m9mq1nzc7cwv7"))
+       (patches
+        ;; This patch is included in the post-18.11 git master tree
+        ;; and can be removed when we move to the next release.
+        (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)
                      ("texinfo" ,texinfo)))
