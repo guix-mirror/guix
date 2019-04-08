@@ -789,13 +789,13 @@ Glide64 video plugin.")
     (version "2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mupen64plus/mupen64plus-video-glide64mk2/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mupen64plus/mupen64plus-video-glide64mk2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1ihl4q293d6svba26b4mhapjcdg12p90gibz79b4mx423jlcxxj9"))))
+        (base32 "08pm28a36dpr0cvr8pzw0n5ksdazp7jqvlmqfy2lwb4dm0cwhkqd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
