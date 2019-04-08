@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -402,13 +402,11 @@ rasterisation.")
                 "-Dtegra=true"
                 "-Dfreedreno-kgsl=true"))
              (_ '())))
-       ,@(if (string=? (%current-system) "armhf-linux")
-             '(#:phases
-               (modify-phases %standard-phases
-                 (replace 'check
-                   (lambda _
-                     (invoke "meson" "test" "--timeout-multiplier" "5")))))
-             '())))
+
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "meson" "test" "--timeout-multiplier" "5"))))))
     (inputs
      `(("libpciaccess" ,libpciaccess)))
     (native-inputs
