@@ -1972,12 +1972,13 @@ simple (yet expressive) query language to select the tests to run.")
       (inherit base)
       (version "5.0+4.02.0")
       (source
-        (origin
-          (method url-fetch)
-          (uri (string-append "https://github.com/alainfrisch/ppx_tools/archive/"
-                              version ".tar.gz"))
-          (sha256 (base32
-                    "0rjg4rngi8k9873z4zq95zn9hj8qyw1vcrf11y15aqasfpqq16rc")))))))
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alainfrisch/ppx_tools.git")
+               (commit version)))
+         (sha256
+          (base32 "16drjk0qafjls8blng69qiv35a84wlafpk16grrg2i3x19p8dlj8")))))))
 
 (define-public ocaml-react
   (package
