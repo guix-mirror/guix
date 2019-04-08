@@ -9190,13 +9190,13 @@ newsreader.")
     (version "0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mickeynp/makey/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mickeynp/makey.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0kzl4q1wf2zhkx9nrymxa67n99iq0bj7zqhpaz4byksna1hsxfmv"))))
+        (base32 "1rr7vpm3xxzcaam3m8xni3ajy8ycyljix07n2jzczayri9sd8csy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mickeynp/makey")
     (synopsis "Emacs interactive command-line mode")
