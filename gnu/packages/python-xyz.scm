@@ -10239,20 +10239,21 @@ discovery, monitoring and configuration.")
     (name "python-schematics")
     (version "1.1.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/schematics/schematics/archive/v" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "19v1i69bf3bzarfxmbv0v6ivpcn758x3shvbiy9l2hy0lvqwnp6l"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/schematics/schematics.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xdqskycznqc7mfp60bhw1zq8wx7yx1dvmbq3brnm1dx3xnqa0zd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
     (arguments
-     `(#:tests? #f)) ; requires a bunch of not very nice packages with fixed
-                     ; version requirements (eg python-coveralls)
+     ;; The tests require a bunch of not very nice packages with fixed
+     ;; version requirements (e.g. python-coveralls).
+     `(#:tests? #f))
     (home-page "https://github.com/schematics/schematics")
     (synopsis "Python Data Structures for Humans")
     (description "Python Data Structures for Humans.")
