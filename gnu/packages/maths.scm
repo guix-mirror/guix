@@ -3680,23 +3680,24 @@ set.")
   (package
     (name "hypre")
     (version "2.14.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/LLNL/hypre/archive/"
-                                  "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0v515i73bvaz378h5465b1dy9v2gf924zy2q94cpq4qqarawvkqh"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove use of __DATE__ and __TIME__ for reproducibility;
-                  ;; substitute the tarball creation time.
-                  (substitute* "src/utilities/HYPRE_utilities.h"
-                    (("Date Compiled: .*$")
-                     "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
-                  #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LLNL/hypre.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12iciad718rf7vcl33klza7dcnxxa5581yav7c72l81m7mswihq9"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove use of __DATE__ and __TIME__ for reproducibility;
+           ;; substitute the tarball creation time.
+           (substitute* "src/utilities/HYPRE_utilities.h"
+             (("Date Compiled: .*$")
+              "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
+           #t))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;6.1 MiB of headers and libraries
                "doc"))                  ;4.8 MiB of documentation
