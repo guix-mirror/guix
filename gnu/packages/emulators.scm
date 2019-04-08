@@ -735,13 +735,13 @@ Arachnoid video plugin.")
     (version "2.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mupen64plus/mupen64plus-video-glide64/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mupen64plus/mupen64plus-video-glide64.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1rm55dbf6xgsq1blbzs6swa2ajv0qkn38acbljj346abnk6s3dla"))))
+        (base32 "0qn5za7g7796kh2ag3xpmhbqg0yf71g9liz6ks0rha8pz73lgs01"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
