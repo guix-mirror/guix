@@ -7720,14 +7720,13 @@ editing RPM spec files.")
     (version "0.18")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/syohex/emacs-git-messenger/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-git-messenger.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17mqki6g0wx46fn7dcbcc2pjxik7vvrcb1j9jzxim8b9psbsbnp9"))))
+        (base32 "04fnby2nblk8l70gv09asxkmnn53fh1pdfs77ix44npp99fyw8ix"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-popup" ,emacs-popup)))
