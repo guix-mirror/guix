@@ -855,13 +855,13 @@ streams which are similar to string streams.")
     (version "2.0.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/edicl/cl-ppcre/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/cl-ppcre.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cl-ppcre" version))
        (sha256
-        (base32 "1i7daxf0wnydb0pgwiym7qh2wy70n14lxd6dyv28sy0naa8p31gd"))
-       (file-name (string-append "cl-ppcre-" version ".tar.gz"))))
+        (base32 "0q3iany07vgqm144lw6pj0af2d3vsikpbkwcxr30fci3kzsq4f49"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("flexi-streams" ,sbcl-flexi-streams)))
     (synopsis "Portable regular expression library for Common Lisp")
