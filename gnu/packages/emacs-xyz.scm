@@ -10194,13 +10194,13 @@ documentation.")
     (version "0.3.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/yasuyk/web-beautify/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/yasuyk/web-beautify.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1j57hwid74id4swkx2g0iljfawx0k9c7qjrwqc0mv657x9p78hcs"))))
+        (base32 "0vms7zz3ym53wf1zdrkbf2ky2xjr1v134ngsd0jr8azyi8siw84d"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/yasuyk/web-beautify")
     (synopsis "Format HTML, CSS and JavaScript, JSON")
