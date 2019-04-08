@@ -10485,15 +10485,15 @@ downloading manager for Emacs.")
   (package
     (name "emacs-helpful")
     (version "0.15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Wilfred/helpful/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1xmvhphzb4hbg647dz4lafy6hd19b7bk3lxni6irqrzdsrclhzn6"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Wilfred/helpful.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rqnx7672175288yqaslw0d9vw04j6psw7mys8j9zcp2i72hlvkn"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elisp-refs" ,emacs-elisp-refs)))
