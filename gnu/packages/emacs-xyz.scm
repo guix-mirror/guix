@@ -8663,14 +8663,13 @@ the pipeline, featuring the support for running @code{emacsclient}.")
     (version "0.03")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/syohex/emacs-hcl-mode/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-hcl-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0pvw74qpwh0znqzp6syp4wxjqs7dp1hbn5h7xfk97mff9l5d8k6x"))))
+        (base32 "0jqrgq15jz6pvx38pnwkizzfiih0d3nxqphyrc92nqpcyimg8b6g"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/syohex/emacs-hcl-mode")
     (synopsis "Major mode for the Hashicorp Configuration Language")
