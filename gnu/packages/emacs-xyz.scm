@@ -8313,14 +8313,13 @@ Feautures:
     (version "2.2.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/redguardtoo/evil-matchit/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/redguardtoo/evil-matchit.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1i5a7szl0m3xnqyjq6zhg5j68x9fgf9ffxghj918c4brj4436sjb"))))
+        (base32 "12if45pxfndy3d7r4gd3zx4d3jk4d64fdmwkhc3y5zhqq9h9iy4c"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
