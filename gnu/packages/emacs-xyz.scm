@@ -7419,13 +7419,13 @@ running a customisable handler command (@code{ignore} by default). ")
     (version "1.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Sterlingg/json-snatcher/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Sterlingg/json-snatcher.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1nfiwsifpdiz0lbrqa77nl0crnfrv5h85ans9b0g5rggnmyshcfb"))))
+        (base32 "05zsgnk7grgw9jzwl80h5sxfpifxlr37b4mkbvx7mjq4z14xc2jw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/sterlingg/json-snatcher")
     (synopsis "Grabs the path to JSON values in a JSON file")
