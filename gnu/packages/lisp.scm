@@ -3243,13 +3243,13 @@ precisely control behavior of the parser via Common Lisp restarts.")
     (version "0.21")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/trivial-garbage/trivial-garbage/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trivial-garbage/trivial-garbage.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "trivial-garbage" version))
        (sha256
-        (base32 "0b244nlszkrqawsnp568clnx32xmvjmbbagbz7625w9n0yq7396y"))
-       (file-name (string-append "trivial-garbage-" version ".tar.gz"))))
+        (base32 "0122jicfg7pca1wxw8zak1n92h5friqy60988ns0ysksj3fphw9n"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("rt" ,sbcl-rt)))
