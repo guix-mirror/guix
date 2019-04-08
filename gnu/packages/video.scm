@@ -3383,6 +3383,11 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        ("qtsvg" ,qtsvg)))
     (arguments
      `(#:tests? #f                      ;no tests
+       #:modules ((guix build python-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%python-build-system-modules
+                            (guix build qt-utils))
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
                   (add-before 'install 'set-tmp-home
@@ -3392,12 +3397,10 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                       (setenv "HOME" "/tmp")
                       #t))
                   (add-after 'install 'wrap-program
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (wrap-program (string-append (assoc-ref outputs "out")
-                                                   "/bin/openshot-qt")
-                        `("QT_PLUGIN_PATH" prefix
-                          ,(list (string-append (assoc-ref inputs "qtsvg")
-                                                "/lib/qt5/plugins/")))))))))
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (wrap-qt-program out "openshot-qt"))
+                      #t)))))
     (home-page "https://openshot.org")
     (synopsis "Video editor")
     (description "OpenShot takes your videos, photos, and music files and
