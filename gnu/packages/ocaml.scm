@@ -4369,14 +4369,15 @@ is provide a description of your project and Jbuilder will do the rest.")
   (package
     (name "ocaml-zed")
     (version "1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/diml/zed/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "19m5vrj60vg1b63qfsv0aabdlzgn40cqmx65s3wafqi4fs9xp6jn"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/diml/zed.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00hhxcjf3bj3w2qm8nzs9x6vrqkadf4i0277s5whzy2rmiknj63v"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
