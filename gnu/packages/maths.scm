@@ -3143,13 +3143,13 @@ access to BLIS implementations via traditional BLAS routine calls.")
     (version "0.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/JuliaLang/openlibm/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaLang/openlibm.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0a5fpm8nra5ldhjk0cqd2rx1qh32wiarkxmcqcm5xl8z7l4kjm6l"))))
+        (base32 "08wfchmmr5200fvmn1kwq9byc1fhsq46hn0y5k8scdl74771c7gh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
