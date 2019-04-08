@@ -9978,13 +9978,13 @@ until the top-level form is no longer a macro call.")
     (version "2.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Fanael/parent-mode/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fanael/parent-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0gxbl5s1w96v6v55b7aaansgw4sxhzfx9nrsvpk3pfhsibs6yqjd"))))
+        (base32 "0i5bc7lyyrx6swqlrp9l5x72yzwi53qn6ldrfs99gh08b3yvsnni"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Fanael/parent-mode")
     (synopsis "Get major mode's parent modes")
