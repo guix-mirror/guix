@@ -13500,13 +13500,13 @@ to open SQLite databases.")
     (version "1.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/NixOS/nix-mode/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NixOS/nix-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "06aqz0czznsj8835jqnk794sy2p6pa8kxfqwh0nl5d5vxivria6z"))))
+        (base32 "1vz3s2jx14nzy53f04d821n4f2s22ys5h9s7af6cnpynkwawyhhq"))))
     (build-system emacs-build-system)
     (inputs
      `(("emacs-company" ,emacs-company)
