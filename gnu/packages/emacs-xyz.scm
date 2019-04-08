@@ -9140,16 +9140,15 @@ in @code{emacs-lisp-mode}, together with an elisp equivalent of
   (package
     (name "emacs-dedicated")
     (version "1.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/emacsorphanage/dedicated/archive/"
-                    version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "0nhbkp278cvcznb5rp3jp9ii3mjgb79zx8iwfrw7zfk3yg8688ni"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacsorphanage/dedicated.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pba9s0h37sxyqh733vi6k5raa4cs7aradipf3826inw36jcw414"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacsorphanage/dedicated")
     (synopsis "Emacs minor mode for toggling a windows's \"dedicated\" flag")
