@@ -8360,13 +8360,13 @@ emulates Vim features and provides Vim-like key bindings.")
     (version "0.1.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/blorbx/evil-quickscope/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blorbx/evil-quickscope.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1r26a412mmar7vbf89zcifswiwpdg30mjzj32xdyqss57aqi83ma"))))
+        (base32 "1ja9ggj70wf0nmma4xnc1zdzg2crq9h1cv3cj7cgwjmllflgkfq7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
