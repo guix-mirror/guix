@@ -6861,15 +6861,15 @@ to org file, you can use this tool to write orgify commentary.")
   (package
     (name "emacs-mustache")
     (version "0.23")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Wilfred/mustache.el/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0k9lcgil7kykkv1ylrgwy1g13ldjjmgi2cwmysgyb2vlj3jbwpdj"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Wilfred/mustache.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n2ymd92qpvsby6ms0l3kjhdzzc47rri2aiscc6bs07hm4mjpr9q"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
