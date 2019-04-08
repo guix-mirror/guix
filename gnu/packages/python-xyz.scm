@@ -4456,13 +4456,13 @@ memoizing PEG/Packrat parser in Python.")
     (version "0.13.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/pygridtools/gridmap/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pygridtools/gridmap.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1gzjg2k6f14i1msm2b0ax8d9ds1hvk6qd5nlaivg8m4cxqp4cp1x"))))
+        (base32 "1478lbwsr1w24cii2x01m2910fvh8r43ghnb78nc972a96hqiknm"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Requires python-cherrypy.
