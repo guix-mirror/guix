@@ -8619,40 +8619,34 @@ Features:
     (version "0.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cute-jumper/epipe/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cute-jumper/epipe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05a036852g4j63k1mhvyfrcsgkl9lczayi7x61570ysw3cli5wp5"))))
+        (base32 "0lkisi1s7sn12nx8zh58qmsxwnk1rjwryj18wcbr148xqz3swg57"))))
     (build-system trivial-build-system)
     (inputs
      `(("bash" ,bash)
        ("perl" ,perl)))
-    (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)))
     (arguments
      `(#:modules
        ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils))
-         ;; Extract source
-         (setenv "PATH" (string-append
-                         (assoc-ref %build-inputs "tar") "/bin" ":"
-                         (assoc-ref %build-inputs "gzip") "/bin"))
-         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
-         (chdir (string-append ,name "-" ,version))
-         ;; Patch shebangs
+         ;; Extract source.
+         (copy-recursively (assoc-ref %build-inputs "source") "source")
+         (chdir "source")
+         ;; Patch shebangs.
          (substitute* "epipe"
            (("/usr/bin/env bash")
             (string-append (assoc-ref %build-inputs "bash") "/bin/bash")))
          (patch-shebang "epipe.pl"
                         (list (string-append (assoc-ref %build-inputs "perl")
                                              "/bin")))
-         ;; Installation
+         ;; Install.
          (for-each (lambda (file)
                      (install-file file (string-append %output "/bin")))
                    '("epipe" "epipe.pl"))
