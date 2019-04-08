@@ -5159,15 +5159,15 @@ window edge.")
   (package
     (name "emacs-writeroom")
     (version "3.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/joostkremers/writeroom-mode/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0yqgp5h3kvvpgva4azakb2wnjl7gsyh45glf75crspv3xyq57f2r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/writeroom-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13nbls5qxz5z8firjxaip8m9vzfbbpxmwrmr01njbk4axpwrpj0z"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-visual-fill-column" ,emacs-visual-fill-column)))
