@@ -2979,12 +2979,13 @@ non-consing thread safe queues and fibonacci priority queues.")
     (version "0.19.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cffi/cffi/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cffi/cffi.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "07bc3c1fbfx17wgrvx6bh9byilfzfwv5n597cfdllm0vzwvbmiyk"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "09sfgc6r7ihmbkwfpvkq5fxc7h45cabpvgbvs47i5cvnmv3k72xy"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("libffi" ,libffi)
