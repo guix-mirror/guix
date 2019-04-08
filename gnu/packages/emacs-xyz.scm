@@ -10524,15 +10524,15 @@ and doesn't require memorisation of commands.
   (package
     (name "emacs-logview")
     (version "0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/doublep/logview/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1vd11ppm46ldqsiwhqgw91p34gbjh1y82r9mxcn9r2gj65nvhxcp"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/doublep/logview.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qhzs75pxnaksbhczmpdcy2zmrqavlzkzss7ik5nv2wf9vs0sn02"))))
     (propagated-inputs
      `(("emacs-datetime" ,emacs-datetime)))
     (build-system emacs-build-system)
