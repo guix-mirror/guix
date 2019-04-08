@@ -623,14 +623,15 @@ syntax of OCaml.")
     (inherit camlp4-4.02)
     (name "camlp4")
     (version "4.07+1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml/camlp4/archive/"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "143hhxv1i6aq413z0i1pynrjcfl2g5gnh5r3863v6h9z0riqknzc"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/camlp4.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cxl4hkqcvspvkx4f2k83217rh6051fll9i2yz7cw6m3bq57mdvl"))))
     (properties
      `((ocaml4.02-variant . ,(delay camlp4-4.02))))
     (native-inputs
