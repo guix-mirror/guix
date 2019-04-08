@@ -5608,19 +5608,19 @@ used for reverse direction.")
     (name "emacs-monroe")
     (version "0.3.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/sanel/monroe/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "0icdx8shkd951phlnmcq1vqaxp1l667q5rjscskc5r22aylakh4w"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sanel/monroe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "101lfrykdbv37spkbw7zihhx26bc1lhjyxbanrcp9880bxj04jiy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/sanel/monroe")
     (synopsis "Clojure nREPL client for Emacs")
     (description
-      "Monroe is a nREPL client for Emacs, focused on simplicity and easy
+     "Monroe is a nREPL client for Emacs, focused on simplicity and easy
 distribution, primarily targeting Clojure users")
     (license license:gpl3+)))
 
