@@ -4064,14 +4064,15 @@ cpp-like directives.")
   (package
     (name "ocaml-piqilib")
     (version "0.6.14")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alavrik/piqi/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1ssccnwqzfyf7syfq2fv4zyhwayxwd75rhq9y28mvq1w6qbww4l7"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alavrik/piqi.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0lyqllmfsxmwlg7qidy92kvxi9n39lvachmydcyi81f8p07ykd2d"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
