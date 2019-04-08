@@ -6704,15 +6704,15 @@ constructs.")
   (package
     (name "emacs-cnfonts")
     (version "0.9.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tumashu/cnfonts/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1l6cgcvc6md1zq97ccczankpyi0k4vjx6apflny6kjq3p33lyhf4"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tumashu/cnfonts.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11d44lf0m0kbzq1mvyqkl4aprys0xqaarp08nij57xnynin1rynx"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tumashu/cnfonts")
     (synopsis "Emacs Chinese fonts setup tool")
