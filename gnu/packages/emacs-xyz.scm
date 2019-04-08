@@ -9413,15 +9413,15 @@ and @code{erc-send-modify-hook} to download and show images.")
   (package
     (name "emacs-helm-gtags")
     (version "1.5.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/syohex/emacs-helm-gtags/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1a10snhg6nnnan6w9a7mcziy26vxbsr3c35i0gcarnkdp2yqng36"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-helm-gtags.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0zyspn9rqfs3hkq8qx0q1w5qiv30ignbmycyv0vn3a6q7a5fsnhx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
