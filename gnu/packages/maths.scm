@@ -3182,13 +3182,13 @@ environments.")
     (version "0.5.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/JuliaLang/openspecfun/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaLang/openspecfun.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1rs1bv8jq751fv9vq79890wqf9xlbjc7lvz3ighzyfczbyjcf18m"))))
+        (base32 "0pfw6l3ch7isz403llx7inxlvavqh01jh1hb9dpidi86sjjx9kfh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no "check" target
