@@ -564,14 +564,15 @@ Git-friendly development workflow.")
   (package
     (name "camlp4")
     (version "4.02+6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml/camlp4/archive/"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0icdfzhsbgf89925gc8gl3fm8z2xzszzlib0v9dj5wyzkyv3a342"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/camlp4.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06yl4q0qazl7g25b0axd1gdkfd4qpqzs1gr5fkvmkrcbz113h1hj"))))
     (build-system gnu-build-system)
     (native-inputs `(("ocaml" ,ocaml-4.02)
                      ("which" ,which)))
