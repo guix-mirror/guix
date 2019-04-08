@@ -6534,14 +6534,13 @@ the hunks and revert them selectively.")
     (version "0.45")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/myrjola/diminish.el/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/myrjola/diminish.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0i3629sv5cfrrb00hcnmaqzgs8mk36yasc1ax3ry1ga09nr6rkj9"))))
+        (base32 "0qpgfgp8hrzz4vdifxq8h25n0a0jlzgf7aa1fpy6r0080v5rqbb6"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/myrjola/diminish.el")
     (synopsis "Diminish minor modes with no modeline display")
