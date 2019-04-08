@@ -7439,13 +7439,13 @@ a @url{http://json.org/, JSON} file.")
     (version "1.7.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/joshwnj/json-mode/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joshwnj/json-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "06h45p4cn767pk9sqi2zb1c65wy5gyyijqxzpglp80zwxhvajdz5"))))
+        (base32 "0i79lqzdg59vkqwjd3q092xxn9vhxspb1vn4pkis0vfvn46g01jy"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-json-reformat" ,emacs-json-reformat)
