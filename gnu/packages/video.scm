@@ -91,6 +91,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
@@ -3371,10 +3372,15 @@ API.  It includes bindings for Python, Ruby, and other languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mg63v36h7l8kv2sgf6x8c1n3ygddkqqwlciz7ccxpbm4x1idqba"))))
+                "0mg63v36h7l8kv2sgf6x8c1n3ygddkqqwlciz7ccxpbm4x1idqba"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/images/fonts") #t))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)
+       ("font-ubuntu" ,font-ubuntu)
        ("libopenshot" ,libopenshot)
        ("python" ,python)
        ("python-pyqt" ,python-pyqt)
@@ -3390,6 +3396,13 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                             (guix build qt-utils))
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
+                  (add-after 'unpack 'patch-font-location
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((font (assoc-ref inputs "font-ubuntu")))
+                        (substitute* "src/classes/app.py"
+                          (("info.IMAGES_PATH") (string-append "\"" font "\""))
+                          (("fonts") "share/fonts/truetype")))
+                      #t))
                   (add-before 'install 'set-tmp-home
                     (lambda _
                       ;; src/classes/info.py "needs" to create several
