@@ -8945,13 +8945,13 @@ match and total match information in the mode-line in various search modes.")
   (version "2.0.0")
   (source
     (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/skeeto/elisp-finalize/archive/"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/skeeto/elisp-finalize.git")
+            (commit version)))
+      (file-name (git-file-name name version))
       (sha256
-        (base32
-         "077fycy3i5f0kjw5z3rhf4kld5lbk2idz690nkwhkz04vppk4q4x"))))
+        (base32 "1gvlm4i62af5jscwz0jccc8ra0grprxpg2rlq91d5nn8dn5lpy79"))))
   (build-system emacs-build-system)
   (propagated-inputs
     `(("emacs-cl-generic" ,emacs-cl-generic)))
