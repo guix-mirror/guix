@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2018 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Frederick Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,15 +81,15 @@ and freshness without requiring additional information from the user.")
     (package
       (name "ldc")
       (version "0.17.4")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://github.com/ldc-developers/ldc/archive/v"
-                      version ".tar.gz"))
-                (file-name (string-append name "-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1kw0j378k6bh0k66dvx99bjq8ilp8bb24w3jrmibn8rhmqv0d5q8"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ldc-developers/ldc.git")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nnrjavfmpfp7bib04isqlxvyzh6mlvsdan0gxysdz96hlg4hcq8"))))
       (build-system cmake-build-system)
       (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
       (properties
@@ -101,11 +101,15 @@ and freshness without requiring additional information from the user.")
          (modify-phases %standard-phases
            (add-after 'unpack 'unpack-submodule-sources
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unpack (lambda (source target)
-                               (with-directory-excursion target
-                                 (invoke "tar" "xvf"
-                                         (assoc-ref inputs source)
-                                         "--strip-components=1")))))
+               (let ((unpack (lambda (input target)
+                               (let ((source (assoc-ref inputs input)))
+                                 ;; Git checkouts are directories as long as
+                                 ;; there are no patches; tarballs otherwise.
+                                 (if (file-is-directory? source)
+                                     (copy-recursively source target)
+                                     (with-directory-excursion target
+                                       (invoke "tar" "xvf" source
+                                               "--strip-components=1")))))))
                  (unpack "phobos-src" "runtime/phobos")
                  (unpack "druntime-src" "runtime/druntime")
                  (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")
@@ -147,32 +151,32 @@ and freshness without requiring additional information from the user.")
          ("unzip" ,unzip)
          ("phobos-src"
           ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/ldc-developers/phobos/archive/ldc-v"
-                   version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ldc-developers/phobos.git")
+                   (commit (string-append "ldc-v" version))))
+             (file-name (git-file-name "phobos" version))
              (sha256
-              (base32
-               "16x36kp46mqiihxx7jvr1d3mv3b96yfmhinb9lzinh2m4clr85wz"))
+              (base32 "0i7gh99w4mi0hdv16261jcdiqyv1nkjdcwy9prw32s0lvplx8fdy"))
              (patches (search-patches "ldc-bootstrap-disable-tests.patch"))))
          ("druntime-src"
           ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/ldc-developers/druntime/archive/ldc-v"
-                   version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ldc-developers/druntime.git")
+                   (commit (string-append "ldc-v" version))))
+             (file-name (git-file-name "druntime" version))
              (sha256
-              (base32
-               "0iw2xxhcbsc5f1707dgdzhff528363l4faqdk513gaxs2dhfx8vx"))))
+              (base32 "0alabm3bbvs94msvxz5psiwk4f51cw9h82z1p5hhsnf8ja6d0am7"))))
          ("dmd-testsuite-src"
           ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/ldc-developers/dmd-testsuite/archive/ldc-v"
-                   version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ldc-developers/dmd-testsuite.git")
+                   (commit (string-append "ldc-v" version))))
+             (file-name (git-file-name "dmd-testsuite" version))
              (sha256
-              (base32
-               "0z6ch930wjkg2vlnqkbliwxxxifad6ydsdpwdxwnajkb2kaxsjx4"))))))
+              (base32 "05qr4cgb4scfqzbw1l5pk72kil074mvj9d55b165ljyr51sgwgbl"))))))
       (home-page "http://wiki.dlang.org/LDC")
       (synopsis "LLVM-based compiler for the D programming language")
       (description
