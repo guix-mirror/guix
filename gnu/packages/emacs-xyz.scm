@@ -6271,14 +6271,13 @@ above over the network.")
     (version "1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/skeeto/emacs-memoize/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/emacs-memoize.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05ijgwi4ymxx31vpjm2pn356j85cykknajn14lrzz8pn5sh0vrg4"))))
+        (base32 "04qgnlg4x6va7x364dhj1wbjmz8p5iq2vk36mn9198k2vxmijwzk"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
