@@ -3978,14 +3978,15 @@ JSON.")
   (package
     (name "ocaml4.02-uri")
     (version "1.9.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mirage/ocaml-uri/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "02bzrag79prx261rxf9mlak749pwf4flpfl8p012x1xznv9m0clc"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mirage/ocaml-uri.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "137pg8j654x7r0d1664iy2zp3l82nki1kkh921lwdrwc5qqdl6jx"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:ocaml ,ocaml-4.02
