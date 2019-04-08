@@ -2948,13 +2948,14 @@ programs.  It allows the definition of simple macros and file inclusion.  Cpp oi
     (name "ocaml4.02-ppx-deriving")
     (version "4.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/whitequark/ppx_deriving//archive/v"
-                            version ".tar.gz"))
-        (sha256 (base32
-                  "1fr16g121j6zinwcprzlhx2py4271n9jzs2m9hq2f3qli2b1p0vl"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/whitequark/ppx_deriving.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cy9p8d8cbcxvqyyv8fz2z9ypi121zrgaamdlp4ld9f3jnwz7my9"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("js-build-tools" ,ocaml4.02-js-build-tools)
@@ -2969,13 +2970,17 @@ programs.  It allows the definition of simple macros and file inclusion.  Cpp oi
        #:findlib ,ocaml4.02-findlib
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (delete 'configure)
-           (add-before 'install 'fix-environment
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; the installation procedures looks for the installed module
-               (setenv "OCAMLPATH"
-                       (string-append (getenv "OCAMLPATH") ":"
-                                      (getenv "OCAMLFIND_DESTDIR"))))))))
+         (add-before 'install 'fix-environment
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; the installation procedures looks for the installed module
+             (setenv "OCAMLPATH"
+                     (string-append (getenv "OCAMLPATH") ":"
+                                    (getenv "OCAMLFIND_DESTDIR"))))))))
     (home-page "https://github.com/whitequark/ppx_deriving/")
     (synopsis "Type-driven code generation for OCaml >=4.02")
     (description "Ppx_deriving provides common infrastructure for generating
