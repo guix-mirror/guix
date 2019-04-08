@@ -4411,12 +4411,13 @@ connect an engine to your inputs and rendering functions to get an editor.")
     (version "1.13")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/diml/lambda-term/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/diml/lambda-term.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1hy5ryagqclgdm9lzh1qil5mrynlypv7mn6qm858hdcnmz9zzn0l"))))
+        (base32 "0wwib20b2ir3h2g9zwhzn04cv160psb805skp8v23wqgyn5cnbh8"))))
     (build-system dune-build-system)
     (arguments
      `(#:build-flags (list "--profile" "release")
