@@ -1270,14 +1270,15 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
   (package
     (name "ocaml-qcheck")
     (version "0.5.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/c-cube/qcheck/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1zs1pg5cb1iry554v3cdmmiglsrwmsqa9x8zxmzb118fnk5d3ha6"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/c-cube/qcheck.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vl2asr7md99pv558nbszxvjj36b4l6rj05hyczfy524vihhl0gf"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ounit" ,ocaml-ounit)
