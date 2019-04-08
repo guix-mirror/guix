@@ -9456,13 +9456,13 @@ and @code{erc-send-modify-hook} to download and show images.")
     (version "2.0.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/emacsfodder/move-text/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacsfodder/move-text.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1sjfja9r25692pgcldgnjzkapzy970m14jh9l4pajysiqcdk72g0"))))
+        (base32 "06jxk5g23822gfmwrxhc34zand3dr8p2wjh1zs3j61ibz6n0nmz1"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacsfodder/move-text")
     (synopsis "Move current line or region with M-up or M-down")
