@@ -649,13 +649,13 @@ plotting engine by third-party applications like Octave.")
     (version "2.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/OkoSanto/GCTP/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OkoSanto/GCTP.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0l9aqnqynh9laicn5dxf3rsb1n14xiks79wbyqccirzmjqd1c1x4"))))
+        (base32 "11wqmd443b4nksdbzp1msdws3av948nmwq1xz80w6hka3ss2aigd"))))
     (native-inputs
      `(("fortran" ,gfortran)))
     (build-system gnu-build-system)
