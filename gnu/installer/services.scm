@@ -102,4 +102,13 @@
                        '%base-services)))
     (if (null? snippets)
         `((services ,base))
-        `((services (cons* ,@snippets ,base))))))
+        `((services (cons* ,@snippets
+
+                           ,@(if desktop?
+                                 ;; XXX: Assume 'keyboard-layout' is in scope.
+                                 '((set-xorg-configuration
+                                    (xorg-configuration
+                                     (keyboard-layout keyboard-layout))))
+                                 '())
+
+                           ,base))))))
