@@ -6654,14 +6654,13 @@ fonts is supported.")
     (version "0.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/philjackson/xmlgen/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/philjackson/xmlgen.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0zay490vjby3f7455r0vydmjg7q1gwc78hilpfb0rg4gwz224z8r"))))
+        (base32 "096i29v0badx0a6339h9ckdz78zj59gbjdp7vj7vhkq9d830392s"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
