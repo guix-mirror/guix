@@ -9909,13 +9909,13 @@ your Emacs.")
     (version "0.03")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/syohex/emacs-sourcemap/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-sourcemap.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0bmd5l3cx2iyl7vxn84xdhs80b07kpdpfwki28lh5d0kmm5qs6m6"))))
+        (base32 "115g2mfpbfywp8xnag4gsb50klfvplqfh928a5mabb5s8v4a3582"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/syohex/emacs-sourcemap")
     (synopsis "Sourcemap parser")
