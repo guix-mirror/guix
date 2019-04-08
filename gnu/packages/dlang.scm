@@ -199,28 +199,33 @@ bootstrapping more recent compilers written in D.")
       (inherit ldc-bootstrap)
       (name "ldc")
       (version "1.10.0")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://github.com/ldc-developers/ldc/archive/v"
-                      version ".tar.gz"))
-                (file-name (string-append name "-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "16b1h9kwfggjw6ykc6sfs26ak6vypylsx9wmvp5m6x3cvi6g70yi"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ldc-developers/ldc.git")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0qcb2rn01wql7y8qp31blbv3hwmnh3zjgzi2n7k168cxr6rrdhlp"))))
       (arguments
        `(#:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'unpack-submodule-sources
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((unpack (lambda (source target)
-                               (with-directory-excursion target
-                                 (invoke "tar" "xvf"
-                                         (assoc-ref inputs source)
-                                         "--strip-components=1")))))
+               (let ((unpack (lambda (input target)
+                               (let ((source (assoc-ref inputs input)))
+                                 ;; Git checkouts are directories as long as
+                                 ;; there are no patches; tarballs otherwise.
+                                 (if (file-is-directory? source)
+                                     (copy-recursively source target)
+                                     (with-directory-excursion target
+                                       (invoke "tar" "xvf" source
+                                               "--strip-components=1")))))))
                  (unpack "phobos-src" "runtime/phobos")
                  (unpack "druntime-src" "runtime/druntime")
-                 (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite"))))
+                 (unpack "dmd-testsuite-src" "tests/d2/dmd-testsuite")
+                 #t)))
            (add-after 'unpack-submodule-sources 'patch-phobos
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* '("runtime/phobos/std/process.d"
@@ -228,7 +233,7 @@ bootstrapping more recent compilers written in D.")
                  (("/bin/sh") (which "sh"))
                  (("echo") (which "echo")))
                (substitute* "tests/d2/dmd-testsuite/Makefile"
-                            (("/bin/bash") (which "bash")))
+                 (("/bin/bash") (which "bash")))
                ;; disable unittests in the following files. We are discussing with
                ;; upstream
                (substitute* '("runtime/phobos/std/net/curl.d"
@@ -245,14 +250,14 @@ bootstrapping more recent compilers written in D.")
                (delete-file "tests/plugins/addFuncEntryCall/testPlugin.d")
                ;; the following tests requires AVX instruction set in the CPU.
                (substitute* "tests/d2/dmd-testsuite/runnable/test_cdvecfill.d"
-                (("^// DISABLED: ") "^// DISABLED: linux64 "))
+                 (("^// DISABLED: ") "^// DISABLED: linux64 "))
                #t))
            (replace 'check
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; some tests call into gdb binary which needs SHELL and CC set
-                      (setenv "SHELL" (which "sh"))
-                      (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
-                      (invoke "make" "test" "-j" (number->string (parallel-job-count))))))))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; some tests call into gdb binary which needs SHELL and CC set
+               (setenv "SHELL" (which "sh"))
+               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+               (invoke "make" "test" "-j" (number->string (parallel-job-count))))))))
       (native-inputs
        `(("llvm" ,llvm-6)
          ("clang" ,clang-6)
@@ -263,13 +268,13 @@ bootstrapping more recent compilers written in D.")
          ("gdb" ,gdb)
          ("phobos-src"
           ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/ldc-developers/phobos/archive/ldc-v"
-                   older-version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ldc-developers/phobos.git")
+                   (commit (string-append "ldc-v" older-version))))
+             (file-name (git-file-name "phobos" older-version))
              (sha256
-              (base32
-               "0cpmrww00xf1qx38bcc22rr05qw41p00p45yb5fbwnfaccfwdn0s"))
+              (base32 "1gmlwnjdcf6s5aahadxsif9l5nyaj0rrn379g6fmhcvdk64kf509"))
              ;; This patch deactivates some tests that depend on network access
              ;; to pass.  It also deactivates some tests that have some reliance
              ;; on timezone.
@@ -282,22 +287,22 @@ bootstrapping more recent compilers written in D.")
              (patches (search-patches "ldc-disable-phobos-tests.patch"))))
          ("druntime-src"
           ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/ldc-developers/druntime/archive/ldc-v"
-                   older-version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ldc-developers/druntime.git")
+                   (commit (string-append "ldc-v" older-version))))
+             (file-name (git-file-name "druntime" older-version))
              (sha256
-              (base32
-               "1akh2vdi98jih8642yjbvv2vavxzrmq24kz8i3kfidg5ndqyv222"))))
+              (base32 "0a3yyjcnpvm5fbdczf76fx08kl154w17w06hlxf0j3p1p4jc85aj"))))
          ("dmd-testsuite-src"
           ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/ldc-developers/dmd-testsuite/archive/ldc-v"
-                   older-version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ldc-developers/dmd-testsuite.git")
+                   (commit (string-append "ldc-v" older-version))))
+             (file-name (git-file-name "dmd-testsuite" older-version))
              (sha256
-              (base32
-               "0z5x07qrbkpksshaymp11ir6jlmg9wjicxn6zhp8cya6i1ha9p99")))))))))
+              (base32 "0mm3rliki1nqiqfaha7ssvm156aa398vpvf4v6895m7nn1mz7rss")))))))))
 
 (define-public dub
   (package
