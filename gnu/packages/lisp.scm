@@ -691,13 +691,13 @@ portable between implementations.")
     (version "1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/sionescu/fiveam/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sionescu/fiveam.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "fiveam" version))
        (sha256
-        (base32 "0f48pcbhqs3wwwzjl5nk57d4hcbib4l9xblxc66b8c2fhvhmhxnv"))
-       (file-name (string-append "fiveam-" version ".tar.gz"))))
+        (base32 "1yx9716mk8pq9076q6cjx4c9lyax3amiccy37sh0913k2x8gsm4l"))))
     (inputs `(("alexandria" ,sbcl-alexandria)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp testing framework")
