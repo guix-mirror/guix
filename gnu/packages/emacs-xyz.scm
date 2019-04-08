@@ -5949,14 +5949,13 @@ procedures for emacs-lisp-mode.")
     (version "2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/Wilfred/ht.el/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Wilfred/ht.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0fsi27gdrh2dgwdbq43vnw5sz25war6shlxaclr60fl7krpxjkzf"))))
+        (base32 "1p3qa7g0wa0wbviv2f8bda39cjys3naayk5xjm3nxxmqsyy8papx"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/Wilfred/ht.el")
