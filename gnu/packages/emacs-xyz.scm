@@ -5327,16 +5327,15 @@ not tied in the trap of backward compatibility.")
   (package
     (name "emacs-helm-swoop")
     (version "1.7.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ShingoFukuyama/helm-swoop/archive/"
-                    version
-                    ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ssivsjzlnkg049cg993l8fp09l5nhpz6asj7w5c91zp5kpc6fh7"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ShingoFukuyama/helm-swoop.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0b23j1bkpg4pm310hqdhgnl4mxsj05gpl08b6kb2ja4fzrg6adsk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
