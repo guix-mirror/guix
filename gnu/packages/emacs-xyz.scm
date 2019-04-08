@@ -6841,15 +6841,15 @@ posframe is a child frame displayed within its root window's buffer.
   (package
     (name "emacs-el2org")
     (version "0.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tumashu/el2org/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0gd3km1swwvg2w0kdi7370f54wgrflxn63gjgssfjc1iyc9sbqwq"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tumashu/el2org.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mzddqny6wpg1fv99xrvlv7rxmaifvmy5bvj4in4pldhm4cx4q1b"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tumashu/el2org")
     (synopsis "Convert Emacs-lisp file to org file")
