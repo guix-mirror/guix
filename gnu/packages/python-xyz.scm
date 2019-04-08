@@ -4487,13 +4487,13 @@ cluster without needing to write any wrapper code yourself.")
     (version "1.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/nickstenning/honcho/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nickstenning/honcho.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0zizn61n5z5hq421hkypk9pw8s6fpxw30f4hsg7k4ivwzy3gjw9j"))))
+        (base32 "11bd87474qpif20xdcn0ra1idj5k16ka51i658wfpxwc6nzsn92b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
