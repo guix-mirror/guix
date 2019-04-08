@@ -1554,15 +1554,14 @@ script files.")
     (version "0.17.2")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/tpaviot/oce/archive/OCE-"
-               version
-               ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/tpaviot/oce.git")
+              (commit (string-append "OCE-" version))))
+        (file-name (git-file-name name version))
         (patches (search-patches "opencascade-oce-glibc-2.26.patch"))
         (sha256
-          (base32
-            "0vpmnb0k5y2f7lpmwx9pg9yfq24zjvnsak5alzacncfm1hv9b6cd"))))
+          (base32 "0rg5wzkvfmzfl6v2amyryb8dnjad0nn9kyr607wy2gch6rciah69"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
