@@ -308,15 +308,16 @@ bootstrapping more recent compilers written in D.")
   (package
     (name "dub")
     (version "1.7.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dlang/dub/archive/"
-                                  "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1jvr1mmq8j77wnsrsg7x2xv8yfljqd6x8gn6yy7dd6h6y3cf408q"))))
-   (build-system gnu-build-system)
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dlang/dub.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "073ibvgm1gphcqs1yjrav9ryp677nh3b194nxmvicwgvdc0sb6w9"))))
+    (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; it would have tested itself by installing some packages (vibe etc)
        #:phases
