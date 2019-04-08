@@ -7594,14 +7594,13 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
     (version "3.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/justbur/emacs-which-key/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/justbur/emacs-which-key.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1g8k0js21bc8mlw6hvmg93zgfjhil77c30cv1hf85y4qb9ldvika"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1dh6kr00wmql46whjkvnl953zngiv5j99ypvr1b3cb2174623afb"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
