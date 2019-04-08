@@ -605,8 +605,8 @@ problems in numerical linear algebra.")
 routines on parallel distributed memory machines.  ScaLAPACK solves dense and
 banded linear systems, least squares problems, eigenvalue problems, and
 singular value problems.")
-    (license (license:bsd-style "file://LICENSE"
-                                "See LICENSE in the distribution."))))
+    (license (license:non-copyleft "file://LICENSE"
+                                   "See LICENSE in the distribution."))))
 
 (define-public gnuplot
   (package
