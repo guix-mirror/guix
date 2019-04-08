@@ -7874,14 +7874,13 @@ Idris.")
     (version "0.10.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/rmuslimov/browse-at-remote/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rmuslimov/browse-at-remote.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0ymslsp6i1naw25zckv25bf4aaq6qwkbkn95qyzlwg869l802686"))))
+        (base32 "0vhia7xmszcb3lxrb8wh93a3knjfzj48h8nhj4fh8zj1pjz6args"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-f" ,emacs-f)
@@ -8095,25 +8094,28 @@ messaging service.")
    (version "2.1.0")
    (source
     (origin
-      (method url-fetch)
-      (uri (string-append
-            "https://github.com/szermatt/emacs-bash-completion/archive/v"
-            version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/szermatt/emacs-bash-completion.git")
+            (commit version)))
+      (file-name (git-file-name name version))
       (sha256
-       (base32
-        "1z0qck3v3ra6ivacn8n04w1v33a4xn01xx860761q31qzsv3sksq"))))
+       (base32 "1a1wxcqzh0javjmxwi3lng5i99xiylm8lm04kv4q1lh9bli6vmv0"))))
    (inputs `(("bash" ,bash)))
    (build-system emacs-build-system)
    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((bash (assoc-ref inputs "bash")))
-               (emacs-substitute-variables "bash-completion.el"
-                 ("bash-completion-prog" (string-append bash "/bin/bash"))))
-             #t)))))
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'make-git-checkout-writable
+          (λ _
+            (for-each make-file-writable (find-files "."))
+            #t))
+        (add-before 'install 'configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((bash (assoc-ref inputs "bash")))
+              (emacs-substitute-variables "bash-completion.el"
+                ("bash-completion-prog" (string-append bash "/bin/bash"))))
+            #t)))))
    (home-page "https://github.com/szermatt/emacs-bash-completion")
    (synopsis "Bash completion for the shell buffer")
    (description
