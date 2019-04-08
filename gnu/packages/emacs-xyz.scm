@@ -3315,15 +3315,15 @@ and popup menus.")
   (package
     (name "emacs-python-environment")
     (version "0.0.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/tkf/emacs-python-environment/")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0q6bib9nr6xiq6npzbngyfcjk87yyvwzq1zirr3z1h5wadm34lsk"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tkf/emacs-python-environment/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q6bib9nr6xiq6npzbngyfcjk87yyvwzq1zirr3z1h5wadm34lsk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)))
