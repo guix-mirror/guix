@@ -3945,14 +3945,15 @@ writing to these structures, and they are accessed via the Bigarray module.")
   (package
     (name "ocaml4.02-ezjsonm")
     (version "0.4.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mirage/ezjsonm/archive/"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1kag0z2xlk4rw73a240dmkxh9rj6psxxcxkm7d7z0rrj6hzjajgq"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mirage/ezjsonm.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y6p3ga6vj1wx5dyns7hjgd0qgrrn2hnn323a7y5didgci5pybls"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("alcotest" ,ocaml4.02-alcotest)))
