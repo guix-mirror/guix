@@ -11261,13 +11261,13 @@ sections for bookmarks, projectil projects, org-agenda and more. ")
     (version "1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/anwyn/slime-company/archive/"
-                           "v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/anwyn/slime-company.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1myl79pxj501xfr5qc5a24qddsn2l5iaamg7rf7fpny7mr9v70ar"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1hl1hqkc1pxga9k2k8k15d7dip7sfsmwf4wm4sh346m6nj606q8g"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-slime" ,emacs-slime)
