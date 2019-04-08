@@ -5887,14 +5887,13 @@ extensibility.")
     (version "1.1.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/ajc/nginx-mode/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ajc/nginx-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0bzyrj6zz1hm67bkhw23bam7qc869s3zg7m1rb1c3aa4n0aw90cq"))))
+        (base32 "17dh5pr3gh6adrbqx588gimxbb2fr7iv2qrxv6r48w2727l344xs"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ajc/nginx-mode")
     (synopsis "Emacs major mode for editing nginx config files")
