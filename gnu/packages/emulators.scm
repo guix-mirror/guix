@@ -1005,21 +1005,21 @@ towards a working Mupen64Plus for casual users.")
   (package
     (name "nestopia-ue")
     (version "1.48")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rdanbrook/nestopia/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "184y05z4k4a4m4022niy625kan0rklh8gcxyynxli1fss2sjjrpv"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; We don't need libretro for the GNU/Linux build.
-                  (delete-file-recursively "libretro")
-                  #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rdanbrook/nestopia.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19c8vx5yxbysl0sszk5blfngwacshdgwbf44g1qaxvq8ywiyxmb4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; We don't need libretro for the GNU/Linux build.
+           (delete-file-recursively "libretro")
+           #t))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
