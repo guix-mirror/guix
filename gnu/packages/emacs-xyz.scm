@@ -9809,13 +9809,13 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (version "1.13")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/stsquad/emacs_chrome/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stsquad/emacs_chrome.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1r92kqggslqasza718z4ka883mqfbnibdm43f0j9gaipk0msm2wf"))))
+        (base32 "12dp1xj09jrp0kxp9xb6cak9dn6zkyis1wfn4fnhzmxxnrd8c5rn"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
