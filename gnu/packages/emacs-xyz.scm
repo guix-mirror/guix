@@ -7650,14 +7650,13 @@ characters from end of lines.")
     (version "0.8.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/et2010/org-edit-latex/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/et2010/org-edit-latex.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1y4h6wrs8286h9pbsv4d8fr67a885vz8b2k80qgv5qddipi2i78p"))))
+        (base32 "0zcllyhx9n9vcr5w87h0hfz25v52lvh5fi717cb7mf3jh89zh842"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-auctex" ,emacs-auctex)
