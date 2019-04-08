@@ -8856,15 +8856,15 @@ standard Unix password manager\").")
   (package
     (name "emacs-pass")
     (version "1.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/NicolasPetton/pass/archive/"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0aiz90gklk0cb8n4v1s3l0mx6pp2b7f4k2c0fjpihwmga13yklwn"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NicolasPetton/pass.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05h4hacv3yygyjcjj004qbyqjpkl4pyhwgp25gsz8mw5c66l70cx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-password-store" ,emacs-password-store)
