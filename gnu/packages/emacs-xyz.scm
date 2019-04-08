@@ -8754,13 +8754,13 @@ directories of plain text notes, inspired by Notational Velocity.")
     (version "0.62")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/syohex/emacs-anzu/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-anzu.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "16cg3897x5znbmgk7sdy0qyd0fbic9dmmz0dchq2vz5z29yhg4cz"))))
+        (base32 "1lzvc0ihcbplir4hqfyxfqpsd78arz15gk92kmq4f8ggbkl37fan"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/syohex/emacs-anzu")
     (synopsis "Show number of matches in mode-line while searching")
