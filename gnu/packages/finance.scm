@@ -627,7 +627,7 @@ Monero GUI client.")
 (define-public python-trezor-agent
   (package
     (name "python-trezor-agent")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method git-fetch)
@@ -636,7 +636,7 @@ Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i4igkxi8fwdlbhg6nx27lhnc9v9nmrw4j5fvpnc202n6yjlc7x7"))))
+        (base32 "0q99vbfd3h85s8rnjipnmldixabqmmlk5w9karv6f0rhyi54f4zv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
