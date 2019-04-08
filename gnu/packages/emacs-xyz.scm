@@ -7674,15 +7674,15 @@ src block.")
   (package
     (name "emacs-emamux")
     (version "0.14")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/syohex/emacs-emamux/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0wlqg4icy037bj70b0qmhvwvmiwhagpnx6pnxhq6gzy1hvwlilkx"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-emamux.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19y69qw79miim9cz5ji54gwspjkcp9g2c1xr5s7jj2fiabnxax6b"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/syohex/emacs-emamux")
     (synopsis "Manipulate Tmux from Emacs")
