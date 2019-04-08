@@ -12590,13 +12590,13 @@ Swagger 2.0).")
     (version "0.6.3")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/rochacbruno/flasgger/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/rochacbruno/flasgger.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-          (base32
-            "1gqzlm0rb55fdpsy5ipkganlx9cnpi454fqyycr03jm22zql14ay"))))
+          (base32 "0yydxsyjnc0clbrjqb1n7587l6cdqvwdagwxk5hkx01qwdfbkvpn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
