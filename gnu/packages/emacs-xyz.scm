@@ -8389,14 +8389,13 @@ features and provides Vim-like key bindings.")
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/dbrock/bongo/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dbrock/bongo.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1pcsyyrvj7djjjwpaswd1i782hvqvlvs39cy9ns0k795si6xd64d"))))
+        (base32 "1q3ws2vn062dh7ci6jn2k2bcn7szh3ap64sgwkzdd6f1pas37fnr"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/dbrock/bongo")
     (synopsis "Media player for Emacs")
