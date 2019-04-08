@@ -5298,15 +5298,15 @@ ack, ag, helm and pt.")
   (package
     (name "emacs-helm")
     (version "3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/" name "/helm/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ymykcsbcgq2kskqc0ddigg0kfznxx3j02mkd5r3c3n8gn3kgz84"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-helm/helm.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x3nv8zvp8vvl30bm2d83hd7zxb0ca64pc8kwb81ml9al6r3mm01"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
