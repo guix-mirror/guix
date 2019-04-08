@@ -9519,14 +9519,13 @@ orient yourself in the code, and tell which statements are at a given level.")
     (version "0.7.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/DamienCassou/hierarchy/archive/"
-             "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DamienCassou/hierarchy.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1a463v5zk6zis2p8cs4mads3iyxh266yahi6j6y0paggfl2yhkc8"))))
+        (base32 "1kykbb1sil5cycfa5aj8dhsxc5yrx1641i2np5kwdjid6ahdlz5r"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/DamienCassou/hierarchy")
     (synopsis "Library to create and display hierarchy structures")
