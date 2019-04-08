@@ -1362,17 +1362,18 @@ full_split, cut, rcut, etc..")
   (package
     (name "ocaml-bisect")
     (version "1.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/gasche/bisect/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0p67fppk5ifb63b00kxwrb1xg75hrqhknng3bsdyw3gxxqyjlpmx"))
-              (patches
-               (search-patches
-                "ocaml-bisect-fix-camlp4-in-another-directory.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gasche/bisect.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hm5za61qydda6ri3887b4zqqbqilh42x712xnclm1rr7ggga2nh"))
+       (patches
+        (search-patches
+         "ocaml-bisect-fix-camlp4-in-another-directory.patch"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)
