@@ -7373,13 +7373,13 @@ running a customisable handler command (@code{ignore} by default). ")
     (version "0.0.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/gongo/json-reformat/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gongo/json-reformat.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "11fbq4scrgr7m0iwnzcrn2g7xvqwm2gf82sa7zy1l0nil7265p28"))
+        (base32 "0qp4n2k6s69jj4gwwimkpadjv245y54wk3bxb1x96f034gkp81vs"))
        (patches (search-patches "emacs-json-reformat-fix-tests.patch"))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -7393,6 +7393,10 @@ running a customisable handler command (@code{ignore} by default). ")
        #:test-command '("ert-runner")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'make-tests-writable
+           (lambda _
+             (for-each make-file-writable (find-files "test"))
+             #t))
          (add-before 'check 'delete-json-objects-order-test
            (lambda _
              (emacs-batch-edit-file "test/json-reformat-test.el"
