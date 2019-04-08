@@ -4333,15 +4333,15 @@ library is currently designed for Unicode Standard 3.2.")
   (package
     (name "ocaml-jbuilder")
     (version "1.0+beta16")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/janestreet/jbuilder/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1cy07pwvbrlysszs938yd74yyvvbgkffpb82qrjph77zf0h2gdi7"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/janestreet/jbuilder.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1y3fgf570w3vrnhianrg26jy5j749zczq3f78s2dy5ylbp1hrx71"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:ocaml ,ocaml-4.02
