@@ -6633,14 +6633,13 @@ source file, @file{jl-encrypt.el}.")
     (version "1.53")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/hniksic/emacs-htmlize/archive/release/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hniksic/emacs-htmlize.git")
+             (commit (string-append "release/" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1lzaf9m1qr9dhw4nn53g6wszk2vqw95gpsbrc3y85bams4cn24ga"))))
+        (base32 "0dr235c0z8is3pi5xdgqyqljg6px0b2aya6qb79zkyi477bmz4ip"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/hniksic/emacs-htmlize")
     (synopsis "Convert buffer text and decorations to HTML")
