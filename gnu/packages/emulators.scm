@@ -605,13 +605,13 @@ SDL input plugin.")
     (version "2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mupen64plus/mupen64plus-rsp-hle/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mupen64plus/mupen64plus-rsp-hle.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "15h7mgz6xd2zjzm6l3f96sbs8kwr3xvbwzgikhnka79m6c69hsxv"))))
+        (base32 "0pi31qzjjp7aypdvvnz6ms18g09c4gqzxi6328zj8sji94b75gf0"))))
     (build-system gnu-build-system)
     (inputs
      `(("mupen64plus-core" ,mupen64plus-core)))
