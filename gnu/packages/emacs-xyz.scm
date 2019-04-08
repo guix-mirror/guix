@@ -8336,14 +8336,13 @@ evil mode using @kbd{%}.  It is a port of @code{matchit} for Vim.")
     (version "0.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/expez/evil-smartparens/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/expez/evil-smartparens.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1bwzdd3054d407d5j4m3njsbvmc9r8zzp33m32pj3b3irxrl68q0"))))
+        (base32 "1di4qz5fbrlwbg16c2j0m7y8zqfxw027qd7zqmc3rwk9znbhg7wl"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
