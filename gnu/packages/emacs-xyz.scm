@@ -12056,14 +12056,12 @@ from @code{emms-source-file-default-directory}.")
       (version (git-version "20180703" "2" commit))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://github.com/emacs-helm/helm-exwm/archive/"
-               commit
-               ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-exwm.git")
+               (commit commit)))
          (sha256
-          (base32
-           "0n7hdiajw5vxl8ha2r9r4cl4i7crza25348825wb6acwhhzijxcj"))))
+          (base32 "064ziinqa5sdv7rfjn0y278l12kld176fr88k4h78pgf2f2n7cd8"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
