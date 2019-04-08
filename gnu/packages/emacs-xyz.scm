@@ -3230,14 +3230,13 @@ in @code{html-mode}.")
     (version "2.23")
     (source
      (origin
-       (file-name (string-append name "-" version ".tar.gz"))
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/slime/slime/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/slime/slime.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "01gkrqfpifcx1vipwrbhns2r4s8izp3z1w4p41azc943s1a2d5nc"))))
+        (base32 "0i637n0ragpbj39hqx65nx5k99xf0464c4w6w1qpzykm6z42grky"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
@@ -3247,6 +3246,10 @@ in @code{html-mode}.")
                    "^contrib/Makefile$" "^contrib/README.md$")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'install 'configure
            (lambda* _
              (emacs-substitute-variables "slime.el"
