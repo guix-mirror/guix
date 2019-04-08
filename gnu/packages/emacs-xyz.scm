@@ -5350,16 +5350,15 @@ for search-based navigation of buffers.")
   (package
     (name "emacs-helm-projectile")
     (version "0.14.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/bbatsov/helm-projectile/archive/v"
-                    version
-                    ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "19cfmilqh8kbab3b2hmx6lyrj73q6vfmn3p730x95g23iz16mnd5"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bbatsov/helm-projectile.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0lph38p112fridighqcizpsyzjbv7qr3d8prbfj6w6q6gfl6cna4"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
