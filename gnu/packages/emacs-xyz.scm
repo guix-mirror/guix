@@ -10379,13 +10379,13 @@ duplicate hook and function names further into a single declarative call.")
     (version "0.9.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Malabarba/fancy-narrow/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Malabarba/fancy-narrow.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0rf2rnzg82pdqch041yyx3f9ddixffkk9s2ydzg8hwy66sg3385n"))))
+        (base32 "0vcr1gnqawvc1yclqs23jvxm6bqix8kpflf1c7znb0wzxmz9kx7y"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Malabarba/fancy-narrow/releases")
     (synopsis "Imitate @code{narrow-to-region} with more eye candy")
