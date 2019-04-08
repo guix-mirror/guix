@@ -9624,15 +9624,15 @@ navigate and display hierarchy structures.")
   (package
     (name "emacs-datetime")
     (version "0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/doublep/datetime/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "12wqpj67rjij2ki7nmw38rz3k2bsq68pk6zswknlcn9qhp1zd9w9"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/doublep/datetime.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fdswqi53qx924lib7nd9dazn0916xf1ybrh3bcn3f8cn6b8ikg5"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/doublep/datetime/")
     (synopsis "Library to work with dates in Emacs")
