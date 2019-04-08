@@ -731,14 +731,15 @@ written in Objective Caml.")
   (package
     (name "ocaml-num")
     (version "1.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml/num/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1xlkd0svc0mgq5s7nrm2rjrsvg15i9wxqkc1kvwjp6sv8vv8bb04"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/num.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a4mhxgs5hi81d227aygjx35696314swas0vzy3ig809jb7zq4h0"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
