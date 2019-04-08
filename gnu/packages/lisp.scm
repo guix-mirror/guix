@@ -1612,13 +1612,13 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
     (version "0.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/trivial-features/trivial-features/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trivial-features/trivial-features.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "trivial-features" version))
        (sha256
-        (base32 "0db1awn6jyhcfhyfvpjvfziprmq85cigf19mwbvaprhblydsag3c"))
-       (file-name (string-append "trivial-features-" version ".tar.gz"))))
+        (base32 "0ccv7dqyrk55xga78i5vzlic7mdwp28in3g1a8fqhlk6626scsq9"))))
     (build-system asdf-build-system/sbcl)
     (arguments '(#:tests? #f))
     (home-page "http://cliki.net/trivial-features")
