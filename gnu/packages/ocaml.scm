@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016-2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Peter Kreye <kreyepr@gmail.com>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -265,14 +265,15 @@ functional, imperative and object-oriented styles of programming.")
   (package
     (name "ocamlbuild")
     (version "0.13.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml/ocamlbuild/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1320cfkixs1xlng5av04pa5qjb3ynvi2kl3k1ngqzg5fpi29b0vr"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/ocamlbuild.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0v37vjvdqw35yvj8ipmlzmwf1jhip0hbsmcbdcn9cnj12p3mr6k7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
