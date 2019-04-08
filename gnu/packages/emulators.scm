@@ -887,13 +887,13 @@ Rice Video plugin.")
     (version "2.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mupen64plus/mupen64plus-video-z64/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mupen64plus/mupen64plus-video-z64.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1x7wsjs5gx2iwx20p4cjcbf696zsjlh31qxmghwv0ifrq8x58s1b"))
+        (base32 "04qa2fdd6dakpk2v0d4l80xh9b4h8gm71g80c0wyyxdhmhwk1r9c"))
        (patches (search-patches "mupen64plus-video-z64-glew-correct-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
