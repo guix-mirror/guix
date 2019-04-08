@@ -9120,13 +9120,13 @@ Emacs.")
     (version "0.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/purcell/elisp-slime-nav/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/elisp-slime-nav.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1vq7ym1q47p97gxrv45c9gm96d23xbp237vkmakikj6grngxjfb2"))))
+        (base32 "11vyy0bvzbs1h1kggikrvhd658j7c730w0pdp6qkm60rigvfi1ih"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/elisp-slime-nav")
     (synopsis "Make @code{M-.} and @code{M-,} work for elisp like they do in SLIME")
