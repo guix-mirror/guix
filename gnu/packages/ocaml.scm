@@ -2274,14 +2274,15 @@ representation of the data.")
   (package
     (name "ocaml-ulex")
     (version "1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/whitequark/ulex/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-                (base32
-                  "16gnbhqs6y2v89vw4igzvxdf2g8ybh5643636824aldcv8sscac0"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/whitequark/ulex.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08yf2x9a52l2y4savjqfjd2xy4pjd1rpla2ylrr9qrz1drpfw4ic"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases (delete 'configure))
