@@ -12146,14 +12146,12 @@ projects unrelated to current-buffer.
       (version (git-version  "20180513" "1" commit))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://github.com/emacs-helm/helm-mu/archive/"
-               commit
-               ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-mu.git")
+               (commit commit)))
          (sha256
-          (base32
-           "0qm4xi3i957scm50nar398pv4x8y03si10l77jb9ckjaviyq2hj9"))))
+          (base32 "1lh0ahxdc5b2z18m9p30gwg8sbg33sjwkjr38p7h5xsm5fm7i0fz"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
