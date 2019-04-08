@@ -4443,14 +4443,15 @@ instead of bindings to a C library.")
   (package
     (name "ocaml-utop")
     (version "2.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-community/utop/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1414snwmqaxs1x8wbpjf6fn3jsl01hq0phrr7639xmb5vh15mgd4"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml-community/utop.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02hjkc0rdzfq3bqy9mqm5wmw312r3187v9cl66ynb6hxkj6s3glb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
