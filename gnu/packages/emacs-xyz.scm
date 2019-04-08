@@ -8685,14 +8685,13 @@ highlighting and indentation support.")
     (version "0.06")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/syohex/emacs-terraform-mode/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-terraform-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0h9267ifdjmcin4sj8slxydbacx4bqicbvg8pa1qq2l72h9m5381"))))
+        (base32 "05hn8kskx9lcgn7bzgam99c629zlryir2pickwrqndacjrqpdykx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-hcl-mode" ,emacs-hcl-mode)))
