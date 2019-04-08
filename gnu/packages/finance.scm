@@ -733,14 +733,14 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "064yds8f4px0c6grkkanpdjx022g4q87ihzhkmdv9qanv0hz6hv0"))))
+            "1f0zfki12mnhidkfxpx2lpq1xim8f35i2d64bx9lf4m26xxv9x56"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
