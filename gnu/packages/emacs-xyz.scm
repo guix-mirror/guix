@@ -10770,14 +10770,13 @@ yasnippet fields and mirrors to be.")
     (version "0.2.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/Fanael/highlight-numbers/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fanael/highlight-numbers.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "030v5p11d4n0581ncv499l1fqrmfziy756q6378x2bv22ixghqqp"))))
+        (base32 "1r07mpyr7rhd7bkg778hx6vbhb4n9ixgzkpszhgks7ri6ia38pj8"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-parent-mode" ,emacs-parent-mode)))
