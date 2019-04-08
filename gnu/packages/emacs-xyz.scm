@@ -9281,13 +9281,13 @@ outline-mode), so there is no such thing like an outshine mode, only
     (version "0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cpitclaudel/biblio.el/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cpitclaudel/biblio.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0vwrljmab8m1z83048gxx5mryml9f5pb3h0jpwkvqcl0ra152lzx"))))
+        (base32 "1gxjind6r235az59dr8liv03d8994mqb8a7m28j3c12q7p70aziz"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-seq" ,emacs-seq)
