@@ -3508,14 +3508,15 @@ new record values.")
   (package
     (name "ocaml-seq")
     (version "0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/c-cube/seq/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "02lb2d9i12bxrz2ba5wygk2bycan316skqlyri0597q7j9210g8r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/c-cube/seq.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1cjpsc7q76yfgq9iyvswxgic4kfq2vcqdlmxjdjgd4lx87zvcwrv"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f
@@ -3534,9 +3535,9 @@ new record values.")
 version=\"[distributed with ocaml]\"
 description=\"dummy package for compatibility\"
 requires=\"\"")))
-             #t))))))
+               #t))))))
     (properties
-      `((ocaml4.02-variant . ,(delay ocaml4.02-seq))))
+     `((ocaml4.02-variant . ,(delay ocaml4.02-seq))))
     (home-page "https://github.com/c-cube/seq")
     (synopsis "OCaml's standard iterator type")
     (description "This package is a compatibility package for OCaml's
