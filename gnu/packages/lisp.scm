@@ -818,14 +818,21 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
     (version "1.0.16")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/edicl/flexi-streams/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/flexi-streams.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "flexi-streams" version))
        (sha256
-        (base32 "1fb0jrwxr5c3i2lhy7kn30m1n0vggfzwjm1dacx6y5wf9wfsbamw"))
-       (file-name (string-append "flexi-streams-" version ".tar.gz"))))
+        (base32 "0gvykjlmja060zqq6nn6aqxlshh6r6ijahmmgf20q0d839rwpgxc"))))
     (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
     (inputs `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
     (synopsis "Implementation of virtual bivalent streams for Common Lisp")
     (description "Flexi-streams is an implementation of \"virtual\" bivalent
