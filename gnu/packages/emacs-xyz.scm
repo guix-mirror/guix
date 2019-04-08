@@ -10866,13 +10866,13 @@ decreasing the default font size in all GUI Emacs frames.")
     (version "1.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/benma/visual-regexp.el/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/benma/visual-regexp.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1czmhvcivlcdyz7rfm0vd4a3xsgmy4qbvbl6yjxc217wrxqflr92"))))
+        (base32 "12zpmzwyp85dzsjpxd3279kpfi9yz3jwc1k9fnb3xv3pjiil5svg"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/benma/visual-regexp.el/")
     (synopsis "Regexp command with interactive visual feedback")
