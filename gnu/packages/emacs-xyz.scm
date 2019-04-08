@@ -8259,31 +8259,25 @@ for external literate programming tools for exporting, weaving and tangling.")
   (package
     (name "eless")
     (version "0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/kaushalmodi/eless/archive/"
-                    "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0gjnnhgw5xs1w3qfnkvwa2nv44gnxr8pkhx3c7qig45p8nh1461h"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kaushalmodi/eless.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jr7vhh4vw69llhi0fh9ljscljkszkj0acdxl04da5hvqv6pnqbb"))))
     (build-system trivial-build-system)
     (inputs
      `(("bash" ,bash)))
-    (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils))
-         (setenv "PATH" (string-append
-                         (assoc-ref %build-inputs "tar") "/bin" ":"
-                         (assoc-ref %build-inputs "gzip") "/bin"))
-         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
-         (chdir (string-append "eless" "-" ,version))
+         (copy-recursively (assoc-ref %build-inputs "source") "source")
+         (chdir "source")
          (substitute* "eless" (("/usr/bin/env bash")
                                (string-append (assoc-ref %build-inputs "bash")
                                               "/bin/bash")))
