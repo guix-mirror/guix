@@ -824,14 +824,15 @@ map, geocoding with Nominatim, or general analysis.")
   (package
     (name "tippecanoe")
     (version "1.31.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mapbox/tippecanoe/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1057na1dkgjaryr7jr15lqkxpam111d3l5zdpdkqzzzpxmdjxqcf"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mapbox/tippecanoe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1m0x931a945sr7axyhcvpwh798m58hx1zxh6ikgf9gsgqhdhmszz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
