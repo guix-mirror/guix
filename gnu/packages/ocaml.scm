@@ -3558,14 +3558,15 @@ standard iterator type starting from 4.07.")
   (package
     (name "ocaml-re")
     (version "1.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml/ocaml-re//archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1pdb0mr6z5ax6szblr3f5lbdnqq9grm97cmsfjmdma60yrx2rqhd"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/ocaml-re.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ch6hvmm4ym3w2vghjxf3ka5j1023a37980fqi4zcb7sx756z20i"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f
