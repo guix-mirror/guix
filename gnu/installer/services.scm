@@ -53,9 +53,7 @@
       (snippet '(service gnome-desktop-service-type)))
      (desktop-environment
       (name "Xfce")
-      ;; TODO: Use 'xfce-desktop-service-type' when the 'guix' package provides
-      ;; it with a default value.
-      (snippet '(xfce-desktop-service)))
+      (snippet '(service xfce-desktop-service-type)))
      (desktop-environment
       (name "MATE")
       (snippet '(service mate-desktop-service-type)))
@@ -104,4 +102,13 @@
                        '%base-services)))
     (if (null? snippets)
         `((services ,base))
-        `((services (cons* ,@snippets ,base))))))
+        `((services (append (list ,@snippets
+
+                                  ,@(if desktop?
+                                        ;; XXX: Assume 'keyboard-layout' is in
+                                        ;; scope.
+                                        '((set-xorg-configuration
+                                           (xorg-configuration
+                                            (keyboard-layout keyboard-layout))))
+                                        '()))
+                           ,base))))))

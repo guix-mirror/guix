@@ -424,8 +424,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0.6")
-(define %linux-libre-hash "0zznxchsdljw4swnr4i0qlvdww7cxskmil1691baj53xjv3wsh3n")
+(define %linux-libre-version "5.0.7")
+(define %linux-libre-hash "0c8g20crv03xxxpirj0jylcxxy33dn9f9x7viv451rzh9frc5mal")
 
 (define %linux-libre-5.0-patches
   (list %boot-logo-patch
@@ -438,8 +438,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.33")
-(define %linux-libre-4.19-hash "147ksl3ksxdv2ifr18cbzq4647n9d7yr7kbxg02sljia7z3b70cm")
+(define %linux-libre-4.19-version "4.19.34")
+(define %linux-libre-4.19-hash "0rmpyj2qb651p2k2srpjndjxry87hr5vq0jkk4rvxjhm5y3sb65l")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -452,8 +452,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.110")
-(define %linux-libre-4.14-hash "05cfb1wb4ml5a1vfakq5v6192f584j3701d2mf03mv5fzxb7l2dx")
+(define %linux-libre-4.14-version "4.14.111")
+(define %linux-libre-4.14-hash "1b34f96yigdxxh5wg798933nrv7rak1w0v0q1jfviyrllrg3hkmq")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -462,8 +462,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.167"
-                    "16428a6mxxi6k4ag7pj6jl01d3a3yshynn3b9jf3vjip6kcrhw03"
+  (make-linux-libre "4.9.168"
+                    "1nli5di7i7x4jyad7nappm1awz207rg18n08wb82b1w8rwqyqgy3"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 

@@ -91,6 +91,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
@@ -1326,6 +1327,14 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((ytdl (assoc-ref inputs "youtube-dl")))
+              (substitute* "player/lua/ytdl_hook.lua"
+                (("\"youtube-dl\",")
+                 (string-append "\"" ytdl "/bin/youtube-dl\",")))
+              #t)))
          (add-before
           'configure 'setup-waf
           (lambda* (#:key inputs #:allow-other-keys)
@@ -3293,7 +3302,7 @@ create smoother and stable videos.")
 (define-public libopenshot
   (package
     (name "libopenshot")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3302,7 +3311,7 @@ create smoother and stable videos.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x4kv05pdq1pglb6y056aa7llc6iyibyhzg93k7zwj0q08cp5ixd"))
+                "0r1qmr8ar5n72603xkj9h065vbpznrqsq88kxxmn9n8djyyvk03k"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Allow overriding of the python installation dir
@@ -3311,9 +3320,7 @@ create smoother and stable videos.")
                              (string-append set " CACHE PATH "
                                             "\"Python bindings directory\")")))
                           (delete-file-recursively "thirdparty")
-                          #t))
-              (patches (search-patches "libopenshot-fixup-tests.patch"
-                                       "libopenshot-tests-with-system-libs.patch"))))
+                          #t))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -3357,7 +3364,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 (define-public openshot
   (package
     (name "openshot")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3366,10 +3373,15 @@ API.  It includes bindings for Python, Ruby, and other languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qdw1mli4y9qhrnllnkaf6ydgw5vfvdb90chs4i679k0x0jyb9a2"))))
+                "0mg63v36h7l8kv2sgf6x8c1n3ygddkqqwlciz7ccxpbm4x1idqba"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/images/fonts") #t))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)
+       ("font-ubuntu" ,font-ubuntu)
        ("libopenshot" ,libopenshot)
        ("python" ,python)
        ("python-pyqt" ,python-pyqt)
@@ -3378,8 +3390,20 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        ("qtsvg" ,qtsvg)))
     (arguments
      `(#:tests? #f                      ;no tests
+       #:modules ((guix build python-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%python-build-system-modules
+                            (guix build qt-utils))
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
+                  (add-after 'unpack 'patch-font-location
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((font (assoc-ref inputs "font-ubuntu")))
+                        (substitute* "src/classes/app.py"
+                          (("info.IMAGES_PATH") (string-append "\"" font "\""))
+                          (("fonts") "share/fonts/truetype")))
+                      #t))
                   (add-before 'install 'set-tmp-home
                     (lambda _
                       ;; src/classes/info.py "needs" to create several
@@ -3387,12 +3411,10 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                       (setenv "HOME" "/tmp")
                       #t))
                   (add-after 'install 'wrap-program
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (wrap-program (string-append (assoc-ref outputs "out")
-                                                   "/bin/openshot-qt")
-                        `("QT_PLUGIN_PATH" prefix
-                          ,(list (string-append (assoc-ref inputs "qtsvg")
-                                                "/lib/qt5/plugins/")))))))))
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (wrap-qt-program out "openshot-qt"))
+                      #t)))))
     (home-page "https://openshot.org")
     (synopsis "Video editor")
     (description "OpenShot takes your videos, photos, and music files and

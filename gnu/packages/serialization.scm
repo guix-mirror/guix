@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
@@ -30,6 +30,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -316,6 +317,23 @@ including serialization and deserialization to and from strings.  It can also
 preserve existing comment in unserialization/serialization steps, making
 it a convenient format to store user input files.")
     (license license:expat)))
+
+;; Tensorflow does not build with jsoncpp 1.8.x.  It is built with commit
+;; 4356d9bba191e1e16ce7a92073cbf3e63564e973, which lies between version 1.7.2
+;; and 1.7.3.
+(define-public jsoncpp-for-tensorflow
+  (package (inherit jsoncpp)
+    (name "jsoncpp")
+    (version "1.7.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/open-source-parsers/jsoncpp.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1180ln8blrb0mwzpcf78k49hlki6di65q77rsvglf83kfcyh4d7z"))))))
 
 (define-public capnproto
   (package
