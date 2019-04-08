@@ -2950,13 +2950,13 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
       (version (string-append upstream-version "-" revision))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/beltoforion/muparser/archive/v"
-                             upstream-version ".tar.gz"))
-         (file-name (string-append name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/beltoforion/muparser.git")
+               (commit (string-append "v" upstream-version))))
+         (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0277qsi5l23jsck1vhn383bmvc2n9l4a1dl5r9bf7hvjv9ayyrh6"))))
+          (base32 "0f0g4995xngf1pp3zr4p6ai2f8v6f8bxwa0k8ayjjiv1l8h44m24"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags '("--enable-samples=no")
