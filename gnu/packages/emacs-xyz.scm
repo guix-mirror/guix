@@ -8168,15 +8168,15 @@ in a generalized CSV (character-separated values) format.")
   (package
     (name "emacs-transmission")
     (version "0.12.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/holomorph/transmission/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1rrlgn96gi1ljfwbwvlyyxbq75xzamlbdhq1bpyadxxmxcvlmk3n"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/holomorph/transmission.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0kvg2gawsgy440x1fsl2c4pkxwp3zirq9rzixanklk0ryijhd3ry"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/holomorph/transmission")
     (synopsis "Emacs interface to a Transmission session")
