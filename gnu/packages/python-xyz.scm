@@ -6750,14 +6750,15 @@ Python Package Index (PyPI).")
     (name "python-tlsh")
     (version "3.4.5")
     (home-page "https://github.com/trendmicro/tlsh")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/trendmicro/tlsh/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1x1vahd4zg5kpyr9h9hs3fvh460p25rjy4cclwdnbbw8x3vc30q3"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trendmicro/tlsh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ydliir308xn4ywy705mmsh7863ldlixdvpqwdhbipzq9vfpmvll"))))
     (build-system cmake-build-system)
     (arguments
      '(#:out-of-source? #f
