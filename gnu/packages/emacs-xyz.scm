@@ -10357,15 +10357,15 @@ files.")
   (package
     (name "emacs-add-hooks")
     (version "3.1.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/nickmccurdy/add-hooks/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "03a28gb3298g7pc2qji9hi44p4d99ljp5mpi9cmg42ldv8fl6549"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nickmccurdy/add-hooks.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jv9fpcsm572zg0j1mbpbfkqgdlqapy89xhhj19pswkhjns1y2wl"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/nickmccurdy/add-hooks/")
     (synopsis "Emacs function for setting multiple hooks")
