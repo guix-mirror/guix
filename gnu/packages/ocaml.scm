@@ -1948,18 +1948,19 @@ simple (yet expressive) query language to select the tests to run.")
     (name "ocaml-ppx-tools")
     (version "5.1+4.06.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/alainfrisch/ppx_tools/archive/"
-                            version ".tar.gz"))
-        (sha256 (base32
-                  "0mncpy9v2mcjgnj7s2vqpp2b1ixv54djicfx66ic9wny9d202gj1"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alainfrisch/ppx_tools.git")
+             (commit version)))
+       (sha256 (base32
+                "1ww4cspdpgjjsgiv71s0im5yjkr3544x96wsq1vpdacq7dr7zwiw"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f))
     (properties
-      `((ocaml4.02-variant . ,(delay ocaml4.02-ppx-tools))))
+     `((ocaml4.02-variant . ,(delay ocaml4.02-ppx-tools))))
     (home-page "https://github.com/alainfrisch/ppx_tools")
     (synopsis "Tools for authors of ppx rewriters and other syntactic tools")
     (description "Tools for authors of ppx rewriters and other syntactic tools.")
