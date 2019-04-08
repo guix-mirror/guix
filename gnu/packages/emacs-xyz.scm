@@ -10654,13 +10654,13 @@ buffer with each of your todos.")
     (version "0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cosmicexplorer/f3/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cosmicexplorer/f3.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "06b8i1jvklm5k3k90n65f197l1miq1xlxqkqpbppw4h3rhl4y98h"))))
+        (base32 "1qg48zbjdjqimw4516ymrsilz41zkib9321q0caf9474s9xyp2bi"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
