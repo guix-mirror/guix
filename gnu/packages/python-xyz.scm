@@ -13102,13 +13102,13 @@ executed more than a given number of times during a given period.")
     (version "0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/kovidgoyal/dukpy/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kovidgoyal/dukpy.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0pj39rfwlzivqm5hkrsza7gssg6ggpxlq5ivc8f3h7x5pfgc6y6c"))))
+        (base32 "13h21nqzasv4zj32xs61brmc106pr2cx243672crcmwxxnjgaxls"))))
     (build-system python-build-system)
     (home-page "https://github.com/kovidgoyal/dukpy")
     (synopsis "Run JavaScript in python")
