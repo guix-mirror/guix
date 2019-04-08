@@ -6773,15 +6773,15 @@ function to be used by other frontend programs.")
   (package
     (name "emacs-pyim-basedict")
     (version "0.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/tumashu/pyim-basedict/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0nfgxviavkgrpyfsw60xsws4fk51fcmgl8fp6zf4ibqjjbp53n3n"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tumashu/pyim-basedict.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0576r8ap9gp91ycjf1d47pn13kxp0f9fysn09zlq44hr0s1y2y5d"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tumashu/pyim-basedict")
     (synopsis "Input method dictionary of pyim")
