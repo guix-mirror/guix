@@ -7216,14 +7216,13 @@ addition of surrounding pairs, such as parantheses and quotes, in evil mode.")
     (version "2.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/linktohack/evil-commentary/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linktohack/evil-commentary.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1jdya0i921nwskwrzdsj0vrr3m7gm49dy6f6pk9p5nxaarfxk230"))))
+        (base32 "0zjs9zyqfygnpxapvf0ymmiid40i06cxbhjzd81zw33nafgkf6r4"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
