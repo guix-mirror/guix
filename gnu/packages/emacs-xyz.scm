@@ -11683,14 +11683,12 @@ This code is still alpha.")
     (version "20180518")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/egh/zotxt-emacs/archive/"
-             "23a4a9f74a658222027d53a9a83cd4bcc583ca8b"
-             ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/egh/zotxt-emacs.git")
+             (commit "23a4a9f74a658222027d53a9a83cd4bcc583ca8b")))
        (sha256
-        (base32
-         "1qlibaciqgsva6fc7vv9krssjq00bi880396jk7llbi3c52q9n1y"))))
+        (base32 "09fq3w9yk9kn6bz7y9kgpiw612dvj3yzsdk734js6zgb0p8lfd2c"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-deferred" ,emacs-deferred)
