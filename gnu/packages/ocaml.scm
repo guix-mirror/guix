@@ -4034,14 +4034,15 @@ Format module of the OCaml standard library.")
   (package
     (name "optcomp")
     (version "1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/diml/optcomp/archive/"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0hhhb2gisah1h22zlg5iszbgqxdd7x85cwd57bd4mfkx9l7dh8jh"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/diml/optcomp.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0bm4f3fs9g1yiz48hdxvcjwnrgymwisqilxhmm87ndz81wp47zfy"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:ocaml ,ocaml-4.02
