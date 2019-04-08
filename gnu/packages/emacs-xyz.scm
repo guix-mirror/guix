@@ -11444,14 +11444,13 @@ through the symbol: @command{this-fn}.")
     (version "0.5.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/jacktasia/dumb-jump/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jacktasia/dumb-jump.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "07n0xjgpxjpf3vp9gxchkjpydyj0zm166930as0kwiwkhjlsirsf"))))
+        (base32 "00ph85vp8sa3k99qrdxfz4l8zx121q9xf47vvspzg26bk9l4nwin"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #f ; FIXME: Tests freeze when run.
