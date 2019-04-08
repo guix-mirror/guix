@@ -7113,14 +7113,13 @@ on mouse-control.")
     (version "0.7.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/bruceravel/gnuplot-mode/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bruceravel/gnuplot-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0glzymrn138lwig7p4cj17x4if5jisr6l4g6wcbxisqkqgc1h01i"))))
+        (base32 "0bwri3cvm2vr27kyqkrddm28fs08axnd4nm9amfgp54xp20bn4yn"))))
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
