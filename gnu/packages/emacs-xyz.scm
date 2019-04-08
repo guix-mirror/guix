@@ -9736,13 +9736,13 @@ tramp.")
     (version "1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Wilfred/loop.el/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Wilfred/loop.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1z3rhh3zyjabz36410yz0lp4a0qwwj0387as662wvx3z9y54jia9"))))
+        (base32 "1gs95xnmnn8aa4794k7h8mw1sz1nfdh9v0caqj6yvnsdnwy74n5x"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Wilfred/loop.el")
     (synopsis "Imperative loop structures for Emacs")
