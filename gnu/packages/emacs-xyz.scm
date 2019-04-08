@@ -6747,15 +6747,15 @@ browser.")
   (package
     (name "emacs-pos-tip")
     (version "0.4.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/pitkali/pos-tip/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "12jqfy26vjk7lq0aa8yn8zqj8c85fkvx7y9prj0pcn4wqiz2ad2r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pitkali/pos-tip.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0w8bnspnk871qndp18hs0wk4x9x31xr9rwbvf5dc8mcbnj29ch33"))))
     (build-system emacs-build-system)
     ;; The following functions and variables needed by emacs-pos-tip are
     ;; not included in emacs-minimal:
