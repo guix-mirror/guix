@@ -746,14 +746,14 @@ to create databases that are optimized for rendering/tile/map-services.")
     (name "libosmium")
     (version "2.14.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/osmcode/libosmium/archive/v"
-                version ".tar.gz"))
-    (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0d9b46qiw7zkw1h9lygjdwqxnbhm3c7v8kydzw9f9f778cyagc94"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/osmcode/libosmium.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "123ri1l0a2b9fljgpwsl7z2w4i3kmgxz79d4ns9z4mwbp8sw0250"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("boost" ,boost)
