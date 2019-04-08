@@ -647,13 +647,13 @@ high-level emulation (HLE) RSP processor plugin.")
     (version "2.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mupen64plus/mupen64plus-rsp-z64/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mupen64plus/mupen64plus-rsp-z64.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "10jz1w2dhx5slhyk4m8mdqlpsd6cshchslr1fckb2ayzb1ls3ghi"))))
+        (base32 "0nfyjns9k8xbg3aqs7593nfaxvlj72h3l8h467442xlk8ajfcylx"))))
     (build-system gnu-build-system)
     (inputs
      `(("mupen64plus-core" ,mupen64plus-core)))
