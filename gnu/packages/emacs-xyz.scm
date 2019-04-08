@@ -6296,14 +6296,13 @@ memoizing functions.")
     (version "0.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/coldnew/linum-relative/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/coldnew/linum-relative.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0s4frvr27866lw1rn3jal9wj5rkz9fx4yiszqv7w06azsdgsqksv"))))
+        (base32 "11bjnqqwvr9zrvz5dlm8a0yw4zg9ysh3jdiq5a6iw09d3f0h1v2s"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/coldnew/linum-relative")
     (synopsis "Relative line numbering for Emacs")
