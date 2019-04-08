@@ -11238,14 +11238,13 @@ Emacs minor mode to escape sequences in code.")
     (version "1.2.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/rakanalh/emacs-dashboard/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rakanalh/emacs-dashboard.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1738lmbgq6gk24hcwic0qjyajr21l5xzhya4pv58dw1bhd6vxv9g"))))
+        (base32 "1hhh1kfsz87qfmh45wjf2r93rz79rq0vbyxlfrsl02092zjbl1zr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-page-break-lines" ,emacs-page-break-lines)))
