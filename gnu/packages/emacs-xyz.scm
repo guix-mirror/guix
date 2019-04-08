@@ -11356,14 +11356,13 @@ scroll up to read the function name and then scroll down to original position.")
     (version "4.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/ryuslash/git-auto-commit-mode/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ryuslash/git-auto-commit-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "04avxmalsl3b7zi2vipfw9rb4wrwysnipsbch96skviql9axk870"))))
+        (base32 "0psmr7749nzxln4b500sl3vrf24x3qijp12ir0i5z4x25k72hrlh"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ryuslash/git-auto-commit-mode")
     (synopsis "Emacs Minor mode to automatically commit and push")
