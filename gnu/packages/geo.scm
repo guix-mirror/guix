@@ -776,20 +776,21 @@ OpenStreetMap data.")
   (package
     (name "osm2pgsql")
     (version "0.96.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/openstreetmap/osm2pgsql/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08y7776r4l9v9177a4q6cfdri0lpirky96m6g699hwl7v1vhw0mn"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (delete-file-recursively "contrib/protozero")
-                  (delete-file-recursively "contrib/libosmium")
-                  #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openstreetmap/osm2pgsql.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "032cydh8ynaqfhdzmkvgbmqyjql668y6qln1l59l2s3ni9963bbl"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "contrib/protozero")
+           (delete-file-recursively "contrib/libosmium")
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f; tests fail because we need to setup a database
