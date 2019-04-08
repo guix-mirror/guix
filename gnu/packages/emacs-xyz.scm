@@ -10172,13 +10172,13 @@ documentation.")
     (version "1.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/hylang/hy-mode/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hylang/hy-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0b4pvbr2hf77bq2vsyfsv653q0dab7qzq85wc7kdziw7687jdf2z"))))
+        (base32 "1jxximiznz7fw9ys5k6plw85zrbzvxidql7py1fdi425fdp4058z"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
