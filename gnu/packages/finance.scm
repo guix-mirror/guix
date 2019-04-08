@@ -779,14 +779,14 @@ TREZOR Hardware Wallet.")
 (define-public python-keepkey
   (package
     (name "python-keepkey")
-    (version "6.0.2")
+    (version "6.0.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "keepkey" version))
         (sha256
           (base32
-            "16j8hnxj9r4b2w6kfncmny09pb1al8ppmn59qxzl3qmh1xhpy45g"))))
+            "0z3d0m6364v9dv0njs4cd5m5ai6j6v35xaaxfxl90m9vmyxy81vd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
