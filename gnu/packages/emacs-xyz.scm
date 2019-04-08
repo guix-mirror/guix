@@ -6361,14 +6361,13 @@ jQuery and Bootstrap resources included via osscdn.")
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/daimrod/highlight-sexp/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/daimrod/highlight-sexp.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0jwx87qkln1rg9wmv4qkgkml935fh2pkgrg5x4ca6n5dgb4q6rj1"))))
+        (base32 "12cyk2q5g6p4ac2hykw1cag7dp1prjjnck5f7nalwwaklmy62y79"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/daimrod/highlight-sexp")
     (synopsis "Minor mode that highlights the s-exp at the current position")
