@@ -6338,14 +6338,13 @@ number on the left margin in Emacs.")
     (version "1.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/marsmining/ox-twbs/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/marsmining/ox-twbs.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1zaq8dczq5wijjk36114k2x3hfrqig3lyx6djril6wyk67vczyqs"))))
+        (base32 "0kd45p8y7ykadmai4jn1x1pgpafyqggwb1ccbjzalxw4k9wmd45f"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/marsmining/ox-twbs")
     (synopsis "Export org-mode docs as HTML compatible with Twitter Bootstrap")
