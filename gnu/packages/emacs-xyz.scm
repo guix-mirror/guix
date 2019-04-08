@@ -5971,14 +5971,13 @@ provides functions to convert hash tables from and to alists and plists.")
     (version "0.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/aki2o/log4e/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aki2o/log4e.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0nbdpbw353snda3v19l9hsm6gimppwnpxj18amm350bm81lyim2g"))))
+        (base32 "1l28n7a0v2zkknc70i1wn6qb5i21dkhfizzk8wcj28v44cgzk022"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
