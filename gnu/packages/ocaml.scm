@@ -647,14 +647,15 @@ syntax of OCaml.")
   (package
     (name "camlp5")
     (version "7.07")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/camlp5/camlp5/archive/rel"
-                                  (string-delete #\. version) ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "148r6p93xlxi6v7kbsqv8i70r6av04cyn0109pwss5xj6fw97i52"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/camlp5/camlp5.git")
+             (commit (string-append "rel" (string-delete #\. version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1c8v45553ccbqha2ypfranqlgw06rr5wjr2hlnrx5bf9jfq0h0dn"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
