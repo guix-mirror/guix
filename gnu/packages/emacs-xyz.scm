@@ -11152,14 +11152,13 @@ bookmarks and history.")
     (version "0.1.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/creichert/ido-vertical-mode.el/archive/"
-             "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/creichert/ido-vertical-mode.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0dprdxq8wvqd45dinwj92k0kixr07c8xvspa6i613mjcpxgwjg53"))))
+        (base32 "1lv82q639xjnmvby56nwqn23ijh6f163bk675s33dkingm8csj8k"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/creichert/ido-vertical-mode.el")
     (synopsis "Makes ido-mode display vertically")
