@@ -3868,7 +3868,7 @@ gone wrong.  As such, each Lisp has developed its own notion of what to
 display, how to display it, and what sort of arguments can be used to
 customize it.  @code{trivial-backtrace} is a simple solution to generating a
 backtrace portably.")
-     (license license:bsd-style))))
+     (license license:expat))))
 
 (define-public cl-trivial-backtrace
   (sbcl-package->cl-source-package sbcl-trivial-backtrace))
