@@ -14175,16 +14175,15 @@ manager compatible with @code{asyncio}.")
   (package
     (name "python-glob2")
     (version "0.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/miracle2k/python-glob2/archive/"
-                    version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "0ja168f0dz4kbz4m06dm0rd3acaypk6hjx2km541pw22y9s40mag"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miracle2k/python-glob2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lm1xz3k3l0k1c5bcp9hlzmi3gp5j8dl1k3xhpiq5mnm0xq6n163"))))
     (build-system python-build-system)
     (home-page "https://github.com/miracle2k/python-glob2/")
     (synopsis "Extended Version of the python buildin glob module")
