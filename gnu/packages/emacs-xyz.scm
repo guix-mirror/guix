@@ -7796,13 +7796,13 @@ the nick color and the background color
     (version "2.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/hrs/engine-mode/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hrs/engine-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1vm4p7pcp1vnwwxvps1bhm7i7hkabqqxl898knxf2hqvxys76684"))))
+        (base32 "02xas46nl28mascqsyr1zcd4hn15bh0fjv2xlxv1kmrj0pis94ml"))))
     (build-system emacs-build-system)
     (synopsis "Minor mode for defining and querying search engines")
     (description "@code{engine-mode} is a global minor mode for Emacs.  It
