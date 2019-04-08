@@ -6001,14 +6001,13 @@ you to deal with multiple log levels.")
     (version "0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/tekai/gntp.el/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tekai/gntp.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "16c1dfkia9yhl206bdhjr3b8kfvqcqr38jl5lq8qsyrrzsnmghny"))))
+        (base32 "1nvyjjjydrimpxy4cpg90si7sr8lmldbhlcm2mx8npklp9pn5y3a"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tekai/gntp.el")
     (synopsis "Growl Notification Protocol for Emacs")
