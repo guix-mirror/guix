@@ -11036,14 +11036,13 @@ decrease the number at point.")
     (version "0.1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/Fanael/highlight-defined/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fanael/highlight-defined.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1ryd66989b5byqdw8jmjrjf0c78iiz72wibld750skcnj5h5h506"))))
+        (base32 "08czwa165rnd5z0dwwdddn7zi5w63sdk31l47bj0598kbly01n7r"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Fanael/highlight-defined")
     (synopsis "Syntax highlighting of known Elisp symbols")
