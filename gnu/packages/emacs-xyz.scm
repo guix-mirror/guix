@@ -9672,13 +9672,13 @@ timestamps and date-time format strings library for Emacs.")
     (version "0.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mojochao/npm-mode/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mojochao/npm-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1kq1ww22dwf8c2i2b4z2ldbbmnihj65kb7n5vzvwkch9h4hxpqh5"))))
+        (base32 "1mh6nbffciw4yhv049kdhh796ysj1x21ndm3fwymhskb3dy0w1ss"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mojochao/npm-mode")
     (synopsis "Minor mode for working with @code{npm} projects")
