@@ -779,20 +779,25 @@ the OCaml core distribution.")
   (package
     (name "emacs-tuareg")
     (version "2.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml/tuareg/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ynpfc170f9jqx49biji9npfkvfpflbm29xf24wc7fnxxayr49ig"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/tuareg.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06zxnn85fk5087iq0zxc5l5n9fz8r0367wylmynbfhc9711vccy6"))))
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("opam" ,opam)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (delete 'configure)
          (add-before 'install 'fix-install-path
            (lambda* (#:key outputs #:allow-other-keys)
