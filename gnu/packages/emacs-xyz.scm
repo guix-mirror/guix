@@ -4637,14 +4637,15 @@ to all the other commands, too.")
   (package
     (name "emacs-js2-mode")
     (version "20190219")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mooz/js2-mode/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1gv1vinp2avnnn6an8ffcx79vmsdjhhikz7s6cmphligb26qp2vi"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mooz/js2-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0766bbr4piia9vfr4ivd2gwi8dxah654adv6h28ylz4q8xmfzm1b"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mooz/js2-mode/")
     (synopsis "Improved JavaScript editing mode for Emacs")
