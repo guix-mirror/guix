@@ -466,13 +466,13 @@ and Game Boy Color games.")
     (version "2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mupen64plus/mupen64plus-core/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mupen64plus/mupen64plus-core.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0dg2hksm5qni2hcha93k7n4fqr92888p946f7phb0ndschzfh9kk"))))
+        (base32 "116fndl6652zrp1r6ag4xv3dzp1x52mlvadj8xwflq07fd5rhri1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
