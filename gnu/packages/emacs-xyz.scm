@@ -11057,13 +11057,13 @@ macros, faces and variables.  To enable call @code{highlight-defined-mode}. ")
     (version "0.4.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/DogLooksGood/parinfer-mode/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DogLooksGood/parinfer-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "06ba9qi59sm9ih9m38fbr8kj4qkvrm58n0c0ngfjz60gnr9x9pcv"))))
+        (base32 "0v97ncb0w1slb0x8861l3yr1kqz6fgw1fwl1z9lz6hh8p2ih34sk"))))
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-rainbow-delimiters" ,emacs-rainbow-delimiters)
