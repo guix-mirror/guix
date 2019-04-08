@@ -942,13 +942,13 @@ Z64 video plugin.")
     (version "2.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mupen64plus/mupen64plus-ui-console/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mupen64plus/mupen64plus-ui-console.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "04qkpd8ic7xsgnqz7spl00wxdygf79m7d1k8rabbygjk5lg6p8z2"))
+        (base32 "0vrf98qa6a0y3647kslsv644fag233dxh5dcr1yncjiiwickcr5a"))
        (patches (search-patches "mupen64plus-ui-console-notice.patch"))))
     (build-system gnu-build-system)
     (native-inputs
