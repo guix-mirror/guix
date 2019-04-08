@@ -1699,13 +1699,13 @@ with a focus on interactive development.")
     (version "0.5.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/cl-babel/babel/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cl-babel/babel.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "babel" version))
        (sha256
-        (base32 "189kgbmslh36xx0d2i1g6a7mcvjryvjzkdlnhilqy5xs7hkyqirq"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "139a8rn2gnhj082n8jg01gc8fyr63hkj57hgrnmb3d1r327yc77f"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("tests:cl-hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
