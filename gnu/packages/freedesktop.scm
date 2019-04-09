@@ -54,12 +54,14 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
@@ -74,6 +76,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -629,7 +632,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "5.0.0")
+    (version "6.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -637,30 +640,40 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "1bsc9ry566mpk6fdwkqpvwq2j7m79d9cvh7d3lgf6igsphik98hm"))))
-    (build-system gnu-build-system)
+                "04p6hal5kalmdp5dxwh2h5qhkkb4dvbsk7l091zvvcq70slj6qsl"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server)))
     (inputs
      `(("cairo" ,cairo-xcb)
+       ("colord" ,colord)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
+       ("lcms" ,lcms)
+       ("libevdev" ,libevdev)
        ("libinput" ,libinput-minimal)
+       ("libjpeg" ,libjpeg)
        ("libunwind" ,libunwind)
+       ("libva" ,libva)
+       ("libwebp" ,libwebp)
        ("libxcursor" ,libxcursor)
        ("libxkbcommon" ,libxkbcommon)
+       ("libxml2" ,libxml2)
        ("mesa" ,mesa)
        ("mtdev" ,mtdev)
        ("linux-pam" ,linux-pam)
+       ("pango" ,pango)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
        ("xorg-server-xwayland" ,xorg-server-xwayland)))
     (arguments
      `(#:configure-flags
-       (list "--disable-setuid-install"
-             "--enable-systemd-login"
-             (string-append "--with-xserver-path="
+       (list "-Dbackend-rdp=false" ; TODO: Enable.
+             "-Dremoting=false" ; TODO: Enable.
+             "-Dsimple-dmabuf-drm=auto"
+             "-Dsystemd=false"
+             (string-append "-Dxwayland-path="
                             (assoc-ref %build-inputs "xorg-server-xwayland")
                             "/bin/Xwayland"))
        #:parallel-tests? #f ; Parallel tests cause failures.
@@ -669,8 +682,8 @@ applications, X servers (rootless or fullscreen) or other display servers.")
          (add-before 'configure 'use-elogind
            (lambda _
              ;; Use elogind instead of systemd
-             (substitute* "configure"
-               (("libsystemd-login >= 198") "libelogind"))
+             (substitute* "libweston/meson.build"
+               (("libsystemd-login") "libelogind"))
              (substitute* '("libweston/launcher-logind.c"
                             "libweston/weston-launch.c")
                (("#include <systemd/sd-login.h>")
@@ -678,7 +691,8 @@ applications, X servers (rootless or fullscreen) or other display servers.")
              #t))
          (add-after 'configure 'patch-confdefs.h
            (lambda _
-             (system "echo \"#define HAVE_SYSTEMD_LOGIN_209 1\" >> confdefs.h")))
+             (system "echo \"#define HAVE_SYSTEMD_LOGIN_209 1\" >> confdefs.h")
+             #t))
          (add-before 'check 'setup
            (lambda _
              (setenv "HOME" (getcwd))
