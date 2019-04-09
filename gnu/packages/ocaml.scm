@@ -5025,6 +5025,26 @@ Atom.")
 the OCaml language.")
     (license license:gpl3+)))
 
+(define-public ocaml-gsl-1
+  (package
+    (inherit ocaml-gsl)
+    (version "1.19.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mmottl/gsl-ocaml"
+                                  "/releases/download/v"
+                                  version "/gsl-ocaml-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nzp43hp8pbjqkrxnwp5lgjrabxayf61h18fjaydi0s5faq6f3xh"))))
+    (build-system ocaml-build-system)
+    (inputs
+     `(("gsl" ,gsl)))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
+    (arguments '())
+    (propagated-inputs '())))
+
 (define-public cubicle
   (package
     (name "cubicle")
