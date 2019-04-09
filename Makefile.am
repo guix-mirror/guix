@@ -138,6 +138,7 @@ MODULES =					\
   guix/store.scm				\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\
+  guix/colors.scm				\
   guix/i18n.scm					\
   guix/ui.scm					\
   guix/status.scm				\

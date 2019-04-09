@@ -20,7 +20,7 @@
 (define-module (guix status)
   #:use-module (guix records)
   #:use-module (guix i18n)
-  #:use-module ((guix ui) #:select (colorize-string))
+  #:use-module (guix colors)
   #:use-module (guix progress)
   #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module ((guix build download)
@@ -339,10 +339,6 @@ build-log\" traces."
   (and (current-store-protocol-version)
        (>= (current-store-protocol-version) #x163)))
 
-(define isatty?*
-  (mlambdaq (port)
-    (isatty? port)))
-
 (define spin!
   (let ((steps (circular-list "\\" "|" "/" "-")))
     (lambda (phase port)
@@ -361,44 +357,6 @@ the current build phase."
              ;; build phase--e.g., 'configure' or 'build'.
              (format port (G_ "'~a' phase") phase))
            (force-output port)))))))
-
-(define (color-output? port)
-  "Return true if we should write colored output to PORT."
-  (and (not (getenv "INSIDE_EMACS"))
-       (not (getenv "NO_COLOR"))
-       (isatty?* port)))
-
-(define-syntax color-rules
-  (syntax-rules ()
-    "Return a procedure that colorizes the string it is passed according to
-the given rules.  Each rule has the form:
-
-  (REGEXP COLOR1 COLOR2 ...)
-
-where COLOR1 specifies how to colorize the first submatch of REGEXP, and so
-on."
-    ((_ (regexp colors ...) rest ...)
-     (let ((next (color-rules rest ...))
-           (rx   (make-regexp regexp)))
-       (lambda (str)
-         (if (string-index str #\nul)
-             str
-             (match (regexp-exec rx str)
-               (#f (next str))
-               (m  (let loop ((n 1)
-                              (c '(colors ...))
-                              (result '()))
-                     (match c
-                       (()
-                        (string-concatenate-reverse result))
-                       ((first . tail)
-                        (loop (+ n 1) tail
-                              (cons (colorize-string (match:substring m n)
-                                                     first)
-                                    result)))))))))))
-    ((_)
-     (lambda (str)
-       str))))
 
 (define colorize-log-line
   ;; Take a string and return a possibly colorized string according to the

@@ -10,8 +10,6 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2013, 2014 Free Software Foundation, Inc.
-;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -118,8 +116,7 @@
             guix-warning-port
             warning
             info
-            guix-main
-            colorize-string))
+            guix-main))
 
 ;;; Commentary:
 ;;;
@@ -1702,55 +1699,5 @@ and signal handling has already been set up."
 (define (guix-main arg0 . args)
   (initialize-guix)
   (apply run-guix args))
-
-(define color-table
-  `((CLEAR       .   "0")
-    (RESET       .   "0")
-    (BOLD        .   "1")
-    (DARK        .   "2")
-    (UNDERLINE   .   "4")
-    (UNDERSCORE  .   "4")
-    (BLINK       .   "5")
-    (REVERSE     .   "6")
-    (CONCEALED   .   "8")
-    (BLACK       .  "30")
-    (RED         .  "31")
-    (GREEN       .  "32")
-    (YELLOW      .  "33")
-    (BLUE        .  "34")
-    (MAGENTA     .  "35")
-    (CYAN        .  "36")
-    (WHITE       .  "37")
-    (ON-BLACK    .  "40")
-    (ON-RED      .  "41")
-    (ON-GREEN    .  "42")
-    (ON-YELLOW   .  "43")
-    (ON-BLUE     .  "44")
-    (ON-MAGENTA  .  "45")
-    (ON-CYAN     .  "46")
-    (ON-WHITE    .  "47")))
-
-(define (color . lst)
-  "Return a string containing the ANSI escape sequence for producing the
-requested set of attributes in LST.  Unknown attributes are ignored."
-  (let ((color-list
-         (remove not
-                 (map (lambda (color) (assq-ref color-table color))
-                      lst))))
-    (if (null? color-list)
-        ""
-        (string-append
-         (string #\esc #\[)
-         (string-join color-list ";" 'infix)
-         "m"))))
-
-(define (colorize-string str . color-list)
-  "Return a copy of STR colorized using ANSI escape sequences according to the
-attributes STR.  At the end of the returned string, the color attributes will
-be reset such that subsequent output will not have any colors in effect."
-  (string-append
-   (apply color color-list)
-   str
-   (color 'RESET)))
 
 ;;; ui.scm ends here
