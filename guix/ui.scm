@@ -124,35 +124,42 @@
 ;;;
 ;;; Code:
 
-(define-syntax-rule (define-diagnostic name prefix)
-  "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
+(define-syntax define-diagnostic
+  (syntax-rules ()
+    "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
 messages."
-  (define-syntax name
-    (lambda (x)
-      (syntax-case x ()
-        ((name (underscore fmt) args (... ...))
-         (and (string? (syntax->datum #'fmt))
-              (free-identifier=? #'underscore #'G_))
-         #'(begin
-             (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
-                     (program-name) (program-name) prefix)
-             (format (guix-warning-port) (gettext fmt)
-                     args (... ...))))
-        ((name (N-underscore singular plural n) args (... ...))
-         (and (string? (syntax->datum #'singular))
-              (string? (syntax->datum #'plural))
-              (free-identifier=? #'N-underscore #'N_))
-         #'(begin
-             (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
-                     (program-name) (program-name) prefix)
-             (format (guix-warning-port)
-                     (ngettext singular plural n %gettext-domain)
-                     args (... ...))))))))
+    ((_ name (G_ prefix))
+     (define-syntax name
+       (lambda (x)
+         (syntax-case x ()
+           ((name (underscore fmt) args (... ...))
+            (and (string? (syntax->datum #'fmt))
+                 (free-identifier=? #'underscore #'G_))
+            #'(begin
+                (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
+                        (program-name) (program-name)
+                        (gettext prefix %gettext-domain))
+                (format (guix-warning-port) (gettext fmt %gettext-domain)
+                        args (... ...))))
+           ((name (N-underscore singular plural n) args (... ...))
+            (and (string? (syntax->datum #'singular))
+                 (string? (syntax->datum #'plural))
+                 (free-identifier=? #'N-underscore #'N_))
+            #'(begin
+                (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
+                        (program-name) (program-name)
+                        (gettext prefix %gettext-domain))
+                (format (guix-warning-port)
+                        (ngettext singular plural n %gettext-domain)
+                        args (... ...))))))))))
 
-(define-diagnostic warning "warning: ") ; emit a warning
-(define-diagnostic info "")
+;; XXX: This doesn't work well for right-to-left languages.
+;; TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
+;; "~a" is a placeholder for that phrase.
+(define-diagnostic warning (G_ "warning: "))    ;emit a warning
+(define-diagnostic info (G_ ""))
 
-(define-diagnostic report-error "error: ")
+(define-diagnostic report-error (G_ "error: "))
 (define-syntax-rule (leave args ...)
   "Emit an error message and exit."
   (begin
