@@ -24001,7 +24001,7 @@ must @emph{not} be an OS device name such as @file{/dev/sda1}.
 @end deftp
 
 @c FIXME: Write documentation once it's stable.
-Fow now only GRUB has theme support. GRUB themes are created using
+For now only GRUB has theme support. GRUB themes are created using
 the @code{grub-theme} form, which is not documented yet.
 
 @defvr {Scheme Variable} %default-theme
