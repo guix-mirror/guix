@@ -163,7 +163,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.103")
+    (version "1.1.106")
     (source
      (origin
        (method git-fetch)
@@ -173,7 +173,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1q3c79rf3mma0vqmwnxwps588pnyzap4nn49hk41m39k79vniaz8"))))
+         "0idw7q715ikj575qmspvgq2gzc6c1sj581b8z3xnv6wz9qbzrmsd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -187,7 +187,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.1.102")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method git-fetch)
@@ -197,7 +197,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ccpklv251jcz2lxvd5ix5i3cg4wb7qq5xi6cwvniy1rw52z7h00"))))
+         "1ypjd2gfxdwldnqrrqy6bnjln5mml62a9k5pfi451srcxznijjai"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
