@@ -129,28 +129,24 @@
 messages."
   (define-syntax name
     (lambda (x)
-      (define (augmented-format-string fmt)
-        (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
-
       (syntax-case x ()
         ((name (underscore fmt) args (... ...))
          (and (string? (syntax->datum #'fmt))
               (free-identifier=? #'underscore #'G_))
-         (with-syntax ((fmt*   (augmented-format-string #'fmt))
-                       (prefix (datum->syntax x prefix)))
-           #'(format (guix-warning-port) (gettext fmt*)
-                     (program-name) (program-name) prefix
+         #'(begin
+             (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
+                     (program-name) (program-name) prefix)
+             (format (guix-warning-port) (gettext fmt)
                      args (... ...))))
         ((name (N-underscore singular plural n) args (... ...))
          (and (string? (syntax->datum #'singular))
               (string? (syntax->datum #'plural))
               (free-identifier=? #'N-underscore #'N_))
-         (with-syntax ((s      (augmented-format-string #'singular))
-                       (p      (augmented-format-string #'plural))
-                       (prefix (datum->syntax x prefix)))
-           #'(format (guix-warning-port)
-                     (ngettext s p n %gettext-domain)
-                     (program-name) (program-name) prefix
+         #'(begin
+             (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
+                     (program-name) (program-name) prefix)
+             (format (guix-warning-port)
+                     (ngettext singular plural n %gettext-domain)
                      args (... ...))))))))
 
 (define-diagnostic warning "warning: ") ; emit a warning
