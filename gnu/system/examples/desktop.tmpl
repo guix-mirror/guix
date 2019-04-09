@@ -58,8 +58,8 @@
                      gvfs)
                     %base-packages))
 
-  ;; Add GNOME and/or Xfce---we can choose at the log-in
-  ;; screen with F1.  Use the "desktop" services, which
+  ;; Add GNOME and Xfce---we can choose at the log-in screen
+  ;; by clicking the gear.  Use the "desktop" services, which
   ;; include the X11 log-in service, networking with
   ;; NetworkManager, and more.
   (services (append (list (service gnome-desktop-service-type)
