@@ -602,18 +602,22 @@ connection.  Use with care."
   "Close the connection to SERVER."
   (close (store-connection-socket server)))
 
-(define-syntax-rule (with-store store exp ...)
-  "Bind STORE to an open connection to the store and evaluate EXPs;
-automatically close the store when the dynamic extent of EXP is left."
+(define (call-with-store proc)
+  "Call PROC with an open store connection."
   (let ((store (open-connection)))
     (dynamic-wind
       (const #f)
       (lambda ()
         (parameterize ((current-store-protocol-version
                         (store-connection-version store)))
-         exp) ...)
+          (proc store)))
       (lambda ()
         (false-if-exception (close-connection store))))))
+
+(define-syntax-rule (with-store store exp ...)
+  "Bind STORE to an open connection to the store and evaluate EXPs;
+automatically close the store when the dynamic extent of EXP is left."
+  (call-with-store (lambda (store) exp ...)))
 
 (define current-store-protocol-version
   ;; Protocol version of the store currently used.  XXX: This is a hack to
