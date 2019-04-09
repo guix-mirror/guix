@@ -14555,3 +14555,156 @@ overlapping paired-ended reads into (longer) consensus sequences.
 Additionally, the AdapterRemoval may be used to recover a consensus adapter
 sequence for paired-ended data, for which this information is not available.")
     (license license:gpl3+)))
+
+(define-public pplacer
+  (let ((commit "807f6f3"))
+    (package
+      (name "pplacer")
+      ;; The commit should be updated with each version change.
+      (version "1.1.alpha19")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/matsen/pplacer.git")
+               (commit (string-append "v" version))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "11ppbbbx20p2g9wj3ff64dhnarb12q79v7qh4rk0gj6lkbz4n7cn"))))
+      (build-system ocaml-build-system)
+      (arguments
+       `(#:modules ((guix build ocaml-build-system)
+                    (guix build utils)
+                    (ice-9 ftw))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'fix-build-with-latest-ocaml
+             (lambda _
+               (substitute* "myocamlbuild.ml"
+                 (("dep \\[\"c_pam\"\\]" m)
+                  (string-append "flag [\"ocaml\"; \"compile\"] (A \"-unsafe-string\");\n"
+                                 m))
+                 (("let run_and_read" m)
+                  (string-append "
+let split s ch =
+  let x = ref [] in
+  let rec go s =
+    let pos = String.index s ch in
+    x := (String.before s pos)::!x;
+    go (String.after s (pos + 1))
+  in
+  try go s
+  with Not_found -> !x
+let split_nl s = split s '\\n'
+let before_space s =
+  try String.before s (String.index s ' ')
+  with Not_found -> s
+
+" m))
+                 (("run_and_read \"ocamlfind list \\| cut -d' ' -f1\"" m)
+                  (string-append "List.map before_space (split_nl & " m ")"))
+                 (("    blank_sep_strings &") "")
+                 (("      Lexing.from_string &") ""))
+               #t))
+           (add-after 'unpack 'replace-bundled-cddlib
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((cddlib-src (assoc-ref inputs "cddlib-src"))
+                      (local-dir "cddlib_guix"))
+                 (mkdir local-dir)
+                 (with-directory-excursion local-dir
+                   (invoke "tar" "xvf" cddlib-src))
+                 (let ((cddlib-src-folder
+                        (string-append local-dir "/"
+                                       (list-ref (scandir local-dir) 2)
+                                       "/lib-src")))
+                   (for-each make-file-writable (find-files "cdd_src" ".*"))
+                   (for-each
+                    (lambda (file)
+                      (copy-file file
+                                 (string-append "cdd_src/" (basename file))))
+                    (find-files cddlib-src-folder ".*[ch]$")))
+                 #t)))
+           (add-after 'unpack 'fix-makefile
+             (lambda _
+               ;; Remove system calls to 'git'.
+               (substitute* "Makefile"
+                 (("^DESCRIPT:=pplacer-.*")
+                  (string-append
+                   "DESCRIPT:=pplacer-$(shell uname)-v" ,version "\n")))
+               (substitute* "myocamlbuild.ml"
+                 (("git describe --tags --long .*\\\" with")
+                  (string-append
+                   "echo -n v" ,version "-" ,commit "\" with")))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (copy-recursively "bin" bin))
+               #t)))))
+      (inputs
+       `(("zlib" ,zlib "static")
+         ("gsl" ,gsl)
+         ("ocaml-ounit" ,ocaml-ounit)
+         ("ocaml-batteries" ,ocaml-batteries)
+         ("ocaml-camlzip" ,camlzip)
+         ("ocaml-csv" ,ocaml-csv)
+         ("ocaml-sqlite3" ,ocaml-sqlite3)
+         ("ocaml-xmlm" ,ocaml-xmlm)
+         ("ocaml-mcl" ,ocaml-mcl)
+         ("ocaml-gsl" ,ocaml-gsl-1)))
+      (native-inputs
+       `(("cddlib-src" ,(package-source cddlib))
+         ("ocamlbuild" ,ocamlbuild)
+         ("pkg-config" ,pkg-config)))
+      (propagated-inputs
+       `(("pplacer-scripts" ,pplacer-scripts)))
+      (synopsis "Phylogenetic placement of biological sequences")
+      (description
+       "Pplacer places query sequences on a fixed reference phylogenetic tree
+to maximize phylogenetic likelihood or posterior probability according to a
+reference alignment.  Pplacer is designed to be fast, to give useful
+information about uncertainty, and to offer advanced visualization and
+downstream analysis.")
+      (home-page "http://matsen.fhcrc.org/pplacer")
+      (license license:gpl3))))
+
+;; This package is installed alongside 'pplacer'.  It is a separate package so
+;; that it can use the python-build-system for the scripts that are
+;; distributed alongside the main OCaml binaries.
+(define pplacer-scripts
+  (package
+    (inherit pplacer)
+    (name "pplacer-scripts")
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-scripts-dir
+           (lambda _ (chdir "scripts") #t))
+         (replace 'check
+           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t))
+         (add-after 'install 'wrap-executables
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (let ((path (string-append
+                            (assoc-ref inputs "hmmer") "/bin:"
+                            (assoc-ref inputs "infernal") "/bin")))
+                 (display path)
+                 (wrap-program (string-append bin "/refpkg_align.py")
+                   `("PATH" ":" prefix (,path))))
+               (let ((path (string-append
+                            (assoc-ref inputs "hmmer") "/bin")))
+                 (wrap-program (string-append bin "/hrefpkg_query.py")
+                   `("PATH" ":" prefix (,path)))))
+             #t)))))
+    (inputs
+     `(("infernal" ,infernal)
+       ("hmmer" ,hmmer)))
+    (propagated-inputs
+     `(("python-biopython" ,python2-biopython)
+       ("taxtastic" ,taxtastic)))
+    (synopsis "Pplacer Python scripts")))
