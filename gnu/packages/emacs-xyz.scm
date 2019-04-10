@@ -5003,7 +5003,7 @@ indentation (space indentation only).
               (uri (git-reference
                     (url "https://github.com/jorgenschaefer/elpy.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "073bwxwjzcbmvpcz9q2xjwzx9x7hkvjni6fwvikh6yawzjp56jis"))))
