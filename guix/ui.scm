@@ -125,6 +125,48 @@
 ;;;
 ;;; Code:
 
+(define-syntax highlight-argument
+  (lambda (s)
+    "Given FMT and ARG, expand ARG to a call that highlights it, provided FMT
+is a trivial format string."
+    (define (trivial-format-string? fmt)
+      (define len
+        (string-length fmt))
+
+      (let loop ((start 0))
+        (or (>= (+ 1 start) len)
+            (let ((tilde (string-index fmt #\~ start)))
+              (or (not tilde)
+                  (case (string-ref fmt (+ tilde 1))
+                    ((#\a #\A #\%) (loop (+ tilde 2)))
+                    (else          #f)))))))
+
+    ;; Be conservative: limit format argument highlighting to cases where the
+    ;; format string contains nothing but ~a escapes.  If it contained ~s
+    ;; escapes, this strategy wouldn't work.
+    (syntax-case s ()
+      ((_ "~a~%" arg)                          ;don't highlight whole messages
+       #'arg)
+      ((_ fmt arg)
+       (trivial-format-string? (syntax->datum #'fmt))
+       #'(%highlight-argument arg))
+      ((_ fmt arg)
+       #'arg))))
+
+(define* (%highlight-argument arg #:optional (port (guix-warning-port)))
+  "Highlight ARG, a format string argument, if PORT supports colors."
+  (define highlight
+    (if (color-output? port)
+        (lambda (str)
+          (apply colorize-string str %highlight-colors))
+        identity))
+
+  (cond ((string? arg)
+         (highlight arg))
+        ((symbol? arg)
+         (highlight (symbol->string arg)))
+        (else arg)))
+
 (define-syntax define-diagnostic
   (syntax-rules ()
     "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
@@ -140,7 +182,7 @@ messages."
                 (print-diagnostic-prefix prefix location
                                          #:colors colors)
                 (format (guix-warning-port) (gettext fmt %gettext-domain)
-                        args (... ...))))
+                        (highlight-argument fmt args) (... ...))))
            ((name location (N-underscore singular plural n)
                   args (... ...))
             (and (string? (syntax->datum #'singular))
@@ -151,7 +193,7 @@ messages."
                                          #:colors colors)
                 (format (guix-warning-port)
                         (ngettext singular plural n %gettext-domain)
-                        args (... ...))))
+                        (highlight-argument singular args) (... ...))))
            ((name (underscore fmt) args (... ...))
             (free-identifier=? #'underscore #'G_)
             #'(name #f (underscore fmt) args (... ...)))
@@ -178,6 +220,7 @@ messages."
 (define %info-colors '(BOLD))
 (define %error-colors '(BOLD RED))
 (define %hint-colors '(BOLD CYAN))
+(define %highlight-colors '(BOLD))
 
 (define* (print-diagnostic-prefix prefix #:optional location
                                   #:key (colors '()))
