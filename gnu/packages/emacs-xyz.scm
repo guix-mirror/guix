@@ -3423,7 +3423,7 @@ linting of manifests and integration with Puppet Debugger.")
          (uri (git-reference
                (url "https://github.com/chrisdone/god-mode.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1am415k4xxcva6y3vbvyvknzc6bma49pq3p85zmpjsdmsp18qdix"))))
