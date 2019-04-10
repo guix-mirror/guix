@@ -1538,7 +1538,7 @@ Maps directly inside Emacs.")
                 (uri (git-reference
                       (url "https://github.com/ppareit/graphviz-dot-mode.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0j1r2rspaakw37b0mx7pwpvdsvixq9sw3xjbww5piihzpdxz58z1"))))
