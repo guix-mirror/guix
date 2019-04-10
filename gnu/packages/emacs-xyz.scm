@@ -12316,7 +12316,7 @@ file.")
                "https://gitlab.com/Ambrevar/mu4e-conversation/"
                "repository/archive.tar.gz?ref="
                commit))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0b52hf9rm2afba9pvgink9bwqm705sk0y5qikp0ff5sk53wqvy29"))))
