@@ -4979,7 +4979,7 @@ environments (virtualenv) inside Emacs.")
               (uri (git-reference
                     (url "https://github.com/antonj/Highlight-Indentation-for-Emacs.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "00l54k75qk24a0znzl4ij3s3nrnr2wy9ha3za8apphzlm98m907k"))))
