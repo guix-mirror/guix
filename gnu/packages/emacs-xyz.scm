@@ -4887,7 +4887,7 @@ provide the historic behavior of @code{flet}, as well as
               (uri (git-reference
                     (url "https://github.com/sigma/mocker.el.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1lav7am41v63xgavq8pr88y828jmd1cxd4prjq7jlbxm6nvrwxh2"))))
