@@ -1729,7 +1729,7 @@ and stored in memory.")
               (uri (git-reference
                     (url "https://notabug.org/alezost/emacs-bui.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0sszdl4kvqbihdh8d7mybpp0d8yw2p3gyiipjcxz9xhvvmw3ww4x"))))
