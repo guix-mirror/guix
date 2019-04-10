@@ -9893,7 +9893,7 @@ macro takes a first argument (whose value must be an alist) and a body.")
          (uri (git-reference
                (url "https://github.com/jschaf/esup.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "04lxmd0h7mfjjl0qghrycgff0vcv950j1wqv0dbkr61jxp64n5fv"))))
