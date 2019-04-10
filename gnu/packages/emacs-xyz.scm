@@ -11104,7 +11104,7 @@ interactive behavior should be different.")
                 (uri (git-reference
                       (url "https://github.com/purcell/default-text-scale")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0zds01c3q5yny6ab1fxfkzzgn1kgl3q23lxxap905f4qd70v922h"))))
