@@ -11233,7 +11233,7 @@ compilation/grep buffers.  Works with @code{wgrep}, @code{ack}, @code{ag},
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-firefox.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "08mjsi2f9s29fkk35cj1rrparjnkm836qmbfdwdz7y51f9varjbs"))))
