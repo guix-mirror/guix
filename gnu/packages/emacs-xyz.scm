@@ -4854,7 +4854,7 @@ and RSS, with a user interface inspired by notmuch.")
               (uri (git-reference
                     (url "https://github.com/sigma/el-x.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1i6j44ssxm1xdg0mf91nh1lnprwsaxsx8vsrf720nan7mfr283h5"))))
