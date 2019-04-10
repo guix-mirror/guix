@@ -29,6 +29,7 @@
 
 (define-module (guix ui)
   #:use-module (guix i18n)
+  #:use-module (guix colors)
   #:use-module (guix gexp)
   #:use-module (guix sets)
   #:use-module (guix utils)
@@ -128,7 +129,7 @@
   (syntax-rules ()
     "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
 messages."
-    ((_ name (G_ prefix))
+    ((_ name (G_ prefix) colors)
      (define-syntax name
        (lambda (x)
          (syntax-case x ()
@@ -136,7 +137,8 @@ messages."
             (and (string? (syntax->datum #'fmt))
                  (free-identifier=? #'underscore #'G_))
             #'(begin
-                (print-diagnostic-prefix prefix location)
+                (print-diagnostic-prefix prefix location
+                                         #:colors colors)
                 (format (guix-warning-port) (gettext fmt %gettext-domain)
                         args (... ...))))
            ((name location (N-underscore singular plural n)
@@ -145,7 +147,8 @@ messages."
                  (string? (syntax->datum #'plural))
                  (free-identifier=? #'N-underscore #'N_))
             #'(begin
-                (print-diagnostic-prefix prefix location)
+                (print-diagnostic-prefix prefix location
+                                         #:colors colors)
                 (format (guix-warning-port)
                         (ngettext singular plural n %gettext-domain)
                         args (... ...))))
@@ -161,26 +164,47 @@ messages."
 ;; XXX: This doesn't work well for right-to-left languages.
 ;; TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
 ;; "~a" is a placeholder for that phrase.
-(define-diagnostic warning (G_ "warning: "))    ;emit a warning
-(define-diagnostic info (G_ ""))
+(define-diagnostic warning (G_ "warning: ") %warning-colors) ;emit a warning
+(define-diagnostic info (G_ "") %info-colors)
+(define-diagnostic report-error (G_ "error: ") %error-colors)
 
-(define-diagnostic report-error (G_ "error: "))
 (define-syntax-rule (leave args ...)
   "Emit an error message and exit."
   (begin
     (report-error args ...)
     (exit 1)))
 
-(define* (print-diagnostic-prefix prefix #:optional location)
+(define %warning-colors '(BOLD MAGENTA))
+(define %info-colors '(BOLD CYAN))
+(define %error-colors '(BOLD RED))
+
+(define* (print-diagnostic-prefix prefix #:optional location
+                                  #:key (colors '()))
   "Print PREFIX as a diagnostic line prefix."
+  (define color?
+    (color-output? (guix-warning-port)))
+
+  (define location-color
+    (if color?
+        (cut colorize-string <> 'BOLD)
+        identity))
+
+  (define prefix-color
+    (if color?
+        (lambda (prefix)
+          (apply colorize-string prefix colors))
+        identity))
+
   (let ((prefix (if (string-null? prefix)
                     prefix
                     (gettext prefix %gettext-domain))))
     (if location
         (format (guix-warning-port) "~a: ~a"
-                (location->string location) prefix)
+                (location-color (location->string location))
+                (prefix-color prefix))
         (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
-                (program-name) (program-name) prefix))))
+                (program-name) (program-name)
+                (prefix-color prefix)))))
 
 (define (print-unbound-variable-error port key args default-printer)
   ;; Print unbound variable errors more nicely, and in the right language.
