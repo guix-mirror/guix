@@ -9564,7 +9564,7 @@ navigate and display hierarchy structures.")
          (uri (git-reference
                (url "https://github.com/emacsorphanage/tree-mode.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "13bbdhdmqg4x9yghanhr8fsbsxbnypzxdxgicz31sjjm675kpnix"))))
