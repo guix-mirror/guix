@@ -5815,7 +5815,7 @@ known loosely as deftheme.  Many mode-specific customizations are included.")
          (uri (git-reference
                (url home-page)
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0s6rbsb0y8i8m5b9xm4gw1p1cxsxdqnqxqqb638pygz9f76mbir1"))))
