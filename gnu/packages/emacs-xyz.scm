@@ -10100,7 +10100,7 @@ key again.")
          (uri (git-reference
                (url "https://github.com/dimitri/mbsync-el.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0yj93y2mpxlir8x73znlg1slxlv4blm1vjv5h2w3j8lxg8bxvmn6"))))
