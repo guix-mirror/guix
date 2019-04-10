@@ -7627,7 +7627,7 @@ settings).")
               (uri (git-reference
                     (url "https://github.com/lewang/ws-butler.git")
                     (commit "323b651dd70ee40a25accc940b8f80c3a3185205")))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1a4b0lsmwq84qfx51c5xy4fryhb1ysld4fhgw2vr37izf53379sb"))))
