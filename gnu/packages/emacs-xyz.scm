@@ -10279,7 +10279,7 @@ their meaning for the current Emacs major-mode.")
          (uri (git-reference
                (url "https://github.com/jkitchin/org-ref.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1rxz0bjdsayk0slv23i07d9xhj2m7s4hsc81wc2d1cs52dkr5zmz"))))
