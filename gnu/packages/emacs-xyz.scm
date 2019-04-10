@@ -11569,7 +11569,7 @@ interactive loop.")
          (uri (git-reference
                (url "https://github.com/xiongtx/eros.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0whlsq90v13fz69k3wjrwcwb9gkpfxqjd75mg3nrp85j9nwhb5i4"))))
