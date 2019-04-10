@@ -5249,3 +5249,36 @@ Python's WSGI and Ruby's Rack.")
 
 (define-public cl-clack
   (sbcl-package->cl-source-package sbcl-clack))
+
+(define-public sbcl-log4cl
+  (let ((commit "611e094458504b938d49de904eab141285328c7c")
+        (revision "1"))
+    (package
+      (name "sbcl-log4cl")
+      (build-system asdf-build-system/sbcl)
+      (version "1.1.2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/log4cl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "08jly0s0g26b56hhpfizxsb4j0yvbh946sd205gr42dkzv8l7dsc"))))
+      ;; FIXME: tests require stefil, sbcl-hu.dwim.stefil wont work
+      (arguments
+       `(#:tests? #f))
+      (inputs `(("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (synopsis "Common Lisp logging framework, modeled after Log4J")
+      (home-page "https://github.com/7max/log4cl")
+      (description "This is a Common Lisp logging framework that can log at
+various levels and mix text with expressions.")
+      (license license:asl2.0))))
+
+(define-public cl-log4cl
+  (sbcl-package->cl-source-package sbcl-log4cl))
+
+(define-public ecl-log4cl
+  (sbcl-package->ecl-package sbcl-log4cl))
