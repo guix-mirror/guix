@@ -265,9 +265,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     (search-auxiliary-file file)))
 
 (define %default-extra-linux-options
-  `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
-    ;; Modules required for initrd:
+  `(;; Modules required for initrd:
     ("CONFIG_NET_9P" . m)
     ("CONFIG_NET_9P_VIRTIO" . m)
     ("CONFIG_VIRTIO_BLK" . m)
@@ -494,7 +492,13 @@ between the CDemu userspace daemon and linux kernel.")
   (make-linux-libre "4.4.178"
                     "1lgsd760md6b32qb5ng3anfq1n754a9d0c4xnf2mjxkimncb1jpp"
                     '("x86_64-linux" "i686-linux")
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:extra-options
+                    (append
+                     `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+                       ;; This option was removed upstream in version 4.7.
+                       ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
+                     %default-extra-linux-options)))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
