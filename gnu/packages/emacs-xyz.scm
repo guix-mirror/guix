@@ -10124,7 +10124,7 @@ within Emacs.")
          (uri (git-reference
                (url "https://github.com/purcell/ibuffer-projectile.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1nd26cwwdpnwj0g4w393rd59klpyr6wqrnyr6scmwb5d06bsm44n"))))
