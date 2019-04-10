@@ -4033,7 +4033,7 @@ parallel.")
               (uri (git-reference
                     (url "https://github.com/tkf/emacs-request.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0wyxqbb35yqf6ci47531lk32d6fppamx9d8826kdz983vm87him7"))))
