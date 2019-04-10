@@ -10470,7 +10470,7 @@ buffer.")
          (uri (git-reference
                (url "https://github.com/zk-phi/download-region.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0v52djg39b6k2snizd9x0qc009ws5y0ywqsfwhqgcbs5ymzh7dsc"))))
