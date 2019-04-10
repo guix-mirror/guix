@@ -12002,7 +12002,7 @@ describing the key binding changes.")
        (uri (git-reference
              (url "https://github.com/hlissner/evil-multiedit")
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "19h3kqylqzbjv4297wkzzxdmn9yxbg6z4ga4ssrqri90xs7m3rw3"))))
