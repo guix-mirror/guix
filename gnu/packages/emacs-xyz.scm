@@ -6387,7 +6387,7 @@ jQuery and Bootstrap resources included via osscdn.")
          (uri (git-reference
                (url "https://github.com/zk-phi/highlight-stages.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0r6nbcrr0dqpgm8dir8ahzjy7rw4nrac48byamzrq96r7ajlxlv0"))
