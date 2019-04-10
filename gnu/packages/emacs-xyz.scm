@@ -11748,7 +11748,7 @@ Dumb Jump performs best with The Silver Searcher @command{ag} or ripgrep
          (uri (git-reference
                (url "https://github.com/bgamari/dts-mode.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1k8lljdbc90nd29xrhdrsscxavzdq532wq2mg7ljc94krj7538b1"))))
