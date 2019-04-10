@@ -12113,7 +12113,7 @@ See @code{helm-exwm-switch-browser} for an example.")
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-ls-git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0vsq1n3xl3ghy5zik2scm7jrs501n4kybdqd6yw6j0cv4jxdqbr0"))))
