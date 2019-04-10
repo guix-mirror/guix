@@ -12034,7 +12034,7 @@ you searched for and execute it, or view its documentation.")
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-emms")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1595r09y3rmwd46nnhvjja3hb8j2ila295ijxv61cg52ws4wginh"))))
