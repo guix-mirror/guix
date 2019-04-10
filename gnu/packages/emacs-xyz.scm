@@ -9671,7 +9671,7 @@ timestamps and date-time format strings library for Emacs.")
          (uri (git-reference
                (url "https://github.com/theodorewiles/org-mind-map.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0jgkkgq7g64zckrmjib0hvz0qy3ynz5vz13qbmlpf096l3bb65wn"))))
