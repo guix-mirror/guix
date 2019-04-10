@@ -11863,7 +11863,7 @@ matching regexps.")
        (uri (git-reference
              (url "https://github.com/dieggsy/esh-autosuggest")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "116pdjgpjy9b0psm5kzwkwy7dq8vn0p6dy75dl1zsy2xrjf1iqdw"))))
