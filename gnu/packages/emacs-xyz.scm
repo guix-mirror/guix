@@ -11205,7 +11205,7 @@ perform regression test for packages that provide font-lock rules.")
          (uri (git-reference
                (url "https://github.com/mkcms/grep-context.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1nqfa6kjzjshww4hnwg1c0vcr90bdjihy3kmixq3c3jkvxg99b62"))))
