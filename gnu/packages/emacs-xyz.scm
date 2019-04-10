@@ -12675,7 +12675,7 @@ few (like NOTE).")
          (uri (git-reference
                (url "https://github.com/jwiegley/git-annex-el")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1mzv40gj7k10h7h5s43my8msgzjpj680qprqa9pp8nbyhl49v3wh"))))
