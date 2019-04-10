@@ -9173,7 +9173,7 @@ the source file.")
                 (uri (git-reference
                       (url "https://github.com/paul-issartel/nnreddit.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0j4h3bnga640250jdq8bwyja49r41ssrsjd6lba4gzzllqk02nbn"))))
