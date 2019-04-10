@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -714,18 +715,18 @@ interactive development model in mind.")
   (sbcl-package->ecl-package sbcl-fiveam))
 
 (define-public sbcl-bordeaux-threads
-  (let ((commit "354abb0ae9f1d9324001e1a8abab3128d7420e0e")
+  (let ((commit "5dce49fbc829f4d136a734f5ef4f5d599660984f")
         (revision "1"))
     (package
       (name "sbcl-bordeaux-threads")
-      (version (git-version "0.8.5" revision commit))
+      (version (git-version "0.8.6" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/sionescu/bordeaux-threads.git")
                       (commit commit)))
                 (sha256
-                 (base32 "1hcfp21l6av1xj6z7r77sp6h4mwf9vvx4s745803sysq2qy2mwnq"))
+                 (base32 "1gkh9rz7zw57n3110ikcf4835950wr4hgp8l79id5ai6nd86x7wv"))
                 (file-name
                  (git-file-name "bordeaux-threads" version))))
       (inputs `(("alexandria" ,sbcl-alexandria)))
