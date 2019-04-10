@@ -11770,7 +11770,7 @@ device tree files.")
        (uri (git-reference
              (url "https://github.com/cbowdon/daemons.el")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "00bkzfaw3bqykcks610vk9wlpa2z360xn32bpsrycacwfv29j7g4"))))
