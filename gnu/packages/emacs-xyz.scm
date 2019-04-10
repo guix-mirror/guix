@@ -11476,7 +11476,7 @@ the previously visible buffer part after each scroll.")
          (uri (git-reference
                (url "https://github.com/dgutov/highlight-escape-sequences.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "05mc3w1f8ykf80914a1yddw6j8cmh0h57llm07xh89s53821v2is"))))
