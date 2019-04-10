@@ -11173,7 +11173,7 @@ perform regression test for packages that provide font-lock rules.")
          (uri (git-reference
                (url "https://github.com/greghendershott/racket-mode")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0vp4bbbplqvmnhjpl6ajrlydmrhqzil56cfbs18m5c5fddx0zlh7"))))
