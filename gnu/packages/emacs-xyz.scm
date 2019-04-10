@@ -11591,7 +11591,7 @@ interactive loop.")
          (uri (git-reference
                (url "https://github.com/tuhdo/semantic-stickyfunc-enhance.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "16dxjsr5nj20blww4xpd4jzgjprzzh1nwvb810ggdmp9paf4iy0g"))))
