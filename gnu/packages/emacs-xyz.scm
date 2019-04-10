@@ -9794,7 +9794,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
          (uri (git-reference
                (url "https://github.com/bbatsov/crux.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1fdxvv25cs01sg6fmvmzxpzvs50i6v8n2jya60lbavxqqhi0sbxd"))))
