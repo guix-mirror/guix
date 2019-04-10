@@ -12261,7 +12261,7 @@ framework.")
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-descbinds")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1n89p56qwa243w1c85i5awnaf7piwjsvfi7nmnsrwm33hix5dknk"))))
