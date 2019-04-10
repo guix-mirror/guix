@@ -10706,7 +10706,7 @@ buffer with each of your todos.")
          (uri (git-reference
                (url "https://github.com/nashamri/academic-phrases.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0qfzsq8jh05w4zkr0cvq3i1hdn97bq344vcqjg46sib26x3wpz6r"))))
