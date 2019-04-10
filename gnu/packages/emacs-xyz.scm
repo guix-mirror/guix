@@ -1828,7 +1828,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
               (uri (git-reference
                     (url "https://notabug.org/alezost/emacs-build-farm.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0i0bwbav5861j2y15j9nd5m9rdqg9q97zgcbld8pivr9nyxy63lz"))))
