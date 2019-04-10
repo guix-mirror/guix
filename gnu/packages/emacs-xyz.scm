@@ -11669,7 +11669,7 @@ It provides auto-completion for HTTP methods and headers in
          (uri (git-reference
                (url "https://github.com/nicferrier/emacs-noflet")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0g70gnmfi8n24jzfci9nrj0n9bn1qig7b8f9f325rin8h7x32ypf"))))
