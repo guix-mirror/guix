@@ -2454,7 +2454,7 @@ in Lisp modes.")
               (uri (git-reference
                     (url "https://github.com/akicho8/string-inflection")
                     (commit "a150e7bdda60b7824d3a936750ce23f73b0e4edd")))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1k0sm552iawi49v4zis6dbb81d1rzgky9v0dpv7nj31gnb7bmy7k"))))
