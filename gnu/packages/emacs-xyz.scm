@@ -13553,7 +13553,7 @@ front end to mpc, a client for the @dfn{Music Player Daemon} (MPD).")
        (uri (git-reference
              (url "https://github.com/mkmcc/gnuplot-mode")
              (commit "601f6392986f0cba332c87678d31ae0d0a496ce7")))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "14f0yh1rjqc3337j4sbqzfb7pjim2c8a7wk1a73xkrdkmjn82vgb"))))
