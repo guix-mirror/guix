@@ -11893,7 +11893,7 @@ autosuggestions with:
          (uri (git-reference
                (url "https://gitlab.petton.fr/DamienCassou/desktop-environment")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0x73x5hy7w55jrzy3xvqhk90rrsznmxjqvsvwhh21qznv5w269xz"))))
