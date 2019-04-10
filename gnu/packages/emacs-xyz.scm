@@ -4106,7 +4106,7 @@ automatically.")
        (uri (git-reference
              (url "https://github.com/abo-abo/swiper.git")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "009n8zjycs62cv4i1k9adbb284wz2w3r13xki2740sj34k683v13"))))
