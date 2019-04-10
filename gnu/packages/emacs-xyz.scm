@@ -6163,7 +6163,7 @@ abbreviation and automatically expand it into function templates.")
          (uri (git-reference
                (url "https://github.com/AndreaCrotti/yasnippet-snippets")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1m935zgglw0iakzrixld5rcjz3wnj84f8wy2mvc3pggjri9l0qr9"))))
