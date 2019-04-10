@@ -5382,7 +5382,7 @@ for search-based navigation of buffers.")
          (uri (git-reference
                (url "https://github.com/abo-abo/helm-make.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1y2v77mmd1bfkkz51cnk1l0dg3lvvxc39wlamnm7wjns66dbvlam"))))
