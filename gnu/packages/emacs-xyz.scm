@@ -5538,7 +5538,7 @@ news items, openrc and runscripts.")
        (uri (git-reference
              (url "https://github.com/emacs-evil/evil")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
