@@ -12031,7 +12031,7 @@ defaults.")
          (uri (git-reference
                (url "https://github.com/Somelauw/evil-org-mode")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "176hrw7y7nczffbyhsa167b8rvfacsmcafm2gpkrdjqlrikbmrhl"))))
