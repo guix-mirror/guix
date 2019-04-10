@@ -11365,7 +11365,7 @@ bookmarks and history.")
                 (uri (git-reference
                       (url "https://github.com/stumpwm/stumpwm-contrib.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1dfwsvz1c8w6j4jp0kzaz78ml3f5dp0a5pvf090kwpbpg176r7iq"))))
