@@ -12209,7 +12209,7 @@ provided by other Emacs packages dealing with pass:
          (uri (git-reference
                (url "https://github.com/mhayashi1120/Emacs-imagex")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0v66wk9nh0raih4jhrzmmyi5lbysjnmbv791vm2230ffi2hmwxnd"))))
