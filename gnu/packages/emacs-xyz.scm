@@ -4599,7 +4599,7 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
          (uri (git-reference
                (url "https://github.com/JuliaEditorSupport/julia-emacs.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1is4dcv6blslpzbjcg8l2jpxi8xj96q4cm0nxjxsyswpm8bw8ki0"))))
