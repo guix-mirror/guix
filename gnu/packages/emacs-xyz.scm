@@ -8513,7 +8513,7 @@ formatting rules for that language.")
        (uri (git-reference
              (url "https://github.com/nicferrier/emacs-kv.git")
              (commit "721148475bce38a70e0b678ba8aa923652e8900e")))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "0r0lz2s6gvy04fwnafai668jsf4546h4k6zd6isx5wpk0n33pj5m"))))
