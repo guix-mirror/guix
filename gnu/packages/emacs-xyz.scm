@@ -7963,7 +7963,7 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
        (uri (git-reference
              (url "https://github.com/ahyatt/emacs-websocket.git")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1dgrf7na6r6mmkknphzshlbd5fnzisg0qn0j7vfpa38wgsymaq52"))))
