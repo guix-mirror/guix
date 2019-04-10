@@ -12235,7 +12235,7 @@ on-line service.")
          (uri (git-reference
                (url "https://github.com/Sodel-the-Vociferous/helm-company")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1ciirsanhajdqm5iwl8k9ywf4jha1wdv4sc4d9kslyrfr9zn4q6k"))))
