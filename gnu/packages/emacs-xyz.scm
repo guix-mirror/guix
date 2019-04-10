@@ -9317,7 +9317,7 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
          (uri (git-reference
                (url "https://github.com/tmalsburg/helm-bibtex.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "14lyx0vbqr97p3anzrsp7m3q0kqclyjcdwplpraim403fcklzbnz"))))
