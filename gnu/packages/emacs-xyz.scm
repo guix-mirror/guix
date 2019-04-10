@@ -11148,7 +11148,7 @@ interactive visual feedback.")
          (uri (git-reference
                (url "https://github.com/Lindydancer/faceup.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1yzmy7flrhrh0i10bdszx8idx6r8h6czm4vm4q0z6fp5fw94zwrx"))))
