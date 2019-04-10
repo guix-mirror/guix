@@ -9569,7 +9569,7 @@ navigate and display hierarchy structures.")
                 (uri (git-reference
                       (url "https://github.com/ahungry/md4rd.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0mvv1mvsrpkrmikcpfqf2zbawnzgq33j6zjdrlv48mcw57xb2ak9"))))
