@@ -4948,7 +4948,7 @@ functions to assist in reviewing changes on files.")
               (uri (git-reference
                     (url "https://github.com/jorgenschaefer/pyvenv.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1x052fsavb94x3scpqd6n9spqgzaahzbdxhg4qa5sy6hqsabn6zh"))))
