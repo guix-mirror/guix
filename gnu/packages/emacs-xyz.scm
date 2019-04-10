@@ -5843,7 +5843,7 @@ known loosely as deftheme.  Many mode-specific customizations are included.")
          (uri (git-reference
                (url "https://github.com/djcb/dream-theme")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0za18nfkq4xqm35k6006vsixcbmvmxqgma4iw5sw37h8vmcsdylk"))))
