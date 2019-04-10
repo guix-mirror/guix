@@ -4915,7 +4915,7 @@ maximizes flexibility (at the expense of conciseness).")
               (uri (git-reference
                     (url "https://github.com/technomancy/find-file-in-project.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1sdnyqv69mipbgs9yax88m9b6crsa59rjhwrih197pifl4089awr"))))
