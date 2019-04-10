@@ -136,9 +136,7 @@ messages."
             (and (string? (syntax->datum #'fmt))
                  (free-identifier=? #'underscore #'G_))
             #'(begin
-                (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
-                        (program-name) (program-name)
-                        (gettext prefix %gettext-domain))
+                (print-diagnostic-prefix prefix)
                 (format (guix-warning-port) (gettext fmt %gettext-domain)
                         args (... ...))))
            ((name (N-underscore singular plural n) args (... ...))
@@ -146,9 +144,7 @@ messages."
                  (string? (syntax->datum #'plural))
                  (free-identifier=? #'N-underscore #'N_))
             #'(begin
-                (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
-                        (program-name) (program-name)
-                        (gettext prefix %gettext-domain))
+                (print-diagnostic-prefix prefix)
                 (format (guix-warning-port)
                         (ngettext singular plural n %gettext-domain)
                         args (... ...))))))))))
@@ -165,6 +161,14 @@ messages."
   (begin
     (report-error args ...)
     (exit 1)))
+
+(define (print-diagnostic-prefix prefix)
+  "Print PREFIX as a diagnostic line prefix."
+  (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
+          (program-name) (program-name)
+          (if (string-null? prefix)
+              prefix
+              (gettext prefix %gettext-domain))))
 
 (define (print-unbound-variable-error port key args default-printer)
   ;; Print unbound variable errors more nicely, and in the right language.
