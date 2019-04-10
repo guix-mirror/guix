@@ -11340,7 +11340,7 @@ keep Parens and Indentation inline with one another.")
               (uri (git-reference
                     (url "https://github.com/emacs-helm/helm-eww.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0hpq1h0p69c9k6hkd2mjpprx213sc5475q7pr2zpmwrjdzgcv70z"))))
