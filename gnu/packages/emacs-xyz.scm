@@ -11970,7 +11970,7 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
          (uri (git-reference
                (url "https://github.com/emacs-evil/evil-magit")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "134v7s03jvbhm70mavwab85r09i68g2a5bvriirh0chz1av2y16v"))))
