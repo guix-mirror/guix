@@ -10739,7 +10739,7 @@ browse the phrases by the paper section and fill-in the blanks if required.")
                 (uri (git-reference
                       (url "https://github.com/abo-abo/auto-yasnippet.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1i8k2qiyzd5rq0zplk4xb5nfa5mp0ibxbzwqj6c7877waq7244xk"))))
