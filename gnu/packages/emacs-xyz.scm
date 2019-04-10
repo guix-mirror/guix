@@ -9934,7 +9934,7 @@ your Emacs.")
                 (uri (git-reference
                       (url "https://github.com/joddie/macrostep.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1fm40mxdn289cyzgw992223dgrjmwxn4q8svyyxfaxjrpb38jhjz"))))
