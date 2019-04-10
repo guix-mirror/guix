@@ -1915,7 +1915,7 @@ in the center.")
               (uri (git-reference
                     (url "http://dr-qubit.org/git/undo-tree.git")
                     (commit (string-append "release/" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1hnh2mnmw179gr094r561w6cw1haid0lpvpqvkc24wpj82vphzpa"))))
