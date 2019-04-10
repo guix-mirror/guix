@@ -175,8 +175,9 @@ messages."
     (exit 1)))
 
 (define %warning-colors '(BOLD MAGENTA))
-(define %info-colors '(BOLD CYAN))
+(define %info-colors '(BOLD))
 (define %error-colors '(BOLD RED))
+(define %hint-colors '(BOLD CYAN))
 
 (define* (print-diagnostic-prefix prefix #:optional location
                                   #:key (colors '()))
@@ -357,11 +358,18 @@ VARIABLE and return it, or #f if none was found."
 (define* (display-hint message #:optional (port (current-error-port)))
   "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
 PORT."
-  (format port (G_ "hint: ~a~%")
-          ;; XXX: We should arrange so that the initial indent is wider.
-          (parameterize ((%text-width (max 15
-                                           (- (terminal-columns) 5))))
-            (texi->plain-text message))))
+  (define colorize
+    (if (color-output? port)
+        (lambda (str)
+          (apply colorize-string str %hint-colors))
+        identity))
+
+  (display (colorize (G_ "hint: ")) port)
+  (display
+   ;; XXX: We should arrange so that the initial indent is wider.
+   (parameterize ((%text-width (max 15 (- (terminal-columns) 5))))
+     (texi->plain-text message))
+   port))
 
 (define* (report-unbound-variable-error args #:key frame)
   "Return the given unbound-variable error, where ARGS is the list of 'throw'
