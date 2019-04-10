@@ -7535,7 +7535,7 @@ the actual transformations.")
                 (uri (git-reference
                       (url "https://github.com/Fuco1/dired-hacks.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1g7mky41cahpryzj6frdgzdymknpqq7pidzfjj9304887kijmhj3"))))
