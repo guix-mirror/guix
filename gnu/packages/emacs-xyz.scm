@@ -12248,7 +12248,7 @@ image, rotate it, save modified images, and more.")
          (uri (git-reference
                (url "https://github.com/purcell/package-lint")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1hfricsgmy3x9snnd2p4xq6vnnv94qdsxxnxp07b3hqc9bhw31rq"))))
