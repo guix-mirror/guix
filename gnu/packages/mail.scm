@@ -1391,7 +1391,7 @@ How it works:
 @item This password digest is used as a symmetric secret to decrypt a libsodium secretbox.
 @item Inside the secretbox is stored a Curve25519 private key.
 @item The Curve25519 private key is used to decrypt each individual message,
-using lidsodium sealed boxes.
+using libsodium sealed boxes.
 @item New mail is encrypted as it arrives using the Curve25519 public key.
 @end enumerate\n")
     (license agpl3)))
