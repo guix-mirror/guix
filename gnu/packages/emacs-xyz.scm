@@ -6209,7 +6209,7 @@ To make YASnippet aware of these snippets, add the above directory to
                 (uri (git-reference
                       (url "https://github.com/emacs-jp/helm-c-yasnippet")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1cbafjqlzxbg19xfdqsinsh7afq58gkf44rsg1qxfgm8g6zhr7f8"))))
