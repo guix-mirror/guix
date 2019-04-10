@@ -6589,7 +6589,7 @@ performance-oriented and tidy.")
                 (uri (git-reference
                       (url "https://github.com/pkmoore/strace-mode")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1lbk2kzdznf2bkfazizfbimaxxzfzv00lrz1ran9dc2zqbc0bj9f"))))
