@@ -9736,7 +9736,7 @@ functions provided by @file{subr.el}.")
          (uri (git-reference
                (url "https://github.com/re5et/itail.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "044nzxh1hq41faxw3lix0wy78vfz304pjcaa5a11dqfz7q3gx5cv"))))
