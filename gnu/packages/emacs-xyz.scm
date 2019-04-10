@@ -12087,7 +12087,7 @@ See @code{helm-exwm-switch-browser} for an example.")
          (uri (git-reference
                (url "https://github.com/yasuyk/helm-flycheck")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1a2yfxhz04klwhcandqvfzysxp6b7bxyxx1xk1x3kds5hif5fkl4"))))
