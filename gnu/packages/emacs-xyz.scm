@@ -5565,7 +5565,7 @@ extensions.")
                 (uri (git-reference
                       (url "https://github.com/emacs-evil/evil-collection")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "09v97nk7qawphfijzqxzi2y63ydmfq7hsgpljjxwkykrc5h0kdlj"))))
