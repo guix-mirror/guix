@@ -5980,7 +5980,7 @@ Conventions Manual) and some of the @dfn{EWMH}
              (commit (string-append "xcompmgr-" version))))
        (sha256
         (base32 "11i7vyk3pynw8q8aczpy56qncm84y0cmhlvyja3sj8dgy60g03q2"))
-       (file-name (string-append name "-" version))))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
