@@ -1739,15 +1739,15 @@ limits.")
     (version "22.5.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/wting/autojump/archive/"
-                           "release-v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wting/autojump.git")
+             (commit (string-append "release-v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17z9j9936x0nizwrzf664bngh60x5qbvrrf1s5qdzd0f2gdanpvn"))))
+        (base32 "1l1278g3k1qfrz41pkpjdhsabassb9si2d1bfbcmvbv5h3wmlqk9"))))
     (build-system gnu-build-system)
-    (native-inputs                      ;for tests
+    (native-inputs                      ; for tests
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
     (inputs
@@ -1755,6 +1755,11 @@ limits.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           ;; ‘install.py’ modifies files before installing them.
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (delete 'configure)
          (delete 'build)
          (replace 'check
