@@ -496,15 +496,14 @@ cups server to be installed.")
 (define-public noice
   (package
     (name "noice")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
                            "noice-" version ".tar.gz"))
        (sha256
-        (base32
-         "03b0kzngzacfpz4n8lgbvia2s765i5bkw55v482hh4m49dm41gpc"))))
+        (base32 "0g01iwzscdv27c1idv93gd74kjzy3n9kazgm6qz08rygp96qx4xw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
