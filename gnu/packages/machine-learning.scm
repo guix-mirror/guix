@@ -305,14 +305,14 @@ networks) based on simulation of (stochastic) flow in graphs.")
     (version "12-068oasis4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/fhcrc/mcl/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fhcrc/mcl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l5jbhwjpsj38x8b9698hfpkv75h8hn3kj0gihjhn8ym2cwwv110"))))
+         "0009dc3h2jp3qg5val452wngpqnbfyhbcxylghq0mrjqxx0jdq5p"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
