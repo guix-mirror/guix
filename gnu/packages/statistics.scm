@@ -2421,13 +2421,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "1nyspqicn9zd1rgq3k07b3179i8w5ys6jbd65g9q8qczrb7z3x8f"))))
+                "028pppj39ng7q17k27531s8k00lmw982vz5krn74n9b8f2azm8lr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
