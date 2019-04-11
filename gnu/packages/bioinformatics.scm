@@ -14708,3 +14708,39 @@ downstream analysis.")
      `(("python-biopython" ,python2-biopython)
        ("taxtastic" ,taxtastic)))
     (synopsis "Pplacer Python scripts")))
+
+(define-public python2-checkm-genome
+  (package
+    (name "python2-checkm-genome")
+    (version "1.0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "checkm-genome" version))
+       (sha256
+        (base32
+         "0bm8gpxjmzxsxxl8lzwqhgx8g1dlnmp6znz7wv3hgb0gdjbf9dzz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f)) ; some tests are interactive
+    (propagated-inputs
+     `(("python-dendropy" ,python2-dendropy)
+       ("python-matplotlib" ,python2-matplotlib)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-scipy" ,python2-scipy)))
+    (home-page "http://pypi.python.org/pypi/checkm/")
+    (synopsis "Assess the quality of putative genome bins")
+    (description
+     "CheckM provides a set of tools for assessing the quality of genomes
+recovered from isolates, single cells, or metagenomes.  It provides robust
+estimates of genome completeness and contamination by using collocated sets of
+genes that are ubiquitous and single-copy within a phylogenetic lineage.
+Assessment of genome quality can also be examined using plots depicting key
+genomic characteristics (e.g., GC, coding density) which highlight sequences
+outside the expected distributions of a typical genome.  CheckM also provides
+tools for identifying genome bins that are likely candidates for merging based
+on marker set compatibility, similarity in genomic characteristics, and
+proximity within a reference genome.")
+    (license license:gpl3+)))
