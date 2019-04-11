@@ -1287,7 +1287,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20190215")
+    (version "20190405")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1295,7 +1295,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1iy2zwi8aicq0b5a0phfacvk1f9z1d89cx43adcf0qh82gb9m4wg"))))
+                "0hv6r65l8vk3f6i3by7i47vc1917qm47838bpq80lfn22784y53y"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
