@@ -6020,7 +6020,7 @@ typearea (which are the main parts of the bundle).")
            (copy-recursively (assoc-ref %build-inputs "source") target)
            #t))))
     (home-page "https://www.ctan.org/pkg/listofitems")
-    (synopsis "Grab items in lists using user-specified seperation character")
+    (synopsis "Grab items in lists using user-specified separation character")
     (description
      "This package allows one to capture all the items of a list, for which
 the parsing character has been selected by the user, and to access any of
