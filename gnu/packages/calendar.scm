@@ -96,13 +96,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.10.0")
+    (version "0.10.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "khal" version))
              (sha256
               (base32
-               "1p49f3g25x900vk32spjbr2aipj12kcbhayny2vwhdpkjlv6k396"))))
+               "1r8bkgjwkh7i8ygvsv51h1cnax50sb183vafg66x5snxf3dgjl6l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
