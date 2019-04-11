@@ -11810,14 +11810,14 @@ al. (2010).")
 (define-public r-reinforcelearn
   (package
     (name "r-reinforcelearn")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reinforcelearn" version))
        (sha256
         (base32
-         "0naakmyb14d2cf7cy5ir52qh3bp51gvs6hyhfi3f72yl2jfnnpzg"))))
+         "176z2q69p24i29a8sh19xxn2zl3h1z2ixdssr5i6m4yvkvdrvv3b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
