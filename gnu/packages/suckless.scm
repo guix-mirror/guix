@@ -501,7 +501,7 @@ cups server to be installed.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "noice-" version ".tar.gz"))
        (sha256
         (base32
          "03b0kzngzacfpz4n8lgbvia2s765i5bkw55v482hh4m49dm41gpc"))))
