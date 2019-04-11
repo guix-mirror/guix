@@ -5155,6 +5155,36 @@ Depending on your architecture, it only requires about 40 bytes of data per
 message stream (in a web server that is per connection).")
     (license l:expat)))
 
+(define-public python-httpretty
+  (package
+    (name "python-httpretty")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpretty" version))
+       (sha256
+        (base32 "1p1rb4mpngh0632xrmdfhvc8yink519yfkqz97d2ww3y0x2jvd81"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-httplib2" ,python-httplib2)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-nose-randomly" ,python-nose-randomly)
+       ("python-rednose" ,python-rednose)
+       ("python-requests" ,python-requests)
+       ("python-sure" ,python-sure)
+       ("python-tornado" ,python-tornado)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://httpretty.readthedocs.io")
+    (synopsis "HTTP client mock for Python")
+    (description "@code{httpretty} is a helper for faking web requests,
+inspired by Ruby's @code{fakeweb}.")
+    (license l:expat)))
+
 (define-public python2-httpretty
   (package
     (name "python2-httpretty")
