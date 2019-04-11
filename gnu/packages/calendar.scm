@@ -146,7 +146,7 @@ data units.")
     (synopsis "Console calendar program")
     (description "Khal is a standards based console calendar program,
 able to synchronize with CalDAV servers through vdirsyncer.")
-    (home-page "http://lostpackets.de/khal/")
+    (home-page "https://lostpackets.de/khal/")
     (license license:expat)))
 
 (define-public remind
