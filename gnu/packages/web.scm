@@ -4637,14 +4637,15 @@ handling many of the web standards in use today.")
 (define-public surfraw
   (package
     (name "surfraw")
-    (version "2.2.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://surfraw.alioth.debian.org/dist/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fy4ph5h9kp0jzj1m6pfylxnnmgdk0mmdppw76z9jhna4jndk5xa"))))
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/surfraw/Surfraw/uploads/"
+                           "2de827b2786ef2fe43b6f07913ca7b7f/"
+                           "surfraw-" version ".tar.gz"))
+       (sha256
+        (base32 "099nbif0x5cbcf18snc58nx1a3q7z0v9br9p2jiq9pcc7ic2015d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
