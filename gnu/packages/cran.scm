@@ -242,14 +242,14 @@ single step.")
 (define-public r-rvest
   (package
     (name "r-rvest")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvest" version))
        (sha256
         (base32
-         "04mv99z8dixywx96kfy4215g6ib23s7qvd77hcf9pxqxzcvqhvhd"))))
+         "0vsm38w83zf0djcrc5ymb1ysg88hmgq2w937ql7pqgvk5px8f2mi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httr" ,r-httr)
