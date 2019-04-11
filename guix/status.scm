@@ -410,17 +410,17 @@ produce colorful output.  When PRINT-LOG? is true, display the build log in
 addition to build events."
   (define info
     (if colorize?
-        (cut colorize-string <> 'BOLD)
+        (cute colorize-string <> (color BOLD))
         identity))
 
   (define success
     (if colorize?
-        (cut colorize-string <> 'GREEN 'BOLD)
+        (cute colorize-string <> (color GREEN BOLD))
         identity))
 
   (define failure
     (if colorize?
-        (cut colorize-string <> 'RED 'BOLD)
+        (cute colorize-string <> (color RED BOLD))
         identity))
 
   (define (report-build-progress phase %)

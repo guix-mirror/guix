@@ -22,9 +22,14 @@
 (define-module (guix colors)
   #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
-  #:export (colorize-string
+  #:export (color
+            color?
+
+            colorize-string
             color-rules
             color-output?
             isatty?*))
@@ -35,55 +40,86 @@
 ;;;
 ;;; Code:
 
-(define color-table
-  `((CLEAR       .   "0")
-    (RESET       .   "0")
-    (BOLD        .   "1")
-    (DARK        .   "2")
-    (UNDERLINE   .   "4")
-    (UNDERSCORE  .   "4")
-    (BLINK       .   "5")
-    (REVERSE     .   "6")
-    (CONCEALED   .   "8")
-    (BLACK       .  "30")
-    (RED         .  "31")
-    (GREEN       .  "32")
-    (YELLOW      .  "33")
-    (BLUE        .  "34")
-    (MAGENTA     .  "35")
-    (CYAN        .  "36")
-    (WHITE       .  "37")
-    (ON-BLACK    .  "40")
-    (ON-RED      .  "41")
-    (ON-GREEN    .  "42")
-    (ON-YELLOW   .  "43")
-    (ON-BLUE     .  "44")
-    (ON-MAGENTA  .  "45")
-    (ON-CYAN     .  "46")
-    (ON-WHITE    .  "47")))
+;; Record type for "colors", which are actually lists of color attributes.
+(define-record-type <color>
+  (make-color symbols ansi)
+  color?
+  (symbols  color-symbols)
+  (ansi     color-ansi))
 
-(define (color . lst)
-  "Return a string containing the ANSI escape sequence for producing the
-requested set of attributes in LST.  Unknown attributes are ignored."
-  (let ((color-list
-         (remove not
-                 (map (lambda (color) (assq-ref color-table color))
-                      lst))))
-    (if (null? color-list)
-        ""
-        (string-append
-         (string #\esc #\[)
-         (string-join color-list ";" 'infix)
-         "m"))))
+(define (print-color color port)
+  (format port "#<color ~a>"
+          (string-join (map symbol->string
+                            (color-symbols color)))))
 
-(define (colorize-string str . color-list)
-  "Return a copy of STR colorized using ANSI escape sequences according to the
-attributes STR.  At the end of the returned string, the color attributes will
-be reset such that subsequent output will not have any colors in effect."
-  (string-append
-   (apply color color-list)
-   str
-   (color 'RESET)))
+(set-record-type-printer! <color> print-color)
+
+(define-syntax define-color-table
+  (syntax-rules ()
+    "Define NAME as a macro that builds a list of color attributes."
+    ((_ name (color escape) ...)
+     (begin
+       (define-syntax color-codes
+         (syntax-rules (color ...)
+           ((_)
+            '())
+           ((_ color rest (... ...))
+            `(escape ,@(color-codes rest (... ...))))
+           ...))
+
+       (define-syntax-rule (name colors (... ...))
+         "Return a list of color attributes that can be passed to
+'colorize-string'."
+         (make-color '(colors (... ...))
+                     (color-codes->ansi (color-codes colors (... ...)))))))))
+
+(define-color-table color
+  (CLEAR        "0")
+  (RESET        "0")
+  (BOLD         "1")
+  (DARK         "2")
+  (UNDERLINE    "4")
+  (UNDERSCORE   "4")
+  (BLINK        "5")
+  (REVERSE      "6")
+  (CONCEALED    "8")
+  (BLACK       "30")
+  (RED         "31")
+  (GREEN       "32")
+  (YELLOW      "33")
+  (BLUE        "34")
+  (MAGENTA     "35")
+  (CYAN        "36")
+  (WHITE       "37")
+  (ON-BLACK    "40")
+  (ON-RED      "41")
+  (ON-GREEN    "42")
+  (ON-YELLOW   "43")
+  (ON-BLUE     "44")
+  (ON-MAGENTA  "45")
+  (ON-CYAN     "46")
+  (ON-WHITE    "47"))
+
+(define (color-codes->ansi codes)
+  "Convert CODES, a list of color attribute codes, to a ANSI escape string."
+  (match codes
+    (()
+     "")
+    (_
+     (string-append (string #\esc #\[)
+                    (string-join codes ";" 'infix)
+                    "m"))))
+
+(define %reset
+  (color RESET))
+
+(define (colorize-string str color)
+  "Return a copy of STR colorized using ANSI escape sequences according to
+COLOR.  At the end of the returned string, the color attributes are reset such
+that subsequent output will not have any colors in effect."
+  (string-append (color-ansi color)
+                 str
+                 (color-ansi %reset)))
 
 (define isatty?*
   (mlambdaq (port)
@@ -114,7 +150,7 @@ on."
              (match (regexp-exec rx str)
                (#f (next str))
                (m  (let loop ((n 1)
-                              (c '(colors ...))
+                              (c (list (color colors) ...))
                               (result '()))
                      (match c
                        (()

@@ -158,7 +158,7 @@ is a trivial format string."
   (define highlight
     (if (color-output? port)
         (lambda (str)
-          (apply colorize-string str %highlight-colors))
+          (colorize-string str %highlight-color))
         identity))
 
   (cond ((string? arg)
@@ -206,9 +206,9 @@ messages."
 ;; XXX: This doesn't work well for right-to-left languages.
 ;; TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
 ;; "~a" is a placeholder for that phrase.
-(define-diagnostic warning (G_ "warning: ") %warning-colors) ;emit a warning
-(define-diagnostic info (G_ "") %info-colors)
-(define-diagnostic report-error (G_ "error: ") %error-colors)
+(define-diagnostic warning (G_ "warning: ") %warning-color) ;emit a warning
+(define-diagnostic info (G_ "") %info-color)
+(define-diagnostic report-error (G_ "error: ") %error-color)
 
 (define-syntax-rule (leave args ...)
   "Emit an error message and exit."
@@ -216,27 +216,27 @@ messages."
     (report-error args ...)
     (exit 1)))
 
-(define %warning-colors '(BOLD MAGENTA))
-(define %info-colors '(BOLD))
-(define %error-colors '(BOLD RED))
-(define %hint-colors '(BOLD CYAN))
-(define %highlight-colors '(BOLD))
+(define %warning-color (color BOLD MAGENTA))
+(define %info-color (color BOLD))
+(define %error-color (color BOLD RED))
+(define %hint-color (color BOLD CYAN))
+(define %highlight-color (color BOLD))
 
 (define* (print-diagnostic-prefix prefix #:optional location
-                                  #:key (colors '()))
+                                  #:key (colors (color)))
   "Print PREFIX as a diagnostic line prefix."
   (define color?
     (color-output? (guix-warning-port)))
 
   (define location-color
     (if color?
-        (cut colorize-string <> 'BOLD)
+        (cut colorize-string <> (color BOLD))
         identity))
 
   (define prefix-color
     (if color?
         (lambda (prefix)
-          (apply colorize-string prefix colors))
+          (colorize-string prefix colors))
         identity))
 
   (let ((prefix (if (string-null? prefix)
@@ -404,7 +404,7 @@ PORT."
   (define colorize
     (if (color-output? port)
         (lambda (str)
-          (apply colorize-string str %hint-colors))
+          (colorize-string str %hint-color))
         identity))
 
   (display (colorize (G_ "hint: ")) port)
