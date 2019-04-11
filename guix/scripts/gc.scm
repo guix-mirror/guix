@@ -245,7 +245,11 @@ is deprecated; use '-D'~%"))
   (define (delete-generations store pattern)
     ;; Delete the generations matching PATTERN of all the user's profiles.
     (let ((profiles (delete-duplicates
-                     (filter-map generation-profile (gc-roots)))))
+                     (filter-map (lambda (root)
+                                   (and (or (zero? (getuid))
+                                            (user-owned? root))
+                                        (generation-profile root)))
+                                 (gc-roots)))))
       (for-each (lambda (profile)
                   (delete-old-generations store profile pattern))
                 profiles)))
