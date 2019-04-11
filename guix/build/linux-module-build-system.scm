@@ -32,6 +32,23 @@
 ;;
 ;; Code:
 
+;; Copied from make-linux-libre's "configure" phase.
+(define* (configure #:key inputs target #:allow-other-keys)
+  (setenv "KCONFIG_NOTIMESTAMP" "1")
+  (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
+  ;(let ((arch ,(system->linux-architecture
+  ;                         (or (%current-target-system)
+  ;                             (%current-system)))))
+  ;  (setenv "ARCH" arch)
+  ;  (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
+  (when target
+    (setenv "CROSS_COMPILE" (string-append target "-"))
+    (format #t "`CROSS_COMPILE' set to `~a'~%"
+               (getenv "CROSS_COMPILE")))
+  ; TODO: (setenv "EXTRA_VERSION" ,extra-version)
+  ; TODO: kernel ".config".
+  #t)
+
 (define* (build #:key inputs make-flags #:allow-other-keys)
   (apply invoke "make" "-C"
          (string-append (assoc-ref inputs "linux-module-builder")
@@ -60,7 +77,7 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (delete 'configure)
+    (replace 'configure configure)
     (replace 'build build)
     (replace 'install install)))
 
