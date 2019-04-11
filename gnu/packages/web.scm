@@ -6519,4 +6519,4 @@ site from link to link, as if you were viewing it online.  HTTrack can also
 update an existing mirrored site, and resume interrupted downloads.
 
 HTTrack is fully configurable, and has an integrated help system.")
-    (license license:gpl3+)))
+    (license l:gpl3+)))
