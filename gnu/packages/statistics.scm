@@ -3805,13 +3805,13 @@ features present in other programming languages.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "4.8.0")
+    (version "4.9.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "19p8pa03q9mw5vaan7r56xgd13d90ssiz0flbrkvpfrir2105ybq"))))
+                "1kz2hm7vnkn4clxr6yyxxnmdmkz9zwjq6bzysw7j27r3721i8qgp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
