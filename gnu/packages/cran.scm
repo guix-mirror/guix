@@ -8040,14 +8040,14 @@ more information about packages, and where they were installed from.")
 (define-public r-remotes
   (package
     (name "r-remotes")
-    (version "2.0.2")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "remotes" version))
        (sha256
         (base32
-         "0rsjxmhwpr51ilsdjfqn06mj8yr2d7nckcn3arv1ljn23qfkpcxa"))))
+         "1jbn4kjimcr82zv5lnqxqa2487a96vn6jxf7wc6gnpxr6k06d61p"))))
     (build-system r-build-system)
     (home-page "https://github.com/r-lib/remotes#readme")
     (synopsis "R package installation from remote repositories")
