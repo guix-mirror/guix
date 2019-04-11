@@ -1819,13 +1819,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.6")
+    (version "0.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "0mvpfd5dc3zgcvwfidcd2qyn59xl5biv728mxifw0ls5rzkc9chs"))))
+        (base32 "1jw4i58cd4j1ymsnhv9224xsi26w8y0qrj6z4nw50dnbl45b6aaa"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1847,6 +1847,9 @@ QMatrixClient project.")
        ("python-reparser" ,python-reparser)
        ("python-requests" ,python-requests)
        ("python-urwid" ,python-urwid)))
+    (native-inputs
+     `(("python-httpretty" ,python-httpretty)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://hangups.readthedocs.io/")
     (synopsis "Instant messaging client for Google Hangouts")
     (description
