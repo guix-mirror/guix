@@ -56,14 +56,14 @@
 (define-public cifs-utils
   (package
     (name "cifs-utils")
-    (version "6.8")
+    (version "6.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/linux-cifs/"
                            "cifs-utils/cifs-utils-" version ".tar.bz2"))
        (sha256 (base32
-                "0ygz3pagjpaj5ky11hzh4byyymb7fpmqiqkprn11zwj31h2zdlg7"))))
+                "175cp509wn1zv8p8mv37hkf6sxiskrsxdnq22mhlsg61jazz3n0q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -80,7 +80,8 @@
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-root-sbin
-           (lambda _ ; Don't try to install in "/sbin".
+           (lambda _
+             ;; Don't try to install into "/sbin".
              (setenv "ROOTSBINDIR"
                      (string-append (assoc-ref %outputs "out") "/sbin"))
              #t)))))
