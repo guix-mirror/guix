@@ -5977,7 +5977,7 @@ Conventions Manual) and some of the @dfn{EWMH}
        (method git-fetch)
        (uri (git-reference
              (url "https://anongit.freedesktop.org/git/xorg/app/xcompmgr.git")
-             (commit (string-append name "-" version))))
+             (commit (string-append "xcompmgr-" version))))
        (sha256
         (base32
          "04swkrm3gk689wrjc418bd3n25w8r20kg1xfbn5j8d7mx1r5gf16"))
