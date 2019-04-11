@@ -23152,7 +23152,7 @@ The port to bind the server to.
 @cindex fingerprint
 @subsubheading Fingerprint Service
 
-The @code{(gnu services fingerprint)} module provides a DBus service to
+The @code{(gnu services authentication)} module provides a DBus service to
 read and identify fingerprints via a fingerprint sensor.
 
 @defvr {Scheme Variable} fprintd-service-type
