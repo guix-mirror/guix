@@ -132,6 +132,38 @@ that subsequent output will not have any colors in effect."
        (not (getenv "NO_COLOR"))
        (isatty?* port)))
 
+(define (colorize-matches rules)
+  "Return a procedure that, when passed a string, returns that string
+colorized according to RULES.  RULES must be a list of tuples like:
+
+  (REGEXP COLOR1 COLOR2 ...)
+
+where COLOR1 specifies how to colorize the first submatch of REGEXP, and so
+on."
+  (lambda (str)
+    (if (string-index str #\nul)
+        str
+        (let loop ((rules rules))
+          (match rules
+            (()
+             str)
+            (((regexp . colors) . rest)
+             (match (regexp-exec regexp str)
+               (#f (loop rest))
+               (m  (let loop ((n 1)
+                              (colors colors)
+                              (result (list (match:prefix m))))
+                     (match colors
+                       (()
+                        (string-concatenate-reverse
+                         (cons (match:suffix m) result)))
+                       ((first . tail)
+                        (loop (+ n 1)
+                              tail
+                              (cons (colorize-string (match:substring m n)
+                                                     first)
+                                    result)))))))))))))
+
 (define-syntax color-rules
   (syntax-rules ()
     "Return a procedure that colorizes the string it is passed according to
@@ -141,25 +173,6 @@ the given rules.  Each rule has the form:
 
 where COLOR1 specifies how to colorize the first submatch of REGEXP, and so
 on."
-    ((_ (regexp colors ...) rest ...)
-     (let ((next (color-rules rest ...))
-           (rx   (make-regexp regexp)))
-       (lambda (str)
-         (if (string-index str #\nul)
-             str
-             (match (regexp-exec rx str)
-               (#f (next str))
-               (m  (let loop ((n 1)
-                              (c (list (color colors) ...))
-                              (result '()))
-                     (match c
-                       (()
-                        (string-concatenate-reverse result))
-                       ((first . tail)
-                        (loop (+ n 1) tail
-                              (cons (colorize-string (match:substring m n)
-                                                     first)
-                                    result)))))))))))
-    ((_)
-     (lambda (str)
-       str))))
+    ((_ (regexp colors ...) ...)
+     (colorize-matches `((,(make-regexp regexp) ,(color colors) ...)
+                         ...)))))
