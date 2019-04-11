@@ -103,17 +103,35 @@ See <https://github.com/moby/moby/pull/38930>.
  
 --- docker-18.09.0-checkout/vendor/github.com/docker/libnetwork/ns/init_linux.go.orig	2019-03-19 11:23:20.738316699 +0100
 +++ docker-18.09.0-checkout/vendor/github.com/docker/libnetwork/ns/init_linux.go	2019-03-19 11:27:57.149753073 +0100
-@@ -100,12 +100,7 @@
+@@ -76,12 +76,8 @@ func NlHandle() *netlink.Handle {
+ func getSupportedNlFamilies() []int {
+ 	fams := []int{syscall.NETLINK_ROUTE}
+ 	// NETLINK_XFRM test
+-	if err := loadXfrmModules(); err != nil {
+-		if checkXfrmSocket() != nil {
+-			logrus.Warnf("Could not load necessary modules for IPSEC rules: %v", err)
+-		} else {
+-			fams = append(fams, syscall.NETLINK_XFRM)
+-		}
++	if err := checkXfrmSocket(); err != nil {
++		logrus.Warnf("Could not load necessary modules for IPSEC rules: %v", err)
+ 	} else {
+ 		fams = append(fams, syscall.NETLINK_XFRM)
+ 	}
+@@ -99,16 +95,6 @@ func getSupportedNlFamilies() []int {
+ 	return fams
  }
  
- func loadXfrmModules() error {
+-func loadXfrmModules() error {
 -	if out, err := exec.Command("modprobe", "-va", "xfrm_user").CombinedOutput(); err != nil {
 -		return fmt.Errorf("Running modprobe xfrm_user failed with message: `%s`, error: %v", strings.TrimSpace(string(out)), err)
 -	}
 -	if out, err := exec.Command("modprobe", "-va", "xfrm_algo").CombinedOutput(); err != nil {
 -		return fmt.Errorf("Running modprobe xfrm_algo failed with message: `%s`, error: %v", strings.TrimSpace(string(out)), err)
 -	}
-+	// Those are automatically loaded when someone opens the socket anyway.
- 	return nil
- }
- 
+-	return nil
+-}
+-
+ // API check on required xfrm modules (xfrm_user, xfrm_algo)
+ func checkXfrmSocket() error {
+ 	fd, err := syscall.Socket(syscall.AF_NETLINK, syscall.SOCK_RAW, syscall.NETLINK_XFRM)
