@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -92,11 +92,10 @@ program to exhibit a bug.")
     ;; home-page pointing to a bsd-2 license.
     (license bsd-3)))
 
-;; Newer versions depend on LLVM and Clang >= 4, which have yet to be packaged.
 (define-public c-reduce
   (package
     (name "c-reduce")
-    (version "2.6.0")
+    (version "2.8.0")
     (source
      (origin
       (method url-fetch)
@@ -105,12 +104,12 @@ program to exhibit a bug.")
                            "creduce-" version ".tar.gz")))
       (sha256
        (base32
-        "0pf5q0n8vkdcr1wrkxn2jzxv0xkrir13bwmqfw3jpbm3dh2c3b6d"))))
+        "1vqx73ymfscvlyig03972a5m7ar3gx2yv6m8c6h2mibz792j5xkp"))))
     (build-system gnu-build-system)
     (inputs
      `(("astyle"          ,astyle)
-       ("llvm"            ,llvm-3.9.1)
-       ("clang"           ,clang-3.9.1)
+       ("llvm"            ,llvm-6)
+       ("clang"           ,clang-6)
        ("flex"            ,flex)
        ("indent"          ,indent)
        ("perl"            ,perl)
@@ -118,11 +117,16 @@ program to exhibit a bug.")
        ("file-which"      ,perl-file-which)
        ("getopt-tabular"  ,perl-getopt-tabular)
        ("regex-common"    ,perl-regexp-common)
-       ("sys-cpu"         ,perl-sys-cpu)
        ("term-readkey"    ,perl-term-readkey)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "tests"
+               ;; Running all tests can take a looong time, and tests 4 and 5
+               ;; require frama-c or kcc.  So run just one for sanity.
+               (invoke "./run_tests" "1"))))
          (add-after 'install 'set-load-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Tell creduce where to find the perl modules it needs.
@@ -137,7 +141,7 @@ program to exhibit a bug.")
                                           ,(package-version perl)))
                          '("term-readkey"    "exporter-lite"
                            "file-which"      "getopt-tabular"
-                           "regex-common"    "sys-cpu")))))
+                           "regex-common")))))
              #t)))))
     (home-page "https://embed.cs.utah.edu/creduce")
     (synopsis "Reducer for interesting code")
