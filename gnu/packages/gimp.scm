@@ -368,5 +368,5 @@ MyPaint.")
      "This package provides resynthesizer plugins for GIMP, which encompasses
 tools for healing selections (content-aware fill), enlarging the canvas and
 healing the border, increasing the resolution while adding detail, and
-transfering the style of an image.")
+transferring the style of an image.")
     (license license:gpl3+)))
