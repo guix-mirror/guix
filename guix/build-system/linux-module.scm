@@ -63,6 +63,9 @@
   (package
     (inherit linux)
     (name (string-append (package-name linux) "-module-builder"))
+    (native-inputs
+     `(("linux" ,linux)
+       ,@(package-native-inputs linux)))
     (arguments
      (substitute-keyword-arguments (package-arguments linux)
       ((#:phases phases)
@@ -72,11 +75,17 @@
               (invoke "make" "modules_prepare")))
           (delete 'strip) ; faster.
           (replace 'install
-            (lambda* (#:key outputs #:allow-other-keys)
+            (lambda* (#:key inputs outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (out-lib-build (string-append out "/lib/modules/build")))
                 ; TODO: Only preserve the minimum, i.e. [Kbuild], Kconfig, scripts, include, ".config".
                 (copy-recursively "." out-lib-build)
+                (let* ((linux (assoc-ref inputs "linux")))
+                  (install-file (string-append linux "/System.map")
+                                out-lib-build)
+                  (let ((source (string-append linux "/Module.symvers")))
+                    (if (file-exists? source)
+                        (install-file source out-lib-build))))
                 #t)))))))))
 
 (define* (lower name

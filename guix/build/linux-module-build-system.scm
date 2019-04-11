@@ -32,10 +32,6 @@
 ;;
 ;; Code:
 
-;; TODO: It might make sense to provide "Module.symvers" in the future.
-(define* (configure #:key inputs #:allow-other-keys)
-  #t)
-
 (define* (build #:key inputs make-flags #:allow-other-keys)
   (apply invoke "make" "-C"
          (string-append (assoc-ref inputs "linux-module-builder")
@@ -64,7 +60,7 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (replace 'configure configure)
+    (delete 'configure)
     (replace 'build build)
     (replace 'install install)))
 
