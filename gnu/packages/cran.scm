@@ -7979,14 +7979,14 @@ terminals that do not support Unicode.")
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "1gadckx3sxz9gxvpkprj9x7zcgg2nz5m4q0vi76ya9li1v03rwwn"))))
+         "0pn6ka3726psaqlx573g6nxi90apf0rn5m4k2lz1jr66xdc19sag"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-clipr" ,r-clipr)
@@ -7998,10 +7998,13 @@ terminals that do not support Unicode.")
        ("r-gh" ,r-gh)
        ("r-git2r" ,r-git2r)
        ("r-glue" ,r-glue)
+       ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-rprojroot" ,r-rprojroot)
        ("r-rstudioapi" ,r-rstudioapi)
-       ("r-whisker" ,r-whisker)))
+       ("r-whisker" ,r-whisker)
+       ("r-withr" ,r-withr)
+       ("r-yaml" ,r-yaml)))
     (home-page "https://github.com/r-lib/usethis")
     (synopsis "Automate R package and project setup")
     (description
