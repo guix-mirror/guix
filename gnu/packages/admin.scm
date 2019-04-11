@@ -1736,7 +1736,7 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.5.1")
+    (version "22.5.3")
     (source
      (origin
        (method git-fetch)
@@ -1745,7 +1745,7 @@ limits.")
              (commit (string-append "release-v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1l1278g3k1qfrz41pkpjdhsabassb9si2d1bfbcmvbv5h3wmlqk9"))))
+        (base32 "1rgpsh70manr2dydna9da4x7p8ahii7dgdgwir5fka340n1wrcws"))))
     (build-system gnu-build-system)
     (native-inputs                      ; for tests
      `(("python-mock" ,python-mock)
