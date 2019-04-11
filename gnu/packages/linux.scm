@@ -118,6 +118,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system linux-module)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -437,6 +438,28 @@ It has been modified to remove all non-free binary blobs.")
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
+
+(define-public vhba-module
+  (package
+    (name "vhba-module")
+    (version "20170610")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/cdemu/vhba-module-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1v6r0bgx0a65vlh36b1l2965xybngbpga6rp54k4z74xk0zwjw3r"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; TODO: No tests?
+     `(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Kernel module that emulates SCSI devices")
+    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
+between the CDemu userspace daemon and linux kernel.")
+    (license license:gpl2+)))
 
 (define %linux-libre-4.19-version "4.19.34")
 (define %linux-libre-4.19-hash "0rmpyj2qb651p2k2srpjndjxry87hr5vq0jkk4rvxjhm5y3sb65l")
