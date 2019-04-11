@@ -97,7 +97,7 @@ older or slower computers and embedded systems.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
-                                  name "-" version ".tar.bz2"))
+                                  "links-" version ".tar.bz2"))
                 (sha256
                (base32
                 "0mwhh61klicn2vwk39nc7y4cw4mygzdi2nljn4r0gjbw6jmw3337"))))
