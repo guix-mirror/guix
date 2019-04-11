@@ -377,7 +377,7 @@ to all types of devices that provide serial consoles.")
 (define-public beep
   (package
     (name "beep")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method git-fetch)
@@ -390,7 +390,7 @@ to all types of devices that provide serial consoles.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gramwa2zm59kqjhv96fi8vg7l6lyffv02h0310vb90naschi99g"))))
+        (base32 "1bk7g63qpiclbq20iz2x238by8s1b2iafdim7i6dq1i5n01s7lgx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
