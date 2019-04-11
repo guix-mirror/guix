@@ -536,7 +536,7 @@ tiled on several screens.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
-                                  name "-" version ".tar.gz"))
+                                  "xmobar-" version ".tar.gz"))
               (sha256
                (base32
                 "1xh87asg8y35srvp7d3gyyy4bkxsw122liihxgzgm8pqv2z3h4zd"))))
