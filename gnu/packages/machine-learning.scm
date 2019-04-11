@@ -315,18 +315,36 @@ networks) based on simulation of (stochastic) flow in graphs.")
          "1l5jbhwjpsj38x8b9698hfpkv75h8hn3kj0gihjhn8ym2cwwv110"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
            (lambda _
              (substitute* "configure"
-               (("SHELL = /bin/sh") (string-append "SHELL = "(which "sh"))))
+               (("/bin/sh") (which "sh")))
              (substitute* "setup.ml"
                (("LDFLAGS=-fPIC")
-                (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh"))))
+                (string-append "LDFLAGS=-fPIC\"; \"SHELL=" (which "sh")))
+               (("-std=c89") "-std=gnu99")
+
+               ;; This is a mutable string, which is no longer supported.  Use
+               ;; a byte buffer instead.
+               (("String.make \\(String.length s\\)")
+                "Bytes.make (String.length s)")
+
+               ;; These two belong together.
+               (("OASISString.replace_chars")
+                "Bytes.to_string (OASISString.replace_chars")
+               ((" s;")
+                " s);"))
+             (substitute* "myocamlbuild.ml"
+               (("std=c89") "std=gnu99"))
+             ;; Since we build with a more recent OCaml, we have to use C99 or
+             ;; later.  This causes problems with the old C code.
+             (substitute* "src/impala/matrix.c"
+               (("restrict") "restrict_"))
              #t)))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://github.com/fhcrc/mcl")
     (synopsis "OCaml wrappers around MCL")
     (description
