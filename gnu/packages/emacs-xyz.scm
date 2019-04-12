@@ -14500,6 +14500,32 @@ functions for Fish shell scripts.")
 parent directory using @code{Eshell}.")
       (license license:gpl3+))))
 
+(define-public emacs-tco-el
+  (let ((commit "482db5313f090b17ed22ccd856f0e141dc75afe6")
+        (version "0.3")
+        (revision "1"))
+    (package
+      (name "emacs-tco-el")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Wilfred/tco.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1z7xkbrqznk6ni687qqknp8labcyhl8y6576hjfri89fn21385y9"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/Wilfred/tco.el")
+      (synopsis "Tail-call optimization for Emacs Lisp")
+      (description "This package provides tail-call optimization for Emacs
+Lisp functions that call themselves in tail position.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
