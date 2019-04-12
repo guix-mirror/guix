@@ -14476,6 +14476,30 @@ provides a minor mode that autoformats the buffer upon saving.")
 functions for Fish shell scripts.")
     (license license:gpl3+)))
 
+(define-public emacs-eshell-up
+  (let ((commit "9c100bae5c3020e8d9307e4332d3b64e7dc28519")
+        (version "0.0.3")
+        (revision "12"))
+    (package
+      (name "emacs-eshell-up")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/peterwvj/eshell-up")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "00zdbcncjabgj5mp47l1chymx5na18v2g4kj730dgmj3rnl3iz2q"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/peterwvj/eshell-up")
+      (synopsis "Quickly go to a parent directory in @code{Eshell}")
+      (description "This package provides quick navigation to a specific
+parent directory using @code{Eshell}.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
