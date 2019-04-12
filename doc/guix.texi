@@ -1795,25 +1795,14 @@ available.
 @node Limitations
 @section Limitations
 
-As of version @value{VERSION}, Guix System is
-not production-ready.  It may contain bugs and lack important
-features.  Thus, if you are looking for a stable production system that
-respects your freedom as a computer user, a good solution at this point
-is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
-the more established GNU/Linux distributions}.  We hope you can soon switch
-to the Guix System without fear, of course.  In the meantime, you can
-also keep using your distribution and try out the package manager on top
-of it (@pxref{Installation}).
+We consider Guix System to be ready for a wide range of ``dekstop'' and server
+use cases.  The reliability guarantees it provides---transactional upgrades
+and rollbacks, reproducibility---make it a solid foundation.
 
-Before you proceed with the installation, be aware of the following
-noteworthy limitations applicable to version @value{VERSION}:
+Nevertheless, before you proceed with the installation, be aware of the
+following noteworthy limitations applicable to version @value{VERSION}:
 
 @itemize
-@item
-The installation process does not include a graphical user interface and
-requires familiarity with GNU/Linux (see the following subsections to
-get a feel of what that means.)
-
 @item
 Support for the Logical Volume Manager (LVM) is missing.
 
@@ -1822,18 +1811,14 @@ More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
 @item
-More than 8,500 packages are available, but you might
-occasionally find that a useful package is missing.
-
-@item
 GNOME, Xfce, LXDE, and Enlightenment are available (@pxref{Desktop Services}),
-as well as a number of X11 window managers.  However, some graphical
-applications may be missing, as well as KDE.
+as well as a number of X11 window managers.  However, KDE is currently
+missing.
 @end itemize
 
-You have been warned!  But more than a disclaimer, this is an invitation
-to report issues (and success stories!), and to join us in improving it.
-@xref{Contributing}, for more info.
+More than a disclaimer, this is an invitation to report issues (and success
+stories!), and to join us in improving it.  @xref{Contributing}, for more
+info.
 
 
 @node Hardware Considerations
