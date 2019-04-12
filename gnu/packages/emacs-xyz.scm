@@ -14553,6 +14553,32 @@ Lisp functions that call themselves in tail position.")
 compatible with Emacs' shell modes.")
       (license license:gpl3+))))
 
+(define-public emacs-vdiff
+  (let ((commit "09e15fc932bfd2febe1d4a65780a532394562b07")
+        (version "0.2.3")
+        (revision "1"))
+    (package
+      (name "emacs-vdiff")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/justbur/emacs-vdiff/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1gvqi5l4zs872nn4pmj603aza09d81qad2rgijzv268lif8z34db"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-hydra" ,emacs-hydra)))
+      (home-page "https://github.com/justbur/emacs-vdiff/")
+      (synopsis "Frontend for diffing based on vimdiff")
+      (description "This package permits comparisons of two or three buffers
+based on diff output.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
