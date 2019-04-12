@@ -14762,6 +14762,27 @@ url-encoded parameters, as well as web sockets.")
 files, and sends rendered Markdown to a web browser.")
     (license license:gpl3+)))
 
+(define-public emacs-dotenv-mode
+  (package
+    (name "emacs-dotenv-mode")
+    (version "0.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/preetpalS/emacs-dotenv-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fplkhxnsgdrg10iqsmw162zny2idz4vvv35spsb9j0hsk8imclc"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/preetpalS/emacs-dotenv-mode")
+    (synopsis "Major mode for @file{.env} files")
+    (description "This package provides syntax highlighting for @file{.env}
+files.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
