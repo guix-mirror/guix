@@ -14455,6 +14455,27 @@ JavaScript.")
 provides a minor mode that autoformats the buffer upon saving.")
       (license license:expat))))
 
+(define-public emacs-fish-mode
+  (package
+    (name "emacs-fish-mode")
+    (version "0.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wwwjfy/emacs-fish")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0a74ghmjjrxfdhk4mvq6lar4w6l6lc4iilabs99smqr2fn5rsslq"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/wwwjfy/emacs-fish")
+    (synopsis "Major mode for Fish shell scripts")
+    (description "This package provides syntax highlighting and indentation
+functions for Fish shell scripts.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
