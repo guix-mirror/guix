@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -832,6 +832,28 @@ package.")
 code pages on Windows.  On all other operating systems, the library does
 nothing.")
   (license license:bsd-3)))
+
+(define-public ghc-libffi
+  (package
+    (name "ghc-libffi")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "libffi/libffi-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g7jnhng3j7z5517aaqga0144aamibsbpgm3yynwyfzkq1kp0f28"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libffi" ,libffi)))
+    (home-page "http://hackage.haskell.org/package/libffi")
+    (synopsis "Haskell binding to libffi")
+    (description
+     "A binding to libffi, allowing C functions of types only known at runtime
+to be called from Haskell.")
+    (license license:bsd-3)))
 
 (define-public ghc-newtype-generics
   (package
