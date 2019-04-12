@@ -14783,6 +14783,31 @@ files, and sends rendered Markdown to a web browser.")
 files.")
     (license license:gpl3+)))
 
+(define-public emacs-add-node-modules-path
+  (let ((commit "f31e69ccb681f882aebb806ce6e9478e3ac39708")
+        (version "1.2.0")
+        (revision "10"))
+    (package
+      (name "emacs-add-node-modules-path")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/codesuki/add-node-modules-path")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0p106bqmvdr8by5iv02bshm339qbrjcch2d15mrm4h3nav03v306"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/codesuki/add-node-modules-path")
+      (synopsis "Add @file{node_modules} to the buffer-local @file{exec-path}")
+      (description "This package searches the parent directories of the
+current file for the project's @file{node_modules/.bin/} directory, allowing
+Emacs to find project-specific installations of packages.")
+      (license license:expat))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
