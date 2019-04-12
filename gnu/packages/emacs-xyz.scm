@@ -15008,6 +15008,31 @@ function to be specified and for any differences from the original definition
 to be examined using Ediff.")
     (license license:expat)))
 
+(define-public emacs-info-plus
+  (let ((commit "b837d710f7d58db586116cf6f75e75a9a074bc4b")
+        (version "5101")
+        (revision "55"))
+    (package
+      (name "emacs-info-plus")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/info-plus")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1knyjkdm4rcs3qrc51jllw46ph7ycq5zxnvl70ydchzfwava43h6"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/emacsmirror/info-plus")
+      (synopsis "Extensions to @file{info.el}")
+      (description "This package extends Emacs' @file{info.el} by allowing
+outline-enabled table of contents, additional metadata association for Info
+nodes, and more.")
+      (license license:gpl2+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
