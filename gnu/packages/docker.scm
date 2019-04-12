@@ -378,7 +378,7 @@ built-in registry server of Docker.")
                                                          "\")"))
                                        (string-append "\""
                                                       (assoc-ref inputs package)
-                                                      relative-path
+                                                      "/" relative-path
                                                       "\", error(nil)")))))))
                             (substitute-Command
                              (lambda (x)
@@ -393,29 +393,29 @@ built-in registry server of Docker.")
                                        (string-append (if re? re? "")
                                                       "exec.Command(\""
                                                       (assoc-ref inputs package)
-                                                      relative-path
+                                                      "/" relative-path
                                                       "\""))))))))
-                 (substitute-LookPath "ps" "procps" "/bin/ps")
-                 (substitute-LookPath "mkfs.xfs" "xfsprogs" "/bin/mkfs.xfs")
-                 (substitute-LookPath "lvmdiskscan" "lvm2" "/sbin/lvmdiskscan")
-                 (substitute-LookPath "pvdisplay" "lvm2" "/sbin/pvdisplay")
-                 (substitute-LookPath "blkid" "util-linux" "/sbin/blkid")
-                 (substitute-LookPath "unpigz" "pigz" "/bin/unpigz")
-                 (substitute-LookPath "iptables" "iptables" "/sbin/iptables")
-                 (substitute-LookPath "iptables-legacy" "iptables" "/sbin/iptables")
-                 (substitute-LookPath "ip" "iproute2" "/sbin/ip")
-                 (substitute-Command "modprobe" "kmod" "/bin/modprobe")
-                 (substitute-Command "pvcreate" "lvm2" "/sbin/pvcreate")
-                 (substitute-Command "vgcreate" "lvm2" "/sbin/vgcreate")
-                 (substitute-Command "lvcreate" "lvm2" "/sbin/lvcreate")
-                 (substitute-Command "lvconvert" "lvm2" "/sbin/lvconvert")
-                 (substitute-Command "lvchange" "lvm2" "/sbin/lvchange")
-                 (substitute-Command "mkfs.xfs" "xfsprogs" "/sbin/mkfs.xfs")
-                 (substitute-Command "xfs_growfs" "xfsprogs" "/sbin/xfs_growfs")
-                 (substitute-Command "mkfs.ext4" "e2fsprogs" "/sbin/mkfs.ext4")
-                 (substitute-Command "tune2fs" "e2fsprogs" "/sbin/tune2fs")
-                 (substitute-Command "blkid" "util-linux" "/sbin/blkid")
-                 (substitute-Command "resize2fs" "e2fsprogs" "/sbin/resize2fs")
+                 (substitute-LookPath "ps" "procps" "bin/ps")
+                 (substitute-LookPath "mkfs.xfs" "xfsprogs" "bin/mkfs.xfs")
+                 (substitute-LookPath "lvmdiskscan" "lvm2" "sbin/lvmdiskscan")
+                 (substitute-LookPath "pvdisplay" "lvm2" "sbin/pvdisplay")
+                 (substitute-LookPath "blkid" "util-linux" "sbin/blkid")
+                 (substitute-LookPath "unpigz" "pigz" "bin/unpigz")
+                 (substitute-LookPath "iptables" "iptables" "sbin/iptables")
+                 (substitute-LookPath "iptables-legacy" "iptables" "sbin/iptables")
+                 (substitute-LookPath "ip" "iproute2" "sbin/ip")
+                 (substitute-Command "modprobe" "kmod" "bin/modprobe")
+                 (substitute-Command "pvcreate" "lvm2" "sbin/pvcreate")
+                 (substitute-Command "vgcreate" "lvm2" "sbin/vgcreate")
+                 (substitute-Command "lvcreate" "lvm2" "sbin/lvcreate")
+                 (substitute-Command "lvconvert" "lvm2" "sbin/lvconvert")
+                 (substitute-Command "lvchange" "lvm2" "sbin/lvchange")
+                 (substitute-Command "mkfs.xfs" "xfsprogs" "sbin/mkfs.xfs")
+                 (substitute-Command "xfs_growfs" "xfsprogs" "sbin/xfs_growfs")
+                 (substitute-Command "mkfs.ext4" "e2fsprogs" "sbin/mkfs.ext4")
+                 (substitute-Command "tune2fs" "e2fsprogs" "sbin/tune2fs")
+                 (substitute-Command "blkid" "util-linux" "sbin/blkid")
+                 (substitute-Command "resize2fs" "e2fsprogs" "sbin/resize2fs")
                  ;; docker-mountfrom ??
                  ;; docker
                  ;; docker-untar ??
@@ -423,11 +423,11 @@ built-in registry server of Docker.")
                  ;; /usr/bin/uname
                  ;; grep
                  ;; apparmor_parser
-                 (substitute-Command "ps" "procps" "/bin/ps")
-                 (substitute-Command "losetup" "util-linux" "/sbin/losetup")
-                 (substitute-Command "uname" "coreutils" "/bin/uname")
-                 (substitute-Command "dbus-launch" "dbus" "/bin/dbus-launch")
-                 (substitute-Command "git" "git" "/bin/git"))
+                 (substitute-Command "ps" "procps" "bin/ps")
+                 (substitute-Command "losetup" "util-linux" "sbin/losetup")
+                 (substitute-Command "uname" "coreutils" "bin/uname")
+                 (substitute-Command "dbus-launch" "dbus" "bin/dbus-launch")
+                 (substitute-Command "git" "git" "bin/git"))
                ;; Make compilation fail when, in future versions, Docker
                ;; invokes other programs we don't know about and thus don't
                ;; substitute.
