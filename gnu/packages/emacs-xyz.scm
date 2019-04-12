@@ -14320,6 +14320,30 @@ subsequent committal of a chain of @code{undo} commands as a single edit in
 the @code{undo} history.")
       (license license:gpl3+))))
 
+(define-public emacs-elisp-docstring-mode
+  (let ((commit "f512e509dd690f65133e55563ebbfd2dede5034f")
+        (version "0.0.1")
+        (revision "1"))
+    (package
+      (name "emacs-elisp-docstring-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Fuco1/elisp-docstring-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0al8m75p359h4n82rf0dsl22qfdg9cwwywn5pn7x6gb96c7qrqaa"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/Fuco1/elisp-docstring-mode")
+      (synopsis "Major mode for editing Emacs Lisp docstrings")
+      (description "This package provides font lock and automatic escaping and
+unescaping of quotes.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
