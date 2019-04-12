@@ -14344,6 +14344,30 @@ the @code{undo} history.")
 unescaping of quotes.")
       (license license:gpl3+))))
 
+(define-public emacs-vimrc-mode
+  (let ((commit "13bc150a870d5d4a95f1111e4740e2b22813c30e")
+        (version "0.3.1")
+        (revision "1"))
+    (package
+      (name "emacs-vimrc-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mcandre/vimrc-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0026dqs3hwygk2k2xfra90w5sfnxrfj7l69jz7sq5glavbf340pk"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/mcandre/vimrc-mode")
+      (synopsis "Major mode for Vimscript")
+      (description "This package provides font lock and @code{beginning-} and
+@code{end-of-defun} functions for Vimscript files.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
