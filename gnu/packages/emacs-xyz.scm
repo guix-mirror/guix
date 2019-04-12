@@ -14909,6 +14909,29 @@ expanding regions of text without modifying the actual contents.")
 previewed by scrolling up and down within a @code{dired} buffer.")
       (license license:gpl3+))))
 
+(define-public emacs-counsel-etags
+  (package
+    (name "emacs-counsel-etags")
+    (version "1.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/redguardtoo/counsel-etags")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d8nlrbsyza6q7yqm9248bxxsf49qf6hchg3zwv0l11acn3w8np5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/redguardtoo/counsel-etags")
+    (synopsis "Fast @code{Ctags}/@code{Etags} solution with @code{ivy-mode}")
+    (description "This package uses @code{ivy-mode} to facilitate navigating
+and searching through @code{Ctags} files.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
