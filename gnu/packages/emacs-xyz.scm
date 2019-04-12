@@ -14712,6 +14712,30 @@ invoked.")
       (description "This package provides a GUI for defining and monitoring services.")
       (license license:gpl3+))))
 
+(define-public emacs-web-server
+  (let ((commit "cafa5b7582c57252a0884b2c33da9b18fb678713")
+        (version "0.1.1")
+        (revision "1"))
+    (package
+      (name "emacs-web-server")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/eschulte/emacs-web-server/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1c0lfqmbs5hvz3fh3c8wgp6ipwmxrwx9xj264bjpj3phixd5419y"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/eschulte/emacs-web-server/")
+      (synopsis "Web server with handlers in Emacs Lisp")
+      (description "This package supports HTTP GET and POST requests with
+url-encoded parameters, as well as web sockets.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
