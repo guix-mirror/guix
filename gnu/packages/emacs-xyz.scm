@@ -14431,6 +14431,30 @@ buffers.")
 JavaScript.")
       (license license:gpl3+))))
 
+(define-public emacs-prettier
+  (let ((commit "e9b73e81d3e1642aec682195f127a42dfb0b5774")
+        (version "0.1.0")
+        (revision "1"))
+    (package
+      (name "emacs-prettier")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/prettier/prettier-emacs")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0hj4fv3fgc60i6jrsx4a81s5c9fsxxafhhs3q2q1dypsscjci9ph"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/prettier/prettier-emacs")
+      (synopsis "Automatic formatting of JavaScript code")
+      (description "This package integrates Prettier with Emacs, and
+provides a minor mode that autoformats the buffer upon saving.")
+      (license license:expat))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
