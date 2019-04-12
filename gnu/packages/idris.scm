@@ -23,6 +23,7 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (guix build-system gnu)
@@ -61,6 +62,7 @@
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)
+       ("ghc-libffi" ,ghc-libffi)
        ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
@@ -79,7 +81,8 @@
      `(#:tests? #f ; FIXME: Test suite doesn't run in a sandbox.
        #:configure-flags
        (list (string-append "--datasubdir="
-                            (assoc-ref %outputs "out") "/lib/idris"))
+                            (assoc-ref %outputs "out") "/lib/idris")
+             "-fFFI" "-fGMP")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-cc-command
