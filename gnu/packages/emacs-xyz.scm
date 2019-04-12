@@ -15078,6 +15078,29 @@ well as an option for visually flashing evaluated s-expressions.")
 SSH servers.")
     (license license:gpl3+)))
 
+(define-public emacs-eacl
+  (package
+    (name "emacs-eacl")
+    (version "2.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/redguardtoo/eacl")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ksn11sm3g1ja5lpjz3hrzzw8b480mfcb3q589m52qjgvvn5iyfv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/redguardtoo/eacl")
+    (synopsis "Auto-complete lines by using @code{grep} on a project")
+    (description "This package provides auto-completion cammands for single
+and multiple lines of code in a project.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
