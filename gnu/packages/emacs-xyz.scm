@@ -14368,6 +14368,36 @@ unescaping of quotes.")
 @code{end-of-defun} functions for Vimscript files.")
       (license license:gpl3+))))
 
+(define-public emacs-flycheck-haskell
+  (let ((commit "32ddff87165a7d3a35e7318bee997b5b4bd41278")
+        (version "0.8")
+        (revision "79"))
+    (package
+      (name "emacs-flycheck-haskell")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flycheck/flycheck-haskell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "10pgsbagq6qj4mshq5sypv0q0khck92b30sc793b4g1pfpsxvgjn"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-seq" ,emacs-seq)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-haskell-mode" ,emacs-haskell-mode)
+         ("emacs-let-alist" ,emacs-let-alist)))
+      (home-page "https://github.com/flycheck/flycheck-haskell")
+      (synopsis "Flycheck for Haskell")
+      (description "This package configures syntax-checking for Haskell
+buffers.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
