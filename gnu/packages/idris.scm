@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,7 @@
 (define-public idris
   (package
     (name "idris")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -42,7 +43,7 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "1w5i2z88li4niykwc6yrgxgfp25ll6ih95cip0ri7d8i7ik03c48"))))
+                "0fn9h58l592j72njwma1ia48h8h87wi2rjqfxs7j2lfmvgfv18fi"))))
     (build-system haskell-build-system)
     (inputs
      `(("gmp" ,gmp)
@@ -85,11 +86,6 @@
            (lambda _
              (setenv "CC" "gcc")
              #t))
-         (add-before 'configure 'update-constraints
-           (lambda _
-             (substitute* "idris.cabal"
-               (("aeson >= 0\\.6 && < 1\\.3")
-                "aeson >= 0.6 && < 1.4"))))
          (add-after 'install 'fix-libs-install-location
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
