@@ -15055,6 +15055,29 @@ nodes, and more.")
 well as an option for visually flashing evaluated s-expressions.")
     (license license:gpl3+)))
 
+(define-public emacs-counsel-tramp
+  (package
+    (name "emacs-counsel-tramp")
+    (version "0.6.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/masasam/emacs-counsel-tramp")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nz0733x2b9b5nkwivvhv5c8747dng451na1sdfbkx5x9fjs5gc7"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ivy" ,emacs-ivy)))
+    (home-page "https://github.com/masasam/emacs-counsel-tramp")
+    (synopsis "Ivy interface for TRAMP")
+    (description "This package allows @code{ivy-mode} to display and filter
+SSH servers.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
