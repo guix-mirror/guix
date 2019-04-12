@@ -14958,6 +14958,34 @@ and searching through @code{Ctags} files.")
 Dash docsets.")
       (license license:gpl3+))))
 
+(define-public emacs-counsel-dash
+  (let ((commit "07fa74a94ff4da5b6c8c4810f5e143e701b480d2")
+        (version "0.1.3")
+        (revision "3"))
+    (package
+      (name "emacs-counsel-dash")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nathankot/counsel-dash")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "17h2m9zsadq270mkq12kmdzmpbfjiwjbg8n1rg2apqnm1ndgcwf8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm-dash" ,emacs-helm-dash)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/nathankot/counsel-dash")
+      (synopsis "Offline documentation browser for APIs using Dash docsets")
+      (description "This package uses @code{ivy-mode} to install and navigate
+through Dash docsets.")
+      (license license:expat))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
