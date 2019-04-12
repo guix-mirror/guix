@@ -372,7 +372,7 @@ built-in registry server of Docker.")
                                  ((substitute-LookPath source-text package
                                                        relative-path)
                                   #`(substitute* source-files
-                                      ((#,(string-append "exec\\.LookPath\\(\""
+                                      ((#,(string-append "\\<exec\\.LookPath\\(\""
                                                          (syntax->datum
                                                           #'source-text)
                                                          "\")"))
@@ -386,11 +386,12 @@ built-in registry server of Docker.")
                                  ((substitute-LookPath source-text package
                                                        relative-path)
                                   #`(substitute* source-files
-                                      ((#,(string-append "exec\\.Command\\(\""
+                                      ((#,(string-append "\\<(re)?exec\\.Command\\(\""
                                                          (syntax->datum
                                                           #'source-text)
-                                                         "\""))
-                                       (string-append "exec.Command(\""
+                                                         "\"") _ re?)
+                                       (string-append (if re? re? "")
+                                                      "exec.Command(\""
                                                       (assoc-ref inputs package)
                                                       relative-path
                                                       "\""))))))))
