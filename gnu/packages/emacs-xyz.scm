@@ -14832,6 +14832,32 @@ Emacs to find project-specific installations of packages.")
 definition-jumping and type-checking on demand.")
       (license license:bsd-3))))
 
+(define-public emacs-rjsx-mode
+  (let ((commit "03dd8d1683501e81b58674d64c3032b7b718402c")
+        (version "0.4.0")
+        (revision "35"))
+    (package
+      (name "emacs-rjsx-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/felipeochoa/rjsx-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1kc44g9f38klpjklmz9n50a28nqv7prz6ck6ghdr6bnj1s98pb8a"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-js2-mode" ,emacs-js2-mode)))
+      (home-page "https://github.com/felipeochoa/rjsx-mode")
+      (synopsis "Major mode for JSX files")
+      (description "This package extends the parser of @code{js2-mode} to
+support JSX syntax.")
+      (license license:expat))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
