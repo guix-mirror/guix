@@ -73,11 +73,24 @@
 ;;; Code:
 
 
-(define (log-to-info)
+;;;
+;;; Documentation service.
+;;;
+
+(define (log-to-info tty user)
   "Return a script that spawns the Info reader on the right section of the
 manual."
   (program-file "log-to-info"
-                #~(begin
+                #~(let ((tty (open-file #$(string-append "/dev/" tty)
+                                        "r0+")))
+                    (redirect-port tty (current-output-port))
+                    (redirect-port tty (current-error-port))
+                    (redirect-port tty (current-input-port))
+
+                    (let ((pw (getpwnam #$user)))
+                      (setgid (passwd:gid pw))
+                      (setuid (passwd:uid pw)))
+
                     ;; 'gunzip' is needed to decompress the doc.
                     (setenv "PATH" (string-append #$gzip "/bin"))
 
@@ -86,6 +99,33 @@ manual."
                            "-f" (string-append #$guix "/share/info/guix.info")
                            "-n" "System Installation"))))
 
+(define (documentation-shepherd-service tty)
+  (list (shepherd-service
+         (provision (list (symbol-append 'term- (string->symbol tty))))
+         (requirement '(user-processes host-name udev virtual-terminal))
+
+         (start #~(make-forkexec-constructor
+                   (list #$(log-to-info tty "documentation"))))
+         (stop #~(make-kill-destructor)))))
+
+(define %documentation-users
+  ;; User account for the Info viewer.
+  (list (user-account (name "documentation")
+                      (system? #t)
+                      (group "nogroup")
+                      (home-directory "/var/empty"))))
+
+(define documentation-service-type
+  ;; Documentation viewer service.
+  (service-type (name 'documentation)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          documentation-shepherd-service)
+                       (service-extension account-service-type
+                                          (const %documentation-users))))
+                (description "Run the Info reader on a tty.")))
+
+
 (define %backing-directory
   ;; Sub-directory used as the backing store for copy-on-write.
   "/tmp/guix-inst")
@@ -239,10 +279,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; Documentation.  The manual is in UTF-8, but
           ;; 'console-font-service' sets up Unicode support and loads a font
           ;; with all the useful glyphs like em dash and quotation marks.
-          (mingetty-service (mingetty-configuration
-                             (tty "tty2")
-                             (auto-login "guest")
-                             (login-program (log-to-info))))
+          (service documentation-service-type "tty2")
 
           ;; Documentation add-on.
           %configuration-template-service
