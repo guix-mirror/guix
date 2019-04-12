@@ -15033,6 +15033,28 @@ outline-enabled table of contents, additional metadata association for Info
 nodes, and more.")
       (license license:gpl2+))))
 
+(define-public emacs-eval-sexp-fu-el
+  (package
+    (name "emacs-eval-sexp-fu-el")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hchbaw/eval-sexp-fu.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "01mpnpgmlnfbi2yw9dxz5iw72mw3lk223bj172i4fnx3xdrrxbij"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hchbaw/eval-sexp-fu.el")
+    (synopsis "Enhancements for evaluating s-expressions")
+    (description "This package provides provides variants of
+@code{eval-last-sexp} that work on the containing list or s-expression, as
+well as an option for visually flashing evaluated s-expressions.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
