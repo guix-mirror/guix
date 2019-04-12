@@ -20,12 +20,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages idris)
+  #:use-module (gnu packages)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
@@ -44,8 +46,14 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "0fn9h58l592j72njwma1ia48h8h87wi2rjqfxs7j2lfmvgfv18fi"))))
+                "0fn9h58l592j72njwma1ia48h8h87wi2rjqfxs7j2lfmvgfv18fi"))
+              (patches (search-patches "idris-test-no-node.patch"))))
     (build-system haskell-build-system)
+    (native-inputs                      ;For tests
+     `(("perl" ,perl)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
@@ -78,8 +86,7 @@
        ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
        ("ghc-zip-archive" ,ghc-zip-archive)))
     (arguments
-     `(#:tests? #f ; FIXME: Test suite doesn't run in a sandbox.
-       #:configure-flags
+     `(#:configure-flags
        (list (string-append "--datasubdir="
                             (assoc-ref %outputs "out") "/lib/idris")
              "-fFFI" "-fGMP")
@@ -98,7 +105,15 @@
                 (lambda (module)
                   (symlink (string-append modules "/" module)
                            (string-append lib "/" module)))
-                '("prelude" "base" "contrib" "effects" "pruviloj"))))))))
+                '("prelude" "base" "contrib" "effects" "pruviloj")))))
+         (delete 'check)                ;Run check later
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys #:rest args)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "TASTY_NUM_THREADS" (number->string (parallel-job-count)))
+               (setenv "IDRIS_CC" "gcc") ;Needed for creating executables
+               (setenv "PATH" (string-append out "/bin:" (getenv "PATH")))
+               (apply (assoc-ref %standard-phases 'check) args)))))))
     (native-search-paths
      (list (search-path-specification
             (variable "IDRIS_LIBRARY_PATH")
