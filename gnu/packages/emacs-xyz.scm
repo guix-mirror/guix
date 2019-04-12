@@ -14526,6 +14526,33 @@ parent directory using @code{Eshell}.")
 Lisp functions that call themselves in tail position.")
       (license license:gpl3+))))
 
+(define-public emacs-equake
+  (let ((commit "ed15fd55cd4f2276161a6f712ed0b83cd10a8cdc")
+        (version "0.85")
+        (revision "1"))
+    (package
+      (name "emacs-equake")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/emacsomancer/equake/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "04kj88rlnn22gwmmv2gly2ibi6jka6l2cd4979pi6lhlvqqgjdnj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-tco-el" ,emacs-tco-el)))
+      (home-page "https://gitlab.com/emacsomancer/equake/")
+      (synopsis "Drop-down console for @code{Eshell} and terminal emulators")
+      (description "This package provides a Quake-style drop-down console
+compatible with Emacs' shell modes.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
