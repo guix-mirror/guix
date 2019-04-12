@@ -389,11 +389,11 @@ built-in registry server of Docker.")
                                       ((#,(string-append "exec\\.Command\\(\""
                                                          (syntax->datum
                                                           #'source-text)
-                                                         "\"")) ; )
+                                                         "\""))
                                        (string-append "exec.Command(\""
                                                       (assoc-ref inputs package)
                                                       relative-path
-                                                      "\"")))))))) ; )
+                                                      "\""))))))))
                  (substitute-LookPath "ps" "procps" "/bin/ps")
                  (substitute-LookPath "mkfs.xfs" "xfsprogs" "/bin/mkfs.xfs")
                  (substitute-LookPath "lvmdiskscan" "lvm2" "/sbin/lvmdiskscan")
@@ -432,22 +432,22 @@ built-in registry server of Docker.")
                ;; substitute.
                (substitute* source-files
                  ;; Search for Java in PATH.
-                 (("\\<exec\\.Command\\(\"java\"") ; )
-                  "xxec.Command(\"java\"")         ; )
+                 (("\\<exec\\.Command\\(\"java\"")
+                  "xxec.Command(\"java\"")
                  ;; Search for AUFS in PATH (mainline Linux doesn't support it).
-                 (("\\<exec\\.Command\\(\"auplink\"") ; )
-                  "xxec.Command(\"auplink\"")         ; )
+                 (("\\<exec\\.Command\\(\"auplink\"")
+                  "xxec.Command(\"auplink\"")
                  ;; Fail on other unsubstituted commands.
                  (("\\<exec\\.Command\\(\"([a-zA-Z0-9][a-zA-Z0-9_-]*)\""
-                   _ executable)        ; )
+                   _ executable)
                   (string-append "exec.Guix_doesnt_want_Command(\""
-                                 executable "\"")) ;)
+                                 executable "\""))
                  (("\\<xxec\\.Command")
                   "exec.Command")
                  ;; Search for ZFS in PATH.
                  (("\\<LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
                  ;; Fail on other unsubstituted LookPaths.
-                 (("\\<LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"") ; ))
+                 (("\\<LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"")
                  (("\\<LooxPath") "LookPath")))
              #t))
          (add-after 'patch-paths 'delete-failing-tests
