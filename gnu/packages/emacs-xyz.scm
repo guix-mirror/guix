@@ -14736,6 +14736,32 @@ invoked.")
 url-encoded parameters, as well as web sockets.")
       (license license:gpl3+))))
 
+(define-public emacs-markdown-preview-mode
+  (package
+    (name "emacs-markdown-preview-mode")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ancane/markdown-preview-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d1id99gagymvzdfa1mwqh8y3szm8ii47rpijkfi1qnifjg5jaq9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-markdown-mode" ,emacs-markdown-mode)
+       ("emacs-websocket" ,emacs-websocket)
+       ("emacs-web-server" ,emacs-web-server)))
+    (arguments '(#:include '("\\.el$" "\\.html$")))
+    (home-page "https://github.com/ancane/markdown-preview-mode")
+    (synopsis "Live web development in Emacs")
+    (description "This package provides a minor mode for preview of Markdown
+files, and sends rendered Markdown to a web browser.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
