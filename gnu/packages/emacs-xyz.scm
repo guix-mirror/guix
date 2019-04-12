@@ -14635,6 +14635,33 @@ based on diff output.")
 be used in @code{dired-mode}.")
       (license license:gpl3+))))
 
+(define-public emacs-exwm-edit
+  (let ((commit "961c0f3ea45766b888c73d7353da13d329538034")
+        (version "0.0.1")
+        (revision "1"))
+    (package
+      (name "emacs-exwm-edit")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/agzam/exwm-edit/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "087pk5ckx753qrn6xpka9khhlp7iqlz76w7861x90av2f5cgy6fw"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-exwm" ,emacs-exwm)))
+      (home-page "https://github.com/agzam/exwm-edit/")
+      (synopsis "Open temp buffers for editing text from EXWM buffers")
+      (description "This package facilitates editing text from EXWM buffers by
+generating a temp buffer in which any useful Emacs utilities and modes can be
+invoked.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
