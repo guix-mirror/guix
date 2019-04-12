@@ -7999,7 +7999,7 @@ error encouraging the user to seek support.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AB/ABW/"
+       (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                            "Template-Toolkit-" version ".tar.gz"))
        (sha256
         (base32
