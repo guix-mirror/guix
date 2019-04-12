@@ -296,17 +296,17 @@ built-in registry server of Docker.")
     (version %docker-version)
     (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/docker/engine.git")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "0cirpd9l2qazp2jyanwzvrkx2m98nksjdvn43ff38p89w6133ipb"))
-      (patches
-       (search-patches "docker-engine-test-noinstall.patch"
-                       "docker-fix-tests.patch"
-                       "docker-use-fewer-modprobes.patch"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/docker/engine.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cirpd9l2qazp2jyanwzvrkx2m98nksjdvn43ff38p89w6133ipb"))
+       (patches
+        (search-patches "docker-engine-test-noinstall.patch"
+                        "docker-fix-tests.patch"
+                        "docker-use-fewer-modprobes.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules
@@ -323,77 +323,77 @@ built-in registry server of Docker.")
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "builder/builder-next/executor_unix.go"
-              (("CommandCandidates:.*runc.*")
-               (string-append "CommandCandidates: []string{\""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"},\n")))
+               (("CommandCandidates:.*runc.*")
+                (string-append "CommandCandidates: []string{\""
+                               (assoc-ref inputs "runc")
+                               "/sbin/runc\"},\n")))
              (substitute* "vendor/github.com/containerd/go-runc/runc.go"
-              (("DefaultCommand = .*")
-               (string-append "DefaultCommand = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n")))
+               (("DefaultCommand = .*")
+                (string-append "DefaultCommand = \""
+                               (assoc-ref inputs "runc")
+                               "/sbin/runc\"\n")))
              (substitute* "vendor/github.com/containerd/containerd/runtime/v1/linux/runtime.go"
-              (("defaultRuntime[ \t]*=.*")
-               (string-append "defaultRuntime = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n"))
-              (("defaultShim[ \t]*=.*")
-               (string-append "defaultShim = \""
-                              (assoc-ref inputs "containerd")
-                              "/bin/containerd-shim\"\n")))
+               (("defaultRuntime[ \t]*=.*")
+                (string-append "defaultRuntime = \""
+                               (assoc-ref inputs "runc")
+                               "/sbin/runc\"\n"))
+               (("defaultShim[ \t]*=.*")
+                (string-append "defaultShim = \""
+                               (assoc-ref inputs "containerd")
+                               "/bin/containerd-shim\"\n")))
              (substitute* "daemon/daemon_unix.go"
-              (("DefaultShimBinary = .*")
-               (string-append "DefaultShimBinary = \""
-                              (assoc-ref inputs "containerd")
-                              "/bin/containerd-shim\"\n"))
-              (("DefaultRuntimeBinary = .*")
-               (string-append "DefaultRuntimeBinary = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n"))
-              (("DefaultRuntimeName = .*")
-               (string-append "DefaultRuntimeName = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n")))
+               (("DefaultShimBinary = .*")
+                (string-append "DefaultShimBinary = \""
+                               (assoc-ref inputs "containerd")
+                               "/bin/containerd-shim\"\n"))
+               (("DefaultRuntimeBinary = .*")
+                (string-append "DefaultRuntimeBinary = \""
+                               (assoc-ref inputs "runc")
+                               "/sbin/runc\"\n"))
+               (("DefaultRuntimeName = .*")
+                (string-append "DefaultRuntimeName = \""
+                               (assoc-ref inputs "runc")
+                               "/sbin/runc\"\n")))
              (substitute* "daemon/config/config.go"
-              (("StockRuntimeName = .*")
-               (string-append "StockRuntimeName = \""
-                              (assoc-ref inputs "runc")
-                              "/sbin/runc\"\n")))
+               (("StockRuntimeName = .*")
+                (string-append "StockRuntimeName = \""
+                               (assoc-ref inputs "runc")
+                               "/sbin/runc\"\n")))
              (substitute* "vendor/github.com/moby/buildkit/executor/runcexecutor/executor.go"
-              (("var defaultCommandCandidates = .*")
-               (string-append "var defaultCommandCandidates = []string{\""
-                              (assoc-ref inputs "runc") "/sbin/runc\"}")))
+               (("var defaultCommandCandidates = .*")
+                (string-append "var defaultCommandCandidates = []string{\""
+                               (assoc-ref inputs "runc") "/sbin/runc\"}")))
              (let ((source-files (filter (lambda (name)
-                                    (not (string-contains name "test")))
-                                  (find-files "." "\\.go$"))))
+                                           (not (string-contains name "test")))
+                                         (find-files "." "\\.go$"))))
                (let-syntax ((substitute-LookPath
                              (lambda (x)
                                (syntax-case x ()
                                  ((substitute-LookPath source-text package
                                                        relative-path)
                                   #`(substitute* source-files
-                                     ((#,(string-append "exec\\.LookPath\\(\""
-                                                        (syntax->datum
-                                                         #'source-text)
-                                                        "\")"))
-                                      (string-append "\""
-                                                     (assoc-ref inputs package)
-                                                     relative-path
-                                                     "\", error(nil)")))))))
+                                      ((#,(string-append "exec\\.LookPath\\(\""
+                                                         (syntax->datum
+                                                          #'source-text)
+                                                         "\")"))
+                                       (string-append "\""
+                                                      (assoc-ref inputs package)
+                                                      relative-path
+                                                      "\", error(nil)")))))))
                             (substitute-Command
                              (lambda (x)
                                (syntax-case x ()
                                  ((substitute-LookPath source-text package
                                                        relative-path)
                                   #`(substitute* source-files
-                                     ((#,(string-append "exec\\.Command\\(\""
-                                                        (syntax->datum
-                                                         #'source-text)
-                                                        "\"")) ; )
-                                      (string-append "exec.Command(\""
-                                                     (assoc-ref inputs package)
-                                                     relative-path
-                                                     "\"")))))))) ; )
+                                      ((#,(string-append "exec\\.Command\\(\""
+                                                         (syntax->datum
+                                                          #'source-text)
+                                                         "\"")) ; )
+                                       (string-append "exec.Command(\""
+                                                      (assoc-ref inputs package)
+                                                      relative-path
+                                                      "\"")))))))) ; )
                  (substitute-LookPath "ps" "procps" "/bin/ps")
                  (substitute-LookPath "mkfs.xfs" "xfsprogs" "/bin/mkfs.xfs")
                  (substitute-LookPath "lvmdiskscan" "lvm2" "/sbin/lvmdiskscan")
@@ -415,13 +415,13 @@ built-in registry server of Docker.")
                  (substitute-Command "tune2fs" "e2fsprogs" "/sbin/tune2fs")
                  (substitute-Command "blkid" "util-linux" "/sbin/blkid")
                  (substitute-Command "resize2fs" "e2fsprogs" "/sbin/resize2fs")
-; docker-mountfrom ??
-; docker
-; docker-untar ??
-; docker-applyLayer ??
-; /usr/bin/uname
-; grep
-; apparmor_parser
+                 ;; docker-mountfrom ??
+                 ;; docker
+                 ;; docker-untar ??
+                 ;; docker-applyLayer ??
+                 ;; /usr/bin/uname
+                 ;; grep
+                 ;; apparmor_parser
                  (substitute-Command "ps" "procps" "/bin/ps")
                  (substitute-Command "losetup" "util-linux" "/sbin/losetup")
                  (substitute-Command "uname" "coreutils" "/bin/uname")
@@ -431,24 +431,24 @@ built-in registry server of Docker.")
                ;; invokes other programs we don't know about and thus don't
                ;; substitute.
                (substitute* source-files
-                ;; Search for Java in PATH.
-                (("\\<exec\\.Command\\(\"java\"") ; )
-                 "xxec.Command(\"java\"") ; )
-                ;; Search for AUFS in PATH (mainline Linux doesn't support it).
-                (("\\<exec\\.Command\\(\"auplink\"") ; )
-                 "xxec.Command(\"auplink\"") ; )
-                ;; Fail on other unsubstituted commands.
-                (("\\<exec\\.Command\\(\"([a-zA-Z0-9][a-zA-Z0-9_-]*)\""
-                  _ executable) ; )
-                 (string-append "exec.Guix_doesnt_want_Command(\""
-                                executable "\"")) ;)
-                (("\\<xxec\\.Command")
-                 "exec.Command")
-                ;; Search for ZFS in PATH.
-                (("\\<LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
-                ;; Fail on other unsubstituted LookPaths.
-                (("\\<LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"") ; ))
-                (("\\<LooxPath") "LookPath")))
+                 ;; Search for Java in PATH.
+                 (("\\<exec\\.Command\\(\"java\"") ; )
+                  "xxec.Command(\"java\"")         ; )
+                 ;; Search for AUFS in PATH (mainline Linux doesn't support it).
+                 (("\\<exec\\.Command\\(\"auplink\"") ; )
+                  "xxec.Command(\"auplink\"")         ; )
+                 ;; Fail on other unsubstituted commands.
+                 (("\\<exec\\.Command\\(\"([a-zA-Z0-9][a-zA-Z0-9_-]*)\""
+                   _ executable)        ; )
+                  (string-append "exec.Guix_doesnt_want_Command(\""
+                                 executable "\"")) ;)
+                 (("\\<xxec\\.Command")
+                  "exec.Command")
+                 ;; Search for ZFS in PATH.
+                 (("\\<LookPath\\(\"zfs\"\\)") "LooxPath(\"zfs\")")
+                 ;; Fail on other unsubstituted LookPaths.
+                 (("\\<LookPath\\(\"") "Guix_doesnt_want_LookPath\\(\"") ; ))
+                 (("\\<LooxPath") "LookPath")))
              #t))
          (add-after 'patch-paths 'delete-failing-tests
            (lambda _
@@ -495,7 +495,7 @@ built-in registry server of Docker.")
              ;; But go needs to have the uncanonicalized directory name, so
              ;; store that.
              (setenv "PWD" (string-append (getcwd)
-                            "/.gopath/src/github.com/docker/docker"))
+                                          "/.gopath/src/github.com/docker/docker"))
              (with-directory-excursion ".gopath/src/github.com/docker/docker"
                (invoke "hack/test/unit"))
              (setenv "PWD" #f)
@@ -509,7 +509,7 @@ built-in registry server of Docker.")
                #t))))))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
-       ("containerd" ,containerd) ; for containerd-shim
+       ("containerd" ,containerd)       ; for containerd-shim
        ("coreutils" ,coreutils)
        ("dbus" ,dbus)
        ("e2fsprogs" ,e2fsprogs)
@@ -525,7 +525,7 @@ built-in registry server of Docker.")
        ("lvm2" ,lvm2)
        ("xfsprogs" ,xfsprogs)))
     (native-inputs
-     `(("eudev" ,eudev) ; TODO: Should be propagated by lvm2 (.pc -> .pc)
+     `(("eudev" ,eudev)      ; TODO: Should be propagated by lvm2 (.pc -> .pc)
        ("go" ,go)
        ("pkg-config" ,pkg-config)))
     (synopsis "Docker container component library, and daemon")
