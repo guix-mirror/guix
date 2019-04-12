@@ -14858,6 +14858,33 @@ definition-jumping and type-checking on demand.")
 support JSX syntax.")
       (license license:expat))))
 
+(define-public emacs-origami-el
+  (let ((commit "1f38085c8f9af7842765ed63f7d6dfe4dab59366")
+        (version "1.0")
+        (revision "1"))
+    (package
+      (name "emacs-origami-el")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gregsexton/origami.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ha1qsz2p36pqa0sa2sp83lspbgx5lr7930qxnwd585liajzdd9x"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/gregsexton/origami.el")
+      (synopsis "Flexible text-folding")
+      (description "This package provides a minor mode for collapsing and
+expanding regions of text without modifying the actual contents.")
+      (license license:expat))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
