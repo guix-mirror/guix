@@ -91,9 +91,17 @@ version of this file."
 
 (define apply-locale
   ;; Install the specified locale.
-  #~(lambda (locale-name)
-      (false-if-exception
-       (setlocale LC_ALL locale-name))))
+  (with-imported-modules (source-module-closure '((gnu services herd)))
+    #~(lambda (locale)
+        (false-if-exception
+         (setlocale LC_ALL locale))
+
+        ;; Restart the documentation viewer so it displays the manual in
+        ;; language that corresponds to LOCALE.
+        (with-error-to-port (%make-void-port "w")
+          (lambda ()
+            (stop-service 'term-tty2)
+            (start-service 'term-tty2 (list locale)))))))
 
 (define* (compute-locale-step #:key
                               locales-name
@@ -323,6 +331,7 @@ selected keymap."
                          (gnu installer newt)
                          ((gnu installer newt keymap)
                           #:select (keyboard-layout->configuration))
+                         (gnu services herd)
                          (guix i18n)
                          (guix build utils)
                          (ice-9 match))

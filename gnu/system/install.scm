@@ -77,12 +77,32 @@
 ;;; Documentation service.
 ;;;
 
+(define %installation-node-names
+  ;; Translated name of the "System Installation" node of the manual.  Ideally
+  ;; we'd extract it from the 'guix-manual' gettext domain, but that one is
+  ;; usually not available at run time, hence this hack.
+  '(("de" . "Systeminstallation")
+    ("en" . "System Installation")
+    ("fr" . "Installation du système")))
+
 (define (log-to-info tty user)
   "Return a script that spawns the Info reader on the right section of the
 manual."
   (program-file "log-to-info"
-                #~(let ((tty (open-file #$(string-append "/dev/" tty)
-                                        "r0+")))
+                #~(let* ((tty      (open-file #$(string-append "/dev/" tty)
+                                              "r0+"))
+                         (locale   (cadr (command-line)))
+                         (language (string-take locale
+                                                (string-index locale #\_)))
+                         (infodir  "/run/current-system/profile/share/info")
+                         (per-lang (string-append infodir "/guix." language
+                                                  ".info.gz"))
+                         (file     (if (file-exists? per-lang)
+                                       per-lang
+                                       (string-append infodir "/guix.info")))
+                         (node     (or (assoc-ref '#$%installation-node-names
+                                                  language)
+                                       "System Installation")))
                     (redirect-port tty (current-output-port))
                     (redirect-port tty (current-error-port))
                     (redirect-port tty (current-input-port))
@@ -94,18 +114,32 @@ manual."
                     ;; 'gunzip' is needed to decompress the doc.
                     (setenv "PATH" (string-append #$gzip "/bin"))
 
-                    (execl (string-append #$info-reader "/bin/info") "info"
-                           "-d" "/run/current-system/profile/share/info"
-                           "-f" (string-append #$guix "/share/info/guix.info")
-                           "-n" "System Installation"))))
+                    ;; Change this process' locale so that command-line
+                    ;; arguments to 'info' are properly encoded.
+                    (catch #t
+                      (lambda ()
+                        (setlocale LC_ALL locale)
+                        (setenv "LC_ALL" locale))
+                      (lambda _
+                        ;; Sometimes LOCALE itself is not available.  In that
+                        ;; case pick the one UTF-8 locale that's known to work
+                        ;; instead of failing.
+                        (setlocale LC_ALL "en_US.utf8")
+                        (setenv "LC_ALL" "en_US.utf8")))
+
+                    (execl #$(file-append info-reader "/bin/info")
+                           "info" "-d" infodir "-f" file "-n" node))))
 
 (define (documentation-shepherd-service tty)
   (list (shepherd-service
          (provision (list (symbol-append 'term- (string->symbol tty))))
          (requirement '(user-processes host-name udev virtual-terminal))
-
-         (start #~(make-forkexec-constructor
-                   (list #$(log-to-info tty "documentation"))))
+         (start #~(lambda* (#:optional (locale "en_US.utf8"))
+                    (fork+exec-command
+                     (list #$(log-to-info tty "documentation") locale)
+                     #:environment-variables
+                     `("GUIX_LOCPATH=/run/current-system/locale"
+                       "TERM=linux"))))
          (stop #~(make-kill-destructor)))))
 
 (define %documentation-users
