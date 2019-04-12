@@ -14885,6 +14885,30 @@ support JSX syntax.")
 expanding regions of text without modifying the actual contents.")
       (license license:expat))))
 
+(define-public emacs-peep-dired
+  (let ((commit "c88a9a3050197840edfe145f11e0bb9488de32f4")
+        (version "0")
+        (revision "1"))
+    (package
+      (name "emacs-peep-dired")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/asok/peep-dired")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1wy5qpnfri1gha2cnl6q20qar8dbl2mimpb43bnhmm2g3wgjyad6"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/asok/peep-dired")
+      (synopsis "Preview files in another window")
+      (description "This package provides a minor mode that allows files to be
+previewed by scrolling up and down within a @code{dired} buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
