@@ -14662,6 +14662,26 @@ generating a temp buffer in which any useful Emacs utilities and modes can be
 invoked.")
       (license license:gpl3+))))
 
+(define-public emacs-ert-async
+  (package
+    (name "emacs-ert-async")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rejeep/ert-async.el")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hn9i405nfhjd1h9vnwj43nxbbz00khrwkjq0acfyxjaz1shfac9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rejeep/ert-async.el")
+    (synopsis "Async support for ERT")
+    (description "This package allows ERT to work with asynchronous tests.")
+    (license license:gpl3+)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
