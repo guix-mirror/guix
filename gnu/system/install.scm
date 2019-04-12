@@ -342,12 +342,18 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; since it takes the installation directory as an argument.
           (cow-store-service)
 
-          ;; Install Unicode support and a suitable font.  Use a font that
-          ;; doesn't have more than 256 glyphs so that we can use colors with
-          ;; varying brightness levels (see note in setfont(8)).
+          ;; Install Unicode support and a suitable font.
           (service console-font-service-type
-                   (map (lambda (tty)
-                          (cons tty "lat9u-16"))
+                   (map (match-lambda
+                          ("tty2"
+                           ;; Use a font that contains characters such as
+                           ;; curly quotes as found in the manual.
+                           '("tty2" . "LatGrkCyr-8x16"))
+                          (tty
+                           ;; Use a font that doesn't have more than 256
+                           ;; glyphs so that we can use colors with varying
+                           ;; brightness levels (see note in setfont(8)).
+                           `(,tty . "lat9u-16")))
                         '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
           ;; To facilitate copy/paste.
