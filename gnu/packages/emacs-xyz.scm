@@ -14294,6 +14294,32 @@ command\", but because it always involves at least two commands (a prefix and
 a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
+(define-public emacs-undo-propose-el
+  (let ((commit "5f1fa99a04369a959aad01b476fe4f34229f28cd")
+        (version "1.0.0")
+        (revision "1"))
+    (package
+      (name "emacs-undo-propose-el")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jackkamm/undo-propose-el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p9h1fqmva07mcs46rqrg9vqn537b615as84s9b7xh76k1r8h1c0"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jackkamm/undo-propose-el")
+      (synopsis "Simple and safe navigation of @code{undo} history")
+      (description "This package permits navigation of @code{undo} history in a
+temporary buffer, which is read-only save for @code{undo} commands, and
+subsequent committal of a chain of @code{undo} commands as a single edit in
+the @code{undo} history.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
