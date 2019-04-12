@@ -14682,6 +14682,36 @@ invoked.")
     (description "This package allows ERT to work with asynchronous tests.")
     (license license:gpl3+)))
 
+(define-public emacs-prodigy-el
+  (let ((commit "701dccaa56de9e6a330c05bde33bce4f3b3d6a97")
+        (version "0.7.0")
+        (revision "28"))
+    (package
+      (name "emacs-prodigy-el")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rejeep/prodigy.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1vyvxawlayp2nra0q83146q2nzv8qwn5a4nj0sx1jc90a0a83vgj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-f" ,emacs-f)))
+      (native-inputs
+       `(("emacs-el-mock" ,emacs-el-mock)
+         ("emacs-ert-async" ,emacs-ert-async)))
+      (home-page "https://github.com/rejeep/prodigy.el")
+      (synopsis "Manage external services from within Emacs")
+      (description "This package provides a GUI for defining and monitoring services.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
