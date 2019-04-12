@@ -14932,6 +14932,32 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 and searching through @code{Ctags} files.")
     (license license:gpl3+)))
 
+(define-public emacs-helm-dash
+  (let ((commit "192b862185df661439a06de644791171e899348a")
+        (version "1.3.0")
+        (revision "18"))
+    (package
+      (name "emacs-helm-dash")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/areina/helm-dash")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "06am5vnr4hsxkvh2b8q8kb80y5x1h3qyv7gwggswwhfa7w2vba3w"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/areina/helm-dash")
+      (synopsis "Offline documentation browser for APIs using Dash docsets")
+      (description "This package uses Helm to install and navigate through
+Dash docsets.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
