@@ -20,6 +20,7 @@
 (define-module (gnu installer services)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
   #:export (system-service?
             system-service-name
             system-service-type
@@ -75,11 +76,13 @@
      (system-service
       (name (G_ "NetworkManager network connection manager"))
       (type 'network-management)
-      (snippet '(service network-manager-service-type)))
+      (snippet '((service network-manager-service-type)
+                 (service wpa-supplicant-service-type))))
      (system-service
       (name (G_ "Connman network connection manager"))
       (type 'network-management)
-      (snippet '(service connman-service-type)))
+      (snippet '((service connman-service-type)
+                 (service wpa-supplicant-service-type))))
      (system-service
       (name (G_ "DHCP client (dynamic IP address assignment)"))
       (type 'network-management)
@@ -95,7 +98,13 @@
 
 (define (system-services->configuration services)
   "Return the configuration field for SERVICES."
-  (let* ((snippets (map system-service-snippet services))
+  (let* ((snippets (append-map (lambda (service)
+                                 (match (system-service-snippet service)
+                                   ((and lst (('service _ ...) ...))
+                                    lst)
+                                   (sexp
+                                    (list sexp))))
+                               services))
          (desktop? (find desktop-system-service? services))
          (base     (if desktop?
                        '%desktop-services
