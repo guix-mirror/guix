@@ -14579,6 +14579,36 @@ compatible with Emacs' shell modes.")
 based on diff output.")
       (license license:gpl3+))))
 
+(define-public emacs-vdiff-magit
+  ;; Need to use a more recent commit than the latest release version because
+  ;; of Magit and Transient
+  (let ((commit "b100d126c69e5c26a61ae05aa1778bcc4302b597")
+        (version "0.3.2")
+        (revision "8"))
+    (package
+      (name "emacs-vdiff-magit")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/justbur/emacs-vdiff-magit/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16cjmrzflf2i1w01973sl944xrfanakba8sb4dpwi79d92xp03xy"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-vdiff" ,emacs-vdiff)
+         ("emacs-magit" ,emacs-magit)
+         ("emacs-transient" ,emacs-transient)))
+      (home-page "https://github.com/justbur/emacs-vdiff-magit/")
+      (synopsis "Frontend for diffing based on vimdiff")
+      (description "This package permits comparisons of two or three buffers
+based on diff output.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
