@@ -14398,6 +14398,39 @@ unescaping of quotes.")
 buffers.")
       (license license:gpl3+))))
 
+(define-public emacs-js2-refactor-el
+  (let ((commit "79124b3274c43ad1f9ec6205fa362576552db02f")
+        (version "0.9.0")
+        (revision "27"))
+    (package
+      (name "emacs-js2-refactor-el")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/magnars/js2-refactor.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1wswhlpbd3airrhyncb9vblqigwnqg9n96z0iis8jnz37q2whica"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-js2-mode" ,emacs-js2-mode)
+         ("emacs-yasnippet" ,emacs-yasnippet)
+         ("emacs-multiple-cursors" ,emacs-multiple-cursors)))
+      (native-inputs
+       `(("emacs-buttercup" ,emacs-buttercup)
+         ("emacs-espuds" ,emacs-espuds)))
+      (home-page "https://github.com/magnars/js2-refactor.el")
+      (synopsis "JavaScript refactoring in Emacs")
+      (description "This package provides various refactoring functions for
+JavaScript.")
+      (license license:gpl3+))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
