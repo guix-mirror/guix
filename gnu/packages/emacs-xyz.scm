@@ -14986,6 +14986,28 @@ Dash docsets.")
 through Dash docsets.")
       (license license:expat))))
 
+(define-public emacs-el-patch
+  (package
+    (name "emacs-el-patch")
+    (version "2.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/el-patch")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18djslz177q6q33y82zmg2v6n9236a76kiqfvxdk4vbqzjbq82f7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/raxod502/el-patch")
+    (synopsis "Future-proof your Emacs customizations")
+    (description "This package allows for an alternate definition of an Elisp
+function to be specified and for any differences from the original definition
+to be examined using Ediff.")
+    (license license:expat)))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
