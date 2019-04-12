@@ -14808,6 +14808,30 @@ current file for the project's @file{node_modules/.bin/} directory, allowing
 Emacs to find project-specific installations of packages.")
       (license license:expat))))
 
+(define-public emacs-flow-minor-mode
+  (let ((commit "d1b32a7dd0d33c6a00a106da5f4b2323602cbd3e")
+        (version "0.3")
+        (revision "4"))
+    (package
+      (name "emacs-flow-minor-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/an-sh/flow-minor-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "169r4ib9qg9q6fm3p0p23qs1qx4pa9pg1qvyq4ysr85i7kwygppl"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/an-sh/flow-minor-mode")
+      (synopsis "Minor mode for JavaScript Flow files")
+      (description "This package integrates Flow with Emacs, allowing for
+definition-jumping and type-checking on demand.")
+      (license license:bsd-3))))
+
 (define-public emacs-semantic-refactor
   ;; The last release, 0.5, was made on 2015-07-26 and there have been 47
   ;; commits since then.
