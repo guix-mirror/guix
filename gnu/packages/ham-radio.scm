@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,13 +20,17 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
 
 (define-public rtl-sdr
@@ -82,3 +86,41 @@ growing list of radios across several manufacturers and allows transferring of
 memory contents between them.")
     (license (list license:gpl3+
                    license:lgpl3+)))) ; chirp/elib_intl.py
+
+(define-public aptdec
+  (package
+    (name "aptdec")
+    (version "1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/csete/aptdec")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1hf0zb51qc6fyhdjxyij1n3vgwnw3cwksc3r11szbhkml14qjnzk"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpng" ,libpng)
+       ("libsndfile" ,libsndfile)))
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "atpdec" (string-append out "/bin")))
+             #t)))))
+    (home-page "https://github.com/csete/aptdec")
+    (synopsis "NOAA Automatic Picture Transmission (APT) decoder")
+    (description "Aptdec decodes Automatic Picture Transmission (APT) images.
+These are medium resolution images of the Earth transmitted by, among other
+satellites, the POES NOAA weather satellite series.  These transmissions are
+on a frequency of 137 MHz.  They can be received using an inexpensive antenna
+and a dedicated receiver.")
+    (license license:gpl2+)))
