@@ -6765,3 +6765,66 @@ a procedurally generated world, the player can explore thousands of rooms in
 search of powerful artifacts, tools to help them, and to eventually free the
 Orcus Dome from evil.")
     (license license:gpl3+)))
+
+(define-public marble-marcher
+  (let ((commit "e580460a0c3826f9b28ab404607942a8ecb625d7")
+        (revision "1"))
+    (package
+      (name "marble-marcher")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/HackerPoet/MarbleMarcher.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0jjv832hl1v170n6gryp2sr3lgqndi9ab841qvgqk68bks8701mx"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f  ; there are none
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'embed-asset-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((assets (string-append (assoc-ref outputs "out")
+                                            "/share/marble-marcher/assets/")))
+                 ;; Some of the files we're patching are
+                 ;; ISO-8859-1-encoded, so choose it as the default
+                 ;; encoding so the byte encoding is preserved.
+                 (with-fluids ((%default-port-encoding #f))
+                   (substitute* "src/Resource.rc"
+                     (("../assets/icon.ico")
+                      (string-append assets "icon.ico")))
+                   (substitute* "src/Res.h"
+                     (("assets/") assets))))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (assets (string-append out "/share/marble-marcher/assets"))
+                      (bin (string-append out "/bin/")))
+                 (mkdir-p bin)
+                 (mkdir-p assets)
+                 (copy-recursively "../source/assets" assets)
+                 (install-file "MarbleMarcher" bin))
+               #t)))))
+      (inputs
+       `(("eigen" ,eigen)
+         ("mesa" ,mesa)
+         ("sfml" ,sfml)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://codeparade.itch.io/marblemarcher")
+      (synopsis "Guide a marble across fractal landscapes")
+      (description "Marble Marcher is a video game that uses a fractal physics
+engine and fully procedural rendering to produce beautiful and unique
+gameplay.  The game is played on the surface of evolving fractals.  The goal
+of the game is to get your marble to the flag as quickly as possible.  But be
+careful not to fall off the level or get crushed by the fractal!  There are 24
+levels to unlock.")
+      ;; Code is under GPLv2+, assets are under CC-BY-SA 3.0 and OFL 1.1.
+      (license (list license:gpl2+
+                     license:silofl1.1
+                     license:cc-by-sa3.0)))))
