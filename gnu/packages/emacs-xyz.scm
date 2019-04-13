@@ -722,6 +722,29 @@ can take association lists, hash tables, and in some cases vectors (where the
 index is considered the key).")
     (license license:gpl3+)))
 
+(define-public emacs-ace-jump-mode
+  (package
+    (name "emacs-ace-jump-mode")
+    (version "2.0")
+    (home-page "https://github.com/winterTTr/ace-jump-mode")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1bwvzh056ls2v7y26a0s4j5mj582dmds04lx4x6iqihs04ss74bb"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (synopsis "Cursor location minor mode for fast navigation")
+    (description "Ace-jump-mode is a fast/direct cursor location minor
+mode.  It creates an N-Branch search tree internally and marks all
+the possible position with predefined keys in within the whole Emacs
+view.  This allows you to move to the character, word, or line almost
+directly.")
+    (license license:gpl3+)))
+
 (define-public emacs-anaphora
   (package
     (name "emacs-anaphora")
