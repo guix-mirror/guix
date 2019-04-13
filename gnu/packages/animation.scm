@@ -44,15 +44,15 @@
 (define-public etl
   (package
     (name "etl")
-    (version "0.04.22")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               ;; Keep this synchronized with the synfig release version.
               (uri (string-append "mirror://sourceforge/synfig/releases/"
-                                  "1.2.0/source/ETL-" version ".tar.gz"))
+                                  version "/source/ETL-" version ".tar.gz"))
               (sha256
                (base32
-                "0ii73nsd3xzkhz6w1rnxwphl637j9w82xiy6apa9vin2isdynnmc"))))
+                "12sd8pz8l5xcxcmapkvih3brihdhdb6xmxisr9a415lydid9rh8d"))))
     (build-system gnu-build-system)
     (home-page "https://www.synfig.org")
     (synopsis "Extended C++ template library")
