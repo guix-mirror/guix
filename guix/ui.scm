@@ -1564,7 +1564,7 @@ DURATION-RELATION with the current time."
 (define (display-generation profile number)
   "Display a one-line summary of generation NUMBER of PROFILE."
   (unless (zero? number)
-    (let ((header (format #f (G_ "Generation ~a\t~a") number
+    (let ((header (format #f (highlight (G_ "Generation ~a\t~a")) number
                           (date->string
                            (time-utc->date
                             (generation-time profile number))
