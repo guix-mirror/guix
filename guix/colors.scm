@@ -30,6 +30,7 @@
             color?
 
             colorize-string
+            highlight
             color-rules
             color-output?
             isatty?*))
@@ -131,6 +132,15 @@ that subsequent output will not have any colors in effect."
   (and (not (getenv "INSIDE_EMACS"))
        (not (getenv "NO_COLOR"))
        (isatty?* port)))
+
+(define %highlight-color (color BOLD))
+
+(define* (highlight str #:optional (port (current-output-port)))
+  "Return STR with extra ANSI color attributes to highlight it if PORT
+supports it."
+  (if (color-output? port)
+      (colorize-string str %highlight-color)
+      str))
 
 (define (colorize-matches rules)
   "Return a procedure that, when passed a string, returns that string

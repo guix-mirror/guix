@@ -155,16 +155,10 @@ is a trivial format string."
 
 (define* (%highlight-argument arg #:optional (port (guix-warning-port)))
   "Highlight ARG, a format string argument, if PORT supports colors."
-  (define highlight
-    (if (color-output? port)
-        (lambda (str)
-          (colorize-string str %highlight-color))
-        identity))
-
   (cond ((string? arg)
-         (highlight arg))
+         (highlight arg port))
         ((symbol? arg)
-         (highlight (symbol->string arg)))
+         (highlight (symbol->string arg) port))
         (else arg)))
 
 (define-syntax define-diagnostic
@@ -220,7 +214,6 @@ messages."
 (define %info-color (color BOLD))
 (define %error-color (color BOLD RED))
 (define %hint-color (color BOLD CYAN))
-(define %highlight-color (color BOLD))
 
 (define* (print-diagnostic-prefix prefix #:optional location
                                   #:key (colors (color)))
