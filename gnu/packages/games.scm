@@ -6829,6 +6829,7 @@ levels to unlock.")
                      license:silofl1.1
                      license:cc-by-sa3.0)))))
 
+;; This must be updated together with flightgear.
 (define simgear
   (package
     (name "simgear")
@@ -6864,3 +6865,98 @@ building blocks for quickly assembling 3D simulations, games, and
 visualization applications.  SimGear is developed by the FlightGear project
 and also provides the base for the FlightGear Flight Simulator.")
     (license license:lgpl2.0+)))
+
+(define-public flightgear
+  (package
+    (name "flightgear")
+    (version (package-version simgear))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/flightgear/release-"
+                                  (version-major+minor version) "/"
+                                  "flightgear-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0lzy524cjzs8vldcjcc750bgg5c4mq9fkymxxxzqf68ilc4d1jss"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; There are some bundled libraries.
+                  (for-each delete-file-recursively
+                            '("3rdparty/sqlite3/"))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DSYSTEM_SQLITE=ON"
+             (string-append "-DFG_DATA_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/flightgear"))
+       ;; TODO: test cannot be run because the "run_test_suite" executable
+       ;; does not seem to be built.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/fgfs")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtdeclarative" "qtsvg")))
+                 `("QML2_IMPORT_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/qml"))
+                         '("qtdeclarative" "qtsvg"))))
+               #t)))
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out") "/share/flightgear")))
+               (mkdir-p share)
+               (with-directory-excursion share
+                 (invoke "tar" "xf" (assoc-ref inputs "flightgear-data")
+                         "--strip-components=1")))
+             #t)))))
+    (inputs
+     `(("boost" ,boost-for-mysql)       ; same as simgear
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)
+       ("freeglut" ,freeglut)
+       ("freetype" ,freetype)
+       ("glew" ,glew)
+       ("libpng" ,libpng)
+       ("openal" ,openal)
+       ("openscenegraph" ,openscenegraph-3.4)
+       ("plib" ,plib)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
+       ("simgear" ,simgear)
+       ("speexdsp" ,speexdsp)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("flightgear-data"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://sourceforge/flightgear/release-"
+                               (version-major+minor version) "/"
+                               "FlightGear-" version "-data.tar.bz2"))
+           (sha256
+            (base32
+             "0h4npa7gqpf5fw6pv2bpw0wbwr7fa2vhia21cjbigfgd75x82zi7"))))))
+    (home-page "https://home.flightgear.org/")
+    (synopsis "Flight simulator")
+    (description "The goal of the FlightGear project is to create a
+sophisticated flight simulator framework for use in research or academic
+environments, pilot training, as an industry engineering tool, for DIY-ers to
+pursue their favorite interesting flight simulation idea, and last but
+certainly not least as a fun, realistic, and challenging desktop flight
+simulator.")
+    (license license:gpl2+)))
