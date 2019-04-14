@@ -1016,4 +1016,18 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (setenv "RUST_TEST_THREADS" "2")
                  #t)))))))))
 
-(define-public rust rust-1.33)
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.33 "1.34.0"
+                                    "0n8z1wngkxab1rvixqg6w8b727hzpnm9wp9h8iy3mpbrzp7mmj3s"
+                                    #:patches '())))
+    (package
+      (inherit base-rust)
+      (source
+        (origin
+          (inherit (package-source base-rust))
+          (snippet '(begin
+                      (delete-file-recursively "src/llvm-emscripten")
+                      (delete-file-recursively "src/llvm-project")
+                      (delete-file-recursively "vendor/jemalloc-sys/jemalloc")
+                      #t)))))))
