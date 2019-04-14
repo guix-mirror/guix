@@ -3951,7 +3951,7 @@ writing to these structures, and they are accessed via the Bigarray module.")
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/mirage/ezjsonm.git")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32 "1y6p3ga6vj1wx5dyns7hjgd0qgrrn2hnn323a7y5didgci5pybls"))))
