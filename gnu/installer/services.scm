@@ -86,7 +86,7 @@
      (system-service
       (name (G_ "DHCP client (dynamic IP address assignment)"))
       (type 'network-management)
-      (snippet '(service dhcp-client-service))))))
+      (snippet '(service dhcp-client-service-type))))))
 
 (define (desktop-system-service? service)
   "Return true if SERVICE is a desktop environment service."
