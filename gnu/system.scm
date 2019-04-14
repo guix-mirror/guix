@@ -911,13 +911,11 @@ listed in OS.  The C library expects to find it under
   (cond ((package? kernel)
          (string-append "GNU with "
                         (string-titlecase (package-name kernel)) " "
-                        (package-version kernel)
-                        " (beta)"))
+                        (package-version kernel)))
         ((inferior-package? kernel)
          (string-append "GNU with "
                         (string-titlecase (inferior-package-name kernel)) " "
-                        (inferior-package-version kernel)
-                        " (beta)"))
+                        (inferior-package-version kernel)))
         (else "GNU")))
 
 (define (store-file-system file-systems)
