@@ -6828,3 +6828,39 @@ levels to unlock.")
       (license (list license:gpl2+
                      license:silofl1.1
                      license:cc-by-sa3.0)))))
+
+(define simgear
+  (package
+    (name "simgear")
+    (version "2018.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/flightgear/release-"
+                                  (version-major+minor version) "/"
+                                  "simgear-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1941ay8rngz4vwsx37bbpxr48hpcvcbj3xw1hy264lq4qnl99c68"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Skip tests that require internet access.
+             (invoke "ctest" "-E" "(http|dns)"))))))
+    (inputs
+     `(("boost" ,boost-for-mysql) ; fails with 1.69
+       ("curl" ,curl)
+       ("expat" ,expat)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("openscenegraph" ,openscenegraph-3.4)
+       ("zlib" ,zlib)))
+    (home-page "https://home.flightgear.org/")
+    (synopsis "Libraries for 3D simulations and games")
+    (description "SimGear is a set of libraries designed to be used as
+building blocks for quickly assembling 3D simulations, games, and
+visualization applications.  SimGear is developed by the FlightGear project
+and also provides the base for the FlightGear Flight Simulator.")
+    (license license:lgpl2.0+)))
