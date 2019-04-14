@@ -1255,19 +1255,20 @@ for speed and space economy.")
 (define-public ocaml-frontc
   (package
     (name "ocaml-frontc")
-    (version "3.4")
+    (version "3.4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.irit.fr/recherches/ARCHI/MARCH/"
-                                  "frontc/Frontc-" version ".tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/BinaryAnalysisPlatform/FrontC")
+                     (commit (string-append
+                               "V_" (string-join (string-split version #\.) "_")))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "16dz153s92dgbw1rrfwbhscy73did87kfmjwyh3qpvs748h1sc4g"))))
+                "1dq5nks0c9gsbr1m8k39m1bniawr5hqcy1r8x5px7naa95ch06ak"))))
     (build-system ocaml-build-system)
     (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (add-after 'install 'install-meta
@@ -2720,9 +2721,9 @@ language.")
 can match the question using a regular expression or a timeout.")
     (license license:lgpl2.1+))) ; with the OCaml static compilation exception
 
-(define-public ocaml4.02-fileutils
+(define-public ocaml-fileutils
   (package
-    (name "ocaml4.02-fileutils")
+    (name "ocaml-fileutils")
     (version "0.5.3")
     (source (origin
               (method url-fetch)
@@ -2731,11 +2732,9 @@ can match the question using a regular expression or a timeout.")
                (base32
                 "1rc4cqlvdhbs55i85zfbfhz938fsy4fj6kwlkfm3ra7bpwn8bmpd"))))
     (build-system ocaml-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib))
     (native-inputs
-     `(("ounit" ,ocaml4.02-ounit)))
+     `(("ocamlbuild" ,ocamlbuild)
+       ("ounit" ,ocaml-ounit)))
     (home-page "http://ocaml-fileutils.forge.ocamlcore.org")
     (synopsis "Pure OCaml functions to manipulate real file and filename")
     (description "Library to provide pure OCaml functions to manipulate real
@@ -3904,43 +3903,24 @@ big- and little-endian, with their unsafe counter-parts.")
 (define-public ocaml4.02-ocplib-endian
   (package-with-ocaml4.02 ocaml-ocplib-endian))
 
-(define-public ocaml4.02-cstruct
+(define-public ocaml-cstruct
   (package
-    (name "ocaml4.02-cstruct")
-    (version "2.3.1")
+    (name "ocaml-cstruct")
+    (version "4.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mirage/ocaml-cstruct/"
-                                  "archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mirage/ocaml-cstruct")
+                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "15qpdc8421shq4pprdas9jznpva45229wkfqbwcxw9khaiiz7949"))
-              (file-name (string-append name "-" version ".tar.gz"))))
-    (build-system ocaml-build-system)
+                "0m4bz0digcsc8l2msfikwcbi1y371kccx6xnkwrz212mf5mp98bv"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib
-       #:configure-flags
-       (list "--enable-lwt" "--enable-async")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'link-stubs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
-                    (lib (string-append out "/lib/ocaml/site-lib/cstruct")))
-               (mkdir-p stubs)
-               (symlink (string-append lib "/dllcstruct_stubs.so")
-                        (string-append stubs "/dllcstruct_stubs.so"))))))))
+     `(#:package "cstruct"
+       #:test-target "."))
     (native-inputs
-     `(("ounit" ,ocaml4.02-ounit)
-       ("ppx-tools" ,ocaml4.02-ppx-tools)
-       ("camlp4" ,camlp4-4.02)))
-    (propagated-inputs
-     `(("ocplib-endian" ,ocaml4.02-ocplib-endian)
-       ("lwt" ,ocaml4.02-lwt)
-       ("async" ,ocaml4.02-async)
-       ("sexplib" ,ocaml4.02-sexplib)))
+     `(("ocaml-alcotest" ,ocaml-alcotest)))
     (home-page "https://github.com/mirage/ocaml-cstruct")
     (synopsis "Access C structures via a camlp4 extension")
     (description "Cstruct is a library and syntax extension to make it easier
@@ -3948,33 +3928,34 @@ to access C-like structures directly from OCaml.  It supports both reading and
 writing to these structures, and they are accessed via the Bigarray module.")
     (license license:isc)))
 
-(define-public ocaml4.02-hex
+(define-public ocaml-hex
   (package
-    (name "ocaml4.02-hex")
-    (version "1.0.0")
+    (name "ocaml-hex")
+    (version "1.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mirage/ocaml-hex/"
-                                  "archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mirage/ocaml-hex")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s63g0b8gfv2xm6fv6xg7bva8h76b5pcjb0zw3f8cygs0lq9072v"))
-              (file-name (string-append name "-" version ".tar.gz"))))
-    (build-system ocaml-build-system)
+                "0c8nhibcwy0ykzca4jn3gqb8ylq21ff88y82gl60wyzijr64rn0q"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib))
+     `(#:test-target "."))
     (propagated-inputs
-     `(("cstruct" ,ocaml4.02-cstruct)))
+     `(("ocaml-bigarray-compat" ,ocaml-bigarray-compat)
+       ("cstruct" ,ocaml-cstruct)))
     (home-page "https://github.com/mirage/ocaml-hex/")
     (synopsis "Minimal library providing hexadecimal converters")
     (description "Hex is a minimal library providing hexadecimal converters.")
     (license license:isc)))
 
-(define-public ocaml4.02-ezjsonm
+(define-public ocaml-ezjsonm
   (package
-    (name "ocaml4.02-ezjsonm")
-    (version "0.4.3")
+    (name "ocaml-ezjsonm")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -3983,19 +3964,17 @@ writing to these structures, and they are accessed via the Bigarray module.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1y6p3ga6vj1wx5dyns7hjgd0qgrrn2hnn323a7y5didgci5pybls"))))
-    (build-system ocaml-build-system)
-    (native-inputs
-     `(("alcotest" ,ocaml4.02-alcotest)))
-    (propagated-inputs
-     `(("hex" ,ocaml4.02-hex)
-       ("jsonm" ,ocaml4.02-jsonm)
-       ("lwt" ,ocaml4.02-lwt)
-       ("sexplib" ,ocaml4.02-sexplib)))
+        (base32 "1dzjqrj7nl15ij921r7439fp0m7jrl3vskkdqb4syihjvsbvq1sj"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:configure-flags (list "--enable-lwt")
-       #:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib))
+     `(#:package "ezjsonm"
+       #:test-target "."))
+    (native-inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)))
+    (propagated-inputs
+     `(("ocaml-hex" ,ocaml-hex)
+       ("ocaml-jsonm" ,ocaml-jsonm)
+       ("ocaml-sexplib" ,ocaml-sexplib)))
     (home-page "https://github.com/mirage/ezjsonm/")
     (synopsis "Read and write JSON data")
     (description "Ezjsonm provides more convenient (but far less flexible) input
@@ -4004,10 +3983,10 @@ the need to write signal code, which is useful for quick scripts that manipulate
 JSON.")
     (license license:isc)))
 
-(define-public ocaml4.02-uri
+(define-public ocaml-uri
   (package
-    (name "ocaml4.02-uri")
-    (version "1.9.2")
+    (name "ocaml-uri")
+    (version "2.2.0")
     (source
      (origin
        (method git-fetch)
@@ -4016,19 +3995,17 @@ JSON.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "137pg8j654x7r0d1664iy2zp3l82nki1kkh921lwdrwc5qqdl6jx"))))
-    (build-system ocaml-build-system)
+        (base32 "1ppbav41mszpjcl0zi3fyg958cxyfs57i7kvha4ds9ydn89bjmrh"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib))
+     `(#:test-target "."))
     (native-inputs
-     `(("ounit" ,ocaml4.02-ounit)))
+     `(("ocaml-ounit" ,ocaml-ounit)
+       ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)))
     (propagated-inputs
-     `(("ppx-sexp-conv" ,ocaml4.02-ppx-sexp-conv)
-       ("re" ,ocaml4.02-re)
-       ("ppx-deriving" ,ocaml4.02-ppx-deriving)
-       ("sexplib" ,ocaml4.02-sexplib)
-       ("stringext" ,ocaml4.02-stringext)))
+     `(("ocaml-re" ,ocaml-re)
+       ("ocaml-sexplib0" ,ocaml-sexplib0)
+       ("ocaml-stringext" ,ocaml-stringext)))
     (home-page "https://github.com/mirage/ocaml-uri")
     (synopsis "RFC3986 URI/URL parsing library")
     (description "OCaml-uri is a library for parsing URI/URL in the RFC3986 format.")
@@ -4266,50 +4243,52 @@ XML and Protocol Buffers formats.")
 (define-public bap
   (package
     (name "bap")
-    (version "1.3.0")
+    (version "1.6.0")
     (home-page "https://github.com/BinaryAnalysisPlatform/bap")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url home-page)
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v95v9mp7mg8fj25ry0w7566zd9xp6cs8nnqj4l38q54fb1hfav9"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0ryf2xb37pj2f9mc3p5prqgqrylph9qgq7q9jnbx8b03nzzpa6h6"))))
    (build-system ocaml-build-system)
    (native-inputs
-    `(("oasis" ,ocaml4.02-oasis)
+    `(("ocaml-oasis" ,ocaml-oasis)
       ("clang" ,clang-3.8)
-      ("ounit" ,ocaml4.02-ounit)))
+      ("ocaml-ounit" ,ocaml-ounit)))
    (propagated-inputs
-    `(("core-kernel" ,ocaml4.02-core-kernel)
-      ("ppx-driver" ,ocaml4.02-ppx-driver)
-      ("bin-prot" ,ocaml4.02-bin-prot)
-      ("uri" ,ocaml4.02-uri)
-      ("llvm" ,llvm-3.8)
-      ("gmp" ,gmp)
-      ("clang-runtime" ,clang-runtime)
-      ("fileutils" ,ocaml4.02-fileutils)
-      ("cmdliner" ,ocaml4.02-cmdliner)
-      ("zarith" ,ocaml4.02-zarith)
-      ("uuidm" ,ocaml4.02-uuidm)
-      ("camlzip" ,ocaml4.02-camlzip)
-      ("frontc" ,ocaml-frontc)
-      ("ezjsonm" ,ocaml4.02-ezjsonm)
-      ("ocurl" ,ocaml4.02-ocurl)
-      ("piqi" ,ocaml4.02-piqi)
-      ("ocamlgraph" ,ocaml4.02-graph)
-      ("bitstring" ,ocaml4.02-bitstring)
-      ("ppx-jane" ,ocaml4.02-ppx-jane)
-      ("re" ,ocaml4.02-re)))
-   (inputs `(("llvm" ,llvm-3.8)))
+    `(("camlzip" ,camlzip)
+      ("ocaml-bitstring" ,ocaml-bitstring)
+      ("ocaml-cmdliner" ,ocaml-cmdliner)
+      ("ocaml-core-kernel" ,ocaml-core-kernel)
+      ("ocaml-ezjsonm" ,ocaml-ezjsonm)
+      ("ocaml-fileutils" ,ocaml-fileutils)
+      ("ocaml-frontc" ,ocaml-frontc)
+      ("ocaml-graph" ,ocaml-graph)
+      ("ocaml-ocurl" ,ocaml-ocurl)
+      ("ocaml-piqi" ,ocaml-piqi)
+      ("ocaml-ppx-jane" ,ocaml-ppx-jane)
+      ("ocaml-uuidm" ,ocaml-uuidm)
+      ("ocaml-uri" ,ocaml-uri)
+      ("ocaml-zarith" ,ocaml-zarith)))
+   (inputs
+    `(("llvm" ,llvm-3.8)
+      ("gmp" ,gmp)))
    (arguments
-    `(#:ocaml ,ocaml-4.02
-      #:findlib ,ocaml4.02-findlib
-      #:use-make? #t
+    `(#:use-make? #t
       #:phases
       (modify-phases %standard-phases
         (replace 'configure
           (lambda* (#:key outputs inputs #:allow-other-keys)
+            ;; add write for user, to prevent a failure in the install phase
+            (for-each
+              (lambda (file)
+                (let ((stat (stat file)))
+                  (chmod file (+ #o200 (stat:mode stat)))))
+              (find-files "." "."))
             (invoke "./configure" "--prefix"
                     (assoc-ref outputs "out")
                     "--libdir"
@@ -4318,11 +4297,7 @@ XML and Protocol Buffers formats.")
                       "/lib/ocaml/site-lib")
                     "--with-llvm-version=3.8"
                     "--with-llvm-config=llvm-config"
-                    "--enable-everything")
-            (substitute* "plugins/objdump/objdump_main.ml"
-              (("Re_perl") "Re.Perl"))
-            (substitute* "oasis/objdump"
-              (("re.pcre") "re.pcre, re.perl")))))))
+                    "--enable-everything"))))))
    (synopsis "Binary Analysis Platform")
    (description "Binary Analysis Platform is a framework for writing program
 analysis tools, that target binary files.  The framework consists of a plethora
