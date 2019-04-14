@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -1404,3 +1404,33 @@ Fenix.")
     (description "This package contains a collection of modules for the Bennu
 Game Developement programming language, from CD handling through SDL to
 joystick support.")))
+
+(define-public plib
+  (package
+    (name "plib")
+    (version "1.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://plib.sourceforge.net/dist/"
+                                  "plib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cha71mflpa10vh2l7ipyqk67dq2y0k5xbafwdks03fwdyzj4ns8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mesa" ,mesa)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://plib.sourceforge.net/")
+    (synopsis "Suite of portable game libraries")
+    (description "PLIB is a set of libraries that will permit programmers to
+write games and other realtime interactive applications that are 100% portable
+across a wide range of hardware and operating systems.  PLIB includes sound
+effects, music, a complete 3D engine, font rendering, a simple Windowing
+library, a game scripting language, a GUI, networking, 3D math library and a
+collection of handy utility functions.  All are 100% portable across nearly
+all modern computing platforms.  Each library component is fairly independent
+of the others")
+    (license license:lgpl2.0+)))
