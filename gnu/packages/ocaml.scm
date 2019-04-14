@@ -2508,21 +2508,25 @@ radix-64 representation.  It is specified in RFC 4648.")
 (define-public ocamlify
   (package
     (name "ocamlify")
-    (version "0.0.2")
+    (version "0.0.1")
     (source (origin
               (method url-fetch)
-              (uri (ocaml-forge-uri name version 1209))
+              (uri "https://download.ocamlcore.org/ocamlify/ocamlify/0.0.1/ocamlify-0.0.1.tar.gz")
               (sha256
                (base32
-                "1f0fghvlbfryf5h3j4as7vcqrgfjb4c8abl5y0y5h069vs4kp5ii"))))
+                "1j9nb3vjqbdsx3d6jazixgrh776051zkrc06nsc5q5ilp1jhrwkm"))))
     (build-system ocaml-build-system)
     ; tests are done during build
     (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'check))))
+         (delete 'check)
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "ocaml" "setup.ml" "-configure" "--prefix"
+                     (assoc-ref outputs "out")))))))
+    (native-inputs
+     `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://forge.ocamlcore.org/projects/ocamlify")
     (synopsis "Include files in OCaml code")
     (description "OCamlify allows to create OCaml source code by including
