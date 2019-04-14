@@ -363,6 +363,11 @@ built-in registry server of Docker.")
                (("var defaultCommandCandidates = .*")
                 (string-append "var defaultCommandCandidates = []string{\""
                                (assoc-ref inputs "runc") "/sbin/runc\"}")))
+             (substitute* "vendor/github.com/docker/libnetwork/portmapper/proxy.go"
+               (("var userlandProxyCommandName = .*")
+                (string-append "var userlandProxyCommandName = \""
+                               (assoc-ref inputs "docker-proxy")
+                               "/bin/proxy\"\n")))
              (let ((source-files (filter (lambda (name)
                                            (not (string-contains name "test")))
                                          (find-files "." "\\.go$"))))
@@ -511,6 +516,7 @@ built-in registry server of Docker.")
        ("containerd" ,containerd)       ; for containerd-shim
        ("coreutils" ,coreutils)
        ("dbus" ,dbus)
+       ("docker-proxy" ,docker-libnetwork-cmd-proxy)
        ("e2fsprogs" ,e2fsprogs)
        ("git" ,git)
        ("iproute2" ,iproute)
