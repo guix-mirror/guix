@@ -1795,7 +1795,7 @@ available.
 @node Limitations
 @section Limitations
 
-We consider Guix System to be ready for a wide range of ``dekstop'' and server
+We consider Guix System to be ready for a wide range of ``desktop'' and server
 use cases.  The reliability guarantees it provides---transactional upgrades
 and rollbacks, reproducibility---make it a solid foundation.
 
