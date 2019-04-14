@@ -366,68 +366,66 @@ built-in registry server of Docker.")
              (let ((source-files (filter (lambda (name)
                                            (not (string-contains name "test")))
                                          (find-files "." "\\.go$"))))
-               (let-syntax ((substitute-LookPath
-                             (lambda (x)
-                               (syntax-case x ()
-                                 ((substitute-LookPath source-text package
-                                                       relative-path)
-                                  #`(substitute* source-files
-                                      ((#,(string-append "\\<exec\\.LookPath\\(\""
-                                                         (syntax->datum
-                                                          #'source-text)
-                                                         "\")"))
-                                       (string-append "\""
-                                                      (assoc-ref inputs package)
-                                                      "/" relative-path
-                                                      "\", error(nil)")))))))
-                            (substitute-Command
-                             (lambda (x)
-                               (syntax-case x ()
-                                 ((substitute-LookPath source-text package
-                                                       relative-path)
-                                  #`(substitute* source-files
-                                      ((#,(string-append "\\<(re)?exec\\.Command\\(\""
-                                                         (syntax->datum
-                                                          #'source-text)
-                                                         "\"") _ re?)
-                                       (string-append (if re? re? "")
-                                                      "exec.Command(\""
-                                                      (assoc-ref inputs package)
-                                                      "/" relative-path
-                                                      "\""))))))))
-                 (substitute-LookPath "ps" "procps" "bin/ps")
-                 (substitute-LookPath "mkfs.xfs" "xfsprogs" "bin/mkfs.xfs")
-                 (substitute-LookPath "lvmdiskscan" "lvm2" "sbin/lvmdiskscan")
-                 (substitute-LookPath "pvdisplay" "lvm2" "sbin/pvdisplay")
-                 (substitute-LookPath "blkid" "util-linux" "sbin/blkid")
-                 (substitute-LookPath "unpigz" "pigz" "bin/unpigz")
-                 (substitute-LookPath "iptables" "iptables" "sbin/iptables")
-                 (substitute-LookPath "iptables-legacy" "iptables" "sbin/iptables")
-                 (substitute-LookPath "ip" "iproute2" "sbin/ip")
-                 (substitute-Command "modprobe" "kmod" "bin/modprobe")
-                 (substitute-Command "pvcreate" "lvm2" "sbin/pvcreate")
-                 (substitute-Command "vgcreate" "lvm2" "sbin/vgcreate")
-                 (substitute-Command "lvcreate" "lvm2" "sbin/lvcreate")
-                 (substitute-Command "lvconvert" "lvm2" "sbin/lvconvert")
-                 (substitute-Command "lvchange" "lvm2" "sbin/lvchange")
-                 (substitute-Command "mkfs.xfs" "xfsprogs" "sbin/mkfs.xfs")
-                 (substitute-Command "xfs_growfs" "xfsprogs" "sbin/xfs_growfs")
-                 (substitute-Command "mkfs.ext4" "e2fsprogs" "sbin/mkfs.ext4")
-                 (substitute-Command "tune2fs" "e2fsprogs" "sbin/tune2fs")
-                 (substitute-Command "blkid" "util-linux" "sbin/blkid")
-                 (substitute-Command "resize2fs" "e2fsprogs" "sbin/resize2fs")
-                 ;; docker-mountfrom ??
-                 ;; docker
-                 ;; docker-untar ??
-                 ;; docker-applyLayer ??
-                 ;; /usr/bin/uname
-                 ;; grep
-                 ;; apparmor_parser
-                 (substitute-Command "ps" "procps" "bin/ps")
-                 (substitute-Command "losetup" "util-linux" "sbin/losetup")
-                 (substitute-Command "uname" "coreutils" "bin/uname")
-                 (substitute-Command "dbus-launch" "dbus" "bin/dbus-launch")
-                 (substitute-Command "git" "git" "bin/git"))
+               (let-syntax ((substitute-LookPath*
+                             (syntax-rules ()
+                               ((_ (source-text package relative-path) ...)
+                                (substitute* source-files
+                                  (((string-append "\\<exec\\.LookPath\\(\""
+                                                   source-text
+                                                   "\")"))
+                                   (string-append "\""
+                                                  (assoc-ref inputs package)
+                                                  "/" relative-path
+                                                  "\", error(nil)")) ...))))
+                            (substitute-Command*
+                             (syntax-rules ()
+                               ((_ (source-text package relative-path) ...)
+                                (substitute* source-files
+                                  (((string-append "\\<(re)?exec\\.Command\\(\""
+                                                   source-text
+                                                   "\"") _ re?)
+                                   (string-append (if re? re? "")
+                                                  "exec.Command(\""
+                                                  (assoc-ref inputs package)
+                                                  "/" relative-path
+                                                  "\"")) ...)))))
+                 (substitute-LookPath*
+                  ("ps" "procps" "bin/ps")
+                  ("mkfs.xfs" "xfsprogs" "bin/mkfs.xfs")
+                  ("lvmdiskscan" "lvm2" "sbin/lvmdiskscan")
+                  ("pvdisplay" "lvm2" "sbin/pvdisplay")
+                  ("blkid" "util-linux" "sbin/blkid")
+                  ("unpigz" "pigz" "bin/unpigz")
+                  ("iptables" "iptables" "sbin/iptables")
+                  ("iptables-legacy" "iptables" "sbin/iptables")
+                  ("ip" "iproute2" "sbin/ip"))
+
+                 (substitute-Command*
+                  ("modprobe" "kmod" "bin/modprobe")
+                  ("pvcreate" "lvm2" "sbin/pvcreate")
+                  ("vgcreate" "lvm2" "sbin/vgcreate")
+                  ("lvcreate" "lvm2" "sbin/lvcreate")
+                  ("lvconvert" "lvm2" "sbin/lvconvert")
+                  ("lvchange" "lvm2" "sbin/lvchange")
+                  ("mkfs.xfs" "xfsprogs" "sbin/mkfs.xfs")
+                  ("xfs_growfs" "xfsprogs" "sbin/xfs_growfs")
+                  ("mkfs.ext4" "e2fsprogs" "sbin/mkfs.ext4")
+                  ("tune2fs" "e2fsprogs" "sbin/tune2fs")
+                  ("blkid" "util-linux" "sbin/blkid")
+                  ("resize2fs" "e2fsprogs" "sbin/resize2fs")
+                  ("ps" "procps" "bin/ps")
+                  ("losetup" "util-linux" "sbin/losetup")
+                  ("uname" "coreutils" "bin/uname")
+                  ("dbus-launch" "dbus" "bin/dbus-launch")
+                  ("git" "git" "bin/git")))
+               ;; docker-mountfrom ??
+               ;; docker
+               ;; docker-untar ??
+               ;; docker-applyLayer ??
+               ;; /usr/bin/uname
+               ;; grep
+               ;; apparmor_parser
+
                ;; Make compilation fail when, in future versions, Docker
                ;; invokes other programs we don't know about and thus don't
                ;; substitute.
