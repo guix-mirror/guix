@@ -867,6 +867,28 @@ Knuth’s LR(1) parser construction technique.")
     (inputs `(("ocaml" ,ocaml-4.02)))
     (native-inputs '())))
 
+(define-public ocaml-bigarray-compat
+  (package
+    (name "ocaml-bigarray-compat")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mirage/bigarray-compat")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06j1dwlpisxshdd0nab4n4x266gg1s1n8na16lpgw3fvcznwnimz"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:tests? #f)); no tests
+    (home-page "https://github.com/mirage/bigarray-compat")
+    (synopsis "OCaml compatibility library")
+    (description "This package contains a compatibility library for
+@code{Stdlib.Bigarray} in OCaml.")
+    (license license:isc)))
+
 (define-public lablgtk
   (package
     (name "lablgtk")
