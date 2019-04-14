@@ -471,11 +471,6 @@ GRUB configuration and OS-DRV as the stuff in it."
                 "mnt=/tmp/root/mnt"
                 "-path-list" "-"
                 "--"
-
-                ;; XXX: Add padding to avoid I/O errors on i686:
-                ;; <https://bugs.gnu.org/33639>.
-                "-padding" "10m"
-
                 "-volid" (string-upcase volume-id)
                 (if volume-uuid
                     `("-volume_date" "uuid"
