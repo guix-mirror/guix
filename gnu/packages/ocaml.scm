@@ -4334,42 +4334,6 @@ library is currently designed for Unicode Standard 3.2.")
 (define-public ocaml4.02-camomile
   (package-with-ocaml4.02 ocaml-camomile))
 
-(define-public ocaml-jbuilder
-  (package
-    (name "ocaml-jbuilder")
-    (version "1.0+beta16")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/janestreet/jbuilder.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1y3fgf570w3vrnhianrg26jy5j749zczq3f78s2dy5ylbp1hrx71"))))
-    (build-system ocaml-build-system)
-    (arguments
-     `(#:ocaml ,ocaml-4.02
-       #:findlib ,ocaml4.02-findlib
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PREFIX" out))
-             #t)))))
-    (native-inputs
-     `(("menhir" ,ocaml4.02-menhir)))
-    (propagated-inputs
-     `(("opam" ,opam)))
-    (home-page "https://github.com/janestreet/jbuilder")
-    (synopsis "Composable build system for OCaml")
-    (description "Jbuilder is a build system designed for OCaml/Reason projects
-only.  It focuses on providing the user with a consistent experience and takes
-care of most of the low-level details of OCaml compilation.  All you have to do
-is provide a description of your project and Jbuilder will do the rest.")
-    (license license:asl2.0)))
-
 (define-public ocaml-zed
   (package
     (name "ocaml-zed")
@@ -4383,20 +4347,10 @@ is provide a description of your project and Jbuilder will do the rest.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "00hhxcjf3bj3w2qm8nzs9x6vrqkadf4i0277s5whzy2rmiknj63v"))))
-    (build-system ocaml-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda _ (invoke "jbuilder" "build")))
-         (delete 'check)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "jbuilder" "install" "--prefix" out)))))))
-    (native-inputs
-     `(("jbuilder" ,ocaml-jbuilder)))
+     `(#:jbuild? #t
+       #:test-target "."))
     (propagated-inputs
      `(("camomile" ,ocaml-camomile)
        ("react" ,ocaml-react)))
@@ -4457,27 +4411,14 @@ instead of bindings to a C library.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "02hjkc0rdzfq3bqy9mqm5wmw312r3187v9cl66ynb6hxkj6s3glb"))))
-    (build-system gnu-build-system)
+    (build-system dune-build-system)
     (arguments
-     `(#:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (libdir (string-append out "/lib/ocaml/site-lib")))
-               (mkdir-p libdir)
-               (invoke "jbuilder" "install"
-                       "--prefix" out
-                       "--libdir" libdir)))))))
+     `(#:jbuild? #t
+       #:test-target "."))
     (native-inputs
-     `(("ocaml" ,ocaml)
-       ("cppo" ,ocaml-cppo)
-       ("jbuilder" ,ocaml-jbuilder)))
+     `(("cppo" ,ocaml-cppo)))
     (propagated-inputs
-     `(("ocaml-findlib" ,ocaml-findlib)
-       ("lambda-term" ,ocaml-lambda-term)
+     `(("lambda-term" ,ocaml-lambda-term)
        ("lwt" ,ocaml-lwt)
        ("react" ,ocaml-react)
        ("camomile" ,ocaml-camomile)
