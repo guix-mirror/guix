@@ -2487,7 +2487,7 @@ country-specific regulations for the wireless spectrum.")
 (define-public lm-sensors
   (package
     (name "lm-sensors")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
@@ -2497,7 +2497,7 @@ country-specific regulations for the wireless spectrum.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0knb09s9lvx0wzfsaizx3xq58q6kllqf7nkbwvir0wkgn31c2d73"))
+                "1q6p6i8mrzxw70hfjvq4mlahnx2ahvbmyxsa78dmin2c7bbc2wgn"))
               (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
