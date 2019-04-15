@@ -1694,14 +1694,15 @@ building the IRC clients and bots.")
   (package
     (name "toxic")
     (version "0.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/JFreegman/toxic/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1dx6z7k0zpsd7dpysdy23f0hnm49qlikb0mq8fg0y01dsz9vxgak"))
-              (file-name (git-file-name name version))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JFreegman/toxic.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0fwmk945nip98m3md58y3ibjmzfq25hns3xf0bmbc6fjpww8d5p5"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
