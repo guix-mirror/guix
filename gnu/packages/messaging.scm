@@ -1693,7 +1693,7 @@ building the IRC clients and bots.")
 (define-public toxic
   (package
     (name "toxic")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method git-fetch)
@@ -1701,11 +1701,11 @@ building the IRC clients and bots.")
              (url "https://github.com/JFreegman/toxic.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0fwmk945nip98m3md58y3ibjmzfq25hns3xf0bmbc6fjpww8d5p5"))
+        (base32 "09l2j3lwvrq7bf3051vjsnml9w63790ly3iylgf26gkrmld6k31w"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list
         "CC=gcc"
@@ -1722,7 +1722,7 @@ building the IRC clients and bots.")
      `(("c-toxcore" ,c-toxcore)
        ("curl" ,curl)
        ("freealut" ,freealut)
-       ("gdk-pixbuf" ,gdk-pixbuf) ; for libnotify.pc
+       ("gdk-pixbuf" ,gdk-pixbuf)       ; for libnotify.pc
        ("libconfig" ,libconfig)
        ("libnotify" ,libnotify)
        ("libpng" ,libpng)
