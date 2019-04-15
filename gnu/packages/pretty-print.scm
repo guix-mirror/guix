@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -241,14 +241,14 @@ seen in a terminal.")
 (define-public highlight
   (package
     (name "highlight")
-    (version "3.49")
+    (version "3.50")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.andre-simon.de/zip/highlight-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1zlhmlq5fnsxxmm04qfchhl4w2iw5fa6sn81c34q6k2m1m77g6aj"))))
+        (base32 "0frcq12zy3dqfhwwzylm10ydp7zp51w9jlijm23zvx09daslg1bl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
