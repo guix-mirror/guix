@@ -5409,6 +5409,27 @@ automatically corrected.
 @end table
 @end deftp
 
+@deffn {Scheme Syntax} this-package
+When used in the @emph{lexical scope} of a package field definition, this
+identifier resolves to the package being defined.
+
+The example below shows how to add a package as a native input of itself when
+cross-compiling:
+
+@example
+(package
+  (name "guile")
+  ;; ...
+
+  ;; When cross-compiled, Guile, for example, depends on
+  ;; a native version of itself.  Add it here.
+  (native-inputs (if (%current-target-system)
+                     `(("self" ,this-package))
+                     '())))
+@end example
+
+It is an error to refer to @code{this-package} outside a package definition.
+@end deffn
 
 @node origin Reference
 @subsection @code{origin} Reference
@@ -10592,6 +10613,27 @@ is that only @code{root} and members of the @code{wheel} group may use
 @code{sudo}.
 
 @end table
+
+@deffn {Scheme Syntax} this-operating-system
+When used in the @emph{lexical scope} of an operating system field definition,
+this identifier resolves to the operating system being defined.
+
+The example below shows how to refer to the operating system being defined in
+the definition of the @code{label} field:
+
+@example
+(use-modules (gnu) (guix))
+
+(operating-system
+  ;; ...
+  (label (package-full-name
+          (operating-system-kernel this-operating-system))))
+@end example
+
+It is an error to refer to @code{this-operating-system} outside an operating
+system definition.
+@end deffn
+
 @end deftp
 
 @node File Systems
