@@ -590,15 +590,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32
-         "17h0ixq7yr6scscjkidaj3dh5x6dfd3f97ggdxlklkz9nbsk0kxw"))))
+        (base32 "13605bpnnbqsdr8ybqnscbz9g422zmyymn4q5aci28vc1wylr1l6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
