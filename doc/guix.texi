@@ -1841,7 +1841,7 @@ devices.  WiFi devices known to work include those using Atheros chips
 driver, and those using Broadcom/AirForce chips (BCM43xx with
 Wireless-Core Revision 5), which corresponds to the @code{b43-open}
 Linux-libre driver.  Free firmware exists for both and is available
-out-of-the-box on Guix System, as part of @var{%base-firmware}
+out-of-the-box on Guix System, as part of @code{%base-firmware}
 (@pxref{operating-system Reference, @code{firmware}}).
 
 @cindex RYF, Respects Your Freedom
@@ -24745,23 +24745,23 @@ exception is the @dfn{boot service type}, which is the ultimate service.
 Optionally, a default value for instances of this type.
 @end enumerate
 
-In this example, @var{guix-service-type} extends three services:
+In this example, @code{guix-service-type} extends three services:
 
-@table @var
+@table @code
 @item shepherd-root-service-type
-The @var{guix-shepherd-service} procedure defines how the Shepherd
+The @code{guix-shepherd-service} procedure defines how the Shepherd
 service is extended.  Namely, it returns a @code{<shepherd-service>}
 object that defines how @command{guix-daemon} is started and stopped
 (@pxref{Shepherd Services}).
 
 @item account-service-type
-This extension for this service is computed by @var{guix-accounts},
+This extension for this service is computed by @code{guix-accounts},
 which returns a list of @code{user-group} and @code{user-account}
 objects representing the build user accounts (@pxref{Invoking
 guix-daemon}).
 
 @item activation-service-type
-Here @var{guix-activation} is a procedure that returns a gexp, which is
+Here @code{guix-activation} is a procedure that returns a gexp, which is
 a code snippet to run at ``activation time''---e.g., when the service is
 booted.
 @end table
@@ -24786,7 +24786,7 @@ value is omitted, the default value specified by
 (service guix-service-type)
 @end example
 
-@var{guix-service-type} is quite simple because it extends other
+@code{guix-service-type} is quite simple because it extends other
 services but is not extensible itself.
 
 @c @subsubsubsection Extensible Service Types
@@ -24812,7 +24812,7 @@ The service type for an @emph{extensible} service looks like this:
 This is the service type for the
 @uref{https://wiki.gentoo.org/wiki/Project:Eudev, eudev device
 management daemon}.  Compared to the previous example, in addition to an
-extension of @var{shepherd-root-service-type}, we see two new fields:
+extension of @code{shepherd-root-service-type}, we see two new fields:
 
 @table @code
 @item compose
@@ -24839,7 +24839,7 @@ them (@pxref{Invoking guix system}).
 @end table
 
 There can be only one instance of an extensible service type such as
-@var{udev-service-type}.  If there were more, the
+@code{udev-service-type}.  If there were more, the
 @code{service-extension} specifications would be ambiguous.
 
 Still here?  The next section provides a reference of the programming
@@ -24913,7 +24913,7 @@ Here is an example of how a service is created and manipulated:
 
 The @code{modify-services} form provides a handy way to change the
 parameters of some of the services of a list such as
-@var{%base-services} (@pxref{Base Services, @code{%base-services}}).  It
+@code{%base-services} (@pxref{Base Services, @code{%base-services}}).  It
 evaluates to a list of services.  Of course, you could always use
 standard list combinators such as @code{map} and @code{fold} to do that
 (@pxref{SRFI-1, List Library,, guile, GNU Guile Reference Manual});
@@ -25094,8 +25094,8 @@ You can actually generate such a graph for any operating system
 definition using the @command{guix system shepherd-graph} command
 (@pxref{system-shepherd-graph, @command{guix system shepherd-graph}}).
 
-The @var{%shepherd-root-service} is a service object representing
-PID@tie{}1, of type @var{shepherd-root-service-type}; it can be extended
+The @code{%shepherd-root-service} is a service object representing
+PID@tie{}1, of type @code{shepherd-root-service-type}; it can be extended
 by passing it lists of @code{<shepherd-service>} objects.
 
 @deftp {Data Type} shepherd-service
@@ -25143,10 +25143,10 @@ A documentation string, as shown when running:
 herd doc @var{service-name}
 @end example
 
-where @var{service-name} is one of the symbols in @var{provision}
+where @var{service-name} is one of the symbols in @code{provision}
 (@pxref{Invoking herd,,, shepherd, The GNU Shepherd Manual}).
 
-@item @code{modules} (default: @var{%default-modules})
+@item @code{modules} (default: @code{%default-modules})
 This is the list of modules that must be in scope when @code{start} and
 @code{stop} are evaluated.
 
@@ -25393,7 +25393,7 @@ order of magnitudes lower than a full rebuild of the dependency chain.
 @cindex replacements of packages, for grafts
 For instance, suppose a security update needs to be applied to Bash.
 Guix developers will provide a package definition for the ``fixed''
-Bash, say @var{bash-fixed}, in the usual way (@pxref{Defining
+Bash, say @code{bash-fixed}, in the usual way (@pxref{Defining
 Packages}).  Then, the original package definition is augmented with a
 @code{replacement} field pointing to the package containing the bug fix:
 
@@ -25408,14 +25408,14 @@ Packages}).  Then, the original package definition is augmented with a
 From there on, any package depending directly or indirectly on Bash---as
 reported by @command{guix gc --requisites} (@pxref{Invoking guix
 gc})---that is installed is automatically ``rewritten'' to refer to
-@var{bash-fixed} instead of @var{bash}.  This grafting process takes
+@code{bash-fixed} instead of @code{bash}.  This grafting process takes
 time proportional to the size of the package, usually less than a
 minute for an ``average'' package on a recent machine.  Grafting is
 recursive: when an indirect dependency requires grafting, then grafting
 ``propagates'' up to the package that the user is installing.
 
 Currently, the length of the name and version of the graft and that of
-the package it replaces (@var{bash-fixed} and @var{bash} in the example
+the package it replaces (@code{bash-fixed} and @code{bash} in the example
 above) must be equal.  This restriction mostly comes from the fact that
 grafting works by patching files, including binary files, directly.
 Other restrictions may apply: for instance, when adding a graft to a
