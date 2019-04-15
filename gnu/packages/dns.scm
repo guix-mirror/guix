@@ -569,23 +569,21 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://secure.nic.cz/files/knot-dns/"
-                                  "knot-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1vw7xx7bm440jwrpvdd04vrp6ccz2b11swcn9msvs62hf0kdjjj9"))
-              (patches
-               (search-patches "knot-include-system-lmdb-header.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete bundled libraries.
-                  (with-directory-excursion "src/contrib"
-                    (delete-file-recursively "lmdb"))
-                  #t))))
+    (version "2.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://secure.nic.cz/files/knot-dns/"
+                           "knot-" version ".tar.xz"))
+       (sha256
+        (base32 "1im2wb8hl394mzni1wavmvfqd7il8s28kcz8w3s4v05nbhzg06xj"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled libraries.
+           (with-directory-excursion "src/contrib"
+             (delete-file-recursively "lmdb"))
+           #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

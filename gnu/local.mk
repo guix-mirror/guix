@@ -949,7 +949,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/kio-search-smbd-on-PATH.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
-  %D%/packages/patches/knot-include-system-lmdb-header.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
