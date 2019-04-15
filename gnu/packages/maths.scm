@@ -3679,7 +3679,7 @@ set.")
 (define-public hypre
   (package
     (name "hypre")
-    (version "2.14.0")
+    (version "2.15.1")
     (source
      (origin
        (method git-fetch)
@@ -3688,23 +3688,23 @@ set.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12iciad718rf7vcl33klza7dcnxxa5581yav7c72l81m7mswihq9"))
+        (base32 "1lvh4ybqkriyqfg2zmic6mrg1981qv1i9vry1fdgsabn81hb71g4"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Remove use of __DATE__ and __TIME__ for reproducibility;
-           ;; substitute the tarball creation time.
+           ;; substitute the release date.
            (substitute* "src/utilities/HYPRE_utilities.h"
              (("Date Compiled: .*$")
-              "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
+              "Date Compiled: Oct 19 2018 15:23:00 +0000\"\n"))
            #t))))
     (build-system gnu-build-system)
-    (outputs '("out"                    ;6.1 MiB of headers and libraries
-               "doc"))                  ;4.8 MiB of documentation
+    (outputs '("out"                    ; 6.1 MiB of headers and libraries
+               "doc"))                  ; 4.8 MiB of documentation
     (native-inputs
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
-       ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
+       ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
        ("texlive" ,(texlive-union (list texlive-generic-xypic
                                         texlive-fonts-xypic
                                         texlive-latex-hyperref
@@ -3768,7 +3768,7 @@ set.")
                (with-directory-excursion "docs"
                  (for-each (lambda (base)
                              (install-file (string-append base ".pdf") docdir)
-                             (copy-recursively base docdir)) ;html docs
+                             (copy-recursively base docdir)) ; html docs
                            '("HYPRE_usr_manual"
                              "HYPRE_ref_manual")))
                #t))))))
