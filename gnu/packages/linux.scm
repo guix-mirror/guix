@@ -1472,14 +1472,14 @@ Linux-based operating systems.")
 (define-public bridge-utils
   (package
     (name "bridge-utils")
-    (version "1.5")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/bridge/bridge/"
-                                 "bridge-utils-" version ".tar.gz"))
-             (sha256
-              (base32
-               "12367cwqmi0yqphi6j8rkx97q8hw52yq2fx4k0xfclkcizxybya2"))))
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.kernel.org/pub/linux/utils/net/"
+                           "bridge-utils/bridge-utils-" version ".tar.xz"))
+       (sha256
+        (base32 "1j16kr44csyr4yqxly26l1yw2bh4nkiasgwvask2i2gvsnsyyryc"))))
     (build-system gnu-build-system)
 
     ;; The tarball lacks all the generated files.
