@@ -4178,12 +4178,13 @@ sockets, SSL, continuable uploads, file uploads, cookies, and more.")
     (version "1.2.38")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/edicl/hunchentoot/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/hunchentoot.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "hunchentoot" version))
        (sha256
-        (base32 "17z8rpd6b5w93jwrdwfwxjha617xnjqw8aq1hw2z76zp1fn8yrmh"))))
+        (base32 "1anpcad7w045m4rsjs1f3xdhjwx5cppq1h0vlb3q7dz81fi3i6yq"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("sbcl-cl-who" ,sbcl-cl-who)
