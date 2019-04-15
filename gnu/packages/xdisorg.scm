@@ -956,7 +956,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.32")
+    (version "0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -964,7 +964,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
-                "102kz0q7i0bjsnl6yy83vcj2rpir12rs2d4xr0wvhw84rs5sp7bb"))))
+                "1wnv34y7m9l6avlvwqvfrnksfnsz1lbgb412dn6s7x1h3wvs7y4l"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
