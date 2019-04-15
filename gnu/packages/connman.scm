@@ -44,15 +44,14 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.36")
+    (version "1.37")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kernel.org/linux/network/connman/"
                             "connman-" version ".tar.xz"))
     (sha256
-     (base32
-      "0x00dq5c2frz06md3g5y0jh5kbcj2hrfl5qjcqga8gs4ri0xp2f7"))))
+     (base32 "05kfjiqhqfmbbwc4snnyvi5hc4zxanac62f6gcwaf5mvn0z9pqkc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -63,8 +62,6 @@
              "--enable-vpnc"
              "--enable-pptp"
              "--enable-l2tp"
-             ;; location for daemon state files and internal configuration
-             ;; needs to be writeable
              "--localstatedir=/var"
              (string-append
               "--with-dbusconfdir=" (assoc-ref %outputs "out") "/etc")
