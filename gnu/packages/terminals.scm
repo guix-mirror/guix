@@ -252,7 +252,10 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                 (modules '((guix build utils)))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases (modify-phases %standard-phases
+       `(;; The closure of MESA is huge so we'd rather avoid it.
+         #:disallowed-references (,mesa)
+
+         #:phases (modify-phases %standard-phases
                     (replace 'bootstrap
                       (lambda _
                         (setenv "NOCONFIGURE" "indeed")
@@ -285,7 +288,10 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
          ("libtsm" ,libtsm)
          ("libxkbcommon" ,libxkbcommon)
          ("logind" ,elogind)
-         ("mesa" ,mesa)
+         ;; MESA can be used for accelerated video output via OpenGLESv2, but
+         ;; it's a bit dependency that we'd rather avoid in the installation
+         ;; image.
+         ;; ("mesa" ,mesa)
          ("pango" ,pango)
          ("udev" ,eudev)))
       (synopsis "Linux KMS-based terminal emulator")
