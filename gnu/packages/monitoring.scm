@@ -433,7 +433,7 @@ written in Go with pluggable metric collectors.")
               (uri (git-reference
                       (url "https://github.com/emcrisostomo/fswatch.git")
                       (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0r9m3rysqa1kdgghv2i6sv4zrd0v8idsbrp627ys642dl39svir3"))))
