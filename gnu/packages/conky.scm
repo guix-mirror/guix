@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,7 +44,7 @@
        (uri (git-reference
              (url home-page)
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "0yalcpwx85smh6nnvxxsgqi344nk7jzlkkam7yjghm87df4v7xmx"))))
     (build-system cmake-build-system)
