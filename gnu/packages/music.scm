@@ -2222,14 +2222,14 @@ computer's keyboard.")
 (define-public aj-snapshot
   (package
     (name "aj-snapshot")
-    (version "0.9.8")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/aj-snapshot/"
                                   "aj-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wilky1g2mb88v2z0520s7sw1dsn10iwanc8id5p6z1xsnhg7b6p"))))
+                "0z8wd5yvxdmw1h1rj6km9h01xd4xmp4d86gczlix7hsc7zrf0wil"))))
     (build-system gnu-build-system)
     (inputs
      `(("minixml" ,minixml)
