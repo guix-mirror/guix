@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1605,6 +1606,7 @@ used to bring up authentication dialogs.")
        ("mate-terminal"             ,mate-terminal)
        ("mate-themes"               ,mate-themes)
        ("mate-icon-theme"           ,mate-icon-theme)
+       ("mate-power-manager"        ,mate-power-manager)
        ("mate-menu"                 ,mate-menus)
        ("mate-panel"                ,mate-panel)
        ("mate-control-center"       ,mate-control-center)
