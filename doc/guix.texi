@@ -10436,6 +10436,10 @@ the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{Bootloader Configuration}.
 
+@item @code{label}
+This is the label (a string) as it appears in the bootloader's menu entry.
+The default label includes the kernel name and version.
+
 @item @code{keyboard-layout} (default: @code{#f})
 This field specifies the keyboard layout to use in the console.  It can be
 either @code{#f}, in which case the default keyboard layout is used (usually

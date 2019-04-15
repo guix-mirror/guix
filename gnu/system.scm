@@ -78,6 +78,8 @@
             operating-system-kernel
             operating-system-kernel-file
             operating-system-kernel-arguments
+            operating-system-label
+            operating-system-default-label
             operating-system-initrd-modules
             operating-system-initrd
             operating-system-users
@@ -160,6 +162,9 @@
   (kernel-arguments operating-system-user-kernel-arguments
                     (default '()))                ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
+  (label operating-system-label                   ; string
+         (thunked)
+         (default (operating-system-default-label this-operating-system)))
 
   (keyboard-layout operating-system-keyboard-layout ;#f | <keyboard-layout>
                    (default #f))
@@ -918,6 +923,11 @@ listed in OS.  The C library expects to find it under
                         (inferior-package-version kernel)))
         (else "GNU")))
 
+(define (operating-system-default-label os)
+  "Return the default label for OS, as it will appear in the bootloader menu
+entry."
+  (kernel->boot-label (operating-system-kernel os)))
+
 (define (store-file-system file-systems)
   "Return the file system object among FILE-SYSTEMS that contains the store."
   (match (filter (lambda (fs)
@@ -966,7 +976,7 @@ such as '--root' and '--load' to <boot-parameters>."
          (bootloader      (bootloader-configuration-bootloader
                            (operating-system-bootloader os)))
          (bootloader-name (bootloader-name bootloader))
-         (label           (kernel->boot-label (operating-system-kernel os))))
+         (label           (operating-system-label os)))
     (boot-parameters
      (label label)
      (root-device root-device)
