@@ -2488,17 +2488,17 @@ country-specific regulations for the wireless spectrum.")
   (package
     (name "lm-sensors")
     (version "3.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append
-                           "https://github.com/groeck/lm-sensors/archive/V"
-                           (string-join (string-split version #\.) "-")
-                           ".tar.gz")))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1q6p6i8mrzxw70hfjvq4mlahnx2ahvbmyxsa78dmin2c7bbc2wgn"))
-              (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/groeck/lm-sensors.git")
+             (commit (string-append "V" (string-join
+                                         (string-split version #\.) "-")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mdrnb9r01z1xfdm6dpkywvf9yy9a4yzb59paih9sijwmigv19fj"))
+       (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
               ("perl" ,perl)
