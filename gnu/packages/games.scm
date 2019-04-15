@@ -3542,12 +3542,19 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (inputs
      `(("lablgtk" ,lablgtk)
        ("ocaml" ,ocaml)
-       ("ocaml-findlib" ,ocaml-findlib)))
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'build 'setenv
+         (add-before 'build 'allow-unsafe-strings
+           ;; Fix a build failure with ocaml >=4.06.0.
+           ;; See <https://github.com/sgimenez/laby/issues/53>.
+           (lambda _
+             (setenv "OCAMLPARAM" "safe-string=0,_")
+             #t))
+         (add-before 'build 'set-library-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((lablgtk (assoc-ref inputs "lablgtk")))
                (setenv "LD_LIBRARY_PATH"
