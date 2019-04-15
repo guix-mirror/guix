@@ -481,6 +481,17 @@ settings (aliasing, linear interpolation and cubic interpolation).")
     ;; Therefore, the DUMB license may be considered a free software license.
     (license (license:fsf-free "file://LICENSE"))))
 
+(define-public dumb-allegro4
+  (package
+    (inherit dumb)
+    (name "dumb-allegro4")
+    (arguments
+     (substitute-keyword-arguments (package-arguments dumb)
+       ((#:configure-flags flags)
+        `(cons "-DBUILD_ALLEGRO4=ON" ,flags))))
+    (inputs
+     `(("allegro" ,allegro-4)))))
+
 (define-public hydrogen
   (package
     (name "hydrogen")
