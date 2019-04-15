@@ -249,7 +249,8 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                   "0q62kjsvy2iwy8adfiygx2bfwlh83rphgxbis95ycspqidg9py87"))
                 (patches
                  (search-patches "kmscon-runtime-keymap-switch.patch"))
-                (modules '((guix build utils)))))
+                (modules '((guix build utils)))
+                (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        `(;; The closure of MESA is huge so we'd rather avoid it.
