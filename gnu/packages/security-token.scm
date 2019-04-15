@@ -312,7 +312,7 @@ and other operations.  It includes a library and a command-line tool.")
 (define-public yubikey-personalization
   (package
     (name "yubikey-personalization")
-    (version "1.19.0")
+    (version "1.19.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -320,7 +320,7 @@ and other operations.  It includes a library and a command-line tool.")
                     "/Releases/ykpers-" version ".tar.gz"))
               (sha256
                (base32
-                "104lc0nnqdr365fa7c4vrq67rxp1dp8idndsh9jlhnj9dnhszj1b"))))
+                "0jhvnavjrpwzmmjcw486df5s48j53njqgyz36yz3dskbaz3kwlfr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-udevrulesdir="
