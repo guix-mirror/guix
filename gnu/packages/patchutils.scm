@@ -98,18 +98,14 @@ listing the files modified by a patch.")
 (define-public quilt
   (package
     (name "quilt")
-    (version "0.65")
+    (version "0.66")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://savannah/quilt/"
-                          "quilt-" version ".tar.gz"))
-      (sha256
-       (base32
-        "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
-      (patches (search-patches "quilt-test-fix-regex.patch"
-                               "quilt-getopt-second-separator.patch"
-                               "quilt-getopt-nondigit-param.patch"))))
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/quilt/"
+                           "quilt-" version ".tar.gz"))
+       (sha256
+        (base32 "01vfvk4pqigahx82fhaaffg921ivd3k7rylz1yfvy4zbdyd32jri"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)))

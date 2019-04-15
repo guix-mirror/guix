@@ -1220,9 +1220,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
-  %D%/packages/patches/quilt-test-fix-regex.patch		\
-  %D%/packages/patches/quilt-getopt-nondigit-param.patch	\
-  %D%/packages/patches/quilt-getopt-second-separator.patch	\
   %D%/packages/patches/qtwebkit-pbutils-include.patch		\
   %D%/packages/patches/randomjungle-disable-static-build.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
