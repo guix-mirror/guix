@@ -2555,7 +2555,7 @@ country-specific regulations for the wireless spectrum.")
                 (string-append (assoc-ref inputs "coreutils")
                                "/bin/readlink -f")))
              #t)))))
-    (home-page "http://jdelvare.nerim.net/devel.html#lmsensors")
+    (home-page "https://hwmon.wiki.kernel.org/lm_sensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
      "Lm-sensors is a hardware health monitoring package for Linux.  It allows
