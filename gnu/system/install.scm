@@ -27,6 +27,7 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module ((guix packages) #:select (package-version))
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu installer)
   #:use-module (gnu services dbus)
@@ -423,6 +424,9 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
                  (target "/dev/sda")))
+    (label (string-append "GNU Guix installation "
+                          (package-version guix)))
+
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.
