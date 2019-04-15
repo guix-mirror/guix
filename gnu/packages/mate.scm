@@ -92,6 +92,46 @@
 MATE applications.")
     (license license:gpl3+)))
 
+(define-public mate-power-manager
+  (package
+    (name "mate-power-manager")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "03c09h41qfz83wmjfvwzkq4xqc54aswmki4h034qcxbgfnyfmk1i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("yelp-tools" ,yelp-tools)
+       ("glib" ,glib "bin") ; glib-gettextize
+       ("libtool" ,libtool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("dbus-glib" ,dbus-glib)
+       ("libgnome-keyring" ,libgnome-keyring)
+       ("cairo" ,cairo)
+       ("dbus" ,dbus)
+       ("libnotify" ,libnotify)
+       ("mate-panel" ,mate-panel)
+       ("libxrandr" ,libxrandr)
+       ("libcanberra" ,libcanberra)
+       ("upower" ,upower)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "A Power Manager for MATE")
+    (description
+     "MATE Power Manager is a MATE session daemon that acts as a policy agent on
+top of UPower. It listens to system events and responds with user-configurable
+actions.")
+    (license license:gpl3+)))
+
 (define-public mate-icon-theme
   (package
     (name "mate-icon-theme")
