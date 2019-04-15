@@ -427,7 +427,7 @@ written in Go with pluggable metric collectors.")
 (define-public fswatch
   (package
     (name "fswatch")
-    (version "1.13.0")
+    (version "1.14.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -436,7 +436,7 @@ written in Go with pluggable metric collectors.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r9m3rysqa1kdgghv2i6sv4zrd0v8idsbrp627ys642dl39svir3"))))
+                "1ihn7wp3y7ml2lm8drz2hc6fmgj8kygbygnw8mz7gjax88f9dbx7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
