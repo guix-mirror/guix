@@ -2467,6 +2467,45 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
     (native-inputs
      `(("unzip" ,unzip)))))
 
+(define-public java-ecj
+  (package (inherit java-ecj-3)
+           (version "4.6.3")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://archive.eclipse.org/eclipse/downloads/drops4/R-"
+                    version
+                    "-201703010400/ecjsrc-"
+                    version
+                    ".jar"))
+              (sha256
+               (base32
+                "11cfgsdgznja1pvlxkjbqykxd7pcd5655vkm7s44xmahmap15gpl"))))
+           (arguments
+            `(#:tests? #f ; none included
+              #:build-target "build"
+              #:phases
+              (modify-phases %standard-phases
+                (add-after 'unpack 'fix-build.xml
+                  (lambda _
+                    (substitute* "src/build.xml"
+                      (("^.*MANIFEST.*$")
+                       ""))
+                    #t))
+                (add-after 'unpack 'fix-prop
+                  (lambda _
+                    (substitute* "src/build.xml"
+                      (("^.*properties.*$")
+                       "<include name=\"**/*.properties\"/>
+ <include name=\"**/*.props\"/>"))
+                    #t))
+                (add-before 'build 'chdir
+                  (lambda _
+                    (chdir "src")
+                    #t))
+                (replace 'install (install-jars ".")))))))
+
 (define-public java-cisd-base
   (let ((revision 38938)
         (base-version "14.12.0"))
