@@ -103,7 +103,7 @@ listing the files modified by a patch.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://savannah/quilt/"
-                          name "-" version ".tar.gz"))
+                          "quilt-" version ".tar.gz"))
       (sha256
        (base32
         "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
