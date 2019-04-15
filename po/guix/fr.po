@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: guix 1.0.0-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2019-04-10 21:48+0200\n"
-"PO-Revision-Date: 2019-04-13 13:22+0200\n"
+"PO-Revision-Date: 2019-04-15 21:19+0200\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -32,7 +32,7 @@ msgstr ""
 #: gnu.scm:83
 #, scheme-format
 msgid "module ~a not found"
-msgstr "module « ~a » introuvable"
+msgstr "module ~a introuvable"
 
 #: gnu.scm:101
 msgid ""
@@ -682,7 +682,7 @@ msgstr "Client DHCP (affectation dynamique d'adresse IP)"
 #: gnu/installer/timezone.scm:110
 #, scheme-format
 msgid "Unable to locate path: ~a."
-msgstr "impossible de trouver le chemin : ~a."
+msgstr "Impossible de trouver le chemin : ~a."
 
 #: guix/scripts.scm:61
 #, scheme-format
@@ -1907,7 +1907,7 @@ msgstr "    commit : ~a~%"
 msgid "  ~h new package: ~a~%"
 msgid_plural "  ~h new packages: ~a~%"
 msgstr[0] "  ~h nouveau paquet : ~a~%"
-msgstr[1] "  ~h nouveau paquets : ~a~%"
+msgstr[1] "  ~h nouveaux paquets : ~a~%"
 
 #: guix/scripts/pull.scm:421
 msgid "  ~h package upgraded: ~a~%"
@@ -3827,11 +3827,11 @@ msgstr "~a : ~a : aucun champ « version » dans la source ; ignoré~%"
 #. "~a" is a placeholder for that phrase.
 #: guix/ui.scm:209
 msgid "warning: "
-msgstr "avertissement : ~a~%"
+msgstr "avertissement : "
 
 #: guix/ui.scm:211
 msgid "error: "
-msgstr "erreur :"
+msgstr "erreur : "
 
 #: guix/ui.scm:259
 #, scheme-format
@@ -3844,7 +3844,7 @@ msgstr "entrée dans le débogueur; tapez « ,bt » pour la trace d'exécution
 
 #: guix/ui.scm:410
 msgid "hint: "
-msgstr "conseil :"
+msgstr "conseil : "
 
 #: guix/ui.scm:427
 msgid "Did you forget a @code{use-modules} form?"
@@ -4022,7 +4022,7 @@ msgstr "la génération ~a du profile « ~a » n'existe pas~%"
 #: guix/ui.scm:739
 #, scheme-format
 msgid "package '~a~@[@~a~]~@[:~a~]' not found in profile~%"
-msgstr "Le paquet « ~a~@[@~a~]~@[:~a~] » n'a pas été trouvé dans le profil~%"
+msgstr "le paquet « ~a~@[@~a~]~@[:~a~] » n'a pas été trouvé dans le profil~%"
 
 #: guix/ui.scm:751
 #, scheme-format
@@ -4302,7 +4302,7 @@ msgstr "guix : option « ~a » non reconnue ~%"
 #: guix/status.scm:358
 #, scheme-format
 msgid "'~a' phase"
-msgstr "phace « ~a »"
+msgstr "phase « ~a »"
 
 #: guix/status.scm:378
 msgid "building directory of Info manuals..."
@@ -4334,7 +4334,7 @@ msgstr "construction du cache des fichiers desktop du XDG…"
 
 #: guix/status.scm:392
 msgid "building XDG MIME database..."
-msgstr "construction de la base de donnée MIME du XDG…"
+msgstr "construction de la base de données MIME du XDG…"
 
 #: guix/status.scm:394
 msgid "building fonts directory..."
@@ -4389,7 +4389,7 @@ msgstr "la compilation de ~a a échoué"
 #: guix/status.scm:508
 #, scheme-format
 msgid "Could not find build log for '~a'."
-msgstr "Aucun journal de compilation pour « ~a »~%"
+msgstr "Aucun journal de compilation pour « ~a »."
 
 #: guix/status.scm:511
 #, scheme-format
