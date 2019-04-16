@@ -6485,7 +6485,7 @@ the desired spell.")
 (define-public the-legend-of-edgar
   (package
     (name "the-legend-of-edgar")
-    (version "1.30")
+    (version "1.31")
     (source
      (origin
        (method url-fetch)
@@ -6493,10 +6493,9 @@ the desired spell.")
         (string-append "https://github.com/riksweeney/edgar/releases/download/"
                        version "/edgar-" version "-1.tar.gz"))
        (sha256
-        (base32
-         "0bhbs33dg0nb8wqlh6px1jj41j05f89ngdqwdkffabmjk7wq5isx"))))
+        (base32 "0i4851ci8a86ql4bhdq3xdfmf4b9z5zrd4xpc6vhi06697zgm13i"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f                    ; there are no tests
+    (arguments '(#:tests? #f            ; there are no tests
                  #:make-flags
                  (list "CC=gcc"
                        (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -6506,14 +6505,13 @@ the desired spell.")
                    (delete 'configure)
                    (add-before 'build 'fix-env
                      (lambda* (#:key inputs #:allow-other-keys)
-                       (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
-                                                      "/include/SDL/"))
+                       (setenv "CPATH"
+                               (string-append (assoc-ref inputs "sdl2-union")
+                                              "/include/SDL2"))
                        #t)))))
-    (inputs `(("sdl" ,sdl)
-              ("sdl-img" ,sdl-image)
-              ("sdl-mixer" ,sdl-mixer)
-              ("sdl-ttf" ,sdl-ttf)
-              ("zlib" ,zlib)))
+    (inputs
+     `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
