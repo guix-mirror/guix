@@ -64,6 +64,7 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu system uuid)
 
   #:use-module (srfi srfi-1)
@@ -249,6 +250,12 @@ made available under the /xchg CIFS share."
                       #:guile-for-build guile-for-build
                       #:references-graphs references-graphs)))
 
+(define (has-guix-service-type? os)
+  "Return true if OS contains a service of the type GUIX-SERVICE-TYPE."
+  (not (not (find (lambda (service)
+                     (eq? (service-kind service) guix-service-type))
+                   (operating-system-services os)))))
+
 (define* (iso9660-image #:key
                         (name "iso9660-image")
                         file-system-label
@@ -258,7 +265,7 @@ made available under the /xchg CIFS share."
                         os
                         bootcfg-drv
                         bootloader
-                        register-closures?
+                        (register-closures? (has-guix-service-type? os))
                         (inputs '()))
   "Return a bootable, stand-alone iso9660 image.
 
@@ -343,7 +350,7 @@ INPUTS is a list of inputs (as for packages)."
                      os
                      bootcfg-drv
                      bootloader
-                     (register-closures? #t)
+                     (register-closures? (has-guix-service-type? os))
                      (inputs '())
                      copy-inputs?)
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
@@ -359,7 +366,9 @@ file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
-the image."
+the image.  By default, REGISTER-CLOSURES? is set to true only if a service of
+type GUIX-SERVICE-TYPE is present in the services definition of the operating
+system."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -474,14 +483,13 @@ the image."
 (define* (system-docker-image os
                               #:key
                               (name "guixsd-docker-image")
-                              register-closures?)
+                              (register-closures? (has-guix-service-type? os)))
   "Build a docker image.  OS is the desired <operating-system>.  NAME is the
-base name to use for the output file.  When REGISTER-CLOSURES? is not #f,
-register the closure of OS with Guix in the resulting Docker image.  This only
-makes sense when you want to build a Guix System Docker image that has Guix
-installed inside of it.  If you don't need Guix (e.g., your Docker
-image just contains a web server that is started by the Shepherd), then you
-should set REGISTER-CLOSURES? to #f."
+base name to use for the output file.  When REGISTER-CLOSURES? is true,
+register the closure of OS with Guix in the resulting Docker image.  By
+default, REGISTER-CLOSURES? is set to true only if a service of type
+GUIX-SERVICE-TYPE is present in the services definition of the operating
+system."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -678,7 +686,6 @@ to USB sticks meant to be read-only."
                        #:file-system-label root-label
                        #:file-system-uuid uuid
                        #:os os
-                       #:register-closures? #t
                        #:bootcfg-drv bootcfg
                        #:bootloader (bootloader-configuration-bootloader
                                      (operating-system-bootloader os))
@@ -695,7 +702,6 @@ to USB sticks meant to be read-only."
                     #:file-system-label root-label
                     #:file-system-uuid uuid
                     #:copy-inputs? #t
-                    #:register-closures? #t
                     #:inputs `(("system" ,os)
                                ("bootcfg" ,bootcfg))))))
 

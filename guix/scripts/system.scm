@@ -786,7 +786,7 @@ checking this by themselves in their 'check' procedure."
                         #:disk-image-size image-size
                         #:file-system-type file-system-type))
     ((docker-image)
-     (system-docker-image os #:register-closures? #t))))
+     (system-docker-image os))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
