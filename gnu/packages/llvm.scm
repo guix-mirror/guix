@@ -40,7 +40,9 @@
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages compression)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
 
@@ -280,6 +282,43 @@ code analysis tools.")
     (description
      "This package provides an implementation of the C++ standard library for
 use with Clang, targeting C++11, C++14 and above.")
+    (license license:expat)))
+
+(define-public libomp
+  (package
+    (name "libomp")
+    (version (package-version llvm))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://releases.llvm.org/"
+                                  version  "/openmp-" version
+                                  ".src.tar.xz"))
+              (sha256
+               (base32
+                "030dkg5cypd7j9hq0mcqb5gs31lxwmzfq52j81l7v9ldcy5bf5mz"))
+              (file-name (string-append "libomp-" version ".tar.xz"))))
+    (build-system cmake-build-system)
+    ;; XXX: Note this gets built with GCC because building with Clang itself
+    ;; fails (missing <atomic>, even when libcxx is added as an input.)
+    (arguments
+     '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
+                           "-DOPENMP_TEST_C_COMPILER=clang"
+                           "-DOPENMP_TEST_CXX_COMPILER=clang++")
+       #:test-target "check-libomptarget"))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hwloc" ,hwloc "lib")))
+    (home-page "https://openmp.llvm.org")
+    (synopsis "OpenMP run-time support library")
+    (description
+     "This package provides the run-time support library developed by the LLVM
+project for the OpenMP multi-theaded programming extension.  This package
+notably provides @file{libgomp.so}, which is has a binary interface compatible
+with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (license license:expat)))
 
 (define-public clang-runtime
