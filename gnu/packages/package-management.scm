@@ -137,9 +137,6 @@
                             (string-append "--with-bash-completion-dir="
                                            (assoc-ref %outputs "out")
                                            "/etc/bash_completion.d")
-                            (string-append "--with-libgcrypt-prefix="
-                                           (assoc-ref %build-inputs
-                                                      "libgcrypt"))
 
                             ;; Set 'DOT_USER_PROGRAM' to the empty string so
                             ;; we don't keep a reference to Graphviz, whose
