@@ -5163,7 +5163,16 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "12ilmjma6vmlm2kl23fx5pbi226x098gljgxpx3h2kmq8pg2lm28"))))
+                "12ilmjma6vmlm2kl23fx5pbi226x098gljgxpx3h2kmq8pg2lm28"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; There are signedness errors that trigger on 32-bit
+                  ;; platforms that trigger, and '-Werror' leads to build
+                  ;; failures.
+                  (substitute* "Makefile"
+                    (("-Werror") ""))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
