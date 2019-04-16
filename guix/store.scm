@@ -368,7 +368,9 @@
   (ats-cache    store-connection-add-to-store-cache)
   (atts-cache   store-connection-add-text-to-store-cache)
   (object-cache store-connection-object-cache
-                (default vlist-null)))            ;vhash
+                (default vlist-null))             ;vhash
+  (built-in-builders store-connection-built-in-builders
+                     (default (delay '()))))      ;promise
 
 (set-record-type-printer! <store-connection>
                           (lambda (obj port)
@@ -557,13 +559,17 @@ for this connection will be pinned.  Return a server object."
                           (write-int cpu-affinity port)))
                       (when (>= (protocol-minor v) 11)
                         (write-int (if reserve-space? 1 0) port))
-                      (let ((conn (%make-store-connection port
-                                                          (protocol-major v)
-                                                          (protocol-minor v)
-                                                          output flush
-                                                          (make-hash-table 100)
-                                                          (make-hash-table 100)
-                                                          vlist-null)))
+                      (letrec* ((built-in-builders
+                                 (delay (%built-in-builders conn)))
+                                (conn
+                                 (%make-store-connection port
+                                                         (protocol-major v)
+                                                         (protocol-minor v)
+                                                         output flush
+                                                         (make-hash-table 100)
+                                                         (make-hash-table 100)
+                                                         vlist-null
+                                                         built-in-builders)))
                         (let loop ((done? (process-stderr conn)))
                           (or done? (process-stderr conn)))
                         conn)))))))))
@@ -578,13 +584,17 @@ already taken place on PORT and that we're just continuing on this established
 connection.  Use with care."
   (let-values (((output flush)
                 (buffering-output-port port (make-bytevector 8192))))
-    (%make-store-connection port
-                            (protocol-major version)
-                            (protocol-minor version)
-                            output flush
-                            (make-hash-table 100)
-                            (make-hash-table 100)
-                            vlist-null)))
+    (define connection
+      (%make-store-connection port
+                              (protocol-major version)
+                              (protocol-minor version)
+                              output flush
+                              (make-hash-table 100)
+                              (make-hash-table 100)
+                              vlist-null
+                              (delay (%built-in-builders connection))))
+
+    connection))
 
 (define (store-connection-version store)
   "Return the protocol version of STORE as an integer."
@@ -1371,13 +1381,13 @@ that there is no guarantee that the order of the resulting list matches the
 order of PATHS."
              substitutable-path-list))
 
-(define built-in-builders
+(define %built-in-builders
   (let ((builders (operation (built-in-builders)
                              "Return the built-in builders."
                              string-list)))
     (lambda (store)
       "Return the names of the supported built-in derivation builders
-supported by STORE."
+supported by STORE.  The result is memoized for STORE."
       ;; Check whether STORE's version supports this RPC and built-in
       ;; derivation builders in general, which appeared in Guix > 0.11.0.
       ;; Return the empty list if it doesn't.  Note that this RPC does not
@@ -1387,6 +1397,11 @@ supported by STORE."
                    (>= (store-connection-minor-version store) #x60)))
           (builders store)
           '()))))
+
+(define (built-in-builders store)
+  "Return the names of the supported built-in derivation builders
+supported by STORE."
+  (force (store-connection-built-in-builders store)))
 
 (define-operation (optimize-store)
   "Optimize the store by hard-linking identical files (\"deduplication\".)
