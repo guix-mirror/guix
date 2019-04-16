@@ -136,7 +136,7 @@ and they are executed on lists of files, hosts, users or other items.")
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
-      (list "--enable-pam"
+      (list "--enable-pam" "--sysconfdir=/etc/slurm"
             (string-append "--with-freeipmi=" (assoc-ref %build-inputs "freeipmi"))
             (string-append "--with-hwloc=" (assoc-ref %build-inputs "hwloc"))
             (string-append "--with-json=" (assoc-ref %build-inputs "json-c"))
