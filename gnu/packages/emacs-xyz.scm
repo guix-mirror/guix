@@ -2899,7 +2899,7 @@ These are distributed in separate files and can be used individually.")
     (description "Irony-mode provides Clang-assisted syntax checking and
 completion for C, C++, and ObjC in GNU Emacs.  Using @code{libclang} it can
 provide syntax checking and autocompletion on compiler level which is very
-resistent against false positives.  It also integrates well with other
+resistant against false positives.  It also integrates well with other
 packages like @code{eldoc-mode} and especially @code{company-mode} as
 described on the homepage.")
     (license license:gpl3+)))
