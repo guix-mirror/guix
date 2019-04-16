@@ -183,6 +183,13 @@ then false; else true; fi
 
 rm -f "$result"
 
+# Check relative file name canonicalization: <https://bugs.gnu.org/35271>.
+mkdir "$result"
+guix build -r "$result/x" -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
+test -x "$result/x/bin/guile"
+rm "$result/x"
+rmdir "$result"
+
 # Cross building.
 guix build coreutils --target=mips64el-linux-gnu --dry-run --no-substitutes
 

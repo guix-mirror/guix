@@ -1,0 +1,61 @@
+From 6c52e1b902b869c25e2fe39cff6364143a04da61 Mon Sep 17 00:00:00 2001
+From: Niklas Larsson <niklas@mm.st>
+Date: Tue, 11 Dec 2018 19:56:22 +0100
+Subject: [PATCH] Only check for Node when required
+
+---
+ test/TestRun.hs | 34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
+
+diff --git a/test/TestRun.hs b/test/TestRun.hs
+index c7db9fdcd..4809911f3 100644
+--- a/test/TestRun.hs
++++ b/test/TestRun.hs
+@@ -11,6 +11,7 @@ import Data.Proxy
+ import Data.Typeable
+ import Options.Applicative
+ import System.Directory
++import System.Environment
+ import System.Exit
+ import System.FilePath ((</>))
+ import System.Info
+@@ -103,20 +104,25 @@ runTest path flags = do
+       normalise (x : xs) = x : normalise xs
+       normalise [] = []
+ 
++checkNode :: IO  ()
++checkNode = do
++    nodePath   <- findExecutable "node"
++    nodejsPath <- findExecutable "nodejs"
++    let node = nodePath <|> nodejsPath
++    case node of
++      Nothing -> do
++        putStrLn "For running the test suite against Node, node must be installed."
++        exitFailure
++      Just _  -> return ()
++
+ main :: IO ()
+ main = do
+-  nodePath   <- findExecutable "node"
+-  nodejsPath <- findExecutable "nodejs"
+-  let node = nodePath <|> nodejsPath
+-  case node of
+-    Nothing -> do
+-      putStrLn "For running the test suite against Node, node must be installed."
+-      exitFailure
+-    Just _  -> do
+-      defaultMainWithIngredients ingredients $
++    args <- getArgs
++    when ("--node" `elem` args) checkNode
++    defaultMainWithIngredients ingredients $
+         askOption $ \(NodeOpt node) ->
+-          let (codegen, flags) = if node then (JS, ["--codegen", "node"])
+-                                         else (C , [])
+-           in
+-            mkGoldenTests (testFamiliesForCodegen codegen)
+-                        (flags ++ idrisFlags)
++            let (codegen, flags) = if node then (JS, ["--codegen", "node"])
++                                           else (C , [])
++            in
++                mkGoldenTests (testFamiliesForCodegen codegen) (flags ++ idrisFlags)
++

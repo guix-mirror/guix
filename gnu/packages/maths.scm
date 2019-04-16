@@ -650,13 +650,13 @@ plotting engine by third-party applications like Octave.")
     (version "2.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/OkoSanto/GCTP/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OkoSanto/GCTP.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0l9aqnqynh9laicn5dxf3rsb1n14xiks79wbyqccirzmjqd1c1x4"))))
+        (base32 "11wqmd443b4nksdbzp1msdws3av948nmwq1xz80w6hka3ss2aigd"))))
     (native-inputs
      `(("fortran" ,gfortran)))
     (build-system gnu-build-system)
@@ -1555,15 +1555,14 @@ script files.")
     (version "0.17.2")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/tpaviot/oce/archive/OCE-"
-               version
-               ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/tpaviot/oce.git")
+              (commit (string-append "OCE-" version))))
+        (file-name (git-file-name name version))
         (patches (search-patches "opencascade-oce-glibc-2.26.patch"))
         (sha256
-          (base32
-            "0vpmnb0k5y2f7lpmwx9pg9yfq24zjvnsak5alzacncfm1hv9b6cd"))))
+          (base32 "0rg5wzkvfmzfl6v2amyryb8dnjad0nn9kyr607wy2gch6rciah69"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -2228,12 +2227,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.2.2")
+    (version "2.2.5")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "18zhni05gwnxbphl6bmjjxmsgg5wwnnkwlb4g971cqyw3dsd83ki"))))
+        (base32 "0isd3s0i4mzmva8lkh0j76hwjy1w50q7d1n9lhxsnnkgalx3xs1g"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/pracma/")
     (synopsis "Practical numerical math functions")
@@ -2952,13 +2951,13 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
       (version (string-append upstream-version "-" revision))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/beltoforion/muparser/archive/v"
-                             upstream-version ".tar.gz"))
-         (file-name (string-append name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/beltoforion/muparser.git")
+               (commit (string-append "v" upstream-version))))
+         (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0277qsi5l23jsck1vhn383bmvc2n9l4a1dl5r9bf7hvjv9ayyrh6"))))
+          (base32 "0f0g4995xngf1pp3zr4p6ai2f8v6f8bxwa0k8ayjjiv1l8h44m24"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags '("--enable-samples=no")
@@ -3146,13 +3145,13 @@ access to BLIS implementations via traditional BLAS routine calls.")
     (version "0.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/JuliaLang/openlibm/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaLang/openlibm.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0a5fpm8nra5ldhjk0cqd2rx1qh32wiarkxmcqcm5xl8z7l4kjm6l"))))
+        (base32 "08wfchmmr5200fvmn1kwq9byc1fhsq46hn0y5k8scdl74771c7gh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3185,13 +3184,13 @@ environments.")
     (version "0.5.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/JuliaLang/openspecfun/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaLang/openspecfun.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1rs1bv8jq751fv9vq79890wqf9xlbjc7lvz3ighzyfczbyjcf18m"))))
+        (base32 "0pfw6l3ch7isz403llx7inxlvavqh01jh1hb9dpidi86sjjx9kfh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no "check" target
@@ -3682,31 +3681,32 @@ set.")
 (define-public hypre
   (package
     (name "hypre")
-    (version "2.14.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/LLNL/hypre/archive/"
-                                  "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0v515i73bvaz378h5465b1dy9v2gf924zy2q94cpq4qqarawvkqh"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove use of __DATE__ and __TIME__ for reproducibility;
-                  ;; substitute the tarball creation time.
-                  (substitute* "src/utilities/HYPRE_utilities.h"
-                    (("Date Compiled: .*$")
-                     "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
-                  #t))))
+    (version "2.15.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LLNL/hypre.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lvh4ybqkriyqfg2zmic6mrg1981qv1i9vry1fdgsabn81hb71g4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove use of __DATE__ and __TIME__ for reproducibility;
+           ;; substitute the release date.
+           (substitute* "src/utilities/HYPRE_utilities.h"
+             (("Date Compiled: .*$")
+              "Date Compiled: Oct 19 2018 15:23:00 +0000\"\n"))
+           #t))))
     (build-system gnu-build-system)
-    (outputs '("out"                    ;6.1 MiB of headers and libraries
-               "doc"))                  ;4.8 MiB of documentation
+    (outputs '("out"                    ; 6.1 MiB of headers and libraries
+               "doc"))                  ; 4.8 MiB of documentation
     (native-inputs
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
-       ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
+       ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
        ("texlive" ,(texlive-union (list texlive-generic-xypic
                                         texlive-fonts-xypic
                                         texlive-latex-hyperref
@@ -3770,7 +3770,7 @@ set.")
                (with-directory-excursion "docs"
                  (for-each (lambda (base)
                              (install-file (string-append base ".pdf") docdir)
-                             (copy-recursively base docdir)) ;html docs
+                             (copy-recursively base docdir)) ; html docs
                            '("HYPRE_usr_manual"
                              "HYPRE_ref_manual")))
                #t))))))

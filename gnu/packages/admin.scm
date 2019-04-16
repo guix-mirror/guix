@@ -1287,7 +1287,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20190215")
+    (version "20190405")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1295,7 +1295,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1iy2zwi8aicq0b5a0phfacvk1f9z1d89cx43adcf0qh82gb9m4wg"))))
+                "0hv6r65l8vk3f6i3by7i47vc1917qm47838bpq80lfn22784y53y"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1599,13 +1599,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.9")
+    (version "2.7.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "19vyf60zfmnv7frwm96bzqzvia69dysy9apk8bl84vr03ib9vrbf"))))
+        (base32 "15721d0bxymghxnlnknq43lszlxg3ybbcp2p5v424hhw6wg2v944"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -1736,18 +1736,18 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.5.1")
+    (version "22.5.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/wting/autojump/archive/"
-                           "release-v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wting/autojump.git")
+             (commit (string-append "release-v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17z9j9936x0nizwrzf664bngh60x5qbvrrf1s5qdzd0f2gdanpvn"))))
+        (base32 "1rgpsh70manr2dydna9da4x7p8ahii7dgdgwir5fka340n1wrcws"))))
     (build-system gnu-build-system)
-    (native-inputs                      ;for tests
+    (native-inputs                      ; for tests
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
     (inputs
@@ -1755,6 +1755,11 @@ limits.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           ;; ‘install.py’ modifies files before installing them.
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (delete 'configure)
          (delete 'build)
          (replace 'check

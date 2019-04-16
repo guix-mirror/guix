@@ -96,13 +96,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.10.0")
+    (version "0.10.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "khal" version))
              (sha256
               (base32
-               "1p49f3g25x900vk32spjbr2aipj12kcbhayny2vwhdpkjlv6k396"))))
+               "1r8bkgjwkh7i8ygvsv51h1cnax50sb183vafg66x5snxf3dgjl6l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -146,7 +146,7 @@ data units.")
     (synopsis "Console calendar program")
     (description "Khal is a standards based console calendar program,
 able to synchronize with CalDAV servers through vdirsyncer.")
-    (home-page "http://lostpackets.de/khal/")
+    (home-page "https://lostpackets.de/khal/")
     (license license:expat)))
 
 (define-public remind

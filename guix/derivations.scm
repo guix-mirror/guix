@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -344,7 +344,8 @@ OUTPUTS of DRV and not already available in STORE, recursively, and the list
 of required store paths that can be substituted.  SUBSTITUTABLE-INFO must be a
 one-argument procedure similar to that returned by 'substitution-oracle'."
   (define built?
-    (cut valid-path? store <>))
+    (mlambda (item)
+      (valid-path? store item)))
 
   (define input-built?
     (compose (cut any built? <>) derivation-input-output-paths))

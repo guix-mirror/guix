@@ -58,7 +58,12 @@
 (define-peg-pattern weird-record all (and key (* SP) dict))
 (define-peg-pattern key body (+ (or (range #\a #\z) "-")))
 (define-peg-pattern value body (and (or conditional-value ground-value operator) (* SP)))
-(define-peg-pattern ground-value body (and (or multiline-string string-pat list-pat var) (* SP)))
+(define-peg-pattern choice-pat all (and (ignore "(") (* SP) choice (* SP)  (ignore ")")))
+(define-peg-pattern choice body
+  (or (and (or conditional-value ground-value) (* SP) (ignore "|") (* SP) choice)
+      conditional-value
+      ground-value))
+(define-peg-pattern ground-value body (and (or multiline-string string-pat choice-pat list-pat var) (* SP)))
 (define-peg-pattern conditional-value all (and ground-value (* SP) condition))
 (define-peg-pattern string-pat all (and QUOTE (* STRCHR) QUOTE))
 (define-peg-pattern list-pat all (and (ignore "[") (* SP) (* (and value (* SP))) (ignore "]")))
@@ -80,7 +85,8 @@
 (define-peg-pattern condition-form2 body
                     (and (* SP) (or condition-greater-or-equal condition-greater
                                     condition-lower-or-equal condition-lower
-                                    condition-neq condition-eq condition-content) (* SP)))
+                                    condition-neq condition-eq condition-not
+                                    condition-content) (* SP)))
 
 ;(define-peg-pattern condition-operator all (and (ignore operator) (* SP) condition-string))
 (define-peg-pattern condition-greater-or-equal all (and (ignore (and ">" "=")) (* SP) condition-string))
@@ -91,10 +97,12 @@
 (define-peg-pattern condition-or all (and condition-form2 (* SP) (ignore "|") (* SP) condition-form))
 (define-peg-pattern condition-eq all (and (? condition-content) (* SP) (ignore "=") (* SP) condition-content))
 (define-peg-pattern condition-neq all (and (? condition-content) (* SP) (ignore (and "!" "=")) (* SP) condition-content))
-(define-peg-pattern condition-content body (or condition-string condition-var))
+(define-peg-pattern condition-not all (and (ignore (and "!")) (* SP) condition-content))
+(define-peg-pattern condition-content body (or condition-paren condition-string condition-var))
 (define-peg-pattern condition-content2 body (and condition-content (* SP) (not-followed-by (or "&" "=" "!"))))
+(define-peg-pattern condition-paren body (and "(" condition-form ")"))
 (define-peg-pattern condition-string all (and QUOTE (* STRCHR) QUOTE))
-(define-peg-pattern condition-var all (+ (or (range #\a #\z) "-")))
+(define-peg-pattern condition-var all (+ (or (range #\a #\z) "-" ":")))
 
 (define (get-opam-repository)
   "Update or fetch the latest version of the opam repository and return the
@@ -171,18 +179,24 @@ path to the repository."
 (define (dependency->input dependency)
   (match dependency
     (('string-pat str) str)
+    ;; Arbitrary select the first dependency
+    (('choice-pat choice ...) (dependency->input (car choice)))
     (('conditional-value val condition)
      (if (native? condition) "" (dependency->input val)))))
 
 (define (dependency->native-input dependency)
   (match dependency
     (('string-pat str) "")
+    ;; Arbitrary select the first dependency
+    (('choice-pat choice ...) (dependency->input (car choice)))
     (('conditional-value val condition)
      (if (native? condition) (dependency->input val) ""))))
 
 (define (dependency->name dependency)
   (match dependency
     (('string-pat str) str)
+    ;; Arbitrary select the first dependency
+    (('choice-pat choice ...) (dependency->input (car choice)))
     (('conditional-value val condition)
      (dependency->name val))))
 
@@ -233,39 +247,55 @@ path to the repository."
              (url-dict (metadata-ref opam-content "url"))
              (source-url (metadata-ref url-dict "src"))
              (requirements (metadata-ref opam-content "depends"))
-             (dependencies (dependency-list->names requirements))
+             (dependencies (filter
+                              (lambda (name)
+                                (not (member name '("dune" "jbuilder"))))
+                              (dependency-list->names requirements)))
+             (native-dependencies (depends->native-inputs requirements))
              (inputs (dependency-list->inputs (depends->inputs requirements)))
-             (native-inputs (dependency-list->inputs (depends->native-inputs requirements))))
-        (call-with-temporary-output-file
-          (lambda (temp port)
-            (and (url-fetch source-url temp)
-                 (values
-                  `(package
-                     (name ,(ocaml-name->guix-name name))
-                     (version ,(if (string-prefix? "v" version)
-                                 (substring version 1)
-                                 version))
-                     (source
-                       (origin
-                         (method url-fetch)
-                         (uri ,source-url)
-                         (sha256 (base32 ,(guix-hash-url temp)))))
-                     (build-system ocaml-build-system)
-                     ,@(if (null? inputs)
-                         '()
-                         `((inputs ,(list 'quasiquote inputs))))
-                     ,@(if (null? native-inputs)
-                         '()
-                         `((native-inputs ,(list 'quasiquote native-inputs))))
-                     ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
-                         '()
-                         `((properties
-                             ,(list 'quasiquote `((upstream-name . ,name))))))
-                     (home-page ,(metadata-ref opam-content "homepage"))
-                     (synopsis ,(metadata-ref opam-content "synopsis"))
-                     (description ,(metadata-ref opam-content "description"))
-                     (license #f))
-                  dependencies))))))
+             (native-inputs (dependency-list->inputs
+                              ;; Do not add dune nor jbuilder since they are
+                              ;; implicit inputs of the dune-build-system.
+                              (filter
+                                (lambda (name)
+                                  (not (member name '("dune" "jbuilder"))))
+                                native-dependencies))))
+        ;; If one of these are required at build time, it means we
+        ;; can use the much nicer dune-build-system.
+        (let ((use-dune? (or (member "dune" native-dependencies)
+                        (member "jbuilder" native-dependencies))))
+          (call-with-temporary-output-file
+            (lambda (temp port)
+              (and (url-fetch source-url temp)
+                   (values
+                    `(package
+                       (name ,(ocaml-name->guix-name name))
+                       (version ,(if (string-prefix? "v" version)
+                                   (substring version 1)
+                                   version))
+                       (source
+                         (origin
+                           (method url-fetch)
+                           (uri ,source-url)
+                           (sha256 (base32 ,(guix-hash-url temp)))))
+                       (build-system ,(if use-dune?
+                                          'dune-build-system
+                                          'ocaml-build-system))
+                       ,@(if (null? inputs)
+                           '()
+                           `((inputs ,(list 'quasiquote inputs))))
+                       ,@(if (null? native-inputs)
+                           '()
+                           `((native-inputs ,(list 'quasiquote native-inputs))))
+                       ,@(if (equal? name (guix-name->opam-name (ocaml-name->guix-name name)))
+                           '()
+                           `((properties
+                               ,(list 'quasiquote `((upstream-name . ,name))))))
+                       (home-page ,(metadata-ref opam-content "homepage"))
+                       (synopsis ,(metadata-ref opam-content "synopsis"))
+                       (description ,(metadata-ref opam-content "description"))
+                       (license #f))
+                    dependencies)))))))
 
 (define (opam-recursive-import package-name)
   (recursive-import package-name #f

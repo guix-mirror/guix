@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
@@ -898,33 +898,30 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (license license:gpl3+)))
 
 (define-public guile-email
-  (let ((commit "fa52eac55e5946db89621a6c583d2aa357864dee")
-        (revision "1"))
-    (package
-      (name "guile-email")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.systemreboot.net/guile-email")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1037mbz7qd9bzaqp8ysyhnl9ipd97fmj3b9jr8qfzx9179vvsj63"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (home-page "https://git.systemreboot.net/guile-email")
-      (synopsis "Guile email parser")
-      (description "This package provides an email parser written in pure
+  (package
+    (name "guile-email")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://git.systemreboot.net/guile-email/snapshot/guile-email-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "0p2v8q2kkz8m6vf2rsjvz3dj1mvnx7dxakjf72dwkndbgk3rp79f"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://git.systemreboot.net/guile-email")
+    (synopsis "Guile email parser")
+    (description "This package provides an email parser written in pure
 Guile.")
-      (license license:agpl3+))))
+    (license license:agpl3+)))
 
 (define-public guile-debbugs-next
   (let ((commit "75a331d561c8b6f8efcf16216dab961c17759efe")

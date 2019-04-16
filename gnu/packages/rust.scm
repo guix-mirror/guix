@@ -726,6 +726,16 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           `(modify-phases ,phases
              ;; binaryen was replaced with LLD project from LLVM
              (delete 'dont-build-native)
+             (replace 'check
+               (lambda* _
+                 ;; Enable parallel execution.
+                 (let ((parallel-job-spec
+                        (string-append "-j" (number->string
+                                             (min 4
+                                                  (parallel-job-count))))))
+                   (invoke "./x.py" parallel-job-spec "test" "-vv")
+                   (invoke "./x.py" parallel-job-spec "test"
+                           "src/tools/cargo"))))
              (replace 'remove-unsupported-tests
                (lambda* _
                  ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
@@ -930,7 +940,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("```rust") "```rust,no_run"))
                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.32
   (let ((base-rust
          (rust-bootstrapped-package rust-1.31 "1.32.0"
           "0ji2l9xv53y27xy72qagggvq47gayr5lcv2jwvmfirx029vlqnac"
@@ -982,3 +992,44 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              ;; Remove no longer relevant steps
              (delete 'remove-flaky-test)
              (delete 'patch-aarch64-test))))))))
+
+(define-public rust-1.33
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.32 "1.33.0"
+                                    "152x91mg7bz4ygligwjb05fgm1blwy2i70s2j03zc9jiwvbsh0as"
+                                    #:patches '())))
+    (package
+      (inherit base-rust)
+      (inputs
+       ;; Upgrade to jemalloc@5.1.0
+       (alist-replace "jemalloc" (list jemalloc)
+                      (package-inputs base-rust)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'ignore-cargo-package-tests)
+             (add-after 'configure 'configure-test-threads
+               ;; Several rustc and cargo tests will fail if run on one core
+               ;; https://github.com/rust-lang/rust/issues/59122
+               ;; https://github.com/rust-lang/cargo/issues/6746
+               ;; https://github.com/rust-lang/rust/issues/58907
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (setenv "RUST_TEST_THREADS" "2")
+                 #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.33 "1.34.0"
+                                    "0n8z1wngkxab1rvixqg6w8b727hzpnm9wp9h8iy3mpbrzp7mmj3s"
+                                    #:patches '())))
+    (package
+      (inherit base-rust)
+      (source
+        (origin
+          (inherit (package-source base-rust))
+          (snippet '(begin
+                      (delete-file-recursively "src/llvm-emscripten")
+                      (delete-file-recursively "src/llvm-project")
+                      (delete-file-recursively "vendor/jemalloc-sys/jemalloc")
+                      #t)))))))

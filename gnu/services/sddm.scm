@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,8 +140,7 @@ SessionCommand="       (sddm-configuration-session-command config)             "
 SessionDir="           (sddm-configuration-sessions-directory config)          "
 
 [X11]
-ServerPath="           (xorg-configuration-server
-                        (sddm-configuration-xorg config)) "/bin/X"             "
+ServerPath="           (xorg-start-command (sddm-configuration-xorg config))   "
 XauthPath="            (sddm-configuration-xauth-path config)                  "
 XephyrPath="           (sddm-configuration-xephyr-path config)                 "
 DisplayCommand="       (sddm-configuration-xdisplay-start config)              "

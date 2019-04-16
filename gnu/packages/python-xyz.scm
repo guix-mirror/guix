@@ -3349,24 +3349,16 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.27.4")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
-        (base32
-         "15c1mhwwjc7nr8hn5gm21hcfhw61jmwb0vngpjhlm3y5565wg2pz"))))
+        (base32 "0lngsaz029d4fjcwhl17pr59nh9gwl6hwfin36nph60fgsmfdg3d"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f; tests don't run correctly in our environment
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-dependency-versioning
-           (lambda _
-             (substitute* "setup.py"
-               (("<") "<="))
-             #t)))))
+     '(#:tests? #f))            ; tests don't run correctly in our environment
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-cffi" ,python-cffi)
@@ -4453,13 +4445,13 @@ memoizing PEG/Packrat parser in Python.")
     (version "0.13.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/pygridtools/gridmap/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pygridtools/gridmap.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1gzjg2k6f14i1msm2b0ax8d9ds1hvk6qd5nlaivg8m4cxqp4cp1x"))))
+        (base32 "1478lbwsr1w24cii2x01m2910fvh8r43ghnb78nc972a96hqiknm"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Requires python-cherrypy.
@@ -4484,13 +4476,13 @@ cluster without needing to write any wrapper code yourself.")
     (version "1.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/nickstenning/honcho/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nickstenning/honcho.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0zizn61n5z5hq421hkypk9pw8s6fpxw30f4hsg7k4ivwzy3gjw9j"))))
+        (base32 "11bd87474qpif20xdcn0ra1idj5k16ka51i658wfpxwc6nzsn92b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -6747,14 +6739,15 @@ Python Package Index (PyPI).")
     (name "python-tlsh")
     (version "3.4.5")
     (home-page "https://github.com/trendmicro/tlsh")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/trendmicro/tlsh/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1x1vahd4zg5kpyr9h9hs3fvh460p25rjy4cclwdnbbw8x3vc30q3"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trendmicro/tlsh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ydliir308xn4ywy705mmsh7863ldlixdvpqwdhbipzq9vfpmvll"))))
     (build-system cmake-build-system)
     (arguments
      '(#:out-of-source? #f
@@ -10235,20 +10228,21 @@ discovery, monitoring and configuration.")
     (name "python-schematics")
     (version "1.1.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/schematics/schematics/archive/v" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "19v1i69bf3bzarfxmbv0v6ivpcn758x3shvbiy9l2hy0lvqwnp6l"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/schematics/schematics.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xdqskycznqc7mfp60bhw1zq8wx7yx1dvmbq3brnm1dx3xnqa0zd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
     (arguments
-     `(#:tests? #f)) ; requires a bunch of not very nice packages with fixed
-                     ; version requirements (eg python-coveralls)
+     ;; The tests require a bunch of not very nice packages with fixed
+     ;; version requirements (e.g. python-coveralls).
+     `(#:tests? #f))
     (home-page "https://github.com/schematics/schematics")
     (synopsis "Python Data Structures for Humans")
     (description "Python Data Structures for Humans.")
@@ -12585,13 +12579,13 @@ Swagger 2.0).")
     (version "0.6.3")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/rochacbruno/flasgger/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/rochacbruno/flasgger.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-          (base32
-            "1gqzlm0rb55fdpsy5ipkganlx9cnpi454fqyycr03jm22zql14ay"))))
+          (base32 "0yydxsyjnc0clbrjqb1n7587l6cdqvwdagwxk5hkx01qwdfbkvpn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13097,13 +13091,13 @@ executed more than a given number of times during a given period.")
     (version "0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/kovidgoyal/dukpy/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kovidgoyal/dukpy.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0pj39rfwlzivqm5hkrsza7gssg6ggpxlq5ivc8f3h7x5pfgc6y6c"))))
+        (base32 "13h21nqzasv4zj32xs61brmc106pr2cx243672crcmwxxnjgaxls"))))
     (build-system python-build-system)
     (home-page "https://github.com/kovidgoyal/dukpy")
     (synopsis "Run JavaScript in python")
@@ -14170,16 +14164,15 @@ manager compatible with @code{asyncio}.")
   (package
     (name "python-glob2")
     (version "0.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/miracle2k/python-glob2/archive/"
-                    version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "0ja168f0dz4kbz4m06dm0rd3acaypk6hjx2km541pw22y9s40mag"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miracle2k/python-glob2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lm1xz3k3l0k1c5bcp9hlzmi3gp5j8dl1k3xhpiq5mnm0xq6n163"))))
     (build-system python-build-system)
     (home-page "https://github.com/miracle2k/python-glob2/")
     (synopsis "Extended Version of the python buildin glob module")
@@ -14863,14 +14856,14 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.1.4")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
         (base32
-         "1hrnfz4pzawikz9b622vjz2500n7hs25nz9msy1k8l4g7l2kr6ky"))))
+         "1y0dqcp72ixwblgway0jpvfirlxfcmwrjiivdq96firj1hw127sd"))))
     (build-system python-build-system)
     ;; A single test out of 5000+ fails.  This test is marked as xfail when
     ;; pytest-xdist is used.

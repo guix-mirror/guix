@@ -536,7 +536,7 @@ tiled on several screens.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
-                                  name "-" version ".tar.gz"))
+                                  "xmobar-" version ".tar.gz"))
               (sha256
                (base32
                 "1xh87asg8y35srvp7d3gyyy4bkxsw122liihxgzgm8pqv2z3h4zd"))))
@@ -1048,14 +1048,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.3.0")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jaagr/polybar/releases/"
-                           "download/" version "/polybar.tar"))
+                           "download/" version "/polybar-" version ".tar"))
        (sha256
-        (base32 "0sjh3xmf11g09spi88zj7xsc3a3vv78kixab6n5i7436py7xwzb4"))
+        (base32 "0758na059vpgnsrcdrxmh9wsahs80wnmizb9g7bmixlrkxr2m65h"))
        (file-name (string-append name "-" version ".tar"))))
     (build-system cmake-build-system)
     (arguments

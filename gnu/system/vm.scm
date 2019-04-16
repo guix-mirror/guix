@@ -94,6 +94,12 @@
 (define %linux-vm-file-systems
   ;; File systems mounted for 'derivation-in-linux-vm'.  These are shared with
   ;; the host over 9p.
+  ;;
+  ;; The 9p documentation says that cache=loose is "intended for exclusive,
+  ;; read-only mounts", without additional details.  It's much faster than the
+  ;; default cache=none, especially when copying and registering store items.
+  ;; Thus, use cache=loose, except for /xchg where we want to ensure
+  ;; consistency.
   (list (file-system
           (mount-point (%store-prefix))
           (device "store")
@@ -102,18 +108,12 @@
           (flags '(read-only))
           (options "trans=virtio,cache=loose")
           (check? #f))
-
-        ;; The 9p documentation says that cache=loose is "intended for
-        ;; exclusive, read-only mounts", without additional details.  In
-        ;; practice it seems to work well for these, and it's much faster than
-        ;; the default cache=none, especially when copying and registering
-        ;; store items.
         (file-system
           (mount-point "/xchg")
           (device "xchg")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio,cache=loose")
+          (options "trans=virtio")
           (check? #f))
         (file-system
           (mount-point "/tmp")
@@ -530,10 +530,7 @@ should set REGISTER-CLOSURES? to #f."
                  #$os
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)
-                 #:transformations `((,root-directory -> "")))
-
-                ;; Make sure the tarball is fully written before rebooting.
-                (sync))))))
+                 #:transformations `((,root-directory -> ""))))))))
     (expression->derivation-in-linux-vm
      name build
      #:make-disk-image? #f

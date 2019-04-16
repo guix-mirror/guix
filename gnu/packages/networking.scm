@@ -161,7 +161,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.3.2")
+    (version "1.7.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -169,7 +169,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0lcj6zpra33xhgvhmz9l3cqz10v8ybafb8dd1yqkwf1rhy01ymp3"))))
+                "0jnhjijyq74g3wa4ph0am83z6vq7qna7ac0xqjma8s4197z3zmhd"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ;no 'check' phase
     (inputs `(("openssl" ,openssl)))
@@ -590,15 +590,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32
-         "17h0ixq7yr6scscjkidaj3dh5x6dfd3f97ggdxlklkz9nbsk0kxw"))))
+        (base32 "13605bpnnbqsdr8ybqnscbz9g422zmyymn4q5aci28vc1wylr1l6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -894,6 +893,30 @@ attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
 
+(define-public perl-danga-socket
+  (package
+    (name "perl-danga-socket")
+    (version "1.61")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BR/BRADFITZ/"
+                           "Danga-Socket-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nciapvxnc922ms304af0vavz1kgyr45ard8wc659k9srqar4hwf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sys-syscall" ,perl-sys-syscall)))
+    (home-page "https://metacpan.org/release/Danga-Socket")
+    (synopsis "Event loop and event-driven async socket base class")
+    (description
+     "Danga::Socket is an abstract base class for objects backed by a socket
+which provides the basic framework for event-driven asynchronous IO, designed
+to be fast.  Danga::Socket is both a base class for objects, and an event
+loop.")
+    (license license:perl-license)))
+
 (define-public perl-data-validate-ip
   (package
     (name "perl-data-validate-ip")
@@ -924,7 +947,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.19")
+  (version "1.20")
   (source
     (origin
       (method url-fetch)
@@ -935,7 +958,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "1myc23vz0m42yyg8iw7bf1pdrmx9ql6fhl2vwk1vwf55v6yphqi0"))))
+       (base32 "06z09igd42s0kg2ps5k7vpypg77zswfryqzbyalbllvjd0mnknbz"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))

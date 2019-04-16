@@ -201,16 +201,12 @@ available."
     (when (< ratio threshold)
       (warning (G_ "only ~,1f% of free space available on ~a~%")
                (* ratio 100) (%store-prefix))
-      (if profile
-          (display-hint (format #f (G_ "Consider deleting old profile
+      (display-hint (format #f (G_ "Consider deleting old profile
 generations and collecting garbage, along these lines:
 
 @example
-guix package -p ~s --delete-generations=1m
-guix gc
+guix gc --delete-generations=1m
 @end example\n")
-                                profile))
-          (display-hint (G_ "Consider running @command{guix gc} to free
-space."))))))
+                            profile)))))
 
 ;;; scripts.scm ends here

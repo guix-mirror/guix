@@ -49,6 +49,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages perl-web)
@@ -1435,6 +1436,33 @@ some enhancements such as here-documents, C-style comments, and multiline
 options.")
     (license (package-license perl))))
 
+(define-public perl-config-gitlike
+  (package
+    (name "perl-config-gitlike")
+    (version "1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AL/ALEXMV/Config-GitLike-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0kp57na9mk6yni693h2fwap6l1ndbcj97l4860r9vkzx2jw0fjk7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-moox-types-mooselike" ,perl-moox-types-mooselike)))
+    (home-page "https://metacpan.org/release/Config-GitLike")
+    (synopsis "Parse Git style configuration files")
+    (description
+     "This module handles parsing, modifying and creating configuration files
+of the style used by the Git version control system.")
+    (license perl-license)))
+
 (define-public perl-config-ini
   (package
     (name "perl-config-ini")
@@ -1528,6 +1556,28 @@ data.")
     (description
      "@code{CPAN::Changes} helps users programmatically read and write
 @file{Changes} files that conform to a common specification.")
+    (license perl-license)))
+
+(define-public perl-cpan-distnameinfo
+  (package
+    (name "perl-cpan-distnameinfo")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/G/GB/GBARR/CPAN-DistnameInfo-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0d94kx596w7k328cvq4y96z1gz12hdhn3z1mklkbrb7fyzlzn91g"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/CPAN-DistnameInfo")
+    (synopsis "Extract the name and version from a distribution filename")
+    (description
+     "@code{CPAN::DistnameInfo} uses heuristics to extract the distribution
+name and version from filenames.")
     (license perl-license)))
 
 (define-public perl-cpan-meta-check
@@ -2738,6 +2788,26 @@ equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
 files/modules are installed or not).")
     (license (package-license perl))))
 
+(define-public perl-devel-leak
+  (package
+    (name "perl-devel-leak")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NI/NI-S/"
+                           "Devel-Leak-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lkj2xwc3lhxv7scl43r8kfmls4am0b98sqf5vmf7d72257w6hkg"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Devel-Leak")
+    (synopsis "Utility for looking for perl objects that are not reclaimed")
+    (description
+     "This module provides a basic way to discover if a piece of perl code is
+allocating perl data and not releasing them again.")
+    (license perl-license)))
+
 (define-public perl-devel-lexalias
   (package
     (name "perl-devel-lexalias")
@@ -3803,6 +3873,31 @@ functionality; it returns a list of file names that match the given pattern.
 For instance, it supports the @code{**/*.pm} form.")
     (license (package-license perl))))
 
+(define-public perl-filesys-notify-simple
+  (package
+    (name "perl-filesys-notify-simple")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Filesys-Notify-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18jv96k1pf8wqf4vn2ahs7dv44lc9cyqj0bja9z17qici3dx7qxd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-sharedfork" ,perl-test-sharedfork)))
+    (home-page "https://metacpan.org/release/Filesys-Notify-Simple")
+    (synopsis "Simple and dumb file system watcher")
+    (description
+     "Filesys::Notify::Simple is a simple but unified interface to get
+notifications of changes to a given filesystem path.  It utilizes inotify2 on
+Linux, fsevents on OS X, kqueue on FreeBSD and FindFirstChangeNotification on
+Windows if they're installed, with a fallback to the full directory scan if
+they're not available.")
+    (license perl-license)))
+
 (define-public perl-getopt-long
   (package
     (name "perl-getopt-long")
@@ -4210,6 +4305,41 @@ try @code{Capture::Tiny} instead.")
     (description "This module provides three utility subroutines that make it
 easier to develop interactive applications: is_interactive(), interactive(),
 and busy().")
+    (license (package-license perl))))
+
+(define-public perl-io-pager
+  (package
+    (name "perl-io-pager")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JP/JPIERCE/IO-Pager-"
+             version
+             "0.tgz"))
+       (sha256
+        (base32
+         "1vzdypsr7vkj8nnda9ccrksci6pqj5awwmi89l7x3mbpq36gad87"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-less
+           (lambda _
+             (substitute* "lib/IO/Pager.pm"
+               (("/usr/local/bin/less', '/usr/bin/less")
+                (which "less")))
+             #t)))))
+    (propagated-inputs
+     `(("perl-file-which" ,perl-file-which)))
+    (inputs
+     `(("less" ,less)))
+    (home-page "https://metacpan.org/release/IO-Pager")
+    (synopsis "Select a pager and pipe text to it")
+    (description
+     "@code{IO::Pager} can be used to locate an available pager and use it to
+display output if a TTY is in use.")
     (license (package-license perl))))
 
 (define-public perl-io-string
@@ -7539,6 +7669,32 @@ expanding standard C/Unix-style backslash escapes like \n and \t, wrapping and
 removing double-quotes, and truncating to fit within a desired length.")
     (license (package-license perl))))
 
+(define-public perl-string-formatter
+  (package
+    (name "perl-string-formatter")
+    (version "0.102084")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/String-Formatter-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0mlwm0rirv46gj4h072q8gdync5zxxsxy8p028gdyrhczl942dc3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-params-util" ,perl-params-util)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "https://metacpan.org/release/String-Formatter")
+    (synopsis "Build your own sprintf-like functions")
+    (description
+     "@code{String::Formatter} is a tool for building sprintf-like formatting
+routines.  It supports named or positional formatting, custom conversions,
+fixed string interpolation, and simple width-matching.")
+    (license gpl2)))
+
 (define-public perl-string-rewriteprefix
   (package
     (name "perl-string-rewriteprefix")
@@ -7558,6 +7714,28 @@ removing double-quotes, and truncating to fit within a desired length.")
     (synopsis "Rewrite strings based on a set of known prefixes")
     (description "This module allows you to rewrite strings based on a set of
 known prefixes.")
+    (license (package-license perl))))
+
+(define-public perl-string-shellquote
+  (package
+    (name "perl-string-shellquote")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RO/ROSCH/String-ShellQuote-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0dfxhr6hxc2majkkrm0qbx3qcbykzpphbj2ms93dc86f7183c1p6"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/String-ShellQuote")
+    (synopsis "Quote strings for passing through a shell")
+    (description
+     "@code{shell-quote} lets you pass arbitrary strings through the shell so
+that they won't be changed.")
     (license (package-license perl))))
 
 (define-public perl-string-print
@@ -7893,6 +8071,28 @@ determining their type and clock speed.")
 of a system.")
     (license (package-license perl))))
 
+(define-public perl-sys-syscall
+  (package
+    (name "perl-sys-syscall")
+    (version "0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BR/BRADFITZ/"
+                           "Sys-Syscall-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r8k4q04dhs191zgdfgiagvbra770hx0bm6x24jsykxn0c6ghi8y"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Sys-Syscall")
+    (synopsis
+     "Access system calls that Perl doesn't normally provide access to")
+    (description
+     "Sys::Syscall allows one to use epoll and sendfile system calls from
+Perl.  Support is mostly Linux-only for now, but other syscalls/OSes are
+planned for the future.")
+    (license perl-license)))
+
 (define-public perl-task-weaken
   (package
     (name "perl-task-weaken")
@@ -7932,7 +8132,7 @@ error encouraging the user to seek support.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AB/ABW/"
+       (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                            "Template-Toolkit-" version ".tar.gz"))
        (sha256
         (base32
@@ -7970,6 +8170,32 @@ documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
     (description "Template::Timer provides inline profiling of the template
 processing in Perl code.")
     (license (list gpl3 artistic2.0))))
+
+(define-public perl-template-tiny
+  (package
+    (name "perl-template-tiny")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/Template-Tiny-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0jhadxbc8rzbk2v8qvjrbhnvfp0m56iqar6d4nvxyl8bccn0cgh7"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Template-Tiny")
+    (synopsis "Template Toolkit reimplemented in as little code as possible")
+    (description
+     "@code{Template::Tiny} is a reimplementation of a subset of the
+functionality from Template Toolkit in as few lines of code as possible.
+
+It is intended for use in light-usage, low-memory, or low-cpu templating
+situations, where you may need to upgrade to the full feature set in the
+future, or if you want the retain the familiarity of TT-style templates.")
+    (license perl-license)))
 
 (define-public perl-term-encoding
   (package
@@ -8537,6 +8763,28 @@ values corresponding to existing keys in the IxHash are changed.  The elements
 can also be set to any arbitrary supplied order.  The familiar perl array
 operations can also be performed on the IxHash.")
   (license (package-license perl))))
+
+(define-public perl-tie-handle-offset
+  (package
+    (name "perl-tie-handle-offset")
+    (version "0.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Tie-Handle-Offset-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "17m8s8314wi4g0wasdxk15rf12vzsgzmcbr598jam5f6bl2kk7zf"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Tie-Handle-Offset")
+    (synopsis "Special file handle that hides the beginning of a file")
+    (description
+     "This modules provides a file handle that hides the beginning of a file,
+by modifying the @code{seek()} and @code{tell()} calls.")
+    (license asl2.0)))
 
 (define-public perl-tie-toobject
   (package

@@ -118,6 +118,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system linux-module)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -264,9 +265,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     (search-auxiliary-file file)))
 
 (define %default-extra-linux-options
-  `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
-    ;; Modules required for initrd:
+  `(;; Modules required for initrd:
     ("CONFIG_NET_9P" . m)
     ("CONFIG_NET_9P_VIRTIO" . m)
     ("CONFIG_VIRTIO_BLK" . m)
@@ -401,7 +400,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                     (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
                ;; Install kernel image, kernel configuration and link map.
                (for-each (lambda (file) (install-file file out))
-                         (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map)$"))
+                         (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map|Module\\.symvers)$"))
                ;; Install device tree files
                (unless (null? (find-files "." "\\.dtb$"))
                  (mkdir-p dtbdir)
@@ -438,6 +437,28 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
+(define-public vhba-module
+  (package
+    (name "vhba-module")
+    (version "20170610")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/cdemu/vhba-module-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1v6r0bgx0a65vlh36b1l2965xybngbpga6rp54k4z74xk0zwjw3r"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; TODO: No tests?
+     `(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Kernel module that emulates SCSI devices")
+    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
+between the CDemu userspace daemon and linux kernel.")
+    (license license:gpl2+)))
+
 (define %linux-libre-4.19-version "4.19.34")
 (define %linux-libre-4.19-hash "0rmpyj2qb651p2k2srpjndjxry87hr5vq0jkk4rvxjhm5y3sb65l")
 
@@ -471,7 +492,13 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre "4.4.178"
                     "1lgsd760md6b32qb5ng3anfq1n754a9d0c4xnf2mjxkimncb1jpp"
                     '("x86_64-linux" "i686-linux")
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:extra-options
+                    (append
+                     `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+                       ;; This option was removed upstream in version 4.7.
+                       ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
+                     %default-extra-linux-options)))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -1452,14 +1479,14 @@ Linux-based operating systems.")
 (define-public bridge-utils
   (package
     (name "bridge-utils")
-    (version "1.5")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/bridge/bridge/"
-                                 "bridge-utils-" version ".tar.gz"))
-             (sha256
-              (base32
-               "12367cwqmi0yqphi6j8rkx97q8hw52yq2fx4k0xfclkcizxybya2"))))
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.kernel.org/pub/linux/utils/net/"
+                           "bridge-utils/bridge-utils-" version ".tar.xz"))
+       (sha256
+        (base32 "1j16kr44csyr4yqxly26l1yw2bh4nkiasgwvask2i2gvsnsyyryc"))))
     (build-system gnu-build-system)
 
     ;; The tarball lacks all the generated files.
@@ -2467,18 +2494,18 @@ country-specific regulations for the wireless spectrum.")
 (define-public lm-sensors
   (package
     (name "lm-sensors")
-    (version "3.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append
-                           "https://github.com/groeck/lm-sensors/archive/V"
-                           (string-join (string-split version #\.) "-")
-                           ".tar.gz")))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0knb09s9lvx0wzfsaizx3xq58q6kllqf7nkbwvir0wkgn31c2d73"))
-              (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
+    (version "3.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/groeck/lm-sensors.git")
+             (commit (string-append "V" (string-join
+                                         (string-split version #\.) "-")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mdrnb9r01z1xfdm6dpkywvf9yy9a4yzb59paih9sijwmigv19fj"))
+       (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
               ("perl" ,perl)
@@ -2535,7 +2562,7 @@ country-specific regulations for the wireless spectrum.")
                 (string-append (assoc-ref inputs "coreutils")
                                "/bin/readlink -f")))
              #t)))))
-    (home-page "http://jdelvare.nerim.net/devel.html#lmsensors")
+    (home-page "https://hwmon.wiki.kernel.org/lm_sensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
      "Lm-sensors is a hardware health monitoring package for Linux.  It allows

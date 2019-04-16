@@ -117,7 +117,7 @@ which allows users to view a desktop computing environment.")
 (define-public spice-gtk
   (package
     (name "spice-gtk")
-    (version "0.35")
+    (version "0.36")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -125,7 +125,7 @@ which allows users to view a desktop computing environment.")
                 "spice-gtk-" version ".tar.bz2"))
               (sha256
                (base32
-                "11lymg467gvj5ys8k22ihnfbxjn4x34ygyzirpg2nphjwlyhgrml"))))
+                "1kfpixfdmxs9wn3id48gc9bvfrgxz935y3wpykf40bgi9mcc69ki"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
@@ -134,20 +134,23 @@ which allows users to view a desktop computing environment.")
         ("gst-plugins-good" ,gst-plugins-good)
         ("gst-plugins-bad" ,gst-plugins-bad)
         ("gst-plugins-ugly" ,gst-plugins-ugly)
-        ("spice-protocol" ,spice-protocol)))
+        ("spice-protocol" ,spice-protocol)
+
+        ;; These are required by the pkg-config files.
+        ("gtk+" ,gtk+)
+        ("pixman" ,pixman)
+        ("openssl" ,openssl)))
     (inputs
       `(("glib-networking" ,glib-networking)
         ("gobject-introspection" ,gobject-introspection)
-        ("gtk+" ,gtk+)
+        ("json-glib" ,json-glib)
         ("libepoxy" ,libepoxy)
         ("libjpeg" ,libjpeg)
         ("libxcb" ,libxcb)
         ("lz4" ,lz4)
         ("mesa" ,mesa)
-        ("pixman" ,pixman)
         ("pulseaudio" ,pulseaudio)
         ("python" ,python)
-        ("openssl" ,openssl)
         ("opus" ,opus)
         ("usbredir" ,usbredir)))
     (native-inputs
@@ -162,6 +165,13 @@ which allows users to view a desktop computing environment.")
           "--enable-introspection")
         #:phases
          (modify-phases %standard-phases
+           (add-before 'check 'disable-session-test
+             (lambda _
+               ;; XXX: Disable session tests, because they require USB support,
+               ;; which is not available in the build container.
+               (substitute* "tests/Makefile"
+                 (("test-session\\$\\(EXEEXT\\) ") ""))
+               #t))
            (add-after
             'install 'wrap-spicy
             (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -291,7 +301,6 @@ resolution scaling on graphical console window resize.")
       `(("gtk+" ,gtk+)
         ("libcap" ,libcap)
         ("libxml2" ,libxml2)
-        ("openssl" ,openssl)
         ("spice-gtk" ,spice-gtk)))
     (native-inputs
       `(("glib:bin" ,glib "bin")

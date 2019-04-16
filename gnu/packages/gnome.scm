@@ -2666,7 +2666,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.66.0")
+    (version "2.66.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2674,7 +2674,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08c9kkdhzy504gv23pfdm4sq3dd3j20sikwz6gv0qrwcdjnw5bai"))))
+                "1zs3bhspwg7fggxd7x1rrggpkcf2j9ch6dhncq9syh252z0vcb2a"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4309,15 +4309,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.52")
+    (version "0.9.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/d95bf72958276c80dfaca8cce0e4e92c/"
+                                  "uploads/3b2ceb7eb15860587db6886bfdd8a91e/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1s3b0rkm8sxmhzzi624snzqvz61i1rja5wxyzw6jg2kcdjcylwln"))))
+                "1s9gkzxa6457v6bh0q8n1ijq1chd2jwgvhk5kppsnya7kxvsx8qh"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -4378,9 +4378,9 @@ a secret password store, an adblocker, and a modern UI.")
     (version "3.28.3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/epiphany/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "epiphany-" version ".tar.xz"))
               (sha256
                (base32
                 "1xz6xl6b0iihvczyr0cs1z5ifvpai6anb4m0ng1caiph06klc1b9"))))

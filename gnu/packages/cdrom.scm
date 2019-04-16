@@ -863,3 +863,108 @@ Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
 blanking CD-RW media, creating ISO-9660 file system images, extracting audio
 CD data, and more.  It's mostly compatible with @code{cdrtools}.")
     (license gpl2+)))
+
+(define-public libmirage
+  (package
+    (name "libmirage")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.sourceforge.net/cdemu/libmirage-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ydph33sfxplp4872dp8ghp574jk5d4qr8hqz61qnznq1b11cnbr"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("glib" ,glib)))
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "CD-ROM image access library")
+    (description "libMirage is a CD-ROM image access library.  It supports the
+following formats: B6T, C2D, CCD, CDI, CIF, CUE, ISO, MDS, MDX, NRG, TOC.  It
+is written in C and based on GLib.  Its aim is to provide uniform access to
+the data stored in various image formats.")
+    (license gpl2+)))
+
+(define-public cdemu-daemon
+  (package
+    (name "cdemu-daemon")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.sourceforge.net/cdemu/cdemu-daemon/cdemu-daemon-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "171qqcziqgf6dd9n8xs9hc71krhjiyx9qr767s8znidyjj88hbc4"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libmirage" ,libmirage)
+       ("glib" ,glib)
+       ("ao" ,ao)))
+    (arguments
+     ;; No tests.
+     '(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "CD/DVD-ROM device emulator")
+    (description "CDemu is a software suite designed to emulate an optical
+drive and disc (including CD-ROMs and DVD-ROMs).")
+    (license gpl2+)))
+
+(define-public cdemu-client
+  (package
+    (name "cdemu-client")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://downloads.sourceforge.net/cdemu/cdemu-client-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1zwz987pb2pakfk9kz8a6xa9hq1ip48cn4ryl9z85dik8k2sizm9"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("cdemu-daemon" ,cdemu-daemon)))
+    (arguments
+     ;; No tests.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-shebang
+           (lambda* (#:key outputs #:allow-other-keys)
+             (patch-shebang (string-append (assoc-ref outputs "out")
+                                           "/bin/cdemu"))
+             #t))
+         (add-after 'patch-shebang 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/cdemu")))
+               (wrap-program prog
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Command-line client for controlling cdemu-daemon")
+    (description "CDEmu client is a simple command-line client for controlling
+CDEmu daemon.
+
+It provides a way to perform the key tasks related to controlling the CDEmu
+daemon, such as loading and unloading devices, displaying devices' status and
+retrieving/setting devices' debug masks.")
+    (license gpl2+)))

@@ -1693,18 +1693,19 @@ building the IRC clients and bots.")
 (define-public toxic
   (package
     (name "toxic")
-    (version "0.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/JFreegman/toxic/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1dx6z7k0zpsd7dpysdy23f0hnm49qlikb0mq8fg0y01dsz9vxgak"))
-              (file-name (git-file-name name version))))
+    (version "0.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JFreegman/toxic.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "09l2j3lwvrq7bf3051vjsnml9w63790ly3iylgf26gkrmld6k31w"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list
         "CC=gcc"
@@ -1721,7 +1722,7 @@ building the IRC clients and bots.")
      `(("c-toxcore" ,c-toxcore)
        ("curl" ,curl)
        ("freealut" ,freealut)
-       ("gdk-pixbuf" ,gdk-pixbuf) ; for libnotify.pc
+       ("gdk-pixbuf" ,gdk-pixbuf)       ; for libnotify.pc
        ("libconfig" ,libconfig)
        ("libnotify" ,libnotify)
        ("libpng" ,libpng)
@@ -1819,13 +1820,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.6")
+    (version "0.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "0mvpfd5dc3zgcvwfidcd2qyn59xl5biv728mxifw0ls5rzkc9chs"))))
+        (base32 "1jw4i58cd4j1ymsnhv9224xsi26w8y0qrj6z4nw50dnbl45b6aaa"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1847,6 +1848,9 @@ QMatrixClient project.")
        ("python-reparser" ,python-reparser)
        ("python-requests" ,python-requests)
        ("python-urwid" ,python-urwid)))
+    (native-inputs
+     `(("python-httpretty" ,python-httpretty)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://hangups.readthedocs.io/")
     (synopsis "Instant messaging client for Google Hangouts")
     (description

@@ -4027,16 +4027,18 @@ complex transformations and code analysis tools.")
   (package
     (name "java-cglib")
     (version "3.2.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/cglib/cglib/archive/RELEASE_"
-                    (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
-                    ".tar.gz"))
-              (file-name (string-append "cglib-" version ".tar.gz"))
-              (sha256
-               (base32
-                "162dvd4fln76ai8prfharf66pn6r56p3sxx683j5vdyccrd5hi1q"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cglib/cglib.git")
+             (commit (string-append
+                      "RELEASE_"
+                      (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                                  version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "186451jms2zfp47yd8kxd77az2cqal1my2br7klgyp8fpl4qfg8v"))))
     (build-system ant-build-system)
     (arguments
      `(;; FIXME: tests fail because junit runs

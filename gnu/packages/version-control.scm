@@ -522,13 +522,14 @@ everything from small to very large projects with speed and efficiency.")
     (name "libgit2")
     (version "0.28.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/libgit2/libgit2/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libgit2/libgit2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0swk2dyq5a4p1jn5wvbcsrxckhh808vifxz5y8w663avg541188c"))
+                "0j5p0hhz2wizvgkf0nbpd8g32mb5bg1vp8ckpbhb0pq38ja4h43r"))
               (patches (search-patches "libgit2-avoid-python.patch"
                                        "libgit2-mtime-0.patch"))
 
@@ -550,6 +551,10 @@ everything from small to very large projects with speed and efficiency.")
              (substitute* "tests/clar/fs.h"
                (("/bin/cp") (which "cp"))
                (("/bin/rm") (which "rm")))
+             #t))
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
              #t))
          ;; Run checks more verbosely.
          (replace 'check
@@ -577,14 +582,15 @@ write native speed custom Git applications in any language with bindings.")
   (package
     (name "git-crypt")
     (version "0.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/AGWA/git-crypt"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0454fdmgm5f3razkn8n03lfqm5zyzvr4r2528zmlxiwba9518l2i"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AGWA/git-crypt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x9209n3k49k998saadr2d0lmvs01smjinx7gzzyjdwj9l904sii"))))
     (build-system gnu-build-system)
     (inputs
      `(("git" ,git)
@@ -771,14 +777,13 @@ a built-in cache to decrease server I/O pressure.")
     (version "0.5.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/davisp/ghp-import/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/davisp/ghp-import.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0x887v690xsac2hzjkpbvp3a6crh3m08mqbk3nb4xwc9dnk869q7"))))
+        (base32 "12pmw3zz3i57ljnm0rxdyjqdyhisbvy18mjwkb3bzp5pgzs2f45c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1026,14 +1031,15 @@ manipulate them in various ways.")
   (package
     (name "vcsh")
     (version "1.20151229")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/RichiH/vcsh/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ym3swkh738c3vciffvlr96vqzhwmzkb8ajqzap8f0j9n039a1mf"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/RichiH/vcsh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1grpj45nbpv4j60vd2kg4rj53zrm0bc0h9l4pfd3c2mwbvywm6ab"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -1100,15 +1106,15 @@ also walk each side of a merge and test those changes individually.")
   (package
     (name "gitolite")
     (version "3.6.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/sitaramc/gitolite/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1idxipg0df80bhjcxgwxs3lllqnkvhwpinmfv1xvg1l98fxiapgp"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sitaramc/gitolite.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rmyzr66lxh2ildf3h1nh3hh2ndwk21rjdin50r5vhwbdd7jg8vb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -1762,14 +1768,15 @@ output of the @code{git} command.")
   (package
     (name "findnewest")
     (version "0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/0-wiz-0/findnewest/archive/findnewest-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1ydis4y0amkgfr4y60sn076f1l41ya2kn89kfd9fqf44f9ccgb5r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/0-wiz-0/findnewest.git")
+             (commit (string-append "findnewest-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x1cbn2b27h5r0ah5xc06fkalfdci2ngrgd4wibxjw0h88h0nvgq"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
@@ -1833,15 +1840,15 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
   (package
     (name "git-annex-remote-hubic")
     (version "0.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Schnouki/" name "/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "196g3jkaybjx11nbr51n0cjps3wjzb145ab76y717diqvvxp5v4r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Schnouki/git-annex-remote-hubic.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16y9sk67hfi17h9n2kkffyabfccksh5rab40hhk69v6cxmbpn2sx"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (native-inputs
@@ -2096,18 +2103,18 @@ how information about the merge is displayed.")
   (package
     (name "git-imerge")
     (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/mhagger/git-imerge/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0a6ay8fpgz3yd84jc40w41x0rcfpan6bcq4wd1hxiiqwb51jysb2"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mhagger/git-imerge.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vi1w3f0yk4gqhxj2hzqafqq28rihyhyfnp8x7xzib96j2si14a4"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; The are only manual test scripts.
+     `(#:tests? #f                      ; only manual test scripts
        #:make-flags (list (string-append "DESTDIR=" %output)
                           "PREFIX=")
        #:phases

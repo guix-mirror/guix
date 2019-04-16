@@ -3542,12 +3542,19 @@ Linux / Mac OS X servers, and an auto mapper with a VT100 map display.")
     (inputs
      `(("lablgtk" ,lablgtk)
        ("ocaml" ,ocaml)
-       ("ocaml-findlib" ,ocaml-findlib)))
+       ("ocaml-findlib" ,ocaml-findlib)
+       ("ocamlbuild" ,ocamlbuild)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-before 'build 'setenv
+         (add-before 'build 'allow-unsafe-strings
+           ;; Fix a build failure with ocaml >=4.06.0.
+           ;; See <https://github.com/sgimenez/laby/issues/53>.
+           (lambda _
+             (setenv "OCAMLPARAM" "safe-string=0,_")
+             #t))
+         (add-before 'build 'set-library-path
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((lablgtk (assoc-ref inputs "lablgtk")))
                (setenv "LD_LIBRARY_PATH"
@@ -6765,3 +6772,198 @@ a procedurally generated world, the player can explore thousands of rooms in
 search of powerful artifacts, tools to help them, and to eventually free the
 Orcus Dome from evil.")
     (license license:gpl3+)))
+
+(define-public marble-marcher
+  (let ((commit "e580460a0c3826f9b28ab404607942a8ecb625d7")
+        (revision "1"))
+    (package
+      (name "marble-marcher")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/HackerPoet/MarbleMarcher.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0jjv832hl1v170n6gryp2sr3lgqndi9ab841qvgqk68bks8701mx"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f  ; there are none
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'embed-asset-directory
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((assets (string-append (assoc-ref outputs "out")
+                                            "/share/marble-marcher/assets/")))
+                 ;; Some of the files we're patching are
+                 ;; ISO-8859-1-encoded, so choose it as the default
+                 ;; encoding so the byte encoding is preserved.
+                 (with-fluids ((%default-port-encoding #f))
+                   (substitute* "src/Resource.rc"
+                     (("../assets/icon.ico")
+                      (string-append assets "icon.ico")))
+                   (substitute* "src/Res.h"
+                     (("assets/") assets))))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (assets (string-append out "/share/marble-marcher/assets"))
+                      (bin (string-append out "/bin/")))
+                 (mkdir-p bin)
+                 (mkdir-p assets)
+                 (copy-recursively "../source/assets" assets)
+                 (install-file "MarbleMarcher" bin))
+               #t)))))
+      (inputs
+       `(("eigen" ,eigen)
+         ("mesa" ,mesa)
+         ("sfml" ,sfml)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://codeparade.itch.io/marblemarcher")
+      (synopsis "Guide a marble across fractal landscapes")
+      (description "Marble Marcher is a video game that uses a fractal physics
+engine and fully procedural rendering to produce beautiful and unique
+gameplay.  The game is played on the surface of evolving fractals.  The goal
+of the game is to get your marble to the flag as quickly as possible.  But be
+careful not to fall off the level or get crushed by the fractal!  There are 24
+levels to unlock.")
+      ;; Code is under GPLv2+, assets are under CC-BY-SA 3.0 and OFL 1.1.
+      (license (list license:gpl2+
+                     license:silofl1.1
+                     license:cc-by-sa3.0)))))
+
+;; This must be updated together with flightgear.
+(define simgear
+  (package
+    (name "simgear")
+    (version "2018.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/flightgear/release-"
+                                  (version-major+minor version) "/"
+                                  "simgear-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1941ay8rngz4vwsx37bbpxr48hpcvcbj3xw1hy264lq4qnl99c68"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Skip tests that require internet access.
+             (invoke "ctest" "-E" "(http|dns)"))))))
+    (inputs
+     `(("boost" ,boost-for-mysql) ; fails with 1.69
+       ("curl" ,curl)
+       ("expat" ,expat)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("openscenegraph" ,openscenegraph-3.4)
+       ("zlib" ,zlib)))
+    (home-page "https://home.flightgear.org/")
+    (synopsis "Libraries for 3D simulations and games")
+    (description "SimGear is a set of libraries designed to be used as
+building blocks for quickly assembling 3D simulations, games, and
+visualization applications.  SimGear is developed by the FlightGear project
+and also provides the base for the FlightGear Flight Simulator.")
+    (license license:lgpl2.0+)))
+
+(define-public flightgear
+  (package
+    (name "flightgear")
+    (version (package-version simgear))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/flightgear/release-"
+                                  (version-major+minor version) "/"
+                                  "flightgear-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0lzy524cjzs8vldcjcc750bgg5c4mq9fkymxxxzqf68ilc4d1jss"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; There are some bundled libraries.
+                  (for-each delete-file-recursively
+                            '("3rdparty/sqlite3/"))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DSYSTEM_SQLITE=ON"
+             (string-append "-DFG_DATA_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/flightgear"))
+       ;; TODO: test cannot be run because the "run_test_suite" executable
+       ;; does not seem to be built.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/fgfs")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtdeclarative" "qtsvg")))
+                 `("QML2_IMPORT_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/qml"))
+                         '("qtdeclarative" "qtsvg"))))
+               #t)))
+         (add-after 'install 'install-data
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out") "/share/flightgear")))
+               (mkdir-p share)
+               (with-directory-excursion share
+                 (invoke "tar" "xf" (assoc-ref inputs "flightgear-data")
+                         "--strip-components=1")))
+             #t)))))
+    (inputs
+     `(("boost" ,boost-for-mysql)       ; same as simgear
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)
+       ("freeglut" ,freeglut)
+       ("freetype" ,freetype)
+       ("glew" ,glew)
+       ("libpng" ,libpng)
+       ("openal" ,openal)
+       ("openscenegraph" ,openscenegraph-3.4)
+       ("plib" ,plib)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
+       ("simgear" ,simgear)
+       ("speexdsp" ,speexdsp)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("flightgear-data"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://sourceforge/flightgear/release-"
+                               (version-major+minor version) "/"
+                               "FlightGear-" version "-data.tar.bz2"))
+           (sha256
+            (base32
+             "0h4npa7gqpf5fw6pv2bpw0wbwr7fa2vhia21cjbigfgd75x82zi7"))))))
+    (home-page "https://home.flightgear.org/")
+    (synopsis "Flight simulator")
+    (description "The goal of the FlightGear project is to create a
+sophisticated flight simulator framework for use in research or academic
+environments, pilot training, as an industry engineering tool, for DIY-ers to
+pursue their favorite interesting flight simulation idea, and last but
+certainly not least as a fun, realistic, and challenging desktop flight
+simulator.")
+    (license license:gpl2+)))

@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
+;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -691,13 +692,13 @@ portable between implementations.")
     (version "1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/sionescu/fiveam/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sionescu/fiveam.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "fiveam" version))
        (sha256
-        (base32 "0f48pcbhqs3wwwzjl5nk57d4hcbib4l9xblxc66b8c2fhvhmhxnv"))
-       (file-name (string-append "fiveam-" version ".tar.gz"))))
+        (base32 "1yx9716mk8pq9076q6cjx4c9lyax3amiccy37sh0913k2x8gsm4l"))))
     (inputs `(("alexandria" ,sbcl-alexandria)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp testing framework")
@@ -714,18 +715,18 @@ interactive development model in mind.")
   (sbcl-package->ecl-package sbcl-fiveam))
 
 (define-public sbcl-bordeaux-threads
-  (let ((commit "354abb0ae9f1d9324001e1a8abab3128d7420e0e")
+  (let ((commit "5dce49fbc829f4d136a734f5ef4f5d599660984f")
         (revision "1"))
     (package
       (name "sbcl-bordeaux-threads")
-      (version (git-version "0.8.5" revision commit))
+      (version (git-version "0.8.6" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/sionescu/bordeaux-threads.git")
                       (commit commit)))
                 (sha256
-                 (base32 "1hcfp21l6av1xj6z7r77sp6h4mwf9vvx4s745803sysq2qy2mwnq"))
+                 (base32 "1gkh9rz7zw57n3110ikcf4835950wr4hgp8l79id5ai6nd86x7wv"))
                 (file-name
                  (git-file-name "bordeaux-threads" version))))
       (inputs `(("alexandria" ,sbcl-alexandria)))
@@ -818,14 +819,21 @@ logical continuation of Stefil.  It focuses on interactive debugging.")
     (version "1.0.16")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/edicl/flexi-streams/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/flexi-streams.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "flexi-streams" version))
        (sha256
-        (base32 "1fb0jrwxr5c3i2lhy7kn30m1n0vggfzwjm1dacx6y5wf9wfsbamw"))
-       (file-name (string-append "flexi-streams-" version ".tar.gz"))))
+        (base32 "0gvykjlmja060zqq6nn6aqxlshh6r6ijahmmgf20q0d839rwpgxc"))))
     (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t)))))
     (inputs `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
     (synopsis "Implementation of virtual bivalent streams for Common Lisp")
     (description "Flexi-streams is an implementation of \"virtual\" bivalent
@@ -848,13 +856,13 @@ streams which are similar to string streams.")
     (version "2.0.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/edicl/cl-ppcre/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/cl-ppcre.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cl-ppcre" version))
        (sha256
-        (base32 "1i7daxf0wnydb0pgwiym7qh2wy70n14lxd6dyv28sy0naa8p31gd"))
-       (file-name (string-append "cl-ppcre-" version ".tar.gz"))))
+        (base32 "0q3iany07vgqm144lw6pj0af2d3vsikpbkwcxr30fci3kzsq4f49"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("flexi-streams" ,sbcl-flexi-streams)))
     (synopsis "Portable regular expression library for Common Lisp")
@@ -973,18 +981,19 @@ from other CLXes around the net.")
   (package
     (name "stumpwm")
     (version "18.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/stumpwm/stumpwm/archive/"
-                    version ".tar.gz"))
-              (sha256
-               (base32 "177gxfk4c127i9crghx6fmkipznhgylvzgnjb2pna38g21gg6s39"))
-              (file-name (string-append "stumpwm-" version ".tar.gz"))
-              (patches
-               ;; This patch is included in the post-18.11 git master tree
-               ;; and can be removed when we move to the next release.
-               (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stumpwm/stumpwm.git")
+             (commit version)))
+       (file-name (git-file-name "stumpwm" version))
+       (sha256
+        (base32 "003g1fmh7446ws49866kzny4lrk1wf034dq5fa4m9mq1nzc7cwv7"))
+       (patches
+        ;; This patch is included in the post-18.11 git master tree
+        ;; and can be removed when we move to the next release.
+        (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs `(("fiasco" ,sbcl-fiasco)
                      ("texinfo" ,texinfo)))
@@ -1604,13 +1613,13 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
     (version "0.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/trivial-features/trivial-features/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trivial-features/trivial-features.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "trivial-features" version))
        (sha256
-        (base32 "0db1awn6jyhcfhyfvpjvfziprmq85cigf19mwbvaprhblydsag3c"))
-       (file-name (string-append "trivial-features-" version ".tar.gz"))))
+        (base32 "0ccv7dqyrk55xga78i5vzlic7mdwp28in3g1a8fqhlk6626scsq9"))))
     (build-system asdf-build-system/sbcl)
     (arguments '(#:tests? #f))
     (home-page "http://cliki.net/trivial-features")
@@ -1691,13 +1700,13 @@ with a focus on interactive development.")
     (version "0.5.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/cl-babel/babel/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cl-babel/babel.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "babel" version))
        (sha256
-        (base32 "189kgbmslh36xx0d2i1g6a7mcvjryvjzkdlnhilqy5xs7hkyqirq"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "139a8rn2gnhj082n8jg01gc8fyr63hkj57hgrnmb3d1r327yc77f"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("tests:cl-hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
@@ -2971,12 +2980,13 @@ non-consing thread safe queues and fibonacci priority queues.")
     (version "0.19.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/cffi/cffi/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cffi/cffi.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "cffi-bootstrap" version))
        (sha256
-        (base32 "07bc3c1fbfx17wgrvx6bh9byilfzfwv5n597cfdllm0vzwvbmiyk"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "09sfgc6r7ihmbkwfpvkq5fxc7h45cabpvgbvs47i5cvnmv3k72xy"))))
     (build-system asdf-build-system/sbcl)
     (inputs
      `(("libffi" ,libffi)
@@ -3235,13 +3245,13 @@ precisely control behavior of the parser via Common Lisp restarts.")
     (version "0.21")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/trivial-garbage/trivial-garbage/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trivial-garbage/trivial-garbage.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "trivial-garbage" version))
        (sha256
-        (base32 "0b244nlszkrqawsnp568clnx32xmvjmbbagbz7625w9n0yq7396y"))
-       (file-name (string-append "trivial-garbage-" version ".tar.gz"))))
+        (base32 "0122jicfg7pca1wxw8zak1n92h5friqy60988ns0ysksj3fphw9n"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("rt" ,sbcl-rt)))
@@ -4169,12 +4179,13 @@ sockets, SSL, continuable uploads, file uploads, cookies, and more.")
     (version "1.2.38")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/edicl/hunchentoot/archive/v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/hunchentoot.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "hunchentoot" version))
        (sha256
-        (base32 "17z8rpd6b5w93jwrdwfwxjha617xnjqw8aq1hw2z76zp1fn8yrmh"))))
+        (base32 "1anpcad7w045m4rsjs1f3xdhjwx5cppq1h0vlb3q7dz81fi3i6yq"))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      `(("sbcl-cl-who" ,sbcl-cl-who)
@@ -5238,3 +5249,36 @@ Python's WSGI and Ruby's Rack.")
 
 (define-public cl-clack
   (sbcl-package->cl-source-package sbcl-clack))
+
+(define-public sbcl-log4cl
+  (let ((commit "611e094458504b938d49de904eab141285328c7c")
+        (revision "1"))
+    (package
+      (name "sbcl-log4cl")
+      (build-system asdf-build-system/sbcl)
+      (version "1.1.2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/log4cl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "08jly0s0g26b56hhpfizxsb4j0yvbh946sd205gr42dkzv8l7dsc"))))
+      ;; FIXME: tests require stefil, sbcl-hu.dwim.stefil wont work
+      (arguments
+       `(#:tests? #f))
+      (inputs `(("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (synopsis "Common Lisp logging framework, modeled after Log4J")
+      (home-page "https://github.com/7max/log4cl")
+      (description "This is a Common Lisp logging framework that can log at
+various levels and mix text with expressions.")
+      (license license:asl2.0))))
+
+(define-public cl-log4cl
+  (sbcl-package->cl-source-package sbcl-log4cl))
+
+(define-public ecl-log4cl
+  (sbcl-package->ecl-package sbcl-log4cl))

@@ -390,7 +390,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3.6")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
@@ -401,7 +401,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "110apc376wm4yd9ghpffiipwdn8rzyr3z7ncpp2516wbz4mmyhxc"))
+         "16fi03f23yb5r9s64x1a9wrxnvivlbawvrbq4d486yclzl1r7y48"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -627,7 +627,7 @@ Monero GUI client.")
 (define-public python-trezor-agent
   (package
     (name "python-trezor-agent")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method git-fetch)
@@ -636,7 +636,7 @@ Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i4igkxi8fwdlbhg6nx27lhnc9v9nmrw4j5fvpnc202n6yjlc7x7"))))
+        (base32 "0q99vbfd3h85s8rnjipnmldixabqmmlk5w9karv6f0rhyi54f4zv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -733,14 +733,14 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "064yds8f4px0c6grkkanpdjx022g4q87ihzhkmdv9qanv0hz6hv0"))))
+            "1f0zfki12mnhidkfxpx2lpq1xim8f35i2d64bx9lf4m26xxv9x56"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -779,14 +779,14 @@ TREZOR Hardware Wallet.")
 (define-public python-keepkey
   (package
     (name "python-keepkey")
-    (version "6.0.2")
+    (version "6.0.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "keepkey" version))
         (sha256
           (base32
-            "16j8hnxj9r4b2w6kfncmny09pb1al8ppmn59qxzl3qmh1xhpy45g"))))
+            "0z3d0m6364v9dv0njs4cd5m5ai6j6v35xaaxfxl90m9vmyxy81vd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

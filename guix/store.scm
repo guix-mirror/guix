@@ -368,7 +368,9 @@
   (ats-cache    store-connection-add-to-store-cache)
   (atts-cache   store-connection-add-text-to-store-cache)
   (object-cache store-connection-object-cache
-                (default vlist-null)))            ;vhash
+                (default vlist-null))             ;vhash
+  (built-in-builders store-connection-built-in-builders
+                     (default (delay '()))))      ;promise
 
 (set-record-type-printer! <store-connection>
                           (lambda (obj port)
@@ -557,13 +559,17 @@ for this connection will be pinned.  Return a server object."
                           (write-int cpu-affinity port)))
                       (when (>= (protocol-minor v) 11)
                         (write-int (if reserve-space? 1 0) port))
-                      (let ((conn (%make-store-connection port
-                                                          (protocol-major v)
-                                                          (protocol-minor v)
-                                                          output flush
-                                                          (make-hash-table 100)
-                                                          (make-hash-table 100)
-                                                          vlist-null)))
+                      (letrec* ((built-in-builders
+                                 (delay (%built-in-builders conn)))
+                                (conn
+                                 (%make-store-connection port
+                                                         (protocol-major v)
+                                                         (protocol-minor v)
+                                                         output flush
+                                                         (make-hash-table 100)
+                                                         (make-hash-table 100)
+                                                         vlist-null
+                                                         built-in-builders)))
                         (let loop ((done? (process-stderr conn)))
                           (or done? (process-stderr conn)))
                         conn)))))))))
@@ -578,13 +584,17 @@ already taken place on PORT and that we're just continuing on this established
 connection.  Use with care."
   (let-values (((output flush)
                 (buffering-output-port port (make-bytevector 8192))))
-    (%make-store-connection port
-                            (protocol-major version)
-                            (protocol-minor version)
-                            output flush
-                            (make-hash-table 100)
-                            (make-hash-table 100)
-                            vlist-null)))
+    (define connection
+      (%make-store-connection port
+                              (protocol-major version)
+                              (protocol-minor version)
+                              output flush
+                              (make-hash-table 100)
+                              (make-hash-table 100)
+                              vlist-null
+                              (delay (%built-in-builders connection))))
+
+    connection))
 
 (define (store-connection-version store)
   "Return the protocol version of STORE as an integer."
@@ -602,18 +612,22 @@ connection.  Use with care."
   "Close the connection to SERVER."
   (close (store-connection-socket server)))
 
-(define-syntax-rule (with-store store exp ...)
-  "Bind STORE to an open connection to the store and evaluate EXPs;
-automatically close the store when the dynamic extent of EXP is left."
+(define (call-with-store proc)
+  "Call PROC with an open store connection."
   (let ((store (open-connection)))
     (dynamic-wind
       (const #f)
       (lambda ()
         (parameterize ((current-store-protocol-version
                         (store-connection-version store)))
-         exp) ...)
+          (proc store)))
       (lambda ()
         (false-if-exception (close-connection store))))))
+
+(define-syntax-rule (with-store store exp ...)
+  "Bind STORE to an open connection to the store and evaluate EXPs;
+automatically close the store when the dynamic extent of EXP is left."
+  (call-with-store (lambda (store) exp ...)))
 
 (define current-store-protocol-version
   ;; Protocol version of the store currently used.  XXX: This is a hack to
@@ -982,14 +996,52 @@ string).  Raise an error if no such path exists."
          (operation (add-text-to-store (string name) (bytevector text)
                                        (string-list references))
                     #f
-                    store-path)))
+                    store-path))
+        (lookup (if (profiled? "add-data-to-store-cache")
+                    (let ((lookups 0)
+                          (hits    0)
+                          (drv     0)
+                          (scheme  0))
+                      (define (show-stats)
+                        (define (% n)
+                          (if (zero? lookups)
+                              100.
+                              (* 100. (/ n lookups))))
+
+                        (format (current-error-port) "
+'add-data-to-store' cache:
+  lookups:      ~5@a
+  hits:         ~5@a (~,1f%)
+  .drv files:   ~5@a (~,1f%)
+  Scheme files: ~5@a (~,1f%)~%"
+                                lookups hits (% hits)
+                                drv (% drv)
+                                scheme (% scheme)))
+
+                      (register-profiling-hook! "add-data-to-store-cache"
+                                                show-stats)
+                      (lambda (cache args)
+                        (let ((result (hash-ref cache args)))
+                          (set! lookups (+ 1 lookups))
+                          (when result
+                            (set! hits (+ 1 hits)))
+                          (match args
+                            ((_ name _)
+                             (cond ((string-suffix? ".drv" name)
+                                    (set! drv (+ drv 1)))
+                                   ((string-suffix? "-builder" name)
+                                    (set! scheme (+ scheme 1)))
+                                   ((string-suffix? ".scm" name)
+                                    (set! scheme (+ scheme 1))))))
+                          result)))
+                    hash-ref)))
     (lambda* (server name bytes #:optional (references '()))
       "Add BYTES under file NAME in the store, and return its store path.
 REFERENCES is the list of store paths referred to by the resulting store
 path."
       (let* ((args  `(,bytes ,name ,references))
              (cache (store-connection-add-text-to-store-cache server)))
-        (or (hash-ref cache args)
+        (or (lookup cache args)
             (let ((path (add-text-to-store server name bytes references)))
               (hash-set! cache args path)
               path))))))
@@ -1367,13 +1419,13 @@ that there is no guarantee that the order of the resulting list matches the
 order of PATHS."
              substitutable-path-list))
 
-(define built-in-builders
+(define %built-in-builders
   (let ((builders (operation (built-in-builders)
                              "Return the built-in builders."
                              string-list)))
     (lambda (store)
       "Return the names of the supported built-in derivation builders
-supported by STORE."
+supported by STORE.  The result is memoized for STORE."
       ;; Check whether STORE's version supports this RPC and built-in
       ;; derivation builders in general, which appeared in Guix > 0.11.0.
       ;; Return the empty list if it doesn't.  Note that this RPC does not
@@ -1383,6 +1435,11 @@ supported by STORE."
                    (>= (store-connection-minor-version store) #x60)))
           (builders store)
           '()))))
+
+(define (built-in-builders store)
+  "Return the names of the supported built-in derivation builders
+supported by STORE."
+  (force (store-connection-built-in-builders store)))
 
 (define-operation (optimize-store)
   "Optimize the store by hard-linking identical files (\"deduplication\".)

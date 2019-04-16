@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,46 @@
     (description
      "Mate Common includes common files and macros used by
 MATE applications.")
+    (license license:gpl3+)))
+
+(define-public mate-power-manager
+  (package
+    (name "mate-power-manager")
+    (version "1.22.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pub.mate-desktop.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "03c09h41qfz83wmjfvwzkq4xqc54aswmki4h034qcxbgfnyfmk1i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("yelp-tools" ,yelp-tools)
+       ("glib" ,glib "bin") ; glib-gettextize
+       ("libtool" ,libtool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("dbus-glib" ,dbus-glib)
+       ("libgnome-keyring" ,libgnome-keyring)
+       ("cairo" ,cairo)
+       ("dbus" ,dbus)
+       ("libnotify" ,libnotify)
+       ("mate-panel" ,mate-panel)
+       ("libxrandr" ,libxrandr)
+       ("libcanberra" ,libcanberra)
+       ("upower" ,upower)))
+    (home-page "https://mate-desktop.org/")
+    (synopsis "A Power Manager for MATE")
+    (description
+     "MATE Power Manager is a MATE session daemon that acts as a policy agent on
+top of UPower. It listens to system events and responds with user-configurable
+actions.")
     (license license:gpl3+)))
 
 (define-public mate-icon-theme
@@ -1565,6 +1606,7 @@ used to bring up authentication dialogs.")
        ("mate-terminal"             ,mate-terminal)
        ("mate-themes"               ,mate-themes)
        ("mate-icon-theme"           ,mate-icon-theme)
+       ("mate-power-manager"        ,mate-power-manager)
        ("mate-menu"                 ,mate-menus)
        ("mate-panel"                ,mate-panel)
        ("mate-control-center"       ,mate-control-center)

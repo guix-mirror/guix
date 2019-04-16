@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -537,6 +537,32 @@ virtual reality, scientific visualization and modeling.")
     ;; The 'LICENSE' file explains that the source is licensed under
     ;; LGPL 2.1, but with 4 exceptions. This version is called OSGPL.
     (license license:lgpl2.1)))
+
+;; We need this for simgear
+(define-public openscenegraph-3.4
+  (package (inherit openscenegraph)
+    (name "openscenegraph")
+    (version "3.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openscenegraph/OpenSceneGraph")
+             (commit (string-append "OpenSceneGraph-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fbzg1ihjpxk6smlq80p3h3ggllbr16ihd2fxpfwzam8yr8yxip9"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openscenegraph)
+       ((#:configure-flags flags)
+        `(cons
+          ;; The jpeg plugin requires conversion between integers and booleans
+          "-DCMAKE_CXX_FLAGS=-fpermissive"
+          ,flags))))
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ,@(package-inputs openscenegraph)))))
 
 (define-public povray
   (package

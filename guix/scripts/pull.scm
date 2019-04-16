@@ -91,8 +91,6 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
   (display (G_ "
-  -n, --dry-run          show what would be pulled and built"))
-  (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))

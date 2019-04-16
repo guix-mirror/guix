@@ -119,7 +119,7 @@ found.  Return #f if no build log was found."
   (let* ((root (if (string-prefix? "/" root)
                    root
                    (string-append (canonicalize-path (dirname root))
-                                  "/" root))))
+                                  "/" (basename root)))))
     (catch 'system-error
       (lambda ()
         (match paths

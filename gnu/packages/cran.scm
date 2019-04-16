@@ -242,14 +242,14 @@ single step.")
 (define-public r-rvest
   (package
     (name "r-rvest")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvest" version))
        (sha256
         (base32
-         "04mv99z8dixywx96kfy4215g6ib23s7qvd77hcf9pxqxzcvqhvhd"))))
+         "0vsm38w83zf0djcrc5ymb1ysg88hmgq2w937ql7pqgvk5px8f2mi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httr" ,r-httr)
@@ -2515,14 +2515,14 @@ Delaunay triangulation and convex hull computation.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.3.8")
+    (version "1.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "0gi0hl14ghgf65zxsvgzh9z6xx1nyi49cpx192lmwrwqn3dy7ba0"))))
+         "1vzs0cvl6xw3h9i00rg3hs02xwgxcnh8326y10kxmhs3qq4m7nb2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -2674,14 +2674,14 @@ by base R methods related to model fitting.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "0bmf38yvwalqf5j5yrr48nsk5k3n75s0gwcw621hp5lgrgvnp7ns"))))
+         "0qmclih5dm5sqzy4hplcfy677kr12pm9pnpv3r319g14dd27pbqn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
@@ -3701,14 +3701,14 @@ terminals.")
 (define-public r-tinytex
   (package
     (name "r-tinytex")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tinytex" version))
        (sha256
         (base32
-         "017g0niwmx8qafsn9b01gp60j5fgwxch0dnkmjgpxxr1k4h1r64x"))))
+         "03ggxbd4y1ipcmjw5ixa6g6wg4ydargnln7g08bdrdi96zyyq1fh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-xfun" ,r-xfun)))
@@ -5181,14 +5181,14 @@ obtain a better initial configuration in non-metric MDS.")
 (define-public r-reticulate
   (package
     (name "r-reticulate")
-    (version "1.11.1")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reticulate" version))
        (sha256
         (base32
-         "1cyb92dvv9iibsk28i0gm5hm2xqbsn0y6d67id74c8rhai9y8i9v"))))
+         "0pqr1rcs8yg9nlh729mvlws93cqhpmv49j9bcgarh7vxzkwyv0kb"))))
     (build-system r-build-system)
     (inputs `(("python" ,python)))
     (propagated-inputs
@@ -7979,14 +7979,14 @@ terminals that do not support Unicode.")
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "1gadckx3sxz9gxvpkprj9x7zcgg2nz5m4q0vi76ya9li1v03rwwn"))))
+         "0pn6ka3726psaqlx573g6nxi90apf0rn5m4k2lz1jr66xdc19sag"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-clipr" ,r-clipr)
@@ -7998,10 +7998,13 @@ terminals that do not support Unicode.")
        ("r-gh" ,r-gh)
        ("r-git2r" ,r-git2r)
        ("r-glue" ,r-glue)
+       ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-rprojroot" ,r-rprojroot)
        ("r-rstudioapi" ,r-rstudioapi)
-       ("r-whisker" ,r-whisker)))
+       ("r-whisker" ,r-whisker)
+       ("r-withr" ,r-withr)
+       ("r-yaml" ,r-yaml)))
     (home-page "https://github.com/r-lib/usethis")
     (synopsis "Automate R package and project setup")
     (description
@@ -8037,14 +8040,14 @@ more information about packages, and where they were installed from.")
 (define-public r-remotes
   (package
     (name "r-remotes")
-    (version "2.0.2")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "remotes" version))
        (sha256
         (base32
-         "0rsjxmhwpr51ilsdjfqn06mj8yr2d7nckcn3arv1ljn23qfkpcxa"))))
+         "1jbn4kjimcr82zv5lnqxqa2487a96vn6jxf7wc6gnpxr6k06d61p"))))
     (build-system r-build-system)
     (home-page "https://github.com/r-lib/remotes#readme")
     (synopsis "R package installation from remote repositories")
@@ -8161,14 +8164,14 @@ ways.")
 (define-public r-summarytools
   (package
     (name "r-summarytools")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "summarytools" version))
        (sha256
         (base32
-         "1q83kii6prqf9z5v8cxj1q2944kx9x7dcxyqix3m883a94dmgivy"))))
+         "1wfbkgvicaic37zgpr6zcm4a58yx43p59h0sqggdj44ncqs7147f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
@@ -8181,6 +8184,7 @@ ways.")
        ("r-pryr" ,r-pryr)
        ("r-rapportools" ,r-rapportools)
        ("r-rcurl" ,r-rcurl)
+       ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)))
     (home-page "https://github.com/dcomtois/summarytools")
     (synopsis "Tools to quickly and neatly summarize data")
@@ -10618,14 +10622,14 @@ regression coefficients can be conducted via jackknifing.")
 (define-public r-huge
   (package
     (name "r-huge")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "huge" version))
        (sha256
         (base32
-         "06s22i2cdn6g2r8kq5csyspinayh8dxxg9gkwcf4sa1lmrgb0bf9"))))
+         "1j93gvi1jyq3ld9jhdqhrpm2is54rk3ilmf3yw7fx6gva0y6hjqd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-igraph" ,r-igraph)
@@ -11806,14 +11810,14 @@ al. (2010).")
 (define-public r-reinforcelearn
   (package
     (name "r-reinforcelearn")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reinforcelearn" version))
        (sha256
         (base32
-         "0naakmyb14d2cf7cy5ir52qh3bp51gvs6hyhfi3f72yl2jfnnpzg"))))
+         "176z2q69p24i29a8sh19xxn2zl3h1z2ixdssr5i6m4yvkvdrvv3b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
@@ -12721,14 +12725,14 @@ that accept short and long options.")
 (define-public r-wgcna
   (package
     (name "r-wgcna")
-    (version "1.66")
+    (version "1.67")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "WGCNA" version))
        (sha256
         (base32
-         "0rhnyhzfn93yp24jz9v6dzrmyizwzdw070a7idm0k33w1cm8sjqv"))))
+         "09387w85lxvwr8ax2i2h602b4dgfv4wbvsl9aj1q0b1vfs4rkk69"))))
     (properties `((upstream-name . "WGCNA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -13860,3 +13864,27 @@ making it possible to download files over HTTPS across platforms.  The
 @code{RCurl} package provides this functionality (and much more) but has
 external dependencies.  This package has is implemented purely in R.")
     (license license:gpl2)))
+
+(define-public r-rex
+  (package
+    (name "r-rex")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rex" version))
+       (sha256
+        (base32
+         "0alsadgjgass3wr8y5d247j12qqzg454sc84vpskclrkmz778g5x"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)))
+    (home-page "https://github.com/kevinushey/rex")
+    (synopsis "Friendly regular expressions")
+    (description
+     "This package provides a friendly interface for the construction of
+regular expressions.  Regular expressions are a very powerful feature, however
+they are often difficult to interpret.  Rex allows you to build complex
+regular expressions from human readable expressions")
+    (license license:expat)))

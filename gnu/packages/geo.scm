@@ -746,14 +746,14 @@ to create databases that are optimized for rendering/tile/map-services.")
     (name "libosmium")
     (version "2.14.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/osmcode/libosmium/archive/v"
-                version ".tar.gz"))
-    (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0d9b46qiw7zkw1h9lygjdwqxnbhm3c7v8kydzw9f9f778cyagc94"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/osmcode/libosmium.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "123ri1l0a2b9fljgpwsl7z2w4i3kmgxz79d4ns9z4mwbp8sw0250"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("boost" ,boost)
@@ -776,20 +776,21 @@ OpenStreetMap data.")
   (package
     (name "osm2pgsql")
     (version "0.96.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/openstreetmap/osm2pgsql/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08y7776r4l9v9177a4q6cfdri0lpirky96m6g699hwl7v1vhw0mn"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (delete-file-recursively "contrib/protozero")
-                  (delete-file-recursively "contrib/libosmium")
-                  #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openstreetmap/osm2pgsql.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "032cydh8ynaqfhdzmkvgbmqyjql668y6qln1l59l2s3ni9963bbl"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "contrib/protozero")
+           (delete-file-recursively "contrib/libosmium")
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f; tests fail because we need to setup a database
@@ -823,14 +824,15 @@ map, geocoding with Nominatim, or general analysis.")
   (package
     (name "tippecanoe")
     (version "1.31.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mapbox/tippecanoe/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1057na1dkgjaryr7jr15lqkxpam111d3l5zdpdkqzzzpxmdjxqcf"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mapbox/tippecanoe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1m0x931a945sr7axyhcvpwh798m58hx1zxh6ikgf9gsgqhdhmszz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -118,6 +118,7 @@
             profile-search-paths
 
             generation-number
+            generation-profile
             generation-numbers
             profile-generations
             relative-generation-spec->number
@@ -1551,6 +1552,20 @@ already effective."
                                               (basename (readlink profile))))
              (compose string->number (cut match:substring <> 1)))
       0))
+
+(define %profile-generation-rx
+  ;; Regexp that matches profile generation.
+  (make-regexp "(.*)-([0-9]+)-link$"))
+
+(define (generation-profile file)
+  "If FILE is a profile generation GC root such as \"guix-profile-42-link\",
+return its corresponding profile---e.g., \"guix-profile\".  Otherwise return
+#f."
+  (match (regexp-exec %profile-generation-rx file)
+    (#f #f)
+    (m  (let ((profile (match:substring m 1)))
+          (and (file-exists? (string-append profile "/manifest"))
+               profile)))))
 
 (define (generation-numbers profile)
   "Return the sorted list of generation numbers of PROFILE, or '(0) if no

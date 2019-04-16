@@ -278,11 +278,19 @@ path definition to be returned."
                 (evaluate-search-paths search-paths profiles
                                        getenv))))
 
+(define (absolutize file)
+  "Return an absolute file name equivalent to FILE, but without resolving
+symlinks like 'canonicalize-path' would do."
+  (if (string-prefix? "/" file)
+      file
+      (string-append (getcwd) "/" file)))
+
 (define* (display-search-paths entries profiles
                                #:key (kind 'exact))
   "Display the search path environment variables that may need to be set for
 ENTRIES, a list of manifest entries, in the context of PROFILE."
-  (let* ((profiles (map user-friendly-profile profiles))
+  (let* ((profiles (map (compose user-friendly-profile absolutize)
+                        profiles))
          (settings (search-path-environment-variables entries profiles
                                                       #:kind kind)))
     (unless (null? settings)

@@ -1,0 +1,16 @@
+Kodi doesn't set the CAPATH and CAINFO parameters for libcurl. To make HTTPS
+connections work we can set them based on SSL_CERT_DIR and SSL_CERT_FILE.
+
+--- a/xbmc/filesystem/CurlFile.cpp
++++ b/xbmc/filesystem/CurlFile.cpp
+@@ -626,5 +626,9 @@
+   // Setup allowed TLS/SSL ciphers. New versions of cURL may deprecate things that are still in use.
+   if (!m_cipherlist.empty())
+     g_curlInterface.easy_setopt(h, CURLOPT_SSL_CIPHER_LIST, m_cipherlist.c_str());
++
++  // Load certificate data from environment paths
++  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_CAPATH, getenv("SSL_CERT_DIR"));
++  g_curlInterface.easy_setopt(m_state->m_easyHandle, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
+ }
+ 
+ void CCurlFile::SetRequestHeaders(CReadState* state)

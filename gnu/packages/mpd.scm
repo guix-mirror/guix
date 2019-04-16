@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2018, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -195,7 +195,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.33")
+    (version "0.34")
     (source (origin
               (method url-fetch)
               (uri
@@ -204,7 +204,7 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "19fp7xkpai4lq3vmpbppgh3ism7lg2sibv237c0sl5a0hls4mq4l"))))
+                "0mz8r6vc4zn5sa3hlq4ii74qcrkh01nbg784zcwahgz8g3fb3i8l"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

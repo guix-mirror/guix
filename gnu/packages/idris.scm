@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,11 +20,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages idris)
+  #:use-module (gnu packages)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
@@ -34,7 +38,7 @@
 (define-public idris
   (package
     (name "idris")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -42,8 +46,14 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "1w5i2z88li4niykwc6yrgxgfp25ll6ih95cip0ri7d8i7ik03c48"))))
+                "0fn9h58l592j72njwma1ia48h8h87wi2rjqfxs7j2lfmvgfv18fi"))
+              (patches (search-patches "idris-test-no-node.patch"))))
     (build-system haskell-build-system)
+    (native-inputs                      ;For tests
+     `(("perl" ,perl)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
@@ -60,6 +70,7 @@
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)
+       ("ghc-libffi" ,ghc-libffi)
        ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
@@ -75,21 +86,16 @@
        ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
        ("ghc-zip-archive" ,ghc-zip-archive)))
     (arguments
-     `(#:tests? #f ; FIXME: Test suite doesn't run in a sandbox.
-       #:configure-flags
+     `(#:configure-flags
        (list (string-append "--datasubdir="
-                            (assoc-ref %outputs "out") "/lib/idris"))
+                            (assoc-ref %outputs "out") "/lib/idris")
+             "-fFFI" "-fGMP")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-cc-command
            (lambda _
              (setenv "CC" "gcc")
              #t))
-         (add-before 'configure 'update-constraints
-           (lambda _
-             (substitute* "idris.cabal"
-               (("aeson >= 0\\.6 && < 1\\.3")
-                "aeson >= 0.6 && < 1.4"))))
          (add-after 'install 'fix-libs-install-location
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -99,7 +105,15 @@
                 (lambda (module)
                   (symlink (string-append modules "/" module)
                            (string-append lib "/" module)))
-                '("prelude" "base" "contrib" "effects" "pruviloj"))))))))
+                '("prelude" "base" "contrib" "effects" "pruviloj")))))
+         (delete 'check)                ;Run check later
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys #:rest args)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "TASTY_NUM_THREADS" (number->string (parallel-job-count)))
+               (setenv "IDRIS_CC" "gcc") ;Needed for creating executables
+               (setenv "PATH" (string-append out "/bin:" (getenv "PATH")))
+               (apply (assoc-ref %standard-phases 'check) args)))))))
     (native-search-paths
      (list (search-path-specification
             (variable "IDRIS_LIBRARY_PATH")

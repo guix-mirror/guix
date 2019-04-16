@@ -120,6 +120,7 @@ MODULES =					\
   guix/build-system/gnu.scm			\
   guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
+  guix/build-system/linux-module.scm		\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/ocaml.scm			\
@@ -138,6 +139,7 @@ MODULES =					\
   guix/store.scm				\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\
+  guix/colors.scm				\
   guix/i18n.scm					\
   guix/ui.scm					\
   guix/status.scm				\
@@ -172,6 +174,7 @@ MODULES =					\
   guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
+  guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
@@ -276,7 +279,8 @@ endif BUILD_DAEMON_OFFLOAD
 # Scheme implementation of the build daemon and related functionality.
 STORE_MODULES =					\
   guix/store/database.scm			\
-  guix/store/deduplication.scm
+  guix/store/deduplication.scm			\
+  guix/store/roots.scm
 
 MODULES += $(STORE_MODULES)
 
@@ -407,7 +411,8 @@ SCM_TESTS =					\
   tests/pypi.scm				\
   tests/import-utils.scm			\
   tests/store-database.scm			\
-  tests/store-deduplication.scm
+  tests/store-deduplication.scm			\
+  tests/store-roots.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\

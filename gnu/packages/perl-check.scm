@@ -142,6 +142,30 @@ framework base class.  It concentrates on offering reusable data driven
 patterns, so that you can write tests with a minimum of code.")
     (license perl-license)))
 
+(define-public perl-test-checkdeps
+  (package
+    (name "perl-test-checkdeps")
+    (version "0.010")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LE/LEONT/Test-CheckDeps-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1vjinlixxdx6gfcw8y1dw2rla8bfhi8nmgcqr3nffc7kqskcrz36"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)))
+    (home-page "https://metacpan.org/release/Test-CheckDeps")
+    (synopsis "Check for presence of dependencies")
+    (description
+     "This module provides a test that checks all dependencies have been
+installed properly.")
+    (license perl-license)))
+
 (define-public perl-test-class
   (package
     (name "perl-test-class")
@@ -361,6 +385,30 @@ functions.")
     ;; license, any version, ..."
     (license gpl3+)))
 
+(define-public perl-test-dir
+  (package
+    (name "perl-test-dir")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MT/MTHURN/"
+                           "Test-Dir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hpafgr93jjl6s8spskhdxhgich4cccmaiq99mla5diyj4iv6ckk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-pod-coverage" ,perl-pod-coverage)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/Test-Dir")
+    (synopsis "Utilities for testing directory attributes")
+    (description
+     "This modules provides a collection of test utilities for directory
+attributes.")
+    (license perl-license)))
+
 (define-public perl-test-directory
   (package
     (name "perl-test-directory")
@@ -498,6 +546,58 @@ Test::More and friends.")
     (description "Test::Fatal is an alternative to the popular
 Test::Exception.  It does much less, but should allow greater flexibility in
 testing exception-throwing code with about the same amount of typing.")
+    (license perl-license)))
+
+(define-public perl-test-file
+  (package
+    (name "perl-test-file")
+    (version "1.443")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/B/BD/BDFOY/Test-File-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1mdwb3x8d4l24wsymamsnq2c73a637v4q5kmb5xqqz31iymsdd31"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-utf8" ,perl-test-utf8)))
+    (home-page "https://metacpan.org/release/Test-File")
+    (synopsis "Utilities for testing file attributes")
+    (description
+     "@code{Test::File} provides a collection of test utilities for file
+attributes.")
+    (license perl-license)))
+
+(define-public perl-test-file-contents
+  (package
+    (name "perl-test-file-contents")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DW/DWHEELER/Test-File-Contents-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0g8zgfyw84181snw7ghahnl9r4lrmlfj7zwi76sv8d0bj7xssvyd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-text-diff" ,perl-text-diff)))
+    (home-page "https://metacpan.org/release/Test-File-Contents")
+    (synopsis "Test routines for examining the contents of files")
+    (description
+     "@{Test::File::Contents} provides functions for testing the contents of
+files.")
     (license perl-license)))
 
 (define-public perl-test-file-sharedir-dist
@@ -1274,6 +1374,32 @@ UTF-8 strings in Perl.  This module has two types of tests: The validity tests
 check if a string is valid and not corrupt, whereas the characteristics tests
 will check that string has a given set of characteristics.")
     (license perl-license)))
+
+(define-public perl-test-version
+  (package
+    (name "perl-test-version")
+    (version "2.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/P/PL/PLICEASE/Test-Version-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1q1qradaf7r2rb3jhpv01wl8z3bxymkfqrl9gwdhxwx5jwldvqcw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-file-find-rule-perl" ,perl-file-find-rule-perl)))
+    (home-page "https://metacpan.org/release/Test-Version")
+    (synopsis "Check versions in modules")
+    (description
+     "@code{Test::Version} checks to ensure that all modules have a version
+defined, and that the version is valid.")
+    (license artistic2.0)))
 
 (define-public perl-test-warn
   (package

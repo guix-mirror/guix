@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -93,7 +93,16 @@ scientific data.")
                                   "guile-charting-" version ".tar.gz"))
               (sha256
                (base32
-                "0w5qiyv9v0ip5li22x762bm48g8xnw281w66iyw094zdw611pb2m"))))
+                "0w5qiyv9v0ip5li22x762bm48g8xnw281w66iyw094zdw611pb2m"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; By default, .go files would be installed to
+                  ;; $libdir/…/ccache instead of $libdir/…/site-ccache.  Fix
+                  ;; that.
+                  (substitute* (find-files "." "^Makefile\\.in$")
+                    (("/ccache") "/site-ccache"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
