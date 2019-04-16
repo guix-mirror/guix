@@ -127,15 +127,14 @@ brick your device.")
 (define-public avrdude
   (package
     (name "avrdude")
-    (version "6.1")
+    (version "6.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://savannah/avrdude/avrdude-"
                           version ".tar.gz"))
       (sha256
-       (base32
-        "0frxg0q09nrm95z7ymzddx7ysl77ilfbdix1m81d9jjpiv5bm64y"))))
+       (base32 "15m1w1qad3dj7r8n5ng1qqcaiyx1gyd6hnc3p2apgjllccdp77qg"))))
     (build-system gnu-build-system)
     (inputs
      `(("libelf" ,libelf)
