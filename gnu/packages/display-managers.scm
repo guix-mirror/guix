@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 L  p R n  d n <guix@lprndn.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,16 +126,15 @@ create smooth, animated user interfaces.")
 (define-public lightdm
   (package
     (name "lightdm")
-    (version "1.24.0")
+    (version "1.30.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://launchpad.net/lightdm/"
-                                  (version-major+minor version) "/"
-                                  version "/+download/lightdm-"
-                                  version ".tar.xz"))
+              (uri (string-append
+                    "https://github.com/CanonicalLtd/lightdm/releases/download/"
+                    version "/lightdm-" version ".tar.xz"))
               (sha256
                (base32
-                "18j33bm54i8k7ncxcs69zqi4105s62n58jrydqn3ikrb71s9nl6d"))))
+                "158zb2d0v1309a8v19hh32y4yj3v6yg4yg6m0l7v59d3a2b7f651"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f ; fails when run in parallel
@@ -152,12 +152,6 @@ create smooth, animated user interfaces.")
                (("/usr/sbin/nologin") (which "nologin")))
              (substitute* "src/seat.c"
                (("/bin/sh") (which "sh")))
-             #t))
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             (substitute* "tests/Makefile.in"
-               (("test-sessions-gobject ") "")
-               ((" test-sessions-python ") " "))
              #t))
          (add-before 'check 'pre-check
            ;; Run test-suite under a dbus session.
