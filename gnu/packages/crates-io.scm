@@ -43,3 +43,50 @@
 or XID_Continue properties according to Unicode Standard Annex #31.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-proc-macro2
+  (package
+    (name "rust-proc-macro2")
+    (version "0.4.27")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "proc-macro2" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "05c92v787snyaq4ss16vxc9mdv6zndfgsdq8k3hnnyffmsf7ycad"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs (("rust-unicode-xid" ,rust-unicode-xid))
+        #:cargo-development-inputs (("rust-quote" ,rust-quote))))
+    (home-page "https://github.com/alexcrichton/proc-macro2")
+    (synopsis "Stable implementation of the upcoming new `proc_macro` API")
+    (description "This package provides a stable implementation of the upcoming new
+`proc_macro` API.  Comes with an option, off by default, to also reimplement itself
+in terms of the upstream unstable API.")
+    ;; Dual licensed.
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-quote
+  (package
+    (name "rust-quote")
+    (version "0.6.12")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quote" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1nw0klza45hf127kfyrpxsxd5jw2l6h21qxalil3hkr7bnf7kx7s"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs (("rust-proc-macro2" ,rust-proc-macro2))))
+    (home-page "https://github.com/dtolnay/quote")
+    (synopsis "Quasi-quoting macro quote!(...)")
+    (description "Quasi-quoting macro quote!(...)")
+    ;; Dual licensed.
+    (license (list license:asl2.0 license:expat))))
