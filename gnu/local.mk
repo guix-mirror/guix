@@ -121,6 +121,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
   %D%/packages/cran.scm				\
+  %D%/packages/crates-io.scm			\
   %D%/packages/cross-base.scm			\
   %D%/packages/crypto.scm			\
   %D%/packages/cryptsetup.scm			\
