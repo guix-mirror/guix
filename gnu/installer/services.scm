@@ -20,7 +20,6 @@
 (define-module (gnu installer services)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
-  #:use-module (ice-9 match)
   #:export (system-service?
             system-service-name
             system-service-type
@@ -37,7 +36,10 @@
   system-service?
   (name            system-service-name)           ;string
   (type            system-service-type)           ;'desktop | 'networking
-  (snippet         system-service-snippet))       ;sexp
+  (snippet         system-service-snippet         ;list of sexps
+                   (default '()))
+  (packages        system-service-packages        ;list of sexps
+                   (default '())))
 
 ;; This is the list of desktop environments supported as services.
 (define %system-services
@@ -51,26 +53,38 @@
     (list
      (desktop-environment
       (name "GNOME")
-      (snippet '(service gnome-desktop-service-type)))
+      (snippet '((service gnome-desktop-service-type))))
      (desktop-environment
       (name "Xfce")
-      (snippet '(service xfce-desktop-service-type)))
+      (snippet '((service xfce-desktop-service-type))))
      (desktop-environment
       (name "MATE")
-      (snippet '(service mate-desktop-service-type)))
+      (snippet '((service mate-desktop-service-type))))
      (desktop-environment
       (name "Enlightenment")
-      (snippet '(service enlightenment-desktop-service-type)))
+      (snippet '((service enlightenment-desktop-service-type))))
+     (desktop-environment
+      (name "Openbox")
+      (packages '((specification->package "openbox"))))
+     (desktop-environment
+      (name "awesome")
+      (packages '((specification->package "awesome"))))
+     (desktop-environment
+      (name "i3")
+      (packages '((specification->package "i3-wm"))))
+     (desktop-environment
+      (name "ratpoison")
+      (packages '((specification->package "ratpoison"))))
 
      ;; Networking.
      (system-service
       (name (G_ "OpenSSH secure shell daemon (sshd)"))
       (type 'networking)
-      (snippet '(service openssh-service-type)))
+      (snippet '((service openssh-service-type))))
      (system-service
       (name (G_ "Tor anonymous network router"))
       (type 'networking)
-      (snippet '(service tor-service-type)))
+      (snippet '((service tor-service-type))))
 
      ;; Network connectivity management.
      (system-service
@@ -86,7 +100,7 @@
      (system-service
       (name (G_ "DHCP client (dynamic IP address assignment)"))
       (type 'network-management)
-      (snippet '(service dhcp-client-service-type))))))
+      (snippet '((service dhcp-client-service-type)))))))
 
 (define (desktop-system-service? service)
   "Return true if SERVICE is a desktop environment service."
@@ -98,20 +112,21 @@
 
 (define (system-services->configuration services)
   "Return the configuration field for SERVICES."
-  (let* ((snippets (append-map (lambda (service)
-                                 (match (system-service-snippet service)
-                                   ((and lst (('service _ ...) ...))
-                                    lst)
-                                   (sexp
-                                    (list sexp))))
-                               services))
+  (let* ((snippets (append-map system-service-snippet services))
+         (packages (append-map system-service-packages services))
          (desktop? (find desktop-system-service? services))
          (base     (if desktop?
                        '%desktop-services
                        '%base-services)))
     (if (null? snippets)
-        `((services ,base))
-        `((services (append (list ,@snippets
+        `(,@(if (null? packages)
+                '()
+                `((packages (list ,@packages))))
+          (services ,base))
+        `(,@(if (null? packages)
+                '()
+                `((packages (list ,@packages))))
+          (services (append (list ,@snippets
 
                                   ,@(if desktop?
                                         ;; XXX: Assume 'keyboard-layout' is in
