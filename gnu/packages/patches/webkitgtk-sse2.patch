@@ -1,0 +1,202 @@
+Fix build on i686.
+
+This patch is taken from upstream, with ChangeLog entries omitted.
+
+From 5048338c5f21605441c6833907d1136ac9640b35 Mon Sep 17 00:00:00 2001
+From: "mcatanzaro@igalia.com"
+ <mcatanzaro@igalia.com@268f45cc-cd09-0410-ab3c-d52691b4dbfc>
+Date: Wed, 10 Apr 2019 18:27:25 +0000
+Subject: [PATCH] Unreviewed, rolling out r243989.
+
+Broke i686 builds
+
+Reverted changeset:
+
+"[CMake] Detect SSE2 at compile time"
+https://bugs.webkit.org/show_bug.cgi?id=196488
+https://trac.webkit.org/changeset/243989
+
+git-svn-id: http://svn.webkit.org/repository/webkit/trunk@244138 268f45cc-cd09-0410-ab3c-d52691b4dbfc
+---
+ CMakeLists.txt                                | 10 ---
+ ChangeLog                                     | 12 ++++
+ Source/JavaScriptCore/ChangeLog               | 12 ++++
+ .../assembler/MacroAssemblerX86Common.cpp     |  7 ++
+ .../assembler/MacroAssemblerX86Common.h       | 30 +++++++++
+ Source/cmake/FindSSE2.cmake                   | 65 -------------------
+ 6 files changed, 61 insertions(+), 75 deletions(-)
+ delete mode 100644 Source/cmake/FindSSE2.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index acd77f4b623..d3e8a23f9ff 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -114,16 +114,6 @@ else ()
+     set(WTF_CPU_UNKNOWN 1)
+ endif ()
+ 
+-#---------------------------
+-# Make sure SSE2 is present.
+-#---------------------------
+-if (WTF_CPU_X86)
+-    include(FindSSE2)
+-    if (NOT SSE2_SUPPORT_FOUND)
+-        message(FATAL_ERROR "SSE2 support is required to compile WebKit")
+-    endif ()
+-endif ()
+-
+ # -----------------------------------------------------------------------------
+ # Determine the operating system
+ # -----------------------------------------------------------------------------
+diff --git a/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.cpp b/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.cpp
+index 8c752c0d030..31753589df7 100644
+--- a/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.cpp
++++ b/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.cpp
+@@ -168,6 +168,11 @@ static_assert(PROBE_OFFSETOF_REG(cpu.fprs, X86Registers::xmm15) == PROBE_CPU_XMM
+ static_assert(sizeof(Probe::State) == PROBE_SIZE, "Probe::State::size's matches ctiMasmProbeTrampoline");
+ static_assert((PROBE_EXECUTOR_OFFSET + PTR_SIZE) <= (PROBE_SIZE + OUT_SIZE), "Must have room after ProbeContext to stash the probe handler");
+ 
++#if CPU(X86)
++// SSE2 is a hard requirement on x86.
++static_assert(isSSE2Present(), "SSE2 support is required in JavaScriptCore");
++#endif
++
+ #undef PROBE_OFFSETOF
+ 
+ #if CPU(X86)
+@@ -787,6 +792,7 @@ void MacroAssemblerX86Common::collectCPUFeatures()
+     std::call_once(onceKey, [] {
+         {
+             CPUID cpuid = getCPUID(0x1);
++            s_sse2CheckState = (cpuid[3] & (1 << 26)) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
+             s_sse4_1CheckState = (cpuid[2] & (1 << 19)) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
+             s_sse4_2CheckState = (cpuid[2] & (1 << 20)) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
+             s_popcntCheckState = (cpuid[2] & (1 << 23)) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
+@@ -803,6 +809,7 @@ void MacroAssemblerX86Common::collectCPUFeatures()
+     });
+ }
+ 
++MacroAssemblerX86Common::CPUIDCheckState MacroAssemblerX86Common::s_sse2CheckState = CPUIDCheckState::NotChecked;
+ MacroAssemblerX86Common::CPUIDCheckState MacroAssemblerX86Common::s_sse4_1CheckState = CPUIDCheckState::NotChecked;
+ MacroAssemblerX86Common::CPUIDCheckState MacroAssemblerX86Common::s_sse4_2CheckState = CPUIDCheckState::NotChecked;
+ MacroAssemblerX86Common::CPUIDCheckState MacroAssemblerX86Common::s_avxCheckState = CPUIDCheckState::NotChecked;
+diff --git a/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.h b/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.h
+index ff097290ef3..097bcb0bb86 100644
+--- a/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.h
++++ b/Source/JavaScriptCore/assembler/MacroAssemblerX86Common.h
+@@ -4197,11 +4197,41 @@ private:
+     }
+ #endif
+ 
++#if CPU(X86)
++#if OS(MAC_OS_X)
++
++    // All X86 Macs are guaranteed to support at least SSE2,
++    static bool isSSE2Present()
++    {
++        return true;
++    }
++
++#else // OS(MAC_OS_X)
++    static bool isSSE2Present()
++    {
++        if (s_sse2CheckState == CPUIDCheckState::NotChecked)
++            collectCPUFeatures();
++        return s_sse2CheckState == CPUIDCheckState::Set;
++    }
++
++#endif // OS(MAC_OS_X)
++#elif !defined(NDEBUG) // CPU(X86)
++
++    // On x86-64 we should never be checking for SSE2 in a non-debug build,
++    // but non debug add this method to keep the asserts above happy.
++    static bool isSSE2Present()
++    {
++        return true;
++    }
++
++#endif
++
+     using CPUID = std::array<unsigned, 4>;
+     static CPUID getCPUID(unsigned level);
+     static CPUID getCPUIDEx(unsigned level, unsigned count);
+     JS_EXPORT_PRIVATE static void collectCPUFeatures();
+ 
++    JS_EXPORT_PRIVATE static CPUIDCheckState s_sse2CheckState;
+     JS_EXPORT_PRIVATE static CPUIDCheckState s_sse4_1CheckState;
+     JS_EXPORT_PRIVATE static CPUIDCheckState s_sse4_2CheckState;
+     JS_EXPORT_PRIVATE static CPUIDCheckState s_avxCheckState;
+diff --git a/Source/cmake/FindSSE2.cmake b/Source/cmake/FindSSE2.cmake
+deleted file mode 100644
+index 7a947feadd4..00000000000
+--- a/Source/cmake/FindSSE2.cmake
++++ /dev/null
+@@ -1,65 +0,0 @@
+-#################################
+-# Check for the presence of SSE2.
+-#
+-# Once done, this will define:
+-# - SSE2_SUPPORT_FOUND - the system supports (at least) SSE2.
+-#
+-# Copyright (c) 2014, Pablo Fernandez Alcantarilla, Jesus Nuevo
+-# Copyright (c) 2019, Igalia S.L.
+-#
+-# Redistribution and use in source and binary forms, with or without modification,
+-# are permitted provided that the following conditions are met:
+-#
+-#   * Redistributions of source code must retain the above copyright notice,
+-#     this list of conditions and the following disclaimer.
+-#
+-#   * Redistributions in binary form must reproduce the above copyright notice,
+-#     this list of conditions and the following disclaimer in the documentation
+-#     and/or other materials provided with the distribution.
+-#
+-#   * Neither the name of the copyright holders nor the names of its contributors
+-#     may be used to endorse or promote products derived from this software without
+-#     specific prior written permission.
+-#
+-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+-# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+-# SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+-# TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+-# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+-# WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-
+-set(SSE2_SUPPORT_FOUND FALSE)
+-
+-macro(CHECK_FOR_SSE2)
+-    include(CheckCXXSourceRuns)
+-
+-    check_cxx_source_runs("
+-        #include <emmintrin.h>
+-        int main ()
+-        {
+-            __m128d a, b;
+-            double vals[2] = {0};
+-            a = _mm_loadu_pd (vals);
+-            b = _mm_add_pd (a,a);
+-            _mm_storeu_pd (vals,b);
+-            return(0);
+-        }"
+-        HAVE_SSE2_EXTENSIONS)
+-
+-    if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+-        if (HAVE_SSE2_EXTENSIONS)
+-            set(SSE2_SUPPORT_FOUND TRUE)
+-        endif ()
+-    elseif (MSVC AND NOT CMAKE_CL_64)
+-        if (HAVE_SSE2_EXTENSIONS)
+-            set(SSE2_SUPPORT_FOUND TRUE)
+-            message(STATUS "Found SSE2 extensions.")
+-        endif (HAVE_SSE2_EXTENSIONS)
+-    endif ()
+-
+-endmacro(CHECK_FOR_SSE2)
+-
+-CHECK_FOR_SSE2()
+-- 
+2.21.0
+
