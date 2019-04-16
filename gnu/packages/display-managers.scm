@@ -205,12 +205,18 @@ display manager which supports different greeters.")
                (base32
                 "1g7wc3d3vqfa7mrdhx1w9ywydgjbffla6rbrxq9k3sc62br97qms"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--enable-at-spi-command="
+                            (assoc-ref %build-inputs "at-spi2-core")
+                            "/libexec/at-spi-bus-launcher"))))
     (native-inputs
      `(("exo" ,exo)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("lightdm" ,lightdm)
+       ("at-spi2-core" ,at-spi2-core)
        ("gtk+" ,gtk+)))
     (synopsis "GTK+ greeter for LightDM")
     (home-page "https://launchpad.net/lightdm-gtk-greeter")
