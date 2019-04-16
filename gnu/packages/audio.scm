@@ -2316,7 +2316,7 @@ aimed at audio/musical applications.")
 (define-public rubberband
   (package
     (name "rubberband")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -2326,9 +2326,19 @@ aimed at audio/musical applications.")
               (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "05amrbrxx0da3w7m237q51799r8xgs4ffqabi2qv06hq8dpcj386"))))
+                "0462fmjnfqpv2qi0s6ny42drqarkr0xy9lw8frjmfgzyzl5n9294"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-jni-installation
+           ;; ‘make install’ unconditionally installs librubberband-jni.so,
+           ;; which is never built by ‘make all’.  Skip it.
+           (lambda _
+             (substitute* "Makefile.in"
+               ((".*cp -f \\$\\(JNI_TARGET\\).*") ""))
+             #t)))))
     (inputs
      `(("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
