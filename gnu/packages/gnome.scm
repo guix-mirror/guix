@@ -4251,9 +4251,9 @@ a secret password store, an adblocker, and a modern UI.")
     (version "3.28.3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/epiphany/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "epiphany-" version ".tar.xz"))
               (sha256
                (base32
                 "1xz6xl6b0iihvczyr0cs1z5ifvpai6anb4m0ng1caiph06klc1b9"))))
