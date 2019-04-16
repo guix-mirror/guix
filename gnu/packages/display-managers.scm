@@ -209,7 +209,17 @@ display manager which supports different greeters.")
      `(#:configure-flags
        (list (string-append "--enable-at-spi-command="
                             (assoc-ref %build-inputs "at-spi2-core")
-                            "/libexec/at-spi-bus-launcher"))))
+                            "/libexec/at-spi-bus-launcher"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'fix-.desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append
+                             out "/share/xgreeters/lightdm-gtk-greeter.desktop")
+                 (("Exec=lightdm-gtk-greeter")
+                  (string-append "Exec=" out "/sbin/lightdm-gtk-greeter")))
+               #t))))))
     (native-inputs
      `(("exo" ,exo)
        ("intltool" ,intltool)
