@@ -996,14 +996,52 @@ string).  Raise an error if no such path exists."
          (operation (add-text-to-store (string name) (bytevector text)
                                        (string-list references))
                     #f
-                    store-path)))
+                    store-path))
+        (lookup (if (profiled? "add-data-to-store-cache")
+                    (let ((lookups 0)
+                          (hits    0)
+                          (drv     0)
+                          (scheme  0))
+                      (define (show-stats)
+                        (define (% n)
+                          (if (zero? lookups)
+                              100.
+                              (* 100. (/ n lookups))))
+
+                        (format (current-error-port) "
+'add-data-to-store' cache:
+  lookups:      ~5@a
+  hits:         ~5@a (~,1f%)
+  .drv files:   ~5@a (~,1f%)
+  Scheme files: ~5@a (~,1f%)~%"
+                                lookups hits (% hits)
+                                drv (% drv)
+                                scheme (% scheme)))
+
+                      (register-profiling-hook! "add-data-to-store-cache"
+                                                show-stats)
+                      (lambda (cache args)
+                        (let ((result (hash-ref cache args)))
+                          (set! lookups (+ 1 lookups))
+                          (when result
+                            (set! hits (+ 1 hits)))
+                          (match args
+                            ((_ name _)
+                             (cond ((string-suffix? ".drv" name)
+                                    (set! drv (+ drv 1)))
+                                   ((string-suffix? "-builder" name)
+                                    (set! scheme (+ scheme 1)))
+                                   ((string-suffix? ".scm" name)
+                                    (set! scheme (+ scheme 1))))))
+                          result)))
+                    hash-ref)))
     (lambda* (server name bytes #:optional (references '()))
       "Add BYTES under file NAME in the store, and return its store path.
 REFERENCES is the list of store paths referred to by the resulting store
 path."
       (let* ((args  `(,bytes ,name ,references))
              (cache (store-connection-add-text-to-store-cache server)))
-        (or (hash-ref cache args)
+        (or (lookup cache args)
             (let ((path (add-text-to-store server name bytes references)))
               (hash-set! cache args path)
               path))))))
