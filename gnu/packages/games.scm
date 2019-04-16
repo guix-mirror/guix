@@ -4476,7 +4476,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public dungeon-crawl-stone-soup
   (package
     (name "dungeon-crawl-stone-soup")
-    (version "0.23.1")
+    (version "0.23.2")
     (source
      (origin
        (method url-fetch)
@@ -4489,8 +4489,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (string-append "http://crawl.develz.org/release/stone_soup-"
                             version "-nodeps.tar.xz")))
        (sha256
-        (base32
-         "0c3mx49kpz6i2xvv2dwsaj9s7mm4mif1h2qdkfyi80lv2j1ay51h"))
+        (base32 "1hw10hqhh688mrqs9vxrl17y1dzfjzsmxz6izg1a9dzmjlhrc01a"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -4512,7 +4511,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
          (list (string-append "SQLITE_INCLUDE_DIR=" sqlite "/include")
                (string-append "prefix=" out)
                "SAVEDIR=~/.crawl"
-               ;; Don't compile with SSE on systems which don't use it
+               ;; Don't compile with SSE on systems which don't have it.
                ,@(match (%current-system)
                    ((or "i686-linux" "x86_64-linux")
                     '())
