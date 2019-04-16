@@ -14859,14 +14859,14 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.1.4")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
         (base32
-         "1hrnfz4pzawikz9b622vjz2500n7hs25nz9msy1k8l4g7l2kr6ky"))))
+         "1y0dqcp72ixwblgway0jpvfirlxfcmwrjiivdq96firj1hw127sd"))))
     (build-system python-build-system)
     ;; A single test out of 5000+ fails.  This test is marked as xfail when
     ;; pytest-xdist is used.
