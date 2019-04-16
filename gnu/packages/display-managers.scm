@@ -175,6 +175,7 @@ create smooth, animated user interfaces.")
        ("pkg-config" ,pkg-config)
        ("itstool" ,itstool)
        ("intltool" ,intltool)
+       ("vala" ,vala)                   ;for Vala bindings
        ;; For tests
        ("dbus" ,dbus)
        ("python" ,python-2)
