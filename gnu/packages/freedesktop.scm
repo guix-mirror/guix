@@ -921,7 +921,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.18.0")
+    (version "1.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -929,7 +929,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10mjjy860aakfd3h1yaj9l1jw816amrpwmyqlx37j21xv0l03x3c"))))
+                "0s4jsfsydp2vykv7lnimalp9i680aas1qcx7zdpjiic64b5g48vp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
