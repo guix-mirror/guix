@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -499,7 +499,7 @@ matrices, and polynomials over the integers and over finite fields.")
 (define-public singular
   (package
    (name "singular")
-   (version "4.1.1p3")
+   (version "4.1.2p1")
    (source
     (origin
       (method url-fetch)
@@ -513,7 +513,7 @@ matrices, and polynomials over the integers and over finite fields.")
                         #\.) "-")
                       "/singular-" version ".tar.gz"))
              (sha256 (base32
-                      "1qqj9bm9pkzm0iyycpvm8x6s79wws3nq60lz25h8x1q61h3426sm"))))
+                      "0kvd55353fiqyq1msmi0kka66n5h0aqs7m3km60r01b1w2f8085m"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("doxygen" ,doxygen)
