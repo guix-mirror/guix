@@ -106,7 +106,7 @@
 (define u-boot-beaglebone-black-bootloader
   (bootloader
    (inherit u-boot-bootloader)
-   (package u-boot-beagle-bone-black)
+   (package u-boot-am335x-boneblack)
    (installer install-beaglebone-black-u-boot)))
 
 (define u-boot-allwinner-bootloader

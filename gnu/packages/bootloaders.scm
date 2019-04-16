@@ -379,7 +379,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2019.01")
+    (version "2019.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -387,7 +387,10 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "08hwsmh5xsb1gcxsv8gvx00bai938dm5y3889n8jif3a8rd7xgah"))))
+                "1vwv4bgbl7fjcm073zrphn17hnz5h5h778f88ivdsgbb2lnpgdvn"))
+              (patches
+               (search-patches
+                "u-boot-fix-mkimage-header-verification.patch"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -578,8 +581,32 @@ board-independent tools.")))
 (define-public u-boot-malta
   (make-u-boot-package "malta" "mips64el-linux-gnuabi64"))
 
-(define-public u-boot-beagle-bone-black
-  (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
+(define-public u-boot-am335x-boneblack
+  (let ((base (make-u-boot-package "am335x_evm" "arm-linux-gnueabihf")))
+    (package
+      (inherit base)
+      (name "u-boot-am335x-boneblack")
+      (description "U-Boot is a bootloader used mostly for ARM boards. It
+also initializes the boards (RAM etc).
+
+This U-Boot is built for the BeagleBone Black, which was removed upstream,
+adjusted from the am335x_evm build with several device trees removed so that
+it fits within common partitioning schemes.")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'patch-defconfig
+               ;; Patch out other devicetrees to build image small enough to
+               ;; fit within typical partitioning schemes where the first
+               ;; partition begins at sector 2048.
+               (lambda _
+                 (substitute* "configs/am335x_evm_defconfig"
+                   (("CONFIG_OF_LIST=.*$") "CONFIG_OF_LIST=\"am335x-evm am335x-boneblack\"\n"))
+                 #t)))))))))
+
+(define-public u-boot-am335x-evm
+  (make-u-boot-package "am335x_evm" "arm-linux-gnueabihf"))
 
 (define-public (make-u-boot-sunxi64-package board triplet)
   (let ((base (make-u-boot-package board triplet)))
@@ -638,7 +665,7 @@ board-independent tools.")))
 also initializes the boards (RAM etc).
 
 This U-Boot is built for Novena.  Be advised that this version, contrary
-to Novena upstream, does not load u-boot.img from the first patition.")
+to Novena upstream, does not load u-boot.img from the first partition.")
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
@@ -648,7 +675,7 @@ to Novena upstream, does not load u-boot.img from the first patition.")
                ;; allowing it to be installed at a device offset.
                (lambda _
                  (substitute* "configs/novena_defconfig"
-                   (("CONFIG_SPL_FAT_SUPPORT=y") "# CONFIG_SPL_FAT_SUPPORT is not set"))
+                   (("CONFIG_SPL_FS_FAT=y") "# CONFIG_SPL_FS_FAT is not set"))
                  #t)))))))))
 
 (define-public u-boot-cubieboard
