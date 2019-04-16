@@ -1400,9 +1400,9 @@ Fenix.")
               ("openssl" ,openssl)
               ("sdl-mixer" ,sdl-mixer)
               ("bennu-game-development" ,bennu-game-development)))
-    (synopsis "Modules for the Bennu Game Developement programming language")
+    (synopsis "Modules for the Bennu Game Development programming language")
     (description "This package contains a collection of modules for the Bennu
-Game Developement programming language, from CD handling through SDL to
+Game Development programming language, from CD handling through SDL to
 joystick support.")))
 
 (define-public plib
