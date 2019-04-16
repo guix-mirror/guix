@@ -219,13 +219,29 @@ display manager which supports different greeters.")
                              out "/share/xgreeters/lightdm-gtk-greeter.desktop")
                  (("Exec=lightdm-gtk-greeter")
                   (string-append "Exec=" out "/sbin/lightdm-gtk-greeter")))
-               #t))))))
+               #t)))
+         (add-after 'fix-.desktop-file 'wrap-program
+           ;; Mimic glib-or-gtk build system
+           ;; which doesn't wrap files in /sbin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((gtk (assoc-ref inputs "gtk+")))
+               (wrap-program (string-append (assoc-ref outputs "out")
+                                            "/sbin/lightdm-gtk-greeter")
+                 `("XDG_DATA_DIRS" ":" prefix
+                   ,(cons "/run/current-system/profile/share"
+                          (map (lambda (pkg)
+                                 (string-append (assoc-ref inputs pkg) "/share"))
+                               '("gtk+" "shared-mime-info" "glib"))))
+                 `("GTK_PATH" ":" prefix (,gtk))
+                 `("GIO_EXTRA_MODULES" ":" prefix (,gtk))))
+             #t)))))
     (native-inputs
      `(("exo" ,exo)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("lightdm" ,lightdm)
+       ("shared-mime-info" ,shared-mime-info)
        ("at-spi2-core" ,at-spi2-core)
        ("gtk+" ,gtk+)))
     (synopsis "GTK+ greeter for LightDM")
