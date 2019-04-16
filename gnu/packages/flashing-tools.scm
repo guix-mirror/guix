@@ -147,8 +147,8 @@ brick your device.")
     (synopsis "AVR downloader and uploader")
     (description
      "AVRDUDE is a utility to download/upload/manipulate the ROM and
-EEPROM contents of AVR microcontrollers using the in-system programming
-technique (ISP).")
+EEPROM contents of AVR microcontrollers using the @acronym{ISP, in-system
+programming} technique.")
     (license license:gpl2+)))
 
 (define-public dfu-programmer
