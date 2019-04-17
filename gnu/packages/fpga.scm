@@ -305,7 +305,7 @@ Includes the actual FTDI connector.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://gtkwave.sourceforge.net/"
-                                  name "-" version ".tar.gz"))
+                                  "gtkwave-" version ".tar.gz"))
               (sha256
                (base32
                 "0lc4y2vizrbxldjk5yw2i4y7pyprjdjqx3iafzjfnin694zp2630"))))
