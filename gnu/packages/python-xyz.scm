@@ -11327,13 +11327,13 @@ transducers).")
 (define-public python-m2r
   (package
     (name "python-m2r")
-    (version "0.1.12")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "m2r" version))
               (sha256
                (base32
-                "1axrwnf425sz4qz3c0qc7yhhki4myzb8rki7pczcsgzznzmqdyxd"))))
+                "16gdm8i06jjmlpvckpfmlkr4693dh0vs192vgsqn84fsdkbbm45z"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
