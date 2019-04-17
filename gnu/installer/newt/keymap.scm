@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 i18n)
   #:use-module (ice-9 match)
   #:export (run-keymap-page
             keyboard-layout->configuration))
@@ -64,14 +65,29 @@
 
 (define (sort-layouts layouts)
   "Sort LAYOUTS list by putting the US layout ahead and return it."
+  (define (layout<? layout1 layout2)
+    (let ((text1 (x11-keymap-layout-description layout1))
+          (text2 (x11-keymap-layout-description layout2)))
+      ;; XXX: We're calling 'gettext' more than once per item.
+      (string-locale<? (gettext text1 "xkeyboard-config")
+                       (gettext text2 "xkeyboard-config"))))
+
+  (define preferred
+    ;; Two-letter language tag for the preferred keyboard layout.
+    (or (getenv "LANGUAGE") "us"))
+
   (call-with-values
       (lambda ()
         (partition
          (lambda (layout)
-           (let ((name (x11-keymap-layout-name layout)))
-             (string=? name "us")))
+           ;; The 'synopsis' field is usually a language code (e.g., "en")
+           ;; while the 'name' field is a country code (e.g., "us").
+           (or (string=? (x11-keymap-layout-name layout) preferred)
+               (string=? (x11-keymap-layout-synopsis layout) preferred)))
          layouts))
-    (cut append <> <>)))
+    (lambda (main others)
+      (append (sort main layout<?)
+              (sort others layout<?)))))
 
 (define (sort-variants variants)
   "Sort VARIANTS list by putting the international variant ahead and return it."
