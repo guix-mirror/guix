@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -161,7 +162,13 @@ glibc locale string and return it."
          (run-language-page
           (sort-languages
            (delete-duplicates (map locale-language supported-locales)))
-          (cut language-code->language-name iso639-languages <>)))))
+          (lambda (language)
+            (let ((english (language-code->language-name iso639-languages
+                                                         language)))
+              (setenv "LANGUAGE" language)
+              (let ((native (gettext english "iso_639-3")))
+                (unsetenv "LANGUAGE")
+                native)))))))
      (installer-step
       (id 'territory)
       (compute
@@ -175,10 +182,11 @@ glibc locale string and return it."
            ;; supported by the previously selected language.
            (run-territory-page
             (delete-duplicates (map locale-territory locales))
-            (lambda (territory-code)
-              (if territory-code
-                  (territory-code->territory-name iso3166-territories
-                                                  territory-code)
+            (lambda (territory)
+              (if territory
+                  (let ((english (territory-code->territory-name
+                                  iso3166-territories territory)))
+                    (gettext english "iso_3166-1"))
                   (G_ "No location"))))))))
      (installer-step
       (id 'codeset)
