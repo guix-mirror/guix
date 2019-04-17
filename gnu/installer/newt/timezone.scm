@@ -50,12 +50,15 @@ returned."
 
   (define (run-page timezone-tree)
     (define (loop path)
+      ;; XXX: Translation of time zones isn't perfect here because the
+      ;; "iso_3166-1" domain contains translation for "territories" (like
+      ;; "Antarctic") but not for continents (like "Africa").
       (let ((timezones (locate-children timezone-tree path)))
         (run-listbox-selection-page
          #:title (G_ "Timezone")
          #:info-text (G_ "Please select a timezone.")
          #:listbox-items timezones
-         #:listbox-item->text identity
+         #:listbox-item->text (cut gettext <> "iso_3166-1")
          #:button-text (if (null? path)
                            (G_ "Exit")
                            (G_ "Back"))
