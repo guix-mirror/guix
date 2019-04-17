@@ -30,9 +30,9 @@
   #:export (run-locale-page))
 
 (define (run-language-page languages language->text)
-  (let ((title (G_ "Locale language")))
+  (define result
     (run-listbox-selection-page
-     #:title title
+     #:title (G_ "Locale language")
      #:info-text (G_ "Choose the language to use for the \
 installation process and for the installed system.")
      #:info-textbox-width 70
@@ -44,7 +44,13 @@ installation process and for the installed system.")
      (lambda _
        (raise
         (condition
-         (&installer-step-abort)))))))
+         (&installer-step-abort))))))
+
+  ;; Immediately install the chosen language so that the territory page that
+  ;; comes after (optionally) is displayed in the chosen language.
+  (setenv "LANGUAGE" result)
+
+  result)
 
 (define (run-territory-page territories territory->text)
   (let ((title (G_ "Locale location")))
