@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -1721,6 +1721,37 @@ from git information.
 
 (define-public python2-pbr
   (package-with-python2 python-pbr))
+
+(define-public python-pyrsistent
+  (package
+    (name "python-pyrsistent")
+    (version "0.14.11")
+    (home-page "https://github.com/tobgu/pyrsistent")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyrsistent" version))
+              (sha256
+               (base32
+                "1qkh74bm296mp5g3r11lgsksr6bh4w1bf8pji4nmxdlfj542ga1w"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (synopsis "Persistent data structures for Python")
+    (description
+     "Pyrsistent is a number of persistent collections (by some referred to as
+functional data structures).  Persistent in the sense that they are immutable.
+
+All methods on a data structure that would normally mutate it instead return a
+new copy of the structure containing the requested updates.  The original
+structure is left untouched.")
+    (license license:expat)))
+
+(define-public python2-pyrsistent
+  (package-with-python2 python-pyrsistent))
 
 (define-public python-exif-read
   (package
