@@ -87,6 +87,7 @@
   (package
    (name "libpng")
    (version "1.6.34")
+   (replacement libpng-1.6.37)
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -111,6 +112,25 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
+
+;; This graft exists to fix CVE-2018-14048, CVE-2018-14550, and CVE-2019-7317.
+(define-public libpng-1.6.37
+  (package
+    (inherit libpng)
+    (version "1.6.37")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
+                                        version "/libpng-" version ".tar.xz")
+                         (string-append
+                          "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                          "/libpng16/libpng-" version ".tar.xz")
+                         (string-append
+                          "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
+                          "/libpng16/libpng-" version ".tar.xz")))
+              (sha256
+               (base32
+                "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))))
 
 ;; libpng-apng should be updated when the APNG patch is released:
 ;; <https://bugs.gnu.org/27556>
