@@ -301,14 +301,14 @@ Includes the actual FTDI connector.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.99")
+    (version "3.3.100")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://gtkwave.sourceforge.net/"
                                   "gtkwave-" version ".tar.gz"))
               (sha256
                (base32
-                "0lc4y2vizrbxldjk5yw2i4y7pyprjdjqx3iafzjfnin694zp2630"))))
+                "1z60i5nh8dz8j9ii63fwaw7k0p3x0scp91478cxmdv4xhp4njlxa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)
