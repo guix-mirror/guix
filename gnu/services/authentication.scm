@@ -45,14 +45,18 @@
 (define-record-type* <fprintd-configuration>
   fprintd-configuration make-fprintd-configuration
   fprintd-configuration?
-  (ntp      fprintd-configuration-fprintd
+  (fprintd  fprintd-configuration-fprintd
             (default fprintd)))
+
+(define (fprintd-dbus-service config)
+  (list (fprintd-configuration-fprintd config)))
 
 (define fprintd-service-type
   (service-type (name 'fprintd)
                 (extensions
                  (list (service-extension dbus-root-service-type
-                                          list)))
+                                          fprintd-dbus-service)))
+                (default-value (fprintd-configuration))
                 (description
                  "Run fprintd, a fingerprint management daemon.")))
 
