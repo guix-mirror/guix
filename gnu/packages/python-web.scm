@@ -2960,14 +2960,14 @@ ecosystem.")
 (define-public python-hyperlink
   (package
     (name "python-hyperlink")
-    (version "18.0.0")
+    (version "19.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "hyperlink" version))
         (sha256
          (base32
-          "01m3y19arfqljksngy8grc966zdb4larysralb8cajzi8kvly6zh"))))
+          "0m2nhi0j8wmgfscf974wd5v1xfq8mah286hil6npy1ys0m3y7222"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-idna" ,python-idna)))
