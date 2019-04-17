@@ -1923,21 +1923,28 @@ between Julian dates and Gregorian dates.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.6.0")
+    (version "3.0.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "jsonschema" version))
              (sha256
               (base32
-               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
+               "03g20i1xfg4qdlk4475pl4pp7y0h37g1fbgs5qhy678q9xb822hc"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (invoke "nosetests"))))))
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
+             (invoke "trial" "jsonschema"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-vcversioner" ,python-vcversioner)))
+     `(("python-setuptools_scm" ,python-setuptools-scm)
+       ("python-twisted" ,python-twisted)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-six" ,python-six)))
     (home-page "https://github.com/Julian/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
@@ -1949,11 +1956,9 @@ between Julian dates and Gregorian dates.")
   (let ((jsonschema (package-with-python2
                      (strip-python2-variant python-jsonschema))))
     (package (inherit jsonschema)
-             (native-inputs
-              `(("python2-mock" ,python2-mock)
-                ,@(package-native-inputs jsonschema)))
              (propagated-inputs
-              `(("python2-functools32" ,python2-functools32))))))
+              `(("python2-functools32" ,python2-functools32)
+                ,@(package-propagated-inputs jsonschema))))))
 
 (define-public python-schema
   (package
