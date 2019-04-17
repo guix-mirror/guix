@@ -42,11 +42,9 @@
             nslcd-configuration?
             nslcd-service-type))
 
-(define-record-type* <fprintd-configuration>
-  fprintd-configuration make-fprintd-configuration
-  fprintd-configuration?
-  (fprintd  fprintd-configuration-fprintd
-            (default fprintd)))
+(define-configuration fprintd-configuration
+  (fprintd      (package fprintd)
+                "The fprintd package"))
 
 (define (fprintd-dbus-service config)
   (list (fprintd-configuration-fprintd config)))
