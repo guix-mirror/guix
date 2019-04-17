@@ -9381,23 +9381,19 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "17.5.0")
+    (version "19.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "1sh2h23nnizcdyrl2rn7zxijglikxwz7z7grqpvq496zy2aa967i"))))
+                "1gmb8d57s13d8znvqnxi47vqzqz141z443dbxg9wjkp8ia9f220p"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Some tests are failing.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (replace 'check
-       ;;     (lambda _
-       ;;       (zero? (system* "./bin/trial" "twisted")))))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)
+       ("python-pyhamcrest" ,python-pyhamcrest)
        ("python-incremental" ,python-incremental)
        ("python-hyperlink" ,python-hyperlink)
        ("python-constantly" ,python-constantly)
