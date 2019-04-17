@@ -97,7 +97,8 @@ names of the selected keyboard layout and variant."
          (run-layout-page
           (sort-layouts layouts)
           (lambda (layout)
-            (x11-keymap-layout-description layout))))))
+            (gettext (x11-keymap-layout-description layout)
+                     "xkeyboard-config"))))))
      ;; Propose the user to select a variant among those supported by the
      ;; previously selected layout.
      (installer-step
@@ -111,15 +112,16 @@ names of the selected keyboard layout and variant."
                 (run-variant-page
                  (sort-variants variants)
                  (lambda (variant)
-                   (x11-keymap-variant-description
-                    variant))))))))))
+                   (gettext (x11-keymap-variant-description variant)
+                            "xkeyboard-config"))))))))))
 
   (define (format-result result)
     (let ((layout (x11-keymap-layout-name
                    (result-step result 'layout)))
           (variant (and=> (result-step result 'variant)
                           (lambda (variant)
-                            (x11-keymap-variant-name variant)))))
+                            (gettext (x11-keymap-variant-name variant)
+                                     "xkeyboard-config")))))
       (list layout (or variant ""))))
   (format-result
    (run-installer-steps #:steps keymap-steps)))

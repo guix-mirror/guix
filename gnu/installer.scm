@@ -353,6 +353,10 @@ selected keymap."
             (bindtextdomain "iso_3166-1"          ;territories
                             #+(file-append iso-codes "/share/locale"))
 
+            ;; Likewise for XKB keyboard layout names.
+            (bindtextdomain "xkeyboard-config"
+                            #+(file-append xkeyboard-config "/share/locale"))
+
             (let* ((current-installer newt-installer)
                    (steps (#$steps current-installer)))
               ((installer-init current-installer))
