@@ -580,18 +580,16 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.3.0")
-    (replacement openjpeg-2.3.1)
-    (source
-      (origin
-        (method url-fetch)
-        (uri
-         (string-append "https://github.com/uclouvain/openjpeg/archive/v"
-                        version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "06npqzkg20avnygdwaqpap91r7qpdqgrn39adj2bl8v0pg0qgirx"))))
+    (version "2.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uclouvain/openjpeg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "openjpeg" version))
+              (sha256
+               (base32
+                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -614,20 +612,6 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
-
-(define-public openjpeg-2.3.1
-  (package
-    (inherit openjpeg)
-    (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/uclouvain/openjpeg")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "openjpeg" version))
-              (sha256
-               (base32
-                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
