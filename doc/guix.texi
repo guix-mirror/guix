@@ -3646,8 +3646,9 @@ but it supports the following options:
 @item --url=@var{url}
 @itemx --commit=@var{commit}
 @itemx --branch=@var{branch}
-Download code from the specified @var{url}, at the given @var{commit} (a valid
-Git commit ID represented as a hexadecimal string), or @var{branch}.
+Download code for the @code{guix} channel from the specified @var{url}, at the
+given @var{commit} (a valid Git commit ID represented as a hexadecimal
+string), or @var{branch}.
 
 @cindex @file{channels.scm}, configuration file
 @cindex configuration file for channels

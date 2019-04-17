@@ -502,24 +502,22 @@ Use '~/.config/guix/channels.scm' instead."))
         (url (or (assoc-ref opts 'repository-url)
                  (environment-variable))))
     (if (or ref url)
-        (match channels
-          ((one)
-           ;; When there's only one channel, apply '--url', '--commit', and
-           ;; '--branch' to this specific channel.
-           (let ((url (or url (channel-url one))))
-             (list (match ref
+        (match (find guix-channel? channels)
+          ((? channel? guix)
+           ;; Apply '--url', '--commit', and '--branch' to the 'guix' channel.
+           (let ((url (or url (channel-url guix))))
+             (cons (match ref
                      (('commit . commit)
-                      (channel (inherit one)
+                      (channel (inherit guix)
                                (url url) (commit commit) (branch #f)))
                      (('branch . branch)
-                      (channel (inherit one)
+                      (channel (inherit guix)
                                (url url) (commit #f) (branch branch)))
                      (#f
-                      (channel (inherit one) (url url)))))))
-          (_
-           ;; Otherwise bail out.
-           (leave
-            (G_ "'--url', '--commit', and '--branch' are not applicable~%"))))
+                      (channel (inherit guix) (url url))))
+                   (remove guix-channel? channels))))
+          (#f                           ;no 'guix' channel, failure will ensue
+           channels))
         channels)))
 
 
