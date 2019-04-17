@@ -970,14 +970,14 @@ derivation function.")
 (define-public python-service-identity
   (package
     (name "python-service-identity")
-    (version "17.0.0")
+    (version "18.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "service_identity" version))
        (sha256
         (base32
-         "1aq24cn3nnsjr9g797dayhx4g653h6bd41ksqhidzq0rvarzn0a0"))))
+         "0b9f5qiqjy8ralzgwjgkhx82h6h8sa7532psmb8mkd65md5aan08"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)
