@@ -13581,6 +13581,7 @@ and works only with Python 2 and NumPy < 1.9.")
     (synopsis "Send files to the user's @file{~/Trash} directory")
     (description "This package provides a Python library to send files to the
 user's @file{~/Trash} directory.")
+    (properties `((python2-variant . ,(delay python-send2trash))))
     (license license:bsd-3)))
 
 (define-public python2-send2trash
@@ -13594,8 +13595,7 @@ user's @file{~/Trash} directory.")
              (lambda _
                (setenv "PYTHONPATH"
                        (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-               #t))))))
-    (properties `((python2-variant . ,(delay python-send2trash))))))
+               #t))))))))
 
 (define-public python-yapf
   (package
