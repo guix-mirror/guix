@@ -36,6 +36,7 @@
             make-x11-keymap-layout
             x11-keymap-layout?
             x11-keymap-layout-name
+            x11-keymap-layout-synopsis
             x11-keymap-layout-description
             x11-keymap-layout-variants
 
@@ -60,7 +61,8 @@
   x11-keymap-layout make-x11-keymap-layout
   x11-keymap-layout?
   (name            x11-keymap-layout-name) ;string
-  (description     x11-keymap-layout-description) ;string
+  (synopsis        x11-keymap-layout-synopsis)    ;string (e.g., "en")
+  (description     x11-keymap-layout-description) ;string (a whole phrase)
   (variants        x11-keymap-layout-variants)) ;list of <x11-keymap-variant>
 
 (define-record-type* <x11-keymap-variant>
@@ -117,6 +119,8 @@ Configuration Database, describing possible XKB configurations."
                   (variantList ,[variant -> v] ...))
                  (x11-keymap-layout
                   (name name)
+                  (synopsis (car
+                             (assoc-ref rest-layout 'shortDescription)))
                   (description (car
                                 (assoc-ref rest-layout 'description)))
                   (variants (list v ...)))]
@@ -126,6 +130,8 @@ Configuration Database, describing possible XKB configurations."
                    . ,rest-layout))
                  (x11-keymap-layout
                   (name name)
+                  (synopsis (car
+                             (assoc-ref rest-layout 'shortDescription)))
                   (description (car
                                 (assoc-ref rest-layout 'description)))
                   (variants '()))]))
