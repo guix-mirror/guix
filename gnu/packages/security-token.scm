@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
@@ -38,6 +39,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
@@ -53,6 +55,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
@@ -449,3 +453,60 @@ talk to a U2F device and perform the U2F Register and U2F Authenticate
 operations.")
     ;; Most files are LGPLv2.1+, but some files are GPLv3+.
     (license (list license:lgpl2.1+ license:gpl3+))))
+
+(define-public python-fido2
+  (package
+    (name "python-fido2")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/Yubico/python-fido2/releases/download/"
+                version "/fido2-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pl8d2pr6jzqj4y9qiaddhjgnl92kikjxy0bgzm2jshkzzic8mp3"))
+              (snippet
+               ;; Remove bundled dependency.
+               #~(delete-file "fido2/public_suffix_list.dat"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'install-public-suffix-list
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file
+              (string-append (assoc-ref inputs "public-suffix-list")
+                             "/share/public-suffix-list-"
+                             ,(package-version public-suffix-list)
+                             "/public_suffix_list.dat")
+              "fido2/public_suffix_list.dat")
+             #t)))))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyfakefs" ,python-pyfakefs)
+       ("public-suffix-list" ,public-suffix-list)))
+    (home-page "https://github.com/Yubico/python-fido2")
+    (synopsis "Python library for communicating with FIDO devices over USB")
+    (description
+     "This Python library provides functionality for communicating with a Fast
+IDentity Online (FIDO) device over Universal Serial Bus (USB) as well as
+verifying attestation and assertion signatures.  It aims to support the FIDO
+Universal 2nd Factor (U2F) and FIDO 2.0 protocols for communicating with a USB
+authenticator via the Client-to-Authenticator Protocol (CTAP 1 and 2).  In
+addition to this low-level device access, classes defined in the
+@code{fido2.client} and @code{fido2.server} modules implement higher level
+operations which are useful when interfacing with an Authenticator, or when
+implementing a Relying Party.")
+    ;; python-fido2 contains some derivative files originally from pyu2f
+    ;; (https://github.com/google/pyu2f).  These files are licensed under the
+    ;; Apache License, version 2.0.  The maintainers have customized these
+    ;; files for internal use, so they are not really a bundled dependency.
+    (license (list license:bsd-2 license:asl2.0))))
+
+(define-public python2-fido2
+  (package-with-python2 python-fido2))
