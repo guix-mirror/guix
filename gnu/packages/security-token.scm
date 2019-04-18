@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,6 +32,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages check)
@@ -51,6 +52,8 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
@@ -341,3 +344,57 @@ and other operations.  It includes a library and a command-line tool.")
 line tools for personalizing YubiKeys.  You can use these to set an AES key,
 retrieve a YubiKey's serial number, and so forth.")
     (license license:bsd-2)))
+
+(define-public python-pyscard
+  (package
+    (name "python-pyscard")
+    (version "1.9.8")
+    (source (origin
+              (method url-fetch)
+              ;; The maintainer publishes releases on various sites, but
+              ;; SourceForge is apparently the only one with a signed release.
+              (uri (string-append
+                    "mirror://sourceforge/pyscard/pyscard/pyscard%20"
+                    version "/pyscard-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15fh00z1an6r5j7hrz3jlq0rb3jygwf3x4jcwsa008bv8vpcg7gm"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tell pyscard where to find the PCSC include directory.
+         (add-after 'unpack 'patch-platform-include-dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pcsc-include-dir (string-append
+                                      (assoc-ref inputs "pcsc-lite")
+                                      "/include/PCSC")))
+               (substitute* "setup.py"
+                 (("platform_include_dirs = \\[.*?\\]")
+                  (string-append
+                   "platform_include_dirs = ['" pcsc-include-dir "']")))
+               #t)))
+         ;; pyscard wants to dlopen libpcsclite, so tell it where it is.
+         (add-after 'unpack 'patch-dlopen
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "smartcard/scard/winscarddll.c"
+               (("lib = \"libpcsclite\\.so\\.1\";")
+                (simple-format #f
+                               "lib = \"~a\";"
+                               (string-append (assoc-ref inputs "pcsc-lite")
+                                              "/lib/libpcsclite.so.1"))))
+             #t)))))
+    (inputs
+     `(("pcsc-lite" ,pcsc-lite)))
+    (native-inputs
+     `(("swig" ,swig)))
+    (home-page "https://github.com/LudovicRousseau/pyscard")
+    (synopsis "Smart card library for Python")
+    (description
+     "The pyscard smart card library is a framework for building smart card
+aware applications in Python.  The smart card module is built on top of the
+PCSC API Python wrapper module.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pyscard
+  (package-with-python2 python-pyscard))
