@@ -398,3 +398,54 @@ PCSC API Python wrapper module.")
 
 (define-public python2-pyscard
   (package-with-python2 python-pyscard))
+
+(define-public libu2f-host
+  (package
+    (name "libu2f-host")
+    (version "1.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://developers.yubico.com"
+                "/libu2f-host/Releases/libu2f-host-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hnh3f4scx07v9jfkr1nnxasmydk1cmivn0nijcp2p75bc1fznip"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-gtk-doc"
+             (string-append "--with-udevrulesdir="
+                            (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Avoid a network connection attempt during the build.
+             (substitute* "gtk-doc/u2f-host-docs.xml"
+               (("http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/docbookx.dtd")))
+             #t)))))
+    (inputs
+     `(("json-c" ,json-c)
+       ("hidapi" ,hidapi)))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("gengetopt" ,gengetopt)
+       ("pkg-config" ,pkg-config)
+       ("gtk-doc" ,gtk-doc)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("eudev" ,eudev)))
+    (home-page "https://developers.yubico.com/libu2f-host/")
+    ;; TRANSLATORS: The U2F protocol has a "server side" and a "host side".
+    (synopsis "U2F host-side C library and tool")
+    (description
+     "Libu2f-host provides a C library and command-line tool that implements
+the host-side of the Universal 2nd Factor (U2F) protocol.  There are APIs to
+talk to a U2F device and perform the U2F Register and U2F Authenticate
+operations.")
+    ;; Most files are LGPLv2.1+, but some files are GPLv3+.
+    (license (list license:lgpl2.1+ license:gpl3+))))
