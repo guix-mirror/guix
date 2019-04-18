@@ -1,0 +1,23 @@
+This test incorrectly assumes that the root user is always available.
+However, in the build environment, the root user is not available.
+Note that because the original file distributed in the release on PyPi
+has lines ending in CRLF, those are retained in the diff below.
+
+--- a/pyfakefs/tests/fake_filesystem_test.py	1969-12-31 16:00:00.000000000 -0800
++++ b/pyfakefs/tests/fake_filesystem_test.py	1969-12-31 16:00:00.000000000 -0800
+@@ -1021,15 +1021,6 @@
+             self.assertEqual(self.path.expanduser('~'),
+                              self.os.environ['HOME'].replace('/', '!'))
+ 
+-    @unittest.skipIf(TestCase.is_windows or TestCase.is_cygwin,
+-                     'only tested on unix systems')
+-    def test_expand_root(self):
+-        if sys.platform == 'darwin':
+-            roothome = '!var!root'
+-        else:
+-            roothome = '!root'
+-        self.assertEqual(self.path.expanduser('~root'), roothome)
+-
+     def test_getsize_path_nonexistent(self):
+         file_path = 'foo!bar!baz'
+         self.assertRaises(os.error, self.path.getsize, file_path)
