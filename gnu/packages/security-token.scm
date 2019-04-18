@@ -510,3 +510,43 @@ implementing a Relying Party.")
 
 (define-public python2-fido2
   (package-with-python2 python-fido2))
+
+(define-public python-yubikey-manager
+  (package
+    (name "python-yubikey-manager")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://developers.yubico.com/yubikey-manager/Releases"
+                    "/yubikey-manager-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11rsmcaj60k3y5m5gdhr2nbbz0w5dm3m04klyxz0fh5hnpcmr7fm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-pyscard" ,python-pyscard)
+       ("python-pyusb" ,python-pyusb)
+       ("python-click" ,python-click)
+       ("python-cryptography" ,python-cryptography)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-fido2" ,python-fido2)))
+    (inputs
+     `(("yubikey-personalization" ,yubikey-personalization)
+       ("pcsc-lite" ,pcsc-lite)
+       ("libusb" ,libusb)))
+    (native-inputs
+     `(("swig" ,swig)
+       ("python-mock" ,python-mock)))
+    (home-page "https://developers.yubico.com/yubikey-manager/")
+    (synopsis "Command line tool and library for configuring a YubiKey")
+    (description
+     "Python library and command line tool for configuring a YubiKey.  Note
+that after installing this package, you might still need to add appropriate
+udev rules to your system configuration to be able to configure the YubiKey as
+an unprivileged user.")
+    (license license:bsd-2)))
+
+(define-public python2-yubikey-manager
+  (package-with-python2 python-yubikey-manager))
