@@ -54,7 +54,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;;
@@ -147,7 +147,14 @@
                             (assoc-ref %outputs "out") "/lib"))
        ;; With no -j argument tests use all available cpus, so provide one.
        #:make-flags
-       (list (format #f "TESTOPTS=-j~d" (parallel-job-count)))
+       (list (string-append
+              (format #f "TESTOPTS=-j~d" (parallel-job-count))
+              ;; Exclude the following tests as they fail
+              ;; non-deterministically with "error: [Errno 104] Connection
+              ;; reset by peer."  Python 3 seems unaffected.  A potential fix,
+              ;; yet to be backported to Python 2, is available at:
+              ;; https://github.com/python/cpython/commit/529525fb5a8fd9b96ab4021311a598c77588b918.
+              " --exclude test_urllib2_localnet test_httplib"))
 
         #:modules ((ice-9 ftw) (ice-9 match)
                    (guix build utils) (guix build gnu-build-system))
@@ -344,6 +351,9 @@ data types.")
                   #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
+       ((#:make-flags _)
+        ;; Strip tests exclusions that have to do with Python 2 only.
+        `(list (format #f "TESTOPTS=-j~d" (parallel-job-count))))
        ((#:phases phases)
        `(modify-phases ,phases
           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
