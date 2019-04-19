@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -812,3 +813,53 @@ mDNS resolver as well as an announcer.  mDNS (Multicast Domain Name System) is
 a zero-config service that allows one to resolve host names to IP addresses in
 local networks.")
     (license license:lgpl2.1)))
+
+(define-public public-suffix-list
+  ;; Mozilla releases the official list here:
+  ;;
+  ;;   https://publicsuffix.org/list/public_suffix_list.dat
+  ;;
+  ;; However, Mozilla syncs that file from the GitHub repository periodically,
+  ;; so its contents will change over time.  If you update this commit, please
+  ;; make sure that the new commit refers to a list which is identical to the
+  ;; officially published list available from the URL above.
+  (let ((commit "9375b697baddb0827a5995c81bd3c75877a0b35d"))
+    (package
+      (name "public-suffix-list")
+      (version (git-version "0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/publicsuffix/list.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1sm7pni01rnl4ldzi8z8nc4cbgq8nxda9gwc68v0s3ij7jd1jmik"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let* ((out (assoc-ref %outputs "out"))
+                  ;; Install to /share because that is where "read-only
+                  ;; architecture-independent data files" should go (see:
+                  ;; (standards) Directory Variables).  Include the version in
+                  ;; the directory name so that if multiple versions are ever
+                  ;; installed in the same profile, they will not conflict.
+                  (destination (string-append
+                                out "/share/public-suffix-list-" ,version))
+                  (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion source
+             (install-file "public_suffix_list.dat" destination)
+             (install-file "LICENSE" destination))
+             #t))))
+      (home-page "https://publicsuffix.org/")
+      (synopsis "Database of current and historical DNS suffixes")
+      (description "This is the Public Suffix List maintained by Mozilla.  A
+\"public suffix\" is one under which Internet users can (or historically
+could) directly register names in the Domain Name System (DNS).  Some examples
+of public suffixes are .com, .co.uk and pvt.k12.ma.us.  This is a list of all
+known public suffixes.")
+      (license license:mpl2.0))))
