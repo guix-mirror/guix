@@ -19425,6 +19425,26 @@ Its default is the first provided domain.
 The first domain provided will be the subject CN of the certificate, and
 all domains will be Subject Alternative Names on the certificate.
 
+@item @code{challenge} (default: @code{#f})
+The challenge type that has to be run by certbot.  If @code{#f} is specified,
+default to the HTTP challenge.  If a value is specified, defaults to the
+manual plugin (see @code{authentication-hook}, @code{cleanup-hook} and
+the documentation at @url{https://certbot.eff.org/docs/using.html#hooks}).
+
+@item @code{authentication-hook} (default: @code{#f})
+Command to be run in a shell once for each certificate challenge to be
+answered.  For this command, the shell variable @code{$CERTBOT_DOMAIN}
+will contain the domain being authenticated, @code{$CERTBOT_VALIDATION}
+contains the validation string and @code{$CERTBOT_TOKEN} contains the
+file name of the resource requested when performing an HTTP-01 challenge.
+
+@item @code{cleanup-hook} (default: @code{#f})
+Command to be run in a shell once for each certificate challenge that
+have been answered by the @code{auth-hook}.  For this command, the shell
+variables available in the @code{auth-hook} script are still available, and
+additionally @code{$CERTBOT_AUTH_OUTPUT} will contain the standard output
+of the @code{auth-hook} script.
+
 @item @code{deploy-hook} (default: @code{#f})
 Command to be run in a shell once for each successfully issued
 certificate.  For this command, the shell variable
