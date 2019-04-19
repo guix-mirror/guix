@@ -2848,6 +2848,31 @@ respective @code{*Help*} buffers.")
 completion of relevant keywords.")
     (license license:expat)))
 
+(define-public emacs-sudo-edit
+  (let ((commit "cc3d478937b1accd38742bfceba92af02ee9357d")
+        (version "0.1.0")
+        (revision "6"))
+    (package
+      (name "emacs-sudo-edit")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nflath/sudo-edit")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1qv58x5j5a3v1s2ylhck1ykbfclq0mbi0gsvaql3nyv8cxazqlwl"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/nflath/sudo-edit/")
+      (synopsis "Open files as another user")
+      (description
+       "This package allows editing files as another user, including the root
+user.")
+      (license license:gpl3+))))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
