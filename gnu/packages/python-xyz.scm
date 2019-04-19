@@ -13586,7 +13586,7 @@ user's @file{~/Trash} directory.")
 
 (define-public python2-send2trash
   (package
-    (inherit (package-with-python2 python-send2trash))
+    (inherit (package-with-python2 (strip-python2-variant python-send2trash)))
     (arguments
      (substitute-keyword-arguments (package-arguments python-send2trash)
        ((#:phases phases)
