@@ -5605,14 +5605,14 @@ hierarchical models using Markov Chain Monte Carlo (MCMC) simulation.")
 (define-public r-rdpack
   (package
     (name "r-rdpack")
-    (version "0.10-1")
+    (version "0.11-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rdpack" version))
        (sha256
         (base32
-         "0bbjnw88h54v40hzim00i8yd3p4rk9i84zfdmgcbnylscwvsf0av"))))
+         "11cd27s6zp5cxnwxcvz6rjf00y0r7aq8ywhzwpf1r4xy1z44kd4g"))))
     (properties `((upstream-name . "Rdpack")))
     (build-system r-build-system)
     (propagated-inputs
