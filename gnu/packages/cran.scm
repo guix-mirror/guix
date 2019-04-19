@@ -13253,14 +13253,14 @@ self-intersections from polygon data.")
 (define-public r-urltools
   (package
     (name "r-urltools")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "urltools" version))
        (sha256
         (base32
-         "18lp66f2l504b8q3j4xy8j9pyzzlljw9f112sn6qii1cg83072wm"))))
+         "04x3my655dd287cbsszbnf75q0swmjlxxrblcsay7a8n3df3a830"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
