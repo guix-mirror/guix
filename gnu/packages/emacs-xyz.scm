@@ -2719,6 +2719,30 @@ the speedbar window.")
      "This package provides commands to quickly switch between shell buffers.")
     (license license:gpl3+)))
 
+(define-public emacs-names
+  (let ((commit "d8baba5360e5253938a25d3e005455b6d2d86971")
+        (version "20151201.0")
+        (revision "8"))
+    (package
+      (name "emacs-names")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Malabarba/names")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11wyha2q8y7bzqq3jrzix8n97ywvsibvddrahqcps1a1yqk4hzfz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/Malabarba/names/")
+      (synopsis "Namespace implementation for Emacs Lisp")
+      (description
+       "This package provides a macro that writes your namespaces for you.")
+      (license license:gpl3+))))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
