@@ -2873,6 +2873,29 @@ completion of relevant keywords.")
 user.")
       (license license:gpl3+))))
 
+(define-public emacs-miniedit
+  (package
+    (name "emacs-miniedit")
+    (version "2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacsmirror/miniedit")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1850z96gly0jnr50472idqz1drzqarr0n23bbasslrc501xkg0bq"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsmirror/miniedit/")
+    (synopsis "Enhanced editing for minibuffer fields")
+    (description
+     "This package provides a function that can be called from the
+minibuffer to enable editing the minibuffer input in another buffer with
+@code{text-mode} enabled.")
+    (license license:gpl2+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
