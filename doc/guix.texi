@@ -8030,7 +8030,9 @@ The following derivations will be built:
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
-the system type of the build host.
+the system type of the build host.  The @command{guix build} command allows
+you to repeat this option several times, in which case it builds for all the
+specified systems; other commands ignore extraneous @option{-s} options.
 
 @quotation Note
 The @code{--system} flag is for @emph{native} compilation and must not
