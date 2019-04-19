@@ -13888,3 +13888,35 @@ regular expressions.  Regular expressions are a very powerful feature, however
 they are often difficult to interpret.  Rex allows you to build complex
 regular expressions from human readable expressions")
     (license license:expat)))
+
+(define-public r-sctransform
+  (package
+    (name "r-sctransform")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sctransform" version))
+       (sha256
+        (base32
+         "1r5kiqqs318q59h2i8m7c6nhghp9w6q26ss2y5a390lkhsawgx6p"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-future" ,r-future)
+       ("r-future-apply" ,r-future-apply)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/ChristophH/sctransform")
+    (synopsis "Variance stabilizing transformations for Single Cell UMI Data")
+    (description
+     "This package provides a normalization method for single-cell UMI count
+data using a variance stabilizing transformation.  The transformation is based
+on a negative binomial regression model with regularized parameters.  As part
+of the same regression framework, this package also provides functions for
+batch correction, and data correction.")
+    (license license:gpl3)))
