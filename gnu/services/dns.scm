@@ -207,6 +207,8 @@
                  (default knot))
   (run-directory knot-configuration-run-directory
                  (default "/var/run/knot"))
+  (includes      knot-configuration-includes
+                 (default '()))
   (listen-v4     knot-configuration-listen-v4
                  (default "0.0.0.0"))
   (listen-v6     knot-configuration-listen-v6
@@ -296,6 +298,8 @@
     (error-out "knot configuration field must be a package."))
   (unless (string? (knot-configuration-run-directory config))
     (error-out "run-directory must be a string."))
+  (unless (list? (knot-configuration-includes config))
+    (error-out "includes must be a list of strings or file-like objects."))
   (unless (list? (knot-configuration-keys config))
     (error-out "keys must be a list of knot-key-configuration."))
   (for-each (lambda (key) (verify-knot-key-configuration key))
@@ -529,6 +533,10 @@
     #~(begin
         (call-with-output-file #$output
           (lambda (port)
+            (if (knot-configuration-includes config)
+              (for-each (lambda (inc)
+                          (format port "include: ~a\n" inc))
+                (knot-configuration-includes config)))
             (format port "server:\n")
             (format port "    rundir: ~a\n" #$(knot-configuration-run-directory config))
             (format port "    user: knot\n")

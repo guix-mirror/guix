@@ -19843,6 +19843,19 @@ The Knot package.
 @item @code{run-directory} (default: @code{"/var/run/knot"})
 The run directory.  This directory will be used for pid file and sockets.
 
+@item @code{includes} (default: @code{'()})
+A list of strings or file-like objects denoting other files that must be
+included at the top of the configuration file.
+
+@cindex secrets, Knot service
+This can be used to manage secrets out-of-band.  For example, secret
+keys may be stored in an out-of-band file not managed by Guix, and
+thus not visible in @file{/gnu/store}---e.g., you could store secret
+key configuration in @file{/etc/knot/secrets.conf} and add this file
+to the @code{includes} list.
+
+It can also be used to add configuration not supported by this interface.
+
 @item @code{listen-v4} (default: @code{"0.0.0.0"})
 An ip address on which to listen.
 
