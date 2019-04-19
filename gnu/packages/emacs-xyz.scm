@@ -2743,6 +2743,33 @@ the speedbar window.")
        "This package provides a macro that writes your namespaces for you.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-textobj-syntax
+  (let ((commit "2d9ba8c75c754b409aea7469f46a5cfa52a872f3")
+        (version "0")
+        (revision "1"))
+    (package
+      (name "emacs-evil-textobj-syntax")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/laishulu/evil-textobj-syntax/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "031p5i3274dazp7rz6m5y38shfgszm1clmkcf58qfqlvy978ammc"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)
+                           ("emacs-names" ,emacs-names)))
+      (home-page "https://github.com/laishulu/evil-textobj-syntax/")
+      (synopsis "Text objects based on syntax highlighting")
+      (description
+       "This package provides text objects for @code{evil-mode} with
+boundaries defined by syntax highlighting.")
+      (license license:gpl3+))))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
