@@ -2770,6 +2770,33 @@ the speedbar window.")
 boundaries defined by syntax highlighting.")
       (license license:gpl3+))))
 
+(define-public emacs-flycheck-flow
+  (let ((commit "9e8e52cfc98af6a23fd906f9cb5d5d470d8cf82d")
+        (version "1.1")
+        (revision "1"))
+    (package
+      (name "emacs-flycheck-flow")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lbolla/emacs-flycheck-flow")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14qldlisbmxzammr500gyha2hiv2xgyzfc6mysqii06kbcqn1ik1"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-flycheck" ,emacs-flycheck)))
+      (home-page "https://github.com/lbolla/emacs-flycheck-flow")
+      (synopsis "Flow support for @code{flycheck-mode}")
+      (description
+       "This package allows @code{flycheck-mode} to provide syntax-checking
+for Flow files.")
+      (license license:gpl3+))))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
