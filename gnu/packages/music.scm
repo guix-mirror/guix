@@ -721,7 +721,16 @@ audio and video).")
     (arguments
      `(#:scons-flags (list (string-append "PREFIX=" %output))
        #:scons ,scons-python2
-       #:tests? #f)) ;no "check" target
+       #:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-removed-scons-syntax
+           (lambda _
+             (substitute* "SConstruct"
+               (("BoolOption") "BoolVariable")
+               (("PathOption") "PathVariable")
+               (("Options") "Variables"))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("jack" ,jack-1)
