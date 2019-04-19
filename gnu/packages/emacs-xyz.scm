@@ -2823,6 +2823,31 @@ for Flow files.")
 respective @code{*Help*} buffers.")
       (license license:gpl3+))))
 
+(define-public emacs-docker-compose-mode
+  (package
+    (name "emacs-docker-compose-mode")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/meqif/docker-compose-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fbcxwfvm33xcdj3cs26d9i1zyrryyjjkv7sc3mfxd45nq8d3ivj"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)))
+    (home-page "https://github.com/meqif/docker-compose-mode/")
+    (synopsis "Major mode for editing @file{docker-compose} files")
+    (description
+     "This is a major mode for @file{docker-compose} files that provides
+completion of relevant keywords.")
+    (license license:expat)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
