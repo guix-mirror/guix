@@ -459,8 +459,8 @@ It has been modified to remove all non-free binary blobs.")
 between the CDemu userspace daemon and linux kernel.")
     (license license:gpl2+)))
 
-(define %linux-libre-4.19-version "4.19.34")
-(define %linux-libre-4.19-hash "0rmpyj2qb651p2k2srpjndjxry87hr5vq0jkk4rvxjhm5y3sb65l")
+(define %linux-libre-4.19-version "4.19.35")
+(define %linux-libre-4.19-hash "1vz9h7m02012xszsfzzfxnvi4ghfi47gx8xqkcclkiyh8ql337cf")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
