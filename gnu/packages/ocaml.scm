@@ -405,7 +405,7 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
                 "00yvyfm4j423zqndvgc1ycnmiffaa2l9ab40cyg23pf51qmzk2jm"))
               (patches
                (search-patches
-                "ocaml-dose3-Add-unix-as-dependency-to-dose3.common-in-META.in.patch"
+                "ocaml-dose3-add-unix-dependency.patch"
                 "ocaml-dose3-Fix-for-ocaml-4.06.patch"
                 "ocaml-dose3-dont-make-printconf.patch"
                 "ocaml-dose3-Install-mli-cmx-etc.patch"))))
