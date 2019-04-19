@@ -5435,8 +5435,7 @@ Instagram and YouTube.")
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
        (patches
-        (search-patches
-         "linkchecker-mark-more-tests-that-require-the-network.patch"))
+        (search-patches "linkchecker-tests-require-network.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
