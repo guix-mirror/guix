@@ -684,6 +684,9 @@ GUIX_SYSTEM_IMAGE_BASE = guix-system-install-$(PACKAGE_VERSION)
 # Prefix of the Guix VM image file name.
 GUIX_SYSTEM_VM_IMAGE_BASE = guix-system-vm-image-$(PACKAGE_VERSION)
 
+# Return the sequence of '-s' flags for the given systems.
+system_flags = $(foreach system,$(1),-s $(system))
+
 # The release process works in several phases:
 #
 #   0. We assume the developer created a 'vX.Y' tag.
@@ -714,6 +717,9 @@ release: dist
 	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
+	$(top_builddir)/pre-inst-env guix build guix	\
+	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
+	      -v1 --no-grafts -K
 	rm -f $(BINARY_TARBALLS)
 	$(MAKE) $(BINARY_TARBALLS)
 	for system in $(SUPPORTED_SYSTEMS) ; do					\
@@ -725,6 +731,9 @@ release: dist
 	   "`git rev-parse HEAD`"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
+	$(top_builddir)/pre-inst-env guix build guix			\
+	      $(call system_flags,$(GUIX_SYSTEM_SUPPORTED_SYSTEMS))	\
+	      -v1 --no-grafts -K
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
