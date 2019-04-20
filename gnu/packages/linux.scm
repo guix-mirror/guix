@@ -4601,10 +4601,19 @@ interface in sysfs, which can be accomplished with the included udev rules.")
               ("sed" ,sed)
               ("usbutils" ,usbutils)
               ("util-linux" ,util-linux)
-              ("wireless-tools" ,wireless-tools)))
+              ("wireless-tools" ,wireless-tools)
+              ,@(if (let ((system (or (%current-target-system)
+                                      (%current-system))))
+                      (or (string-prefix? "i686-" system)
+                          (string-prefix? "x86_64-" system)))
+                    `(("x86-energy-perf-policy" ,x86-energy-perf-policy))
+                    '())))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
          (add-before 'build 'setenv
@@ -4642,30 +4651,34 @@ interface in sysfs, which can be accomplished with the included udev rules.")
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
                     (bin-files (find-files bin ".*")))
                (define (bin-directory input-name)
-                 (string-append (assoc-ref inputs input-name) "/bin"))
+                 (let ((p (assoc-ref inputs input-name)))
+                   (and p (string-append p "/bin"))))
                (define (sbin-directory input-name)
                  (string-append (assoc-ref inputs input-name) "/sbin"))
                (for-each (lambda (program)
                            (wrap-program program
                              `("PATH" ":" prefix
                                ,(append
-                                 (map bin-directory '("bash"
-                                                      "coreutils"
-                                                      "dbus"
-                                                      "eudev"
-                                                      "grep"
-                                                      "inetutils"
-                                                      "kmod"
-                                                      "perl"
-                                                      "sed"
-                                                      "usbutils"
-                                                      "util-linux"))
-                                 (map sbin-directory '("ethtool"
-                                                       "hdparm"
-                                                       "iw"
-                                                       "pciutils"
-                                                       "rfkill"
-                                                       "wireless-tools"))))))
+                                 (filter-map bin-directory
+                                             '("bash"
+                                               "coreutils"
+                                               "dbus"
+                                               "eudev"
+                                               "grep"
+                                               "inetutils"
+                                               "kmod"
+                                               "perl"
+                                               "sed"
+                                               "usbutils"
+                                               "util-linux"
+                                               "x86-energy-perf-policy"))
+                                 (filter-map sbin-directory
+                                             '("ethtool"
+                                               "hdparm"
+                                               "iw"
+                                               "pciutils"
+                                               "rfkill"
+                                               "wireless-tools"))))))
                          bin-files)
                #t))))))
     (home-page "http://linrunner.de/en/tlp/tlp.html")
