@@ -7,7 +7,7 @@
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
@@ -1846,7 +1846,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "5.0.0")
+    (version "5.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1855,7 +1855,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "186i1pna2f3fwa2001y8mw5131h0sndhfdxzfqq2gnr1m83sjm0w"))))
+                "1hw3n7qqpasq6bivxhq01kr0d58w0gp46s0baxixp1fakd79p8a7"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -1873,7 +1873,7 @@ match, cannon keep, and grave-itation pit.")
                      #t))))
     (synopsis "Main game data for the Minetest game engine")
     (description
-     "Game data for the Minetest infinite-world block sandox game.")
+     "Game data for the Minetest infinite-world block sandbox game.")
     (home-page "http://minetest.net")
     (license license:lgpl2.1+)))
 
