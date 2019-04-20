@@ -179,7 +179,7 @@ may also simplify input method development.")
 (define-public ibus-libpinyin
   (package
     (name "ibus-libpinyin")
-    (version "1.10.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libpinyin/ibus-libpinyin/"
@@ -187,7 +187,7 @@ may also simplify input method development.")
                                   "/ibus-libpinyin-" version ".tar.gz"))
               (sha256
                (base32
-                "0yq8aw4lddiviag8cnik6fp52vvk8lxv6bym13a3xya84c6zii3c"))))
+                "1sypbr5n96sf7mgqhxrwbawdmszgb6yi28iqkmfmb8xr93pwq7fq"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
