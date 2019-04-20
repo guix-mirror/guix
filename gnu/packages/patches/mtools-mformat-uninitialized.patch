@@ -1,0 +1,20 @@
+Fix a bug whereby 'mformat' could end up passing uninitialized bytes
+to write(2).  This could be reproduced with:
+
+  mformat -C -f 1440 -L 16  -N 77777777 -i  /tmp/x ::
+
+where the output of /tmp/x would be non-deterministic.
+
+Patch by Ludovic Courtès <ludo@gnu.org>.
+
+--- mtools-4.0.23/mformat.c	2019-04-21 00:12:01.496116195 +0200
++++ mtools-4.0.23/mformat.c	2019-04-21 00:12:36.675967157 +0200
+@@ -927,6 +927,7 @@ void mformat(int argc, char **argv, int
+ 	
+ 	char *endptr;
+ 
++	memset(&boot.bytes, '\0', sizeof boot);
+ 	hs = hs_set = 0;
+ 	argtracks = 0;
+ 	argheads = 0;
+
