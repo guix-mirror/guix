@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
+;;; Copyright @ 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,14 +62,16 @@
 (define-public go-1.4
   (package
     (name "go")
-    (version "1.4.3")
+    ;; The C-langauge bootstrap of Go:
+    ;; https://golang.org/doc/install/source#go14
+    (version "1.4-bootstrap-20171003")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://storage.googleapis.com/golang/"
-                                  name version ".src.tar.gz"))
+                                  name version ".tar.gz"))
               (sha256
                (base32
-                "0na9yqilzpvq0bjndbibfp07wr796gf252y471cip10bbdqgqiwr"))))
+                "0liybk5z00hizsb5ypkbhqcawnwwa6mkwgvjjg4y3jm3ndg5pzzl"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"
@@ -135,13 +138,6 @@
                   ("os/os_test.go" "(.+)(TestHostname.+)")
                   ("time/format_test.go" "(.+)(TestParseInSydney.+)")
 
-                  ;; Tzdata 2016g changed the name of the time zone used in this
-                  ;; test, and the patch for Go 1.7 does not work for 1.4.3:
-                  ;; https://github.com/golang/go/issues/17545
-                  ;; https://github.com/golang/go/issues/17276
-                  ("time/time_test.go" "(.+)(TestLoadFixed.+)")
-                  ("time/format_test.go" "(.+)(TestParseInLocation.+)")
-
                   ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
                   ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
@@ -168,9 +164,7 @@
                (setenv "GOOS" "linux")
                (setenv "GOROOT" (dirname (getcwd)))
                (setenv "GOROOT_FINAL" output)
-               ;; Go 1.4's cgo will not work with binutils >= 2.27:
-               ;; https://github.com/golang/go/issues/16906
-               (setenv "CGO_ENABLED" "0")
+               (setenv "GO14TESTS" "1")
                (invoke "sh" "all.bash"))))
 
          (replace 'install
