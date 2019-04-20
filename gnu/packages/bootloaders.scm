@@ -90,7 +90,8 @@
               (base32
                "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))
              (patches (search-patches "grub-check-error-efibootmgr.patch"
-                                      "grub-binutils-compat.patch"))))
+                                      "grub-binutils-compat.patch"
+                                      "grub-efi-fat-serial-number.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
