@@ -471,6 +471,10 @@ GRUB configuration and OS-DRV as the stuff in it."
                 "mnt=/tmp/root/mnt"
                 "-path-list" "-"
                 "--"
+
+                ;; Set all timestamps to 1.
+                "-volume_date" "all_file_dates" "=1"
+
                 "-volid" (string-upcase volume-id)
                 (if volume-uuid
                     `("-volume_date" "uuid"
