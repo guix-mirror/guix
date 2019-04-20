@@ -48,6 +48,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
+  #:use-module (gnu packages authentication)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -74,6 +75,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages suckless)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages version-control)
@@ -498,6 +500,55 @@ Synchronization is possible using the integrated git support, which commits
 changes to your password database to a git repository that can be managed
 through the pass command.")
     (license license:gpl2+)))
+
+(define-public pass-otp
+  (package
+    (name "pass-otp")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/tadfisher/pass-otp/releases/"
+                       "download/v" version "/pass-otp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rrs3iazq80dn0wbl20xkh270428jd8l99m5gd7hl93s4r4sc82p"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (let* ((out      (assoc-ref %outputs "out"))
+              (bashcomp (string-append out "/etc/bash_completion.d")))
+         (list (string-append "PREFIX=" %output)
+               (string-append "BASHCOMPDIR=" bashcomp)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'patch-oath-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "otp.bash"
+               (("^OATH=.*$")
+                (string-append
+                 "OATH="
+                 (assoc-ref inputs "oath-toolkit")
+                 "/bin/oathtool\n")))
+             #t)))
+       #:test-target "test"))
+    (inputs
+     `(("oath-toolkit" ,oath-toolkit)))
+    (native-inputs
+     `(("password-store" ,password-store)
+       ("expect" ,expect)
+       ("git" ,git)
+       ("gnupg" ,gnupg)
+       ("which" ,which)))
+    (home-page "https://github.com/tadfisher/pass-otp")
+    (synopsis "Pass extension for managing one-time-password (OTP) tokens")
+    (description
+     "Pass OTP is an extension for password-store that allows adding
+one-time-password (OTP) secrets, generating OTP codes, and displaying secret
+key URIs using the standard otpauth:// scheme.")
+    (license license:gpl3+)))
 
 (define-public argon2
   (package
