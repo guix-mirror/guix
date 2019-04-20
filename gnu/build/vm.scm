@@ -468,6 +468,16 @@ GRUB configuration and OS-DRV as the stuff in it."
            (time-second
             (date->time-utc (make-date 0 0 0 0 1 1 1980 0)))))
 
+  ;; Our patched 'grub-mkrescue' honors this environment variable and passes
+  ;; it to 'mformat', which makes it the serial number of 'efi.img'.  This
+  ;; allows for deterministic builds.
+  (setenv "GRUB_FAT_SERIAL_NUMBER"
+          (number->string (if volume-uuid
+                              (string-hash (iso9660-uuid->string volume-uuid)
+                                           (expt 2 32))
+                              #x77777777)
+                          16))
+
   (let ((pipe
          (apply open-pipe* OPEN_WRITE
                 grub-mkrescue "-o" target
