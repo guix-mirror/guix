@@ -37,6 +37,7 @@
   #:use-module (ice-9 popen)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:export (qemu-command
             load-in-linux-vm
@@ -457,6 +458,15 @@ GRUB configuration and OS-DRV as the stuff in it."
                  #:reset-timestamps? #f))
               closures)
     (register-bootcfg-root "/tmp/root" config-file))
+
+  ;; 'grub-mkrescue' calls out to mtools programs to create 'efi.img', a FAT
+  ;; file system image, and mtools honors SOURCE_DATE_EPOCH for the mtime of
+  ;; those files.  The epoch for FAT is Jan. 1st 1980, not 1970, so choose
+  ;; that.
+  (setenv "SOURCE_DATE_EPOCH"
+          (number->string
+           (time-second
+            (date->time-utc (make-date 0 0 0 0 1 1 1980 0)))))
 
   (let ((pipe
          (apply open-pipe* OPEN_WRITE
