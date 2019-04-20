@@ -57,7 +57,7 @@
 (define-public ibus
   (package
     (name "ibus")
-    (version "1.5.19")
+    (version "1.5.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -65,23 +65,15 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "0a94bnpm24581317hdnihwr4cniriml10p4ffgxg14xhvaccfrjb"))))
+                "0d6hcbw6ai91jl87lqnyn8bxi5y5kba5i9nz7knknyh69g5fbwac"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
        #:configure-flags `("--disable-emoji-dict" ; cannot find emoji.json path
-                           "--disable-python2"
                            "--enable-python-library"
                            ,(string-append "--with-ucd-dir="
                                            (getcwd) "/ucd")
                            "--enable-wayland")
-       #:make-flags
-       (list "CC=gcc"
-             (string-append "pyoverridesdir="
-                            (assoc-ref %outputs "out")
-                            "/lib/python"
-                            ,(version-major+minor (package-version python))
-                            "/site-packages/gi/overrides/"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-ucd-dir
@@ -89,6 +81,18 @@
              (mkdir-p "../ucd")
              (symlink (assoc-ref inputs "unicode-blocks") "../ucd/Blocks.txt")
              (symlink (assoc-ref inputs "unicode-nameslist") "../ucd/NamesList.txt")
+             #t))
+         (add-after 'unpack 'patch-python-target-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((root (string-append (assoc-ref outputs "out")
+                                        "/lib/python"
+                                        ,(version-major+minor (package-version python))
+                                        "/site-packages")))
+               (substitute* "configure"
+                 (("(py2?overridesdir)=.*" _ var)
+                  (string-append var "=" root "/gi/overrides/"))
+                 (("(pkgpython2dir=).*" _ var)
+                  (string-append var root "/ibus"))))
              #t))
          (add-before 'configure 'disable-dconf-update
            (lambda _
@@ -131,7 +135,7 @@
        ("gconf" ,gconf)
        ("gtk2" ,gtk+-2)
        ("gtk+" ,gtk+)
-       ("intltool" ,intltool)
+       ("gettext" ,gnu-gettext)
        ("json-glib" ,json-glib)
        ("libnotify" ,libnotify)
        ("libx11" ,libx11)
