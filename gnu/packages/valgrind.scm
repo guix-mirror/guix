@@ -84,3 +84,18 @@ also use Valgrind to build new tools.")
     ;; Building VEX on mips64el-linux fails with "opcode not supported on this
     ;; processor: mips3".
     (supported-systems (delete "mips64el-linux" %supported-systems))))
+
+(define-public valgrind-3.15
+  (package
+    (inherit valgrind)
+    (version "3.15.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "http://www.valgrind.org/downloads"
+                                        "/valgrind-" version ".tar.bz2")
+                         (string-append "ftp://sourceware.org/pub/valgrind"
+                                        "/valgrind-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "1ccawxrni8brcvwhygy12iprkvz409hbr9xkk1bd03gnm2fplz21"))
+              (patches (search-patches "valgrind-enable-arm.patch"))))))
