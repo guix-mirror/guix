@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -423,6 +423,19 @@ any X11 window.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
+         (add-before 'install 'patch-system-extension-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (extension-dir (string-append out "/lib/password-store/extensions")))
+               (substitute* "src/password-store.sh"
+                 (("^SYSTEM_EXTENSION_DIR=.*$")
+                  ;; lead with whitespace to prevent 'make install' from
+                  ;; overwriting it again
+                  (string-append " SYSTEM_EXTENSION_DIR=\""
+                                 "${PASSWORD_STORE_SYSTEM_EXTENSION_DIR:-"
+                                 extension-dir
+                                 "}\"\n"))))
+             #t))
          (add-before 'install 'patch-passmenu-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "contrib/dmenu/passmenu"
@@ -461,6 +474,10 @@ any X11 window.")
        ;; timeout in some circumstances.
        #:parallel-tests? #f
        #:test-target "test"))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "PASSWORD_STORE_SYSTEM_EXTENSION_DIR")
+            (files '("lib/password-store/extensions")))))
     (inputs
      `(("dmenu" ,dmenu)
        ("getopt" ,util-linux)
