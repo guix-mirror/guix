@@ -213,6 +213,7 @@ may also simplify input method development.")
        ("sqlite" ,sqlite)
        ("python" ,python)
        ("pyxdg" ,python-pyxdg)
+       ("pygobject2" ,python-pygobject)
        ("gtk+" ,gtk+)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
