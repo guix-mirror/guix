@@ -1916,7 +1916,7 @@ match, cannon keep, and grave-itation pit.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("curl" ,curl)
-       ("freetype" ,(@ (gnu packages fontutils) freetype))
+       ("freetype" ,freetype)
        ("gettext" ,gettext-minimal)
        ("gmp" ,gmp)
        ("irrlicht" ,irrlicht)
