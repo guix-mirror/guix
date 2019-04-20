@@ -34,6 +34,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4037,6 +4038,39 @@ from that to the system kernel's @file{/dev/random} machinery.")
      "cpupower is a set of user-space tools that use the cpufreq feature of the
 Linux kernel to retrieve and control processor features related to power saving,
 such as frequency and voltage scaling.")
+    (license license:gpl2)))
+
+(define-public x86-energy-perf-policy
+  (package
+    (name "x86-energy-perf-policy")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _
+             (chdir "tools/power/x86/x86_energy_perf_policy")
+             #t))
+         (delete 'configure)
+         (add-before 'build 'fix-makefile
+           (lambda _
+             (substitute* "Makefile" (("/usr") ""))
+             #t)))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "DESTDIR=" out)
+               (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Display and update Intel-CPU energy-performance policy")
+    (description
+     "@command{x86_energy_perf_policy} displays and updates energy-performance
+policy settings specific to Intel Architecture Processors.  Settings are
+accessed via Model Specific Register (MSR) updates, no matter if the Linux
+cpufreq sub-system is enabled or not.")
     (license license:gpl2)))
 
 (define-public haveged
