@@ -213,6 +213,67 @@ interface and is based on GNU Guile.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/shepherd/")))
 
+(define-public cloud-utils
+  (package
+    (name "cloud-utils")
+    (version "0.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://launchpad.net/cloud-utils/trunk/"
+             version "/+download/cloud-utils-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07fl3dlqwdzw4xx7mcxhpkks6dnmaxha80zgs9f6wmibgzni8z0r"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BINDIR=" out "/bin")
+               (string-append "MANDIR=" out "/share/man/man1")
+               (string-append "DOCDIR=" out "/share/doc")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((growpart (string-append (assoc-ref outputs "out")
+                                            "/bin/growpart")))
+               (wrap-program growpart
+                 `("PATH" ":" prefix (,(dirname (which "sfdisk"))
+                                      ,(dirname (which "readlink"))))))
+             #t)))))
+    (inputs
+     `(("python" ,python)
+       ("util-linux" ,util-linux))) ; contains sfdisk for growpart
+    (home-page "https://launchpad.net/cloud-utils")
+    (synopsis "Set of utilities for cloud computing environments")
+    (description
+     "This package contains a set of utilities for cloud computing
+environments:
+
+@itemize @bullet
+@item @command{cloud-localds} Create a disk for cloud-init to utilize nocloud
+@item @command{cloud-publish-image} Wrapper for cloud image publishing
+@item @command{cloud-publish-tarball} Wrapper for publishing cloud tarballs
+@item @command{cloud-publish-ubuntu} Import a Ubuntu cloud image
+@item @command{ec2metadata} Query and display @acronym{EC2,Amazon Elastic
+  Compute Cloud} metadata
+@item @command{growpart} Grow a partition to fill the device
+@item @command{mount-image-callback} Mount a file and run a command
+@item @command{resize-part-image} Resize a partition image to a new size
+@item @command{ubuntu-cloudimg-query} Get the latest Ubuntu
+  @acronym{AMI,Amazon Machine Image}
+@item @command{ubuntu-ec2-run} Run a @acronym{EC2,Amazon Elastic Compute
+  Cloud} instance using Ubuntu
+@item @command{vcs-run} Obtain a repository, and run a command
+@item @command{write-mime-multipart} Handle multipart
+  @acronym{MIME,Multipurpose Internet Mail Extensions} messages
+@end itemize")
+    (license license:gpl3)))
+
 (define-public daemontools
   (package
     (name "daemontools")
