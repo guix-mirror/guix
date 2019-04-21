@@ -2130,50 +2130,31 @@ This game is based on the GPL version of the famous game TuxRacer.")
        (snippet
         ;; Delete bundled library sources
         '(begin
-           ;; FIXME: try to unbundle enet, and angelscript
+           ;; Supertuxkart uses modified versions of the Irrlicht engine
+           ;; and the bullet library.  The developers gave an explanation
+           ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
+           ;; FIXME: try to unbundle angelscript
            (for-each delete-file-recursively
                      '("lib/zlib"
                        "lib/libpng"
                        "lib/jpeglib"
                        "lib/glew"
-                       "lib/wiiuse"))
-           (substitute* "CMakeLists.txt"
-             ;; Supertuxkart uses modified versions of the Irrlicht engine
-             ;; and the bullet library.  The developers gave an explanation here:
-             ;; http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
-             (("add_subdirectory\\(.*/(glew|zlib)\"\\)") ""))
+                       "lib/wiiuse"
+                       "lib/enet"))
            #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no check target
        #:configure-flags
        (list "-DUSE_WIIUSE=0"
-             ;; Do not use the bundled zlib
+             ;; Do not use the bundled zlib, glew and enet.
              "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
+             "-DUSE_SYSTEM_GLEW=TRUE"
+             "-DUSE_SYSTEM_ENET=TRUE"
              ;; FIXME: needs libopenglrecorder
              "-DBUILD_RECORDER=0"
              ;; Irrlicht returns an integer instead of a boolean
-             "-DCMAKE_C_FLAGS=-fpermissive")
-       #:phases
-       (modify-phases %standard-phases
-         ;; see https://github.com/supertuxkart/stk-code/issues/3557
-         (add-after 'unpack 'patch-for-mesa-18.3
-           (lambda _
-             (substitute* "src/graphics/gl_headers.hpp"
-               (("#if !defined\\(USE_GLES2\\)")
-                "#if !defined(USE_GLES2)\n#   define __gl_glext_h_"))
-             #t))
-         (add-after 'unpack 'unbundle
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-               (("glew")
-                (string-append (assoc-ref inputs "glew")
-                               "/lib/libGLEW.a"))
-               (("include_directories\\(\"\\$\\{PROJECT_SOURCE_DIR\\}/lib/glew/include\"\\)")
-                (string-append "include_directories(\""
-                               (assoc-ref inputs "glew")
-                               "/include\")")))
-             #t)))))
+             "-DCMAKE_C_FLAGS=-fpermissive")))
     (inputs
      `(("glew" ,glew)
        ("zlib" ,zlib)
@@ -2188,7 +2169,8 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
        ("libjpeg" ,libjpeg)
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl)
+       ("enet" ,enet)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://supertuxkart.net/")
