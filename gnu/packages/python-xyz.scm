@@ -629,12 +629,13 @@ version identifier.")
     (home-page "https://github.com/irmen/Serpent")
     (synopsis "Serializer for literal Python expressions")
     (description
-     "Serpent provides ast.literal_eval() compatible object tree
-serialization.  It serializes an object tree into bytes (utf-8 encoded string)
-that can be decoded and then passed as-is to ast.literal_eval() to rebuild it
-as the original object tree.  As such it is safe to send serpent data to other
-machines over the network for instance (because only safe literals are
-encoded).")
+     "Serpent provides @code{ast.literal_eval()}-compatible object tree
+serialization.  It serializes an object tree into bytes (an utf-8 encoded
+string) that can be decoded and then passed as-is to @code{ast.literal_eval()}
+to rebuild the original object tree.
+
+Because only safe literals are encoded, it is safe to send serpent data to
+other machines, such as over the network.")
     (license license:expat)))
 
 (define-public python-setuptools
