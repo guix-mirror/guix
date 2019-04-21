@@ -399,9 +399,9 @@ files."
   (mlet %store-monad ((build  (build-program source version guile-version
                                              #:pull-version pull-version))
                       (system (if system (return system) (current-system)))
-                      (port   ((store-lift nix-server-socket)))
-                      (major  ((store-lift nix-server-major-version)))
-                      (minor  ((store-lift nix-server-minor-version))))
+                      (port   ((store-lift store-connection-socket)))
+                      (major  ((store-lift store-connection-major-version)))
+                      (minor  ((store-lift store-connection-minor-version))))
     (mbegin %store-monad
       (show-what-to-build* (list build))
       (built-derivations (list build))
