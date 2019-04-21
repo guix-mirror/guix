@@ -160,7 +160,7 @@
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
   (kernel-arguments operating-system-user-kernel-arguments
-                    (default '()))                ; list of gexps/strings
+                    (default '("quiet")))         ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
   (label operating-system-label                   ; string
          (thunked)
