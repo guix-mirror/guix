@@ -128,13 +128,14 @@ are already there.")
          (delete 'configure)
          ;; Help the build scripts find the Go language dependencies.
          (add-before 'unpack 'setup-go-environment
-           (assoc-ref go:%standard-phases 'setup-go-environment)))))
-    (inputs
+           (assoc-ref go:%standard-phases 'setup-go-environment))
+         (add-after 'install 'remove-go-references
+           (assoc-ref go:%standard-phases 'remove-go-references)))))
+    (native-inputs
      `(("go" ,go)
        ("go-github-com-burntsushi-toml" ,go-github-com-burntsushi-toml)
-       ("go-github-com-direnv-go-dotenv" ,go-github-com-direnv-go-dotenv)))
-    (native-inputs
-      `(("which" ,which)))
+       ("go-github-com-direnv-go-dotenv" ,go-github-com-direnv-go-dotenv)
+       ("which" ,which)))
     (home-page "https://direnv.net/")
     (synopsis "Environment switcher for the shell")
     (description
