@@ -8434,7 +8434,7 @@ text sequences from strings.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MA/MAKAMAKA/"
+       (uri (string-append "mirror://cpan/authors/id/I/IS/ISHIGAKI/"
                            "Text-CSV-" version ".tar.gz"))
        (sha256
         (base32 "1llccsl6sr11g9affh43m6q5r85qgnpi9n7idcs1vi9cn4ww0kp7"))))
