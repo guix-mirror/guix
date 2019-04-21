@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
+;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -544,6 +545,35 @@ handful of functions that are not resource-specific.")
        "This package provides basic syntax highlighting and editing support
 for editing Racket's Scribble documentation syntax in Emacs.")
       (license license:gpl3+))))
+
+(define-public emacs-shroud
+  (package
+    (name "emacs-shroud")
+    (version "1.15.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/o-nly/emacs-shroud.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wvm4lxqcc1p8v7rpqal3bnqgnpk1gs7v18i83f6cvi5d88jkgdg"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-bui" ,emacs-bui)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)
+       ("gnupg" ,gnupg)
+       ("shroud" ,shroud)))
+    (home-page "https://github.com/o-nly/emacs-shroud")
+    (synopsis "Emacs interface to the Shroud password manager")
+    (description
+     "This package provides an Emacs interface to the Shroud password manager,
+using the Buffers User Interface library.  You can view, copy, and edit secrets
+from within Emacs.")
+    (license license:gpl3+)))
 
 (define-public emacs-unpackaged-el
   (let ((commit "f4df7f8dfea715e893b2223adda32545803f5cce")
