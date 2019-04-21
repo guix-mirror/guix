@@ -38,6 +38,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2116,7 +2117,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "0.9.3")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -2124,7 +2125,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
                            version "/supertuxkart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "1c4w47ibj87lgwiqygq8qi7jiz6gklj4dwf5bs5zk15s0rqlw0fq"))
+         "106rlp99hq18b4q1kdri3pl06cc4v7iqfp1hp9k2f8751lzz923d"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
@@ -2186,7 +2187,8 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("curl" ,curl)
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg)
+       ("openssl" ,openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://supertuxkart.net/")
