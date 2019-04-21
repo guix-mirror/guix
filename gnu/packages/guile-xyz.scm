@@ -948,40 +948,37 @@ Guile.")
        `(("guile" ,guile-2.2)
          ("guile-email" ,guile-email))))))
 
-;; There has not been any release yet.
 (define-public guile-newt
-  (let ((commit "80c1e9e71945f833386d1632b52573e59325804f")
-        (revision "4"))
-    (package
-      (name "guile-newt")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/mothacehe/guile-newt")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags
-         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("newt" ,newt)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (synopsis "Guile bindings to Newt")
-      (description
-       "This package provides bindings for Newt, a programming library for
+  (package
+    (name "guile-newt")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/mothacehe/guile-newt")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("newt" ,newt)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Guile bindings to Newt")
+    (description
+     "This package provides bindings for Newt, a programming library for
 color text mode, widget based user interfaces.  The bindings are written in pure
 Scheme by using Guile’s foreign function interface.")
-      (home-page "https://gitlab.com/mothacehe/guile-newt")
-      (license license:gpl3+))))
+    (home-page "https://gitlab.com/mothacehe/guile-newt")
+    (license license:gpl3+)))
 
 (define-public guile-mastodon
   (package
