@@ -3663,6 +3663,14 @@ Read the list of channels from @var{file} instead of
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
 
+@item --news
+@itemx -N
+Display the list of packages added or upgraded since the previous generation.
+
+This is the same information as displayed upon @command{guix pull} completion,
+but without ellipses; it is also similar to the output of @command{guix pull
+-l} for the last generation (see below).
+
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
 List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
