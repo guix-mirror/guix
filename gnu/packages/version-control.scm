@@ -24,6 +24,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +94,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages sync)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
@@ -1866,6 +1868,48 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (description
      "This package allows you to use your hubic account as a \"special
 repository\" with git-annex.")
+    (license license:gpl3+)))
+
+(define-public git-annex-remote-rclone
+  (package
+    (name "git-annex-remote-rclone")
+    (version "0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DanielDent/git-annex-remote-rclone.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j0hlxji8d974fq7zd4xc02n0jpi31ylhxc7z4zp8iiwad5mkpxp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((bash (string-append (assoc-ref %build-inputs "bash")
+                                    "/bin/bash"))
+               (rclone (string-append (assoc-ref %build-inputs "rclone")
+                                      "/bin/rclone")))
+           (copy-file (string-append (assoc-ref %build-inputs "source")
+                                     "/git-annex-remote-rclone")
+                      "git-annex-remote-rclone")
+           (substitute* "git-annex-remote-rclone"
+             (("/bin/bash") bash)
+             (("runcmd rclone") (string-append "runcmd " rclone)))
+           (install-file "git-annex-remote-rclone"
+                         (string-append %output "/bin"))
+           #t))))
+    (inputs
+     `(("bash" ,bash)
+       ("rclone" ,rclone)))
+    (home-page "https://github.com/DanielDent/git-annex-remote-rclone")
+    (synopsis "Use rclone-supported cloud storage providers with git-annex")
+    (description "This wrapper around rclone makes any destination supported
+by rclone usable with git-annex.")
     (license license:gpl3+)))
 
 (define-public fossil
