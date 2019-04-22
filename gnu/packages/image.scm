@@ -1505,15 +1505,14 @@ in-memory raw vectors.")
 (define-public gifsicle
   (package
    (name "gifsicle")
-   (version "1.91")
+   (version "1.92")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.lcdf.org/gifsicle/gifsicle-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "00586z1yz86qcblgmf16yly39n4lkjrscl52hvfxqk14m81fckha"))))
+        (base32 "0rffpzxcak19k6cngpxn73khvm3z1gswrqs90ycdzzb53p05ddas"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -1528,7 +1527,7 @@ in-memory raw vectors.")
               (("/bin/rm")
                (which "rm")))
             #t)))))
-   (native-inputs `(("perl" ,perl))) ; Only for tests.
+   (native-inputs `(("perl" ,perl)))    ; only for tests
    (inputs `(("libx11" ,libx11)))
    (home-page "http://www.lcdf.org/gifsicle/")
    (synopsis "Edit GIF images and animations")
