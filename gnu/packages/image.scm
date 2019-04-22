@@ -1153,13 +1153,13 @@ the programmer.")
     (version "1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/myint/perceptualdiff/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0zl6xmp971fffg7fzcz2fbgxg5x2w7l8qa65c008i4kbkc9016ps"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/myint/perceptualdiff.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yys55f9i9g3wjjg0j2m0p0k21zwnid8520a8lrr30khm4k5gibp"))))
     (build-system cmake-build-system)
     (inputs `(("freeimage" ,freeimage)))
     (arguments
