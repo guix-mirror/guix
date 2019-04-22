@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -1335,7 +1335,7 @@ Happy works in a similar way to the yacc tool for C.")
 (define-public ghc-haskell-lexer
   (package
     (name "ghc-haskell-lexer")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -1343,8 +1343,7 @@ Happy works in a similar way to the yacc tool for C.")
              "https://hackage.haskell.org/package/haskell-lexer/haskell-lexer-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "0rj3r1pk88hh3sk3mj61whp8czz5kpxhbc78xlr04bxwqjrjmm6p"))))
+        (base32 "1wyxd8x33x4v5vxyzkhm610pl86gbkc8y439092fr1735q9g7kfq"))))
     (build-system haskell-build-system)
     (home-page "http://hackage.haskell.org/package/haskell-lexer")
     (synopsis "Fully compliant Haskell 98 lexer")
