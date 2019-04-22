@@ -2570,15 +2570,15 @@ reasonable substitute.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "0m1b88wg1w6xdwg0siky5k86x8sh6smhbr42ixz41ra81lv34jbj"))))
+        (base32 "0wwj8il4c3aff15xwwcjfci367zxsakq05ps1a2il6yavp91i94c"))))
     (build-system python-build-system)
-    ;; Tests require a running Redis server
+    ;; Tests require a running Redis server.
     (arguments '(#:tests? #f))
     ;; As long as we are not running test, we do not need this input :-)
     ;;(native-inputs
