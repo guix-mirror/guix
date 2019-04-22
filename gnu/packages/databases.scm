@@ -2188,13 +2188,13 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "12sr36646sipf9ac3n2xh8z0w5pz4d3dvw5qjv2kzvcls6wvf7vq"))))
+       (base32 "06c3lcv7nijsgqsjaaa4djrwlzgh9f910zlqxkmgq22h6jl4rici"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
