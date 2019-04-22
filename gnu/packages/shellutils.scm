@@ -105,35 +105,40 @@ are already there.")
     (name "direnv")
     (version "2.15.2")
     (source
-     (origin (method url-fetch)
-             (uri (string-append "https://github.com/direnv/" name
-                                 "/archive/v" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/direnv/direnv.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1hhmc6rb7b1d4s4kgb4blrq35h388ax37ap88dq3dgfcw9w6j1rm"))))
-    (build-system gnu-build-system)
+               "1y18619pmhfl0vrf4w0h75ybkkwgi9wcb7d9kv4n8drg1xp4aw4w"))))
+    (build-system go-build-system)
     (arguments
-     `(#:test-target "test"
-       #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
-       #:modules ((guix build gnu-build-system)
-                  ((guix build go-build-system) #:prefix go:)
-                  (guix build union)
-                  (guix build utils))
-       #:imported-modules (,@%gnu-build-system-modules
-                            (guix build union)
-                            (guix build go-build-system))
+     '(#:import-path "github.com/direnv/direnv"
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         ;; Help the build scripts find the Go language dependencies.
-         (add-before 'unpack 'setup-go-environment
-           (assoc-ref go:%standard-phases 'setup-go-environment))
-         (add-after 'install 'remove-go-references
-           (assoc-ref go:%standard-phases 'remove-go-references)))))
+         (add-after 'unpack 'delete-vendor
+           (lambda _
+             ;; Using a snippet causes issues with the name of the directory,
+             ;; so delete the extra source code here.
+             (delete-file-recursively "src/github.com/direnv/direnv/vendor")
+             #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               (with-directory-excursion "src/github.com/direnv/direnv"
+                 ;; The following file needs to be writable so it can be
+                 ;; modified by the testsuite.
+                 (make-file-writable "test/scenarios/base/.envrc")
+                 (invoke "make" "test")
+                 ;; Clean up from the tests, especially so that the extra
+                 ;; direnv executable that's generated is removed.
+                 (invoke "make" "clean")))
+             #t)))))
     (native-inputs
-     `(("go" ,go)
-       ("go-github-com-burntsushi-toml" ,go-github-com-burntsushi-toml)
+     `(("go-github-com-burntsushi-toml" ,go-github-com-burntsushi-toml)
        ("go-github-com-direnv-go-dotenv" ,go-github-com-direnv-go-dotenv)
        ("which" ,which)))
     (home-page "https://direnv.net/")
