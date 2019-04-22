@@ -99,8 +99,8 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
     (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://sourceware.org/pub/" name
-                                  "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://sourceware.org/pub/libabigail/"
+                                  "libabigail-" version ".tar.gz"))
               (sha256
                (base32
                 "04j07lhvwbp6qp8pdwbf7iqnr7kgpabmqylsw4invpmzwnyp6g6g"))))
