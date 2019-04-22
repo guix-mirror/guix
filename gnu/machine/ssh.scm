@@ -480,6 +480,8 @@ an environment type of 'managed-host."
                                  (raise roll-back-failure)))
                        (entries -> (map boot-parameters->menu-entry
                                         (list (second boot-parameters))))
+                       (locale -> (boot-parameters-locale
+                                   (second boot-parameters)))
                        (old-entries -> (map boot-parameters->menu-entry
                                             (drop boot-parameters 2)))
                        (bootloader -> (operating-system-bootloader
@@ -489,6 +491,7 @@ an environment type of 'managed-host."
                                    (bootloader-configuration-bootloader
                                     bootloader))
                                   bootloader entries
+                                  #:locale locale
                                   #:old-entries old-entries)))
                        (remote-result (machine-remote-eval machine remote-exp)))
     (when (eqv? 'error remote-result)

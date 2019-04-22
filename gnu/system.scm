@@ -1242,6 +1242,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
   (let* ((file-systems    (operating-system-file-systems os))
          (root-fs         (operating-system-root-file-system os))
          (root-device     (file-system-device root-fs))
+         (locale          (operating-system-locale os))
          (params          (operating-system-boot-parameters
                            os root-device
                            #:system-kernel-arguments? #t))
@@ -1254,6 +1255,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
 
     (generate-config-file bootloader-conf (list entry)
                           #:old-entries old-entries
+                          #:locale locale
                           #:store-directory-prefix
 			  (btrfs-store-subvolume-file-name file-systems))))
 
