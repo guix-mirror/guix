@@ -1509,7 +1509,7 @@ in-memory raw vectors.")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.lcdf.org/gifsicle/gifsicle-"
+       (uri (string-append "https://www.lcdf.org/gifsicle/gifsicle-"
                            version ".tar.gz"))
        (sha256
         (base32 "0rffpzxcak19k6cngpxn73khvm3z1gswrqs90ycdzzb53p05ddas"))))
@@ -1529,7 +1529,7 @@ in-memory raw vectors.")
             #t)))))
    (native-inputs `(("perl" ,perl)))    ; only for tests
    (inputs `(("libx11" ,libx11)))
-   (home-page "http://www.lcdf.org/gifsicle/")
+   (home-page "https://www.lcdf.org/gifsicle/")
    (synopsis "Edit GIF images and animations")
    (description "Gifsicle is a command-line GIF image manipulation tool that:
 
