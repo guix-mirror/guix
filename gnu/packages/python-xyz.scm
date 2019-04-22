@@ -14650,16 +14650,15 @@ object-oriented library such as @code{scikit-learn}.")
 (define-public python-dill
   (package
     (name "python-dill")
-    (version "0.2.8.2")
+    (version "0.2.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dill" version))
        (sha256
-        (base32
-         "1cymzn9fxwdy33h21zkk4gqgzvd25110hh3zdqnvnwa3p52c4kb2"))))
+        (base32 "0vwqyi6hyz2r29zydc78dqymkbc5y7gia16xcdh215cikxph9mpn"))))
     (build-system python-build-system)
-    ;; FIXME: The check phase fails with "don't know how to make test".
+    ;; FIXME: The check phase fails with "don't know how to make test from: …".
     (arguments '(#:tests? #f))
     (home-page "https://pypi.org/project/dill")
     (synopsis "Serialize all of Python")
