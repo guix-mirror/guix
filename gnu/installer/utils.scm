@@ -54,9 +54,21 @@ number. If no percentage is found, return #f"
     (and result
          (string->number (match:substring result 1)))))
 
-(define (run-shell-command command)
+(define* (run-shell-command command #:key locale)
+  "Run COMMAND, a string, with Bash, and in the given LOCALE."
   (call-with-temporary-output-file
    (lambda (file port)
+     (when locale
+       (let ((supported? (false-if-exception
+                          (setlocale LC_ALL locale))))
+         ;; If LOCALE is not supported, then set LANGUAGE, which might at
+         ;; least give us translated messages.
+         (if supported?
+             (format port "export LC_ALL=\"~a\"~%" locale)
+             (format port "export LANGUAGE=\"~a\"~%"
+                     (string-take locale
+                                  (string-index locale #\_))))))
+
      (format port "~a~%" command)
      ;; (format port "exit~%")
      (close port)
