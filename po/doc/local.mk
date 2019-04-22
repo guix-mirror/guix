@@ -17,6 +17,7 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 DOC_PO_FILES= \
+  %D%/guix-manual.es.po \
   %D%/guix-manual.de.po \
   %D%/guix-manual.fr.po
 

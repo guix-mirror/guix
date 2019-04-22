@@ -22,6 +22,7 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 info_TEXINFOS = %D%/guix.texi \
+  %D%/guix.es.texi \
   %D%/guix.fr.texi \
   %D%/guix.de.texi
 
@@ -56,8 +57,10 @@ OS_CONFIG_EXAMPLES_TEXI =			\
 
 TRANSLATED_INFO = \
   %D%/guix.de.texi \
+  %D%/guix.es.texi \
   %D%/guix.fr.texi \
   %D%/contributing.de.texi \
+  %D%/contributing.es.texi \
   %D%/contributing.fr.texi
 
 # Bundle this file so that makeinfo finds it in out-of-source-tree builds.
