@@ -431,7 +431,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
     ;; non-functional:
     ;; <https://lists.gnu.org/archive/html/guix-devel/2019-03/msg00441.html>.
     ;; Thus, blacklist it.
-    (kernel-arguments '("modprobe.blacklist=radeon"))
+    (kernel-arguments '("quiet" "modprobe.blacklist=radeon"))
 
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
