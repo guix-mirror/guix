@@ -561,11 +561,11 @@ Use '~/.config/guix/channels.scm' instead."))
             (cache    (string-append (cache-directory) "/pull"))
             (channels (channel-list opts))
             (profile  (or (assoc-ref opts 'profile) %current-profile)))
-       (ensure-default-profile)
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
              (else
               (with-store store
+                (ensure-default-profile)
                 (with-status-verbosity (assoc-ref opts 'verbosity)
                   (parameterize ((%current-system (assoc-ref opts 'system))
                                  (%graft? (assoc-ref opts 'graft?))
