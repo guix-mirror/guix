@@ -7,7 +7,7 @@
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -833,7 +833,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
 (define-public ristretto
   (package
     (name "ristretto")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/ristretto/"
@@ -841,7 +841,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0r96r8r1qslr6cqvwldm99ha563adkw9v2zvaznxkpqn11v1374c"))))
+                "18nf01djwnbjc91bdlv3p0h6pwcq1kfnjgp6yaxhxv4kdi9f82rs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
