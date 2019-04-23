@@ -642,8 +642,8 @@ text documents, vector drawings, presentations and spreadsheets.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "/" name "-"
-                          version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libmwaw/libmwaw/libmwaw-"
+                          version "/libmwaw-" version ".tar.xz"))
       (sha256 (base32
                "1cdhm9yhanyv3w4vr73zhgyynmkhhkp3dyld7m11jd2yy04vnh04"))))
     (build-system gnu-build-system)
