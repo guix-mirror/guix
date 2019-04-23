@@ -522,7 +522,7 @@ WireGuard support.")
 (define-public xl2tpd
   (package
     (name "xl2tpd")
-    (version "1.3.13")
+    (version "1.3.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -530,15 +530,15 @@ WireGuard support.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1nzkmhi9arwd4smhr07l0sssx46w48z0cblv7xcz25wg4hw86mcd"))
+                "1c2ahxz2zmmxwmk951d2qhijgz67zhwa1hn0r59fgz0y14w22myi"))
               (file-name (string-append "xl2tpd-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "DESTDIR=" %output)
                           "CC=gcc")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))
-       #:tests? #f)) ;; no tests provided
+                  (delete 'configure))  ; no configure script
+       #:tests? #f))                    ; no tests provided
     (inputs `(("libpcap" ,libpcap)))
     (home-page "https://www.xelerance.com/software/xl2tpd/")
     (synopsis "Layer 2 Tunnelling Protocol Daemon (RFC 2661)")
