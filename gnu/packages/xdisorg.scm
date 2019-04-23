@@ -573,7 +573,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.5.2")
+    (version "5.5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -582,7 +582,7 @@ selection's dimensions to stdout.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14mfxdm39kc5jk8wysrzx05ag2g4sk9l24i8m5pzqn8j611150v3"))))
+                "1kbxsz8whfxl5blwsvpva2q95zwy72argwhi1cfqh5lrhzq5zrpp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
