@@ -3,9 +3,9 @@ Honor SOURCE_DATE_EPOCH variable to avoid non-determinism in generated
 
 --- a/lisp/emacs-lisp/autoload.el
 +++ b/lisp/emacs-lisp/autoload.el
-@@ -378,8 +378,12 @@
-   "Insert the section-header line,
- which lists the file name and which functions are in it, etc."
+@@ -419,8 +419,12 @@
+   ;;              nil t))
+   ;;        (match-end 2))))
    (insert generate-autoload-section-header)
 -  (prin1 `(autoloads ,autoloads ,load-name ,file ,time)
 -	 outbuf)
