@@ -124,7 +124,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
 (define-public glslang
   (package
     (name "glslang")
-    (version "7.11.3113")
+    (version "7.11.3188")
     (source
      (origin
        (method git-fetch)
@@ -133,7 +133,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
              (commit version)))
        (sha256
         (base32
-         "1kzv2b4q1fddxd7c0hc754nd6rw6y9vijb9fsi13xzzq9dficgb6"))
+         "04y4dd1cqdkd4qffmhgmg3agf9j07ii2w38vpp4jw53ir818bqdq"))
        (file-name (string-append name "-" version "-checkout"))))
     (build-system cmake-build-system)
     (arguments
