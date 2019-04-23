@@ -554,8 +554,8 @@ Java.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
-                          name "-" version ".tar.xz"))
+      (uri (string-append "https://dev-www.libreoffice.org/src/libpagemaker/"
+                          "libpagemaker-" version ".tar.xz"))
       (sha256 (base32
                "17ai8ajffr0ixxmmcv3k5vgjlcsix38ldb4fw2arild70pbsrbb6"))))
     (build-system gnu-build-system)
