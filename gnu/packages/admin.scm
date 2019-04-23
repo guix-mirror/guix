@@ -181,14 +181,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
+              (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wmciqml9yplnx1s4ynn00giqyk06rbrcsgvpjj2df47sawk2jp8"))))
+                "1ys2w83vm62spr8bx38sccfdpy9fqmj7wfywm5k8ihsy2k61da2i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -211,8 +211,7 @@ the execution of system services, replacing similar functionality found in
 typical init systems.  It provides dependency-handling through a convenient
 interface and is based on GNU Guile.")
     (license license:gpl3+)
-    (home-page "https://www.gnu.org/software/shepherd/")
-    (properties '((ftp-server . "alpha.gnu.org")))))
+    (home-page "https://www.gnu.org/software/shepherd/")))
 
 (define-public daemontools
   (package
