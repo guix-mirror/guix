@@ -985,7 +985,14 @@ wireless networking."))))
                       (list (string-append #$connman
                                            "/sbin/connmand")
                             "-n" "-r"
-                            #$@(if disable-vpn? '("--noplugin=vpn") '()))))
+                            #$@(if disable-vpn? '("--noplugin=vpn") '()))
+
+                      ;; As connman(8) notes, when passing '-n', connman
+                      ;; "directs log output to the controlling terminal in
+                      ;; addition to syslog."  Redirect stdout and stderr
+                      ;; to avoid spamming the console (XXX: for some reason
+                      ;; redirecting to /dev/null doesn't work.)
+                      #:log-file "/var/log/connman.log"))
             (stop #~(make-kill-destructor)))))))
 
 (define connman-service-type
