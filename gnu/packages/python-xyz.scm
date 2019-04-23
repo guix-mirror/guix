@@ -476,6 +476,8 @@ concepts.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
+             ;; XXX: A Python 2 test fails when HOME=/homeless-shelter.
+             (setenv "HOME" "/tmp")
              (invoke "python" "sh.py" "test"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)))
