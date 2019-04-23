@@ -5653,7 +5653,7 @@ storage of large amounts of data.")
     (properties `((upstream-name . "ppx_hash")))
     (home-page "https://github.com/janestreet/ppx_hash")
     (synopsis "Generation of hash functions from type expressions and definitions")
-    (description "This package is a collecton of ppx rewriters that generate
+    (description "This package is a collection of ppx rewriters that generate
 hash functions from type exrpessions and definitions.")
     (license license:asl2.0)))
 
