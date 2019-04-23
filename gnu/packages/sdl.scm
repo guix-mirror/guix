@@ -8,6 +8,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -402,6 +403,22 @@ directory.")
         (base32 "0694vsz5bjkcdgfdra6x9fq8vpzrl8m6q96gh58df7065hw5mkxl"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-mixer))))
+
+(define-public sdl2-net
+  (package (inherit sdl-net)
+    (name "sdl2-net")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://www.libsdl.org/projects/SDL_net/release/"
+                       "SDL2_net-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08cxc1bicmyk89kiks7izw1rlx5ng5n6xpy8fy0zxni3b9z8mkhm"))))
+    (propagated-inputs
+     (propagated-inputs-with-sdl2 sdl-net))))
 
 (define-public sdl2-ttf
   (package (inherit sdl-ttf)
