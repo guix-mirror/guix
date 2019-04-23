@@ -581,8 +581,8 @@ created by PageMaker version 6.x and 7.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
-                          name "-" version ".tar.xz"))
+      (uri (string-append "http://dev-www.libreoffice.org/src/libvisio/"
+                          "libvisio-" version ".tar.xz"))
       (sha256 (base32
                "1yahpfl13qk6178irv8jn5ppxdn7isafqisyqsdw0lqxcz9h447y"))))
     (build-system gnu-build-system)
