@@ -60,7 +60,6 @@
             %default-modules
 
             shepherd-service-file
-            %containerized-shepherd-service
 
             shepherd-service-lookup-procedure
             shepherd-service-back-edges
@@ -345,21 +344,6 @@ symbols provided/required by a service."
 
   (lambda (service)
     (vhash-foldq* cons '() service edges)))
-
-(define %containerized-shepherd-service
-  ;; XXX: This service works around a bug in the Shepherd 0.5.0: shepherd
-  ;; calls reboot(2) (via 'disable-reboot-on-ctrl-alt-del') when it starts,
-  ;; but in a container that fails with EINVAL.  This was fixed in Shepherd
-  ;; commit 92e806bac1abaeeaf5d60f0ab50d1ae85ba6a62f.
-  (simple-service 'containerized-shepherd
-                  shepherd-root-service-type
-                  (list (shepherd-service
-                         (provision '(containerized-shepherd))
-                         (start #~(lambda ()
-                                    (set! (@@ (shepherd)
-                                              disable-reboot-on-ctrl-alt-del)
-                                      (const #t))
-                                    #t))))))
 
 (define (shepherd-service-upgrade live target)
   "Return two values: the subset of LIVE (a list of <live-service>) that needs

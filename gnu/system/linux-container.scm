@@ -29,7 +29,6 @@
   #:use-module (gnu build linux-container)
   #:use-module (gnu services)
   #:use-module (gnu services base)
-  #:use-module (gnu services shepherd)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:export (system-container
@@ -52,7 +51,7 @@ from OS that are needed on the bare metal and not in a container."
                  (let ((locale (operating-system-locale-directory os)))
                    (with-monad %store-monad
                      (return `(("locale" ,locale))))))
-        (append base (list %containerized-shepherd-service))))
+        base))
 
 (define (containerized-operating-system os mappings)
   "Return an operating system based on OS for use in a Linux container
