@@ -16,10 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-DOC_PO_FILES= \
-  %D%/guix-manual.es.po \
-  %D%/guix-manual.de.po \
-  %D%/guix-manual.fr.po
+DOC_PO_FILES=					\
+  %D%/guix-manual.es.po				\
+  %D%/guix-manual.de.po				\
+  %D%/guix-manual.fr.po				\
+  %D%/guix-manual.zh_CN.po
 
 EXTRA_DIST = \
   %D%/guix-manual.pot \
