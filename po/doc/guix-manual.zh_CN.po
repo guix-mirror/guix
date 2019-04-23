@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.0.0-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2019-04-10 21:59+0200\n"
-"PO-Revision-Date: 2019-04-19 17:41+0800\n"
+"PO-Revision-Date: 2019-04-24 00:23+0200\n"
 "Last-Translator: Meiyo Peng <meiyo@riseup.net>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -504,7 +504,7 @@ msgstr ""
 #: doc/contributing.texi:255
 msgid "In Guix all this information is embodied in @dfn{package definitions}.  Package definitions provide a high-level view of the package.  They are written using the syntax of the Scheme programming language; in fact, for each package we define a variable bound to the package definition, and export that variable from a module (@pxref{Package Modules}).  However, in-depth Scheme knowledge is @emph{not} a prerequisite for creating packages.  For more information on package definitions, @pxref{Defining Packages}."
 msgstr ""
-"在Guix里所有这些信息都包含在@def{软件包定义}里。软件包定义提供了软件包的高层视角。\n"
+"在Guix里所有这些信息都包含在@dfn{软件包定义}里。软件包定义提供了软件包的高层视角。\n"
 "它们使用Scheme编程语言编写，事实上，对每个软件包我们都定义一个绑定到软件包定义的\n"
 "的变量，并且从模块（@pxref{Package Modules}）中导出那个变量。然而，深入的Scheme\n"
 "知识@emph{不}是创建软件包的前提条件。若要了解软件包的更多信息，@pxref{Defining\n"
@@ -45248,7 +45248,7 @@ msgstr ""
 #: doc/guix.texi:25638
 #, no-wrap
 msgid "contributing.texi"
-msgstr ""
+msgstr "contributing.zh_CN.texi"
 
 #. type: Plain text
 #: doc/guix.texi:25651
