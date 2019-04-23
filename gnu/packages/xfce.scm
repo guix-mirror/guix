@@ -838,7 +838,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/ristretto/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "ristretto-" version ".tar.bz2"))
               (sha256
                (base32
                 "18nf01djwnbjc91bdlv3p0h6pwcq1kfnjgp6yaxhxv4kdi9f82rs"))))
