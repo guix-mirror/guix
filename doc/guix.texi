@@ -25124,6 +25124,12 @@ shepherd, The GNU Shepherd Manual}).  @xref{Slots of services, the
 @item @code{requirements} (default: @code{'()})
 List of symbols denoting the Shepherd services this one depends on.
 
+@cindex one-shot services, for the Shepherd
+@item @code{one-shot?} (default: @code{#f})
+Whether this service is @dfn{one-shot}.  One-shot services stop immediately
+after their @code{start} action has completed.  @xref{Slots of services,,,
+shepherd, The GNU Shepherd Manual}, for more info.
+
 @item @code{respawn?} (default: @code{#t})
 Whether to restart the service when it stops, for instance when the
 underlying process dies.

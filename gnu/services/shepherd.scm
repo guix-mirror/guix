@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
@@ -44,6 +44,7 @@
             shepherd-service-provision
             shepherd-service-canonical-name
             shepherd-service-requirement
+            shepherd-service-one-shot?
             shepherd-service-respawn?
             shepherd-service-start
             shepherd-service-stop
@@ -149,6 +150,8 @@ DEFAULT is given, use it as the service's default value."
   (provision     shepherd-service-provision)           ;list of symbols
   (requirement   shepherd-service-requirement          ;list of symbols
                  (default '()))
+  (one-shot?     shepherd-service-one-shot?            ;Boolean
+                 (default #f))
   (respawn?      shepherd-service-respawn?             ;Boolean
                  (default #t))
   (start         shepherd-service-start)               ;g-expression (procedure)
@@ -238,6 +241,11 @@ stored."
                        #:docstring '#$(shepherd-service-documentation service)
                        #:provides '#$(shepherd-service-provision service)
                        #:requires '#$(shepherd-service-requirement service)
+
+                       ;; The 'one-shot?' slot is new in Shepherd 0.6.0.
+                       ;; Older versions ignore it.
+                       #:one-shot? '#$(shepherd-service-one-shot? service)
+
                        #:respawn? '#$(shepherd-service-respawn? service)
                        #:start #$(shepherd-service-start service)
                        #:stop #$(shepherd-service-stop service)
