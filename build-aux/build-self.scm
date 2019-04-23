@@ -399,6 +399,9 @@ files."
   (mlet %store-monad ((build  (build-program source version guile-version
                                              #:pull-version pull-version))
                       (system (if system (return system) (current-system)))
+
+                      ;; Note: Use the deprecated names here because the
+                      ;; caller might be Guix <= 0.16.0.
                       (port   ((store-lift nix-server-socket)))
                       (major  ((store-lift nix-server-major-version)))
                       (minor  ((store-lift nix-server-minor-version))))
