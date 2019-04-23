@@ -57,7 +57,7 @@
 (define-public ibus
   (package
     (name "ibus")
-    (version "1.5.19")
+    (version "1.5.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ibus/ibus/"
@@ -65,23 +65,15 @@
                                   version "/ibus-" version ".tar.gz"))
               (sha256
                (base32
-                "0a94bnpm24581317hdnihwr4cniriml10p4ffgxg14xhvaccfrjb"))))
+                "0d6hcbw6ai91jl87lqnyn8bxi5y5kba5i9nz7knknyh69g5fbwac"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; tests fail because there's no connection to dbus
        #:configure-flags `("--disable-emoji-dict" ; cannot find emoji.json path
-                           "--disable-python2"
                            "--enable-python-library"
                            ,(string-append "--with-ucd-dir="
                                            (getcwd) "/ucd")
                            "--enable-wayland")
-       #:make-flags
-       (list "CC=gcc"
-             (string-append "pyoverridesdir="
-                            (assoc-ref %outputs "out")
-                            "/lib/python"
-                            ,(version-major+minor (package-version python))
-                            "/site-packages/gi/overrides/"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'prepare-ucd-dir
@@ -89,6 +81,18 @@
              (mkdir-p "../ucd")
              (symlink (assoc-ref inputs "unicode-blocks") "../ucd/Blocks.txt")
              (symlink (assoc-ref inputs "unicode-nameslist") "../ucd/NamesList.txt")
+             #t))
+         (add-after 'unpack 'patch-python-target-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((root (string-append (assoc-ref outputs "out")
+                                        "/lib/python"
+                                        ,(version-major+minor (package-version python))
+                                        "/site-packages")))
+               (substitute* "configure"
+                 (("(py2?overridesdir)=.*" _ var)
+                  (string-append var "=" root "/gi/overrides/"))
+                 (("(pkgpython2dir=).*" _ var)
+                  (string-append var root "/ibus"))))
              #t))
          (add-before 'configure 'disable-dconf-update
            (lambda _
@@ -131,7 +135,7 @@
        ("gconf" ,gconf)
        ("gtk2" ,gtk+-2)
        ("gtk+" ,gtk+)
-       ("intltool" ,intltool)
+       ("gettext" ,gnu-gettext)
        ("json-glib" ,json-glib)
        ("libnotify" ,libnotify)
        ("libx11" ,libx11)
@@ -175,7 +179,7 @@ may also simplify input method development.")
 (define-public ibus-libpinyin
   (package
     (name "ibus-libpinyin")
-    (version "1.10.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libpinyin/ibus-libpinyin/"
@@ -183,7 +187,7 @@ may also simplify input method development.")
                                   "/ibus-libpinyin-" version ".tar.gz"))
               (sha256
                (base32
-                "0yq8aw4lddiviag8cnik6fp52vvk8lxv6bym13a3xya84c6zii3c"))))
+                "1sypbr5n96sf7mgqhxrwbawdmszgb6yi28iqkmfmb8xr93pwq7fq"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -209,6 +213,7 @@ may also simplify input method development.")
        ("sqlite" ,sqlite)
        ("python" ,python)
        ("pyxdg" ,python-pyxdg)
+       ("pygobject2" ,python-pygobject)
        ("gtk+" ,gtk+)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -224,15 +229,15 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libpinyin/libpinyin/"
                                   "releases/download/" version
-                                  "/libpinyin-2.2.0.tar.gz"))
+                                  "/libpinyin-" version ".tar.gz"))
               (sha256
                (base32
-                "1c4wxvcvjxvk23mcwqvsfsv4nhimx4kpjhabxa28gx1ih10l88gj"))))
+                "14969v6w8n1aiqphl2386dws7dmsdwbzyqnlz4kr8ppm39m9rp5k"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)

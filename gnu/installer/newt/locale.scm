@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,9 +31,9 @@
   #:export (run-locale-page))
 
 (define (run-language-page languages language->text)
-  (let ((title (G_ "Locale language")))
+  (define result
     (run-listbox-selection-page
-     #:title title
+     #:title (G_ "Locale language")
      #:info-text (G_ "Choose the language to use for the \
 installation process and for the installed system.")
      #:info-textbox-width 70
@@ -44,7 +45,13 @@ installation process and for the installed system.")
      (lambda _
        (raise
         (condition
-         (&installer-step-abort)))))))
+         (&installer-step-abort))))))
+
+  ;; Immediately install the chosen language so that the territory page that
+  ;; comes after (optionally) is displayed in the chosen language.
+  (setenv "LANGUAGE" result)
+
+  result)
 
 (define (run-territory-page territories territory->text)
   (let ((title (G_ "Locale location")))
@@ -155,7 +162,13 @@ glibc locale string and return it."
          (run-language-page
           (sort-languages
            (delete-duplicates (map locale-language supported-locales)))
-          (cut language-code->language-name iso639-languages <>)))))
+          (lambda (language)
+            (let ((english (language-code->language-name iso639-languages
+                                                         language)))
+              (setenv "LANGUAGE" language)
+              (let ((native (gettext english "iso_639-3")))
+                (unsetenv "LANGUAGE")
+                native)))))))
      (installer-step
       (id 'territory)
       (compute
@@ -169,10 +182,11 @@ glibc locale string and return it."
            ;; supported by the previously selected language.
            (run-territory-page
             (delete-duplicates (map locale-territory locales))
-            (lambda (territory-code)
-              (if territory-code
-                  (territory-code->territory-name iso3166-territories
-                                                  territory-code)
+            (lambda (territory)
+              (if territory
+                  (let ((english (territory-code->territory-name
+                                  iso3166-territories territory)))
+                    (gettext english "iso_3166-1"))
                   (G_ "No location"))))))))
      (installer-step
       (id 'codeset)

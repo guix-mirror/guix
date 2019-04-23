@@ -95,7 +95,7 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "4.4.13")
+    (version "4.4.16")
     (source
      (origin
        (method git-fetch)
@@ -103,7 +103,7 @@ readers and is needed to communicate with such devices through the
              (url "https://github.com/Fedict/eid-mw")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "14bgn2k0xbd6241qdghg787pgxy7k9rvcspaf74zwwyibaqknzyx"))))
+        (base32 "1q82fw63xzrnrgh1wyh457hal6vfdl6swqfq7l6kviywiwlzx7kd"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

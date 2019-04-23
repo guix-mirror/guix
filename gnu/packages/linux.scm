@@ -423,8 +423,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0.7")
-(define %linux-libre-hash "0c8g20crv03xxxpirj0jylcxxy33dn9f9x7viv451rzh9frc5mal")
+(define %linux-libre-version "5.0.9")
+(define %linux-libre-hash "0j2xnpvc13370kprnnq79a08bq6dak0iab94d9hsc6m8v1rxaw2i")
 
 (define %linux-libre-5.0-patches
   (list %boot-logo-patch
@@ -459,8 +459,8 @@ It has been modified to remove all non-free binary blobs.")
 between the CDemu userspace daemon and linux kernel.")
     (license license:gpl2+)))
 
-(define %linux-libre-4.19-version "4.19.34")
-(define %linux-libre-4.19-hash "0rmpyj2qb651p2k2srpjndjxry87hr5vq0jkk4rvxjhm5y3sb65l")
+(define %linux-libre-4.19-version "4.19.36")
+(define %linux-libre-4.19-hash "0dvwza26spa742iznz7rfgsyl4f07x8i6jh2cv5hma9l9fpqc9pi")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -473,8 +473,8 @@ between the CDemu userspace daemon and linux kernel.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.111")
-(define %linux-libre-4.14-hash "1b34f96yigdxxh5wg798933nrv7rak1w0v0q1jfviyrllrg3hkmq")
+(define %linux-libre-4.14-version "4.14.113")
+(define %linux-libre-4.14-hash "0z547pdi1vhybyhnfr5krsfyxmdwnv5p5fps9jjyx6rvkxasddvh")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -483,8 +483,8 @@ between the CDemu userspace daemon and linux kernel.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.168"
-                    "1nli5di7i7x4jyad7nappm1awz207rg18n08wb82b1w8rwqyqgy3"
+  (make-linux-libre "4.9.170"
+                    "15fz2qxvic4sfxm8vi0rghqqi5rv038xyrq9dl6fz6i1c7497g8s"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
@@ -4148,7 +4148,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.4.0")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -4156,7 +4156,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0paj1szszpf8plykrd66jqg1x3kmqs395rbjskahld2bnplcfx1f"))))
+                "1s06h2cgk0xxwmhwj72z33bllafc1xqnxzk2yyra2rmg959778qw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

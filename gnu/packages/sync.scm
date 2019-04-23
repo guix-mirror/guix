@@ -252,7 +252,7 @@ over the Internet in an HTTP and CDN friendly way;
 (define-public rclone
   (package
     (name "rclone")
-    (version "1.46")
+    (version "1.47.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -261,7 +261,7 @@ over the Internet in an HTTP and CDN friendly way;
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fl52dl41n76r678nzkxa2kgk9khn1fxraxgk8jd3ayc787qs9ia"))))
+                "1nxwjr9jly6wh1ixr6a7zhlg4b3298v940040fsm0n3lcljd37zx"))))
     ;; FIXME: Rclone bundles some libraries Guix already provides.  Need to
     ;; un-bundle them.
     (build-system go-build-system)

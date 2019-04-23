@@ -897,14 +897,14 @@ dispatching systems can be built.")
 (define-public python-zope-interface
   (package
     (name "python-zope-interface")
-    (version "4.1.3")
+    (version "4.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.interface" version))
        (sha256
         (base32
-         "0ks8h73b2g4bkad821qbv0wzjppdrwys33i7ka45ik3wxjg1l8if"))))
+         "1rgh2x3rcl9r0v0499kf78xy86rnmanajf4ywmqb943wpk50sg8v"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-zope-event" ,python-zope-event)))
@@ -2959,14 +2959,14 @@ ecosystem.")
 (define-public python-hyperlink
   (package
     (name "python-hyperlink")
-    (version "18.0.0")
+    (version "19.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "hyperlink" version))
         (sha256
          (base32
-          "01m3y19arfqljksngy8grc966zdb4larysralb8cajzi8kvly6zh"))))
+          "0m2nhi0j8wmgfscf974wd5v1xfq8mah286hil6npy1ys0m3y7222"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-idna" ,python-idna)))

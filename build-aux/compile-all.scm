@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +17,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(use-modules (ice-9 match)
+(use-modules (ice-9 format)
+             (ice-9 match)
              (ice-9 threads)
              (srfi srfi-1)
              (guix build compile)
@@ -78,6 +79,10 @@ to 'make'."
                        (current-processor-count))))
                 (loop tail)))))))))
 
+(define (% completed total)
+  "Return the completion percentage of COMPLETED over TOTAL as an integer."
+  (inexact->exact (round (* 100. (/ completed total)))))
+
 ;; Install a SIGINT handler to give unwind handlers in 'compile-file' an
 ;; opportunity to run upon SIGINT and to remove temporary output files.
 (sigaction SIGINT
@@ -92,10 +97,14 @@ to 'make'."
                   #:host host
                   #:report-load (lambda (file total completed)
                                   (when file
-                                    (format #t "  LOAD     ~a~%" file)
+                                    (format #t "[~3d%] LOAD     ~a~%"
+                                            (% (+ 1 completed) (* 2 total))
+                                            file)
                                     (force-output)))
                   #:report-compilation (lambda (file total completed)
                                          (when file
-                                           (format #t "  GUILEC   ~a~%"
+                                           (format #t "[~3d%] GUILEC   ~a~%"
+                                                   (% (+ total completed 1)
+                                                      (* 2 total))
                                                    (scm->go file))
                                            (force-output))))))

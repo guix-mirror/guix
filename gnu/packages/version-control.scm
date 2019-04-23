@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages apr)
@@ -2144,3 +2146,27 @@ design goals are to reduce the pain of resolving merge conflicts by finding
 the smallest possible conflicts and to allow a merge to be saved, tested,
 interrupted, published, and collaborated on while in progress.")
     (license license:gpl2+)))
+
+(define-public git-lfs
+  (package
+    (name "git-lfs")
+    (version "2.7.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/git-lfs/git-lfs")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10v38w8qfz0x8750kv31n8gg2dimvq4wz40m374pd1xaypfs9670"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/git-lfs/git-lfs"))
+    (home-page "https://git-lfs.github.com/")
+    (synopsis "Git extension for versioning large files")
+    (description
+     "Git Large File Storage (LFS) replaces large files such as audio samples,
+videos, datasets, and graphics with text pointers inside Git, while storing the
+file contents on a remote server.")
+    (license license:expat)))

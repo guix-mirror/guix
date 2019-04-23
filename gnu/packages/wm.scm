@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
@@ -811,7 +811,7 @@ experience.")
      "Awesome has been designed as a framework window manager.  It is fast, small,
 dynamic and extensible using the Lua programming language.")
     (license license:gpl2+)
-    (home-page "https://awesome.naquadah.org/")))
+    (home-page "https://awesomewm.org/")))
 
 (define-public menumaker
   (package

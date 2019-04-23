@@ -547,14 +547,14 @@ plugins are provided.")
 (define-public calf
   (package
     (name "calf")
-    (version "0.90.1")
+    (version "0.90.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://calf-studio-gear.org/files/calf-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0znwx5gidr5n503gya9n8gagr8cfym6cwlbiv2r6iksji7jc4fpb"))))
+                "0bn4j1klw2yfxz8clbmasaydifq25rdfsv0n6iisxrzcj1lx7sgh"))))
     (build-system gnu-build-system)
     (inputs
      `(("fluidsynth" ,fluidsynth)
@@ -713,7 +713,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.12.0")
+    (version "6.12.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -722,7 +722,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pv4s54cayvavdp6y30n3r1l5x83x9whyyd2v24y0dh224v3hbxi"))))
+                "01krxcf0alw9k7p5sv0s707600an4sl7lhw3bymbwgqrj0v2p9z2"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1104,7 +1104,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1113,7 +1113,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1v2vji02fbrjgypwb4fw2r90hnfwfbfh3d24j8vjwlbqxhxp16s0"))))
+                "0rv0apxbj0cgm8f8sqf5xr6kdi4q58ph92ip6cg716ha0ca5lr8y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -2120,14 +2120,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.6")
+    (version "0.5.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0wlmbb9m7cf3wr7c2h2hji18592x2b119m7mx85wksjs6rjaq2mj"))))
+                "1g6a5j74p45yisl28bw4fcc9nr6b710ikk459p4mp6djh9gs8v95"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -2316,7 +2316,7 @@ aimed at audio/musical applications.")
 (define-public rubberband
   (package
     (name "rubberband")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -2326,9 +2326,19 @@ aimed at audio/musical applications.")
               (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "05amrbrxx0da3w7m237q51799r8xgs4ffqabi2qv06hq8dpcj386"))))
+                "0462fmjnfqpv2qi0s6ny42drqarkr0xy9lw8frjmfgzyzl5n9294"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-jni-installation
+           ;; ‘make install’ unconditionally installs librubberband-jni.so,
+           ;; which is never built by ‘make all’.  Skip it.
+           (lambda _
+             (substitute* "Makefile.in"
+               ((".*cp -f \\$\\(JNI_TARGET\\).*") ""))
+             #t)))))
     (inputs
      `(("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
@@ -2861,14 +2871,14 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.5")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
                            "/qsynth-" version ".tar.gz"))
        (sha256
-        (base32 "08x7znvbwi9miavcarymi7dsv8njmxzwzma20dbmz8j2aswm53w5"))))
+        (base32 "0h4hhja8qbyzd6v24flw9wr4mwl03nplryx1gyrppn7sg13l1sx6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" phase
@@ -3375,14 +3385,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "19.2")
+    (version "19.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "1a6ls2hyvggss12idca22hq5vsq4jw2xkwrx22dx29i9926gdr6h"))))
+                "16j3fqyw361wdsr1076f0p3va2y7wdzq1lvr4ijz1ajmbxdlc723"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -615,24 +615,27 @@ version identifier.")
 (define-public python-serpent
   (package
     (name "python-serpent")
-    (version "1.27")
+    (version "1.28")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "serpent" version))
        (sha256
-        (base32
-         "04p9dsrm5pv8vhk3flvih55kgvlzpi38hlaykdiakddmgwqw93bg"))))
+        (base32 "1arnckykpkvv2qrp49l1k7q5mr5pisswl0rvdx98x8wsl1n361pk"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pytz" ,python-pytz)))
     (home-page "https://github.com/irmen/Serpent")
     (synopsis "Serializer for literal Python expressions")
     (description
-     "Serpent provides ast.literal_eval() compatible object tree
-serialization.  It serializes an object tree into bytes (utf-8 encoded string)
-that can be decoded and then passed as-is to ast.literal_eval() to rebuild it
-as the original object tree.  As such it is safe to send serpent data to other
-machines over the network for instance (because only safe literals are
-encoded).")
+     "Serpent provides @code{ast.literal_eval()}-compatible object tree
+serialization.  It serializes an object tree into bytes (an utf-8 encoded
+string) that can be decoded and then passed as-is to @code{ast.literal_eval()}
+to rebuild the original object tree.
+
+Because only safe literals are encoded, it is safe to send serpent data to
+other machines, such as over the network.")
     (license license:expat)))
 
 (define-public python-setuptools
@@ -889,7 +892,7 @@ of @code{xmlfile}.")
 (define-public python-openpyxl
   (package
     (name "python-openpyxl")
-    (version "2.6.0")
+    (version "2.6.2")
     (source
      (origin
        ;; We use the upstream repository, as the tests are not included in the
@@ -900,8 +903,7 @@ of @code{xmlfile}.")
              (changeset version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32
-         "1x47ngn7ybaqdbvg90c8h2x0j6yfdfj25gjfinp2w5rf62gsany7"))))
+        (base32 "1qhij6kcvdxqjy4g6193nsv4q7fy8n4fwyd3c2z047idlm6s3j4w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1722,6 +1724,37 @@ from git information.
 (define-public python2-pbr
   (package-with-python2 python-pbr))
 
+(define-public python-pyrsistent
+  (package
+    (name "python-pyrsistent")
+    (version "0.14.11")
+    (home-page "https://github.com/tobgu/pyrsistent")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyrsistent" version))
+              (sha256
+               (base32
+                "1qkh74bm296mp5g3r11lgsksr6bh4w1bf8pji4nmxdlfj542ga1w"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (synopsis "Persistent data structures for Python")
+    (description
+     "Pyrsistent is a number of persistent collections (by some referred to as
+functional data structures).  Persistent in the sense that they are immutable.
+
+All methods on a data structure that would normally mutate it instead return a
+new copy of the structure containing the requested updates.  The original
+structure is left untouched.")
+    (license license:expat)))
+
+(define-public python2-pyrsistent
+  (package-with-python2 python-pyrsistent))
+
 (define-public python-exif-read
   (package
     (name "python-exif-read")
@@ -1892,21 +1925,28 @@ between Julian dates and Gregorian dates.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.6.0")
+    (version "3.0.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "jsonschema" version))
              (sha256
               (base32
-               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
+               "03g20i1xfg4qdlk4475pl4pp7y0h37g1fbgs5qhy678q9xb822hc"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (invoke "nosetests"))))))
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
+             (invoke "trial" "jsonschema"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-vcversioner" ,python-vcversioner)))
+     `(("python-setuptools_scm" ,python-setuptools-scm)
+       ("python-twisted" ,python-twisted)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-six" ,python-six)))
     (home-page "https://github.com/Julian/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
@@ -1918,11 +1958,9 @@ between Julian dates and Gregorian dates.")
   (let ((jsonschema (package-with-python2
                      (strip-python2-variant python-jsonschema))))
     (package (inherit jsonschema)
-             (native-inputs
-              `(("python2-mock" ,python2-mock)
-                ,@(package-native-inputs jsonschema)))
              (propagated-inputs
-              `(("python2-functools32" ,python2-functools32))))))
+              `(("python2-functools32" ,python2-functools32)
+                ,@(package-propagated-inputs jsonschema))))))
 
 (define-public python-schema
   (package
@@ -6928,14 +6966,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.7")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "05jam7d31767dr12x0rbvvs8lxnpb1mhdb2zdlfxgh83z6k3hjk8"))))
+         "01rlkigdxg17sf9yar1jl8n18ls59367wqh59hnawlyg53vb6my3"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
@@ -9664,23 +9702,19 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "17.5.0")
+    (version "19.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "1sh2h23nnizcdyrl2rn7zxijglikxwz7z7grqpvq496zy2aa967i"))))
+                "1gmb8d57s13d8znvqnxi47vqzqz141z443dbxg9wjkp8ia9f220p"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Some tests are failing.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (replace 'check
-       ;;     (lambda _
-       ;;       (zero? (system* "./bin/trial" "twisted")))))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)
+       ("python-pyhamcrest" ,python-pyhamcrest)
        ("python-incremental" ,python-incremental)
        ("python-hyperlink" ,python-hyperlink)
        ("python-constantly" ,python-constantly)
@@ -11577,13 +11611,13 @@ instead of servers and network commands.")
 (define-public python-automat
   (package
     (name "python-automat")
-    (version "0.6.0")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Automat" version))
               (sha256
                (base32
-                "1a7nsrljysfmdqmpn2apfa1gg6rfah4y9sizvns8gb08rx7d07rw"))))
+                "03ivg70n3b1cbcd2zvjhk8y4kmqxcvhmili39lmgx09dza1qpmyb"))))
     (build-system python-build-system)
     ;; We disable the tests because they require python-twisted, while
     ;; python-twisted depends on python-automat.  Twisted is optional, but the
@@ -11610,13 +11644,13 @@ transducers).")
 (define-public python-m2r
   (package
     (name "python-m2r")
-    (version "0.1.12")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "m2r" version))
               (sha256
                (base32
-                "1axrwnf425sz4qz3c0qc7yhhki4myzb8rki7pczcsgzznzmqdyxd"))))
+                "16gdm8i06jjmlpvckpfmlkr4693dh0vs192vgsqn84fsdkbbm45z"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
@@ -13832,11 +13866,12 @@ and works only with Python 2 and NumPy < 1.9.")
     (synopsis "Send files to the user's @file{~/Trash} directory")
     (description "This package provides a Python library to send files to the
 user's @file{~/Trash} directory.")
+    (properties `((python2-variant . ,(delay python2-send2trash))))
     (license license:bsd-3)))
 
 (define-public python2-send2trash
   (package
-    (inherit (package-with-python2 python-send2trash))
+    (inherit (package-with-python2 (strip-python2-variant python-send2trash)))
     (arguments
      (substitute-keyword-arguments (package-arguments python-send2trash)
        ((#:phases phases)
@@ -13845,8 +13880,7 @@ user's @file{~/Trash} directory.")
              (lambda _
                (setenv "PYTHONPATH"
                        (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-               #t))))))
-    (properties `((python2-variant . ,(delay python-send2trash))))))
+               #t))))))))
 
 (define-public python-yapf
   (package
@@ -14899,16 +14933,15 @@ object-oriented library such as @code{scikit-learn}.")
 (define-public python-dill
   (package
     (name "python-dill")
-    (version "0.2.8.2")
+    (version "0.2.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dill" version))
        (sha256
-        (base32
-         "1cymzn9fxwdy33h21zkk4gqgzvd25110hh3zdqnvnwa3p52c4kb2"))))
+        (base32 "0vwqyi6hyz2r29zydc78dqymkbc5y7gia16xcdh215cikxph9mpn"))))
     (build-system python-build-system)
-    ;; FIXME: The check phase fails with "don't know how to make test".
+    ;; FIXME: The check phase fails with "don't know how to make test from: …".
     (arguments '(#:tests? #f))
     (home-page "https://pypi.org/project/dill")
     (synopsis "Serialize all of Python")

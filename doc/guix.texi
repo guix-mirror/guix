@@ -3646,8 +3646,9 @@ but it supports the following options:
 @item --url=@var{url}
 @itemx --commit=@var{commit}
 @itemx --branch=@var{branch}
-Download code from the specified @var{url}, at the given @var{commit} (a valid
-Git commit ID represented as a hexadecimal string), or @var{branch}.
+Download code for the @code{guix} channel from the specified @var{url}, at the
+given @var{commit} (a valid Git commit ID represented as a hexadecimal
+string), or @var{branch}.
 
 @cindex @file{channels.scm}, configuration file
 @cindex configuration file for channels
@@ -3661,6 +3662,14 @@ Read the list of channels from @var{file} instead of
 @file{~/.config/guix/channels.scm}.  @var{file} must contain Scheme code that
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
+
+@item --news
+@itemx -N
+Display the list of packages added or upgraded since the previous generation.
+
+This is the same information as displayed upon @command{guix pull} completion,
+but without ellipses; it is also similar to the output of @command{guix pull
+-l} for the last generation (see below).
 
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
@@ -8029,7 +8038,9 @@ The following derivations will be built:
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
-the system type of the build host.
+the system type of the build host.  The @command{guix build} command allows
+you to repeat this option several times, in which case it builds for all the
+specified systems; other commands ignore extraneous @option{-s} options.
 
 @quotation Note
 The @code{--system} flag is for @emph{native} compilation and must not
@@ -10450,7 +10461,7 @@ The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
 
-@item @code{kernel-arguments} (default: @code{'()})
+@item @code{kernel-arguments} (default: @code{'("quiet")})
 List of strings or gexps representing additional arguments to pass on
 the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 
@@ -25112,6 +25123,12 @@ shepherd, The GNU Shepherd Manual}).  @xref{Slots of services, the
 
 @item @code{requirements} (default: @code{'()})
 List of symbols denoting the Shepherd services this one depends on.
+
+@cindex one-shot services, for the Shepherd
+@item @code{one-shot?} (default: @code{#f})
+Whether this service is @dfn{one-shot}.  One-shot services stop immediately
+after their @code{start} action has completed.  @xref{Slots of services,,,
+shepherd, The GNU Shepherd Manual}, for more info.
 
 @item @code{respawn?} (default: @code{#t})
 Whether to restart the service when it stops, for instance when the

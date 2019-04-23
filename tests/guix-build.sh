@@ -44,6 +44,13 @@ guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
      guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)';	\
   then exit 1; fi )
 
+# Passing one '-s' flag.
+test `guix build sed -s x86_64-linux -d | wc -l` = 1
+
+# Passing multiple '-s' flags.
+all_systems="-s x86_64-linux -s i686-linux -s armhf-linux -s aarch64-linux"
+test `guix build sed $all_systems -d | sort -u | wc -l` = 4
+
 # Check --sources option with its arguments
 module_dir="t-guix-build-$$"
 mkdir "$module_dir"

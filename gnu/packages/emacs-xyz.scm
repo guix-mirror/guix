@@ -2924,7 +2924,7 @@ These are distributed in separate files and can be used individually.")
     (description "Irony-mode provides Clang-assisted syntax checking and
 completion for C, C++, and ObjC in GNU Emacs.  Using @code{libclang} it can
 provide syntax checking and autocompletion on compiler level which is very
-resistent against false positives.  It also integrates well with other
+resistant against false positives.  It also integrates well with other
 packages like @code{eldoc-mode} and especially @code{company-mode} as
 described on the homepage.")
     (license license:gpl3+)))
@@ -14018,7 +14018,7 @@ opposed to character-based).")
 (define-public emacs-disk-usage
   (package
     (name "emacs-disk-usage")
-    (version "1.3.0")
+    (version "1.3.3")
     (home-page "https://gitlab.com/Ambrevar/emacs-disk-usage")
     (source
      (origin
@@ -14029,7 +14029,7 @@ opposed to character-based).")
              ".el"))
        (sha256
         (base32
-         "0ky6c34z7c6hd4yvcrcsidkfk2kvffkg63v02vch2i6hg1n6n028"))))
+         "0h1jwznd41gi0vg830ilfgm01q05zknikzahwasm9cizwm2wyizj"))))
     (build-system emacs-build-system)
     (synopsis "Sort and browse disk usage listings with Emacs")
     (description "Disk Usage is a file system analyzer: it offers a tabulated

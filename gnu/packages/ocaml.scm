@@ -405,7 +405,7 @@ underlying solvers like Cplex, Gurobi, Lpsolver, Glpk, CbC, SCIP or WBO.")
                 "00yvyfm4j423zqndvgc1ycnmiffaa2l9ab40cyg23pf51qmzk2jm"))
               (patches
                (search-patches
-                "ocaml-dose3-Add-unix-as-dependency-to-dose3.common-in-META.in.patch"
+                "ocaml-dose3-add-unix-dependency.patch"
                 "ocaml-dose3-Fix-for-ocaml-4.06.patch"
                 "ocaml-dose3-dont-make-printconf.patch"
                 "ocaml-dose3-Install-mli-cmx-etc.patch"))))
@@ -5653,7 +5653,7 @@ storage of large amounts of data.")
     (properties `((upstream-name . "ppx_hash")))
     (home-page "https://github.com/janestreet/ppx_hash")
     (synopsis "Generation of hash functions from type expressions and definitions")
-    (description "This package is a collecton of ppx rewriters that generate
+    (description "This package is a collection of ppx rewriters that generate
 hash functions from type exrpessions and definitions.")
     (license license:asl2.0)))
 

@@ -65,22 +65,23 @@ press the button to reboot.")))
    (G_ "The final system installation step failed.  You can retry the \
 last step, or restart the installer.")))
 
-(define (run-install-shell)
+(define (run-install-shell locale)
   (clear-screen)
   (newt-suspend)
-  (let ((install-ok? (install-system)))
+  (let ((install-ok? (install-system locale)))
     (newt-resume)
     install-ok?))
 
 (define (run-final-page result prev-steps)
-  (let* ((configuration (format-configuration prev-steps result))
+  (let* ((configuration   (format-configuration prev-steps result))
          (user-partitions (result-step result 'partition))
+         (locale          (result-step result 'locale))
          (install-ok?
           (with-mounted-partitions
            user-partitions
            (configuration->file configuration)
            (run-config-display-page)
-           (run-install-shell))))
+           (run-install-shell locale))))
     (if install-ok?
         (run-install-success-page)
         (run-install-failed-page))))

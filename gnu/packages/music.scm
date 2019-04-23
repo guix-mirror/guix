@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -81,6 +81,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gettext)
@@ -446,6 +447,51 @@ background while you work.")
     (home-page "http://www.denemo.org")
     (license license:gpl3+)))
 
+(define-public dumb
+  (package
+    (name "dumb")
+    (version "2.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kode54/dumb.git")
+             (commit version)))
+       (sha256
+        (base32 "1cnq6rb14d4yllr0yi32p9jmcig8avs3f43bvdjrx4r1mpawspi6"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:configure-flags
+       (list "-DBUILD_SHARED_LIBS=ON"
+             "-DBUILD_EXAMPLES=OFF")))
+    (home-page "https://github.com/kode54/dumb")
+    (synopsis "Module audio renderer library")
+    (description
+     "DUMB is a tracker library with support for IT, XM, S3M and MOD files.  It
+targets maximum accuracy to the original formats, with low-pass resonant filters
+for the IT files, accurate timing and pitching, and three resampling quality
+settings (aliasing, linear interpolation and cubic interpolation).")
+    ;; The DUMB license is a bit peculiar.
+    ;; Clause 8 states that clauses 4, 5 and 6 are null and void, leaving only
+    ;; the first three clauses for genuine consideration.
+    ;; Clauses 1, 2 and 3 are analogous to clauses 1, 2 and 3 of the zlib
+    ;; license, a known free software license.
+    ;; Therefore, the DUMB license may be considered a free software license.
+    (license (license:fsf-free "file://LICENSE"))))
+
+(define-public dumb-allegro4
+  (package
+    (inherit dumb)
+    (name "dumb-allegro4")
+    (arguments
+     (substitute-keyword-arguments (package-arguments dumb)
+       ((#:configure-flags flags)
+        `(cons "-DBUILD_ALLEGRO4=ON" ,flags))))
+    (inputs
+     `(("allegro" ,allegro-4)))))
+
 (define-public hydrogen
   (package
     (name "hydrogen")
@@ -721,7 +767,16 @@ audio and video).")
     (arguments
      `(#:scons-flags (list (string-append "PREFIX=" %output))
        #:scons ,scons-python2
-       #:tests? #f)) ;no "check" target
+       #:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-removed-scons-syntax
+           (lambda _
+             (substitute* "SConstruct"
+               (("BoolOption") "BoolVariable")
+               (("PathOption") "PathVariable")
+               (("Options") "Variables"))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("jack" ,jack-1)

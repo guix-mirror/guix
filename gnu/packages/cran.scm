@@ -78,14 +78,14 @@
 (define-public r-clipr
   (package
     (name "r-clipr")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "clipr" version))
        (sha256
         (base32
-         "1grx0lyww1cxmdvsr44wmbhz9i6zmiwxbchb97gxrfi9gy5kyc7x"))))
+         "0k9kimkmmj9k7290sxiqn4kd1vvm4w7q9a44wp0w30b7yjpavx2m"))))
     (build-system r-build-system)
     (home-page "https://github.com/mdlincoln/clipr")
     (synopsis "Read and write from the system clipboard")
@@ -3050,14 +3050,14 @@ programming} (SQP) based solver).")
 (define-public r-hardyweinberg
   (package
     (name "r-hardyweinberg")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "HardyWeinberg" version))
        (sha256
         (base32
-         "16n8qanxx0p5ny5zqxafn8hwb1xv94y1wig1iql8as5a5qh8lwcz"))))
+         "15i7b444hikkfgqmx2ki827998xwra38k9v7a7kavwz6zmq5mmv9"))))
     (properties `((upstream-name . "HardyWeinberg")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3317,14 +3317,14 @@ normalizations, minimum variance matching, and so on.")
 (define-public r-sdmtools
   (package
     (name "r-sdmtools")
-    (version "1.1-221")
+    (version "1.1-221.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "SDMTools" version))
        (sha256
         (base32
-         "1kacrpamshv7wz83yn45sfbw4m9c44xrrngzcklnwx8gcxx2knm6"))))
+         "1fsgnlc7glawimzijp11j53g5bnfp1mdq9wb0754idmxcdi8a99q"))))
     (properties `((upstream-name . "SDMTools")))
     (build-system r-build-system)
     (propagated-inputs `(("r-r-utils" ,r-r-utils)))
@@ -5489,14 +5489,14 @@ results to the user.")
 (define-public r-hdf5r
   (package
     (name "r-hdf5r")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hdf5r" version))
        (sha256
         (base32
-         "1cq4rdfd0rqvy29ml3x1iid142ljnscs8f4d2y1na13hlvkl3k05"))))
+         "10gynjwaaxks8y9c2fl8k040j0nbwn372nil70009yfk9wrkx0aq"))))
     (build-system r-build-system)
     (inputs
      `(("hdf5" ,hdf5)
@@ -5605,14 +5605,14 @@ hierarchical models using Markov Chain Monte Carlo (MCMC) simulation.")
 (define-public r-rdpack
   (package
     (name "r-rdpack")
-    (version "0.10-1")
+    (version "0.11-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rdpack" version))
        (sha256
         (base32
-         "0bbjnw88h54v40hzim00i8yd3p4rk9i84zfdmgcbnylscwvsf0av"))))
+         "11cd27s6zp5cxnwxcvz6rjf00y0r7aq8ywhzwpf1r4xy1z44kd4g"))))
     (properties `((upstream-name . "Rdpack")))
     (build-system r-build-system)
     (propagated-inputs
@@ -13253,14 +13253,14 @@ self-intersections from polygon data.")
 (define-public r-urltools
   (package
     (name "r-urltools")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "urltools" version))
        (sha256
         (base32
-         "18lp66f2l504b8q3j4xy8j9pyzzlljw9f112sn6qii1cg83072wm"))))
+         "04x3my655dd287cbsszbnf75q0swmjlxxrblcsay7a8n3df3a830"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -13888,3 +13888,65 @@ regular expressions.  Regular expressions are a very powerful feature, however
 they are often difficult to interpret.  Rex allows you to build complex
 regular expressions from human readable expressions")
     (license license:expat)))
+
+(define-public r-sctransform
+  (package
+    (name "r-sctransform")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sctransform" version))
+       (sha256
+        (base32
+         "1r5kiqqs318q59h2i8m7c6nhghp9w6q26ss2y5a390lkhsawgx6p"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-future" ,r-future)
+       ("r-future-apply" ,r-future-apply)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-reshape2" ,r-reshape2)))
+    (home-page "https://github.com/ChristophH/sctransform")
+    (synopsis "Variance stabilizing transformations for Single Cell UMI Data")
+    (description
+     "This package provides a normalization method for single-cell UMI count
+data using a variance stabilizing transformation.  The transformation is based
+on a negative binomial regression model with regularized parameters.  As part
+of the same regression framework, this package also provides functions for
+batch correction, and data correction.")
+    (license license:gpl3)))
+
+(define-public r-styler
+  (package
+    (name "r-styler")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "styler" version))
+       (sha256
+        (base32
+         "1z24mi88snbz1avjw9phq0lzmigddvycc56s83nxzr9w9z85mh05"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)
+       ("r-cli" ,r-cli)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rematch2" ,r-rematch2)
+       ("r-rlang" ,r-rlang)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-tibble" ,r-tibble)
+       ("r-withr" ,r-withr)
+       ("r-xfun" ,r-xfun)))
+    (home-page "https://github.com/r-lib/styler")
+    (synopsis "Non-invasive pretty printing of R code")
+    (description
+     "This is a package for pretty-printing R code without changing the user's
+formatting intent.")
+    (license license:gpl3)))

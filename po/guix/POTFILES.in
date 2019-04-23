@@ -15,12 +15,14 @@ gnu/installer/keymap.scm
 gnu/installer/locale.scm
 gnu/installer/newt.scm
 gnu/installer/newt/ethernet.scm
+gnu/installer/newt/final.scm
 gnu/installer/newt/hostname.scm
 gnu/installer/newt/keymap.scm
 gnu/installer/newt/locale.scm
 gnu/installer/newt/menu.scm
 gnu/installer/newt/network.scm
 gnu/installer/newt/page.scm
+gnu/installer/newt/partition.scm
 gnu/installer/newt/services.scm
 gnu/installer/newt/timezone.scm
 gnu/installer/newt/user.scm

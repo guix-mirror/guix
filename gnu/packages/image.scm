@@ -87,6 +87,7 @@
   (package
    (name "libpng")
    (version "1.6.34")
+   (replacement libpng-1.6.37)
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -111,6 +112,25 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
+
+;; This graft exists to fix CVE-2018-14048, CVE-2018-14550, and CVE-2019-7317.
+(define-public libpng-1.6.37
+  (package
+    (inherit libpng)
+    (version "1.6.37")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
+                                        version "/libpng-" version ".tar.xz")
+                         (string-append
+                          "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                          "/libpng16/libpng-" version ".tar.xz")
+                         (string-append
+                          "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
+                          "/libpng16/libpng-" version ".tar.xz")))
+              (sha256
+               (base32
+                "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))))
 
 ;; libpng-apng should be updated when the APNG patch is released:
 ;; <https://bugs.gnu.org/27556>
@@ -1153,13 +1173,13 @@ the programmer.")
     (version "1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/myint/perceptualdiff/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0zl6xmp971fffg7fzcz2fbgxg5x2w7l8qa65c008i4kbkc9016ps"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/myint/perceptualdiff.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yys55f9i9g3wjjg0j2m0p0k21zwnid8520a8lrr30khm4k5gibp"))))
     (build-system cmake-build-system)
     (inputs `(("freeimage" ,freeimage)))
     (arguments
@@ -1505,15 +1525,14 @@ in-memory raw vectors.")
 (define-public gifsicle
   (package
    (name "gifsicle")
-   (version "1.91")
+   (version "1.92")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.lcdf.org/gifsicle/gifsicle-"
+       (uri (string-append "https://www.lcdf.org/gifsicle/gifsicle-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "00586z1yz86qcblgmf16yly39n4lkjrscl52hvfxqk14m81fckha"))))
+        (base32 "0rffpzxcak19k6cngpxn73khvm3z1gswrqs90ycdzzb53p05ddas"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -1528,9 +1547,9 @@ in-memory raw vectors.")
               (("/bin/rm")
                (which "rm")))
             #t)))))
-   (native-inputs `(("perl" ,perl))) ; Only for tests.
+   (native-inputs `(("perl" ,perl)))    ; only for tests
    (inputs `(("libx11" ,libx11)))
-   (home-page "http://www.lcdf.org/gifsicle/")
+   (home-page "https://www.lcdf.org/gifsicle/")
    (synopsis "Edit GIF images and animations")
    (description "Gifsicle is a command-line GIF image manipulation tool that:
 

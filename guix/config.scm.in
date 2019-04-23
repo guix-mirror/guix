@@ -33,7 +33,6 @@
             %config-directory
 
             %system
-            %libgcrypt
             %libz
             %gzip
             %bzip2
@@ -87,9 +86,6 @@
 
 (define %system
   "@guix_system@")
-
-(define %libgcrypt
-  "@LIBGCRYPT@")
 
 (define %libz
   "@LIBZ@")

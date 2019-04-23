@@ -753,10 +753,6 @@ Info manual."
 ;;; Generating (guix config).
 ;;;
 
-(define %dependency-variables
-  ;; (guix config) variables corresponding to dependencies.
-  '(%libz %xz %gzip %bzip2))
-
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
   '(%guix-package-name

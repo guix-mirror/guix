@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
@@ -44,6 +44,7 @@
             shepherd-service-provision
             shepherd-service-canonical-name
             shepherd-service-requirement
+            shepherd-service-one-shot?
             shepherd-service-respawn?
             shepherd-service-start
             shepherd-service-stop
@@ -59,7 +60,6 @@
             %default-modules
 
             shepherd-service-file
-            %containerized-shepherd-service
 
             shepherd-service-lookup-procedure
             shepherd-service-back-edges
@@ -149,6 +149,8 @@ DEFAULT is given, use it as the service's default value."
   (provision     shepherd-service-provision)           ;list of symbols
   (requirement   shepherd-service-requirement          ;list of symbols
                  (default '()))
+  (one-shot?     shepherd-service-one-shot?            ;Boolean
+                 (default #f))
   (respawn?      shepherd-service-respawn?             ;Boolean
                  (default #t))
   (start         shepherd-service-start)               ;g-expression (procedure)
@@ -238,6 +240,11 @@ stored."
                        #:docstring '#$(shepherd-service-documentation service)
                        #:provides '#$(shepherd-service-provision service)
                        #:requires '#$(shepherd-service-requirement service)
+
+                       ;; The 'one-shot?' slot is new in Shepherd 0.6.0.
+                       ;; Older versions ignore it.
+                       #:one-shot? '#$(shepherd-service-one-shot? service)
+
                        #:respawn? '#$(shepherd-service-respawn? service)
                        #:start #$(shepherd-service-start service)
                        #:stop #$(shepherd-service-stop service)
@@ -337,21 +344,6 @@ symbols provided/required by a service."
 
   (lambda (service)
     (vhash-foldq* cons '() service edges)))
-
-(define %containerized-shepherd-service
-  ;; XXX: This service works around a bug in the Shepherd 0.5.0: shepherd
-  ;; calls reboot(2) (via 'disable-reboot-on-ctrl-alt-del') when it starts,
-  ;; but in a container that fails with EINVAL.  This was fixed in Shepherd
-  ;; commit 92e806bac1abaeeaf5d60f0ab50d1ae85ba6a62f.
-  (simple-service 'containerized-shepherd
-                  shepherd-root-service-type
-                  (list (shepherd-service
-                         (provision '(containerized-shepherd))
-                         (start #~(lambda ()
-                                    (set! (@@ (shepherd)
-                                              disable-reboot-on-ctrl-alt-del)
-                                      (const #t))
-                                    #t))))))
 
 (define (shepherd-service-upgrade live target)
   "Return two values: the subset of LIVE (a list of <live-service>) that needs

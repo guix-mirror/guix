@@ -52,6 +52,7 @@
             channel-location
 
             %default-channels
+            guix-channel?
 
             channel-instance?
             channel-instance-channel

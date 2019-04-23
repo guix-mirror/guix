@@ -2915,8 +2915,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "33ee0c3b21ea279e08d0863fcb2e874f0974b00e")
-        (revision "12"))
+  (let ((commit "6afed33b2d673d88674f0c76efe500ae414e8e1b")
+        (revision "13"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -2929,7 +2929,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "1ryjaj52nd2fbrjf1id5fr5vndzvv287rggbj3lzhbwzxv52r0gj"))
+           "1s3fqlqzmql7s15m7qy21vai93n6q9f0ccpv0p353rwfx16mmf35"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -6001,7 +6001,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.5")
+    (version "2.5.1")
     (source
      (origin
        (method url-fetch)
@@ -6009,7 +6009,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0q6c7ijgpp2wk6jlh0pzqki1w60i36wyl2zfwkg0gpdh40ypab3x"))))
+         "14l3bs7mlkd2lphjhnbw5dr95pg7x1k61s9wk35dra4li2xjy1lm"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
@@ -6347,7 +6347,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.190")
+    (version "1.191")
     (source
      (origin
        (method git-fetch)
@@ -6355,7 +6355,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "0qklm9ww1wap2bs7hp31xkfjyhdrirg2mk4hiv7h6fiqckzmdwvd"))
+        (base32 "0wplhjadk530fqxhfnizil32rcvkcl5m2r18yskspcib53r4pmim"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

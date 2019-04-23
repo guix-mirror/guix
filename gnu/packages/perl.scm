@@ -2541,9 +2541,22 @@ the DateTime.pm class.")
         (base32
          "0kz5kz47awf2bhb85xx5rbajkr093ipm2d2vkhqs8lqq0f305r3a"))))
     (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tzdata
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/DateTime/TimeZone/Local/Unix.pm"
+               (("our \\$ZoneinfoDir = '\\/usr\\/share\\/zoneinfo';")
+                (string-append "our $ZoneinfoDir = '"
+                               (assoc-ref inputs "tzdata") "/share/zoneinfo"
+                               "';")))
+             #t)))))
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)))
+    (inputs
+     `(("tzdata" ,tzdata)))
     (propagated-inputs
      `(("perl-class-singleton" ,perl-class-singleton)
        ("perl-list-allutils" ,perl-list-allutils)
@@ -8421,7 +8434,7 @@ text sequences from strings.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MA/MAKAMAKA/"
+       (uri (string-append "mirror://cpan/authors/id/I/IS/ISHIGAKI/"
                            "Text-CSV-" version ".tar.gz"))
        (sha256
         (base32 "1llccsl6sr11g9affh43m6q5r85qgnpi9n7idcs1vi9cn4ww0kp7"))))

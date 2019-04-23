@@ -21,6 +21,7 @@
   #:use-module (gnu installer utils)
   #:use-module (gnu installer newt utils)
   #:use-module (guix i18n)
+  #:use-module (ice-9 i18n)
   #:use-module (ice-9 match)
   #:use-module (ice-9 receive)
   #:use-module (srfi srfi-1)
@@ -223,7 +224,7 @@ be selected (using the <SPACE> key). It that case, a list containing the
 selected items will be returned.
 
 If SORT-LISTBOX-ITEMS? is set to #t, the listbox items are sorted using
-'string<=' procedure (after being converted to text).
+'string-locale<?' procedure (after being converted to text).
 
 If ALLOW-DELETE? is #t, the form will return if the <DELETE> key is pressed,
 otherwise nothing will happen.
@@ -249,7 +250,7 @@ ITEM was inserted into LISTBOX."
          items))
 
   (define (sort-listbox-items listbox-items)
-    "Return LISTBOX-ITEMS sorted using the 'string<=' procedure on the text
+    "Return LISTBOX-ITEMS sorted using the 'string-locale<?' procedure on the text
 corresponding to each item in the list."
     (let* ((items (map (lambda (item)
                          (cons item (listbox-item->text item)))
@@ -258,7 +259,7 @@ corresponding to each item in the list."
             (sort items (lambda (a b)
                           (let ((text-a (cdr a))
                                 (text-b (cdr b)))
-                            (string<= text-a text-b))))))
+                            (string-locale<? text-a text-b))))))
       (map car sorted-items)))
 
   ;; Store the last selected listbox item's key.

@@ -635,8 +635,7 @@ options handled by 'set-build-options-from-command-line', and listed in
 
 (define %default-options
   ;; Alist of default option values.
-  `((system . ,(%current-system))
-    (build-mode . ,(build-mode normal))
+  `((build-mode . ,(build-mode normal))
     (graft? . #t)
     (substitutes? . #t)
     (build-hook? . #t)
@@ -729,8 +728,7 @@ must be one of 'package', 'all', or 'transitive'~%")
                           rest)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
-                   (alist-cons 'system arg
-                               (alist-delete 'system result eq?))))
+                   (alist-cons 'system arg result)))
          (option '("target") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'target arg
@@ -811,56 +809,71 @@ build."
        (cut package-cross-derivation <> <> triplet <>))))
 
   (define src    (assoc-ref opts 'source))
-  (define system (assoc-ref opts 'system))
   (define graft? (assoc-ref opts 'graft?))
+  (define systems
+    (match (filter-map (match-lambda
+                         (('system . system) system)
+                         (_ #f))
+                       opts)
+      (()      (list (%current-system)))
+      (systems systems)))
+
+  (define things-to-build
+    (map (cut transform store <>)
+         (options->things-to-build opts)))
+
+  (define (compute-derivation obj system)
+    ;; Compute the derivation of OBJ for SYSTEM.
+    (match obj
+      ((? package? p)
+       (let ((p (or (and graft? (package-replacement p)) p)))
+         (match src
+           (#f
+            (list (package->derivation store p system)))
+           (#t
+            (match (package-source p)
+              (#f
+               (format (current-error-port)
+                       (G_ "~a: warning: \
+package '~a' has no source~%")
+                       (location->string (package-location p))
+                       (package-name p))
+               '())
+              (s
+               (list (package-source-derivation store s)))))
+           (proc
+            (map (cut package-source-derivation store <>)
+                 (proc p))))))
+      ((? derivation? drv)
+       (list drv))
+      ((? procedure? proc)
+       (list (run-with-store store
+               (mbegin %store-monad
+                 (set-guile-for-build (default-guile))
+                 (proc))
+               #:system system)))
+      ((? file-like? obj)
+       (list (run-with-store store
+               (lower-object obj system
+                             #:target (assoc-ref opts 'target))
+               #:system system)))
+      ((? gexp? gexp)
+       (list (run-with-store store
+               (mbegin %store-monad
+                 (set-guile-for-build (default-guile))
+                 (gexp->derivation "gexp" gexp
+                                   #:system system))
+               #:system system)))))
 
   ;; We may get 'unbound-variable' errors while evaluating the 'inputs' fields
   ;; of user packages.  Since 'guix build' is the primary tool for people
   ;; testing new packages, report such errors gracefully.
   (with-unbound-variable-handling
    (parameterize ((%graft? graft?))
-     (append-map (match-lambda
-                   ((? package? p)
-                    (let ((p (or (and graft? (package-replacement p)) p)))
-                      (match src
-                        (#f
-                         (list (package->derivation store p system)))
-                        (#t
-                         (match (package-source p)
-                           (#f
-                            (format (current-error-port)
-                                    (G_ "~a: warning: \
-package '~a' has no source~%")
-                                    (location->string (package-location p))
-                                    (package-name p))
-                            '())
-                           (s
-                            (list (package-source-derivation store s)))))
-                        (proc
-                         (map (cut package-source-derivation store <>)
-                              (proc p))))))
-                   ((? derivation? drv)
-                    (list drv))
-                   ((? procedure? proc)
-                    (list (run-with-store store
-                            (mbegin %store-monad
-                              (set-guile-for-build (default-guile))
-                              (proc))
-                            #:system system)))
-                   ((? file-like? obj)
-                    (list (run-with-store store
-                            (lower-object obj system
-                                          #:target (assoc-ref opts 'target))
-                            #:system system)))
-                   ((? gexp? gexp)
-                    (list (run-with-store store
-                            (mbegin %store-monad
-                              (set-guile-for-build (default-guile))
-                              (gexp->derivation "gexp" gexp
-                                                #:system system))
-                            #:system system))))
-                 (map (cut transform store <>)
-                      (options->things-to-build opts))))))
+     (append-map (lambda (system)
+                   (append-map (cut compute-derivation <> system)
+                               things-to-build))
+                 systems))))
 
 (define (show-build-log store file urls)
   "Show the build log for FILE, falling back to remote logs from URLS if

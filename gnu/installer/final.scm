@@ -24,13 +24,15 @@
   #:use-module (guix build utils)
   #:export (install-system))
 
-(define (install-system)
+(define (install-system locale)
   "Start COW-STORE service on target directory and launch guix install command
-in a subshell."
+in a subshell.  LOCALE must be the locale name under which that command will
+run, or #f."
   (let ((install-command
          (format #f "guix system init ~a ~a"
                  (%installer-configuration-file)
                  (%installer-target-dir))))
     (mkdir-p (%installer-target-dir))
     (start-service 'cow-store (list (%installer-target-dir)))
-    (false-if-exception (run-shell-command install-command))))
+    (false-if-exception (run-shell-command install-command
+                                           #:locale locale))))

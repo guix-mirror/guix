@@ -343,6 +343,20 @@ selected keymap."
             ;; Add some binaries used by the installers to PATH.
             #$set-installer-path
 
+            ;; Arrange for language and territory name translations to be
+            ;; available.  We need them at run time, not just compile time,
+            ;; because some territories have several corresponding languages
+            ;; (e.g., "French" is always displayed as "français", but
+            ;; "Belgium" could be translated to Dutch, French, or German.)
+            (bindtextdomain "iso_639-3"           ;languages
+                            #+(file-append iso-codes "/share/locale"))
+            (bindtextdomain "iso_3166-1"          ;territories
+                            #+(file-append iso-codes "/share/locale"))
+
+            ;; Likewise for XKB keyboard layout names.
+            (bindtextdomain "xkeyboard-config"
+                            #+(file-append xkeyboard-config "/share/locale"))
+
             (let* ((current-installer newt-installer)
                    (steps (#$steps current-installer)))
               ((installer-init current-installer))

@@ -948,40 +948,37 @@ Guile.")
        `(("guile" ,guile-2.2)
          ("guile-email" ,guile-email))))))
 
-;; There has not been any release yet.
 (define-public guile-newt
-  (let ((commit "80c1e9e71945f833386d1632b52573e59325804f")
-        (revision "4"))
-    (package
-      (name "guile-newt")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/mothacehe/guile-newt")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags
-         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("newt" ,newt)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (synopsis "Guile bindings to Newt")
-      (description
-       "This package provides bindings for Newt, a programming library for
+  (package
+    (name "guile-newt")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/mothacehe/guile-newt")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("newt" ,newt)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Guile bindings to Newt")
+    (description
+     "This package provides bindings for Newt, a programming library for
 color text mode, widget based user interfaces.  The bindings are written in pure
 Scheme by using Guile’s foreign function interface.")
-      (home-page "https://gitlab.com/mothacehe/guile-newt")
-      (license license:gpl3+))))
+    (home-page "https://gitlab.com/mothacehe/guile-newt")
+    (license license:gpl3+)))
 
 (define-public guile-mastodon
   (package
@@ -1012,42 +1009,39 @@ Scheme by using Guile’s foreign function interface.")
 microblogging service.")
     (license license:gpl3+)))
 
-;; There has not been any release yet.
 (define-public guile-parted
-  (let ((commit "ea3f1a1f6844775fc59d3078d2a09c62ffb341b8")
-        (revision "0"))
-    (package
-      (name "guile-parted")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/mothacehe/guile-parted")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1q7425gpjlwi2wvhzq7kw046yyx7v6j6jyzkd1cr861iz34mjwiq"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags
-         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("parted" ,parted)))
-      (propagated-inputs
-       `(("guile-bytestructures" ,guile-bytestructures)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (synopsis "Guile bindings to GNU Parted")
-      (description
-       "This package provides bindings for GNU Parted library, a C library
-allowing disk partition tables creation and manipulation. The bindings are
+  (package
+    (name "guile-parted")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/mothacehe/guile-parted")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q7425gpjlwi2wvhzq7kw046yyx7v6j6jyzkd1cr861iz34mjwiq"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("parted" ,parted)))
+    (propagated-inputs
+     `(("guile-bytestructures" ,guile-bytestructures)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Guile bindings to GNU Parted")
+    (description
+     "This package provides bindings for GNU Parted library, a C library
+allowing disk partition tables creation and manipulation.  The bindings are
 written in pure Scheme by using Guile's foreign function interface.")
-      (home-page "https://gitlab.com/mothacehe/guile-parted")
-      (license license:gpl3+))))
+    (home-page "https://gitlab.com/mothacehe/guile-parted")
+    (license license:gpl3+)))
 
 (define-public guile-xosd
   (package

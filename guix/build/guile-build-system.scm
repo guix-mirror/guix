@@ -65,6 +65,62 @@ Return #false if it cannot be determined."
      (setenv "GUIX_LOCPATH" (string-append locales "/lib/locale"))
      #t)))
 
+(define* (invoke-each commands
+                      #:key (max-processes (current-processor-count))
+                      report-progress)
+  "Run each command in COMMANDS in a separate process, using up to
+MAX-PROCESSES processes in parallel.  Call REPORT-PROGRESS at each step.
+Raise an error if one of the processes exit with non-zero."
+  (define total
+    (length commands))
+
+  (define (wait-for-one-process)
+    (match (waitpid WAIT_ANY)
+      ((_ . status)
+       (unless (zero? (status:exit-val status))
+         (error "process failed" status)))))
+
+  (define (fork-and-run-command command)
+    (match (primitive-fork)
+      (0
+       (dynamic-wind
+         (const #t)
+         (lambda ()
+           (apply execlp command))
+         (lambda ()
+           (primitive-exit 127))))
+      (pid
+       #t)))
+
+  (let loop ((commands  commands)
+             (running   0)
+             (completed 0))
+    (match commands
+      (()
+       (or (zero? running)
+           (let ((running   (- running 1))
+                 (completed (+ completed 1)))
+             (wait-for-one-process)
+             (report-progress total completed)
+             (loop commands running completed))))
+      ((command . rest)
+       (if (< running max-processes)
+           (let ((running (+ 1 running)))
+             (fork-and-run-command command)
+             (loop rest running completed))
+           (let ((running   (- running 1))
+                 (completed (+ completed 1)))
+             (wait-for-one-process)
+             (report-progress total completed)
+             (loop commands running completed)))))))
+
+(define* (report-build-progress total completed
+                                #:optional (log-port (current-error-port)))
+  "Report that COMPLETED out of TOTAL files have been completed."
+  (format log-port "compiling...\t~5,1f% of ~d files~%" ;FIXME: i18n
+          (* 100. (/ completed total)) total)
+  (force-output log-port))
+
 (define* (build #:key outputs inputs native-inputs
                 (source-directory ".")
                 (compile-flags '())
@@ -101,24 +157,30 @@ Return #false if it cannot be determined."
                            (match (getenv "GUILE_LOAD_COMPILED_PATH")
                              (#f "")
                              (path (string-append ":" path)))))
-    (for-each (lambda (file)
-                (let* ((go (string-append go-dir
-                                          (file-sans-extension file)
-                                          ".go")))
-                  ;; Install source module.
-                  (install-file (string-append source-directory "/" file)
-                                (string-append module-dir
-                                               "/" (dirname file)))
 
-                  ;; Install and compile module.
-                  (apply invoke guild "compile" "-L" source-directory
-                         "-o" go
-                         (string-append source-directory "/" file)
-                         flags)))
+  (let ((source-files
+           (with-directory-excursion source-directory
+             (find-files "." scheme-file-regexp))))
+    (invoke-each
+     (map (lambda (file)
+            (cons* guild
+                   "guild" "compile"
+                   "-L" source-directory
+                   "-o" (string-append go-dir
+                                       (file-sans-extension file)
+                                       ".go")
+                   (string-append source-directory "/" file)
+                   flags))
+          source-files)
+     #:max-processes (parallel-job-count)
+     #:report-progress report-build-progress)
 
-              ;; Arrange to strip SOURCE-DIRECTORY from file names.
-              (with-directory-excursion source-directory
-                (find-files "." scheme-file-regexp)))
+    (for-each
+     (lambda (file)
+         (install-file (string-append source-directory "/" file)
+                       (string-append module-dir
+                                      "/" (dirname file))))
+     source-files))
     #t))
 
 (define* (install-documentation #:key outputs

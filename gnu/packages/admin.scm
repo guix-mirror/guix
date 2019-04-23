@@ -181,14 +181,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
+              (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wmciqml9yplnx1s4ynn00giqyk06rbrcsgvpjj2df47sawk2jp8"))))
+                "1ys2w83vm62spr8bx38sccfdpy9fqmj7wfywm5k8ihsy2k61da2i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -211,8 +211,7 @@ the execution of system services, replacing similar functionality found in
 typical init systems.  It provides dependency-handling through a convenient
 interface and is based on GNU Guile.")
     (license license:gpl3+)
-    (home-page "https://www.gnu.org/software/shepherd/")
-    (properties '((ftp-server . "alpha.gnu.org")))))
+    (home-page "https://www.gnu.org/software/shepherd/")))
 
 (define-public daemontools
   (package
@@ -2925,7 +2924,7 @@ Logitech Unifying Receiver.")
   (package
     (name "lynis")
     ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
-    (version "2.7.3")
+    (version "2.7.4")
     (source
      (origin
        (method git-fetch)
@@ -2934,7 +2933,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0md1w86i3fy9l78i98ijr5136nbhdiik2dxyw9qnzmvdlvkqmw70"))
+        (base32 "1jjk5hcxmp4f4ppsljiq95l2ln6b03azydap3b35lsvxkjybv88k"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2951,10 +2950,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "c166b6a67a53b24f5c1fecd4eb5033f54279a5b3")))
+                 (commit "90f301e21c204792cf372f1cf05890a562f2e31b")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32 "0wa2azcmx6pj9axvq1jmwmz7826rj1c214asmmn1hq7pxmfw62zr"))))))
+            (base32 "1d0smr1fxrvbc3hl8lzy33im9ahzr0hgs3kk09r8g8xccjkcm52l"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

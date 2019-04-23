@@ -323,6 +323,7 @@ accounts among ACCOUNTS+GROUPS."
   (list (shepherd-service
          (requirement '(file-systems))
          (provision '(user-homes))
+         (one-shot? #t)
          (modules '((gnu build activation)
                     (gnu system accounts)))
          (start (with-imported-modules (source-module-closure
@@ -332,9 +333,7 @@ accounts among ACCOUNTS+GROUPS."
                       (activate-user-home
                        (map sexp->user-account
                             (list #$@(map user-account->gexp accounts))))
-                      #f)))                       ;stop
-         (stop #~(const #f))
-         (respawn? #f)
+                      #t)))                       ;success
          (documentation "Create user home directories."))))
 
 (define (shells-file shells)

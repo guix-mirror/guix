@@ -265,14 +265,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.12")
+    (version "1.5.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "0aav15f0lh8k4i62aza2bdv4s8vv65j38pz2zc4v45snd3arfby0"))))
+        (base32 "0qsdkjrns4f02lmabq8c7mzl5n4382q2p6a0dvmsjdcpjisagqb1"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -1942,13 +1942,13 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.25")
+    (version "4.0.26")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
-        (base32 "1bbwrb812w5i0x56jfn0l86mxc2ck904hl8y87mziay96znwia0f"))
+        (base32 "1qrxnf7ji5hml7z4y669k4wmk3iz2pcsr05bnn1n912asash09z5"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
@@ -2189,13 +2189,13 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "12sr36646sipf9ac3n2xh8z0w5pz4d3dvw5qjv2kzvcls6wvf7vq"))))
+       (base32 "06c3lcv7nijsgqsjaaa4djrwlzgh9f910zlqxkmgq22h6jl4rici"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
@@ -2571,15 +2571,15 @@ reasonable substitute.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "0m1b88wg1w6xdwg0siky5k86x8sh6smhbr42ixz41ra81lv34jbj"))))
+        (base32 "0wwj8il4c3aff15xwwcjfci367zxsakq05ps1a2il6yavp91i94c"))))
     (build-system python-build-system)
-    ;; Tests require a running Redis server
+    ;; Tests require a running Redis server.
     (arguments '(#:tests? #f))
     ;; As long as we are not running test, we do not need this input :-)
     ;;(native-inputs

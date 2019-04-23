@@ -37,6 +37,7 @@
   #:use-module (ice-9 popen)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:export (qemu-command
             load-in-linux-vm
@@ -458,6 +459,25 @@ GRUB configuration and OS-DRV as the stuff in it."
               closures)
     (register-bootcfg-root "/tmp/root" config-file))
 
+  ;; 'grub-mkrescue' calls out to mtools programs to create 'efi.img', a FAT
+  ;; file system image, and mtools honors SOURCE_DATE_EPOCH for the mtime of
+  ;; those files.  The epoch for FAT is Jan. 1st 1980, not 1970, so choose
+  ;; that.
+  (setenv "SOURCE_DATE_EPOCH"
+          (number->string
+           (time-second
+            (date->time-utc (make-date 0 0 0 0 1 1 1980 0)))))
+
+  ;; Our patched 'grub-mkrescue' honors this environment variable and passes
+  ;; it to 'mformat', which makes it the serial number of 'efi.img'.  This
+  ;; allows for deterministic builds.
+  (setenv "GRUB_FAT_SERIAL_NUMBER"
+          (number->string (if volume-uuid
+                              (string-hash (iso9660-uuid->string volume-uuid)
+                                           (expt 2 32))
+                              #x77777777)
+                          16))
+
   (let ((pipe
          (apply open-pipe* OPEN_WRITE
                 grub-mkrescue "-o" target
@@ -471,6 +491,10 @@ GRUB configuration and OS-DRV as the stuff in it."
                 "mnt=/tmp/root/mnt"
                 "-path-list" "-"
                 "--"
+
+                ;; Set all timestamps to 1.
+                "-volume_date" "all_file_dates" "=1"
+
                 "-volid" (string-upcase volume-id)
                 (if volume-uuid
                     `("-volume_date" "uuid"

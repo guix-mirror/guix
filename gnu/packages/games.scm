@@ -7,7 +7,7 @@
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
@@ -38,6 +38,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,6 +237,56 @@ a graphical sequence, before moving on to 30 levels of gameplay with numerous
 enemy, ally, weapon and mission types.  Features include simulated 4D texturing,
 mouse and joystick control, and original music.")
     (license license:gpl2)))
+
+(define-public alex4
+  (package
+    (name "alex4")
+    (version "1.2-alpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/carstene1ns/alex4/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0jj1g3v1a6lyfwp5g2ly0n9z65ryqck8jxvzr01kaqjj3lsfkrhg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:make-flags
+       (list "-Csrc"
+             "CC=gcc"
+             "CFLAGS=-D_FILE_OFFSET_BITS=64"
+             (string-append "DATADIR=" (assoc-ref %outputs "out")
+                            "/share/" ,name)
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* '("src/main.c"
+                            "src/shooter.c")
+               (("fcos") "fixcos")
+               (("fmul") "fixmul")
+               (("fsin") "fixsin"))
+             #t))
+         (add-after 'install 'install-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/" ,name)))
+               (install-file "alex4.ini" share)
+               #t))))))
+    (inputs
+     `(("allegro" ,allegro-4)
+       ("dumb" ,dumb-allegro4)))
+    (home-page "http://allegator.sourceforge.net/")
+    (synopsis "Retro platform game")
+    (description
+     "Guide Alex the Allegator through the jungle in order to save his
+girlfriend Lola from evil humans who want to make a pair of shoes out of her.
+Plenty of classic platforming in four nice colors guaranteed!
+
+The game includes a built-in editor so you can design and share your own maps.")
+    (license license:gpl2+)))
 
 (define-public armagetron-advanced
   (package
@@ -1795,7 +1846,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "5.0.0")
+    (version "5.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1804,7 +1855,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "186i1pna2f3fwa2001y8mw5131h0sndhfdxzfqq2gnr1m83sjm0w"))))
+                "1hw3n7qqpasq6bivxhq01kr0d58w0gp46s0baxixp1fakd79p8a7"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -1822,14 +1873,14 @@ match, cannon keep, and grave-itation pit.")
                      #t))))
     (synopsis "Main game data for the Minetest game engine")
     (description
-     "Game data for the Minetest infinite-world block sandox game.")
+     "Game data for the Minetest infinite-world block sandbox game.")
     (home-page "http://minetest.net")
     (license license:lgpl2.1+)))
 
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.0.0")
+    (version "5.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1838,7 +1889,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b8n8nzlvmld1hl3zgs1xg4jbc1nsf1m2bn7fi794vdr06s6n911"))
+                "11i8fqjpdggqfdlx440k5758zy0nbf9phxan9r63mavc7mph88ay"))
               (modules '((guix build utils)))
               (snippet
                 '(begin
@@ -1865,7 +1916,7 @@ match, cannon keep, and grave-itation pit.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("curl" ,curl)
-       ("freetype" ,(@ (gnu packages fontutils) freetype))
+       ("freetype" ,freetype)
        ("gettext" ,gettext-minimal)
        ("gmp" ,gmp)
        ("irrlicht" ,irrlicht)
@@ -2066,7 +2117,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
 (define-public supertuxkart
   (package
     (name "supertuxkart")
-    (version "0.9.3")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -2074,55 +2125,36 @@ This game is based on the GPL version of the famous game TuxRacer.")
                            version "/supertuxkart-" version "-src.tar.xz"))
        (sha256
         (base32
-         "1c4w47ibj87lgwiqygq8qi7jiz6gklj4dwf5bs5zk15s0rqlw0fq"))
+         "106rlp99hq18b4q1kdri3pl06cc4v7iqfp1hp9k2f8751lzz923d"))
        (modules '((guix build utils)))
        (snippet
         ;; Delete bundled library sources
         '(begin
-           ;; FIXME: try to unbundle enet, and angelscript
+           ;; Supertuxkart uses modified versions of the Irrlicht engine
+           ;; and the bullet library.  The developers gave an explanation
+           ;; here: http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
+           ;; FIXME: try to unbundle angelscript
            (for-each delete-file-recursively
                      '("lib/zlib"
                        "lib/libpng"
                        "lib/jpeglib"
                        "lib/glew"
-                       "lib/wiiuse"))
-           (substitute* "CMakeLists.txt"
-             ;; Supertuxkart uses modified versions of the Irrlicht engine
-             ;; and the bullet library.  The developers gave an explanation here:
-             ;; http://forum.freegamedev.net/viewtopic.php?f=17&t=3906
-             (("add_subdirectory\\(.*/(glew|zlib)\"\\)") ""))
+                       "lib/wiiuse"
+                       "lib/enet"))
            #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no check target
        #:configure-flags
        (list "-DUSE_WIIUSE=0"
-             ;; Do not use the bundled zlib
+             ;; Do not use the bundled zlib, glew and enet.
              "-DNO_IRR_COMPILE_WITH_ZLIB_=TRUE"
+             "-DUSE_SYSTEM_GLEW=TRUE"
+             "-DUSE_SYSTEM_ENET=TRUE"
              ;; FIXME: needs libopenglrecorder
              "-DBUILD_RECORDER=0"
              ;; Irrlicht returns an integer instead of a boolean
-             "-DCMAKE_C_FLAGS=-fpermissive")
-       #:phases
-       (modify-phases %standard-phases
-         ;; see https://github.com/supertuxkart/stk-code/issues/3557
-         (add-after 'unpack 'patch-for-mesa-18.3
-           (lambda _
-             (substitute* "src/graphics/gl_headers.hpp"
-               (("#if !defined\\(USE_GLES2\\)")
-                "#if !defined(USE_GLES2)\n#   define __gl_glext_h_"))
-             #t))
-         (add-after 'unpack 'unbundle
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-               (("glew")
-                (string-append (assoc-ref inputs "glew")
-                               "/lib/libGLEW.a"))
-               (("include_directories\\(\"\\$\\{PROJECT_SOURCE_DIR\\}/lib/glew/include\"\\)")
-                (string-append "include_directories(\""
-                               (assoc-ref inputs "glew")
-                               "/include\")")))
-             #t)))))
+             "-DCMAKE_C_FLAGS=-fpermissive")))
     (inputs
      `(("glew" ,glew)
        ("zlib" ,zlib)
@@ -2136,7 +2168,9 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("curl" ,curl)
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg)
+       ("openssl" ,openssl)
+       ("enet" ,enet)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://supertuxkart.net/")
@@ -4476,7 +4510,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public dungeon-crawl-stone-soup
   (package
     (name "dungeon-crawl-stone-soup")
-    (version "0.23.1")
+    (version "0.23.2")
     (source
      (origin
        (method url-fetch)
@@ -4489,8 +4523,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (string-append "http://crawl.develz.org/release/stone_soup-"
                             version "-nodeps.tar.xz")))
        (sha256
-        (base32
-         "0c3mx49kpz6i2xvv2dwsaj9s7mm4mif1h2qdkfyi80lv2j1ay51h"))
+        (base32 "1hw10hqhh688mrqs9vxrl17y1dzfjzsmxz6izg1a9dzmjlhrc01a"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -4512,7 +4545,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
          (list (string-append "SQLITE_INCLUDE_DIR=" sqlite "/include")
                (string-append "prefix=" out)
                "SAVEDIR=~/.crawl"
-               ;; Don't compile with SSE on systems which don't use it
+               ;; Don't compile with SSE on systems which don't have it.
                ,@(match (%current-system)
                    ((or "i686-linux" "x86_64-linux")
                     '())
@@ -6486,7 +6519,7 @@ the desired spell.")
 (define-public the-legend-of-edgar
   (package
     (name "the-legend-of-edgar")
-    (version "1.30")
+    (version "1.31")
     (source
      (origin
        (method url-fetch)
@@ -6494,10 +6527,9 @@ the desired spell.")
         (string-append "https://github.com/riksweeney/edgar/releases/download/"
                        version "/edgar-" version "-1.tar.gz"))
        (sha256
-        (base32
-         "0bhbs33dg0nb8wqlh6px1jj41j05f89ngdqwdkffabmjk7wq5isx"))))
+        (base32 "0i4851ci8a86ql4bhdq3xdfmf4b9z5zrd4xpc6vhi06697zgm13i"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f                    ; there are no tests
+    (arguments '(#:tests? #f            ; there are no tests
                  #:make-flags
                  (list "CC=gcc"
                        (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -6507,14 +6539,13 @@ the desired spell.")
                    (delete 'configure)
                    (add-before 'build 'fix-env
                      (lambda* (#:key inputs #:allow-other-keys)
-                       (setenv "CPATH" (string-append (assoc-ref inputs "sdl")
-                                                      "/include/SDL/"))
+                       (setenv "CPATH"
+                               (string-append (assoc-ref inputs "sdl2-union")
+                                              "/include/SDL2"))
                        #t)))))
-    (inputs `(("sdl" ,sdl)
-              ("sdl-img" ,sdl-image)
-              ("sdl-mixer" ,sdl-mixer)
-              ("sdl-ttf" ,sdl-ttf)
-              ("zlib" ,zlib)))
+    (inputs
+     `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
