@@ -611,8 +611,8 @@ Microsoft Visio documents of all versions.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/libwpd/" name "/"
-                          name "-" version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpd/libodfgen/"
+                          "libodfgen-" version "/libodfgen-" version ".tar.xz"))
       (sha256 (base32
                "0cdq48wlpp8m0qmndybv64r0m4vh0qsqx69cn6ms533cjlgljgij"))))
     (build-system gnu-build-system)
