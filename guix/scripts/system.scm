@@ -855,7 +855,7 @@ static checks."
     (bootloader-configuration-bootloader (operating-system-bootloader os)))
 
   (define bootcfg
-    (and (not (eq? 'container action))
+    (and (memq action '(init reconfigure))
          (operating-system-bootcfg os menu-entries)))
 
   (define bootloader-script
