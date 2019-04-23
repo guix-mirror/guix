@@ -1397,3 +1397,31 @@ files (TTF).")
 formatting.")
     (home-page "https://madmalik.github.io/mononoki/")
     (license license:silofl1.1)))
+
+(define-public font-public-sans
+  (package
+    (name "font-public-sans")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uswds/public-sans.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12ccj7ph3pg962d52d3slbvd44gwfm6bb2846dxyf1xc5h2iwhdv"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; remove versions of predecessor font
+                  (delete-file-recursively "fonts/_archive")
+                  #t))))
+    (build-system font-build-system)
+    (home-page "https://public-sans.digital.gov/")
+    (synopsis
+     "Strong, neutral typeface for interfaces, text, and headings")
+    (description
+     "Public Sans is a strong, neutral, principles-driven, open-source
+typeface for text or display based on Libre Franklin.")
+    (license license:silofl1.1)))
