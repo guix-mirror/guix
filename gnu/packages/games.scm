@@ -30,7 +30,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
@@ -6997,4 +6997,48 @@ environments, pilot training, as an industry engineering tool, for DIY-ers to
 pursue their favorite interesting flight simulation idea, and last but
 certainly not least as a fun, realistic, and challenging desktop flight
 simulator.")
+    (license license:gpl2+)))
+
+(define-public jumpnbump
+  (package
+    (name "jumpnbump")
+    (version "1.60")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/LibreGames/jumpnbump.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gwi58ck4magvdim8wmxdqnsi0fqdpvqia9kcc7q73nqf34jjz3v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'unpack 'fix-sdl-path
+           ;; XXX: For some reason, `sdl2-config' reports stand-alone SDL
+           ;; directory, not SDL-union provided as an input to the package.
+           ;; We force the latter with "--prefix=" option.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("sdl2-config" command)
+                (string-append command " --prefix=" (assoc-ref inputs "sdl"))))
+             #t)))))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-mixer sdl2-net)))
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))   ;for msgfmt
+    (home-page "https://gitlab.com/LibreGames/jumpnbump")
+    (synopsis "Multiplayer platform game with bunnies")
+    (description "You, as a bunny, have to jump on your opponents to make them
+explode.  It is a true multiplayer game; you cannot play this alone.  You can
+play with up to four players simultaneously.  It has network support.")
     (license license:gpl2+)))
