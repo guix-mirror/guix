@@ -12444,14 +12444,14 @@ lspec, polyclass, and polymars.")
 (define-public r-rms
   (package
     (name "r-rms")
-    (version "5.1-3")
+    (version "5.1-3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rms" version))
        (sha256
         (base32
-         "1sw9a0iqiips580jpbk7yiqgyiswihvaqbnq4ybsmd4ki86i5isz"))))
+         "0drbr3g0x5pbxyzy50wnf92rbal8izizrcqslqhg0gsfg9adjih9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
