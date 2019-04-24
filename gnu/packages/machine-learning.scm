@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -407,14 +407,14 @@ sample proximities between pairs of cases.")
 (define-public openfst
   (package
     (name "openfst")
-    (version "1.7.1")
+    (version "1.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.openfst.org/twiki/pub/FST/"
                                   "FstDownload/openfst-" version ".tar.gz"))
               (sha256
                (base32
-                "0x9wfcqd8hq4h349s7j77sr60h8xjdfshqw1m3a2n6z5bdr9qkm1"))))
+                "0fqgk8195kz21is09gwzwnrg7fr9526bi9mh4apyskapz27pbhr1"))))
     (build-system gnu-build-system)
     (home-page "http://www.openfst.org")
     (synopsis "Library for weighted finite-state transducers")
