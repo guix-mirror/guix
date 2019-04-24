@@ -104,6 +104,14 @@
           (lambda ()
             (destroy-form-and-pop form)))))))
 
+(define (run-root-password-page)
+  ;; TRANSLATORS: Leave "root" untranslated: it refers to the name of the
+  ;; system administrator account.
+  (run-input-page (G_ "Please choose a password for the system \
+administrator (\"root\").")
+                  (G_ "System administrator password")
+                  #:input-flags FLAG-PASSWORD))
+
 (define (run-user-page)
   (define (run users)
     (let* ((listbox (make-listbox
@@ -181,4 +189,9 @@
                 users))))
           (lambda ()
             (destroy-form-and-pop form))))))
-  (run '()))
+
+  ;; Add a "root" user simply to convey the root password.
+  (cons (user (name "root")
+              (home-directory "/root")
+              (password (run-root-password-page)))
+        (run '())))

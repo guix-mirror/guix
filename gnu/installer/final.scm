@@ -67,8 +67,12 @@ USERS."
 
   (define users*
     (map (lambda (user)
+           (define root?
+             (string=? "root" (user-name user)))
+
            (sys:user-account (name (user-name user))
                              (group "users")
+                             (uid (if root? 0 #f))
                              (home-directory
                               (user-home-directory user))
                              (password (crypt (user-password user)

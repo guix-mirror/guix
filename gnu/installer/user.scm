@@ -18,6 +18,7 @@
 
 (define-module (gnu installer user)
   #:use-module (guix records)
+  #:use-module (srfi srfi-1)
   #:export (<user>
             user
             make-user
@@ -39,14 +40,18 @@
 
 (define (users->configuration users)
   "Return the configuration field for USERS."
+  (define (user->sexp user)
+    `(user-account
+      (name ,(user-name user))
+      (group ,(user-group user))
+      (home-directory ,(user-home-directory user))
+      (supplementary-groups '("wheel" "netdev"
+                              "audio" "video"))))
+
   `((users (cons*
-             ,@(map (lambda (user)
-                      `(user-account
-                        (name ,(user-name user))
-                        (group ,(user-group user))
-                        (home-directory ,(user-home-directory user))
-                        (supplementary-groups
-                         (quote ("wheel" "netdev"
-                                 "audio" "video")))))
-                    users)
-             %base-user-accounts))))
+            ,@(filter-map (lambda (user)
+                            ;; Do not emit a 'user-account' form for "root".
+                            (and (not (string=? (user-name user) "root"))
+                                 (user->sexp user)))
+                          users)
+            %base-user-accounts))))
