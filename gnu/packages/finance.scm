@@ -241,6 +241,13 @@ in ability, and easy to use.")
          #:tests? #f ; there are none
          #:phases
          (modify-phases %standard-phases
+           (add-before 'build 'patch-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((ledger (assoc-ref inputs "ledger")))
+                 (make-file-writable "ledger-exec.el")
+                 (emacs-substitute-variables "ledger-exec.el"
+                   ("ledger-binary-path" (string-append ledger "/bin/ledger"))))
+               #t))
            (add-after 'build 'build-doc
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((target (string-append (assoc-ref outputs "out")
@@ -260,6 +267,8 @@ in ability, and easy to use.")
                  (rename-file orig-dir dest-dir)
                  (emacs-generate-autoloads ,name dest-dir)
                  #t))))))
+      (inputs
+       `(("ledger" ,ledger)))
       (native-inputs
        `(("emacs-minimal" ,emacs-minimal)
          ("texinfo" ,texinfo)))
