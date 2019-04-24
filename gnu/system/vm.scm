@@ -617,7 +617,7 @@ to USB sticks meant to be read-only."
     ;; Volume name of the root file system.
     (normalize-label "Guix_image"))
 
-  (define root-uuid
+  (define (root-uuid os)
     ;; UUID of the root file system, computed in a deterministic fashion.
     ;; This is what we use to locate the root file system so it has to be
     ;; different from the user's own file system UUIDs.
@@ -647,17 +647,26 @@ to USB sticks meant to be read-only."
                                  (bootloader grub-mkrescue-bootloader))
                                (operating-system-bootloader os)))
 
-               ;; Force our own root file system.
+               ;; Force our own root file system.  (We need a "/" file system
+               ;; to call 'root-uuid'.)
                (file-systems (cons (file-system
                                      (mount-point "/")
-                                     (device root-uuid)
+                                     (device "/dev/placeholder")
+                                     (type file-system-type))
+                                   file-systems-to-keep))))
+         (uuid (root-uuid os))
+         (os (operating-system
+               (inherit os)
+               (file-systems (cons (file-system
+                                     (mount-point "/")
+                                     (device uuid)
                                      (type file-system-type))
                                    file-systems-to-keep))))
         (bootcfg (operating-system-bootcfg os)))
     (if (string=? "iso9660" file-system-type)
         (iso9660-image #:name name
                        #:file-system-label root-label
-                       #:file-system-uuid root-uuid
+                       #:file-system-uuid uuid
                        #:os os
                        #:register-closures? #t
                        #:bootcfg-drv bootcfg
@@ -674,7 +683,7 @@ to USB sticks meant to be read-only."
                     #:disk-image-format "raw"
                     #:file-system-type file-system-type
                     #:file-system-label root-label
-                    #:file-system-uuid root-uuid
+                    #:file-system-uuid uuid
                     #:copy-inputs? #t
                     #:register-closures? #t
                     #:inputs `(("system" ,os)
