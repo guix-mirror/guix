@@ -84,6 +84,7 @@
   ;; usually not available at run time, hence this hack.
   '(("de" . "Systeminstallation")
     ("en" . "System Installation")
+    ("es" . "Instalación del sistema")
     ("fr" . "Installation du système")))
 
 (define (log-to-info tty user)
