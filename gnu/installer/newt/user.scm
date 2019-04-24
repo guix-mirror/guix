@@ -186,7 +186,7 @@ administrator (\"root\").")
                   (run-error-page (G_ "Please create at least one user.")
                                   (G_ "No user"))
                   (run users))
-                users))))
+                (reverse users)))))
           (lambda ()
             (destroy-form-and-pop form))))))
 
