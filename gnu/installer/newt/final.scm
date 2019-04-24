@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,10 +66,11 @@ press the button to reboot.")))
    (G_ "The final system installation step failed.  You can retry the \
 last step, or restart the installer.")))
 
-(define (run-install-shell locale)
+(define* (run-install-shell locale
+                            #:key (users '()))
   (clear-screen)
   (newt-suspend)
-  (let ((install-ok? (install-system locale)))
+  (let ((install-ok? (install-system locale #:users users)))
     (newt-resume)
     install-ok?))
 
@@ -76,12 +78,13 @@ last step, or restart the installer.")))
   (let* ((configuration   (format-configuration prev-steps result))
          (user-partitions (result-step result 'partition))
          (locale          (result-step result 'locale))
+         (users           (result-step result 'user))
          (install-ok?
           (with-mounted-partitions
            user-partitions
            (configuration->file configuration)
            (run-config-display-page)
-           (run-install-shell locale))))
+           (run-install-shell locale #:users users))))
     (if install-ok?
         (run-install-success-page)
         (run-install-failed-page))))

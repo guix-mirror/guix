@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,10 +37,14 @@
           (make-label -1 -1 (pad-label (G_ "Name"))))
          (label-home-directory
           (make-label -1 -1 (pad-label (G_ "Home directory"))))
+         (label-password
+          (make-label -1 -1 (pad-label (G_ "Password"))))
          (entry-width 30)
          (entry-name (make-entry -1 -1 entry-width))
          (entry-home-directory (make-entry -1 -1 entry-width))
-         (entry-grid (make-grid 2 2))
+         (entry-password (make-entry -1 -1 entry-width
+                                     #:flags FLAG-PASSWORD))
+         (entry-grid (make-grid 3 4))
          (button-grid (make-grid 1 1))
          (ok-button (make-button -1 -1 (G_ "OK")))
          (grid (make-grid 1 2))
@@ -52,6 +57,8 @@
     (set-entry-grid-field 1 0 entry-name)
     (set-entry-grid-field 0 1 label-home-directory)
     (set-entry-grid-field 1 1 entry-home-directory)
+    (set-entry-grid-field 0 2 label-password)
+    (set-entry-grid-field 1 2 entry-password)
 
     (set-grid-field button-grid 0 0 GRID-ELEMENT-COMPONENT ok-button)
 
@@ -62,8 +69,8 @@
                        (string-append "/home/" (entry-value entry-name)))))
 
     (add-components-to-form form
-                            label-name label-home-directory
-                            entry-name entry-home-directory
+                            label-name label-home-directory label-password
+                            entry-name entry-home-directory entry-password
                             ok-button)
 
     (make-wrapped-grid-window (vertically-stacked-grid
@@ -82,8 +89,9 @@
             (when (eq? exit-reason 'exit-component)
               (cond
                ((components=? argument ok-button)
-                (let ((name (entry-value entry-name))
-                      (home-directory (entry-value entry-home-directory)))
+                (let ((name           (entry-value entry-name))
+                      (home-directory (entry-value entry-home-directory))
+                      (password       (entry-value entry-password)))
                   (if (or (string=? name "")
                           (string=? home-directory ""))
                       (begin
@@ -91,7 +99,8 @@
                         (run-user-add-page))
                       (user
                        (name name)
-                       (home-directory home-directory))))))))
+                       (home-directory home-directory)
+                       (password password))))))))
           (lambda ()
             (destroy-form-and-pop form)))))))
 

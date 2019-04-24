@@ -24,6 +24,7 @@
             user-name
             user-group
             user-home-directory
+            user-password
 
             users->configuration))
 
@@ -33,6 +34,7 @@
   (name            user-name)
   (group           user-group
                    (default "users"))
+  (password        user-password)
   (home-directory  user-home-directory))
 
 (define (users->configuration users)
