@@ -3680,7 +3680,7 @@ visualization with image data.")
     (synopsis "Tools for high-throughput metabolomics")
     (description
      "This package provides tools to analyze and visualize high-throughput
-metabolomics data aquired using chromatography-mass spectrometry.  These tools
+metabolomics data acquired using chromatography-mass spectrometry.  These tools
 preprocess data in a way that enables reliable and powerful differential
 analysis.")
     (license license:artistic2.0)))
