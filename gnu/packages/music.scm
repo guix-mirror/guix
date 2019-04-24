@@ -2057,7 +2057,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "3.0.4")
+    (version "3.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2065,7 +2065,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "18m4ax0x06y1hx4g2g3gf02v0bldkrrb5m7fsr5jlfp1kvjd2j1x"))))
+                "0qwzg14h043rmyf9jqdylxhyfy4sl0vsr0gjql51wjhid0i34ivl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
