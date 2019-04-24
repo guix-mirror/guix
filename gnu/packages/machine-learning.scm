@@ -111,18 +111,17 @@ connected and sparsely connected networks.")
 (define-public libsvm
   (package
     (name "libsvm")
-    (version "3.22")
+    (version "3.23")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.csie.ntu.edu.tw/~cjlin/libsvm/"
                            name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0zd7s19y5vb7agczl6456bn45cj1y64739sslaskw1qk7dywd0bd"))))
+        (base32 "0jpaq0rr92x38p4nk3gjan79ip67m6p80anb28z1d8601miysyi5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
+     `(#:tests? #f                      ; no "check" target
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (replace
@@ -151,7 +150,7 @@ classification.")
     (name "python-libsvm")
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
+     `(#:tests? #f                      ; no "check" target
        #:make-flags '("-C" "python")
        #:phases
        (modify-phases %standard-phases
