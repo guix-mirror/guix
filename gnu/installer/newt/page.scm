@@ -75,17 +75,20 @@ this page to TITLE."
                          #:key
                          (allow-empty-input? #f)
                          (default-text #f)
-                         (input-field-width 40))
+                         (input-field-width 40)
+                         (input-flags 0))
   "Run a page to prompt user for an input. The given TEXT will be displayed
 above the input field. The page title is set to TITLE. Unless
 allow-empty-input? is set to #t, an error page will be displayed if the user
-enters an empty input."
+enters an empty input.  INPUT-FLAGS is a bitwise-or'd set of flags for the
+input box, such as FLAG-PASSWORD."
   (let* ((text-box
           (make-reflowed-textbox -1 -1 text
                                  input-field-width
                                  #:flags FLAG-BORDER))
          (grid (make-grid 1 3))
-         (input-entry (make-entry -1 -1 20))
+         (input-entry (make-entry -1 -1 20
+                                  #:flags input-flags))
          (ok-button (make-button -1 -1 (G_ "OK")))
          (form (make-form)))
 
