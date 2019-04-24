@@ -9311,14 +9311,14 @@ the first time as the statistic.")
 (define-public r-splitstackshape
   (package
     (name "r-splitstackshape")
-    (version "1.4.6")
+    (version "1.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "splitstackshape" version))
        (sha256
         (base32
-         "03w6h64ga4zqilffdway4l38l5cbman4yrspkzhbigds12aqz25r"))))
+         "0mpyf2kkfdl69pdc6brl1r6101vyc6pgr7z17s55ppg3y71k4q35"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)))
