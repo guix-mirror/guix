@@ -22,7 +22,7 @@ correctifs et leurs communications en ligne ; ils peuvent utiliser n'importe
 quel nom ou pseudonyme de leur choix.
 
 @menu
-* Construire depuis Git::    toujours le plus récent.
+* Construire depuis Git::    Toujours le plus récent.
 * Lancer Guix avant qu'il ne soit installé::  Astuces pour les hackers.
 * La configuration parfaite::  Les bons outils.
 * Consignes d'empaquetage::  Faire grandir la distribution.
@@ -170,11 +170,12 @@ arborescence des source locale.
 @node La configuration parfaite
 @section La configuration parfaite
 
-The Perfect Setup to hack on Guix is basically the perfect setup used for
-Guile hacking (@pxref{Using Guile in Emacs,,, guile, Guile Reference
-Manual}).  First, you need more than an editor, you need
-@url{http://www.gnu.org/software/emacs, Emacs}, empowered by the wonderful
-@url{http://nongnu.org/geiser/, Geiser}.  To set that up, run:
+La configuration parfaite pour travailler sur Guix est simplement la
+configuration parfaite pour travailler en Guile (@pxref{Using Guile in
+Emacs,,, guile, Guile Reference Manual}).  Tout d'abord, vous avez besoin de
+mieux qu'un éditeur de texte, vous avez besoin de
+@url{http://www.gnu.org/software/emacs, Emacs}, amélioré par le superbe
+@url{http://nongnu.org/geiser/, Geiser}.  Pour paramétrer cela, lancez :
 
 @example
 guix package -i emacs guile emacs-geiser
@@ -237,9 +238,8 @@ finissent sur @code{…}, qui peuvent aussi être étendues.
 @section Consignes d'empaquetage
 
 @cindex paquets, création
-The GNU distribution is nascent and may well lack some of your favorite
-packages.  This section describes how you can help make the distribution
-grow.
+La distribution GNU est jeune et vos paquets préférés peuvent manquer.
+Cette section décrit comment vous pouvez aider à agrandir la distribution.
 
 Les paquets de logiciels libres sont habituellement distribués sous forme
 @dfn{d'archives de sources} — typiquement des fichiers @file{.tar.gz}
@@ -283,19 +283,20 @@ d'informations sur la véritable erreur :
 ./pre-inst-env guile -c '(use-modules (gnu packages gnew))'
 @end example
 
-Once your package builds correctly, please send us a patch
-(@pxref{Envoyer des correctifs}).  Well, if you need help, we will be happy to
-help you too.  Once the patch is committed in the Guix repository, the new
-package automatically gets built on the supported platforms by
-@url{http://hydra.gnu.org/jobset/gnu/master, our continuous integration
-system}.
+Une fois que votre paquet est correctement construit, envoyez-nous un
+correctif (@pxref{Contribuer}).  Enfin, si vous avez besoin d'aide, nous
+serrons ravis de vous aider.  Une fois que le correctif soumis est committé
+dans le dépôt Guix, le nouveau paquet est automatiquement construit sur les
+plate-formes supportées par @url{http://hydra.gnu.org/jobset/gnu/master,
+notre système d'intégration continue}.
 
 @cindex substitution
-Users can obtain the new package definition simply by running @command{guix
-pull} (@pxref{Invoquer guix pull}).  When @code{@value{SUBSTITUTE-SERVER}}
-is done building the package, installing the package automatically downloads
-binaries from there (@pxref{Substituts}).  The only place where human
-intervention is needed is to review and apply the patch.
+On peut obtenir la nouvelle définition du paquet simplement en lançant
+@command{guix pull} (@pxref{Invoquer guix pull}). Lorsque
+@code{@value{SUBSTITUTE-SERVER}} a fini de construire le paquet,
+l'installation du paquet y télécharge automatiquement les binaires
+(@pxref{Substituts}). La seule intervention humaine requise est pendant la
+revue et l'application du correctif.
 
 
 @menu
@@ -558,11 +559,10 @@ avec les deux.  Si le paquet Foo ne compile qu'avec Ptyhon 3, on le nomme
 @code{python2-foo}.  S'il est compatible avec les deux versions, nous créons
 deux paquets avec les noms correspondant.
 
-If a project already contains the word @code{python}, we drop this; for
-instance, the module python-dateutil is packaged under the names
-@code{python-dateutil} and @code{python2-dateutil}.  If the project name
-starts with @code{py} (e.g.@: @code{pytz}), we keep it and prefix it as
-described above.
+Si un projet contient déjà le mot @code{python}, on l'enlève, par exemple le
+module python-dateutil est packagé sous les noms @code{python-dateutil} et
+@code{python2-dateutil}.  Si le nom du projet commence par @code{py} (p.@:
+ex.@: @code{pytz}), on le garde et on le préfixe comme décrit ci-dessus.
 
 @subsubsection Spécifier les dépendances
 @cindex entrées, pour les paquets Python
@@ -574,7 +574,7 @@ dans @file{tox.ini}.
 
 Votre mission, lorsque vous écrivez une recette pour un paquet Python, est
 de faire correspondre ces dépendances au bon type « d'entrée »
-(@pxref{Référence de paquet, inputs}).  Bien que l'importeur @code{pypi} fasse
+(@pxref{Référence des paquets, inputs}).  Bien que l'importeur @code{pypi} fasse
 du bon boulot (@pxref{Invoquer guix import}), vous devriez vérifier la liste
 suivant pour déterminer où va telle dépendance.
 
@@ -753,7 +753,7 @@ Certaines formes spéciales introduites dans Guix comme la macro
 définies dans le fichier @file{.dir-locals.el} qu'Emacs utilise
 automatiquement.  Remarquez aussi qu'Emacs-Guix fournit le mode
 @code{guix-devel-mode} qui indente et colore le code Guix correctement
-(@pxref{Development,,, emacs-guix, The Emacs-Guix Reference Manual}).
+(@pxref{Développement,,, emacs-guix, The Emacs-Guix Reference Manual}).
 
 @cindex indentation, du code
 @cindex formatage, du code
@@ -834,29 +834,29 @@ Assurez-vous que le paquet se construise sur votre plate-forme avec
 @code{guix build @var{paquet}}.
 
 @item
-We recommend you also try building the package on other supported
-platforms.  As you may not have access to actual hardware platforms, we
-recommend using the @code{qemu-binfmt-service-type} to emulate them.  In
-order to enable it, add the following service to the list of services in
-your @code{operating-system} configuration:
+Nous vous recommandons aussi d'essayer de construire le paquet sur les
+autres plate-formes prises en charge.  Comme vous n'avez pas forcément accès
+aux plate-formes matérielles, nous vous recommandons d'utiliser le
+@code{qemu-binfmt-service-type} pour les émuler.  Pour cela, ajoutez le
+service suivant à la liste des services dans votre configuration de système
+d'exploitation :
 
 @example
 (service qemu-binfmt-service-type
  (qemu-binfmt-configuration
-   (platforms (lookup-qemu-platforms "arm" "aarch64" "ppc" "mips64el"))
+   (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))
    (guix-support? #t)))
 @end example
 
-Then reconfigure your system.
+Puis reconfigurez votre système.
 
-You can then build packages for different platforms by specifying the
-@code{--system} option.  For example, to build the "hello" package for the
-armhf, aarch64, powerpc, or mips64 architectures, you would run the
-following commands, respectively:
+Vous pourrez ensuite construire les paquets pour différentes plate-formes en
+spécifiant l'option @code{--system}.  Par exemple pour construire le paquet
+« hello » pour les architectures armhf, aarch64 ou mips64, vous devrez
+lancer les commandes suivantes, respectivement :
 @example
 guix build --system=armhf-linux --rounds=2 hello
 guix build --system=aarch64-linux --rounds=2 hello
-guix build --system=powerpc-linux --rounds=2 hello
 guix build --system=mips64el-linux --rounds=2 hello
 @end example
 
@@ -876,12 +876,12 @@ depuis un unique emplacement et qu'ils affectent tout le système, ce
 qu'empêchent les copies groupées.
 
 @item
-Take a look at the profile reported by @command{guix size} (@pxref{Invoquer guix size}).  This will allow you to notice references to other packages
-unwillingly retained.  It may also help determine whether to split the
-package (@pxref{Des paquets avec plusieurs résultats}), and which optional
-dependencies should be used.  In particular, avoid adding @code{texlive} as
-a dependency: because of its extreme size, use @code{texlive-tiny} or
-@code{texlive-union} instead.
+Regardez le profil rapporté par @command{guix size} (@pxref{Invoquer guix size}).  Cela vous permettra de remarquer des références à d'autres paquets
+qui ont été retenus sans que vous vous y attendiez.  Il peut aussi aider à
+déterminer s'il faut découper le paquet (@pxref{Des paquets avec plusieurs
+résultats}) et quelles dépendances facultatives utiliser.  En particulier,
+évitez d'ajouter @code{texlive} en dépendance : à cause de sa taille
+extrême, utilisez @code{texlive-tiny} ou @code{texlive-union} à la place.
 
 @item
 Pour les changements important, vérifiez que les paquets qui en dépendent
@@ -942,14 +942,16 @@ Cela est suffisant pour trouver une classe de non-déterminisme commune,
 comme l'horodatage ou des sorties générées aléatoirement dans le résultat de
 la construction.
 
-Another option is to use @command{guix challenge} (@pxref{Invoquer guix challenge}).  You may run it once the package has been committed and built
-by @code{@value{SUBSTITUTE-SERVER}} to check whether it obtains the same
-result as you did.  Better yet: Find another machine that can build it and
-run @command{guix publish}.  Since the remote build machine is likely
-different from yours, this can catch non-determinism issues related to the
-hardware---e.g., use of different instruction set extensions---or to the
-operating system kernel---e.g., reliance on @code{uname} or @file{/proc}
-files.
+Une autre option consiste à utiliser @command{guix challenge}
+(@pxref{Invoquer guix challenge}).  Vous pouvez lancer la commande une fois
+que les paquets ont été committés et construits par
+@code{@value{SUBSTITUTE-SERVER}} pour vérifier s'il obtient le même résultat
+que vous.  Mieux encore : trouvez une autre machine qui peut le construire
+et lancez @command{guix publish}.  Puisque la machine distante est sûrement
+différente de la vôtre, cela peut trouver des problèmes de non-déterminisme
+liés au matériel — par exemple utiliser une extension du jeu d'instruction —
+ou du noyau du système d'exploitation — par exemple se reposer sur
+@code{uname} ou les fichiers de @file{/proc}.
 
 @item
 Lorsque vous écrivez de la documentation, utilisez une formulation au genre
