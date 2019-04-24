@@ -473,8 +473,12 @@ GRUB configuration and OS-DRV as the stuff in it."
   ;; allows for deterministic builds.
   (setenv "GRUB_FAT_SERIAL_NUMBER"
           (number->string (if volume-uuid
+
+                              ;; On 32-bit systems the 2nd argument must be
+                              ;; lower than 2^32.
                               (string-hash (iso9660-uuid->string volume-uuid)
-                                           (expt 2 32))
+                                           (- (expt 2 32) 1))
+
                               #x77777777)
                           16))
 
