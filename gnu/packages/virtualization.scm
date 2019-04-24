@@ -126,6 +126,8 @@
                                               (assoc-ref %outputs "out")
                                               "/libexec/samba-wrapper")
                                "--audio-drv-list=alsa,pa,sdl")
+       ;; Make build and test output verbose to facilitate investigation upon failure.
+       #:make-flags '("V=1")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -177,10 +179,6 @@ exec smbd $@")))
                (chmod "samba-wrapper" #o755)
                (install-file "samba-wrapper" libexec))
              #t))
-         (add-before 'check 'make-gtester-verbose
-           (lambda _
-             ;; Make GTester verbose to facilitate investigation upon failure.
-             (setenv "V" "1") #t))
          (add-before 'check 'disable-test-qga
            (lambda _
              (substitute* "tests/Makefile.include"
