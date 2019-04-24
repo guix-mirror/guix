@@ -53,6 +53,8 @@
   (service-type (name 'fprintd)
                 (extensions
                  (list (service-extension dbus-root-service-type
+                                          fprintd-dbus-service)
+                       (service-extension polkit-service-type
                                           fprintd-dbus-service)))
                 (default-value (fprintd-configuration))
                 (description
