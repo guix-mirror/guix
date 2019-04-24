@@ -12,7 +12,7 @@
 @settitle GNU Guix参考手册
 @c %**end of header
 
-@include version.texi
+@include version-zh_CN.texi
 
 @c Identifier of the OpenPGP key used to sign tarballs and such.
 @set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
