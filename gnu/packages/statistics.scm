@@ -1847,14 +1847,14 @@ and fast file reading.")
 (define-public r-xtable
   (package
     (name "r-xtable")
-    (version "1.8-3")
+    (version "1.8-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xtable" version))
        (sha256
         (base32
-         "09f311gq9g7dzf8jdvcx72j11xb7p00jlg066jjbpa6pz3zv1cjk"))))
+         "077xfm0gphvhsay75amd9v90zk57kjgrrlgih04fyrbqqblc1gjs"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr))) ; for vignettes
