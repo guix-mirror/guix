@@ -1000,8 +1000,8 @@ for packaging and deployment of cross-compiled Windows applications.")
     (description
      "@code{libostree} is both a shared library and suite of command line
 tools that combines a \"git-like\" model for committing and downloading
-bootable filesystem trees, along with a layer for deploying them and managing
-the bootloader configuration.")
+bootable file system trees, along with a layer for deploying them and managing
+the boot loader configuration.")
     (license license:lgpl2.0+)))
 
 (define-public flatpak

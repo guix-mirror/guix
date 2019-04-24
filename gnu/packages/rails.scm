@@ -602,7 +602,7 @@ can also be launched manually in any page.")
     (synopsis "Advisory locking for ActiveRecord")
     (description
      "The With advisory lock gem adds advisory locking to ActiveRecord for
-PostgreSQL and MySQL.  SQLite is also supported, but this uses the filesystem
+PostgreSQL and MySQL.  SQLite is also supported, but this uses the file system
 for locks.")
     (home-page "https://closuretree.github.io/with_advisory_lock/")
     (license license:expat)))

@@ -14423,7 +14423,7 @@ introspection.")
     (synopsis "File transport adapter for Requests")
     (description
      "Requests-File is a transport adapter for use with the Requests Python
-library to allow local filesystem access via file:// URLs.")
+library to allow local file system access via @code{file://} URLs.")
     (license license:asl2.0)))
 
 (define-public python2-requests-file

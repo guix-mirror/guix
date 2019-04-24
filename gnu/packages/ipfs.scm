@@ -152,7 +152,7 @@ that are shared between @command{go-ipfs/commands} and its rewrite
     (home-page "https://github.com/whyrusleeping/gx")
     (synopsis "Package management tool using IPFS")
     (description "@command{gx} is a packaging tool built around the
-distributed, content addressed filesystem IPFS.  It aims to be flexible,
+distributed, content addressed file system IPFS.  It aims to be flexible,
 powerful and simple.")
     (license license:expat)))
 
@@ -244,7 +244,7 @@ written in Go.")
                         #t))))))
     (home-page "https://ipfs.io")
     (synopsis "Go implementation of IPFS, a peer-to-peer hypermedia protocol")
-    (description "IPFS is a global, versioned, peer-to-peer filesystem.  It
+    (description "IPFS is a global, versioned, peer-to-peer file system.  It
 combines good ideas from Git, BitTorrent, Kademlia, SFS, and the Web.  It is
 like a single bittorrent swarm, exchanging git objects.  IPFS provides an
 interface as simple as the HTTP web, but with permanence built in.  You can

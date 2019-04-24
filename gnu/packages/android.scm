@@ -538,7 +538,7 @@ that is safe to use for user space.  It also includes
     (native-inputs
      `(("android-core" ,(android-platform-system-core version))))
     (home-page "https://developer.android.com/")
-    (synopsis "Android ext4 filesystem utils")
+    (synopsis "Android ext4 file system utilities")
     (description "@code{android-ext4-utils} is a library in common use by the
 Android core.")
     (license license:asl2.0)))

@@ -3168,8 +3168,9 @@ have super fancy logs.")
       (arguments
        '(#:import-path "github.com/kr/fs"))
       (home-page "https://github.com/kr/fs")
-      (synopsis "Filesystem-related functions for Go")
-      (description "Package fs provides filesystem-related functions.")
+      (synopsis "File-system-related functions for Go")
+      (description
+       "The fs package provides file-system-related Go functions.")
       (license license:bsd-3))))
 
 (define-public go-github-com-direnv-go-dotenv

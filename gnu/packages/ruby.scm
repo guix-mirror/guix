@@ -2870,7 +2870,7 @@ conversion to (X)HTML.")
    `(("ruby-listen" ,ruby-listen)))
   (synopsis "Run a process, and restart when some monitored files change")
   (description
-    "Rerun is a tool to launch programs, then monitor the filesystem, and
+    "Rerun is a tool to launch programs, then monitor the file system, and
 restart the program when any of the monitored files change.  It's written in
 Ruby, but can be used for all programs.")
   (home-page "https://github.com/alexch/rerun/")

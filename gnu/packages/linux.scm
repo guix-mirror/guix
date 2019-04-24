@@ -3361,7 +3361,7 @@ write access to exFAT devices.")
     (home-page "https://sourceforge.net/projects/fuseiso/")
     (synopsis "Mount ISO file system images")
     (description
-     "FuseISO is a FUSE module to mount ISO filesystem images (.iso, .nrg,
+     "FuseISO is a FUSE module to mount ISO file system images (.iso, .nrg,
 .bin, .mdf and .img files).  It supports plain ISO9660 Level 1 and 2, Rock
 Ridge, Joliet, and zisofs.")
     (license license:gpl2)))
@@ -3694,7 +3694,7 @@ from userspace.")
          ;; If users install ntfs-3g, they probably want to make it the
          ;; default driver as well, so we opt for sensible defaults and link
          ;; mount.ntfs to mount.ntfs-3g.  (libmount tries to run mount.ntfs to
-         ;; mount NTFS filesystems.)
+         ;; mount NTFS file systems.)
          (add-after 'install 'install-link
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -5240,9 +5240,9 @@ file systems.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (home-page "https://github.com/jeremie-koenig/genext2fs")
-    (synopsis "Generate ext2 filesystem as a normal user")
-    (description "This package provides a program to general an ext2
-filesystem as a normal (non-root) user.  It does not require you to mount
+    (synopsis "Generate ext2 file system as a normal user")
+    (description "This package provides a program to generate an ext2
+file system as a normal (non-root) user.  It does not require you to mount
 the image file to copy files on it, nor does it require that you become
 the superuser to make device nodes.")
     (license license:gpl2)))

@@ -10296,7 +10296,7 @@ authentication, HTTP state management, and HTTP connection management.")
        ("java-commons-net" ,java-commons-net)
        ("java-jsch" ,java-jsch)))
     (home-page "http://commons.apache.org/proper/commons-vfs/")
-    (synopsis "Java filesystem library")
+    (synopsis "Java file system library")
     (description "Commons VFS provides a single API for accessing various
 different file systems.  It presents a uniform view of the files from various
 different sources, such as the files on local disk, on an HTTP server, or
