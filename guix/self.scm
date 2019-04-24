@@ -350,7 +350,7 @@ DOMAIN, a gettext domain."
                                                   (basename texi ".texi")
                                                   ".info")))
                     (cons "guix.texi"
-                          (find-files "." "^guix\\.[a-z]{2}\\.texi$")))
+                          (find-files "." "^guix\\.[a-z]{2}(_[A-Z]{2})?\\.texi$")))
 
           ;; Compress Info files.
           (setenv "PATH"
