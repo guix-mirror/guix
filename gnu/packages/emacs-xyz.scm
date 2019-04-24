@@ -11640,7 +11640,7 @@ bookmarks and history.")
 (define-public emacs-irfc
   (package
     (name "emacs-irfc")
-    (version "20130824.507")
+    (version "20130824.507-1")
     (source
      (origin
        (method url-fetch)
@@ -11648,7 +11648,7 @@ bookmarks and history.")
        (file-name (string-append "irfc-" version ".el"))
        (sha256
         (base32
-         "197ybqwbj8qjh2p9pkf5mvqnrkpcgmv8c5s2gvl6msyrabk0mnca"))))
+         "0rbfrza56kvspvgrwg0b5bj30d0qncqdsmfxn3y5caq4ifcj77hv"))))
     (build-system emacs-build-system)
     (home-page "https://www.emacswiki.org/emacs/download/irfc.el")
     (synopsis "Interface for IETF RFC document")
