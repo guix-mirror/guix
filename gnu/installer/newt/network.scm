@@ -93,7 +93,8 @@ network device were found. Do you want to continue anyway?"))
         (full-value 5))
     (run-scale-page
      #:title (G_ "Powering technology")
-     #:info-text (format #f "Waiting for technology ~a to be powered." name)
+     #:info-text (format #f (G_ "Waiting for technology ~a to be powered.")
+                         name)
      #:scale-full-value full-value
      #:scale-update-proc
      (lambda (value)
