@@ -34,6 +34,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pciutils)
@@ -560,6 +561,7 @@ bookkeeping."
          ;; variant propagated by 'guile-final' and the GMP variant propagated
          ;; by 'gnutls', itself propagated by 'guix'.
          guile-2.2
+         guile-readline guile-colorized
 
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
