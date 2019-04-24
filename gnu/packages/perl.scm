@@ -3904,11 +3904,11 @@ For instance, it supports the @code{**/*.pm} form.")
     (home-page "https://metacpan.org/release/Filesys-Notify-Simple")
     (synopsis "Simple and dumb file system watcher")
     (description
-     "Filesys::Notify::Simple is a simple but unified interface to get
-notifications of changes to a given filesystem path.  It utilizes inotify2 on
-Linux, fsevents on OS X, kqueue on FreeBSD and FindFirstChangeNotification on
-Windows if they're installed, with a fallback to the full directory scan if
-they're not available.")
+     "@code{Filesys::Notify::Simple} is a simple but unified interface to get
+notifications of changes to a given file system path.  It uses inotify2 on
+Linux, fsevents on OS X, @code{kqueue} on FreeBSD, and
+@code{FindFirstChangeNotification} on Windows if they're installed, and falls
+back to a full directory scan if none of these are available.")
     (license perl-license)))
 
 (define-public perl-getopt-long
