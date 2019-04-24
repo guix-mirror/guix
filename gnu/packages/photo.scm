@@ -499,28 +499,28 @@ a complete panorama and stitch any series of overlapping pictures.")
 (define-public rawtherapee
   (package
     (name "rawtherapee")
-    (version "5.5")
+    (version "5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://rawtherapee.com/shared/source/"
                                   "rawtherapee-" version ".tar.xz"))
               (sha256
                (base32
-                "1w28a2rnxnw8hs7s8x8zkccgi5z5y653602jg7g86lfx6zxwjsf1"))))
+                "0x0dcfp6f3j08gr11wq5ah4prp790xy4iadbgsm9kgc0jlalpspr"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; no test suite
+     '(#:tests? #f                      ; no test suite
        #:build-type "release"
        #:configure-flags
        (list (string-append "-DLENSFUNDBDIR="
                             (assoc-ref %build-inputs "lensfun")
                             "/share/lensfun")
-             ; Don't optimize the build for the host machine. See the file
-             ; 'ProcessorTargets.cmake' in the source distribution for more
-             ; information.
+             ;; Don't optimize the build for the host machine. See the file
+             ;; 'ProcessorTargets.cmake' in the source distribution for more
+             ;; information.
              "-DPROC_TARGET_NUMBER=1"
-             ; These flags are recommended by upstream for distributed packages.
-             ; See the file 'RELEASE_NOTES.txt' in the source distribution.
+             ;; These flags are recommended by upstream for distributed packages.
+             ;; See the file 'RELEASE_NOTES.txt' in the source distribution.
              "-O3"
              "-DCACHE_NAME_SUFFIX=\"\"")))
     (native-inputs
@@ -538,6 +538,7 @@ a complete panorama and stitch any series of overlapping pictures.")
        ("libiptcdata" ,libiptcdata)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
        ("libsigc++" ,libsigc++)
        ("libtiff" ,libtiff)
        ("zlib" ,zlib)))
