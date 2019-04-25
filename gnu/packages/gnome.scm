@@ -5932,7 +5932,8 @@ properties, screen resolution, and other GNOME parameters.")
                  `("LD_LIBRARY_PATH" ":" prefix
                    ,(map (lambda (pkg)
                            (string-append (assoc-ref inputs pkg) "/lib"))
-                         '("gnome-bluetooth" "librsvg" "libgweather"))))
+                         '("gdk-pixbuf"
+                           "gnome-bluetooth" "librsvg" "libgweather"))))
                (for-each
                 (lambda (prog)
                   (wrap-program (string-append out "/bin/" prog)
@@ -5969,6 +5970,7 @@ properties, screen resolution, and other GNOME parameters.")
        ("evolution-data-server" ,evolution-data-server)
        ("gcr" ,gcr)
        ("gdm" ,gdm)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("gjs" ,gjs)
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-desktop" ,gnome-desktop)
