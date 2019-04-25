@@ -149,15 +149,16 @@ the X-Consortium license.")
 (define-public ftgl
   (package
     (name "ftgl")
-    (version "2.1.3-rc5")
+    (version "2.4.0")
+    (home-page "https://github.com/frankheckenbach/ftgl")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/ftgl/FTGL%20Source/2.1.3~rc5/"
-                    "ftgl-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nsn4s6vnv5xcgxcw6q031amvh2zfj2smy1r5mbnjj2548hxcn2l"))))
+                "0zjs1h9w30gajq9lndzvjsa26rsmr1081lb1fbpbj10yhcdcsc79"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -167,8 +168,10 @@ the X-Consortium license.")
               ("mesa" ,mesa)
               ("glu" ,glu)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "http://ftgl.sourceforge.net")
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (synopsis "Font rendering library for OpenGL applications")
     (description
      "FTGL is a font rendering library for OpenGL applications.  Supported
