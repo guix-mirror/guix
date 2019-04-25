@@ -2691,18 +2691,16 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "http://www.surina.net/soundtouch/soundtouch-" version ".tar.gz"))
-       (patches (search-patches "soundtouch-CVE-2018-14044-14045.patch"
-                                "soundtouch-CVE-2018-1000223.patch"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/soundtouch/soundtouch.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "09cxr02mfyj2bg731bj0i9hh565x8l9p91aclxs8wpqv8b8zf96j"))))
+        (base32 "0p6jzgfgqw061702dmd2b6r4arz48ac3mmx2qkvvzf8s5jjzykdh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
