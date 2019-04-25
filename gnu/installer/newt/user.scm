@@ -29,7 +29,9 @@
   #:use-module (srfi srfi-26)
   #:export (run-user-page))
 
-(define (run-user-add-page)
+(define* (run-user-add-page #:key (name "") (home-directory ""))
+  "Run a form to enter the user name, home directory, and password.  Use NAME
+and HOME-DIRECTORY as the initial values in the form."
   (define (pad-label label)
     (string-pad-right label 20))
 
@@ -40,8 +42,10 @@
          (label-password
           (make-label -1 -1 (pad-label (G_ "Password"))))
          (entry-width 30)
-         (entry-name (make-entry -1 -1 entry-width))
-         (entry-home-directory (make-entry -1 -1 entry-width))
+         (entry-name (make-entry -1 -1 entry-width
+                                 #:initial-value name))
+         (entry-home-directory (make-entry -1 -1 entry-width
+                                           #:initial-value home-directory))
          (entry-password (make-entry -1 -1 entry-width
                                      #:flags FLAG-PASSWORD))
          (entry-grid (make-grid 3 4))
@@ -100,7 +104,13 @@
                       (user
                        (name name)
                        (home-directory home-directory)
-                       (password password))))))))
+                       (password
+                        (confirm-password password
+                                          (lambda ()
+                                            (run-user-add-page
+                                             #:name name
+                                             #:home-directory
+                                             home-directory)))))))))))
           (lambda ()
             (destroy-form-and-pop form)))))))
 
