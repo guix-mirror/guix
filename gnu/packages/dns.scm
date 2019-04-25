@@ -51,6 +51,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -106,7 +107,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.12.3-P4")
+    (version "9.12.4-P1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -114,7 +115,9 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "01pj47z5582rd538dmbzf1msw4jc8j4zr0zx4ciy88r6qr9l80fi"))))
+                "1if7zc5gzrfd28csc63v9bjwrc0rgvm1x9yx058946hc5gp5lyp2"))
+              (patches
+               (search-patches "bind-fix-unused-pk11-ecc-constants.patch"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -122,7 +125,9 @@ and BOOTP/TFTP for network booting of diskless machines.")
      `(("libcap" ,libcap)
        ("libxml2" ,libxml2)
        ("openssl" ,openssl)
-       ("p11-kit" ,p11-kit)))
+       ("p11-kit" ,p11-kit)
+       ("python" ,python)
+       ("python-ply" ,python-ply)))
     (native-inputs `(("perl" ,perl)
                      ("net-tools" ,net-tools)))
     (arguments
