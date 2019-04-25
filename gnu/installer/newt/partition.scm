@@ -152,6 +152,10 @@ USER-PARTITIONS list. Return this list with password fields filled-in."
                 (file-name (user-partition-file-name user-part))
                 (password-page
                  (lambda ()
+                   ;; Note: Don't use FLAG-PASSWORD here because this is the
+                   ;; first bit of text that the user types in, so it's
+                   ;; probably safer if they can see that the keyboard layout
+                   ;; they chose is in effect.
                    (run-input-page
                     (format #f (G_ "Please enter the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
@@ -161,7 +165,8 @@ encryption of partition ~a (label: ~a).") file-name crypt-label)
                    (run-input-page
                     (format #f (G_ "Please confirm the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
-                    (G_ "Password confirmation required")))))
+                    (G_ "Password confirmation required")
+                    #:input-flags FLAG-PASSWORD))))
            (if crypt-label
                (let loop ()
                  (let ((password (password-page))
