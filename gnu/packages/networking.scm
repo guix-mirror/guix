@@ -2244,37 +2244,37 @@ packets from wireless devices for use with hashcat or John the Ripper.")
     (license license:expat)))
 
 (define-public hcxdumptool
-  (let* ((commit "f4799b5da82c5b030a6d99b02d1c1b9dc838ad36"))
-    (package
-      (name "hcxdumptool")
-      (version (git-version "0.0.0" "1" commit))
-      (home-page "https://github.com/ZerBea/hcxdumptool")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0qlsin0rws9sshn12faq4spmd0ffzssal36s71vhv6gkhhga7abl"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "CC=gcc"
-                            (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
-         #:tests? #f                    ;no tests
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))
-      (synopsis "Small tool to capture packets from wlan devices")
-      (description
-       "Small tool to capture packets from WLAN devices.  After capturing,
+  (package
+    (name "hcxdumptool")
+    (version "5.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ZerBea/hcxdumptool.git")
+             (commit version)))
+       (sha256
+        (base32 "0h2cc2dfpc83325hwqkxwn0p8qfq5gh1dg0yb1nr8bnffy0b4r4v"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/ZerBea/hcxdumptool")
+    (synopsis "Small tool to capture packets from wlan devices")
+    (description
+     "Small tool to capture packets from WLAN devices.  After capturing,
 upload the \"uncleaned\" cap to @url{https://wpa-sec.stanev.org/?submit} to
 see if the access point or the client is vulnerable to a dictionary attack.
 Convert the cap file to hccapx format and/or to WPA-PMKID-PBKDF2
 hashline (16800) with @command{hcxpcaptool} from the @code{hcxtools} package
 and check if the WLAN key or the master key was transmitted unencrypted.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public dante
   (package
