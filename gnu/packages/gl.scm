@@ -158,6 +158,8 @@ the X-Consortium license.")
                (base32
                 "0nsn4s6vnv5xcgxcw6q031amvh2zfj2smy1r5mbnjj2548hxcn2l"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     ;; The pkg-config file lists "freetype2" as Requires.private.
     (propagated-inputs `(("freetype" ,freetype)))
     (inputs `(("libx11" ,libx11)
