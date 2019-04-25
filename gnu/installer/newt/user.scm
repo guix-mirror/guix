@@ -104,13 +104,34 @@
           (lambda ()
             (destroy-form-and-pop form)))))))
 
+(define (confirm-password password try-again)
+  "Ask the user to confirm PASSWORD, a possibly empty string.  Call TRY-AGAIN,
+a thunk, if the confirmation doesn't match PASSWORD.  Return the confirmed
+password."
+  (define confirmation
+    (run-input-page (G_ "Please confirm the password.")
+                    (G_ "Password confirmation required")
+                    #:allow-empty-input? #t
+                    #:input-flags FLAG-PASSWORD))
+
+  (if (string=? password confirmation)
+      password
+      (begin
+        (run-error-page
+         (G_ "Password mismatch, please try again.")
+         (G_ "Password error"))
+        (try-again))))
+
 (define (run-root-password-page)
   ;; TRANSLATORS: Leave "root" untranslated: it refers to the name of the
   ;; system administrator account.
-  (run-input-page (G_ "Please choose a password for the system \
+  (define password
+    (run-input-page (G_ "Please choose a password for the system \
 administrator (\"root\").")
-                  (G_ "System administrator password")
-                  #:input-flags FLAG-PASSWORD))
+                    (G_ "System administrator password")
+                    #:input-flags FLAG-PASSWORD))
+
+  (confirm-password password run-root-password-page))
 
 (define (run-user-page)
   (define (run users)
