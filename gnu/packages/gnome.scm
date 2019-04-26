@@ -33,6 +33,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5536,6 +5537,29 @@ libxml2.")
                (string-append "\"" (assoc-ref inputs "gnome-session")
                               "/bin/gnome-session\"")))
             #t))
+         ;; GDM requires that there be at least one desktop entry
+         ;; file.  This phase installs a hidden one that simply
+         ;; fails.  This enables users to use GDM with a
+         ;; '~/.xsession' script with no other desktop entry files.
+         ;; See <https://bugs.gnu.org/35068>.
+         (add-after 'install 'install-placeholder-desktop-entry
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sessions (string-append out "/share/gdm/BuiltInSessions"))
+                    (fail (string-append sessions "/fail.desktop")))
+               (mkdir-p sessions)
+               (with-output-to-file fail
+                 (lambda ()
+                   (for-each
+                    display
+                    '("[Desktop Entry]\n"
+                      "Encoding=UTF-8\n"
+                      "Type=Application\n"
+                      "Name=Fail\n"
+                      "Comment=This session fails immediately.\n"
+                      "NoDisplay=true\n"
+                      "Exec=false\n"))))
+               #t)))
          ;; GDM needs GNOME Session to run these applications.  We link
          ;; their autostart files in `share/gdm/greeter/autostart'
          ;; because GDM explicitly tells GNOME Session to look there.
