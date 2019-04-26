@@ -389,4 +389,5 @@ selected keymap."
        ;; some reason, unicode support is not correctly installed
        ;; when calling this in 'installer-builder'.
        (setenv "LANG" "en_US.UTF-8")
-       (system #$(program-file "installer-real" installer-builder)))))
+       (execl #$(program-file "installer-real" installer-builder)
+              "installer-real"))))
