@@ -4183,7 +4183,7 @@ storage of large amounts of data.")
 (define-public ocaml-octavius
   (package
     (name "ocaml-octavius")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4192,7 +4192,7 @@ storage of large amounts of data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gqfbwsh0zq4b9mvvlmg3zhpbfbvq8swqr31320aibbqydwf77hr"))))
+                "1ck6yj6z5rvqyl39rz87ca1bnk0f1dpgvlk115631hjh8bwpfvfq"))))
     (build-system dune-build-system)
     (properties `((upstream-name . "octavius")))
     (home-page "https://github.com/ocaml-doc/octavius")
