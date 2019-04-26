@@ -14739,3 +14739,38 @@ tools for identifying genome bins that are likely candidates for merging based
 on marker set compatibility, similarity in genomic characteristics, and
 proximity within a reference genome.")
     (license license:gpl3+)))
+
+(define-public umi-tools
+  (package
+    (name "umi-tools")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "umi_tools" version))
+       (sha256
+        (base32
+         "08y3vz1vcx09whmbsn722lcs6jl9wyrh9i4p3k8j4cb1i32bij4a"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pandas" ,python-pandas)
+       ("python-future" ,python-future)
+       ("python-scipy" ,python-scipy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-regex" ,python-regex)
+       ("python-pysam" ,python-pysam)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-cython" ,python-cython)))
+    (home-page "https://github.com/CGATOxford/UMI-tools")
+    (synopsis "Tools for analyzing unique modular identifiers")
+    (description "This package provides tools for dealing with @dfn{Unique
+Molecular Identifiers} (UMIs) and @dfn{Random Molecular Tags} (RMTs) in
+genetic sequences.  There are six tools: the @code{extract} and
+@code{whitelist} commands are used to prepare a fastq containg UMIs @code{+/-}
+cell barcodes for alignment.  The remaining commands, @code{group},
+@code{dedup}, and @{count}/@code{count_tab}, are used to identify PCR
+duplicates using the UMIs and perform different levels of analysis depending
+on the needs of the user.")
+    (license license:expat)))
