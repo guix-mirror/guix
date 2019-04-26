@@ -336,7 +336,7 @@
           (fold (lambda (x1 x2)
                   (string-append (if (symbol? x1) (symbol->string x1) x1) ", "
                                  (if (symbol? x2) (symbol->string x2) x2)))
-                (car l) (cdr l))
+                (if (symbol? (car l)) (symbol->string (car l)) (car l)) (cdr l))
           "]"))))
 
 (define (knot-acl-config acls)
