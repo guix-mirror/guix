@@ -1370,6 +1370,7 @@ following a very simple s-expression syntax.")
      `(("ocaml-ppx-derivers" ,ocaml-ppx-derivers)
        ("ocamlbuild" ,ocamlbuild)
        ("ocaml-result" ,ocaml-result)))
+    (properties `((upstream-name . "ocaml-migrate-parsetree")))
     (synopsis "OCaml parsetree convertor")
     (description "This library converts between parsetrees of different OCaml
 versions.  For each version, there is a snapshot of the parsetree and conversion
