@@ -12996,7 +12996,8 @@ so anyone (or just yourself) can download existing files or upload new
 files.
 
 @deffn {Scheme Variable} rsync-service-type
-This is the type for the @uref{https://rsync.samba.org, rsync} rsync daemon,
+This is the service type for the @uref{https://rsync.samba.org, rsync} daemon,
+The value for this service type is a
 @command{rsync-configuration} record as in this example:
 
 @example
