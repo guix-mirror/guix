@@ -1322,14 +1322,14 @@ coverage information.")
 (define-public dune
   (package
     (name "dune")
-    (version "1.6.3")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml/dune/releases/"
                                   "download/" version "/dune-" version ".tbz"))
               (sha256
                (base32
-                "0dmf0wbfmgdy5plz1bjiisc2hjgblvxsnrqjmw2c8y45v1h23mdz"))))
+                "0z4jnj0a5vxjqlwksplhag9b3s3iqdcpcpjjzfazv5jdl5cf58f9"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
@@ -3891,7 +3891,7 @@ as part of the same ocaml-migrate-parsetree driver.")
 (define-public ocaml-ppxlib
   (package
     (name "ocaml-ppxlib")
-    (version "0.4.0")
+    (version "0.6.0")
     (home-page "https://github.com/ocaml-ppx/ppxlib")
     (source
      (origin
@@ -3902,7 +3902,7 @@ as part of the same ocaml-migrate-parsetree driver.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1nr4igf5m4prvigvv470dnhfdhdw0p6hz6zw8gnm5bzcv7s2lg5l"))))
+         "0my9x7sxb329h0lzshppdaawiyfbaw6g5f41yiy7bhl071rnlvbv"))))
     (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-base" ,ocaml-base)
@@ -3923,6 +3923,7 @@ as part of the same ocaml-migrate-parsetree driver.")
                     (findlib-libdir
                      (string-append findlib-path "/lib/ocaml/site-lib")))
                (substitute* '("test/base/test.ml"
+                              "test/code_path/test.ml"
                               "test/deriving/test.ml"
                               "test/driver/attributes/test.ml"
                               "test/driver/non-compressible-suffix/test.ml"
