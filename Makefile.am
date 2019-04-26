@@ -54,6 +54,7 @@ nodist_noinst_SCRIPTS =				\
 # Modules that are not compiled but are installed nonetheless, such as
 # build-side modules with unusual dependencies.
 MODULES_NOT_COMPILED =				\
+  guix/build/po.scm				\
   guix/man-db.scm
 
 include gnu/local.mk

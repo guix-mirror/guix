@@ -60,6 +60,8 @@
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
+      ("po4a"       (ref '(gnu packages gettext) 'po4a))
+      ("gettext"       (ref '(gnu packages gettext) 'gettext-minimal))
       (_            #f))))                        ;no such package
 
 
@@ -253,8 +255,134 @@ DOMAIN, a gettext domain."
   (computed-file (string-append "guix-locale-" domain)
                  build))
 
+(define (translate-texi-manuals source)
+  "Return the translated texinfo manuals built from SOURCE."
+  (define po4a
+    (specification->package "po4a"))
+  
+  (define gettext
+    (specification->package "gettext"))
+
+  (define glibc-utf8-locales
+    (module-ref (resolve-interface '(gnu packages base))
+                'glibc-utf8-locales))
+
+  (define documentation
+    (file-append* source "doc"))
+
+  (define documentation-po
+    (file-append* source "po/doc"))
+  
+  (define build
+    (with-imported-modules '((guix build utils) (guix build po))
+      #~(begin
+          (use-modules (guix build utils) (guix build po)
+                       (ice-9 match) (ice-9 regex) (ice-9 textual-ports)
+                       (srfi srfi-1))
+
+          (mkdir #$output)
+
+          (copy-recursively #$documentation "."
+                            #:log (%make-void-port "w"))
+
+          (for-each
+            (lambda (file)
+              (copy-file file (basename file)))
+            (find-files #$documentation-po ".*.po$"))
+
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
+          (setenv "PATH" #+(file-append gettext "/bin"))
+          (setenv "LC_ALL" "en_US.UTF-8")
+          (setlocale LC_ALL "en_US.UTF-8")
+
+          (define (translate-tmp-texi po source output)
+            "Translate Texinfo file SOURCE using messages from PO, and write
+the result to OUTPUT."
+            (invoke #+(file-append po4a "/bin/po4a-translate")
+              "-M" "UTF-8" "-L" "UTF-8" "-k" "0" "-f" "texinfo"
+              "-m" source "-p" po "-l" output))
+
+          (define (make-ref-regex msgid end)
+            (make-regexp (string-append
+                           "ref\\{"
+                           (string-join (string-split (regexp-quote msgid) #\ )
+                                        "[ \n]+")
+                           end)))
+
+          (define (translate-cross-references content translations)
+            "Take CONTENT, a string representing a .texi file and translate any
+cross-reference in it (@ref, @xref and @pxref) that have a translation in
+TRANSLATIONS, an alist of msgid and msgstr."
+            (fold
+              (lambda (elem content)
+                (match elem
+                  ((msgid . msgstr)
+                   ;; Empty translations and strings containing some special characters
+                   ;; cannot be the name of a section.
+                   (if (or (equal? msgstr "")
+                           (string-any (lambda (chr)
+                                         (member chr '(#\{ #\} #\( #\) #\newline #\,)))
+                                       msgid))
+                       content
+                       ;; Otherwise, they might be the name of a section, so we
+                       ;; need to translate any occurence in @(p?x?)ref{...}.
+                       (let ((regexp1 (make-ref-regex msgid ","))
+                             (regexp2 (make-ref-regex msgid "\\}")))
+                         (regexp-substitute/global
+                           #f regexp2
+                           (regexp-substitute/global
+                             #f regexp1 content 'pre "ref{" msgstr "," 'post)
+                           'pre "ref{" msgstr "}" 'post))))))
+              content translations))
+          
+          (define (translate-texi po lang)
+            "Translate the manual for one language LANG using the PO file."
+            (let ((translations (call-with-input-file po read-po-file)))
+              (translate-tmp-texi po "guix.texi"
+                                  (string-append "guix." lang ".texi.tmp"))
+              (translate-tmp-texi po "contributing.texi"
+                                  (string-append "contributing." lang ".texi.tmp"))
+              (let* ((texi-name (string-append "guix." lang ".texi"))
+                     (tmp-name (string-append texi-name ".tmp")))
+                (with-output-to-file texi-name
+                  (lambda _
+                    (format #t "~a"
+                      (translate-cross-references
+                        (call-with-input-file tmp-name get-string-all)
+                        translations)))))
+              (let* ((texi-name (string-append "contributing." lang ".texi"))
+                     (tmp-name (string-append texi-name ".tmp")))
+                (with-output-to-file texi-name
+                  (lambda _
+                    (format #t "~a"
+                      (translate-cross-references
+                        (call-with-input-file tmp-name get-string-all)
+                        translations)))))))
+
+          (for-each (lambda (po)
+                      (match (reverse (string-split po #\.))
+                        ((_ lang _ ...)
+                         (translate-texi po lang))))
+                    (find-files "." "^guix-manual\\.[a-z]{2}(_[A-Z]{2})?\\.po$"))
+
+          (for-each
+            (lambda (file)
+              (copy-file file (string-append #$output "/" file)))
+            (append
+              (find-files "." "contributing\\..*\\.texi$")
+              (find-files "." "guix\\..*\\.texi$"))))))
+
+  (computed-file "guix-translated-texinfo" build))
+
 (define (info-manual source)
   "Return the Info manual built from SOURCE."
+  (define po4a
+    (specification->package "po4a"))
+
+  (define gettext
+    (specification->package "gettext"))
+
   (define texinfo
     (module-ref (resolve-interface '(gnu packages texinfo))
                 'texinfo))
@@ -326,6 +454,8 @@ DOMAIN, a gettext domain."
           ;; add a symlink to the 'images' directory so that 'makeinfo' can
           ;; see those images and produce image references in the Info output.
           (copy-recursively #$documentation "."
+                            #:log (%make-void-port "w"))
+          (copy-recursively #+(translate-texi-manuals source) "."
                             #:log (%make-void-port "w"))
           (delete-file-recursively "images")
           (symlink (string-append #$output "/images") "images")
@@ -578,6 +708,7 @@ Info manual."
                  ;; us to avoid an extra dependency on guile-gdbm-ffi.
                  #:extra-files
                  `(("guix/man-db.scm" ,(local-file "../guix/man-db.scm"))
+                   ("guix/build/po.scm" ,(local-file "../guix/build/po.scm"))
                    ("guix/store/schema.sql"
                     ,(local-file "../guix/store/schema.sql")))
 
