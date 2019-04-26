@@ -13,6 +13,9 @@
 @set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
 @set KEY-SERVER pool.sks-keyservers.net
 
+@c Base URL for downloads.
+@set BASE-URL https://alpha.gnu.org/gnu/guix
+
 @c The official substitute server used by default.
 @set SUBSTITUTE-SERVER ci.guix.info
 
@@ -521,7 +524,7 @@ Installing goes along these lines:
 @item
 @cindex downloading Guix binary
 Download the binary tarball from
-@indicateurl{https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
+@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz},
 where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
 already running the kernel Linux, and so on.
 
@@ -530,7 +533,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
 @example
-$ wget https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 $ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 @end example
 
@@ -1862,7 +1865,7 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{https://alpha.gnu.org/gnu/guix/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
+@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
 where @var{system} is one of:
 
 @table @code
@@ -1878,7 +1881,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget https://alpha.gnu.org/gnu/guix/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
 $ gpg --verify guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
 @end example
 
@@ -24578,7 +24581,7 @@ example graph.
 @cindex virtual machine
 To run Guix in a virtual machine (VM), one can use the pre-built Guix VM image
 distributed at
-@indicateurl{https://alpha.gnu.org/gnu/guix/guix-system-vm-image-@value{VERSION}.@var{system}.xz}
+@indicateurl{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.@var{system}.xz}
 This image is a compressed image in QCOW format.  You will first need to
 decompress with @command{xz -d}, and then you can pass it to an emulator such
 as QEMU (see below for details).
