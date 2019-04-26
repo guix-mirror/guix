@@ -1781,7 +1781,7 @@ lets the client choose the concrete timeline.")
 (define-public ocaml-ssl
   (package
     (name "ocaml-ssl")
-    (version "0.5.5")
+    (version "0.5.7")
     (source
       (origin
         (method git-fetch)
@@ -1790,21 +1790,10 @@ lets the client choose the concrete timeline.")
               (commit version)))
         (file-name (git-file-name name version))
         (sha256 (base32
-                  "0fviq8xhp3qk7pmkl7knchywsipxgb7p0z489hj8qnf2sx8xzdmy"))))
-    (build-system ocaml-build-system)
+                  "06zxqnwqkvf7pmj5s44jflkknv01czgbi4nbaac0ys1p7rv99y3x"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:make-flags (list "OCAMLFIND_LDCONF=ignore")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda* (#:key #:allow-other-keys)
-             (system* "sh" "bootstrap")
-             (substitute* "src/OCamlMakefile"
-               (("/bin/sh") (which "bash")))
-             (substitute* "configure"
-               (("/bin/sh") (which "bash")))
-             #t)))))
+     `(#:test-target "."))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
