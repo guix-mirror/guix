@@ -56,7 +56,10 @@ This will take a few minutes.")
    (G_ "Reboot")
    (G_ "Congratulations!  Installation is now complete.  \
 You may remove the device containing the installation image and \
-press the button to reboot.")))
+press the button to reboot."))
+
+  ;; Return success so that the installer happily reboots.
+  'success)
 
 (define (run-install-failed-page)
   (choice-window

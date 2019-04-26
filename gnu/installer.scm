@@ -314,6 +314,7 @@ selected keymap."
                            guile-json guile-git guix)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
+                                    (gnu services herd)
                                     (guix build utils))
                                   #:select? module-to-import?)
                                ((guix config) => ,(make-config.scm)))
@@ -363,10 +364,20 @@ selected keymap."
 
               (catch #t
                 (lambda ()
-                  (run-installer-steps
-                   #:rewind-strategy 'menu
-                   #:menu-proc (installer-menu-page current-installer)
-                   #:steps steps))
+                  (define results
+                    (run-installer-steps
+                     #:rewind-strategy 'menu
+                     #:menu-proc (installer-menu-page current-installer)
+                     #:steps steps))
+
+                  (match (result-step results 'final)
+                    ('success
+                     ;; We did it!  Let's reboot!
+                     (sync)
+                     (stop-service 'root))
+                    (_                            ;installation failed
+                     ;; TODO: Honor the result of 'run-install-failed-page'.
+                     #f)))
                 (const #f)
                 (lambda (key . args)
                   (let ((error-file "/tmp/last-installer-error"))
