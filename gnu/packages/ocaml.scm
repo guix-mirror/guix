@@ -2694,20 +2694,19 @@ JSON.")
 (define-public ocaml-easy-format
   (package
     (name "ocaml-easy-format")
-    (version "1.2.0")
+    (version "1.3.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mjambon/easy-format/"
-                                  "archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mjambon/easy-format")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zcz682y9figa84k7lgdjcab5qbzk3yy14ygfqp2dhhrvjygm252"))
-              (file-name (string-append name "-" version ".tar.gz"))))
-    (build-system ocaml-build-system)
+                "0jfncci15b8sf1y72yrxfjlsmhs9aavcd14vwz4d7kj8k9w9c4qk"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     `(#:jbuild? #t))
     (home-page "https://github.com/mjambon/easy-format")
     (synopsis "Interface to the Format module")
     (description "Easy-format is a high-level and functional interface to the
