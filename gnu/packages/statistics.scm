@@ -68,6 +68,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -177,7 +178,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "3.5.3")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -185,7 +186,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1337irx9y0r3jm1rcq1dcwnxsgfhnvgjs5wadcyh17vhpnvkgyib"))))
+                "02bmylmzrm9sdidirmwy233lghmd2346z725ca71ari68lzarz1n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -251,6 +252,10 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
                (("(install_package_description\\(.*\"')\\)\"" line prefix)
                 (string-append prefix ", builtStamp='1970-01-01')\"")))
 
+             (substitute* "src/library/Recommended/Makefile.in"
+               (("INSTALL_OPTS =" m)
+                (string-append m " --built-timestamp=1970-01-01" m)))
+
              ;; R bundles an older version of help2man, which does not respect
              ;; SOURCE_DATE_EPOCH.  We cannot just use the latest help2man,
              ;; because that breaks a test.
@@ -312,6 +317,17 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo) ; for building HTML manuals
+       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-latex-amsfonts
+                                        texlive-latex-base
+                                        texlive-latex-fancyvrb
+                                        texlive-latex-graphics
+                                        texlive-latex-hyperref
+                                        texlive-latex-oberdiek
+                                        texlive-latex-tools
+                                        texlive-latex-upquote
+                                        texlive-latex-url)))
        ("tzdata" ,tzdata-for-tests)
        ("xz" ,xz)))
     (inputs
