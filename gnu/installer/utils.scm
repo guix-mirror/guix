@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,8 @@
 (define-module (gnu installer utils)
   #:use-module (guix utils)
   #:use-module (guix build utils)
+  #:use-module (guix i18n)
+  #:use-module (srfi srfi-34)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 textual-ports)
@@ -55,7 +58,12 @@ number. If no percentage is found, return #f"
          (string->number (match:substring result 1)))))
 
 (define* (run-shell-command command #:key locale)
-  "Run COMMAND, a string, with Bash, and in the given LOCALE."
+  "Run COMMAND, a string, with Bash, and in the given LOCALE.  Return true if
+COMMAND exited successfully, #f otherwise."
+  (define (pause)
+    (format #t (G_ "Press Enter to continue.~%"))
+    (read-line (current-input-port)))
+
   (call-with-temporary-output-file
    (lambda (file port)
      (when locale
@@ -69,7 +77,17 @@ number. If no percentage is found, return #f"
                      (string-take locale
                                   (string-index locale #\_))))))
 
-     (format port "~a~%" command)
-     ;; (format port "exit~%")
+     (format port "exec ~a~%" command)
      (close port)
-     (invoke "bash" "--init-file" file))))
+
+     (guard (c ((invoke-error? c)
+                (newline)
+                (format (current-error-port)
+                        (G_ "Command failed with exit code ~a.~%")
+                        (invoke-error-exit-status c))
+                (pause)
+                #f))
+       (invoke "bash" "--init-file" file)
+       (newline)
+       (pause)
+       #t))))

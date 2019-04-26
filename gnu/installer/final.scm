@@ -99,7 +99,7 @@ USERS."
   "Create /etc/shadow and /etc/passwd on the installation target for USERS.
 Start COW-STORE service on target directory and launch guix install command in
 a subshell.  LOCALE must be the locale name under which that command will run,
-or #f."
+or #f.  Return #t on success and #f on failure."
   (let ((install-command
          (format #f "guix system init ~a ~a"
                  (%installer-configuration-file)
@@ -114,5 +114,4 @@ or #f."
     (create-user-database users (%installer-target-dir))
 
     (start-service 'cow-store (list (%installer-target-dir)))
-    (false-if-exception (run-shell-command install-command
-                                           #:locale locale))))
+    (run-shell-command install-command #:locale locale)))
