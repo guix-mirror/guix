@@ -14,7 +14,7 @@
 @set KEY-SERVER pool.sks-keyservers.net
 
 @c Base URL for downloads.
-@set BASE-URL https://alpha.gnu.org/gnu/guix
+@set BASE-URL https://ftp.gnu.org/gnu/guix
 
 @c The official substitute server used by default.
 @set SUBSTITUTE-SERVER ci.guix.info
