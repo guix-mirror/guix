@@ -103,6 +103,8 @@
             accountsservice-service-type
             accountsservice-service
 
+            cups-pk-helper-service-type
+
             gnome-desktop-configuration
             gnome-desktop-configuration?
             gnome-desktop-service
