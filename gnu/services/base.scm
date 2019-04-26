@@ -510,13 +510,30 @@ FILE-SYSTEM."
     (cons* sink user-unmount
            (map file-system-shepherd-service file-systems))))
 
+(define (file-system-fstab-entries file-systems)
+  "Return the subset of @var{file-systems} that should have an entry in
+@file{/etc/fstab}."
+  ;; /etc/fstab is about telling fsck(8), mount(8), and umount(8) about
+  ;; relevant file systems they'll have to deal with.  That excludes "pseudo"
+  ;; file systems.
+  ;;
+  ;; In particular, things like GIO (part of GLib) use it to determine the set
+  ;; of mounts, which is then used by graphical file managers and desktop
+  ;; environments to display "volume" icons.  Thus, we really need to exclude
+  ;; those pseudo file systems from the list.
+  (remove (lambda (file-system)
+            (or (member (file-system-type file-system)
+                        %pseudo-file-system-types)
+                (memq 'bind-mount (file-system-flags file-system))))
+          file-systems))
+
 (define file-system-service-type
   (service-type (name 'file-systems)
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           file-system-shepherd-services)
                        (service-extension fstab-service-type
-                                          identity)
+                                          file-system-fstab-entries)
 
                        ;; Have 'user-processes' depend on 'file-systems'.
                        (service-extension user-processes-service-type
