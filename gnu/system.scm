@@ -493,7 +493,9 @@ bookkeeping."
                                     (operating-system-groups os))
                             (operating-system-skeletons os))
            (operating-system-etc-service os)
-           (service fstab-service-type '())
+           (service fstab-service-type
+                    (filter file-system-needed-for-boot?
+                            (operating-system-file-systems os)))
            (session-environment-service
             (operating-system-environment-variables os))
            host-name procs root-fs
