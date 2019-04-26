@@ -1393,6 +1393,7 @@ functions to the next and/or previous version.")
      `(#:test-target "."))
     (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)))
+    (properties `((upstream-name . "ppx_tools_versioned")))
     (home-page "https://github.com/let-def/ppx_tools_versioned")
     (synopsis "Variant of ppx_tools")
     (description "This package is a variant of ppx_tools based on
