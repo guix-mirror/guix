@@ -24576,13 +24576,23 @@ example graph.
 @section Running Guix in a Virtual Machine
 
 @cindex virtual machine
-To run Guix in a virtual machine (VM), one can either use the
-pre-built Guix VM image distributed at
+To run Guix in a virtual machine (VM), one can use the pre-built Guix VM image
+distributed at
 @indicateurl{https://alpha.gnu.org/gnu/guix/guix-system-vm-image-@value{VERSION}.@var{system}.xz}
-, or build their own virtual machine image using @command{guix system
-vm-image} (@pxref{Invoking guix system}).  The returned image is in
-qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
-efficiently use.
+This image is a compressed image in QCOW format.  You will first need to
+decompress with @command{xz -d}, and then you can pass it to an emulator such
+as QEMU (see below for details).
+
+This image boots the Xfce graphical environment and it contains some
+commonly-used tools.  You can install more software in the image by running
+@command{guix package} in a terminal (@pxref{Invoking guix package}).  You can
+also reconfigure the system based on its initial configuration file available
+as @file{/etc/config.scm} (@pxref{Using the Configuration System}).
+
+Instead of using this pre-built image, one can also build their own virtual
+machine image using @command{guix system vm-image} (@pxref{Invoking guix
+system}).  The returned image is in qcow2 format, which the
+@uref{http://qemu.org/, QEMU emulator} can efficiently use.
 
 @cindex QEMU
 If you built your own image, you must copy it out of the store
@@ -24595,7 +24605,7 @@ vm-image} on x86_64 hardware:
 @example
 $ qemu-system-x86_64 \
    -net user -net nic,model=virtio \
-   -enable-kvm -m 256 /tmp/qemu-image
+   -enable-kvm -m 512 /tmp/qemu-image
 @end example
 
 Here is what each of these options means:
@@ -24621,7 +24631,7 @@ If your system has hardware virtualization extensions, enabling the
 virtual machine support (KVM) of the Linux kernel will make things run
 faster.
 
-@item -m 256
+@item -m 512
 RAM available to the guest OS, in mebibytes.  Defaults to 128@tie{}MiB,
 which may be insufficient for some operations.
 

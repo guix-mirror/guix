@@ -1,58 +1,85 @@
-;;; This is an operating system configuration template for a "bare-bones" setup,
-;;; suitable for booting in a virtualized environment, including virtual private
-;;; servers (VPS).
+;; This is an operating system configuration for a VM image.
+;; Modify it as you see fit and instantiate the changes by running:
+;;
+;;   guix system reconfigure /etc/config.scm
+;;
 
-(use-modules (gnu))
-(use-package-modules bootloaders disk nvi)
+(use-modules (gnu) (srfi srfi-1))
+(use-service-modules xorg desktop)
+(use-package-modules bootloaders nvi wget xorg)
 
 (define vm-image-motd (plain-file "motd" "
-This is the GNU system.  Welcome!
+\x1b[1;37mThis is the GNU system.  Welcome!\x1b[0m
 
-This instance of Guix System is a bare-bones template for virtualized environments.
+This instance of Guix is a template for virtualized environments.
+You can reconfigure the whole system by adjusting /etc/config.scm
+and running:
 
-You will probably want to do these things first if you booted in a virtual
-private server (VPS):
+  guix system reconfigure /etc/config.scm
 
-* Set a password for 'root'.
-* Set up networking.
-* Expand the root partition to fill the space available by 0) deleting and
-recreating the partition with fdisk, 1) reloading the partition table with
-partprobe, and then 2) resizing the filesystem with resize2fs.\n"))
+\x1b[1;33mConsider setting a password for the 'root' and 'guest' \
+accounts.\x1b[0m
+"))
+
+(define this-file
+  (local-file "./vm-image.tmpl" "config.scm"))
+
 
 (operating-system
   (host-name "gnu")
   (timezone "Etc/UTC")
   (locale "en_US.utf8")
+  (keyboard-layout (keyboard-layout "us" "altgr-intl"))
 
   (firmware '())
 
-  ;; Assuming /dev/sdX is the target hard disk, and "my-root" is
-  ;; the label of the target root file system.
+  ;; Below we assume /dev/vda is the VM's hard disk.
+  ;; Adjust as needed.
   (bootloader (bootloader-configuration
                (bootloader grub-bootloader)
-               (target "/dev/sda")
+               (target "/dev/vda")
                (terminal-outputs '(console))))
   (file-systems (cons (file-system
-                        (device (file-system-label "my-root"))
                         (mount-point "/")
+                        (device "/dev/vda1")
                         (type "ext4"))
                       %base-file-systems))
 
-  ;; This is where user accounts are specified.  The "root"
-  ;; account is implicit, and is initially created with the
-  ;; empty password.
-  (users %base-user-accounts)
+  (users (cons (user-account
+                (name "guest")
+                (comment "GNU Guix Live")
+                (password "")                     ;no password
+                (group "users")
+                (supplementary-groups '("wheel" "netdev"
+                                        "audio" "video")))
+               %base-user-accounts))
 
-  ;; Globally-installed packages.
-  (packages (append (list nvi fdisk
-                          ;; mostly so xrefs to its manual work
-                          grub
-                          ;; partprobe
-                          parted)
-                    %base-packages))
+  (packages (append (list nvi wget) %base-packages))
 
-  (services (modify-services %base-services
-              (login-service-type config =>
-                                  (login-configuration
-                                    (inherit config)
-                                    (motd vm-image-motd))))))
+  (services
+   (append (list (service xfce-desktop-service-type)
+
+                 ;; Copy this file to /etc/config.scm in the OS.
+                 (simple-service 'config-file etc-service-type
+                                 `(("config.scm" ,this-file)))
+
+                 ;; Choose SLiM, which is lighter than the default GDM.
+                 (service slim-service-type
+                          (slim-configuration
+                           (auto-login? #t)
+                           (default-user "guest")
+                           (xorg-configuration
+                            (xorg-configuration
+                             (keyboard-layout keyboard-layout))))))
+
+           ;; Remove GDM.
+           (remove (lambda (service)
+                     (eq? gdm-service-type (service-kind service)))
+                   (modify-services %desktop-services
+                     (login-service-type config =>
+                                         (login-configuration
+                                          (inherit config)
+                                          (motd vm-image-motd)))))))
+
+  ;; Allow resolution of '.local' host names with mDNS.
+  (name-service-switch %mdns-host-lookup-nss))
