@@ -6068,7 +6068,7 @@ are run after installation using the R function
 @end defvr
 
 @defvr {Scheme Variable} rakudo-build-system
-This variable is exported by @code{(guix build-system rakudo)} It
+This variable is exported by @code{(guix build-system rakudo)}.  It
 implements the build procedure used by @uref{https://rakudo.org/,
 Rakudo} for @uref{https://perl6.org/, Perl6} packages. It installs the
 package to @code{/gnu/store/@dots{}/NAME-VERSION/share/perl6} and
@@ -11757,8 +11757,8 @@ interpreted as backspace when the user types their login name.
 
 @item @code{kill-characters} (default: @code{#f})
 This option accepts a string that should be interpreted to mean "ignore
-all previous characters" (also called a "kill" character) when the types
-their login name.
+all previous characters" (also called a "kill" character) when the user
+types their login name.
 
 @item @code{chdir} (default: @code{#f})
 This option accepts, as a string, a directory path that will be changed
@@ -12023,7 +12023,7 @@ A directory path where the @command{guix-daemon} will perform builds.
 @deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 udev rules can be provided as a list of files through the @var{rules}
-variable.  The procedures @var{udev-rule} and @var{file->udev-rule} from
+variable.  The procedures @code{udev-rule} and @code{file->udev-rule} from
 @code{(gnu services base)} simplify the creation of such rule files.
 @end deffn
 
@@ -14642,7 +14642,7 @@ polkit with the actions from @code{gnome-settings-daemon}.
 Configuration record for the GNOME desktop environment.
 
 @table @asis
-@item @code{gnome} (default @code{gnome})
+@item @code{gnome} (default: @code{gnome})
 The GNOME package to use.
 @end table
 @end deftp
@@ -14662,7 +14662,7 @@ with the administrator's password.
 Configuration record for the Xfce desktop environment.
 
 @table @asis
-@item @code{xfce} (default @code{xfce})
+@item @code{xfce} (default: @code{xfce})
 The Xfce package to use.
 @end table
 @end deftp
@@ -14681,7 +14681,7 @@ profile, and extends polkit with the actions from
 Configuration record for the MATE desktop environment.
 
 @table @asis
-@item @code{mate} (default @code{mate})
+@item @code{mate} (default: @code{mate})
 The MATE package to use.
 @end table
 @end deftp
@@ -14693,7 +14693,7 @@ profile, and extends dbus with actions from @code{efl}.
 
 @deftp {Data Type} enlightenment-desktop-service-configuration
 @table @asis
-@item @code{enlightenment} (default @code{enlightenment})
+@item @code{enlightenment} (default: @code{enlightenment})
 The enlightenment package to use.
 @end table
 @end deftp
@@ -18033,7 +18033,7 @@ A service type for the Kerberos 5 PAM module.
 @end defvr
 
 @deftp {Data Type} pam-krb5-configuration
-Data type representing the configuration of the Kerberos 5 PAM module
+Data type representing the configuration of the Kerberos 5 PAM module.
 This type has the following parameters:
 @table @asis
 @item @code{pam-krb5} (default: @code{pam-krb5})
@@ -20119,7 +20119,7 @@ Defaults to @samp{()}.
 
 The @code{(gnu services vpn)} module provides services related to
 @dfn{virtual private networks} (VPNs).  It provides a @emph{client} service for
-your machine to connect to a VPN, and a @emph{servire} service for your machine
+your machine to connect to a VPN, and a @emph{server} service for your machine
 to host a VPN.  Both services use @uref{https://openvpn.net/, OpenVPN}.
 
 @deffn {Scheme Procedure} openvpn-client-service @
@@ -21716,7 +21716,7 @@ Defaults to @samp{"3:remote 4:event"}.
 @deftypevr {@code{libvirt-configuration} parameter} string log-outputs
 Logging outputs.
 
-An output is one of the places to save logging information The format
+An output is one of the places to save logging information.  The format
 for an output can be:
 
 @table @code
