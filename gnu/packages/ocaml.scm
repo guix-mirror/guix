@@ -1874,6 +1874,7 @@ locks or other synchronization primitives.")
        #:jbuild? #t))
     (propagated-inputs
      `(("lwt" ,ocaml-lwt)))
+    (properties `((upstream-name . "lwt_log")))
     (home-page "https://github.com/aantron/lwt_log")
     (synopsis "Logging library")
     (description "This package provides a deprecated logging component for
