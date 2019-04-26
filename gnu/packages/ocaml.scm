@@ -1109,13 +1109,15 @@ files in these formats.")
 (define-public ocaml-zarith
   (package
     (name "ocaml-zarith")
-    (version "1.4.1")
+    (version "1.7")
     (source (origin
-              (method url-fetch)
-              (uri (ocaml-forge-uri "zarith" version 1574))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml/Zarith")
+                     (commit (string-append "release-" version))))
               (sha256
                (base32
-                "0l36hzmfbvdai2kcgynh13vfdim5x2grnaw61fxqalyjm90c3di3"))))
+                "08x5xnamibhvxl50f1bb3jl9ym0hm6004hmc54xnrnrv7jxz9rvz"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("perl" ,perl)))
