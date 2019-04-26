@@ -3820,6 +3820,7 @@ provided by companion libraries such as
     (build-system dune-build-system)
     (arguments
      '(#:tests? #f)) ;no tests
+    (properties `((upstream-name . "ocaml-compiler-libs")))
     (synopsis "Compiler libraries repackaged")
     (description "This packaeg simply repackages the OCaml compiler libraries
 so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
