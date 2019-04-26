@@ -2323,31 +2323,21 @@ hierarchy of modules.")
 (define-public ocaml-pcre
   (package
     (name "ocaml-pcre")
-    (version "7.2.3")
+    (version "7.4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mmottl/pcre-ocaml/archive"
-                                  "/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mmottl/pcre-ocaml")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rj6dw79px4sj2kq0iss2nzq3rnsn9wivvc0f44wa1mppr6njfb3"))))
-    (build-system ocaml-build-system)
+                "11sd8g668h48790lamz0riw9jgnfkaif5qdfa0akcndwa6aj07jf"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'link-lib
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (stubs (string-append out "/lib/ocaml/site-lib/stubslibs"))
-                    (lib (string-append out "/lib/ocaml/site-lib/pcre")))
-               (mkdir-p stubs)
-               (symlink (string-append lib "/dllpcre_stubs.so")
-                        (string-append stubs "/dllpcre_stubs.so")))
-             #t)))))
+     `(#:test-target "."))
     (native-inputs
-     `(("batteries" ,ocaml-batteries)
-       ("ocamlbuild" ,ocamlbuild)
+     `(("ocaml-base" ,ocaml-base)
        ("pcre:bin" ,pcre "bin")))
     (propagated-inputs `(("pcre" ,pcre)))
     (home-page "https://mmottl.github.io/pcre-ocaml")
