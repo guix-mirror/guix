@@ -1246,16 +1246,19 @@ to use -- to sophisticated random generation of test cases.")
 (define-public ocaml-stringext
   (package
     (name "ocaml-stringext")
-    (version "1.4.3")
+    (version "1.5.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/rgrinberg/stringext"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/rgrinberg/stringext")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "19g6lfn03iki9f8h91hi0yiqn0b3wkxyq08b3y23wgv6jw6mssfh"))))
-    (build-system ocaml-build-system)
+                "0035pyakk0r7pfhkrayvqncpv9mk6lssr455j3prmdcirh6s50d7"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:test-target "."))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("qtest" ,ocaml-qtest)))
