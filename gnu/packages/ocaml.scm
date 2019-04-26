@@ -3301,7 +3301,7 @@ syntax checking on dedukti files.")
 (define-public ocaml-ppx-inline-test
   (package
     (name "ocaml-ppx-inline-test")
-    (version "0.11.0")
+    (version "0.12.0")
     (home-page "https://github.com/janestreet/ppx_inline_test")
     (source
      (origin
@@ -3312,7 +3312,7 @@ syntax checking on dedukti files.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "11n94fz1asjf5vqdgriv0pvsa5lbfpqcyk525c7816w23vskcvq6"))))
+         "0nyz411zim94pzbxm2l2v2l9jishcxwvxhh142792g2s18r4vn50"))))
     (build-system dune-build-system)
     (arguments
      ;see home page README for further information
@@ -3324,6 +3324,7 @@ syntax checking on dedukti files.")
        ("ocaml-sexplib0" ,ocaml-sexplib0)
        ("ocaml-stdio" ,ocaml-stdio)
        ("ocaml-ppxlib" ,ocaml-ppxlib)))
+    (properties `((upstream-name . "ppx_inline_test")))
     (synopsis "Syntax extension for writing in-line tests in ocaml code")
     (description "This package contains a syntax extension for writing
 in-line tests in ocaml code.  It is part of Jane Street's PPX rewriters
@@ -4530,7 +4531,7 @@ useful errors on failure.")
 (define-public ocaml-ppx-expect
   (package
     (name "ocaml-ppx-expect")
-    (version "0.11.1")
+    (version "0.12.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4539,7 +4540,7 @@ useful errors on failure.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bnz3cpj3vwdw409r6f8raakl8n364q5l7wy4i6gckr34a4vla69"))))
+                "1wawsbjfkri4sw52n8xqrzihxc3xfpdicv3ahz83a1rsn4lb8j5q"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t))
