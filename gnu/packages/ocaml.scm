@@ -3857,7 +3857,7 @@ a more consistent API.")
 (define-public ocaml-ppx-derivers
   (package
     (name "ocaml-ppx-derivers")
-    (version "1.2")
+    (version "1.2.1")
     (home-page
      "https://github.com/ocaml-ppx/ppx_derivers")
     (source
@@ -3869,7 +3869,7 @@ a more consistent API.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bnhihl1w31as5w2czly1v3d6pbir9inmgsjg2cj6aaj9v1dzd85"))))
+         "0yqvqw58hbx1a61wcpbnl9j30n495k23qmyy2xwczqs63mn2nkpn"))))
     (build-system dune-build-system)
     (arguments
      '(#:tests? #f)) ;no tests
