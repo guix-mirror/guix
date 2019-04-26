@@ -1174,6 +1174,7 @@ archive(native) = \"frontc.cmxa\""))))
        #:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out"))
                           "OCAML_SITE=$(LIB_DIR)/ocaml/")))
+    (properties `((upstream-name . "FrontC")))
     (home-page "https://www.irit.fr/FrontC")
     (synopsis "C parser and lexer library")
     (description "FrontC is an OCAML library providing a C parser and lexer.
