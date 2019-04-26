@@ -533,10 +533,9 @@
     #~(begin
         (call-with-output-file #$output
           (lambda (port)
-            (if (knot-configuration-includes config)
-              (for-each (lambda (inc)
-                          (format port "include: ~a\n" inc))
-                (knot-configuration-includes config)))
+            (for-each (lambda (inc)
+                        (format port "include: ~a\n" inc))
+                      '#$(knot-configuration-includes config))
             (format port "server:\n")
             (format port "    rundir: ~a\n" #$(knot-configuration-run-directory config))
             (format port "    user: knot\n")
