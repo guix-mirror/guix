@@ -1751,6 +1751,7 @@ simple (yet expressive) query language to select the tests to run.")
     (arguments
      `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f))
+    (properties `((upstream-name . "ppx_tools")))
     (home-page "https://github.com/alainfrisch/ppx_tools")
     (synopsis "Tools for authors of ppx rewriters and other syntactic tools")
     (description "Tools for authors of ppx rewriters and other syntactic tools.")
