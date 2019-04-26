@@ -22,7 +22,8 @@ accounts.\x1b[0m
 "))
 
 (define this-file
-  (local-file "./vm-image.tmpl" "config.scm"))
+  (local-file (basename (assoc-ref (current-source-location) 'filename))
+              "config.scm"))
 
 
 (operating-system
