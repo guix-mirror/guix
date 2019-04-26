@@ -1428,21 +1428,19 @@ powerful.")
 (define-public ocaml-result
   (package
     (name "ocaml-result")
-    (version "1.2")
+    (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/janestreet/result"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janestreet/result")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pgpfsgvhxnh0i37fkvp9j8nadns9hz9iqgabj4dr519j2gr1xvw"))))
-    (build-system ocaml-build-system)
+                "081ayblszn9pj2rqcif40x6cz2zda48vi45gy49rc2qfc4gszry3"))))
+    (build-system dune-build-system)
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+     `(#:test-target "."))
     (home-page "https://github.com/janestreet/result")
     (synopsis "Compatibility Result module")
     (description "Uses the new result type defined in OCaml >= 4.03 while
