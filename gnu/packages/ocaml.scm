@@ -3052,7 +3052,7 @@ sensitive completion, colors, and more.")
 (define-public ocaml-integers
   (package
     (name "ocaml-integers")
-    (version "0.2.2")
+    (version "0.3.0")
     (home-page "https://github.com/ocamllabs/ocaml-integers")
     (source (origin
               (method url-fetch)
