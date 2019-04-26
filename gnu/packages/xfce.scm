@@ -29,17 +29,21 @@
   #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu artwork)
   #:use-module (gnu packages)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages web)
@@ -692,11 +696,40 @@ on the screen.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jzi851arljq5lza9inyq4ss513l62lbzbfm64a7x4320m8kb2h9"))))
+                "1jzi851arljq5lza9inyq4ss513l62lbzbfm64a7x4320m8kb2h9"))
+              (modules '((guix build utils)))
+              (snippet
+               #~(begin
+                   (copy-file #$(file-append %artwork-repository "/logo/Guix.svg")
+                              "backgrounds/guix-logo.svg")
+                   #t))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'prepare-background-image
+                    (lambda _
+                      ;; Stick a Guix logo in the background image.  XXX: It
+                      ;; has to go to the center because the image might be
+                      ;; truncated on the edges.  :-/
+                      (invoke "inkscape" "--export-dpi=120"
+                              "--export-png=/tmp/guix.png"
+                              "backgrounds/guix-logo.svg")
+                      (for-each (lambda (image)
+                                  (invoke "composite" "-gravity" "center"
+                                          "/tmp/guix.png" image
+                                          "/tmp/final.jpg")
+                                  (copy-file "/tmp/final.jpg" image))
+                                '(;; "backgrounds/xfce-blue.jpg"
+                                  "backgrounds/xfce-teal.jpg"))
+                      #t)))
+
+       #:disallowed-references (,inkscape ,imagemagick)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+
+       ("inkscape" ,inkscape)
+       ("imagemagick" ,imagemagick)))
     (inputs
      `(("exo" ,exo)
        ("garcon" ,garcon)
