@@ -12805,7 +12805,7 @@ A list of local IP addresses or hostnames the ntpd daemon should listen on.
 A list of local IP address the ntpd daemon should use for outgoing queries.
 @item @code{sensor} (default: @code{'()})
 Specify a list of timedelta sensor devices ntpd should use.  @code{ntpd}
-will listen to each sensor that acutally exists and ignore non-existant ones.
+will listen to each sensor that actually exists and ignore non-existent ones.
 See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
 information.
 @item @code{server} (default: @var{%ntp-servers})
