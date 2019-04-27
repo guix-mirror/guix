@@ -24675,7 +24675,8 @@ If your system has hardware virtualization extensions, enabling the
 virtual machine support (KVM) of the Linux kernel will make things run
 faster.
 
-@item -m 512
+@c To run Xfce + 'guix pull', we need at least 1G of RAM.
+@item -m 1024
 RAM available to the guest OS, in mebibytes.  Defaults to 128@tie{}MiB,
 which may be insufficient for some operations.
 
