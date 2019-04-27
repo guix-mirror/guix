@@ -8290,6 +8290,9 @@ secondary structure and comparative analysis in R.")
          "13fv78sk5g0gqfl3ks3rps3zc1k66a4lzxvgn36r7ix43yxk7hnr"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
+    ;; Without this a temporary directory ends up in the Rhtslib.so binary,
+    ;; which makes R abort the build.
+    (arguments '(#:configure-flags '("--no-staged-install")))
     (propagated-inputs
      `(("r-zlibbioc" ,r-zlibbioc)))
     (inputs
