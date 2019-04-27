@@ -61,8 +61,7 @@
     (synopsis "Save and restore environment variables")
     (description "Envstore is a program for sharing environment variables
 between various shells or commands.")
-    (license
-     (non-copyleft "http://www.wtfpl.net/txt/copying/"))))
+    (license license:wtfpl2)))
 
 (define-public trash-cli
   (package
