@@ -163,30 +163,40 @@
 (define-record-type* <knot-zone-configuration>
   knot-zone-configuration make-knot-zone-configuration
   knot-zone-configuration?
-  (domain           knot-zone-configuration-domain
-                    (default ""))
-  (file             knot-zone-configuration-file
-                    (default "")) ; the file where this zone is saved.
-  (zone             knot-zone-configuration-zone
-                    (default (zone-file))) ; initial content of the zone file
-  (master           knot-zone-configuration-master
-                    (default '()))
-  (ddns-master      knot-zone-configuration-ddns-master
-                    (default #f))
-  (notify           knot-zone-configuration-notify
-                    (default '()))
-  (acl              knot-zone-configuration-acl
-                    (default '()))
-  (semantic-checks? knot-zone-configuration-semantic-checks?
-                    (default #f))
-  (disable-any?     knot-zone-configuration-disable-any?
-                    (default #f))
-  (zonefile-sync    knot-zone-configuration-zonefile-sync
-                    (default 0))
-  (dnssec-policy    knot-zone-configuration-dnssec-policy
-                    (default #f))
-  (serial-policy    knot-zone-configuration-serial-policy
-                    (default 'increment)))
+  (domain            knot-zone-configuration-domain
+                     (default ""))
+  (file              knot-zone-configuration-file
+                     (default "")) ; the file where this zone is saved.
+  (zone              knot-zone-configuration-zone
+                     (default (zone-file))) ; initial content of the zone file
+  (master            knot-zone-configuration-master
+                     (default '()))
+  (ddns-master       knot-zone-configuration-ddns-master
+                     (default #f))
+  (notify            knot-zone-configuration-notify
+                     (default '()))
+  (acl               knot-zone-configuration-acl
+                     (default '()))
+  (semantic-checks?  knot-zone-configuration-semantic-checks?
+                     (default #f))
+  (disable-any?      knot-zone-configuration-disable-any?
+                     (default #f))
+  (zonefile-sync     knot-zone-configuration-zonefile-sync
+                     (default 0))
+  (zonefile-load     knot-zone-configuration-zonefile-load
+                     (default #f))
+  (journal-content   knot-zone-configuration-journal-content
+                     (default #f))
+  (max-journal-usage knot-zone-configuration-max-journal-usage
+                     (default #f))
+  (max-journal-depth knot-zone-configuration-max-journal-depth
+                     (default #f))
+  (max-zone-size     knot-zone-configuration-max-zone-size
+                     (default #f))
+  (dnssec-policy     knot-zone-configuration-dnssec-policy
+                     (default #f))
+  (serial-policy     knot-zone-configuration-serial-policy
+                     (default 'increment)))
 
 (define-record-type* <knot-remote-configuration>
   knot-remote-configuration make-knot-remote-configuration
@@ -494,6 +504,12 @@
                 (acl (list #$@(knot-zone-configuration-acl zone)))
                 (semantic-checks? #$(knot-zone-configuration-semantic-checks? zone))
                 (disable-any? #$(knot-zone-configuration-disable-any? zone))
+                (zone-file-sync #$(knot-zone-configuration-zonefile-sync zone))
+                (zone-file-load #$(knot-zone-configuration-zonefile-load zone))
+                (journal-content #$(knot-zone-configuration-journal-content zone))
+                (max-journal-usage #$(knot-zone-configuration-max-journal-usage zone))
+                (max-journal-depth #$(knot-zone-configuration-max-journal-depth zone))
+                (max-zone-size #$(knot-zone-configuration-max-zone-size zone))
                 (dnssec-policy #$(knot-zone-configuration-dnssec-policy zone))
                 (serial-policy '#$(knot-zone-configuration-serial-policy zone)))
             (format #t "    - domain: ~a\n" domain)
@@ -520,6 +536,22 @@
                           (knot-zone-configuration-acl zone))))
             (format #t "      semantic-checks: ~a\n" (if semantic-checks? "on" "off"))
             (format #t "      disable-any: ~a\n" (if disable-any? "on" "off"))
+            (if zonefile-sync
+              (format #t "      zonefile-sync: ~a\n" zonefile-sync))
+            (if zonefile-load
+              (format #t "      zonefile-load: ~a\n"
+                      (symbol->string zonefile-load)))
+            (if journal-content
+              (format #t "      journal-content: ~a\n"
+                      (symbol->string journal-content)))
+            (if max-journal-usage
+              (format #t "      max-journal-usage: ~a\n" max-journal-usage))
+            (if max-journal-depth
+              (format #t "      max-journal-depth: ~a\n" max-journal-depth))
+            (if max-zone-size
+              (format #t "      max-zone-size: ~a\n" max-zone-size))
+            (if 
+              (format #t "      : ~a\n" ))
             (if dnssec-policy
                 (begin
                   (format #t "      dnssec-signing: on\n")

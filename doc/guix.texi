@@ -19829,6 +19829,45 @@ When set, this forbids queries of the ANY type.
 The delay between a modification in memory and on disk.  0 means immediate
 synchronization.
 
+@item @code{zonefile-load} (default: @code{#f})
+The way the zone file contents are applied during zone load.  Possible values
+are:
+
+@itemize
+@item @code{#f} for using the default value from Knot,
+@item @code{'none} for not using the zone file at all,
+@item @code{'difference} for computing the difference between already available
+contents and zone contents and applying it to the current zone contents,
+@item @code{'difference-no-serial} for the same as @code{'difference}, but
+ignoring the SOA serial in the zone file, while the server takes care of it
+automatically.
+@item @code{'whole} for loading zone contents from the zone file.
+@end itemize
+
+@item @code{journal-content} (default: @code{#f})
+The way the journal is used to store zone and its changes.  Possible values
+are @code{'none} to not use it at all, @code{'changes} to store changes and
+@code{'all} to store contents.  @code{#f} does not set this option, so the
+default value from Knot is used.
+
+@item @code{max-journal-usage} (default: @code{#f})
+The maximum size for the journal on disk.  @code{#f} does not set this option,
+so the default value from Knot is used.
+
+@item @code{max-journal-depth} (default: @code{#f})
+The maximum size of the history.  @code{#f} does not set this option, so the
+default value from Knot is used.
+
+@item @code{max-zone-size} (default: @code{#f})
+The maximum size of the zone file.  This limit is enforced for incoming
+transfer and updates.  @code{#f} does not set this option, so the default
+value from Knot is used.
+
+@item @code{dnssec-policy} (default: @code{#f})
+A reference to a @code{knot-policy-configuration} record, or the special
+name @code{"default"}.  If the value is @code{#f}, there is no dnssec signing
+on this zone.
+
 @item @code{serial-policy} (default: @code{'increment})
 A policy between @code{'increment} and @code{'unixtime}.
 
