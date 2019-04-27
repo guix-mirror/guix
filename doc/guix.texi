@@ -24703,11 +24703,10 @@ network connectivity, for example @command{guix download}.
 
 @cindex SSH
 @cindex SSH server
-To enable SSH inside a VM you need to add a SSH server like @code{(dropbear-service)}
-or @code{(lsh-service)} to your VM.  The @code{(lsh-service}) doesn't currently
-boot unsupervised.  It requires you to type some characters to initialize the
-randomness generator.  In addition you need to forward the SSH port, 22 by
-default, to the host.  You can do this with
+To enable SSH inside a VM you need to add an SSH server like
+@code{openssh-service-type} to your VM (@pxref{Networking Services,
+@code{openssh-service-type}}).  In addition you need to forward the SSH port,
+22 by default, to the host.  You can do this with
 
 @example
 `guix system vm config.scm` -net user,hostfwd=tcp::10022-:22

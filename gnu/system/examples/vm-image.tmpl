@@ -5,7 +5,7 @@
 ;;
 
 (use-modules (gnu) (srfi srfi-1))
-(use-service-modules desktop networking xorg)
+(use-service-modules desktop networking ssh xorg)
 (use-package-modules bootloaders nvi wget xorg)
 
 (define vm-image-motd (plain-file "motd" "
@@ -72,6 +72,9 @@ accounts.\x1b[0m
                            (xorg-configuration
                             (xorg-configuration
                              (keyboard-layout keyboard-layout)))))
+
+                 ;; Uncomment the line below to add an SSH server.
+                 ;;(service openssh-service-type)
 
                  ;; Use the DHCP client service rather than NetworkManager.
                  (service dhcp-client-service-type))
