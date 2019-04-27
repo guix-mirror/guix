@@ -90,8 +90,7 @@ continue running in the background, then later reattached.")
       (home-page "https://github.com/jimeh/tmux-themepack")
       (synopsis "Collection of themes for Tmux")
       (description "A collection of various themes for Tmux.")
-      (license
-       (non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+      (license license:wtfpl2))))
 
 (define-public tmuxifier
   (package
