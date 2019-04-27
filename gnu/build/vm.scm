@@ -145,6 +145,7 @@ the #:references-graphs parameter of 'derivation'."
     (_ #f))
 
   (apply invoke qemu "-nographic" "-no-reboot"
+         "-smp" (number->string (parallel-job-count))
          "-m" (number->string memory-size)
          "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
          "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
