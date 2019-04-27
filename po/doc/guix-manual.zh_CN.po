@@ -1543,7 +1543,7 @@ msgstr "GNU Guix参考手册"
 #: doc/guix.texi:10
 #, no-wrap
 msgid "version.texi"
-msgstr "version.zh_CN.texi"
+msgstr "version-zh_CN.texi"
 
 #. type: copying
 #: doc/guix.texi:61
