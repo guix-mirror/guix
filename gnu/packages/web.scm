@@ -49,7 +49,7 @@
 
 (define-module (gnu packages web)
   #:use-module (ice-9 match)
-  #:use-module ((guix licenses) #:prefix l:)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -158,7 +158,7 @@ freely-available source code implementation of an HTTP (Web) server.  The
 project is jointly managed by a group of volunteers located around the world,
 using the Internet and the Web to communicate, plan, and develop the server
 and its related documentation.")
-    (license l:asl2.0)
+    (license license:asl2.0)
     (home-page "https://httpd.apache.org/")))
 
 (define-public mod-wsgi
@@ -189,7 +189,7 @@ and its related documentation.")
      "The mod_wsgi module for the Apache HTTPD Server adds support for running
 applications that support the Python @acronym{WSGI, Web Server Gateway
 Interface} specification.")
-    (license l:asl2.0)
+    (license license:asl2.0)
     (home-page "https://modwsgi.readthedocs.io/")))
 
 (define-public nginx
@@ -285,7 +285,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;   * The 'nginx-http-push' module is covered by the expat license.
     ;;   * The 'nginx-development-kit' module is mostly covered by bsd-3,
     ;;     except for two source files which are bsd-4 licensed.
-    (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
+    (license (list license:bsd-2 license:expat license:bsd-3 license:bsd-4))))
 
 (define nginx-xslscript
   (let ((revision 11)
@@ -327,7 +327,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
        "XSLScript is a terse notation for writing complex XSLT stylesheets.
 This is modified version, specifically intended for use with the NGinx
 documentation.")
-      (license l:bsd-2))))
+      (license license:bsd-2))))
 
 (define-public nginx-documentation
   ;; This documentation should be relevant for nginx@1.15.9.
@@ -380,7 +380,7 @@ documentation.")
       (synopsis "Documentation for the nginx web server")
       (description
        "This package provides HTML documentation for the nginx web server.")
-      (license l:bsd-2))))
+      (license license:bsd-2))))
 
 (define-public fcgi
   (package
@@ -408,7 +408,7 @@ that provides high performance without the limitations of server specific
 APIs.")
     ;; This package is released under the Open Market License, a variant of
     ;; the Expat license, incompatible with the GPL.
-    (license (l:non-copyleft "file://LICENSE.TERMS"))))
+    (license (license:non-copyleft "file://LICENSE.TERMS"))))
 
 (define-public fcgiwrap
   (package
@@ -438,7 +438,7 @@ APIs.")
     (description "Fcgiwrap is a simple server for running CGI applications
 over FastCGI.  It hopes to provide clean CGI support to Nginx (and other web
 servers that may need it).")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public starman
   (package
@@ -470,7 +470,7 @@ servers that may need it).")
     (description "Starman is a PSGI perl web server that has unique features
 such as high performance, preforking, signal support, superdaemon awareness,
 and UNIX socket support.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public icedtea-web
   (package
@@ -506,7 +506,7 @@ Protocol}, also known as Java Web Start.  This package provides tools and
 libraries for working with JNLP applets.")
     ;; The program is mainly GPL2+, with some individual files under LGPL2.1+
     ;; or dual licenses.
-    (license l:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public jansson
   (package
@@ -528,7 +528,7 @@ libraries for working with JNLP applets.")
     (description
      "Jansson is a C library for encoding, decoding and manipulating JSON
 data.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public json-c
   (package
@@ -559,7 +559,7 @@ data.")
 easily construct JSON objects in C, output them as JSON-formatted strings and
 parse JSON-formatted strings back into the C representation of JSON objects.
 It aims to conform to RFC 7159.")
-    (license l:x11)))
+    (license license:x11)))
 
 ;; TODO: remove this old version when all dependents have been updated.
 (define-public json-c-0.12
@@ -616,7 +616,7 @@ project)
 @item Never recurses or allocates more memory than it needs
 @item Very simple API with operator sugar for C++
 @end itemize")
-    (license l:bsd-2)))
+    (license license:bsd-2)))
 
 (define-public qjson
   (package
@@ -656,7 +656,7 @@ project)
 @code{QVariant} objects.  JSON arrays will be mapped to @code{QVariantList}
 instances, while JSON's objects will be mapped to @code{QVariantMap}.")
     ;; Only version 2.1 of the license
-    (license l:lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public krona-tools
   (package
@@ -743,7 +743,7 @@ hierarchical data, such as metagenomic classifications, using a radial,
 space-filling display.  It is implemented using HTML5 and JavaScript, allowing
 charts to be explored locally or served over the Internet, requiring only a
 current version of any major web browser.")
-   (license l:bsd-3)))
+   (license license:bsd-3)))
 
 (define-public rapidjson
   (package
@@ -783,7 +783,7 @@ current version of any major web browser.")
     (description
      "RapidJSON is a fast JSON parser/generator for C++ with both SAX/DOM
 style API.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libyajl
   (package
@@ -812,7 +812,7 @@ style API.")
     (description
      "Yet Another JSON Library (YAJL) is a small event-driven (SAX-style) JSON
 parser written in ANSI C and a small validating JSON generator.")
-    (license l:isc)))
+    (license license:isc)))
 
 (define-public libwebsockets
   (package
@@ -848,7 +848,7 @@ for efficient socket-like bidirectional reliable communication channels.")
     (home-page "http://libwebsockets.org/")
 
     ;; This is LGPLv2.1-only with extra exceptions specified in 'LICENSE'.
-    (license l:lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public libpsl
   (package
@@ -886,7 +886,7 @@ domain verification, finds the longest public part of a given domain, finds
 the shortest private part of a given domain, works with international
 domains (UTF-8 and IDNA2008 Punycode), is thread-safe, and handles IDNA2008
 UTS#46.")
-    (license l:x11)))
+    (license license:x11)))
 
 (define-public tidy
   (package
@@ -922,7 +922,7 @@ UTS#46.")
     (description "HTML Tidy is a command-line tool and C library that can be
 used to validate and fix HTML data.")
     (home-page "http://tidy.sourceforge.net/")
-    (license (l:x11-style "file:///include/tidy.h"))))
+    (license (license:x11-style "file:///include/tidy.h"))))
 
 (define-public tinyproxy
   (package
@@ -957,7 +957,7 @@ daemon.  Designed from the ground up to be fast and yet small, it is an ideal
 solution for use cases such as embedded deployments where a full featured HTTP
 proxy is required, but the system resources for a larger proxy are
 unavailable.")
-    (license l:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public polipo
   (package
@@ -990,7 +990,7 @@ unavailable.")
      "Polipo is a small caching web proxy (web cache, HTTP proxy, and proxy
 server).  It was primarily designed to be used by one person or a small group
 of people.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public websockify
   (package
@@ -1020,7 +1020,7 @@ of people.")
 traffic.  Websockify accepts the WebSockets handshake, parses it, and then
 begins forwarding traffic between the client and the target in both
 directions.")
-    (license l:lgpl3)))
+    (license license:lgpl3)))
 
 (define-public wwwoffle
   (package
@@ -1048,7 +1048,7 @@ intermittent internet links.  It can cache HTTP, HTTPS, FTP, and finger
 protocols, and supports browsing and requesting pages while offline, indexing,
 modifying pages and incoming and outgoing headers, monitoring pages for
 changes, and much more.")
-    (license l:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public liboauth
   (package
@@ -1076,7 +1076,7 @@ specifications and offers high-level functionality built on top to sign
 requests or verify signatures using either NSS or OpenSSL for calculating the
 hash/signatures.")
     ;; Source code may be distributed under either license.
-    (license (list l:expat l:gpl2+))))
+    (license (list license:expat license:gpl2+))))
 
 (define-public libyaml
   (package
@@ -1096,7 +1096,7 @@ hash/signatures.")
     (synopsis "YAML 1.1 parser and emitter written in C")
     (description
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libquvi-scripts
   (package
@@ -1115,7 +1115,7 @@ hash/signatures.")
     (synopsis "Media stream URL parser")
     (description "This package contains support scripts called by libquvi to
 parse media stream properties.")
-    (license l:lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libquvi
   (package
@@ -1149,7 +1149,7 @@ parse media stream properties.")
     (synopsis "Media stream URL parser")
     (description "libquvi is a library with a C API for parsing media stream
 URLs and extracting their actual media files.")
-    (license l:lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public quvi
   (package
@@ -1172,7 +1172,7 @@ URLs and extracting their actual media files.")
     (synopsis "Media stream URL parser")
     (description "quvi is a command-line-tool suite to extract media files
 from streaming URLs.  It is a command-line wrapper for the libquvi library.")
-    (license l:lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public serf
   (package
@@ -1250,7 +1250,7 @@ communication asynchronously.  Memory copies and transformations are kept to a
 minimum to provide high performance operation.")
     ;; Most of the code is covered by the Apache License, Version 2.0, but the
     ;; bundled CuTest framework uses a different non-copyleft license.
-    (license (list l:asl2.0 (l:non-copyleft "file://test/CuTest-README.txt")))))
+    (license (list license:asl2.0 (license:non-copyleft "file://test/CuTest-README.txt")))))
 
 (define-public libsass
   (package
@@ -1284,7 +1284,7 @@ minimum to provide high performance operation.")
 library designed for portability and efficiency.  To actually compile SASS
 stylesheets, you'll need to use another program that uses this library,
 @var{sassc} for example.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public sassc
   (package
@@ -1333,7 +1333,7 @@ stylesheets, you'll need to use another program that uses this library,
     (description "SassC is a compiler written in C for the CSS pre-processor
 language known as SASS.")
     (home-page "http://sass-lang.com/libsass")
-    (license l:expat)))
+    (license license:expat)))
 
 
 (define-public perl-apache-logformat-compiler
@@ -1361,7 +1361,7 @@ language known as SASS.")
     (synopsis "Compile a log format string to perl-code")
     (description "This module provides methods to compile a log format string
 to perl-code, for faster generation of access_log lines.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-authen-sasl
   (package
@@ -1389,7 +1389,7 @@ to perl-code, for faster generation of access_log lines.")
     (home-page "https://metacpan.org/release/Authen-SASL")
     (synopsis "SASL authentication framework")
     (description "Authen::SASL provides an SASL authentication framework.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-action-renderview
   (package
@@ -1416,7 +1416,7 @@ to perl-code, for faster generation of access_log lines.")
     (synopsis "Sensible default Catalyst action")
     (description "This Catalyst action implements a sensible default end
 action, which will forward to the first available view.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-action-rest
   (package
@@ -1452,7 +1452,7 @@ REST requests.  It takes a normal Catalyst action, and changes the dispatch to
 append an underscore and method name.  First it will try dispatching to an
 action with the generated name, and failing that it will try to dispatch to a
 regular method.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-authentication-store-dbix-class
   (package
@@ -1488,7 +1488,7 @@ regular method.")
     (description "The Catalyst::Authentication::Store::DBIx::Class class
 provides access to authentication information stored in a database via
 DBIx::Class.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-component-instancepercontext
   (package
@@ -1514,7 +1514,7 @@ DBIx::Class.")
     (synopsis "Create only one instance of Moose component per context")
     (description "Catalyst::Component::InstancePerContext returns a new
 instance of a component on each request.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-devel
   (package
@@ -1556,7 +1556,7 @@ to run them.  Catalyst-Devel includes the Catalyst::Helper system, which
 autogenerates scripts and tests; Module::Install::Catalyst, a Module::Install
 extension for Catalyst; and requirements for a variety of development-related
 modules.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-dispatchtype-regex
   (package
@@ -1586,7 +1586,7 @@ core.  It is recommend that you use Chained methods or other techniques
 instead.  As part of the refactoring, the dispatch priority of Regex vs Regexp
 vs LocalRegex vs LocalRegexp may have changed.  Priority is now influenced by
 when the dispatch type is first seen in your application.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-model-dbic-schema
   (package
@@ -1632,7 +1632,7 @@ when the dispatch type is first seen in your application.")
   (synopsis "DBIx::Class::Schema Model Class")
   (description "This is a Catalyst Model for DBIx::Class::Schema-based
 Models.")
-  (license l:perl-license)))
+  (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-accesslog
   (package
@@ -1657,7 +1657,7 @@ Models.")
     (description "This Catalyst plugin enables you to create \"access logs\"
 from within a Catalyst application instead of requiring a webserver to do it
 for you.  It will work even with Catalyst debug logging turned off.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-authentication
   (package
@@ -1693,7 +1693,7 @@ for you.  It will work even with Catalyst debug logging turned off.")
 Catalyst apps.  It is the basis for both authentication (checking the user is
 who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-authorization-roles
   (package
@@ -1723,7 +1723,7 @@ system authorises them to do).")
     (synopsis "Role-based authorization for Catalyst")
     (description "Catalyst::Plugin::Authorization::Roles provides role-based
 authorization for Catalyst based on Catalyst::Plugin::Authentication.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-captcha
   (package
@@ -1747,7 +1747,7 @@ authorization for Catalyst based on Catalyst::Plugin::Authentication.")
     (synopsis "Captchas for Catalyst")
     (description "This plugin creates and validates Captcha images for
 Catalyst.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-configloader
   (package
@@ -1776,7 +1776,7 @@ Catalyst.")
     (description "This module will attempt to load find and load configuration
 files of various types.  Currently it supports YAML, JSON, XML, INI and Perl
 formats.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-session
   (package
@@ -1807,7 +1807,7 @@ formats.")
     (synopsis "Catalyst generic session plugin")
     (description "This plugin links the two pieces required for session
 management in web applications together: the state, and the store.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-session-state-cookie
   (package
@@ -1838,7 +1838,7 @@ management in web applications together: the state, and the store.")
 ID needs to be stored on the client, and the session data needs to be stored
 on the server.  This plugin stores the session ID on the client using the
 cookie mechanism.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-session-store-fastmmap
   (package
@@ -1868,7 +1868,7 @@ cookie mechanism.")
     (description "Catalyst::Plugin::Session::Store::FastMmap is a fast session
 storage plugin for Catalyst that uses an mmap'ed file to act as a shared
 memory interprocess cache.  It is based on Cache::FastMmap.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-stacktrace
   (package
@@ -1895,7 +1895,7 @@ memory interprocess cache.  It is based on Cache::FastMmap.")
 including a stack trace of your application up to the point where the error
 occurred.  Each stack frame is displayed along with the package name, line
 number, file name, and code context surrounding the line number.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-plugin-static-simple
   (package
@@ -1927,7 +1927,7 @@ looking at the file extension in the URL (such as .css or .png or .js).  The
 plugin uses the lightweight MIME::Types module to map file extensions to
 IANA-registered MIME types, and will serve your static files with the correct
 MIME type directly to the browser, without being processed through Catalyst.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-runtime
   (package
@@ -1987,7 +1987,7 @@ MIME type directly to the browser, without being processed through Catalyst.")
 It is designed to make it easy to manage the various tasks you need to do to
 run an application on the web, either by doing them itself, or by letting you
 \"plug in\" existing Perl modules that do what you need.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-traitfor-request-proxybase
   (package
@@ -2019,7 +2019,7 @@ run an application on the web, either by doing them itself, or by letting you
 flexibility in your application's deployment configurations when deployed
 behind a proxy.  Using this module, the request base ($c->req->base) is
 replaced with the contents of the X-Request-Base header.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-view-download
   (package
@@ -2046,7 +2046,7 @@ replaced with the contents of the X-Request-Base header.")
     (description "The purpose of this module is to provide a method for
 downloading data into many supportable formats.  For example, downloading a
 table based report in a variety of formats (CSV, HTML, etc.).")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-view-json
   (package
@@ -2072,7 +2072,7 @@ table based report in a variety of formats (CSV, HTML, etc.).")
     (synopsis "Catalyst JSON view")
     (description "Catalyst::View::JSON is a Catalyst View handler that returns
 stash data in JSON format.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalyst-view-tt
   (package
@@ -2099,7 +2099,7 @@ stash data in JSON format.")
   (synopsis "Template View Class")
   (description "This module is a Catalyst view class for the Template
 Toolkit.")
-  (license l:perl-license)))
+  (license license:perl-license)))
 
 (define-public perl-catalystx-component-traits
   (package
@@ -2132,7 +2132,7 @@ Catalyst component base class that reads the optional \"traits\" parameter
 from app and component config and instantiates the component subclass with
 those traits using \"new_with_traits\" in MooseX::Traits from
 MooseX::Traits::Pluggable.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalystx-roleapplicator
   (package
@@ -2155,7 +2155,7 @@ MooseX::Traits::Pluggable.")
     (synopsis "Apply roles to Catalyst classes")
     (description "CatalystX::RoleApplicator applies roles to Catalyst
 application classes.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-catalystx-script-server-starman
   (package
@@ -2183,7 +2183,7 @@ application classes.")
     (synopsis "Catalyst development server with Starman")
     (description "This module provides a Catalyst extension to replace the
 development server with Starman.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-cgi
   (package
@@ -2211,7 +2211,7 @@ processing and preparing HTTP requests and responses.  Major features include
 processing form submissions, file uploads, reading and writing cookies, query
 string generation and manipulation, and processing and preparing HTTP
 headers.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-cgi-formbuilder
   (package
@@ -2235,7 +2235,7 @@ headers.")
     (description
      "@code{CGI::FormBuilder} provides an easy way to generate and process CGI
 form-based applications.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-cgi-session
   (package
@@ -2262,7 +2262,7 @@ form-based applications.")
     (description
      "@code{CGI::Session} provides modular session management system across
 HTTP requests.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-cgi-simple
   (package
@@ -2286,7 +2286,7 @@ HTTP requests.")
     (description "CGI::Simple provides a relatively lightweight drop in
 replacement for CGI.pm.  It shares an identical OO interface to CGI.pm for
 parameter parsing, file upload, cookie handling and header generation.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-cgi-struct
   (package
@@ -2307,7 +2307,7 @@ parameter parsing, file upload, cookie handling and header generation.")
     (synopsis "Build structures from CGI data")
     (description "This is a module for building structured data from CGI
 inputs, in a manner reminiscent of how PHP does.")
-    (license l:bsd-2)))
+    (license license:bsd-2)))
 
 (define-public perl-datetime-format-http
   (package
@@ -2331,7 +2331,7 @@ inputs, in a manner reminiscent of how PHP does.")
     (synopsis "Date conversion routines")
     (description "This module provides functions that deal with the date
 formats used by the HTTP protocol.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-digest-md5-file
   (package
@@ -2352,7 +2352,7 @@ formats used by the HTTP protocol.")
     (synopsis "MD5 sums for files and urls")
     (description "Digest::MD5::File is a Perl extension for getting MD5 sums
 for files and urls.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-encode-locale
   (package
@@ -2367,7 +2367,7 @@ for files and urls.")
               (base32
                "1h8fvcdg3n20c2yp7107yhdkkx78534s9hnvn7ps8hpmf4ks0vqp"))))
     (build-system perl-build-system)
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl locale encoding determination")
     (description
      "The POSIX locale system is used to specify both the language
@@ -2409,7 +2409,7 @@ with Encode::decode(locale => $string).")
     (description "@code{Feed::Find} implements feed auto-discovery for finding
 syndication feeds, given a URI.  It will discover the following feed formats:
 RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-file-listing
   (package
@@ -2426,7 +2426,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-date" ,perl-http-date)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl directory listing parser")
     (description
      "The File::Listing module exports a single function called parse_dir(),
@@ -2464,7 +2464,7 @@ which can be used to parse directory listings.")
    (description
     "Finance::Quote gets stock quotes from various internet sources, including
 Yahoo! Finance, Fidelity Investments, and the Australian Stock Exchange.")
-   (license l:gpl2)))
+   (license license:gpl2)))
 
 (define-public perl-gssapi
   (package
@@ -2487,7 +2487,7 @@ Yahoo! Finance, Fidelity Investments, and the Australian Stock Exchange.")
     (synopsis "Perl extension providing access to the GSSAPIv2 library")
     (description "This is a Perl extension for using GSSAPI C bindings as
 described in RFC 2744.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-html-element-extended
   (package
@@ -2509,7 +2509,7 @@ described in RFC 2744.")
     (description
      "HTML::Element::Extended is a Perl extension for manipulating a table
 composed of HTML::Element style components.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-html-form
   (package
@@ -2534,7 +2534,7 @@ composed of HTML::Element style components.")
     (synopsis "Perl class representing an HTML form element")
     (description "Objects of the HTML::Form class represents a single HTML
 <form> ... </form> instance.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-html-scrubber
   (package
@@ -2566,7 +2566,7 @@ composed of HTML::Element style components.")
      "Perl extension for scrubbing/sanitizing html")
     (description
      "@code{HTML::Scrubber} Perl extension for scrubbing/sanitizing HTML.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-html-lint
   (package
@@ -2588,7 +2588,7 @@ composed of HTML::Element style components.")
     (synopsis "Check for HTML errors in a string or file")
     (description "HTML::Lint is a pure-Perl HTML parser and checker for
 syntactic legitmacy.")
-    (license l:artistic2.0)))
+    (license license:artistic2.0)))
 
 (define-public perl-html-tableextract
   (package
@@ -2611,7 +2611,7 @@ syntactic legitmacy.")
     (description
      "HTML::TableExtract is a Perl module for extracting the content contained
 in tables within an HTML document, either as text or encoded element trees.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-html-tree
   (package
@@ -2637,7 +2637,7 @@ in tables within an HTML document, either as text or encoded element trees.")
     (synopsis "Work with HTML in a DOM-like tree structure")
     (description "This distribution contains a suite of modules for
 representing, creating, and extracting information from HTML syntax trees.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-html-parser
   (package
@@ -2655,7 +2655,7 @@ representing, creating, and extracting information from HTML syntax trees.")
     (inputs
      `(("perl-html-tagset" ,perl-html-tagset)
        ("perl-http-message" ,perl-http-message)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl HTML parser class")
     (description
      "Objects of the HTML::Parser class will recognize markup and separate
@@ -2677,7 +2677,7 @@ are invoked.")
               (base32
                "1qh8249wgr4v9vgghq77zh1d2zs176bir223a8gh3k9nksn7vcdd"))))
     (build-system perl-build-system)
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl data tables useful in parsing HTML")
     (description
      "The HTML::Tagset module contains several data tables useful in various
@@ -2708,7 +2708,7 @@ It extends standard HTML with a few new HTML-esque tags: @code{<TMPL_VAR>},
 these new tags is called a template.  Using this module you fill in the values
 for the variables, loops and branches declared in the template.  This allows
 you to separate design from the data.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-http-body
   (package
@@ -2733,7 +2733,7 @@ you to separate design from the data.")
     (description "HTTP::Body parses chunks of HTTP POST data and supports
 application/octet-stream, application/json, application/x-www-form-urlencoded,
 and multipart/form-data.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-http-cookiejar
   (package
@@ -2760,7 +2760,7 @@ and multipart/form-data.")
     (synopsis "Minimalist HTTP user agent cookie jar")
     (description "This module implements a minimalist HTTP user agent cookie
 jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
-    (license l:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public perl-http-cookies
   (package
@@ -2777,7 +2777,7 @@ jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl HTTP cookie jars")
     (description
      "The HTTP::Cookies class is for objects that represent a cookie jar,
@@ -2801,7 +2801,7 @@ object knows about.")
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl simple http server class")
     (description
      "Instances of the HTTP::Daemon class are HTTP/1.1 servers that listen
@@ -2822,7 +2822,7 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
               (base32
                "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
     (build-system perl-build-system)
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl date conversion routines")
     (description
      "The HTTP::Date module provides functions that deal with date formats
@@ -2850,7 +2850,7 @@ used by the HTTP protocol (and then some more).")
        ("perl-io-html" ,perl-io-html)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
        ("perl-uri" ,perl-uri)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl HTTP style message")
     (description
      "An HTTP::Message object contains some headers and a content body.")
@@ -2871,7 +2871,7 @@ used by the HTTP protocol (and then some more).")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl http content negotiation")
     (description
      "The HTTP::Negotiate module provides a complete implementation of the
@@ -2904,7 +2904,7 @@ fields in the request.")
 received and returns a @code{hint} as to what is required, or returns the
 HTTP::Request when a complete request has been read.  HTTP/1.1 chunking is
 supported.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-http-parser-xs
   (package
@@ -2925,7 +2925,7 @@ supported.")
     (synopsis "Fast HTTP request parser")
     (description "HTTP::Parser::XS is a fast, primitive HTTP request/response
 parser.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-http-request-ascgi
   (package
@@ -2947,7 +2947,7 @@ parser.")
     (synopsis "Set up a CGI environment from an HTTP::Request")
     (description "This module provides a convenient way to set up a CGI
 environment from an HTTP::Request.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-http-server-simple
   (package
@@ -2982,7 +2982,7 @@ environment from an HTTP::Request.")
     (description "HTTP::Server::Simple is a simple standalone HTTP daemon with
 no non-core module dependencies.  It can be used for building a standalone
 http-based UI to your existing tools.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-http-tiny
   (package
@@ -3008,7 +3008,7 @@ http-based UI to your existing tools.")
     (description "This is a very simple HTTP/1.1 client, designed for doing
 simple requests without the overhead of a large framework like LWP::UserAgent.
 It supports proxies and redirection.  It also correctly resumes after EINTR.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-http-tinyish
   (package
@@ -3035,7 +3035,7 @@ It supports proxies and redirection.  It also correctly resumes after EINTR.")
 @code{HTTP::Tiny}, curl and wget.
 
 It provides an API compatible to HTTP::Tiny.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-io-html
   (package
@@ -3050,7 +3050,7 @@ It provides an API compatible to HTTP::Tiny.")
               (base32
                "06nj3a0xgp5jxwxx6ayglfk2v7npf5a7gwkqsjlkapjkybarzqh4"))))
     (build-system perl-build-system)
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl module to open an HTML file with automatic charset detection")
     (description
      "IO::HTML provides an easy way to open a file containing HTML while
@@ -3076,7 +3076,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
     (synopsis "Family-neutral IP socket supporting both IPv4 and IPv6")
     (description "This module provides a protocol-independent way to use IPv4
 and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-io-socket-ssl
   (package
@@ -3103,7 +3103,7 @@ necessary functionality into the familiar IO::Socket interface and providing
 secure defaults whenever possible.  This way existing applications can be made
 SSL-aware without much effort, at least if you do blocking I/O and don't use
 select or poll.")
-    (license l:perl-license)
+    (license license:perl-license)
     (home-page "https://github.com/noxxi/p5-io-socket-ssl")))
 
 (define-public perl-libwww
@@ -3136,7 +3136,7 @@ select or poll.")
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl modules for the WWW")
     (description
      "The libwww-perl collection is a set of Perl modules which provides a
@@ -3174,7 +3174,7 @@ of the nastiest technical questions there is: am I on the internet?
 A host of networking and security issues make this problem very difficult.
 There are firewalls, proxies (both well behaved and badly behaved).  We might
 not have DNS.  We might not have a network card at all!")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lwp-mediatypes
   (package
@@ -3189,7 +3189,7 @@ not have DNS.  We might not have a network card at all!")
               (base32
                "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
     (build-system perl-build-system)
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl module to guess the media type for a file or a URL")
     (description
      "The LWP::MediaTypes module provides functions for handling media (also
@@ -3224,7 +3224,7 @@ exists it is used instead.")
     (synopsis "HTTPS support for LWP::UserAgent")
     (description "The LWP::Protocol::https module provides support for using
 https schemed URLs with LWP.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-lwp-useragent-determined
   (package
@@ -3247,7 +3247,7 @@ https schemed URLs with LWP.")
 except that when you use it to get a web page but run into a
 possibly-temporary error (like a DNS lookup timeout), it'll wait a few seconds
 and retry a few times.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-net-amazon-s3
   (package
@@ -3290,7 +3290,7 @@ and retry a few times.")
     (home-page "https://metacpan.org/release/Net-Amazon-S3")
     (synopsis "Perl interface to Amazon S3")
     (description "This module provides a Perlish interface to Amazon S3.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-net-http
   (package
@@ -3308,7 +3308,7 @@ and retry a few times.")
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-uri" ,perl-uri)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl low-level HTTP connection (client)")
     (description
      "The Net::HTTP class is a low-level HTTP client.  An instance of the
@@ -3342,7 +3342,7 @@ children (Net::Server::PreForkSimple), or as a managed preforking server which
 maintains the number of children based on server load (Net::Server::PreFork).
 In all but the inetd type, the server provides the ability to connect to one
 or to multiple server ports.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-net-smtp-ssl
   (package
@@ -3362,7 +3362,7 @@ or to multiple server ports.")
     (home-page "https://metacpan.org/release/Net-SMTP-SSL")
     (synopsis "SSL support for Net::SMTP")
     (description "SSL support for Net::SMTP.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-plack
   (package
@@ -3400,7 +3400,7 @@ or to multiple server ports.")
 contains middleware components, a reference server, and utilities for Web
 application frameworks.  Plack is like Ruby's Rack or Python's Paste for
 WSGI.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-plack-middleware-deflater
   (package
@@ -3429,7 +3429,7 @@ in gzip or deflate, based on \"Accept-Encoding\" HTTP request header.  It
 would save the bandwidth a little bit but should increase the Plack server
 load, so ideally you should handle this on the frontend reverse proxy
 servers.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-plack-middleware-fixmissingbodyinredirect
   (package
@@ -3454,7 +3454,7 @@ servers.")
     (synopsis "Plack::Middleware which sets body for redirect response")
     (description "This module sets the body in redirect response, if it's not
 already set.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-plack-middleware-methodoverride
   (package
@@ -3479,7 +3479,7 @@ already set.")
 something else: by adding either a header named X-HTTP-Method-Override to the
 request, or a query parameter named x-tunneled-method to the URI, the client
 can say what method it actually meant.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-plack-middleware-removeredundantbody
   (package
@@ -3501,7 +3501,7 @@ can say what method it actually meant.")
     (synopsis "Plack::Middleware which removes body for HTTP response")
     (description "This module removes the body in an HTTP response if it's not
 required.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-plack-middleware-reverseproxy
   (package
@@ -3525,7 +3525,7 @@ required.")
     (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
 which are changed by reverse-proxy.  You can specify the reverse proxy address
 and stop fake requests using @code{enable_if} directive in your app.psgi.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-plack-test-externalserver
   (package
@@ -3546,7 +3546,7 @@ and stop fake requests using @code{enable_if} directive in your app.psgi.")
     (description "This module allows your to run your Plack::Test tests
 against an external server instead of just against a local application through
 either mocked HTTP or a locally spawned server.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-test-tcp
   (package
@@ -3566,7 +3566,7 @@ either mocked HTTP or a locally spawned server.")
     (home-page "https://metacpan.org/release/Test-TCP")
     (synopsis "Testing TCP programs")
     (description "Test::TCP is test utilities for TCP/IP programs.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-test-www-mechanize
   (package
@@ -3592,7 +3592,7 @@ either mocked HTTP or a locally spawned server.")
     (synopsis "Testing-specific WWW::Mechanize subclass")
     (description "Test::WWW::Mechanize is a subclass of the Perl module
 WWW::Mechanize that incorporates features for web application testing.")
-    (license l:artistic2.0)))
+    (license license:artistic2.0)))
 
 (define-public perl-test-www-mechanize-catalyst
   (package
@@ -3627,7 +3627,7 @@ WWW::Mechanize that incorporates features for web application testing.")
     (description "The Test::WWW::Mechanize::Catalyst module meshes the
 Test::WWW:Mechanize module and the Catalyst web application framework to allow
 testing of Catalyst applications without needing to start up a web server.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-test-www-mechanize-psgi
   (package
@@ -3654,7 +3654,7 @@ from web application framework code.  Test::WWW::Mechanize is a subclass of
 WWW::Mechanize that incorporates features for web application testing.  The
 Test::WWW::Mechanize::PSGI module meshes the two to allow easy testing of PSGI
 applications.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-uri
   (package
@@ -3671,7 +3671,7 @@ applications.")
     (native-inputs
      ;; For tests.
      `(("perl-test-needs" ,perl-test-needs)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
     (description
      "The URI module implements the URI class.  Objects of this class
@@ -3702,7 +3702,7 @@ and updated by RFC 2732.")
     (description "@code{URI::Fetch} is a smart client for fetching HTTP pages,
 notably syndication feeds (RSS, Atom, and others), in an intelligent, bandwidth-
 and time-saving way.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-uri-find
   (package
@@ -3727,7 +3727,7 @@ and time-saving way.")
 considers a URI) in plain text.  It only finds URIs which include a
 scheme (http:// or the like), for something a bit less strict, consider
 URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-uri-ws
   (package
@@ -3748,7 +3748,7 @@ URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
     (synopsis "WebSocket support for URI package")
     (description "With this module, the URI package provides the same set of
 methods for WebSocket URIs as it does for HTTP URIs.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-uri-template
   (package
@@ -3773,7 +3773,7 @@ methods for WebSocket URIs as it does for HTTP URIs.")
     (synopsis "Object for handling URI templates")
     (description "This perl module provides a wrapper around URI templates as described in
 RFC 6570.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-www-curl
   (package
@@ -3807,7 +3807,7 @@ RFC 6570.")
     (description
      "This is a Perl extension interface for the libcurl file downloading
 library.")
-    (license l:perl-license)
+    (license license:perl-license)
     (home-page "https://metacpan.org/release/WWW-Curl")))
 
 (define-public perl-www-mechanize
@@ -3841,7 +3841,7 @@ library.")
     (synopsis "Web browsing in a Perl object")
     (description "WWW::Mechanize is a Perl module for stateful programmatic
 web browsing, used for automating interaction with websites.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-www-opensearch
   (package
@@ -3879,7 +3879,7 @@ web browsing, used for automating interaction with websites.")
     (description
      "@code{WWW::OpenSearch} is a module to search @url{A9's OpenSearch,
 http://opensearch.a9.com} compatible search engines.")
-    (license l:perl-license)))
+    (license license:perl-license)))
 
 (define-public perl-www-robotrules
   (package
@@ -3896,7 +3896,7 @@ http://opensearch.a9.com} compatible search engines.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-uri" ,perl-uri)))
-    (license l:perl-license)
+    (license license:perl-license)
     (synopsis "Perl database of robots.txt-derived permissions")
     (description
      "The WWW::RobotRules module parses /robots.txt files as specified in
@@ -3926,8 +3926,8 @@ their web site.")
     (description
      "Universal feed parser which handles RSS 0.9x, RSS 1.0, RSS 2.0,
 CDF, Atom 0.3, and Atom 1.0 feeds.")
-    (license (list l:bsd-2 ; source code
-                   l:freebsd-doc)))) ; documentation
+    (license (list license:bsd-2 ; source code
+                   license:freebsd-doc)))) ; documentation
 
 (define-public python2-feedparser
   (package-with-python2 python-feedparser))
@@ -3957,7 +3957,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
     (description
      "Gumbo is an implementation of the HTML5 parsing algorithm implemented as
 a pure C99 library.")
-    (license l:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public uwsgi
   (package
@@ -4031,7 +4031,7 @@ embedded_plugins =
      "uWSGI presents a complete stack for networked/clustered web applications,
 implementing message/object passing, caching, RPC and process management.
 It uses the uwsgi protocol for all the networking/interprocess communications.")
-    (license l:gpl2+))) ; with linking exception
+    (license license:gpl2+))) ; with linking exception
 
 (define-public jq
   (package
@@ -4061,7 +4061,7 @@ grep and friends let you play with text.  It is written in portable C.  jq can
 mangle the data format that you have into the one that you want with very
 little effort, and the program to do so is often shorter and simpler than
 you'd expect.")
-    (license (list l:expat l:cc-by3.0))))
+    (license (list license:expat license:cc-by3.0))))
 
 (define-public uhttpmock
   (package
@@ -4090,7 +4090,7 @@ you'd expect.")
      "Uhttpmock is a project for mocking web service APIs which use HTTP or
 HTTPS.  It provides a library, libuhttpmock, which implements recording and
 playback of HTTP request/response traces.")
-    (license l:lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public woof
   (package
@@ -4126,7 +4126,7 @@ playback of HTTP request/response traces.")
     (description "Woof (Web Offer One File) is a small simple web server that
 can easily be invoked on a single file.  Your partner can access the file with
 tools they trust (e.g. wget).")
-    (license l:gpl2+)))
+    (license license:gpl2+)))
 
 (define netsurf-buildsystem
   (package
@@ -4153,7 +4153,7 @@ tools they trust (e.g. wget).")
     (description
      "This package provides the shared build system for Netsurf project
 libraries.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define netsurf-buildsystem-arguments
   `(#:make-flags `("COMPONENT_TYPE=lib-shared"
@@ -4190,7 +4190,7 @@ libraries.")
     (description
      "LibParserUtils is a library for building efficient parsers, written in
 C.  It is developed as part of the NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public hubbub
   (package
@@ -4221,7 +4221,7 @@ C.  It is developed as part of the NetSurf project.")
      "Hubbub is an HTML5 compliant parsing library, written in C, which can
 parse both valid and invalid web content.  It is developed as part of the
 NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public ikiwiki
   (package
@@ -4304,7 +4304,7 @@ NetSurf project.")
      "Ikiwiki is a wiki compiler, capable of generating a static set of web
 pages, but also incorporating dynamic features like a web based editor and
 commenting.")
-    (license l:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libwapcaplet
   (package
@@ -4330,7 +4330,7 @@ commenting.")
      "LibWapcaplet provides a reference counted string internment system
 designed to store small strings and allow rapid comparison of them.  It is
 developed as part of the Netsurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libcss
   (package
@@ -4358,7 +4358,7 @@ developed as part of the Netsurf project.")
     (description
      "LibCSS is a CSS (Cascading Style Sheet) parser and selection engine,
 written in C.  It is developed as part of the NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libdom
   (package
@@ -4394,7 +4394,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (description
      "LibDOM is an implementation of the W3C DOM, written in C.  It is
 developed as part of the NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libsvgtiny
   (package
@@ -4425,7 +4425,7 @@ developed as part of the NetSurf project.")
 which can be rendered easily, as defined in
 @url{http://www.w3.org/TR/SVGMobile/}.  It is developed as part of the NetSurf
 project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libnsbmp
   (package
@@ -4448,7 +4448,7 @@ project.")
     (description
      "Libnsbmp is a decoding library for BMP and ICO image file formats,
 written in C.  It is developed as part of the NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libnsgif
   (package
@@ -4471,7 +4471,7 @@ written in C.  It is developed as part of the NetSurf project.")
     (description
      "Libnsgif is a decoding library for the GIF image file format, written in
 C.  It is developed as part of the NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libnsutils
   (package
@@ -4494,7 +4494,7 @@ C.  It is developed as part of the NetSurf project.")
     (description
      "Libnsutils provides a small number of useful utility routines.  It is
 developed as part of the NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public libnspsl
   (package
@@ -4517,7 +4517,7 @@ developed as part of the NetSurf project.")
     (description
      "Libnspsl is a library to generate a static code representation of the
 Public Suffix List.  It is developed as part of the NetSurf project.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public nsgenbind
   (package
@@ -4545,7 +4545,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
     (description
      "@code{nsgenbind} is a tool to generate JavaScript to DOM bindings from
 w3c webidl files and a binding configuration file.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public netsurf
   (package
@@ -4660,7 +4660,7 @@ w3c webidl files and a binding configuration file.")
      "NetSurf is a lightweight web browser that has its own layout and
 rendering engine entirely written from scratch.  It is small and capable of
 handling many of the web standards in use today.")
-    (license l:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public surfraw
   (package
@@ -4703,7 +4703,7 @@ handling many of the web standards in use today.")
 provides a unix command line interface to a variety of popular www search engines
 and similar services.")
     (home-page "https://surfraw.alioth.debian.org/")
-    (license l:public-domain)))
+    (license license:public-domain)))
 
 (define-public darkhttpd
   (package
@@ -4735,7 +4735,7 @@ and similar services.")
 standalone and does not need inetd or ucspi-tcp.  It does not need any
 config files---you only have to specify the www root.")
     (home-page "https://unix4lyfe.org/darkhttpd/")
-    (license l:isc)))
+    (license license:isc)))
 
 (define-public goaccess
   (package
@@ -4768,7 +4768,7 @@ config files---you only have to specify the www root.")
 runs in a terminal or through your browser.  It provides fast and valuable
 HTTP statistics for system administrators that require a visual server report
 on the fly.")
-    (license l:x11)))
+    (license license:x11)))
 
 (define-public httptunnel
   (package
@@ -4806,7 +4806,7 @@ tunnelled through HTTP (HyperText Transfer Protocol) requests.  This can be
 useful for users behind restrictive firewalls.  As long as Web traffic is
 allowed, even through a HTTP-only proxy, httptunnel can be combined with other
 tools like SSH (Secure Shell) to reach the outside world.")
-    (license l:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public stunnel
   (package
@@ -4853,7 +4853,7 @@ functionality to existing clients and servers without any changes in the
 programs' code.  Its architecture is optimized for security, portability, and
 scalability (including load-balancing), making it suitable for large
 deployments.")
-  (license l:gpl2+)))
+  (license license:gpl2+)))
 
 (define-public varnish
   (package
@@ -4923,10 +4923,10 @@ deployments.")
 reverse proxy and load balancer.  You install it in front of any server that
 speaks HTTP and configure it to cache the contents through an extensive
 configuration language.")
-    (license (list l:bsd-2           ;main distribution
-                   l:zlib            ;lib/libvgz/*
-                   l:public-domain   ;bin/varnishncsa/as64.c, include/miniobj.h
-                   l:bsd-3))))       ;include/vqueue.h, lib/libvarnishcompat/daemon.c
+    (license (list license:bsd-2           ;main distribution
+                   license:zlib            ;lib/libvgz/*
+                   license:public-domain   ;bin/varnishncsa/as64.c, include/miniobj.h
+                   license:bsd-3))))       ;include/vqueue.h, lib/libvarnishcompat/daemon.c
 
 (define-public varnish-modules
   (package
@@ -4952,7 +4952,7 @@ configuration language.")
      "This package provides a collection of modules (@dfn{vmods}) for the Varnish
 cache server, extending the @dfn{Varnish Configuration Language} (VCL) with
 additional capabilities.")
-    (license l:bsd-2)))
+    (license license:bsd-2)))
 
 (define-public xinetd
   (package
@@ -4982,7 +4982,7 @@ listens for incoming requests over a network and launches the appropriate
 service for that request.  Requests are made using port numbers as identifiers
 and xinetd usually launches another daemon to handle the request.  It can be
 used to start services with both privileged and non-privileged port numbers.")
-    (license (l:fsf-free "file://COPYRIGHT"))))
+    (license (license:fsf-free "file://COPYRIGHT"))))
 
 (define-public tidy-html
   (package
@@ -5030,7 +5030,7 @@ legacy code to modern standards.
 Tidy also provides @code{libtidy}, a C static and dynamic library that
 developers can integrate into their applications to make use of the
 functions of Tidy.")
-    (license l:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public hiawatha
   (package
@@ -5091,7 +5091,7 @@ functions of Tidy.")
      "Hiawatha has been written with security in mind.
 Features include the ability to stop SQL injections, XSS and CSRF attacks and
 exploit attempts.")
-    (license l:gpl2)))
+    (license license:gpl2)))
 
 (define-public python-httpbin
   (package
@@ -5117,7 +5117,7 @@ exploit attempts.")
 @code{RequestBin} is fantastic for testing POST requests, but doesn't let you control the
 response.  This exists to cover all kinds of HTTP scenarios.  All endpoint responses are
 JSON-encoded.")
-    (license l:isc)))
+    (license license:isc)))
 
 (define-public python2-httpbin
   (package-with-python2 python-httpbin))
@@ -5146,7 +5146,7 @@ JSON-encoded.")
      "@code{Pytest-httpbin} creates a @code{pytest} fixture that is dependency-injected
 into your tests.  It automatically starts up a HTTP server in a separate thread running
 @code{httpbin} and provides your test with the URL in the fixture.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public python2-pytest-httpbin
   (package-with-python2 python-pytest-httpbin))
@@ -5181,7 +5181,7 @@ high-performance HTTP applications.  It does not make any syscalls nor
 allocations, it does not buffer data, it can be interrupted at anytime.
 Depending on your architecture, it only requires about 40 bytes of data per
 message stream (in a web server that is per connection).")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public python-httpretty
   (package
@@ -5211,7 +5211,7 @@ message stream (in a web server that is per connection).")
     (synopsis "HTTP client mock for Python")
     (description "@code{httpretty} is a helper for faking web requests,
 inspired by Ruby's @code{fakeweb}.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public python2-httpretty
   (package
@@ -5260,7 +5260,7 @@ inspired by Ruby's @code{fakeweb}.")
     (synopsis "HTTP client mock for Python")
     (description "@code{httpretty} is a helper for faking web requests,
 inspired by Ruby's @code{fakeweb}.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public jo
   (package
@@ -5280,8 +5280,8 @@ inspired by Ruby's @code{fakeweb}.")
     (description "jo is a command-line utility to create JSON objects or
 arrays.  It creates a JSON string on stdout from words provided as
 command-line arguments or read from stdin.")
-    (license (list l:gpl2+
-                   l:expat)))) ; json.c, json.h
+    (license (list license:gpl2+
+                   license:expat)))) ; json.c, json.h
 
 (define-public python-internetarchive
   (package
@@ -5331,7 +5331,7 @@ command-line arguments or read from stdin.")
 internetarchive python module for programatic access to archive.org.")
     (properties
      `((python2-variant . ,(delay python2-internetarchive))))
-    (license l:agpl3+)))
+    (license license:agpl3+)))
 
 (define-public python2-internetarchive
   (package-with-python2
@@ -5385,7 +5385,7 @@ internetarchive python module for programatic access to archive.org.")
       (synopsis "Search code snippets on @url{https://commandlinefu.com}")
       (description "@code{clf} is a command line tool for searching code
 snippets on @url{https://commandlinefu.com}.")
-      (license l:expat))))
+      (license license:expat))))
 
 (define-public python2-clf
   (package-with-python2 python-clf))
@@ -5421,8 +5421,8 @@ snippets on @url{https://commandlinefu.com}.")
     (description "rss-bridge generates Atom feeds for social networking
 websites lacking feeds.  Supported websites include Facebook, Twitter,
 Instagram and YouTube.")
-    (license (list l:public-domain
-                   l:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php
+    (license (list license:public-domain
+                   license:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php
 
 (define-public linkchecker
   (package
@@ -5478,11 +5478,11 @@ links in websites.  It is recursive and multithreaded providing output in
 colored or normal text, HTML, SQL, CSV, XML or as a sitemap graph.  It
 supports checking HTTP/1.1, HTTPS, FTP, mailto, news, nntp, telnet and local
 file links.")
-    (license (list l:gpl2+
-                   l:bsd-2              ; linkcheck/better_exchook2.py
-                   l:bsd-3              ; linkcheck/colorama.py
-                   l:psfl               ; linkcheck/gzip2.py
-                   l:expat))))          ; linkcheck/mem.py
+    (license (list license:gpl2+
+                   license:bsd-2              ; linkcheck/better_exchook2.py
+                   license:bsd-3              ; linkcheck/colorama.py
+                   license:psfl               ; linkcheck/gzip2.py
+                   license:expat))))          ; linkcheck/mem.py
 
 (define-public cadaver
   (package
@@ -5514,7 +5514,7 @@ file links.")
      "Cadaver is a command-line WebDAV client for Unix. It supports
 file upload, download, on-screen display, namespace operations (move/copy),
 collection creation and deletion, and locking operations.")
-    (license l:gpl2)))
+    (license license:gpl2)))
 
 (define-public python-py-ubjson
   (package
@@ -5533,7 +5533,7 @@ collection creation and deletion, and locking operations.")
     (description
      "Py-ubjson is a Python module providing an Universal Binary JSON
 encoder/decoder based on the draft-12 specification for UBJSON.")
-    (license l:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public java-tomcat
   (package
@@ -5598,7 +5598,7 @@ WebSocket")
     (description "Apache Tomcat is a free implementation of the Java
 Servlet, JavaServer Pages, Java Expression Language and Java WebSocket
 technologies.")
-    (license l:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public java-eclipse-jetty-test-helper
   (package
@@ -5650,7 +5650,7 @@ technologies.")
     (description "This packages contains helper classes for testing the Jetty
 Web Server.")
     ;; This program is licensed under both epl and asl.
-    (license (list l:epl1.0 l:asl2.0))))
+    (license (list license:epl1.0 license:asl2.0))))
 
 (define-public java-eclipse-jetty-perf-helper
   (package
@@ -5713,7 +5713,7 @@ Web Server.")
     (description "The Jetty Web Server provides an HTTP server and Servlet
 container capable of serving static and dynamic content either from a standalone
 or embedded instantiation.  This package provides utility classes.")
-    (license (list l:epl1.0 l:asl2.0))))
+    (license (list license:epl1.0 license:asl2.0))))
 
 ;; This version is required by maven-wagon
 (define-public java-eclipse-jetty-util-9.2
@@ -6205,7 +6205,7 @@ container.")))
     (description "Jsoup is a Java library for working with real-world HTML.  It
 provides a very convenient API for extracting and manipulating data, using the
 best of DOM, CSS, and jQuery-like methods.")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public tidyp
   (package
@@ -6231,7 +6231,7 @@ libtidyp is the library on which the program is based.  It can be used by any
 other program that can interface to it.  The Perl module @code{HTML::Tidy} is
 based on this library, allowing Perl programmers to easily validate HTML.")
     ;; See htmldoc/license.html
-    (license l:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public perl-html-tidy
   (package
@@ -6269,7 +6269,7 @@ based on this library, allowing Perl programmers to easily validate HTML.")
     (description "@code{HTML::Tidy} is an HTML checker in a handy dandy
 object.  It's meant as a replacement for @code{HTML::Lint}, which is written
 in Perl but is not nearly as capable as @code{HTML::Tidy}.")
-    (license l:artistic2.0)))
+    (license license:artistic2.0)))
 
 (define-public geomyidae
   (package
@@ -6305,7 +6305,7 @@ features include:
 @item search support in CGI files;
 @item logging with multiple log levels.
 @end enumerate\n")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public cat-avatar-generator
   (package
@@ -6348,8 +6348,8 @@ die('You need to set the CACHE_DIR variable first.');"))
 to generate random avatars, or defined avatar from a \"seed\".  This is a
 derivation by David Revoy from the original MonsterID by Andreas Gohr.")
     ;; expat for the code, CC-BY 4.0 for the artwork
-    (license (list l:expat
-                   l:cc-by4.0))))
+    (license (list license:expat
+                   license:cc-by4.0))))
 
 (define-public nghttp2
   (package
@@ -6434,7 +6434,7 @@ nghttp2 provides a HPACK encoder and decoder as part of its public API.
 compressed JSON header blocks.
 @item @command{inflatehd} converts such compressed headers back to JSON pairs.
 @end itemize\n")
-    (license l:expat)))
+    (license license:expat)))
 
 (define-public hpcguix-web
   (let ((commit "53e09ea59ec0380b41a4cbda32df8bdb9a10004d")
@@ -6516,7 +6516,7 @@ compressed JSON header blocks.
       (description "Hpcguix-web provides a web interface to the list of packages
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
-      (license l:agpl3+))))
+      (license license:agpl3+))))
 
 (define-public httrack
   (package
@@ -6545,4 +6545,4 @@ site from link to link, as if you were viewing it online.  HTTrack can also
 update an existing mirrored site, and resume interrupted downloads.
 
 HTTrack is fully configurable, and has an integrated help system.")
-    (license l:gpl3+)))
+    (license license:gpl3+)))
