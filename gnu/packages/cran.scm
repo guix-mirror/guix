@@ -7919,29 +7919,32 @@ results using @code{ggplot2}.")
 (define-public r-sjplot
   (package
     (name "r-sjplot")
-    (version "2.6.2")
+    (version "2.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjPlot" version))
        (sha256
         (base32
-         "0x9pbchmz4qf4c9bi52dhhgv1phfj03q1hnxic8vndl6xwib63cy"))))
+         "0h1mkmp5mrkbf7y3zh6m4cnm737cpg1m5si0lrmal7j2ixqicwjy"))))
     (properties `((upstream-name . "sjPlot")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-broom" ,r-broom)
+     `(("r-bayestestr" ,r-bayestestr)
+       ("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
        ("r-forcats" ,r-forcats)
        ("r-ggeffects" ,r-ggeffects)
        ("r-ggplot2" ,r-ggplot2)
        ("r-glmmtmb" ,r-glmmtmb)
+       ("r-insight" ,r-insight)
        ("r-knitr" ,r-knitr)
        ("r-lme4" ,r-lme4)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-modelr" ,r-modelr)
        ("r-nlme" ,r-nlme)
+       ("r-performance" ,r-performance)
        ("r-psych" ,r-psych)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
