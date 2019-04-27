@@ -683,12 +683,6 @@ the root profile:
 # guix package -i hello
 @end example
 
-The @code{guix} package must remain available in @code{root}'s profile,
-or it would become subject to garbage collection---in which case you
-would find yourself badly handicapped by the lack of the @command{guix}
-command.  In other words, do not remove @code{guix} by running
-@code{guix package -r guix}.
-
 The binary installation tarball can be (re)produced and verified simply
 by running the following command in the Guix source tree:
 
