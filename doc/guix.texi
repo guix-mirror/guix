@@ -24647,7 +24647,9 @@ vm-image} on x86_64 hardware:
 @example
 $ qemu-system-x86_64 \
    -net user -net nic,model=virtio \
-   -enable-kvm -m 512 /tmp/qemu-image
+   -enable-kvm -m 512 \
+   -device virtio-blk,drive=myhd \
+   -drive if=none,file=/tmp/qemu-image,id=myhd
 @end example
 
 Here is what each of these options means:
@@ -24677,8 +24679,15 @@ faster.
 RAM available to the guest OS, in mebibytes.  Defaults to 128@tie{}MiB,
 which may be insufficient for some operations.
 
-@item /tmp/qemu-image
-The file name of the qcow2 image.
+@item -device virtio-blk,drive=myhd
+Create a @code{virtio-blk} drive called ``myhd''.  @code{virtio-blk} is a
+``paravirtualization'' mechanism for block devices that allows QEMU to achieve
+better performance than if it were emulating a complete disk drive.  See the
+QEMU and KVM documentation for more info.
+
+@item -drive if=none,file=/tmp/qemu-image,id=myhd
+Use our QCOW image, the @file{/tmp/qemu-image} file, as the backing store the
+the ``myhd'' drive.
 @end table
 
 The default @command{run-vm.sh} script that is returned by an invocation of
