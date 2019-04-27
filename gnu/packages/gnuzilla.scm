@@ -190,7 +190,7 @@ in C/C++.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://people.mozilla.org/~sstangl/"
+                    "https://anduin.linuxfromscratch.org/BLFS/mozjs/"
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
