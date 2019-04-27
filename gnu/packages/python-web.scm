@@ -637,6 +637,28 @@ options.")
 (define-public python2-cssutils
   (package-with-python2 python-cssutils))
 
+(define-public python-css-parser
+  (package
+    (inherit python-cssutils)
+    (name "python-css-parser")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "css-parser" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i4xfykiffxzr4f6y0m2ggqvx1rzam6pw6krlr5k6ldf29akbay7"))))
+    (home-page "https://github.com/ebook-utils/css-parser")
+    (synopsis "Fork of cssutils modified for parsing ebooks")
+    (description
+     "Css-parser is a fork of cssutils 1.0.2, updated and modified for parsing
+ebooks, due to cssutils not receiving updates as of 1.0.2.")
+    (license license:lgpl3+)))
+
+(define-public python2-css-parser
+  (package-with-python2 python-css-parser))
+
 (define-public python-cssselect
   (package
     (name "python-cssselect")
