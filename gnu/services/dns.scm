@@ -504,8 +504,8 @@
                 (acl (list #$@(knot-zone-configuration-acl zone)))
                 (semantic-checks? #$(knot-zone-configuration-semantic-checks? zone))
                 (disable-any? #$(knot-zone-configuration-disable-any? zone))
-                (zone-file-sync #$(knot-zone-configuration-zonefile-sync zone))
-                (zone-file-load #$(knot-zone-configuration-zonefile-load zone))
+                (zonefile-sync #$(knot-zone-configuration-zonefile-sync zone))
+                (zonefile-load '#$(knot-zone-configuration-zonefile-load zone))
                 (journal-content #$(knot-zone-configuration-journal-content zone))
                 (max-journal-usage #$(knot-zone-configuration-max-journal-usage zone))
                 (max-journal-depth #$(knot-zone-configuration-max-journal-depth zone))
@@ -550,8 +550,6 @@
               (format #t "      max-journal-depth: ~a\n" max-journal-depth))
             (if max-zone-size
               (format #t "      max-zone-size: ~a\n" max-zone-size))
-            (if 
-              (format #t "      : ~a\n" ))
             (if dnssec-policy
                 (begin
                   (format #t "      dnssec-signing: on\n")
