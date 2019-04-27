@@ -298,7 +298,7 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
      `(#:phases
        (modify-phases %standard-phases
          (delete 'check)
-         (add-after 'install 'check ;; add-after 'install
+         (add-after 'install 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
@@ -308,9 +308,8 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
                (setenv "XDG_DATA_DIRS"
                        (string-append out "/share:"
                                       (getenv "XDG_DATA_DIRS")))
-               (zero?
-                (system* "ctest" "-R" ;; almost all tests require a display
-                         "filteringstrategy|kdevvarlengtharray|kdevhash"))))))))
+               (invoke "ctest" "-R" ; almost all tests require a display
+                       "filteringstrategy|kdevvarlengtharray|kdevhash")))))))
     (home-page "https://github.com/KDE/kdevplatform")
     (synopsis "Framework to build integrated development environments (IDEs)")
     (description "KDevPlatform is the basis of KDevelop and contains some
