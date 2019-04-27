@@ -7855,6 +7855,33 @@ Density Interval} (HDI), and indices used for null-hypothesis testing (such as
 ROPE percentage and pd).")
     (license license:gpl3)))
 
+(define-public r-performance
+  (package
+    (name "r-performance")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "performance" version))
+       (sha256
+        (base32
+         "19lfx25hkavzbycrh6hq4v24a0dz4s60ryq6jyihjlxgrb9g7cnw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayestestr" ,r-bayestestr)
+       ("r-insight" ,r-insight)))
+    (home-page "https://easystats.github.io/performance/")
+    (synopsis "Assessment of regression models performance")
+    (description
+     "This package provides utilities for computing measures to assess model
+quality, which are not directly provided by R's @code{base} or @code{stats}
+packages.  These include e.g. measures like r-squared, intraclass correlation
+coefficient, root mean squared error or functions to check models for
+overdispersion, singularity or zero-inflation and more.  Functions apply to a
+large variety of regression models, including generalized linear models, mixed
+effects models and Bayesian models.")
+    (license license:gpl3)))
+
 (define-public r-ggeffects
   (package
     (name "r-ggeffects")
