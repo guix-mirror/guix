@@ -1165,7 +1165,7 @@ the programmer.")
     (home-page "https://github.com/sekrit-twc/zimg")
     ;; test/extra/ contains musl-libm,
     ;; which is MIT/expat licensed, but only used for tests
-    (license (license:fsf-free "file://COPYING")))) ;WTFPL version 2
+    (license license:wtfpl2)))
 
 (define-public perceptualdiff
   (package
