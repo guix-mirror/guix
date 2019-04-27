@@ -42,8 +42,8 @@
 (define (run-scheme-page)
   "Run a page asking the user for a partitioning scheme."
   (let* ((items
-          '((root . "Everything is one partition")
-            (root-home . "Separate /home partition")))
+          `((root . ,(G_ "Everything is one partition"))
+            (root-home . ,(G_ "Separate /home partition"))))
          (result (run-listbox-selection-page
                   #:info-text (G_ "Please select a partitioning scheme.")
                   #:title (G_ "Partition scheme")
@@ -429,10 +429,10 @@ partition. Leave this field empty if you don't want to set a mounting point.")
           (run-listbox-selection-page
            #:info-text
            (if creation?
-               (G_ (format #f "Creating ~a partition starting at ~a of ~a."
-                           type-str start file-name))
-               (G_ (format #f "You are currently editing partition ~a."
-                           number-str)))
+               (format #f (G_ "Creating ~a partition starting at ~a of ~a.")
+                       type-str start file-name)
+               (format #f (G_ "You are currently editing partition ~a.")
+                       number-str))
            #:title (if creation?
                        (G_ "Partition creation")
                        (G_ "Partition edit"))
@@ -724,9 +724,9 @@ by pressing the Exit button.~%~%")))
   "Run a page asking the user for a partitioning method."
   (define (run-page devices)
     (let* ((items
-            '((entire . "Guided - using the entire disk")
-              (entire-encrypted . "Guided - using the entire disk with encryption")
-              (manual . "Manual")))
+            `((entire . ,(G_ "Guided - using the entire disk"))
+              (entire-encrypted . ,(G_ "Guided - using the entire disk with encryption"))
+              (manual . ,(G_ "Manual"))))
            (result (run-listbox-selection-page
                     #:info-text (G_ "Please select a partitioning method.")
                     #:title (G_ "Partitioning method")
