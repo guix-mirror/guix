@@ -25,7 +25,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages python)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -98,7 +98,7 @@ between various shells or commands.")
 FreeDesktop.org trash can used by GNOME, KDE, XFCE, and other common desktop
 environments.  It can move files to the trash, and remove or list files that
 are already there.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public direnv
   (package
@@ -151,7 +151,7 @@ allows project-specific environment variables without using @file{~/.profile}.
 Before each prompt, direnv checks for the existence of a @file{.envrc} file in
 the current and parent directories.  This file is then used to alter the
 environment variables of the current shell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public fzy
   (package
@@ -186,7 +186,7 @@ or different parts of the path.
 fzy is designed to be used both as an editor plugin and on the command
 line.  Rather than clearing the screen, fzy displays its interface directly
 below the current cursor position, scrolling the screen if necessary.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public hstr
   (package
@@ -228,4 +228,4 @@ HSTR can also manage your command history (for instance you can remove
 commands that are obsolete or contain a piece of sensitive information) or
 bookmark your favourite commands.")
     (home-page "http://me.mindforger.com/projects/hh.html")
-    (license asl2.0)))
+    (license license:asl2.0)))
