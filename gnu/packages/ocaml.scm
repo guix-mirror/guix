@@ -2638,16 +2638,16 @@ writing to these structures, and they are accessed via the Bigarray module.")
 (define-public ocaml-ezjsonm
   (package
     (name "ocaml-ezjsonm")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/mirage/ezjsonm.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dzjqrj7nl15ij921r7439fp0m7jrl3vskkdqb4syihjvsbvq1sj"))))
+        (base32 "064j9pzy01p3dv947khqyn7fkjbs3jmrqsg8limb4abnlaqxxs2s"))))
     (build-system dune-build-system)
     (arguments
      `(#:package "ezjsonm"
