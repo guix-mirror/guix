@@ -225,14 +225,14 @@ nobody:!:0::::::\n"))
   ;; Make sure bits of state are preserved: UID, no reuse of previously-used
   ;; UIDs, and shell.
   (list (password-entry (name "alice") (uid 1234) (gid 1000)
-                        (real-name "Alice Smith") (shell "/gnu/.../bin/gash")
+                        (real-name "Alice Smith") (shell "/bin/sh")
                         (directory "/home/alice"))
         (password-entry (name "charlie") (uid 1236) (gid 1000)
                         (real-name "Charlie") (shell "/bin/sh")
                         (directory "/home/charlie")))
   (allocate-passwd (list (user-account (name "alice")
                                        (comment "Alice")
-                                       (shell "/bin/sh") ;ignored
+                                       (shell "/bin/sh") ;honored
                                        (group "users"))
                          (user-account (name "charlie")
                                        (comment "Charlie")
@@ -241,7 +241,7 @@ nobody:!:0::::::\n"))
                    (list (group-entry (name "users") (gid 1000)))
                    (list (password-entry (name "alice") (uid 1234) (gid 9999)
                                          (real-name "Alice Smith")
-                                         (shell "/gnu/.../bin/gash")
+                                         (shell "/gnu/.../bin/gash") ;ignored
                                          (directory "/home/alice"))
                          (password-entry (name "bob") (uid 1235) (gid 1001)
                                          (real-name "Bob") (shell "/bin/sh")
