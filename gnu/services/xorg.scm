@@ -502,7 +502,6 @@ desktop session from the system or user profile will be used."
   (define slim.cfg
     (let ((xinitrc (xinitrc #:fallback-session
                             (slim-configuration-auto-login-session config)))
-          (slim    (slim-configuration-slim config))
           (xauth   (slim-configuration-xauth config))
           (startx  (xorg-start-command (slim-configuration-xorg config)))
           (shepherd   (slim-configuration-shepherd config))
@@ -547,7 +546,9 @@ reboot_cmd " shepherd "/sbin/reboot\n"
               (false-if-exception (delete-file "/var/run/slim.lock"))
 
               (fork+exec-command
-               (list (string-append #$slim "/bin/slim") "-nodaemon")
+               (list (string-append #$(slim-configuration-slim config)
+                                    "/bin/slim")
+                     "-nodaemon")
                #:environment-variables
                (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
                      #$@(if theme
