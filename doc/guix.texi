@@ -13897,7 +13897,7 @@ Defaults to @samp{"0644"}.
 
 @deftypevr {@code{files-configuration} parameter} log-location page-log
 Defines the page log filename.  Specifying a blank filename disables
-access log generation.  The value @code{stderr} causes log entries to be
+page log generation.  The value @code{stderr} causes log entries to be
 sent to the standard error file when the scheduler is running in the
 foreground, or to the system log daemon when run in the background.  The
 value @code{syslog} causes log entries to be sent to the system log
