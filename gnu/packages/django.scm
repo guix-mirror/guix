@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
+;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -118,6 +120,46 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
          ;; When adding memcached mind: for Python 2 memcached <= 1.53 is
          ;; required.
          ,@(package-native-inputs base))))))
+
+(define-public python-django-extensions
+  (package
+    (name "python-django-extensions")
+    (version "2.1.6")
+    (source
+     (origin
+       (method git-fetch)
+       ;; Fetch from the git repository, so that the tests can be run.
+       (uri (git-reference
+             (url "https://github.com/django-extensions/django-extensions.git")
+             (commit version)))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0p4qrdinrv6indczlc8dcnm528i5fzmcn9xk1ja7ycfkyk5x6j5w"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ;TODO collected 378 items / 3 errors / 1 skipped
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-vobject" ,python-vobject)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-dateutil" ,python-dateutil)
+       ("python-django" ,python-django)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-factory-boy" ,python-factory-boy)
+       ("python-tox" ,python-tox)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-django" ,python-pytest-django)
+       ("python-shortuuid" , python-shortuuid)))
+    (home-page
+     "https://github.com/django-extensions/django-extensions")
+    (synopsis "Custom management extensions for Django")
+    (description
+     "Django-extensions extends Django providing, for example, management
+commands, additional database fields and admin extensions.")
+    (license license:expat)))
 
 (define-public python-django-simple-math-captcha
   (package
