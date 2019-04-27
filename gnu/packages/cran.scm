@@ -7249,19 +7249,20 @@ console, resulting in an interactive editing environment.")
 (define-public r-survey
   (package
     (name "r-survey")
-    (version "3.35-1")
+    (version "3.36")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survey" version))
        (sha256
         (base32
-         "1nv4sdfmidvyjgvp3zvn5iw35bb8w0v7095is2pdy8cckkgdvr8i"))))
+         "0xclsy4ram4k48vzh5m5bpmknnpwxnss85v73s4czsjj5ffjxwwh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
        ("r-matrix" ,r-matrix)
        ("r-minqa" ,r-minqa)
+       ("r-mitools" ,r-mitools)
        ("r-numderiv" ,r-numderiv)
        ("r-survival" ,r-survival)))
     (home-page "http://r-survey.r-forge.r-project.org/survey/")
