@@ -1214,28 +1214,23 @@ instances and printing them.")
 (define-public ocaml-qtest
   (package
     (name "ocaml-qtest")
-    (version "2.8")
+    (version "2.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/vincent-hugot/qtest/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/vincent-hugot/qtest/")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ff4if64mc9c7wmhjdgnlnh6k6a713piqzr4043zzj4s5pw7smxk"))))
-    (build-system ocaml-build-system)
-    (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)))
+                "1ifxc8jndwah82g5k8xaa7jskbv866j4zpd0w41f0pskg4y0z9g1"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:jbuild? #t
+       #:test-target "tests"))
     (propagated-inputs
      `(("ounit" ,ocaml-ounit)
        ("qcheck" ,ocaml-qcheck)))
-    (arguments
-     `(#:tests? #f ; No test target.
-       #:make-flags
-       (list (string-append "BIN=" (assoc-ref %outputs "out") "/bin"))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
     (home-page "https://github.com/vincent-hugot/qtest")
     (synopsis "Inline (Unit) Tests for OCaml")
     (description "Qtest extracts inline unit tests written using a special
