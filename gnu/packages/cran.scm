@@ -2867,14 +2867,14 @@ with the package @code{optim}.")
 (define-public r-ordinal
   (package
     (name "r-ordinal")
-    (version "2019.3-9")
+    (version "2019.4-25")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ordinal" version))
        (sha256
         (base32
-         "0xsr2715ghh1q5hjnx7d8lyavzfvpi370blm1xdljn3p4kar8ldi"))))
+         "1pvrkly4x12w32n7w1qljdwzqnlkv7rfa7rx0nz5vbiw29xas4i8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
