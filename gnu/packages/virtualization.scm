@@ -1092,7 +1092,7 @@ virtual machines.")
 restricting their access to parts of the operating system or user data such as
 the home directory.  Bubblewrap always creates a new mount namespace, and the
 user can specify exactly what parts of the file system should be made visible
-in the sandbox.  These directories are mounted with the @code{nodev) option
+in the sandbox.  These directories are mounted with the @code{nodev} option
 by default and can be made read-only.")
     (license license:lgpl2.0+)))
 
