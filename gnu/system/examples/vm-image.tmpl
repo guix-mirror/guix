@@ -57,6 +57,12 @@ accounts.\x1b[0m
                                         "audio" "video")))
                %base-user-accounts))
 
+  ;; Our /etc/sudoers file.  Since 'guest' initially has an empty password,
+  ;; allow for password-less sudo.
+  (sudoers-file (plain-file "sudoers" "\
+root ALL=(ALL) ALL
+%wheel ALL=NOPASSWD: ALL\n"))
+
   (packages (append (list font-bitstream-vera nvi wget)
                     %base-packages))
 
