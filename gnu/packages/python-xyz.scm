@@ -10200,7 +10200,7 @@ addresses, and phone numbers.")
     (description
      "pyaml is a PyYAML based python module to produce pretty and readable
 YAML-serialized data.")
-    (license (license:non-copyleft "http://www.wtfpl.net/txt/copying/"))))
+    (license license:wtfpl2)))
 
 (define-public python2-pyaml
   (package-with-python2 python-pyaml))
