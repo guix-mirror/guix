@@ -7193,6 +7193,26 @@ replicating the evaluation as many times as specified, and returning the results
 conveniently wrapped into a data frame.")
     (license license:gpl2+)))
 
+(define-public r-mitools
+  (package
+    (name "r-mitools")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mitools" version))
+       (sha256
+        (base32
+         "0c2x2n1p53lcw0vx4vmy5j7m2f95i7g2iwbryl89imr99rvz617j"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-dbi" ,r-dbi)))
+    (home-page "https://cran.r-project.org/web/packages/mitools/")
+    (synopsis "Tools for multiple imputation of missing data")
+    (description
+     "This package provides tools to perform analyses and combine results from
+multiple-imputation datasets.")
+    (license license:gpl2)))
+
 (define-public r-magick
   (package
     (name "r-magick")
