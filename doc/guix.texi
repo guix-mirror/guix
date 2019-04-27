@@ -689,7 +689,7 @@ You can confirm that Guix is working by installing a sample package into
 the root profile:
 
 @example
-# guix package -i hello
+# guix install hello
 @end example
 
 The binary installation tarball can be (re)produced and verified simply
@@ -1577,7 +1577,7 @@ available with Guix and then define the @code{GUIX_LOCPATH} environment
 variable:
 
 @example
-$ guix package -i glibc-locales
+$ guix install glibc-locales
 $ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
 @end example
 
@@ -1677,7 +1677,7 @@ Multiple Outputs}).  For instance, the following command installs fonts
 for Chinese languages:
 
 @example
-guix package -i font-adobe-source-han-sans:cn
+guix install font-adobe-source-han-sans:cn
 @end example
 
 @cindex @code{xterm}
@@ -2492,7 +2492,7 @@ emacs-guix, The Emacs-Guix Reference Manual}), after installing
 with it):
 
 @example
-guix package -i emacs-guix
+guix install emacs-guix
 @end example
 
 @menu
@@ -2610,6 +2610,7 @@ is:
 @example
 guix package @var{options}
 @end example
+
 @cindex transactions
 Primarily, @var{options} specifies the operations to be performed during
 the transaction.  Upon completion, a new profile is created, but
@@ -2622,6 +2623,22 @@ For example, to remove @code{lua} and install @code{guile} and
 @example
 guix package -r lua -i guile guile-cairo
 @end example
+
+@cindex aliases, for @command{guix package}
+For your convenience, we also provide the following aliases:
+
+@itemize
+@item
+@command{guix install} is an alias for @command{guix package -i},
+@item
+@command{guix remove} is an alias for @command{guix package -r},
+@item
+and @command{guix upgrade} is an alias for @command{guix package -u}.
+@end itemize
+
+These aliases are less expressive than @command{guix package} and provide
+fewer options, so in some cases you'll probably want to use @command{guix
+package} directly.
 
 @command{guix package} also supports a @dfn{declarative approach}
 whereby the user specifies the exact set of packages to be available and
@@ -3312,7 +3329,7 @@ like to discuss this project, join us on @email{guix-devel@@gnu.org}.
 
 Often, packages defined in Guix have a single @dfn{output}---i.e., the
 source package leads to exactly one directory in the store.  When running
-@command{guix package -i glibc}, one installs the default output of the
+@command{guix install glibc}, one installs the default output of the
 GNU libc package; the default output is called @code{out}, but its name
 can be omitted as shown in this command.  In this particular case, the
 default output of @code{glibc} contains all the C header files, shared
@@ -3328,14 +3345,14 @@ separate output, called @code{doc}.  To install the main GLib output,
 which contains everything but the documentation, one would run:
 
 @example
-guix package -i glib
+guix install glib
 @end example
 
 @cindex documentation
 The command to install its documentation is:
 
 @example
-guix package -i glib:doc
+guix install glib:doc
 @end example
 
 Some packages install programs with different ``dependency footprints''.
@@ -4986,7 +5003,7 @@ module exports a variable named @code{emacs}, which is bound to a
 
 The @code{(gnu packages @dots{})} module name space is
 automatically scanned for packages by the command-line tools.  For
-instance, when running @code{guix package -i emacs}, all the @code{(gnu
+instance, when running @code{guix install emacs}, all the @code{(gnu
 packages @dots{})} modules are scanned until one that exports a package
 object whose name is @code{emacs} is found.  This package search
 facility is implemented in the @code{(gnu packages)} module.
@@ -23634,7 +23651,7 @@ pointed to by the @code{GIT_SSL_CAINFO} environment variable.  Thus, you
 would typically run something like:
 
 @example
-$ guix package -i nss-certs
+$ guix install nss-certs
 $ export SSL_CERT_DIR="$HOME/.guix-profile/etc/ssl/certs"
 $ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 $ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
@@ -23645,7 +23662,7 @@ variable to point to a certificate bundle, so you would have to run
 something like this:
 
 @example
-$ guix package -i nss-certs
+$ guix install nss-certs
 $ export CURL_CA_BUNDLE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 @end example
 
@@ -25427,7 +25444,7 @@ installs the debugging information for the GNU C Library and for GNU
 Guile:
 
 @example
-guix package -i glibc:debug guile:debug
+guix install glibc:debug guile:debug
 @end example
 
 GDB must then be told to look for debug files in the user's profile, by

@@ -224,6 +224,9 @@ MODULES =					\
   guix/scripts/archive.scm			\
   guix/scripts/import.scm			\
   guix/scripts/package.scm			\
+  guix/scripts/install.scm			\
+  guix/scripts/remove.scm			\
+  guix/scripts/upgrade.scm			\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\
@@ -425,6 +428,7 @@ SH_TESTS =					\
   tests/guix-pack-localstatedir.sh		\
   tests/guix-pack-relocatable.sh		\
   tests/guix-package.sh				\
+  tests/guix-package-aliases.sh			\
   tests/guix-package-net.sh			\
   tests/guix-system.sh				\
   tests/guix-archive.sh				\

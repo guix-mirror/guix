@@ -41,6 +41,9 @@ guix/scripts/build.scm
 guix/discovery.scm
 guix/scripts/download.scm
 guix/scripts/package.scm
+guix/scripts/install.scm
+guix/scripts/remove.scm
+guix/scripts/upgrade.scm
 guix/scripts/gc.scm
 guix/scripts/hash.scm
 guix/scripts/import.scm

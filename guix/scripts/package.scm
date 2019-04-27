@@ -58,7 +58,11 @@
             delete-generations
             delete-matching-generations
             display-search-paths
-            guix-package))
+            guix-package
+
+            (%options . %package-options)
+            (%default-options . %package-default-options)
+            guix-package*))
 
 (define %store
   (make-parameter #f))
@@ -899,6 +903,11 @@ processed, #f otherwise."
     (parse-command-line args %options (list %default-options #f)
                         #:argument-handler handle-argument))
 
+  (guix-package* opts))
+
+(define (guix-package* opts)
+  "Run the 'guix package' command on OPTS, an alist resulting for command-line
+option processing with 'parse-command-line'."
   (with-error-handling
     (or (process-query opts)
         (parameterize ((%store  (open-connection))
