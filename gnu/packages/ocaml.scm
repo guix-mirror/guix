@@ -4818,15 +4818,16 @@ Configurator allows one to:
 (define-public ocaml-spawn
   (package
     (name "ocaml-spawn")
-    (version "0.12.0")
+    (version "0.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/janestreet/spawn.git")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0amgj7g9sjlbjivn1mg7yjdmxd21hgp4a0ak2zrm95dmm4gi846i"))))
+                "1w003k1kw1lmyiqlk58gkxx8rac7dchiqlz6ah7aj7bh49b36ppf"))))
     (build-system dune-build-system)
     (arguments
      `(#:phases
