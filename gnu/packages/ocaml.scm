@@ -1554,20 +1554,21 @@ coexistence with the old (version 2) SQLite and its OCaml wrapper
 (define-public ocaml-csv
   (package
     (name "ocaml-csv")
-    (version "1.6")
+    (version "2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "https://github.com/Chris00/ocaml-csv/releases/download/"
-         version "/csv-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Chris00/ocaml-csv")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rv7x843vn6scxj87hzl01yqrl26rc27lr8s7z6rp9vs745g05zj"))))
-    (build-system ocaml-build-system)
-    (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)))
+         "07qdw8bbvprk78x96pnm807rhs82ks6sxis1cf5nyng8b5nvm2mv"))))
+    (build-system dune-build-system)
+    (arguments
+     `(#:package "csv"
+       #:test-target "."))
     (home-page "https://github.com/Chris00/ocaml-csv")
     (synopsis "Pure OCaml functions to read and write CSV")
     (description
