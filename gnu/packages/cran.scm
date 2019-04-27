@@ -7830,6 +7830,31 @@ Laplace approximation.  Gradients are calculated using automatic
 differentiation.")
     (license license:agpl3+)))
 
+(define-public r-bayestestr
+  (package
+    (name "r-bayestestr")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bayestestR" version))
+       (sha256
+        (base32
+         "1m6gj55z3shm3m3mgqj8nk73wij67y617sl04rbj400wz9qrhfva"))))
+    (properties `((upstream-name . "bayestestR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-insight" ,r-insight)))
+    (home-page "https://github.com/easystats/bayestestR")
+    (synopsis "Describe Bayesian models and posterior distributions")
+    (description
+     "This package provides utilities to understand and describe posterior
+distributions and Bayesian models.  It includes point-estimates such as
+@dfn{Maximum A Posteriori} (MAP), measures of dispersion such as @dfn{Highest
+Density Interval} (HDI), and indices used for null-hypothesis testing (such as
+ROPE percentage and pd).")
+    (license license:gpl3)))
+
 (define-public r-ggeffects
   (package
     (name "r-ggeffects")
