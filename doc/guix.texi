@@ -13696,7 +13696,7 @@ default is @code{-nolisten tcp}.
 @deffn {Scheme Procedure} set-xorg-configuration @var{config} @
   [@var{login-manager-service-type}]
 Tell the log-in manager (of type @var{login-manager-service-type}) to use
-@var{config}, an <xorg-configuration> record.
+@var{config}, an @code{<xorg-configuration>} record.
 
 Since the Xorg configuration is embedded in the log-in manager's
 configuration---e.g., @code{gdm-configuration}---this procedure provides a
@@ -13832,7 +13832,7 @@ Defaults to @samp{"0640"}.
 
 @deftypevr {@code{files-configuration} parameter} log-location error-log
 Defines the error log filename.  Specifying a blank filename disables
-access log generation.  The value @code{stderr} causes log entries to be
+error log generation.  The value @code{stderr} causes log entries to be
 sent to the standard error file when the scheduler is running in the
 foreground, or to the system log daemon when run in the background.  The
 value @code{syslog} causes log entries to be sent to the system log
