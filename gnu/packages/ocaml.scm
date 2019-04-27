@@ -2531,7 +2531,7 @@ standard iterator type starting from 4.07.")
 (define-public ocaml-re
   (package
     (name "ocaml-re")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -2540,7 +2540,7 @@ standard iterator type starting from 4.07.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ch6hvmm4ym3w2vghjxf3ka5j1023a37980fqi4zcb7sx756z20i"))))
+        (base32 "07ycb103mr4mrkxfd63cwlsn023xvcjp0ra0k7n2gwrg0mwxmfss"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f
@@ -2681,7 +2681,13 @@ JSON.")
         (base32 "1ppbav41mszpjcl0zi3fyg958cxyfs57i7kvha4ds9ydn89bjmrh"))))
     (build-system dune-build-system)
     (arguments
-     `(#:test-target "."))
+     `(#:test-target "."
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'update-deprecated
+           (lambda _
+             (substitute* "lib/uri.ml"
+               (("Re.get") "Re.Group.get")))))))
     (native-inputs
      `(("ocaml-ounit" ,ocaml-ounit)
        ("ocaml-ppx-sexp-conv" ,ocaml-ppx-sexp-conv)))
