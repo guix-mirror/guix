@@ -9953,6 +9953,16 @@ effort and encourages consistency.")
         (base32
          "0wq49qqzkcn8s19xgaxf2s1j1a563d7pbhhvris6fhxfdjsz4934"))))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See https://github.com/tengfei/ggbio/issues/117
+         ;; This fix will be included in the next release.
+         (add-after 'unpack 'fix-typo
+           (lambda _
+             (substitute* "R/GGbio-class.R"
+               (("fechable") "fetchable"))
+             #t)))))
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-annotationfilter" ,r-annotationfilter)
