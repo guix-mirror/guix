@@ -684,6 +684,10 @@ GUIX_SYSTEM_IMAGE_BASE = guix-system-install-$(PACKAGE_VERSION)
 # Prefix of the Guix VM image file name.
 GUIX_SYSTEM_VM_IMAGE_BASE = guix-system-vm-image-$(PACKAGE_VERSION)
 
+# Flags for 'guix system vm-image'.  By default create a VM image that appears
+# to have a 20G hard disk.
+GUIX_SYSTEM_VM_IMAGE_FLAGS ?= --image-size=30G
+
 # Return the sequence of '-s' flags for the given systems.
 system_flags = $(foreach system,$(1),-s $(system))
 
@@ -750,7 +754,7 @@ release: dist
 	done
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system vm-image							\
+	    guix system vm-image $(GUIX_SYSTEM_VM_IMAGE_FLAGS)				\
 	    --system=$$system								\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\
