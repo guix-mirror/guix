@@ -240,7 +240,8 @@ GTK+, lets you select a desktop session and log in to it.")
                                       "slim-reset.patch"
                                       "slim-login.patch"
                                       "slim-session.patch"
-                                      "slim-sigusr1.patch"))))
+                                      "slim-sigusr1.patch"
+                                      "slim-display.patch"))))
     (build-system cmake-build-system)
     (inputs `(("linux-pam" ,linux-pam)
 	      ("libpng" ,libpng)

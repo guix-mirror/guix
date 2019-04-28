@@ -1,0 +1,75 @@
+Add "display_name" configuration option and use its value instead of
+the hard coded one.
+
+Patch by Diego N. Barbato
+
+--- a/app.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/app.cpp	2019-04-27 13:48:23.479133531 +0200
+@@ -190,7 +190,13 @@
+ }
+ 
+ void App::Run() {
+-	DisplayName = DISPLAY;
++	/* Read configuration */
++	cfg = new Cfg;
++	char *cfgfile = getenv("SLIM_CFGFILE");
++	if (!cfgfile) cfgfile = CFGFILE;
++	cfg->readConf(cfgfile);
++
++	DisplayName = cfg->getOption("display_name").c_str();
+ 
+ #ifdef XNEST_DEBUG
+ 	char* p = getenv("DISPLAY");
+@@ -200,11 +206,7 @@
+ 	}
+ #endif
+ 
+-	/* Read configuration and theme */
+-	cfg = new Cfg;
+-	char *cfgfile = getenv("SLIM_CFGFILE");
+-	if (!cfgfile) cfgfile = CFGFILE;
+-	cfg->readConf(cfgfile);
++	/* Read theme */
+ 	string themebase = "";
+ 	string themefile = "";
+ 	string themedir = "";
+@@ -911,9 +913,7 @@
+ 	static const int MAX_XSERVER_ARGS = 256;
+ 	static char* server[MAX_XSERVER_ARGS+2] = { NULL };
+ 	server[0] = (char *)cfg->getOption("default_xserver").c_str();
+-	string argOption = cfg->getOption("xserver_arguments");
+-	/* Add mandatory -xauth option */
+-	argOption = argOption + " -auth " + cfg->getOption("authfile");
++	string argOption = cfg->getOption("display_name") + " " + cfg->getOption("xserver_arguments") + " -auth " + cfg->getOption("authfile");
+ 	char* args = new char[argOption.length()+2]; /* NULL plus vt */
+ 	strcpy(args, argOption.c_str());
+ 
+@@ -1233,7 +1233,7 @@
+ 	authfile = cfg->getOption("authfile");
+ 	remove(authfile.c_str());
+ 	putenv(StrConcat("XAUTHORITY=", authfile.c_str()));
+-	Util::add_mcookie(mcookie, ":0", cfg->getOption("xauth_path"),
++	Util::add_mcookie(mcookie, cfg->getOption("display_name").c_str(), cfg->getOption("xauth_path"),
+ 	  authfile);
+ }
+ 
+--- a/cfg.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/cfg.cpp	2019-04-27 13:49:40.511773743 +0200
+@@ -31,6 +31,7 @@
+ 	/* Configuration options */
+ 	options.insert(option("default_path","/bin:/usr/bin:/usr/local/bin"));
+ 	options.insert(option("default_xserver","/usr/bin/X"));
++	options.insert(option("display_name",":0.0"));
+ 	options.insert(option("xserver_arguments",""));
+ 	options.insert(option("numlock",""));
+ 	options.insert(option("daemon",""));
+--- a/switchuser.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/switchuser.cpp	2019-04-27 13:50:19.380096651 +0200
+@@ -54,6 +54,6 @@
+ 	string home = string(Pw->pw_dir);
+ 	string authfile = home + "/.Xauthority";
+ 	remove(authfile.c_str());
+-	Util::add_mcookie(mcookie, ":0", cfg->getOption("xauth_path"),
++	Util::add_mcookie(mcookie, displayName.c_str(), cfg->getOption("xauth_path"),
+ 	  authfile);
+ }
