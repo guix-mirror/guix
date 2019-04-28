@@ -5261,8 +5261,8 @@ techniques and a terse syntax.")
        ("ruby-netrc" ,ruby-netrc)))
     (native-inputs
      `(("bundler" ,bundler)
-       ("ruby-webmock", ruby-webmock-2)
-       ("ruby-rspec", ruby-rspec)))
+       ("ruby-webmock" ,ruby-webmock-2)
+       ("ruby-rspec" ,ruby-rspec)))
     (synopsis "Simple HTTP and REST client for Ruby")
     (description
      "@code{rest-client} provides a simple HTTP and REST client for Ruby,
