@@ -473,8 +473,8 @@ between the CDemu userspace daemon and linux kernel.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.113")
-(define %linux-libre-4.14-hash "0z547pdi1vhybyhnfr5krsfyxmdwnv5p5fps9jjyx6rvkxasddvh")
+(define %linux-libre-4.14-version "4.14.114")
+(define %linux-libre-4.14-hash "0hc6vk8wh6dlr8lbfd269n3drgbw2swfhlgqs9kl13104jrxqqv4")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
