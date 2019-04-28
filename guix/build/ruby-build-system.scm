@@ -86,28 +86,29 @@ operation is not deterministic, we replace it with `find`."
   "Remove the original gemspec, if present, and replace it with a new one.
 This avoids issues with upstream gemspecs requiring tools such as git to
 generate the files list."
-  (when (gem-archive? source)
-    (let ((gemspec (or (false-if-exception (first-gemspec))
-                       ;; Make new gemspec if one wasn't shipped.
-                       ".gemspec")))
+  (if (gem-archive? source)
+      (let ((gemspec (or (false-if-exception (first-gemspec))
+                         ;; Make new gemspec if one wasn't shipped.
+                         ".gemspec")))
 
-      (when (file-exists? gemspec) (delete-file gemspec))
+        (when (file-exists? gemspec) (delete-file gemspec))
 
-      ;; Extract gemspec from source gem.
-      (let ((pipe (open-pipe* OPEN_READ "gem" "spec" "--ruby" source)))
-        (dynamic-wind
-          (const #t)
-          (lambda ()
-            (call-with-output-file gemspec
-              (lambda (out)
-                ;; 'gem spec' writes to stdout, but 'gem build' only reads
-                ;; gemspecs from a file, so we redirect the output to a file.
-                (while (not (eof-object? (peek-char pipe)))
-                  (write-char (read-char pipe) out))))
-            #t)
-          (lambda ()
-            (close-pipe pipe)))))
-    #t))
+        ;; Extract gemspec from source gem.
+        (let ((pipe (open-pipe* OPEN_READ "gem" "spec" "--ruby" source)))
+          (dynamic-wind
+            (const #t)
+            (lambda ()
+              (call-with-output-file gemspec
+                (lambda (out)
+                  ;; 'gem spec' writes to stdout, but 'gem build' only reads
+                  ;; gemspecs from a file, so we redirect the output to a file.
+                  (while (not (eof-object? (peek-char pipe)))
+                    (write-char (read-char pipe) out))))
+              #t)
+            (lambda ()
+              (close-pipe pipe)))))
+      (display "extract-gemspec: skipping as source is not a gem archive\n"))
+  #t)
 
 (define* (build #:key source #:allow-other-keys)
   "Build a new gem using the gemspec from the SOURCE gem."
@@ -138,11 +139,15 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
          (gem-file-basename (basename gem-file))
          (gem-name (substring gem-file-basename
                               0
-                              (- (string-length gem-file-basename) 4))))
+                              (- (string-length gem-file-basename) 4)))
+         (gem-dir (string-append vendor-dir "/gems/" gem-name)))
     (setenv "GEM_VENDOR" vendor-dir)
 
     (or (zero?
+          ;; 'zero? system*' allows the custom error handling to function as
+          ;; expected, while 'invoke' raises its own exception.
          (apply system* "gem" "install" gem-file
+                "--verbose"
                 "--local" "--ignore-dependencies" "--vendor"
                 ;; Executables should go into /bin, not
                 ;; /lib/ruby/gems.
@@ -163,7 +168,7 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
     ;; For gems with native extensions, several Makefile-related files
     ;; are created that contain timestamps or other elements making
     ;; them not reproducible.  They are unnecessary so we remove them.
-    (when (file-exists? (string-append vendor-dir "/ext"))
+    (when (file-exists? (string-append gem-dir "/ext"))
       (for-each (lambda (file)
                   (log-file-deletion file)
                   (delete-file file))
@@ -172,7 +177,7 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
                              "page-Makefile.ri")
                  (find-files (string-append vendor-dir "/extensions")
                              "gem_make.out")
-                 (find-files (string-append vendor-dir "/ext")
+                 (find-files (string-append gem-dir "/ext")
                              "Makefile"))))
 
     #t))

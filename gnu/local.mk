@@ -664,6 +664,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/aria2-CVE-2019-3500.patch		\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
+  %D%/packages/patches/at-spi2-core-meson-compat.patch		\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
   %D%/packages/patches/ath9k-htc-firmware-gcc.patch		\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
@@ -813,8 +814,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
-  %D%/packages/patches/gcr-disable-failing-tests.patch		\
-  %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
   %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-CVE-2018-1000222.patch		\
   %D%/packages/patches/gd-CVE-2019-6977.patch			\
@@ -859,7 +858,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
-  %D%/packages/patches/gnome-todo-libical-compat.patch		\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-fix-test-transaction-failure.patch \
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
@@ -890,7 +888,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   %D%/packages/patches/gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtk2-theme-paths.patch			\
-  %D%/packages/patches/gtk3-fix-deprecation-macro-use.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
@@ -1079,6 +1076,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-tracelogger.patch		\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mrrescue-support-love-11.patch		\
+  %D%/packages/patches/mrustc-0.8.0-fix-variable-length-integer-receiving.patch \
   %D%/packages/patches/mtools-mformat-uninitialized.patch	\
   %D%/packages/patches/mumble-1.2.19-abs.patch			\
   %D%/packages/patches/mumps-build-parallelism.patch		\
@@ -1211,6 +1209,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
+  %D%/packages/patches/python-robotframework-honor-source-date-epoch.patch \
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
@@ -1292,9 +1291,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/teeworlds-use-latest-wavpack.patch	\
   %D%/packages/patches/texinfo-perl-compat.patch		\
   %D%/packages/patches/texinfo-5-perl-compat.patch		\
+  %D%/packages/patches/texlive-bin-CVE-2018-17407.patch		\
   %D%/packages/patches/texlive-bin-luatex-poppler-compat.patch	\
-  %D%/packages/patches/texlive-bin-pdftex-poppler-compat.patch	\
-  %D%/packages/patches/texlive-bin-xetex-poppler-compat.patch	\
   %D%/packages/patches/telegram-purple-adjust-test.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
@@ -1307,6 +1305,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tk-find-library.patch			\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
+  %D%/packages/patches/totem-meson-compat.patch			\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
@@ -1328,7 +1327,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
-  %D%/packages/patches/valgrind-glibc-compat.patch		\
   %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
   %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\
   %D%/packages/patches/vboot-utils-skip-test-workbuf.patch	\

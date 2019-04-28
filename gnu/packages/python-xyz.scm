@@ -2671,6 +2671,292 @@ and several other projects.")
 (define-public python2-guzzle-sphinx-theme
   (package-with-python2 python-guzzle-sphinx-theme))
 
+(define-public python-bumpversion
+  (package
+    (name "python-bumpversion")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bumpversion" version))
+       (sha256
+        (base32
+         "0zn7694yfipxg35ikkfh7kvgl2fissha3dnqad2c5bvsvmrwhi37"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/peritus/bumpversion")
+    (synopsis "Tool to bump software version")
+    (description "This tool provides a command-line interface (CLI) to bump a
+software version simply.")
+    (license license:expat)))
+
+(define-public python-deprecated
+  (package
+    (name "python-deprecated")
+    (version "1.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tantale/deprecated.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14909glxxwwc4b9qpz2b9jdriwzi5n65ichw85xqppap5f79wcwz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-wrapt" ,python-wrapt)))
+    (native-inputs
+     `(("python-bumpversion" ,python-bumpversion)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx" ,python-sphinx)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/tantale/deprecated")
+    (synopsis "Python decorator to deprecate classes, functions or methods")
+    (description "The @code{deprecated} decorator provides a convenient way to deprecate
+to deprecate classes, functions or methods.")
+    (license license:expat)))
+
+(define-public python-pygithub
+  (package
+    (name "python-pygithub")
+    (version "1.43.7")
+    (source
+     ;; We fetch from the Git repo because there are no tests in the PyPI
+     ;; archive.
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PyGithub/PyGithub.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ww92zz0ja9w6rw83vphmn8rwmcn6abg16j4q7zxjc0rrg2cfj9i"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ;; Some tests rely on the network.
+                  (add-after 'unpack 'disable-failing-tests
+                    (lambda _
+                      (substitute* "tests/Issue142.py"
+                        (("testDecodeJson") "disabled_testDecodeJson"))
+                      #t))
+                  (add-before 'check 'prepare-for-tests
+                    (lambda _
+                      (for-each (lambda (f)
+                                  (chmod f #o666))
+                                (find-files "./tests"))
+                      (system* "python" "-m" "lib2to3" "-w" "-n" "tests")
+                      (setenv "PYTHONPATH"
+                              (string-append "./tests:" (getenv "PYTHONPATH")))
+                      #t)))))
+    (propagated-inputs
+     `(("python-deprecated" ,python-deprecated)
+       ("python-pyjwt" ,python-pyjwt)
+       ("python-requests" ,python-requests)))
+    (native-inputs `(("python-httpretty" ,python-httpretty)))
+    (home-page "https://pygithub.readthedocs.io/en/latest/")
+    (synopsis "Python library for the GitHub API")
+    (description "This library allows managing GitHub resources such as
+repositories, user profiles, and organizations in your Python applications,
+using version 3 of the GitHub application programming interface (API).")
+    (license license:lgpl3+)))
+
+(define-public python-rellu
+  (package
+    (name "python-rellu")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rellu" version))
+       (sha256
+        (base32
+         "1w0arpj1sm7vh29nrbnca4pnp8sx42l07r17inwqcjjf9bhng66x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-invoke" ,python-invoke)
+       ("python-pygithub" ,python-pygithub)))
+    (home-page "https://github.com/robotframework/rellu")
+    (synopsis "Utilities to create PyPI releases")
+    (description "This collection of utilities contains tooling and templates
+to assist in creating releases on GitHub and publishing them on PyPI.  It is
+designed to be used by Robot Framework and tools and libraries in its
+ecosystem, but can naturally be used also by other projects.")
+    (license license:asl2.0)))
+
+(define-public python-robotframework
+  (package
+    (name "python-robotframework")
+    (version "3.1.1")
+    ;; There are no tests in the PyPI archive.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robotframework/robotframework.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aaiamc9l35m5sf7xl2qc5q9308v7sz3p1qgzcslsjxzddphyn4v"))
+       (patches (search-patches
+                 "python-robotframework-honor-source-date-epoch.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'build-and-install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((doc-output (assoc-ref outputs "doc"))
+                             (doc (string-append doc-output "/share/"
+                                                 ,name "-" ,version "/")))
+                        (invoke "invoke" "library-docs" "all")
+                        (mkdir-p doc)
+                        (copy-recursively "doc/libraries"
+                                          (string-append doc "/libraries"))
+                        #t)))
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "utest/run.py"))))))
+    (native-inputs
+     `(("python-invoke" ,python-invoke)
+       ("python-rellu" ,python-rellu)
+       ("python:tk" ,python "tk")))     ;used when building the HTML doc
+    (outputs '("out" "doc"))
+    (home-page "https://robotframework.org")
+    (synopsis "Generic automation framework")
+    (description "Robot Framework is a generic automation framework for
+acceptance testing, acceptance test driven development (ATDD), and robotic
+process automation (RPA).")
+    (license license:asl2.0)))
+
+(define-public python-robotframework-lint
+  ;; There is no properly tagged release; the commit below seems to correspond
+  ;; to the 0.9 stable release available from PyPI.  The tests are not
+  ;; included in the PyPI archive, so we fetch the sources from the upstream
+  ;; Git repo.
+  (let ((commit "e851879bab1f63e4e53b34a4dc8a67ed95102830")
+        (revision "1"))
+    (package
+      (name "python-robotframework-lint")
+      (version (git-version "0.9.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/boakley/robotframework-lint.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p6fknqg5sb9qz5857ji4a877657vgfjm5v3zn45994parx6ml1m"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "python" "-m" "robot" "-A"
+                       "tests/conf/default.args" "tests"))))))
+      (propagated-inputs
+       `(("python-robotframework" ,python-robotframework)))
+      (home-page "https://github.com/boakley/robotframework-lint/")
+      (synopsis "Static analysis tool (linter) for Robot Framework")
+      (description "This package provides the @code{rflint} command-line
+utility, a static analysis tool (linter) for Robot Framework source files.")
+      (license license:asl2.0))))
+
+(define-public python-robotframework-sshlibrary
+  (package
+    (name "python-robotframework-sshlibrary")
+    (version "3.3.0")
+    ;; There are no tests in the PyPI archive.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robotframework/SSHLibrary.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1mk6dz2jqqndbx4yji09012q6rmadnqdywi7czvj62b0s07dr3r2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-and-install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc-output (assoc-ref outputs "doc"))
+                    (doc (string-append doc-output "/share/"
+                                        ,name "-" ,version "/")))
+               (invoke "chmod" "-R" "+w" "docs")
+               (invoke "invoke" "kw-docs" "project-docs")
+               (mkdir-p doc)
+               (for-each delete-file (find-files "docs" "\\.rst"))
+               (copy-recursively "docs" doc)
+               #t)))
+         (replace 'check
+           (lambda _
+             ;; Some tests require an SSH server; we remove them.
+             (delete-file "utest/test_client_api.py")
+             (delete-file "utest/test_scp.py")
+             (invoke "python" "utest/run.py"))))))
+    (propagated-inputs
+     `(("python-robotframework" ,python-robotframework)
+       ("python-paramiko" ,python-paramiko)
+       ("python-scp" ,python-scp)))
+    (native-inputs
+     `(("openssh" ,openssh)
+       ("which" ,which)
+       ;; To generate the documentation
+       ("python-docutils" ,python-docutils)
+       ("python-invoke" ,python-invoke)
+       ("python-pygments" ,python-pygments)
+       ("python-rellu" ,python-rellu)))
+    (outputs '("out" "doc"))
+    (home-page "https://github.com/robotframework/SSHLibrary")
+    (synopsis "Robot Framework library for SSH and SFTP")
+    (description "SSHLibrary is a Robot Framework library providing support
+for SSH and SFTP.  It has the following main usages:
+@itemize @bullet
+@item Executing commands on the remote machine, either blocking or non-blocking.
+@item Writing and reading in an interactive shell.
+@item Transferring files and directories over SFTP.
+@item Ensuring that files and directories exist on the remote machine.
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python-scp
+  (package
+    (name "python-scp")
+    (version "0.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scp" version))
+       (sha256
+        (base32
+         "1crlpw9lnn58fs1c1rmh7s7s9y5gkgpgjsqlvg9qa51kq1knx7gg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))                     ;tests require an SSH server
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)))
+    (home-page "https://github.com/jbardin/scp.py")
+    (synopsis "SCP protocol module for Python and Paramiko")
+    (description "The scp module extends the Paramiko library to send and
+receive files via the SCP1 protocol, as implemented by the OpenSSH
+@command{scp} program.")
+    (license license:gpl2+)))
+
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
@@ -2977,14 +3263,14 @@ and is very extensible.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.5")
+    (version "0.29.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1wfb68g115gmf3mv23w0hh972b0ll85gpb92ci28x6h997br0llx"))))
+         "1bp7cn0pp5qy63k9hbp4ka34fm01kvysh478phpkhr68npqk6pbc"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3016,9 +3302,6 @@ and is very extensible.")
 
          (replace 'check
            (lambda _
-             ;; The "with_outer_raising" test fails with Python 3.7.  See
-             ;; https://github.com/cython/cython/issues/2454
-             (delete-file "tests/run/generators_py.py")
              (invoke "python" "runtests.py" "-vv"))))))
     (home-page "http://cython.org/")
     (synopsis "C extensions for Python")
@@ -3422,13 +3705,13 @@ library, libgit2 implements Git plumbing.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.2.1")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyparsing" version))
        (sha256
-        (base32 "06dgd0iilvf8m0ssmfpcbh8l6jf0zkp8adbb84llksg17crfx4zl"))))
+        (base32 "0yk6xl885b91dmlhlsap7x78hk2rdr879fln9anbq6k4ca42djb6"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments

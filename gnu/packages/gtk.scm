@@ -85,7 +85,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.28.1")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -93,17 +93,12 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1z7laf6qwv5zsqcnj222dm5f43c6f3liil0cgx4s4s62xjk1wfnd"))))
-   (build-system gnu-build-system)
-   (outputs '("out" "doc"))
-   (arguments
-    `(#:configure-flags
-      (list (string-append "--with-html-dir="
-                           (assoc-ref %outputs "doc")
-                           "/share/gtk-doc/html"))))
+              "1k4i817bd2w5b9z394f2yyx95591l2746wa40am0vvz4gzdgwhfb"))))
+   (build-system meson-build-system)
    (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
     `(("pkg-config" ,pkg-config)
+      ("gettext" ,gettext-minimal)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME accessibility toolkit")
@@ -399,7 +394,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.24.10")
+   (version "4.0.2")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/gtksourceview/"
@@ -407,7 +402,7 @@ printing and other features typical of a source code editor.")
                                  "gtksourceview-" version ".tar.xz"))
              (sha256
               (base32
-               "16ym7jwiki4s1pilwr4incx0yg7ll94f1cajrnpndkxxs36hcm5b"))))
+               "1b2z9c0skxrgw2vh08hv6qxky8jbvamc4rgww82j0kpp533rz0hm"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -444,10 +439,23 @@ GTK+ text widget GtkTextView.  It improves GtkTextView by implementing syntax
 highlighting and other features typical of a source code editor.")
    (license license:lgpl2.1+)))
 
+(define-public gtksourceview-3
+ (package (inherit gtksourceview)
+   (name "gtksourceview")
+   (version "3.24.10")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "16ym7jwiki4s1pilwr4incx0yg7ll94f1cajrnpndkxxs36hcm5b"))))))
+
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.38.0")
+   (version "2.38.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -455,7 +463,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0ixfmnxjylx06mjaw116apymwi1a8rnkmkbbvqaxxg2pfwy9fl6x"))))
+              "0fmbjgjcyym3qg46f64qgl7icdm4ii77flyc1mhk244rp8vgi7zi"))))
    (build-system meson-build-system)
    (arguments
     `(#:configure-flags '("-Dinstalled_tests=false")
@@ -547,39 +555,64 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.26.2")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version)  "/"
                                 name "-" version ".tar.xz"))
+            (patches (search-patches "at-spi2-core-meson-compat.patch"))
             (sha256
              (base32
-              "0596ghkamkxgv08r4a1pdhm06qd5zzgcfqsv64038w9xbvghq3n8"))))
-   (build-system gnu-build-system)
+              "083j1v7kdjrpjsv1b9dl3d8xqj39jyp4cfn8i9gbbm7q2g93b923"))))
+   (build-system meson-build-system)
    (outputs '("out" "doc"))
    (arguments
     '(#:configure-flags
-      (list (string-append "--with-html-dir="
-                           (assoc-ref %outputs "doc")
-                           "/share/gtk-doc/html"))
+      (list "-Ddocs=true")
       #:phases
       (modify-phases %standard-phases
-        (replace 'check
-                 ;; Run test-suite under a dbus session.
-                 (lambda _
-                   ;; Don't fail on missing  '/etc/machine-id'.
-                   (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (invoke "dbus-launch" "make" "check"))))))
+        (add-after 'unpack 'set-documentation-path
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Ensure that the cross-references point to the "doc" output.
+            (substitute* "doc/libatspi/meson.build"
+              (("docpath =.*")
+               (string-append "docpath = '" (assoc-ref outputs "doc") "/share/gtk-doc/html'\n")))
+            #t))
+        (add-before 'install 'prepare-doc-directory
+          (lambda* (#:key outputs #:allow-other-keys)
+            (mkdir-p (string-append (assoc-ref outputs "doc") "/share"))
+            #t))
+        (add-after 'install 'move-documentation
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
+              (copy-recursively
+               (string-append out "/share/gtk-doc")
+               (string-append doc "/share/gtk-doc"))
+              (delete-file-recursively
+               (string-append out "/share/gtk-doc")))
+            #t))
+        (add-after 'install 'check
+          (lambda _
+            (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
+            ;; Run test-suite under a dbus session.
+            (setenv "XDG_DATA_DIRS"     ; for finding org.xfce.Xfconf.service
+                    (string-append %output "/share"))
+            ;; Don't fail on missing  '/etc/machine-id'.
+            (setenv "DBUS_FATAL_WARNINGS" "0") ;
+            (invoke "dbus-launch" "ninja" "test")))
+         (delete 'check))))
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
     `(("dbus" ,dbus)
-      ("glib" ,glib)))
-   (inputs
-    `(("libxi" ,libxi)
+      ("glib" ,glib)
+      ("libxi" ,libxi)
       ("libxtst" ,libxtst)))
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
+      ("gtk-doc" ,gtk-doc)
+      ("glib" ,glib "bin")
       ("intltool" ,intltool)
       ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, core components")
@@ -592,7 +625,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.26.2")
+   (version "2.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -600,8 +633,8 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0vkan52ab9vrkknnv8y4f1cspk8x7xd10qx92xk9ys71p851z2b1"))))
-   (build-system gnu-build-system)
+              "0p54wx6f6q7s8w0b1j0sgw87pikllp79q5g3lfiwqazs779ycl8b"))))
+   (build-system meson-build-system)
    (arguments
     '(#:phases
       (modify-phases %standard-phases
@@ -609,14 +642,16 @@ is part of the GNOME accessibility project.")
                  ;; Run test-suite under a dbus session.
                  (lambda _
                    (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (invoke "dbus-launch" "make" "check"))))))
+                   (invoke "dbus-launch" "meson" "test"))))))
    (propagated-inputs
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
    (inputs
     `(("atk" ,atk)))
    (native-inputs
-    `(("dbus" ,dbus) ; for testing
-      ("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+      ;; For tests.
+      ("dbus" ,dbus)
+      ("libxml2" ,libxml2)))
    (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
    (description
     "The Assistive Technology Service Provider Interface
@@ -693,8 +728,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.24.2")
-   (replacement gtk+/fixed)
+   (version "3.24.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -702,7 +736,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "14l8mimdm44r3h5pn5hzigl1z25jna8jxvb16l88v4nc4zj0afsv"))
+              "080m925dyhiidlhsxqzx040l4iha2gg38pzbfpnsnjyzl92124jj"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))
             (modules '((guix build utils)))
@@ -787,18 +821,6 @@ application suites.")
     (list (search-path-specification
            (variable "GUIX_GTK3_PATH")
            (files '("lib/gtk-3.0")))))))
-
-;; Fixes a bug in Gtk that causes crashes in IceCat and Emacs.
-;; See <https://bugs.gnu.org/34454>, <https://bugs.gnu.org/34658>,
-;; and <https://gitlab.gnome.org/GNOME/gtk/issues/1523>.
-(define gtk+/fixed
-  (package
-    (inherit gtk+)
-    (source (origin
-              (inherit (package-source gtk+))
-              (patches
-               (cons (search-patch "gtk3-fix-deprecation-macro-use.patch")
-                     (origin-patches (package-source gtk+))))))))
 
 ;;;
 ;;; Guile bindings.
@@ -1420,7 +1442,7 @@ information.")
 (define-public gtk-doc
   (package
     (name "gtk-doc")
-    (version "1.27")
+    (version "1.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1428,7 +1450,7 @@ information.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vwsdl61nvnmqswlz5j9m4hg7qirhazwcikcnqf9nx0c13vx6sz2"))))
+                "05apmwibkmn1icx05l8aw241lhymcx01zvk5i499cb150bijj7li"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f

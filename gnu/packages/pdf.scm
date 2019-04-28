@@ -663,14 +663,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "8.2.1")
+   (version "8.4.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256
              (base32
-              "1jdb0jj72fjdp6xip4m7yz31r5x13zs7h4smnxsycgw3vbmx6igl"))
+              "1864p952m8vzxk6v500a42psbqj2g2gyli3d3zj6h33hzwxqy09r"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove

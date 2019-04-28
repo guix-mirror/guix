@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -219,14 +219,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.8.2")
+    (version "0.8.4")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://xkbcommon.org/download/" name "-"
+             (uri (string-append "https://xkbcommon.org/download/libxkbcommon-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "136mdq11lrwg6rjmm44lmysxxgb9c35p4sq6k0cd129x82rw9f3s"))))
+               "12vc91ydhphd5sddz15560r41l7k0i7mq6nma8kkbzdp6bwwzpb0"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -379,7 +379,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.96")
+    (version "2.4.97")
     (source
       (origin
         (method url-fetch)
@@ -389,23 +389,24 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "14xkip83qgljjaahzq40qgl60j54q7k00la1hbf5kk5lgg7ilmhd"))
+          "08yimlp6jir1rs5ajgdx74xa5qdzcqahpdzdk0rmkmhh7vdcrl3p"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
-             ("armhf-linux"
-              '("--enable-exynos-experimental-api"
-                "--enable-omap-experimental-api"
-                "--enable-etnaviv-experimental-api"
-                "--enable-tegra-experimental-api"
-                "--enable-freedreno-kgsl"))
-             ("aarch64-linux"
-              '("--enable-tegra-experimental-api"
-                "--enable-etnaviv-experimental-api"
-                "--enable-freedreno-kgsl"))
-             (_ '())))))
+             ((or "armhf-linux" "aarch64-linux")
+              '("-Dexynos=true"
+                "-Domap=true"
+                "-Detnaviv=true"
+                "-Dtegra=true"
+                "-Dfreedreno-kgsl=true"))
+             (_ '())))
+
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "meson" "test" "--timeout-multiplier" "5"))))))
     (inputs
      `(("libpciaccess" ,libpciaccess)))
     (native-inputs

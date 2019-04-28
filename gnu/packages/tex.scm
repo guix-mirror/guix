@@ -102,21 +102,23 @@
        (base32
         "0khyi6h015r2zfqgg0a44a2j7vmr1cy42knw7jbss237yvakc07y"))
       (patches
-       (list
-        ;; This is required for compatibility with Poppler 0.64.0 and to fix a
-        ;; segmentation fault in dvipdfm-x from XeTeX, and also contains a fix
-        ;; for CVE-2018-17407.
-        (origin
-          (method url-fetch)
-          (uri (string-append "http://www.linuxfromscratch.org/patches/blfs/"
-                              "svn/texlive-" version "-source-upstream_fixes-2.patch"))
-          (file-name "texlive-poppler-compat.patch")
-          (sha256
-           (base32
-            "04sxy1qv9y575mxwyg3y7rx7mh540pfjqx7yni7ncb5wjbq9pq1a")))
-        (search-patch "texlive-bin-luatex-poppler-compat.patch")
-        (search-patch "texlive-bin-pdftex-poppler-compat.patch")
-        (search-patch "texlive-bin-xetex-poppler-compat.patch")))))
+       (let ((arch-patch
+              (lambda (name revision hash)
+                (origin
+                  (method url-fetch)
+                  (uri (string-append "https://git.archlinux.org/svntogit/packages.git"
+                                      "/plain/trunk/" name "?h=packages/texlive-bin"
+                                      "&id=" revision))
+                  (file-name (string-append "texlive-bin-" name))
+                  (sha256 (base32 hash)))))
+             (arch-revision "e1975bce0b9d270d7c9773c5beb7e87d61ee8f57"))
+         (append (search-patches  "texlive-bin-CVE-2018-17407.patch"
+                                  "texlive-bin-luatex-poppler-compat.patch")
+                 (list
+                  (arch-patch "pdftex-poppler0.72.patch" arch-revision
+                              "0p46b6xxxg2s3hx67r0wpz16g3qygx65hpc581xs3jz5pvsiq3y7")
+                  (arch-patch "xetex-poppler-fixes.patch" arch-revision
+                              "1jj1p5zkjljb7id9pjv29cw0cf8mwrgrh4ackgzz9c200vaqpsvx")))))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -195,9 +197,9 @@
             #t))
         (add-after 'unpack 'use-code-for-new-poppler
           (lambda _
-            (copy-file "texk/web2c/pdftexdir/pdftoepdf-newpoppler.cc"
+            (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.72.0.cc"
                        "texk/web2c/pdftexdir/pdftoepdf.cc")
-            (copy-file "texk/web2c/pdftexdir/pdftosrc-newpoppler.cc"
+            (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.72.0.cc"
                        "texk/web2c/pdftexdir/pdftosrc.cc")
             #t))
         (add-after 'unpack 'disable-failing-test

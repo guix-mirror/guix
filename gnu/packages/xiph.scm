@@ -235,7 +235,6 @@ It currently supports:
 (define flac
   (package
    (name "flac")
-   (replacement flac/fixed)
    (version "1.3.2")
    (source (origin
             (method url-fetch)
@@ -243,7 +242,8 @@ It currently supports:
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0gymm2j3276kr9nz6vmgfwsdfrq6c449n40a0mzz8h6wc7nw7kwi"))))
+              "0gymm2j3276kr9nz6vmgfwsdfrq6c449n40a0mzz8h6wc7nw7kwi"))
+            (patches (search-patches "flac-CVE-2017-6888.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f))
@@ -256,14 +256,6 @@ meaning that audio is compressed in FLAC without any loss in quality.")
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution.")) ; and LGPL and GPL
    (home-page "https://xiph.org/flac/")))
-
-(define flac/fixed
-  (package
-    (inherit flac)
-    (source
-      (origin
-        (inherit (package-source flac))
-        (patches (search-patches "flac-CVE-2017-6888.patch"))))))
 
 (define libkate
   (package

@@ -324,15 +324,16 @@ enough to be used effectively as a scientific calculator.")
 (define-public double-conversion
   (package
     (name "double-conversion")
-    (version "3.1.0")
+    (version "3.1.4")
     (home-page "https://github.com/google/double-conversion")
     (source (origin
               (method git-fetch)
-              (uri (git-reference (url home-page) (commit version)))
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "123rb2p4snqagrybw66vnapchqdwn2rfpr1wcq0ya9gwbyl7xccx"))))
+                "13xwcqk2c0q8c1siw566clxcpvp0xrxvb72mra42wa3nvq9wlsv6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
@@ -2972,7 +2973,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
@@ -2981,7 +2982,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1s56lgilyyw86dzmj3jkci9zsg24n60wq4d0zri1hrxlxb6ihimj"))))
+         "062kg4ny1ywz7k5grpb4pbf0hba0w6manbajwkmv4f477a31sxpl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2997,6 +2998,7 @@ parts of it.")
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
+             "MAKE_NB_JOBS=0"           ;use jobserver for submakes
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.

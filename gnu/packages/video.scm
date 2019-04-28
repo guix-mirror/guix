@@ -700,7 +700,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
@@ -712,7 +712,7 @@ libebml is a C++ library to read and write EBML files.")
              (string-append "https://www.freedesktop.org/software/vaapi/releases/"
                             "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "1r6wiw4k044cpb39rfqqdw6qmzw0268whpz124hywck9v980x130"))))
+        (base32 "14ckq67z3pcd7jrnrm3ckss440g6dzp2m0ff5rps54qmq9b309lr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2272,15 +2272,16 @@ and JACK.")
 (define-public libvdpau
   (package
     (name "libvdpau")
-    (version "1.1.1")
+    (version "1.2")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://secure.freedesktop.org/~aplattner/vdpau/"
-                            name "-" version ".tar.bz2"))
+        (uri (string-append "https://gitlab.freedesktop.org/vdpau/libvdpau"
+                            "/uploads/14b620084c027d546fa0b3f083b800c6/"
+                            "libvdpau-" version ".tar.bz2"))
         (sha256
          (base32
-          "0dnpb0yh7v6rvckx82kxg045rd9rbsw25wjv7ad5n8h94s9h2yl5"))))
+          "01ps6g6p6q7j2mjm9vn44pmzq3g75mm7mdgmnhb1qkjjdwc9njba"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

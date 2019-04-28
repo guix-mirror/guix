@@ -57,7 +57,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.21.5")
+    (version "1.22.3")
     (source(origin
               (method url-fetch)
               (uri
@@ -65,7 +65,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0azq9j7kqy18g6vgmvrbw8i4mcqdp3cbgh7q79x1b8p92w4si6rq"))
+                "11vilv80l3q7hz8vyhclvjcnlgk93r7p9dvg634186iddjzls0j3"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -123,6 +123,12 @@
                           (("/usr/local/lib/cups/filter")
                            (string-append out "/lib/cups/filter")))
                         #t)))
+                  (add-after 'unpack 'patch-for-poppler
+                    (lambda _
+                      (substitute* "filter/pdf.cxx"
+                        (("GooString \\*field_name;" m)
+                         (string-append "const " m)))
+                      #t))
                   (add-after 'install 'wrap-filters
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Some filters expect to find 'gs' in $PATH.  We cannot
@@ -180,7 +186,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.2.10")
+    (version "2.2.11")
     (source
      (origin
        (method url-fetch)
@@ -188,7 +194,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "1fq52aw1mini3ld2czv5gg37wbbvh4n7yc7wzzxvbs3zpfrv5j3p"))))
+         "0v5p10lyv8wv48s8ghkhjmdrxg6iwj8hn36v1ilkz46n7y0i107m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

@@ -159,16 +159,17 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.99")
+    (version "1.1.106")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Headers")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "166z6wn5kxnqm55zgzhmqa9hg48d11bfmi3wnf1mqhsx48xw6b8z"))))
+         "0idw7q715ikj575qmspvgq2gzc6c1sj581b8z3xnv6wz9qbzrmsd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -189,9 +190,10 @@ interpretation of the specifications for these languages.")
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Loader")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "02m3sdcbl8s6qr1nsba5621vg3f4akkfaa7g9hi70cpvws4x0gg8"))))
+         "1ypjd2gfxdwldnqrrqy6bnjln5mml62a9k5pfi451srcxznijjai"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -203,20 +205,14 @@ interpretation of the specifications for these languages.")
              (substitute* "CMakeLists.txt" ((".*spirv_tools_commit_id.h.*") ""))
              #t)))
        #:configure-flags (list
-                          "-DBUILD_LAYERS=OFF" ; FIXME: Fails to build.
                           "-DBUILD_TESTS=OFF" ; FIXME: Needs 'googletest' submodule.
                           (string-append "-DCMAKE_INSTALL_LIBDIR="
                                          (assoc-ref %outputs "out") "/lib"))))
-    (inputs `(("glslang" ,glslang)
-              ("libxcb" ,libxcb)
-              ("libx11" ,libx11)
-              ("libxrandr" ,libxrandr)
-              ("mesa" ,mesa)
-              ("spirv-tools" ,spirv-tools)
-              ("vulkan-headers" ,vulkan-headers)
-              ("wayland" ,wayland)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("python" ,python)))
+    (native-inputs `(("libxrandr" ,libxrandr)
+                     ("pkg-config" ,pkg-config)
+                     ("python" ,python)
+                     ("vulkan-headers" ,vulkan-headers)
+                     ("wayland" ,wayland)))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
@@ -238,29 +234,31 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.1.97.0")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/Vulkan-Tools")
-             (commit (string-append "sdk-" version))))
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1p70wk0x546w1dlvlghrqm4l4b6ql0x08pdybyagnwwph0gdvqy3"))))
+         "0swqyk16mbkivyk79dpqbhpw05a7yrakqynywznr5zgqbc0z4gj8"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
        ("libxrandr" ,libxrandr)
-       ("mesa" ,mesa)
-       ("vulkan-headers" ,vulkan-headers)
        ("vulkan-loader" ,vulkan-loader)
        ("wayland" ,wayland)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("python" ,python)
+       ("vulkan-headers" ,vulkan-headers)))
     (arguments
-     `(#:tests? #f))                    ; No tests.
+     `(#:tests? #f                      ; No tests.
+       #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
+                               (assoc-ref %build-inputs "glslang")))))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Tools")
     (synopsis "Tools and utilities for Vulkan")

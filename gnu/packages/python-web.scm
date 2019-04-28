@@ -1280,15 +1280,19 @@ WebSocket usage in Python programs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.13.0")
+    (version "2.21.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "1s0wg4any4dsv5l3hqjxqk2zgb7pdbqhy9rhc8kh3aigfq4ws8jp"))))
-    ;; TODO: unbundle urllib3 and chardet.
+               "13jr0wkj9c2j8c0c8iaal9iivi0bpxghnsdn6lxcpnmc657q4ajh"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-chardet" ,python-chardet)
+       ("python-idna" ,python-idna)
+       ("python-urllib3" ,python-urllib3)))
     (arguments
      ;; FIXME: Some tests require network access.
      '(#:tests? #f))
@@ -1457,11 +1461,6 @@ authenticated session objects providing things like keep-alive.")
           "08lwd9f3hqznyf32vnzwvp87pchx062nkbgyrf67rwlkgj0jk5fy"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
-    (native-inputs
-     `(;; some packages for tests
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-tornado" ,python-tornado)))
     (propagated-inputs
      `(;; These 5 inputs are used to build urrlib3[secure]
        ("python-certifi" ,python-certifi)

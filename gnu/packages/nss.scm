@@ -34,7 +34,7 @@
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.20")
+    (version "4.21")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -42,7 +42,7 @@
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "0vjms4j75zvv5b2siyafg7hh924ysx2cwjad8spzp7x87n8n929c"))))
+               "0nkbgk0x31nfm4xl8la0a3vrnpa8gzkh7g4k65p7n880n73k5shm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -70,7 +70,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.41")
+    (version "3.43")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -81,7 +81,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0bbif42fzz5gk451sv3yphdrl7m4p6zgk5jk0307j06xs3sihbmb"))
+                "1jp27w4w9nj5pkzrbc1zqj6pa09h2yy7vhzyx5fvg1q86fvw22zk"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))
@@ -129,7 +129,7 @@ in the Mozilla clients.")
              ;; leading to test failures:
              ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
              ;; work around that, set the time to roughly the release date.
-             (invoke "faketime" "2018-12-01" "./nss/tests/all.sh")))
+             (invoke "faketime" "2019-02-01" "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))

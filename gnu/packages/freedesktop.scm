@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -152,31 +152,30 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.12.3")
+    (version "1.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   "libinput-" version ".tar.xz"))
               (sha256
                (base32
-                "0mg2zqbjcgj0aq7d9nwawvyhx43vakilahrc83hrfyif3a3gyrpj"))))
+                "0vb11fzd06xbagrnha2bbzmlfg04bbgb5w5rjrxrrz686mfwj9zb"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")))
     (native-inputs
      `(("check" ,check)
-       ("pkg-config" ,pkg-config)
-       ("valgrind" ,valgrind)))
-    (propagated-inputs
-     `(;; In Requires.private of libinput.pc.
-       ("libevdev" ,libevdev)
-       ("libudev" ,eudev)
-       ("libwacom" ,libwacom)
-       ("mtdev" ,mtdev)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
        ("glib" ,glib)
-       ("gtk+" ,gtk+)))
+       ("gtk+" ,gtk+)
+       ("libevdev" ,libevdev)
+       ("libwacom" ,libwacom)
+       ("mtdev" ,mtdev)))
+    (propagated-inputs
+     `(;; libinput.h requires <libudev.h>, so propagate it.
+       ("udev" ,eudev)))
     (home-page "https://www.freedesktop.org/wiki/Software/libinput/")
     (synopsis "Input devices handling library")
     (description
@@ -187,9 +186,9 @@ other applications that need to directly deal with input devices.")
 (define-public libinput-minimal
   (package (inherit libinput)
     (name "libinput-minimal")
-    (inputs '())
-    (propagated-inputs
-     (alist-delete "libwacom" (package-propagated-inputs libinput)))
+    (inputs
+     (fold alist-delete (package-inputs libinput)
+           '("cairo" "glib" "gtk+" "libwacom")))
     (arguments
      (substitute-keyword-arguments (package-arguments libinput)
       ((#:configure-flags flags ''())
@@ -547,14 +546,14 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.16.0")
+    (version "1.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xajhxad43izq9f7sbww1hlg42nayijy8xnp21kgpk09c6sw4wjf"))))
+                "194ibzwpdcn6fvk4xngr4bf5axpciwg2bj82fdvz88kfmjw13akj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f))

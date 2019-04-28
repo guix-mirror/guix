@@ -1082,7 +1082,7 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfontenc
   (package
     (name "libfontenc")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -1092,14 +1092,14 @@ synchronization between the X server and direct-rendering clients.")
                ".tar.bz2"))
         (sha256
           (base32
-            "08gxmrhgw97mv0pvkfmd46zzxrn6zdw4g27073zl55gwwqq8jn3h"))))
+            "0y90170dp8wsidr1dzza0grxr1lfh30ji3b5vkjz4j6x1n0wxz1c"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
         ("xorgproto" ,xorgproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
+    (home-page "https://gitlab.freedesktop.org/xorg/lib/libfontenc")
     (synopsis "Xorg font encoding library")
     (description "Xorg font encoding library.")
     (license license:x11)))
@@ -1268,7 +1268,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxcomposite
   (package
     (name "libxcomposite")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
       (origin
         (method url-fetch)
@@ -1278,7 +1278,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0y21nfpa5s8qmx0srdlilyndas3sgl0c6rc26d5fx2vx436m1qpd"))))
+            "13sfcglvz87vl58hd9rszwr73z0z4nwga3c12rfh7f5s2ln8l8dk"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xcomposite.pc refers to all these.
@@ -1357,7 +1357,7 @@ configuration files.")
 (define-public libxkbfile
   (package
     (name "libxkbfile")
-    (version "1.0.9")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
@@ -1367,7 +1367,7 @@ configuration files.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0smimr14zvail7ar68n7spvpblpdnih3jxrva7cpa6cn602px0ai"))))
+            "1irq9crvscd3yb8sr802dhvvfr35jdy1n2yz094xplmd42mbv3bm"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
@@ -1554,7 +1554,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public makedepend
   (package
     (name "makedepend")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -1564,7 +1564,7 @@ input from UTF-8 into the locale's encoding.")
                ".tar.bz2"))
         (sha256
           (base32
-            "09alw99r6y2bbd1dc786n3jfgv4j520apblyn7cw6jkjydshba7p"))))
+            "072h9nzh8s5vqfz35dli4fba36fnr219asjrb7p89n8ph0paan6m"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)))
@@ -3839,7 +3839,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.24")
+    (version "2.26")
     (source
       (origin
         (method url-fetch)
@@ -3849,7 +3849,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1my4786pd7iv5x392r9skj3qclmbd26nqzvh2fllwkkbyj08bcci"))))
+            "13h3381pfp4pv32189zkfsj2x0alr91xj6dqii76rl0c8v3ihdrr"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
@@ -4970,7 +4970,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
       (origin
         (method url-fetch)
@@ -4980,7 +4980,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bpffxr5dal90a8miv2w0rif61byqxq2f5angj4z1bnznmws00g5"))))
+            "0bb2c996p0smp2lwckffcfh4701bzv7266xh230ag0x68ka38bja"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
@@ -5132,8 +5132,8 @@ over Xlib, including:
         ("xcb-util-renderutil" ,xcb-util-renderutil)
         ("xcb-util-wm" ,xcb-util-wm)))
     (native-inputs
-       `(("python" ,python-minimal-wrapper)
-         ("pkg-config" ,pkg-config)))
+     `(("python" ,python-wrapper)
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:parallel-tests? #f
        #:configure-flags
@@ -5205,16 +5205,7 @@ draggable titlebars and borders.")
 (define-public xorg-server-for-tests
   (hidden-package
    (package
-     (inherit xorg-server)
-     (version "1.20.3")
-     (source (origin
-               (inherit (package-source xorg-server))
-               (uri (string-append
-                     "mirror://xorg/individual/xserver/"
-                     "xorg-server-" version ".tar.bz2"))
-               (sha256
-                (base32
-                 "1ph1j8gy5cazsq05krq9kppjx5v1sl75pbdka8ibxb1cq5kf8g0v")))))))
+     (inherit xorg-server))))
 
 (define-public xorg-server-xwayland
   (package
@@ -5275,7 +5266,7 @@ draggable titlebars and borders.")
 (define-public libxcursor
   (package
     (name "libxcursor")
-    (version "1.1.15")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -5285,7 +5276,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0syzlfvh29037p0vnlc8f3jxz8nl55k65blswsakklkwsc6nfki9"))))
+            "10l7c9fm0jmpkm9ab9dz8r6m1pr87vvgqjnbx1psz50h4pwfklrs"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libx11" ,libx11)

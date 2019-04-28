@@ -144,7 +144,9 @@ Specific to rust versions before 1.32."
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))))
+                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))
+                (patches
+                 (search-patches "mrustc-0.8.0-fix-variable-length-integer-receiving.patch"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs

@@ -388,29 +388,24 @@ X11-system or any other graphical user interface.")
 
 (define-public teckit
   (package
-   (name "teckit")
-   (version "2.5.8")
-   (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/silnrsi/teckit")
-            (commit (string-append "v" version))))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "1jmsdmfz7bgq1n5qsqgpq1b1n77f1hll0czfw5wkxz4knzb14ndn"))))
-   (build-system gnu-build-system)
-   (inputs
-    `(("zlib" ,zlib)
-      ("expat" ,expat)))
-   (native-inputs
-    `(("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("libtool" ,libtool)
-      ("perl" ,perl))) ; for the tests
-   (synopsis "Toolkit for encoding conversions")
-   (description
-    "TECkit is a low-level toolkit intended to be used by other applications
+    (name "teckit")
+    (version "2.5.9")                   ;signed by key 0xC9183BEA0288CDEE
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/silnrsi/teckit/releases/"
+                           "download/v" version "/teckit-" version ".tar.gz"))
+       (sha256
+        (base32 "0gbxyip4wdibirdg2pvzayzyy927vxyd6dfyfiflx8zg88qzn8v8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("expat" ,expat)))
+    (native-inputs
+     `(("perl" ,perl)))                 ;for the tests
+    (synopsis "Toolkit for encoding conversions")
+    (description
+     "TECkit is a low-level toolkit intended to be used by other applications
 that need to perform encoding conversions (e.g., when importing legacy data
 into a Unicode-based application).  The primary component of the TECkit
 package is therefore a library that performs conversions; this is the
@@ -427,8 +422,8 @@ TECkit compiler.  However, it is not intended that these tools will be the
 primary means by which end users perform conversions, and they have not
 been designed, tested, and debugged to the extent that general-purpose
 applications should be.")
-   (license license:lgpl2.1+)
-   (home-page "http://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
+    (license license:lgpl2.1+)
+    (home-page "http://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
 
 (define-public graphite2
   (package
@@ -534,7 +529,7 @@ smooth contours with constant curvature at the spline joins.")
 (define-public libuninameslist
   (package
     (name "libuninameslist")
-    (version "20180701")
+    (version "20190305")
     (home-page "https://github.com/fontforge/libuninameslist")
     (source
      (origin
@@ -543,7 +538,7 @@ smooth contours with constant curvature at the spline joins.")
                            "/libuninameslist-dist-" version ".tar.gz"))
        (sha256
         (base32
-         "141wh2f5jsaw84mgw6vf2c9hd2wm957a2hpnicyqjbc7pk89gvca"))))
+         "1rwd2bgcyvign9agyjsr3v2fr9j1cg2wi6g0z2wwg1az32scknwq"))))
     (build-system gnu-build-system)
     (synopsis "Unicode names and annotation list")
     (description
@@ -560,14 +555,14 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20170731")
+   (version "20190317")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
-                  version "/fontforge-dist-" version ".tar.xz"))
+                  version "/fontforge-" version ".tar.gz"))
             (sha256 (base32
-                     "08l8h3yvk4v7652jvmd3ls7nf5miybkx2fmkf1mpwwfixpxxw2l4"))))
+                     "1ddqbpc32cgbccdnv0lfw0qhj59hcqzb7616ph5lkvm91pnas4dp"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -614,11 +609,7 @@ definitions.")
                           "pango" "cairo" "fontconfig")))
                 ;; Checks for potrace program at runtime
                 `("PATH" ":" prefix (,potrace)))
-              #t))))
-
-      ;; Skip test 40 "FontForge .sfd file open check" to work around
-      ;; <https://github.com/fontforge/fontforge/issues/3246>.
-      #:make-flags '("TESTSUITEFLAGS=-k '!\\.sfd'")))
+              #t))))))
    (synopsis "Outline font editor")
    (description
     "FontForge allows you to create and modify postscript, truetype and
