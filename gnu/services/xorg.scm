@@ -83,6 +83,8 @@
             slim-configuration-shepherd
             slim-configuration-auto-login-session
             slim-configuration-xorg
+            slim-configuration-display
+            slim-configuration-vt
             slim-configuration-sessreg
 
             slim-service-type
@@ -488,6 +490,10 @@ desktop session from the system or user profile will be used."
                       (default #f))
   (xorg-configuration slim-configuration-xorg
                       (default (xorg-configuration)))
+  (display slim-configuration-display
+           (default ":0"))
+  (vt slim-configuration-vt
+      (default "vt7"))
   (sessreg slim-configuration-sessreg
            (default sessreg)))
 
@@ -499,20 +505,26 @@ desktop session from the system or user profile will be used."
          (slim-configuration-allow-empty-passwords? config))))
 
 (define (slim-shepherd-service config)
-  (define slim.cfg
-    (let ((xinitrc (xinitrc #:fallback-session
-                            (slim-configuration-auto-login-session config)))
-          (xauth   (slim-configuration-xauth config))
-          (startx  (xorg-start-command (slim-configuration-xorg config)))
-          (shepherd   (slim-configuration-shepherd config))
-          (theme-name (slim-configuration-theme-name config))
-          (sessreg (slim-configuration-sessreg config)))
+  (let* ((xinitrc (xinitrc #:fallback-session
+                           (slim-configuration-auto-login-session config)))
+         (xauth   (slim-configuration-xauth config))
+         (startx  (xorg-start-command (slim-configuration-xorg config)))
+         (display (slim-configuration-display config))
+         (vt (slim-configuration-vt config))
+         (shepherd   (slim-configuration-shepherd config))
+         (theme-name (slim-configuration-theme-name config))
+         (sessreg (slim-configuration-sessreg config))
+         (lockfile (string-append "/var/run/slim-" vt ".lock")))
+    (define slim.cfg
       (mixed-text-file "slim.cfg"  "
 default_path /run/current-system/profile/bin
 default_xserver " startx "
-xserver_arguments :0 vt7
+display_name " display "
+xserver_arguments " vt "
 xauth_path " xauth "/bin/xauth
-authfile /var/run/slim.auth
+authfile /var/run/slim-" vt ".auth
+lockfile " lockfile "
+logfile /var/log/slim-" vt ".log
 
 # The login command.  '%session' is replaced by the chosen session name, one
 # of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
@@ -530,32 +542,33 @@ reboot_cmd " shepherd "/sbin/reboot\n"
     "")
 (if theme-name
     (string-append "current_theme " theme-name "\n")
-    ""))))
+    "")))
 
-  (define theme
-    (slim-configuration-theme config))
+    (define theme
+      (slim-configuration-theme config))
 
-  (list (shepherd-service
-         (documentation "Xorg display server")
-         (provision '(xorg-server))
-         (requirement '(user-processes host-name udev))
-         (start
-          #~(lambda ()
-              ;; A stale lock file can prevent SLiM from starting, so remove it to
-              ;; be on the safe side.
-              (false-if-exception (delete-file "/var/run/slim.lock"))
+    (list (shepherd-service
+           (documentation "Xorg display server")
+           (provision (list (symbol-append 'xorg-server-
+                                           (string->symbol vt))))
+           (requirement '(user-processes host-name udev))
+           (start
+            #~(lambda ()
+                ;; A stale lock file can prevent SLiM from starting, so remove it to
+                ;; be on the safe side.
+                (false-if-exception (delete-file lockfile))
 
-              (fork+exec-command
-               (list (string-append #$(slim-configuration-slim config)
-                                    "/bin/slim")
-                     "-nodaemon")
-               #:environment-variables
-               (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
-                     #$@(if theme
-                            (list #~(string-append "SLIM_THEMESDIR=" #$theme))
-                            #~())))))
-         (stop #~(make-kill-destructor))
-         (respawn? #t))))
+                (fork+exec-command
+                 (list (string-append #$(slim-configuration-slim config)
+                                      "/bin/slim")
+                       "-nodaemon")
+                 #:environment-variables
+                 (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
+                       #$@(if theme
+                              (list #~(string-append "SLIM_THEMESDIR=" #$theme))
+                              #~())))))
+           (stop #~(make-kill-destructor))
+           (respawn? #t)))))
 
 (define slim-service-type
   (service-type (name 'slim)
