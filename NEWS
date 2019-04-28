@@ -2,7 +2,7 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 
   Copying and distribution of this file, with or without modification,
@@ -10,6 +10,80 @@ Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
   notice and this notice are preserved.
 
 Please send Guix bug reports to bug-guix@gnu.org.
+
+* Changes in 1.0.0 (since 0.16.0)
+** Package management
+*** New ‘-v’/‘--verbosity’ option for all commands
+*** Most commands now default to verbosity level 1 (“quiet”)
+*** ‘guix pack -RR’ produces PRoot-enabled relocatable binaries
+*** New ‘--save-provenance’ option for ‘guix pack’
+*** CLI diagnostics use colors; more operations show progress bars
+*** New ‘--news’ option for ‘guix pull’
+*** New ‘--preserve’ option for ‘guix environment’
+*** ‘guix environment -C’ creates containers with a non-zero UID
+*** Channels can now specify dependencies in a ‘.guix-channel’ file
+*** New ‘reverse-bag’ graph type for ‘guix graph’
+*** New ‘--with-git-url’ package transformation option
+*** The ‘--with-branch’ package transformation option fetches Git sub-modules
+*** New ‘guix system delete-generations’ command
+*** New ‘--list-roots’ and ‘--delete-generations’ options for ‘guix gc’
+*** New ‘--coverage’ option for ‘guix weather’
+*** ‘guix pull’ computes a package cache to speed up package lookups by name
+*** ‘guix pull’ now embeds ‘glibc-utf8-locales’
+*** ‘guix refresh -l’ better estimates dependents
+*** ‘guix build’ can take multiple ‘--system’ flags
+*** ‘guix offload’ avoids build machines with too little free disk space
+*** ‘guix offload’ now uses (guix inferior) to communicate with remote hosts
+*** Guix can no longer be built with Guile 2.0
+** Distribution
+*** New text-mode graphical installer
+*** New virtual machine (VM) image
+*** New ‘keyboard-layout’ field for the OS, bootloader, and Xorg configuration
+*** New ‘xorg-configuration’ record type for Xorg server configuration
+*** ‘%desktop-services’ now includes GDM instead of SLiM for graphical log-in
+*** New ‘label’ and ‘essential-services’ fields for <operation-system>
+*** The manual has been restructured for clarity
+*** New ‘remote-inferior’ procedure in (guix ssh)
+*** New (gnu ci) module for continuous integration jobs
+*** (gnu services shepherd) now supports one-shot services
+** Programming interfaces
+*** New ‘this-package’, ‘this-origin’, and ‘this-operating-system’ macros
+*** The ‘self-native-input?’ field was removed from <package>
+*** New ‘package-input-rewriting/spec’ procedure for graph rewriting
+*** New ‘package-closure’ procedure in (guix packages)
+*** New UI helper modules (guix colors) and (guix deprecation)
+*** New (gnu build accounts) module to manage /etc/{passwd,shadow,group}
+*** ‘nix-*’ bindings in (guix store) replaced by ‘store-connection-*’
+*** Records created by ‘define-record-type*’ report duplicate fields
+** Noteworthy bug fixes
+*** ISO images produced by ‘guix system’ are now reproducible bit-for-bit
+    (<https://bugs.gnu.org/35283>)
+*** ‘guix pack -f squashfs’ produces relative symlinks
+    (<https://bugs.gnu.org/34913>)
+*** ‘guix package -r something-not-installed’ now raises an error
+*** Fix multi-threaded miscompilation issue with syntax parameters
+    (<https://bugs.gnu.org/27476>)
+*** file-systems: Spawn a REPL only when interaction is possible
+    (<https://bugs.gnu.org/23697>)
+*** ‘guix environment’ supports package transformation options
+    (<https://bugs.gnu.org/33776>)
+*** ‘guix substitute’ now ignores irrelevant narinfo signatures
+    (<https://bugs.gnu.org/33733>)
+*** On Guix System, guix-daemon now runs in a UTF-8 locale
+    (<https://bugs.gnu.org/32942>)
+*** Fix relative file name canonicalization for '--root'
+    (<https://bugs.gnu.org/35271>)
+*** vm: Do not mount /xchg with "cache=loose"
+    (<https://bugs.gnu.org/33639>)
+*** build-system/go: Build with a filesystem union of Go dependencies
+    (<https://bugs.gnu.org/33620>)
+*** 'containerized-operating-system' removes "useless" services
+    (<https://bugs.gnu.org/34211>)
+** Native language support
+*** The manual is now fully translated in French and Spanish
+*** The manual is also partly translated in German and in Simplified Chinese
+*** Updated translations: da, de, es, fr
+*** New translations: sv
 
 * Changes in 0.16.0 (since 0.15.0)
 
