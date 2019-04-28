@@ -71,6 +71,7 @@ USERS."
              (string=? "root" (user-name user)))
 
            (sys:user-account (name (user-name user))
+                             (comment (user-real-name user))
                              (group "users")
                              (uid (if root? 0 #f))
                              (home-directory
