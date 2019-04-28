@@ -31,36 +31,40 @@
 (define (run-desktop-environments-cbt-page)
   "Run a page allowing the user to choose between various desktop
 environments."
-  (run-checkbox-tree-page
-   #:info-text (G_ "Please select the desktop(s) environment(s) you wish to \
+  (let ((items (filter desktop-system-service? %system-services)))
+    (run-checkbox-tree-page
+     #:info-text (G_ "Please select the desktop(s) environment(s) you wish to \
 install. If you select multiple desktops environments, you will be able to \
 choose the one to use on the log-in screen.")
-   #:title (G_ "Desktop environment")
-   #:items (filter desktop-system-service? %system-services)
-   #:item->text system-service-name               ;no i18n for DE names
-   #:checkbox-tree-height 5
-   #:exit-button-callback-procedure
-   (lambda ()
-     (raise
-      (condition
-       (&installer-step-abort))))))
+     #:title (G_ "Desktop environment")
+     #:items items
+     #:selection (map system-service-recommended? items)
+     #:item->text system-service-name             ;no i18n for DE names
+     #:checkbox-tree-height 8
+     #:exit-button-callback-procedure
+     (lambda ()
+       (raise
+        (condition
+         (&installer-step-abort)))))))
 
 (define (run-networking-cbt-page)
   "Run a page allowing the user to select networking services."
-  (run-checkbox-tree-page
-   #:info-text (G_ "You can now select networking services to run on your \
+  (let ((items (filter (lambda (service)
+                         (eq? 'networking (system-service-type service)))
+                       %system-services)))
+    (run-checkbox-tree-page
+     #:info-text (G_ "You can now select networking services to run on your \
 system.")
-   #:title (G_ "Network service")
-   #:items (filter (lambda (service)
-                     (eq? 'networking (system-service-type service)))
-                   %system-services)
-   #:item->text (compose G_ system-service-name)
-   #:checkbox-tree-height 5
-   #:exit-button-callback-procedure
-   (lambda ()
-     (raise
-      (condition
-       (&installer-step-abort))))))
+     #:title (G_ "Network service")
+     #:items items
+     #:selection (map system-service-recommended? items)
+     #:item->text (compose G_ system-service-name)
+     #:checkbox-tree-height 5
+     #:exit-button-callback-procedure
+     (lambda ()
+       (raise
+        (condition
+         (&installer-step-abort)))))))
 
 (define (run-network-management-page)
   "Run a page to select among several network management methods."

@@ -23,7 +23,9 @@
   #:export (system-service?
             system-service-name
             system-service-type
+            system-service-recommended?
             system-service-snippet
+            system-service-packages
 
             desktop-system-service?
             networking-system-service?
@@ -36,6 +38,8 @@
   system-service?
   (name            system-service-name)           ;string
   (type            system-service-type)           ;'desktop | 'networking
+  (recommended?    system-service-recommended?    ;Boolean
+                   (default #f))
   (snippet         system-service-snippet         ;list of sexps
                    (default '()))
   (packages        system-service-packages        ;list of sexps
