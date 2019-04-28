@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,6 +127,30 @@ conversions for values passed between the two languages.")
                (("'cc testownlib") "'gcc testownlib"))
              (invoke "py.test" "-v" "c/" "testing/")
              #t))
+         (add-before 'check 'patch-paths-of-dynamically-loaded-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Shared libraries should be referred by their absolute path as
+             ;; using find_library or the like with their name fail when the
+             ;; resolved .so object is a linker script rather than an ELF
+             ;; binary (this is a limitation of the ctype library of Python).
+             (let* ((glibc (assoc-ref inputs "libc"))
+                    (libm (string-append glibc "/lib/libm.so.6"))
+                    (libc (string-append glibc "/lib/libc.so.6")))
+               (substitute* '("testing/cffi0/test_function.py"
+                              "testing/cffi0/test_parsing.py"
+                              "testing/cffi0/test_unicode_literals.py"
+                              "testing/cffi0/test_zdistutils.py"
+                              "testing/cffi1/test_recompiler.py")
+                 (("lib_m = ['\"]{1}m['\"]{1}")
+                  (format #f "lib_m = '~a'" libm)))
+               (substitute* '("testing/cffi0/test_verify.py"
+                              "testing/cffi1/test_verify1.py")
+                 (("lib_m = \\[['\"]{1}m['\"]{1}\\]")
+                  (format #f "lib_m = ['~a']" libm)))
+               (substitute* "c/test_c.py"
+                 (("find_and_load_library\\(['\"]{1}c['\"]{1}")
+                  (format #f "find_and_load_library('~a'" libc)))
+               #t)))
          (add-before 'check 'disable-failing-test
            ;; This is assumed to be a libffi issue:
            ;; https://bitbucket.org/cffi/cffi/issues/312/tests-failed-with-armv8
@@ -133,10 +158,9 @@ conversions for values passed between the two languages.")
              (substitute* "testing/cffi0/test_ownlib.py"
                (("ret.left") "ownlib.left"))
              #t)))))
-    (home-page "https://cffi.readthedocs.org")
+    (home-page "https://cffi.readthedocs.io/")
     (synopsis "Foreign function interface for Python")
-    (description
-     "Foreign Function Interface for Python calling C code.")
+    (description "Foreign Function Interface for Python calling C code.")
     (license expat)))
 
 (define-public python2-cffi
