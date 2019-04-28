@@ -3751,16 +3751,14 @@ set.")
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/hypre/lib"))
              (setenv "PATH" (string-append "." ":" (getenv "PATH")))
-             (and (system* "make" "check" "CHECKRUN=")
-                  (fold (lambda (filename result)
-                          (and result
-                               (let ((size (stat:size (stat filename))))
-                                 (when (not (zero? size))
-                                   (format #t "~a size ~d; error indication~%"
-                                           filename size))
-                                 (zero? size))))
-                        #t
-                        (find-files "test" ".*\\.err$")))))
+             (invoke "make" "check" "CHECKRUN=")
+             (for-each (lambda (filename)
+                         (let ((size (stat:size (stat filename))))
+                           (when (positive? size)
+                             (error (format #f "~a size ~d; error indication~%"
+                                            filename size)))))
+                       (find-files "test" ".*\\.err$"))
+             #t))
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Custom install because docs/Makefile doesn't honor ${docdir}.
