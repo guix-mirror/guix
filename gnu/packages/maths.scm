@@ -3983,8 +3983,7 @@ as equations, scalars, vectors, and matrices.")
              #t))
          (add-before 'configure 'bootstrap
            (lambda _
-             (zero?
-              (system* "python" "scripts/mk_make.py"))))
+             (invoke "python" "scripts/mk_make.py")))
          ;; work around gnu-build-system's setting --enable-fast-install
          ;; (z3's `configure' is a wrapper around the above python file,
          ;; which fails when passed --enable-fast-install)
@@ -3999,12 +3998,12 @@ as equations, scalars, vectors, and matrices.")
          (add-before 'check 'make-test-z3
            (lambda _
              ;; Build the test suite executable.
-             (zero? (system* "make" "test-z3" "-j"
-                             (number->string (parallel-job-count))))))
+             (invoke "make" "test-z3" "-j"
+                     (number->string (parallel-job-count)))))
          (replace 'check
            (lambda _
              ;; Run all the tests that don't require arguments.
-             (zero? (system* "./test-z3" "/a")))))))
+             (invoke "./test-z3" "/a"))))))
     (native-inputs
      `(("which" ,which)
        ("python" ,python-wrapper)))
