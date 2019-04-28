@@ -3944,10 +3944,10 @@ Longest Commons Subsequence of a set of strings.")
                                 (assoc-ref outputs "out"))
                         (chmod wrapper #o555))))
          (replace 'configure
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out")))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "./configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))))))))
     (inputs `(("scm" ,scm)))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
