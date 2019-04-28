@@ -3300,7 +3300,6 @@ packages.")
        #:substitutable? #f
 
        #:modules ((srfi srfi-26)
-                  (srfi srfi-1)
                   (guix build gnu-build-system)
                   (guix build utils))
        #:configure-flags
@@ -3333,11 +3332,11 @@ packages.")
              (let ((doc (string-append (assoc-ref outputs "doc")
                                        "/share/doc/atlas")))
                (mkdir-p doc)
-               (fold (lambda (file previous)
-                       (and previous (zero? (system* "cp" file doc))))
-                     #t (find-files "../ATLAS/doc" ".*")))))
+               (for-each (cut install-file <> doc)
+                         (find-files "../ATLAS/doc" ".*"))
+               #t)))
          (add-after 'check 'check-pt
-           (lambda _ (zero? (system* "make" "ptcheck"))))
+           (lambda _ (invoke "make" "ptcheck")))
          ;; Fix files required to run configure.
          (add-before 'configure 'fix-/bin/sh
            (lambda _
@@ -3372,9 +3371,9 @@ packages.")
                (chdir "../build")
                (format #t "build directory: ~s~%" (getcwd))
                (format #t "configure flags: ~s~%" flags)
-               (zero? (apply system* bash
-                             (string-append srcdir "/configure")
-                             flags))))))))
+               (apply invoke bash
+                      (string-append srcdir "/configure")
+                      flags)))))))
     (synopsis "Automatically Tuned Linear Algebra Software")
     (description
      "ATLAS is an automatically tuned linear algebra software library
