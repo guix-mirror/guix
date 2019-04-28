@@ -89,6 +89,11 @@
       (name (G_ "Tor anonymous network router"))
       (type 'networking)
       (snippet '((service tor-service-type))))
+     (system-service
+      (name (G_ "Mozilla NSS certificates, for HTTPS access"))
+      (type 'networking)
+      (packages '((specification->package "nss-certs")))
+      (recommended? #t))
 
      ;; Network connectivity management.
      (system-service
