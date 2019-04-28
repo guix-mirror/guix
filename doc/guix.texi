@@ -518,6 +518,15 @@ dependencies.  This is often quicker than installing from source, which
 is described in the next sections.  The only requirement is to have
 GNU@tie{}tar and Xz.
 
+@c Note duplicated from the ``Installation'' node.
+@quotation Note
+We recommend the use of this
+@uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
+shell installer script}.  The script automates the download, installation, and
+initial configuration steps described below.  It should be run as the root
+user.
+@end quotation
+
 Installing goes along these lines:
 
 @enumerate
