@@ -23,6 +23,7 @@
             user
             make-user
             user-name
+            user-real-name
             user-group
             user-home-directory
             user-password
@@ -33,6 +34,8 @@
   user make-user
   user?
   (name            user-name)
+  (real-name       user-real-name
+                   (default ""))
   (group           user-group
                    (default "users"))
   (password        user-password)
@@ -43,6 +46,7 @@
   (define (user->sexp user)
     `(user-account
       (name ,(user-name user))
+      (comment ,(user-real-name user))
       (group ,(user-group user))
       (home-directory ,(user-home-directory user))
       (supplementary-groups '("wheel" "netdev"
