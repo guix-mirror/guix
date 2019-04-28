@@ -13485,6 +13485,33 @@ This is the type for the SLiM graphical login manager for X11.
 Like GDM, SLiM looks for session types described by @file{.desktop} files and
 allows users to choose a session from the log-in screen using @kbd{F1}.  It
 also honors @file{~/.xsession} files.
+
+Unlike GDM, SLiM does not spawn the user session on a different VT after
+logging in, which means that you can only start one graphical session.  If you
+want to be able to run multiple graphical sessions at the same time you have
+to add multiple SLiM services to your system services.  The following example
+shows how to replace the default GDM service with two SLiM services on tty7
+and tty8.
+
+@lisp
+(use-modules (gnu services)
+             (gnu services desktop)
+             (gnu services xorg)
+             (srfi srfi-1))  ;for 'remove'
+
+(operating-system
+  ;; ...
+  (services (cons* (service slim-service-type (slim-configuration
+                                               (display ":0")
+                                               (vt "vt7")))
+                   (service slim-service-type (slim-configuration
+                                               (display ":1")
+                                               (vt "vt8")))
+                   (remove (lambda (service)
+                             (eq? (service-kind service) gdm-service-type))
+                           %desktop-services))))
+@end lisp
+
 @end defvr
 
 @deftp {Data Type} slim-configuration
@@ -13521,6 +13548,12 @@ false, you will be unable to log in.
 
 @item @code{xorg-configuration} (default @code{(xorg-configuration)})
 Configuration of the Xorg graphical server.
+
+@item @code{display} (default @code{":0"})
+The display on which to start the Xorg graphical server.
+
+@item @code{vt} (default @code{"vt7"})
+The VT on which to start the Xorg graphical server.
 
 @item @code{xauth} (default: @code{xauth})
 The XAuth package to use.
