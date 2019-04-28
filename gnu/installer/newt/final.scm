@@ -30,15 +30,24 @@
   #:use-module (newt)
   #:export (run-final-page))
 
+(define* (strip-prefix file #:optional (prefix (%installer-target-dir)))
+  "Strip PREFIX from FILE, if PREFIX actually is a prefix of FILE."
+  (if (string-prefix? prefix file)
+      (string-drop file (string-length prefix))
+      file))
+
 (define (run-config-display-page)
   (let ((width (%configuration-file-width))
         (height (nearest-exact-integer
                  (/ (screen-rows) 2))))
     (run-file-textbox-page
-     #:info-text (G_ "We're now ready to proceed with the installation! \
+     #:info-text (format #f (G_ "\
+We're now ready to proceed with the installation! \
 A system configuration file has been generated, it is displayed below.  \
+This file will be available as '~a' on the installed system.  \
 The new system will be created from this file once you've pressed OK.  \
 This will take a few minutes.")
+                         (strip-prefix (%installer-configuration-file)))
      #:title (G_ "Configuration file")
      #:file (%installer-configuration-file)
      #:info-textbox-width width
