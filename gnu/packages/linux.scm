@@ -483,8 +483,8 @@ between the CDemu userspace daemon and linux kernel.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.170"
-                    "15fz2qxvic4sfxm8vi0rghqqi5rv038xyrq9dl6fz6i1c7497g8s"
+  (make-linux-libre "4.9.171"
+                    "10975y9q2yycc85synwmrqqfhq89f3fn66jxq7p2myv1n9m22fx5"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
