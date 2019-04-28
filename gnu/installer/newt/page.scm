@@ -437,10 +437,14 @@ error is raised if the MAX-SCALE-UPDATE limit is reached."
       (lambda ()
         (destroy-form-and-pop form)))))
 
+(define %none-selected
+  (circular-list #f))
+
 (define* (run-checkbox-tree-page #:key
                                  info-text
                                  title
                                  items
+                                 (selection %none-selected)
                                  item->text
                                  (info-textbox-width 50)
                                  (checkbox-tree-height 10)
@@ -453,7 +457,8 @@ a checkbox list. The page contains vertically stacked from the top to the
 bottom, an informative text set to INFO-TEXT, the checkbox list and two
 buttons, 'Ok' and 'Exit'. The page title's is set to TITLE. ITEMS are
 converted to text using ITEM->TEXT before being displayed in the checkbox
-list.
+list.  SELECTION is a list of Booleans of the same length as ITEMS that
+specifies which items are initially checked.
 
 INFO-TEXTBOX-WIDTH is the width of the textbox where INFO-TEXT will be
 displayed. CHECKBOX-TREE-HEIGHT is the height of the checkbox list.
@@ -465,12 +470,15 @@ pressed.
 This procedure returns the list of checked items in the checkbox list among
 ITEMS when 'Ok' is pressed."
   (define (fill-checkbox-tree checkbox-tree items)
-    (map
-     (lambda (item)
-       (let* ((item-text (item->text item))
-              (key (add-entry-to-checkboxtree checkbox-tree item-text 0)))
-         (cons key item)))
-     items))
+    (map (lambda (item selected?)
+           (let* ((item-text (item->text item))
+                  (key (add-entry-to-checkboxtree checkbox-tree item-text
+                                                  (if selected?
+                                                      FLAG-SELECTED
+                                                      0))))
+             (cons key item)))
+         items
+         selection))
 
   (let* ((checkbox-tree
           (make-checkboxtree -1 -1
