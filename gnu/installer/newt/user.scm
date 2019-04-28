@@ -115,25 +115,23 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
                       (begin
                         (error-page)
                         (run-user-add-page))
-                      (user
-                       (name name)
-                       (real-name real-name)
-                       (home-directory home-directory)
-                       (password
-                        (confirm-password password
-                                          (lambda ()
-                                            (run-user-add-page
-                                             #:name name
-                                             #:real-name real-name
-                                             #:home-directory
-                                             home-directory)))))))))))
+                      (let ((password (confirm-password password)))
+                        (if password
+                            (user
+                             (name name)
+                             (real-name real-name)
+                             (home-directory home-directory)
+                             (password password))
+                            (run-user-add-page #:name name
+                                               #:real-name real-name
+                                               #:home-directory
+                                               home-directory)))))))))
           (lambda ()
             (destroy-form-and-pop form)))))))
 
-(define (confirm-password password try-again)
+(define* (confirm-password password #:optional (try-again (const #f)))
   "Ask the user to confirm PASSWORD, a possibly empty string.  Call TRY-AGAIN,
-a thunk, if the confirmation doesn't match PASSWORD.  Return the confirmed
-password."
+a thunk, if the confirmation doesn't match PASSWORD, and return its result."
   (define confirmation
     (run-input-page (G_ "Please confirm the password.")
                     (G_ "Password confirmation required")
