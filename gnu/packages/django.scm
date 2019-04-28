@@ -147,6 +147,38 @@ with arguments to the field constructor.")
 (define-public python2-django-simple-math-captcha
   (package-with-python2 python-django-simple-math-captcha))
 
+(define-public python-django-taggit
+  (package
+    (name "python-django-taggit")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-taggit" version))
+       (sha256
+        (base32
+         "044fzcpmns90kaxdi49qczlam4xsi8rl73rpfwvxx1gkcqzidgq1"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python3" "-m" "django" "test" "--settings=tests.settings"))))))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-isort" ,python-isort)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)))
+    (home-page
+     "https://github.com/jazzband/django-taggit")
+    (synopsis
+     "Reusable Django application for simple tagging")
+    (description
+     "Django-taggit is a reusable Django application for simple tagging.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-django
   (package
     (name "python-pytest-django")
