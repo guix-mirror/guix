@@ -6,7 +6,7 @@
 
 (use-modules (gnu) (srfi srfi-1))
 (use-service-modules desktop networking ssh xorg)
-(use-package-modules bootloaders fonts nvi wget xorg)
+(use-package-modules bootloaders certs fonts nvi wget xorg)
 
 (define vm-image-motd (plain-file "motd" "
 \x1b[1;37mThis is the GNU system.  Welcome!\x1b[0m
@@ -63,7 +63,7 @@ accounts.\x1b[0m
 root ALL=(ALL) ALL
 %wheel ALL=NOPASSWD: ALL\n"))
 
-  (packages (append (list font-bitstream-vera nvi wget)
+  (packages (append (list font-bitstream-vera nss-certs nvi wget)
                     %base-packages))
 
   (services
