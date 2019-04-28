@@ -3087,13 +3087,13 @@ underway to allow BLIS to select the right optimized kernels at run time:
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; This is a home-made 'configure' script.
                       (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* "./configure" "-p" out
-                                        "-d" "opt"
-                                        "--disable-static"
-                                        "--enable-shared"
-                                        "--enable-threading=openmp"
+                        (invoke "./configure" "-p" out
+                                "-d" "opt"
+                                "--disable-static"
+                                "--enable-shared"
+                                "--enable-threading=openmp"
 
-                                        ,implementation)))))
+                                ,implementation))))
                   (add-before 'check 'show-test-output
                     (lambda _
                       ;; By default "make check" is silent.  Make it verbose.
