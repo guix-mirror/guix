@@ -263,7 +263,6 @@ precision.")
                (base32
                 "0f4pkand9vmqfayw18jm5qxbhcwi1405qfd7ibzh9lwzz6amkm3l"))))
     (build-system gnu-build-system)
-    (outputs '("out" "doc"))            ;77MiB of documentation
     (arguments
      `(#:modules ((ice-9 ftw)
                   (guix build utils)
@@ -282,28 +281,25 @@ precision.")
              (substitute* "check/Makefile.in"
                (("chk_fhan11") ""))
              #t))
-         (add-after 'install 'install-doc
-           ;; Setting --docdir to "doc" output isn't sufficient as
-           ;; documentation and examples are scattered throughout the source.
+         (add-after 'install 'fix-doc
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc"))
-                    (docdir (string-append doc
-                                           "/share/doc/"
-                                           (string-append ,name "-" ,version))))
-               ;; For some reason, the install process moves
-               ;; "share/giac/examples" instead of "share/giac/doc" to
-               ;; "$(docdir)".  Clean up the mess and start over.
-               (delete-file-recursively (string-append doc "/share"))
-               (mkdir-p docdir)
-               (with-directory-excursion out
-                 (for-each (lambda (f)
-                             (unless (member f '("." ".."))
-                               (copy-recursively (string-append "share/giac/" f)
-                                                 (string-append docdir "/" f))))
-                           (scandir "share/giac"))
-                 (delete-file-recursively "share/giac")))
-             #t)))))
+             (let ((out (assoc-ref outputs "out")))
+               ;; Most French documentation has a non-commercial
+               ;; license, so we need to remove it.
+               (with-directory-excursion (string-append out "/share/giac/doc/fr")
+                 (for-each delete-file-recursively
+                           '("cascas" "casexo" "casgeo" "casrouge" "cassim"
+                             "castor")))
+               ;; Remove duplicate documentation in
+               ;; "%out/share/doc/giac/", where Xcas does not expect
+               ;; to find it.
+               (delete-file-recursively (string-append out "/share/doc/giac"))
+               #t)))
+         (add-after 'install 'remove-unnecessary-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file (string-append out "/bin/xcasnew"))
+               #t))))))
     (inputs
      `(("fltk" ,fltk)
        ("gmp" ,gmp)
@@ -322,9 +318,10 @@ precision.")
        ("ntl" ,ntl)
        ("perl" ,perl)
        ("pari-gp" ,pari-gp)
-       ("tcsh" ,tcsh)
+       ("tcsh" ,tcsh)))
+    (native-inputs
+     `(("readline" ,readline)
        ("texlive" ,texlive-tiny)))
-    (native-inputs `(("readline" ,readline)))
     (home-page "https://www-fourier.ujf-grenoble.fr/~parisse/giac.html")
     (synopsis "Computer algebra system")
     (description
