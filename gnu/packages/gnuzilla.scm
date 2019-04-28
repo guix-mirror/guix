@@ -844,8 +844,7 @@ from forcing GEXP-PROMISE."
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda _
              (use-modules (guix build cargo-utils))
-             (let ((null-file "/dev/null")
-                   (null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
+             (let ((null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
                (substitute* '("Cargo.lock" "servo/Cargo.lock")
                  (("(\"checksum .* = )\".*\"" all name)
                   (string-append name "\"" null-hash "\"")))
@@ -856,7 +855,7 @@ from forcing GEXP-PROMISE."
                     (display (string-append
                               "patch-cargo-checksums: generate-checksums for "
                               dir "\n"))
-                    (generate-checksums dir null-file)))
+                    (generate-checksums dir)))
                 (find-files "third_party/rust" ".cargo-checksum.json")))
              #t))
          (add-before 'configure 'augment-CPLUS_INCLUDE_PATH

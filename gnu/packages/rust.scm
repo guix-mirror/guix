@@ -55,7 +55,6 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26))
 
-(define %cargo-reference-project-file "/dev/null")
 (define %cargo-reference-hash
   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 
@@ -320,7 +319,7 @@ test = { path = \"../libtest\" }
                   (display (string-append
                             "patch-cargo-checksums: generate-checksums for "
                             dir "\n"))
-                  (generate-checksums dir ,%cargo-reference-project-file)))
+                  (generate-checksums dir)))
               (find-files "src/vendor" ".cargo-checksum.json"))
              #t))
          ;; This phase is overridden by newer versions.
@@ -973,7 +972,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                       (display (string-append
                                 "patch-cargo-checksums: generate-checksums for "
                                 dir "\n"))
-                      (generate-checksums dir ,%cargo-reference-project-file)))
+                      (generate-checksums dir)))
                   (find-files "vendor" ".cargo-checksum.json"))
                  #t))
              (add-after 'enable-codegen-tests 'override-jemalloc
