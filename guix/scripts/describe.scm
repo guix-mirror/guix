@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts describe)
+  #:use-module ((guix config) #:select (%guix-version))
   #:use-module ((guix ui) #:hide (display-profile-content))
   #:use-module (guix channels)
   #:use-module (guix scripts)
@@ -114,7 +115,12 @@ within a Git checkout."
                        (lambda ()
                          (repository-discover (dirname program)))
                        (lambda (key err)
-                         (leave (G_ "failed to determine origin~%")))))
+                         (report-error (G_ "failed to determine origin~%"))
+                         (display-hint (format #f (G_ "Perhaps this
+@command{guix} command was not obtained with @command{guix pull}?  Its version
+string is ~a.~%")
+                                               %guix-version))
+                         (exit 1))))
          (repository (repository-open directory))
          (head       (repository-head repository))
          (commit     (oid->string (reference-target head))))
