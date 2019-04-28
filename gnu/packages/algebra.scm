@@ -337,7 +337,7 @@ or text interfaces) or as a C++ library.")
     (license license:gpl3+)))
 
 (define-public giac-xcas
-  (deprecate-package "giac-xcas" giac))
+  (deprecated-package "giac-xcas" giac))
 
 (define-public flint
   (package
