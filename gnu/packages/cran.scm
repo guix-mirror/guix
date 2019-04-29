@@ -11671,19 +11671,20 @@ compatible with @code{rzmq} are also provided.")
 (define-public r-repr
   (package
     (name "r-repr")
-    (version "0.19.2")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "repr" version))
        (sha256
         (base32
-         "1mhhzakkagb8z568yx3p2ixs8fcifm7f8l2yq285zrz8jmnpckfx"))))
+         "0j8z4sl67fgnbywkhgg0bns68mbgf9iqnw4qiym2rjy1b08fpclq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
        ("r-htmltools" ,r-htmltools)
-       ("r-jsonlite" ,r-jsonlite)))
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-pillar" ,r-pillar)))
     (home-page "https://cran.r-project.org/web/packages/repr/")
     (synopsis "Serializable representations")
     (description
