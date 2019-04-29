@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,9 +103,16 @@ processes."
   (let ((directory (string-append "/proc/"
                                   (number->string (process-id process))
                                   "/fd")))
-    (map (lambda (fd)
-           (readlink (string-append directory "/" fd)))
-         (or (scandir directory string->number) '()))))
+    (filter-map (lambda (fd)
+                  ;; There's a TOCTTOU race here, hence the 'catch'.
+                  (catch 'system-error
+                    (lambda ()
+                      (readlink (string-append directory "/" fd)))
+                    (lambda args
+                      (if (= ENOENT (system-error-errno args))
+                          #f
+                          (apply throw args)))))
+                (or (scandir directory string->number) '()))))
 
 ;; Daemon session.
 (define-record-type <daemon-session>
