@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ison111 <ison111@protonmail.com>
+;;; Copyright © 2018 ison <ison@airmail.cc>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
