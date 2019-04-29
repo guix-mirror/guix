@@ -627,7 +627,7 @@ guix-binary.%.tar.xz:
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
-dist-hook: $(distdir)/ChangeLog gen-AUTHORS gen-tarball-version
+dist-hook: gen-ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
 dist-hook: doc-po-update
 
@@ -641,12 +641,12 @@ $(top_srcdir)/.version:
 gen-tarball-version:
 	echo $(VERSION) > "$(distdir)/.tarball-version"
 
-gen-ChangeLog $(distdir)/ChangeLog:
+gen-ChangeLog:
 	$(AM_V_GEN)if test -d .git; then		\
 	  $(top_srcdir)/build-aux/gitlog-to-changelog	\
-	    > $(distdir)/cl-t;				\
+	    > $(distdir)/ChangeLog.tmp;			\
 	  rm -f $(distdir)/ChangeLog;			\
-	  mv $(distdir)/cl-t $(distdir)/ChangeLog;	\
+	  mv $(distdir)/ChangeLog.tmp $(distdir)/ChangeLog;	\
 	fi
 
 gen-AUTHORS:
@@ -791,13 +791,13 @@ update-NEWS: $(GOBJECTS)
 	  $(top_srcdir)/NEWS "$(GUIX_MAINTENANCE_DIRECTORY)/data"
 
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
-assert-no-store-file-names: $(distdir)/ChangeLog
+assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
 		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
 	     --exclude=guix-prettify.el						\
-	     --exclude=ChangeLog						\
+	     --exclude=ChangeLog*						\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\
