@@ -1130,16 +1130,23 @@ commands and their arguments.")
 (define-public wpa-supplicant-minimal
   (package
     (name "wpa-supplicant-minimal")
-    (version "2.7")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://w1.fi/releases/wpa_supplicant-"
-                    version
-                    ".tar.gz"))
+                    version ".tar.gz"))
               (sha256
                (base32
-                "0x1hqyahq44jyla8jl6791nnwrgicrhidadikrnqxsm2nw36pskn"))))
+                "15ixzm347n8w6gdvi3j3yks3i15qmp6by9ayvswm34d929m372d6"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "wpa_supplicant/defconfig"
+                    ;; Disable D-Bus to save ~14MiB on the closure size.
+                    (("^CONFIG_CTRL_IFACE_DBUS" line _)
+                     (string-append "#" line)))
+                    #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1152,8 +1159,7 @@ commands and their arguments.")
                (display "
       CONFIG_DEBUG_SYSLOG=y
 
-      # Choose GnuTLS (the default is OpenSSL.)
-      CONFIG_TLS=gnutls
+      CONFIG_TLS=openssl
 
       CONFIG_DRIVER_NL80211=y
       CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
@@ -1187,8 +1193,7 @@ commands and their arguments.")
     (inputs
      `(("readline" ,readline)
        ("libnl" ,libnl)
-       ("gnutls" ,gnutls)
-       ("libgcrypt" ,libgcrypt)))                 ;needed by crypto_gnutls.c
+       ("openssl" ,openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://w1.fi/wpa_supplicant/")
@@ -1221,7 +1226,6 @@ command.")
              (lambda _
                (let ((port (open-file ".config" "al")))
                  (display "
-      CONFIG_CTRL_IFACE_DBUS=y
       CONFIG_CTRL_IFACE_DBUS_NEW=y
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
                  (close-port port))
