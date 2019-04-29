@@ -5597,7 +5597,7 @@ libxml2.")
        (modify-phases %standard-phases
          (add-before
           'configure 'pre-configure
-          (lambda* (#:key inputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; We don't have <systemd/sd-daemon.h>.
             (substitute* '("common/gdm-log.c"
                            "daemon/gdm-server.c"
@@ -5665,6 +5665,16 @@ libxml2.")
               (("\"gnome-session\"")
                (string-append "\"" (assoc-ref inputs "gnome-session")
                               "/bin/gnome-session\"")))
+            ;; Do not automatically select the placeholder session.
+            (substitute* "daemon/gdm-session.c"
+              (("!g_str_has_suffix [(]base_name, \"\\.desktop\"[)]")
+               (string-append "!g_str_has_suffix (base_name, \".desktop\") || "
+                              "(g_strcmp0(search_dirs[i], \""
+                              (assoc-ref outputs "out") "/share/gdm/BuiltInSessions/"
+                              "\") == 0 && "
+                              "g_strcmp0(base_name, \"fail.desktop\") == 0)"))
+              (("g_error [(]\"GdmSession: no session desktop files installed, aborting\\.\\.\\.\"[)];")
+               "{ self->priv->fallback_session_name = g_strdup(\"fail\"); goto out; }"))
             #t))
          ;; GDM requires that there be at least one desktop entry
          ;; file.  This phase installs a hidden one that simply
