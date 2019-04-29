@@ -2630,6 +2630,8 @@ For your convenience, we also provide the following aliases:
 
 @itemize
 @item
+@command{guix search} is an alias for @command{guix package -s},
+@item
 @command{guix install} is an alias for @command{guix package -i},
 @item
 @command{guix remove} is an alias for @command{guix package -r},
@@ -2953,12 +2955,13 @@ name: gmp
 @dots{}
 @end example
 
-It is also possible to refine search results using several @code{-s}
-flags.  For example, the following command returns a list of board
-games:
+It is also possible to refine search results using several @code{-s} flags to
+@command{guix package}, or several arguments to @command{guix search}.  For
+example, the following command returns a list of board games (this time using
+the @command{guix search} alias):
 
 @example
-$ guix package -s '\<board\>' -s game | recsel -p name
+$ guix search '\<board\>' game | recsel -p name
 name: gnubg
 @dots{}
 @end example
@@ -2973,7 +2976,7 @@ for cryptographic libraries, filters out Haskell, Perl, Python, and Ruby
 libraries, and prints the name and synopsis of the matching packages:
 
 @example
-$ guix package -s crypto -s library | \
+$ guix search crypto library | \
     recsel -e '! (name ~ "^(ghc|perl|python|ruby)")' -p name,synopsis
 @end example
 

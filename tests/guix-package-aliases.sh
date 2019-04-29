@@ -56,3 +56,5 @@ then false; else true; fi
 
 if guix remove -i guile-bootstrap -p "$profile" --bootstrap
 then false; else true; fi
+
+guix search '\<board\>' game | grep '^name: gnubg'
