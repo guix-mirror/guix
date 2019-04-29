@@ -2653,7 +2653,7 @@ current generation of the user's default profile.  Thus, users can add
 @file{$HOME/.guix-profile/bin} to their @code{PATH} environment
 variable, and so on.
 @cindex search paths
-If you are not using the Guix System Distribution, consider adding the
+If you are not using Guix System, consider adding the
 following lines to your @file{~/.bash_profile} (@pxref{Bash Startup
 Files,,, bash, The GNU Bash Reference Manual}) so that newly-spawned
 shells get all the right environment variable definitions:
@@ -3140,7 +3140,7 @@ could use the information gathered to determine, for instance, whether
 your system has unpatched security vulnerabilities.
 
 Substitutes from the official build farm are enabled by default when
-using the Guix System Distribution (@pxref{GNU Distribution}).  However,
+using Guix System (@pxref{GNU Distribution}).  However,
 they are disabled by default when using Guix on a foreign distribution,
 unless you have explicitly enabled them via one of the recommended
 installation steps (@pxref{Installation}).  The following paragraphs
@@ -10192,7 +10192,7 @@ ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @chapter System Configuration
 
 @cindex system configuration
-The Guix System Distribution supports a consistent whole-system configuration
+Guix System supports a consistent whole-system configuration
 mechanism.  By that we mean that all aspects of the global system
 configuration---such as the available system services, timezone and
 locale settings, user accounts---are declared in a single place.  Such
