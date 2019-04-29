@@ -445,6 +445,10 @@ also initializes the boards (RAM etc).")
               (("def test_ctrl_c")
                "@pytest.mark.skip(reason='Guix has problems with SIGINT')
 def test_ctrl_c"))
+             ;; Test against the tools being installed rather than tools built
+             ;; for "sandbox" target.
+             (substitute* "test/image/test-imagetools.sh"
+               (("BASEDIR=sandbox") "BASEDIR=."))
              (for-each (lambda (file)
                               (substitute* file
                                   ;; Disable signatures, due to GPL/Openssl
@@ -487,12 +491,19 @@ def test_ctrl_c"))
            (delete 'check)
            (add-after 'install 'check
              (lambda* (#:key make-flags test-target #:allow-other-keys)
-               (apply invoke "make" "mrproper" make-flags)
-               (setenv "SDL_VIDEODRIVER" "dummy")
-               (setenv "PAGER" "cat")
-               (apply invoke "make" test-target make-flags)
-               (symlink "build-sandbox_spl" "sandbox")
-               (invoke "test/image/test-imagetools.sh"))))))
+               (invoke "test/image/test-imagetools.sh")))
+           ;; Only run full test suite on x86_64 systems, as many tests
+           ;; assume x86_64.
+           ,@(if (string-match "^x86_64-linux"
+                               (or (%current-target-system)
+                                   (%current-system)))
+                 '((add-after 'check 'check-x86
+                     (lambda* (#:key make-flags test-target #:allow-other-keys)
+                       (apply invoke "make" "mrproper" make-flags)
+                       (setenv "SDL_VIDEODRIVER" "dummy")
+                       (setenv "PAGER" "cat")
+                       (apply invoke "make" test-target make-flags))))
+                 '()))))
     (description "U-Boot is a bootloader used mostly for ARM boards.  It
 also initializes the boards (RAM etc).  This package provides its
 board-independent tools.")))
