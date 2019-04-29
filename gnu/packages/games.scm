@@ -115,6 +115,7 @@
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
