@@ -10753,10 +10753,15 @@ corresponding device mapping established.
 This is a list of symbols denoting mount flags.  Recognized flags
 include @code{read-only}, @code{bind-mount}, @code{no-dev} (disallow
 access to special files), @code{no-suid} (ignore setuid and setgid
-bits), and @code{no-exec} (disallow program execution.)
+bits), @code{no-atime} (do not update file access times), and @code{no-exec}
+(disallow program execution).  @xref{Mount-Unmount-Remount,,, libc, The GNU C
+Library Reference Manual}, for more information on these flags.
 
 @item @code{options} (default: @code{#f})
-This is either @code{#f}, or a string denoting mount options.
+This is either @code{#f}, or a string denoting mount options passed to the
+file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C Library
+Reference Manual}, for details and run @command{man 8 mount} for options for
+various file systems.
 
 @item @code{mount?} (default: @code{#t})
 This value indicates whether to automatically mount the file system when

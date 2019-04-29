@@ -39,6 +39,7 @@
             MS_NODEV
             MS_NOEXEC
             MS_REMOUNT
+            MS_NOATIME
             MS_BIND
             MS_MOVE
             MS_STRICTATIME
@@ -451,6 +452,7 @@ the returned procedure is called."
 (define MS_NODEV              4)
 (define MS_NOEXEC             8)
 (define MS_REMOUNT           32)
+(define MS_NOATIME         1024)
 (define MS_BIND            4096)
 (define MS_MOVE            8192)
 (define MS_STRICTATIME 16777216)
