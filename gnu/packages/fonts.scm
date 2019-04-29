@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -1419,9 +1419,8 @@ formatting.")
                   #t))))
     (build-system font-build-system)
     (home-page "https://public-sans.digital.gov/")
-    (synopsis
-     "Strong, neutral typeface for interfaces, text, and headings")
+    (synopsis "Neutral typeface for interfaces, text, and headings")
     (description
-     "Public Sans is a strong, neutral, principles-driven, open-source
-typeface for text or display based on Libre Franklin.")
+     "Public Sans is a strong, neutral, sans-serif typeface for text or
+display based on Libre Franklin.")
     (license license:silofl1.1)))
