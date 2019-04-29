@@ -158,15 +158,22 @@ active sessions, and the master 'guix-daemon' process."
                      (= pid (process-parent-id process))))
               processes))
 
-    (values (map (lambda (process)
-                   (match (process-command process)
-                     ((argv0 (= string->number client) _ ...)
-                      (let ((files (process-open-files process)))
-                        (daemon-session process
-                                        (lookup-process client)
-                                        (lookup-children (process-id process))
-                                        (filter lock-file? files))))))
-                 children)
+    (define (child-process->session process)
+      (match (process-command process)
+        ((argv0 (= string->number client) _ ...)
+         (let ((files  (process-open-files process))
+               (client (lookup-process client)))
+           ;; After a client has died, there's a window during which its
+           ;; corresponding 'guix-daemon' process is still alive, in which
+           ;; case 'lookup-process' returns #f.  In that case ignore the
+           ;; session.
+           (and client
+                (daemon-session process client
+                                (lookup-children
+                                 (process-id process))
+                                (filter lock-file? files)))))))
+
+    (values (filter-map child-process->session children)
             master)))
 
 (define (daemon-session->recutils session port)
