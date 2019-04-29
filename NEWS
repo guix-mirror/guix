@@ -15,6 +15,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 ** Package management
 *** New ‘-v’/‘--verbosity’ option for all commands
 *** Most commands now default to verbosity level 1 (“quiet”)
+*** New ‘guix package’ aliases: ‘install’, ‘remove’, ‘upgrade’, and ‘search’
 *** ‘guix pack -RR’ produces PRoot-enabled relocatable binaries
 *** New ‘--save-provenance’ option for ‘guix pack’
 *** CLI diagnostics use colors; more operations show progress bars
@@ -46,6 +47,13 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** New ‘remote-inferior’ procedure in (guix ssh)
 *** New (gnu ci) module for continuous integration jobs
 *** (gnu services shepherd) now supports one-shot services
+*** New services
+
+cups-pk-helper, imap4d, inputattach, localed, nslcd, zabbix-agent,
+zabbix-server
+
+*** XXX new packages
+*** XXX package updates
 ** Programming interfaces
 *** New ‘this-package’, ‘this-origin’, and ‘this-operating-system’ macros
 *** The ‘self-native-input?’ field was removed from <package>
