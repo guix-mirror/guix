@@ -3470,18 +3470,18 @@ than yojson), with 25-35% space savings.")
 (define-public ocaml-yojson
   (package
     (name "ocaml-yojson")
-    (version "1.4.1")
+    (version "1.7.0")
     (home-page "https://github.com/ocaml-community/yojson")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url (string-append home-page ".git"))
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nwsfkmqpyfab4rxq76q8ff7giyanghw08094jyrp275v99zdjr9"))))
+         "0zncsw8bgbkh1pfvfc7nh628hfj84lgx6jwhp9ashj3z1z0w3xjn"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -3489,7 +3489,8 @@ than yojson), with 25-35% space savings.")
      `(("ocaml-biniou" ,ocaml-biniou)
        ("ocaml-easy-format" ,ocaml-easy-format)))
     (native-inputs
-     `(("ocaml-cppo" ,ocaml-cppo)))
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-cppo" ,ocaml-cppo)))
     (synopsis "Low-level JSON library for OCaml")
     (description "Yojson is an optimized parsing and printing library for the
 JSON format.  It addresses a few shortcomings of json-wheel including 2x
@@ -3551,7 +3552,8 @@ format}.  @code{craml} is released as a single binary (called @code{craml}).")
     (native-inputs
      `(("ocaml-findlib" ,ocaml-findlib)))
     (arguments
-     '(#:tests? #f)) ;; Errors in tests in version 3.2.2
+     '(#:jbuild? #t
+       #:tests? #f)) ;; Errors in tests in version 3.2.2
     (synopsis "Context sensitive completion for OCaml in Vim and Emacs")
     (description "Merlin is an editor service that provides modern IDE
 features for OCaml.  Emacs and Vim support is provided out-of-the-box.
