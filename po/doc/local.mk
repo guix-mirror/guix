@@ -54,7 +54,7 @@ $(srcdir)/po/doc/%.pot-update: doc/%.texi
 		-p "$$(echo $@ | sed 's|-update||')" $(POT_OPTIONS)
 	@touch "$$(echo $@ | sed 's|-update||')"
 
-TMP_POT_FILES=contributing.pot guix.pot
+TMP_POT_FILES = contributing.pot guix.pot
 
 doc-pot-update:
 	for f in $(TMP_POT_FILES); do \
@@ -68,3 +68,5 @@ doc-po-update: doc-pot-update
 	for f in $(DOC_PO_FILES); do \
 		$(MAKE) "$$f"; \
 	done
+
+.PHONY: doc-po-update doc-pot-update
