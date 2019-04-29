@@ -281,8 +281,8 @@ guix system search anonym network | grep "^name: tor"
 # build these images, the commands would take hours to run in the worst case.
 
 # Verify that the examples can be built.
-for example in gnu/system/examples/*; do
-    guix system -n disk-image $example
+for example in gnu/system/examples/*.tmpl; do
+    guix system -n disk-image "$example"
 done
 
 # Verify that the disk image types can be built.
