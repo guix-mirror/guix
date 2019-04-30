@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -793,6 +794,13 @@ experience.")
              ;; There aren't any tests, so just make sure the binary
              ;; gets built and can be run successfully.
              (invoke "../build/awesome" "-v")))
+         (add-after 'install 'patch-session-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (awesome (string-append out "/bin/awesome")))
+               (substitute* (string-append out "/share/xsessions/awesome.desktop")
+                 (("Exec=awesome") (string-append "Exec=" awesome)))
+               #t)))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((awesome (assoc-ref outputs "out"))
