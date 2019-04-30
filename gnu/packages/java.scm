@@ -3416,14 +3416,14 @@ reusing it in maven.")
 (define-public java-plexus-archiver
   (package
     (name "java-plexus-archiver")
-    (version "3.5")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/codehaus-plexus/plexus-archiver"
                                   "/archive/plexus-archiver-" version ".tar.gz"))
               (sha256
                (base32
-                "0iv1j7khra6icqh3jndng3iipfmkc7l5jq2y802cm8r575v75pyv"))))
+                "0ry6i92gli0mvdmfih2vgs0lkf9yvx18h2ajxim66yg6yipnp0hg"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-archiver.jar"
@@ -3438,6 +3438,11 @@ reusing it in maven.")
              ;; Requires an older version of plexus container
              (delete-file
               "src/test/java/org/codehaus/plexus/archiver/DuplicateFilesTest.java")
+             #t))
+         (add-before 'check 'fix-test-building
+           (lambda _
+             (substitute* "build.xml"
+               (("srcdir=\"src/test\"") "srcdir=\"src/test/java\""))
              #t))
          (add-before 'build 'copy-resources
            (lambda _
@@ -3455,7 +3460,8 @@ reusing it in maven.")
        ("snappy" ,java-snappy)
        ("java-jsr305" ,java-jsr305)))
     (native-inputs
-     `(("junit" ,java-junit)
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("junit" ,java-junit)
        ("classworld" ,java-plexus-classworlds)
        ("xbean" ,java-geronimo-xbean-reflect)
        ("xz" ,java-tukaani-xz)
