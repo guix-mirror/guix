@@ -115,7 +115,8 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; no check target
-       #:configure-flags (list "--with-modules")
+       #:configure-flags (list "--with-modules"
+                               "--disable-build-details")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-/bin/pwd
