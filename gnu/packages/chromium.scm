@@ -93,9 +93,6 @@
     "third_party/angle/src/third_party/compiler" ;BSD-2
     "third_party/angle/src/third_party/libXNVCtrl" ;Expat
     "third_party/angle/src/third_party/trace_event" ;BSD-3
-    "third_party/angle/third_party/glslang" ;BSD-3
-    "third_party/angle/third_party/spirv-headers" ;Expat
-    "third_party/angle/third_party/spirv-tools" ;Expat
     "third_party/angle/third_party/vulkan-headers" ;ASL2.0
     "third_party/angle/third_party/vulkan-loader" ;ASL2.0
     "third_party/angle/third_party/vulkan-tools" ;ASL2.0
@@ -123,9 +120,12 @@
     "third_party/crashpad/crashpad/third_party/zlib/zlib_crashpad.h" ;Zlib
     "third_party/crc32c" ;BSD-3
     "third_party/cros_system_api" ;BSD-3
+    "third_party/dav1d" ;BSD-2
     "third_party/dom_distiller_js" ;BSD-3
+    "third_party/emoji-segmenter" ;ASL2.0
     "third_party/fips181" ;BSD-3
     "third_party/flatbuffers" ;ASL2.0
+    "third_party/glslang" ;BSD-3, Expat, ASL2.0
     "third_party/google_input_tools" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library/third_party/closure" ;Expat
@@ -164,6 +164,7 @@
     "third_party/pdfium/third_party/agg23" ;Expat
     "third_party/pdfium/third_party/base" ;BSD-3
     "third_party/pdfium/third_party/bigint" ;Public domain, BSD-3
+    "third_party/pdfium/third_party/libopenjpeg20" ;BSD-2
     "third_party/pdfium/third_party/skia_shared" ;BSD-3
     "third_party/pdfium/third_party/freetype/include/pstables.h" ;FreeType
     "third_party/ply" ;BSD-3
@@ -223,9 +224,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "73.0.3683.103")
-(define %ungoogled-revision "4c7fb6d1a86602999f30b58ef8b331b2115c5ad8")
-(define %debian-revision "debian/73.0.3683.75-1")
+(define %chromium-version "74.0.3729.108")
+(define %ungoogled-revision "9e33022f3ac7de2a12e3c7a7923799c9bbbf8194")
+(define %debian-revision "debian/74.0.3729.108-1")
 (define package-revision "0")
 
 (define %package-version (string-append %chromium-version "-"
@@ -246,7 +247,7 @@ from forcing GEXP-PROMISE."
                                %chromium-version ".tar.xz"))
            (sha256
             (base32
-             "1bskjr7yiwvdab1b5mp36y6964xqpgks6dqazm4qifwqvqcw80pb"))))
+             "0vsvjhmrc2p8mf4rfp9bf9y4nqkbbi5v8008cdvr6c14zq35w7hy"))))
         (ungoogled-source
          (origin
            (method git-fetch)
@@ -256,7 +257,7 @@ from forcing GEXP-PROMISE."
                                      (string-take %ungoogled-revision 7)))
            (sha256
             (base32
-             "0njx505il07d237fzgbhciy78rz7h77r2ai5crbnsx2gdr9kpvd1"))))
+             "08whx582p3a2nivkj7kwin09a8acybr00z6344smb9xjlxy9rkp4"))))
         (debian-source
          (origin
            (method git-fetch)
@@ -269,7 +270,7 @@ from forcing GEXP-PROMISE."
                                          (string-take %debian-revision 7))))
            (sha256
             (base32
-             "1pq0l3m7frf9ygxc1gva1191fxf3d1phaaqp7g3b70mgbabp0mxi")))))
+             "1bn0c86sxkkxgdz0i88y0zh4zr39l6379r2rhgk3b3qbvwz25s3j")))))
 
     (origin
       (method computed-origin-method)
@@ -335,6 +336,7 @@ from forcing GEXP-PROMISE."
                                (when (and (> (string-length line) 1)
                                           ;; Skip the Debian-specific ones.
                                           (not (string-prefix? "debianization/" line))
+                                          (not (string-prefix? "gcc6/" line))
                                           ;; And those that conflict with Ungoogled.
                                           (not (any (cute string-suffix? <> line)
                                                     '("widevine-buildflag.patch"
@@ -458,6 +460,7 @@ from forcing GEXP-PROMISE."
              "use_system_lcms2=true"
              "use_system_libdrm=true"
              "use_system_libjpeg=true"
+             "use_system_libopenjpeg=true"
              "use_system_libpng=true"
              "use_system_zlib=true"
              "use_gnome_keyring=false"  ;deprecated by libsecret
