@@ -1743,6 +1743,7 @@ simple (yet expressive) query language to select the tests to run.")
        (uri (git-reference
              (url "https://github.com/alainfrisch/ppx_tools.git")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256 (base32
                 "1ww4cspdpgjjsgiv71s0im5yjkr3544x96wsq1vpdacq7dr7zwiw"))))
     (build-system ocaml-build-system)
