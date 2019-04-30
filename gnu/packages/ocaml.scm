@@ -2954,7 +2954,14 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
      `(("camlp4" ,camlp4)))
     (arguments
      `(#:build-flags (list "--profile" "realease")
-       #:tests? #f))
+       #:test-target "camomile-test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-usr-share
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("Camomile/jbuild" "configure.ml")
+               (("/usr/share") (string-append (assoc-ref outputs "out") "/share")))
+             #t)))))
     (synopsis "Comprehensive Unicode library")
     (description "Camomile is a Unicode library for OCaml.  Camomile provides
 Unicode character type, UTF-8, UTF-16, UTF-32 strings, conversion to/from about
