@@ -4018,6 +4018,7 @@ Rosenberg's CL packages.")
          (uri (git-reference
                (url "http://git.kpe.io/cl-base64.git")
                (commit (string-append "v" version))))
+         (file-name (git-file-name "cl-base64" version))
          (sha256
           (base32 "1dw6j7n6gsd2qa0p0rbsjxj00acxx3i9ca1qkgl0liy8lpnwkypl"))))
       (build-system asdf-build-system/sbcl)
