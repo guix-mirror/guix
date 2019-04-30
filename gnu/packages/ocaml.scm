@@ -406,6 +406,7 @@ repository-wide uninstallability checks.")
               (uri (git-reference
                      (url "https://github.com/ocaml/opam-file-format")
                      (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0fqb99asnair0043hhc8r158d6krv5nzvymd0xwycr5y72yrp0hv"))))
