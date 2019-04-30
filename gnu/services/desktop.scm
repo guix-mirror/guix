@@ -93,6 +93,9 @@
             geoclue-service
             geoclue-service-type
 
+            bluetooth-service-type
+            bluetooth-configuration
+            bluetooth-configuration?
             bluetooth-service
 
             elogind-configuration
@@ -452,7 +455,9 @@ site} for more information."
                                `(("bluetooth"
                                   ,(bluetooth-directory config)))))
           (service-extension shepherd-root-service-type
-                             (compose list bluetooth-shepherd-service))))))
+                             (compose list bluetooth-shepherd-service))))
+   (description "Run the @command{bluetoothd} daemon, which manages all the
+Bluetooth devices and provides a number of D-Bus interfaces.")))
 
 (define* (bluetooth-service #:key (bluez bluez) (auto-enable? #f))
   "Return a service that runs the @command{bluetoothd} daemon, which manages
