@@ -714,7 +714,6 @@ system_flags = $(foreach system,$(1),-s $(system))
 # issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
 release: dist
 	cd po; git checkout .
-	cd doc; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
 	  exit 1 ;						\
