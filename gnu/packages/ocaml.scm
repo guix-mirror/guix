@@ -1356,6 +1356,7 @@ following a very simple s-expression syntax.")
        (uri (git-reference
              (url (string-append home-page ".git"))
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "16kas19iwm4afijv3yxd250s08absabmdcb4yj57wc8r4fmzv5dm"))))
