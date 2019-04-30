@@ -182,7 +182,19 @@ commands would.")
        (list "--disable-builddir")
 
        ;; The test suite requires the unpackaged Xephyr X server.
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-session-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (i3 (string-append out "/bin/i3"))
+                    (i3-with-shmlog (string-append out "/bin/i3-with-shmlog")))
+               (substitute* (string-append out "/share/xsessions/i3.desktop")
+                 (("Exec=i3") (string-append "Exec=" i3)))
+               (substitute* (string-append out "/share/xsessions/i3-with-shmlog.desktop")
+                 (("Exec=i3-with-shmlog") (string-append "Exec=" i3-with-shmlog)))
+               #t))))))
     (inputs
      `(("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
