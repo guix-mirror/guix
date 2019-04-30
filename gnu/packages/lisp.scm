@@ -3944,6 +3944,7 @@ RFC 1321 by R. Rivest, published April 1992.")
          (uri (git-reference
                (url "https://github.com/cl-plus-ssl/cl-plus-ssl.git")
                (commit commit)))
+         (file-name (git-file-name "cl+ssl" version))
          (sha256
           (base32 "1845i1pafmqb6cdlr53yaqy67kjrhkvbx6c37ca15cw70vhdr3z9"))))
       (build-system asdf-build-system/sbcl)
