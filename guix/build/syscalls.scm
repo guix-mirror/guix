@@ -692,7 +692,7 @@ mounted at FILE."
 
 (define* (device-in-use? device)
   "Return #t if the block DEVICE is in use, #f otherwise. This is inspired
-from fdisk_device_is_used function of util-linux. This is particulary useful
+from fdisk_device_is_used function of util-linux. This is particularly useful
 for devices that do not appear in /proc/self/mounts like overlayfs lowerdir
 backend device."
   (let*-values (((fd)      (open-fdes device O_RDONLY))
