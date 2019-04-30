@@ -398,7 +398,7 @@ garbage collection of packages (@pxref{Features}).
 @cindex Guix System
 Guix comes with a distribution of the GNU system consisting entirely of
 free software@footnote{The term ``free'' here refers to the
-@url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
+@url{https://www.gnu.org/philosophy/free-sw.html,freedom provided to
 users of that software}.}.  The
 distribution can be installed on its own (@pxref{System Installation}),
 but it is also possible to install Guix as a package manager on top of
@@ -409,7 +409,7 @@ Guix@tie{}System.
 The distribution provides core GNU packages such as GNU libc, GCC, and
 Binutils, as well as many GNU and non-GNU applications.  The complete
 list of available packages can be browsed
-@url{http://www.gnu.org/software/guix/packages,on-line} or by
+@url{https://www.gnu.org/software/guix/packages,on-line} or by
 running @command{guix package} (@pxref{Invoking guix package}):
 
 @example
@@ -620,7 +620,7 @@ with these commands:
 @c files into place.
 @c
 @c See this thread for more information:
-@c http://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
+@c https://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
 
 @example
 # cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
@@ -725,11 +725,11 @@ GNU Guix is available for download from its website at
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.2.x;
+@item @url{https://gnu.org/software/guile/, GNU Guile}, version 2.2.x;
 @item @url{https://notabug.org/cwebber/guile-gcrypt, Guile-Gcrypt}, version
 0.1.0 or later;
 @item
-@uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
+@uref{https://gnutls.org/, GnuTLS}, specifically its Guile bindings
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
 Guile,, gnutls-guile, GnuTLS-Guile});
 @item
@@ -740,8 +740,8 @@ or later;
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
 @item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON};
-@item @url{http://zlib.net, zlib};
-@item @url{http://www.gnu.org/software/make/, GNU Make}.
+@item @url{https://zlib.net, zlib};
+@item @url{https://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
 The following dependencies are optional:
@@ -763,9 +763,9 @@ Unless @code{--disable-daemon} was passed to @command{configure}, the
 following packages are also needed:
 
 @itemize
-@item @url{http://gnupg.org/, GNU libgcrypt};
-@item @url{http://sqlite.org, SQLite 3};
-@item @url{http://gcc.gnu.org, GCC's g++}, with support for the
+@item @url{https://gnupg.org/, GNU libgcrypt};
+@item @url{https://sqlite.org, SQLite 3};
+@item @url{https://gcc.gnu.org, GCC's g++}, with support for the
 C++11 standard.
 @end itemize
 
@@ -779,7 +779,7 @@ unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
 
 @cindex Nix, compatibility
-When a working installation of @url{http://nixos.org/nix/, the Nix package
+When a working installation of @url{https://nixos.org/nix/, the Nix package
 manager} is available, you
 can instead configure Guix with @code{--disable-daemon}.  In that case,
 Nix replaces the three dependencies above.
@@ -908,7 +908,7 @@ regarded as pure functions (@pxref{Introduction}).
 On a GNU/Linux system, a build user pool may be created like this (using
 Bash syntax and the @code{shadow} commands):
 
-@c See http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html
+@c See https://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html
 @c for why `-G' is needed.
 @example
 # groupadd --system guixbuild
@@ -2074,7 +2074,7 @@ ifconfig -a
 ip a
 @end example
 
-@c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
+@c https://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
 Wired interfaces have a name starting with @samp{e}; for example, the
 interface corresponding to the first on-board Ethernet controller is
 called @samp{eno1}.  Wireless interfaces have a name starting with
@@ -2398,7 +2398,7 @@ If you'd like to install Guix System in a virtual machine (VM) or on a
 virtual private server (VPS) rather than on your beloved machine, this
 section is for you.
 
-To boot a @uref{http://qemu.org/,QEMU} VM for installing Guix System in a
+To boot a @uref{https://qemu.org/,QEMU} VM for installing Guix System in a
 disk image, follow these steps:
 
 @enumerate
@@ -2461,7 +2461,7 @@ about the installation image.
 @section Building the Installation Image for ARM Boards
 
 Many ARM boards require a specific variant of the
-@uref{http://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
+@uref{https://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
 
 If you build a disk image and the bootloader is not available otherwise
 (on another boot drive etc), it's advisable to build an image that
@@ -4294,9 +4294,9 @@ same format as the @file{signing-key.pub} file.
 
 The list of authorized keys is kept in the human-editable file
 @file{/etc/guix/acl}.  The file contains
-@url{http://people.csail.mit.edu/rivest/Sexp.txt, ``advanced-format
+@url{https://people.csail.mit.edu/rivest/Sexp.txt, ``advanced-format
 s-expressions''} and is structured as an access-control list in the
-@url{http://theworld.com/~cme/spki.txt, Simple Public-Key Infrastructure
+@url{https://theworld.com/~cme/spki.txt, Simple Public-Key Infrastructure
 (SPKI)}.
 
 @item --extract=@var{directory}
@@ -4775,7 +4775,7 @@ guix pack -f squashfs guile emacs geiser
 @noindent
 The result is a SquashFS file system image that can either be mounted or
 directly be used as a file system container image with the
-@uref{http://singularity.lbl.gov, Singularity container execution
+@uref{https://singularity.lbl.gov, Singularity container execution
 environment}, using commands like @command{singularity shell} or
 @command{singularity exec}.
 
@@ -5084,7 +5084,7 @@ package looks like this:
     (inputs `(("gawk" ,gawk)))
     (synopsis "Hello, GNU world: An example GNU package")
     (description "Guess what GNU Hello prints!")
-    (home-page "http://www.gnu.org/software/hello/")
+    (home-page "https://www.gnu.org/software/hello/")
     (license gpl3+)))
 @end example
 
@@ -5674,7 +5674,7 @@ executed.  Some of these build systems are listed below.
 @defvr {Scheme Variable} ant-build-system
 This variable is exported by @code{(guix build-system ant)}.  It
 implements the build procedure for Java packages that can be built with
-@url{http://ant.apache.org/, Ant build tool}.
+@url{https://ant.apache.org/, Ant build tool}.
 
 It adds both @code{ant} and the @dfn{Java Development Kit} (JDK) as
 provided by the @code{icedtea} package to the set of inputs.  Different
@@ -5844,7 +5844,7 @@ directories specified in @code{#:doc-dirs} are installed as well.
 @defvr {Scheme Variable} cmake-build-system
 This variable is exported by @code{(guix build-system cmake)}.  It
 implements the build procedure for packages using the
-@url{http://www.cmake.org, CMake build tool}.
+@url{https://www.cmake.org, CMake build tool}.
 
 It automatically adds the @code{cmake} package to the set of inputs.
 Which package is used can be specified with the @code{#:cmake}
@@ -6060,7 +6060,7 @@ Which Perl package is used can be specified with @code{#:perl}.
 
 @defvr {Scheme Variable} r-build-system
 This variable is exported by @code{(guix build-system r)}.  It
-implements the build procedure used by @uref{http://r-project.org, R}
+implements the build procedure used by @uref{https://r-project.org, R}
 packages, which essentially is little more than running @code{R CMD
 INSTALL --library=/gnu/store/@dots{}} in an environment where
 @code{R_LIBS_SITE} contains the paths to all R package inputs.  Tests
@@ -6201,7 +6201,7 @@ locations in the output directory.
 @defvr {Scheme Variable} meson-build-system
 This variable is exported by @code{(guix build-system meson)}.  It
 implements the build procedure for packages that use
-@url{http://mesonbuild.com, Meson} as their build system.
+@url{https://mesonbuild.com, Meson} as their build system.
 
 It adds both Meson and @uref{https://ninja-build.org/, Ninja} to the set
 of inputs, and they can be changed with the parameters @code{#:meson}
@@ -8518,7 +8518,7 @@ guix import cpan Acme::Boolean
 @cindex CRAN
 @cindex Bioconductor
 Import metadata from @uref{https://cran.r-project.org/, CRAN}, the
-central repository for the @uref{http://r-project.org, GNU@tie{}R
+central repository for the @uref{https://r-project.org, GNU@tie{}R
 statistical and graphical environment}.
 
 Information is extracted from the @code{DESCRIPTION} file of the package.
@@ -8552,7 +8552,7 @@ guix import cran --archive=bioconductor GenomicRanges
 @item texlive
 @cindex TeX Live
 @cindex CTAN
-Import metadata from @uref{http://www.ctan.org/, CTAN}, the
+Import metadata from @uref{https://www.ctan.org/, CTAN}, the
 comprehensive TeX archive network for TeX packages that are part of the
 @uref{https://www.tug.org/texlive/, TeX Live distribution}.
 
@@ -8631,9 +8631,9 @@ guix import json hello.json
 
 @item nix
 Import metadata from a local copy of the source of the
-@uref{http://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
+@uref{https://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
 relies on the @command{nix-instantiate} command of
-@uref{http://nixos.org/nix/, Nix}.}.  Package definitions in Nixpkgs are
+@uref{https://nixos.org/nix/, Nix}.}.  Package definitions in Nixpkgs are
 typically written in a mixture of Nix-language and Bash code.  This
 command only imports the high-level package structure that is written in
 the Nix language.  It normally includes all the basic fields of a
@@ -8755,7 +8755,7 @@ information.  Currently the supported repositories and their identifiers
 are:
 @itemize -
 @item
-@uref{http://elpa.gnu.org/packages, GNU}, selected by the @code{gnu}
+@uref{https://elpa.gnu.org/packages, GNU}, selected by the @code{gnu}
 identifier.  This is the default.
 
 Packages from @code{elpa.gnu.org} are signed with one of the keys
@@ -8765,11 +8765,11 @@ contained in the GnuPG keyring at
 signatures,, emacs, The GNU Emacs Manual}).
 
 @item
-@uref{http://stable.melpa.org/packages, MELPA-Stable}, selected by the
+@uref{https://stable.melpa.org/packages, MELPA-Stable}, selected by the
 @code{melpa-stable} identifier.
 
 @item
-@uref{http://melpa.org/packages, MELPA}, selected by the @code{melpa}
+@uref{https://melpa.org/packages, MELPA}, selected by the @code{melpa}
 identifier.
 @end itemize
 
@@ -8935,13 +8935,13 @@ the updater for X.org packages;
 @item kernel.org
 the updater for packages hosted on kernel.org;
 @item elpa
-the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
+the updater for @uref{https://elpa.gnu.org/, ELPA} packages;
 @item cran
 the updater for @uref{https://cran.r-project.org/, CRAN} packages;
 @item bioconductor
 the updater for @uref{https://www.bioconductor.org/, Bioconductor} R packages;
 @item cpan
-the updater for @uref{http://www.cpan.org/, CPAN} packages;
+the updater for @uref{https://www.cpan.org/, CPAN} packages;
 @item pypi
 the updater for @uref{https://pypi.python.org, PyPI} packages.
 @item gem
@@ -9179,7 +9179,7 @@ that Guix uses, as in this example:
                 (cpe-version . "2.3")))
 @end example
 
-@c See <http://www.openwall.com/lists/oss-security/2017/03/15/3>.
+@c See <https://www.openwall.com/lists/oss-security/2017/03/15/3>.
 Some entries in the CVE database do not specify which version of a
 package they apply to, and would thus ``stick around'' forever.  Package
 developers who found CVE alerts and verified they can be ignored can
@@ -9337,7 +9337,7 @@ For the example above, the map looks like this:
 produced by @command{guix size}}
 
 This option requires that
-@uref{http://wingolog.org/software/guile-charting/, Guile-Charting} be
+@uref{https://wingolog.org/software/guile-charting/, Guile-Charting} be
 installed and visible in Guile's module search path.  When that is not
 the case, @command{guix size} fails as it tries to load it.
 
@@ -9358,12 +9358,12 @@ directed acyclic graph (DAG).  It can quickly become difficult to have a
 mental model of the package DAG, so the @command{guix graph} command
 provides a visual representation of the DAG.  By default,
 @command{guix graph} emits a DAG representation in the input format of
-@uref{http://www.graphviz.org/, Graphviz}, so its output can be passed
+@uref{https://www.graphviz.org/, Graphviz}, so its output can be passed
 directly to the @command{dot} command of Graphviz.  It can also emit an
 HTML page with embedded JavaScript code to display a ``chord diagram''
 in a Web browser, using the @uref{https://d3js.org/, d3.js} library, or
 emit Cypher queries to construct a graph in a graph database supporting
-the @uref{http://www.opencypher.org/, openCypher} query language.
+the @uref{https://www.opencypher.org/, openCypher} query language.
 The general syntax is:
 
 @example
@@ -11320,7 +11320,7 @@ The name of the source for that locale.  This is typically the
 
 @item @code{charset} (default: @code{"UTF-8"})
 The ``character set'' or ``code set'' for that locale,
-@uref{http://www.iana.org/assignments/character-sets, as defined by
+@uref{https://www.iana.org/assignments/character-sets, as defined by
 IANA}.
 
 @end table
@@ -12498,7 +12498,7 @@ For example:
 The package that provides the DHCP daemon.  This package is expected to
 provide the daemon at @file{sbin/dhcpd} relative to its output
 directory.  The default package is the
-@uref{http://www.isc.org/products/DHCP, ISC's DHCP server}.
+@uref{https://www.isc.org/products/DHCP, ISC's DHCP server}.
 @item @code{config-file} (default: @code{#f})
 The configuration file to use.  This is required.  It will be passed to
 @code{dhcpd} via its @code{-cf} option.  This may be any ``file-like''
@@ -13347,7 +13347,7 @@ The @code{(gnu services avahi)} provides the following definition.
 @defvr {Scheme Variable} avahi-service-type
 This is the service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
-``zero-configuration'' host name lookups (see @uref{http://avahi.org/}).
+``zero-configuration'' host name lookups (see @uref{https://avahi.org/}).
 Its value must be a @code{zero-configuration} record---see below.
 
 This service extends the name service cache daemon (nscd) so that it can
@@ -13394,7 +13394,7 @@ This is a list of domains to browse.
 @end deftp
 
 @deffn {Scheme Variable} openvswitch-service-type
-This is the type of the @uref{http://www.openvswitch.org, Open vSwitch}
+This is the type of the @uref{https://www.openvswitch.org, Open vSwitch}
 service, whose value should be an @code{openvswitch-configuration}
 object.
 @end deffn
@@ -14728,7 +14728,7 @@ are described below.
 Return a service that runs the ``system bus'', using @var{dbus}, with
 support for @var{services}.
 
-@uref{http://dbus.freedesktop.org/, D-Bus} is an inter-process communication
+@uref{https://dbus.freedesktop.org/, D-Bus} is an inter-process communication
 facility.  Its system bus is used to allow system services to communicate
 and to be notified of system-wide events.
 
@@ -14824,7 +14824,7 @@ package to expose as a service.
 @deffn {Scheme Procedure} polkit-service @
                          [#:polkit @var{polkit}]
 Return a service that runs the
-@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
+@uref{https://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
 management service}, which allows system administrators to grant access to
 privileged operations in a structured way.  By querying the Polkit service, a
 privileged system component can know when it should grant additional
@@ -14833,7 +14833,7 @@ the capability to suspend the system if the user is logged in locally.
 @end deffn
 
 @defvr {Scheme Variable} upower-service-type
-Service that runs @uref{http://upower.freedesktop.org/, @command{upowerd}}, a
+Service that runs @uref{https://upower.freedesktop.org/, @command{upowerd}}, a
 system-wide monitor for power consumption and battery levels, with the given
 configuration settings.
 
@@ -14907,7 +14907,7 @@ Possible values are:
 @end deftp
 
 @deffn {Scheme Procedure} udisks-service [#:udisks @var{udisks}]
-Return a service for @uref{http://udisks.freedesktop.org/docs/latest/,
+Return a service for @uref{https://udisks.freedesktop.org/docs/latest/,
 UDisks}, a @dfn{disk management} daemon that provides user interfaces with
 notifications and ways to mount/unmount disks.  Programs that talk to UDisks
 include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
@@ -14917,7 +14917,7 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
 Return a service that runs @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
-tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
+tool.  See @uref{https://www.freedesktop.org/software/colord/, the colord web
 site} for more information.
 @end deffn
 
@@ -17139,11 +17139,11 @@ string, you could instantiate a prosody service like this:
 
 @cindex IRC (Internet Relay Chat)
 @cindex IRC gateway
-@url{http://bitlbee.org,BitlBee} is a gateway that provides an IRC
+@url{https://bitlbee.org,BitlBee} is a gateway that provides an IRC
 interface to a variety of messaging protocols such as XMPP.
 
 @defvr {Scheme Variable} bitlbee-service-type
-This is the service type for the @url{http://bitlbee.org,BitlBee} IRC
+This is the service type for the @url{https://bitlbee.org,BitlBee} IRC
 gateway daemon.  Its value is a @code{bitlbee-configuration} (see
 below).
 
@@ -17975,7 +17975,7 @@ specified by clients;
 The @code{krb5-realm} and @code{krb5-configuration} types have many fields.
 Only the most commonly used ones are described here.
 For a full list, and more detailed explanation of each, see the MIT
-@uref{http://web.mit.edu/kerberos/krb5-devel/doc/admin/conf_files/krb5_conf.html,,krb5.conf}
+@uref{https://web.mit.edu/kerberos/krb5-devel/doc/admin/conf_files/krb5_conf.html,,krb5.conf}
 documentation.
 
 
@@ -20717,7 +20717,7 @@ TLP enables various powersaving modes in userspace and kernel.
 Contrary to @code{upower-service}, it is not a passive,
 monitoring tool, as it will apply custom settings each time a new power
 source is detected.  More information can be found at
-@uref{http://linrunner.de/en/tlp/tlp.html, TLP home page}.
+@uref{https://linrunner.de/en/tlp/tlp.html, TLP home page}.
 
 @deffn {Scheme Variable} tlp-service-type
 The service type for the TLP tool.  Its value should be a valid
@@ -23186,7 +23186,7 @@ could instantiate a cgit service like this:
 
 @cindex Gitolite service
 @cindex Git, hosting
-@uref{http://gitolite.com/gitolite/, Gitolite} is a tool for hosting Git
+@uref{https://gitolite.com/gitolite/, Gitolite} is a tool for hosting Git
 repositories on a central server.
 
 Gitolite can handle multiple repositories and users, and supports flexible
@@ -23412,7 +23412,7 @@ passed to @command{lircd}.
 The @code{(gnu services spice)} module provides the following service.
 
 @deffn {Scheme Procedure} spice-vdagent-service [#:spice-vdagent]
-Returns a service that runs @url{http://www.spice-space.org,VDAGENT}, a daemon
+Returns a service that runs @url{https://www.spice-space.org,VDAGENT}, a daemon
 that enables sharing the clipboard with a vm and setting the guest display
 resolution when the graphical console window resizes.
 @end deffn
@@ -23550,7 +23550,7 @@ The @code{(gnu services docker)} module provides the following service.
 
 @defvr {Scheme Variable} docker-service-type
 
-This is the type of the service that runs @url{http://www.docker.com,Docker},
+This is the type of the service that runs @url{https://www.docker.com,Docker},
 a daemon that can execute application bundles (sometimes referred to as
 ``containers'') in isolated environments.
 
@@ -24036,7 +24036,7 @@ in ``legacy'' BIOS mode.
 Available bootloaders are described in @code{(gnu bootloader @dots{})}
 modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
 of bootloaders for a wide range of ARM and AArch64 systems, using the
-@uref{http://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
+@uref{https://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
 
 @item @code{target}
 This is a string denoting the target onto which to install the
@@ -24267,7 +24267,7 @@ an older system generation at boot time should you need it.
 
 @quotation Note
 @c The paragraph below refers to the problem discussed at
-@c <http://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>.
+@c <https://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>.
 It is highly recommended to run @command{guix pull} once before you run
 @command{guix system reconfigure} for the first time (@pxref{Invoking
 guix pull}).  Failing to do that you would see an older version of Guix
@@ -24663,7 +24663,7 @@ as @file{/etc/config.scm} (@pxref{Using the Configuration System}).
 Instead of using this pre-built image, one can also build their own virtual
 machine image using @command{guix system vm-image} (@pxref{Invoking guix
 system}).  The returned image is in qcow2 format, which the
-@uref{http://qemu.org/, QEMU emulator} can efficiently use.
+@uref{https://qemu.org/, QEMU emulator} can efficiently use.
 
 @cindex QEMU
 If you built your own image, you must copy it out of the store
@@ -25717,7 +25717,7 @@ approximation, we will consider it final.}, depicted below.
 
 @image{images/bootstrap-packages,6in,,Dependency graph of the early packages}
 
-@c See <http://lists.gnu.org/archive/html/gnu-system-discuss/2012-10/msg00000.html>.
+@c See <https://lists.gnu.org/archive/html/gnu-system-discuss/2012-10/msg00000.html>.
 The first tool that gets built with the bootstrap binaries is
 GNU@tie{}Make---noted @code{make-boot0} above---which is a prerequisite
 for all the following packages.  From there Findutils and Diffutils get
@@ -25840,7 +25840,7 @@ reason.
 @node Acknowledgments
 @chapter Acknowledgments
 
-Guix is based on the @uref{http://nixos.org/nix/, Nix package manager},
+Guix is based on the @uref{https://nixos.org/nix/, Nix package manager},
 which was designed and
 implemented by Eelco Dolstra, with contributions from other people (see
 the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package
