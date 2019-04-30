@@ -8483,6 +8483,7 @@ JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
          (uri (git-reference
                (url "https://github.com/bitemyapp/esqueleto")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0lz1qxms7cfg5p3j37inlych0r2fwhm8xbarcys3df9m7jy9nixa"))))
