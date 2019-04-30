@@ -4441,6 +4441,7 @@ Lisp. It is intended to be a replacement of PURI.")
        (uri (git-reference
              (url "https://github.com/fukamachi/myway.git")
              (commit commit)))
+       (file-name (git-file-name "myway" version))
        (sha256
         (base32 "0briia9bk3lbr0frnx39d1qg6i38dm4j6z9w3yga3d40k6df4a90"))))
      (build-system asdf-build-system/sbcl)
