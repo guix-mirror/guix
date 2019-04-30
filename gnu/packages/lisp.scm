@@ -3864,6 +3864,7 @@ client and server.")
        (uri (git-reference
              (url "https://github.com/gwkkwg/trivial-backtrace.git")
              (commit commit)))
+       (file-name (git-file-name "trivial-backtrace" version))
        (sha256
         (base32 "10p41p43skj6cimdg8skjy7372s8v2xpkg8djjy0l8rm45i654k1"))))
      (build-system asdf-build-system/sbcl)
