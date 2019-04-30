@@ -84,6 +84,7 @@
             udisks-service
             udisks-service-type
 
+            colord-service-type
             colord-service
 
             geoclue-application
@@ -511,7 +512,11 @@ Users need to be in the @code{lp} group to access the D-Bus service.
                        (service-extension udev-service-type list)
 
                        ;; It provides polkit "actions".
-                       (service-extension polkit-service-type list)))))
+                       (service-extension polkit-service-type list)))
+                (description
+                 "Run @command{colord}, a system service with a D-Bus
+interface to manage the color profiles of input and output devices such as
+screens and scanners.")))
 
 (define* (colord-service #:key (colord colord))
   "Return a service that runs @command{colord}, a system service with a D-Bus
