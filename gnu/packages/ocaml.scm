@@ -4240,13 +4240,13 @@ hash functions from type exrpessions and definitions.")
               (uri (git-reference
                      (url "https://github.com/janestreet/ppx_enumerate.git")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0spx9k1v7vjjb6sigbfs69yndgq76v114jhxvzjmffw7q989cyhr"))))
     (build-system dune-build-system)
     (arguments
-     ;; No tests
-     `(#:tests? #f))
+     `(#:tests? #f))                    ; no test suite
     (propagated-inputs
       `(("ocaml-base" ,ocaml-base)
         ("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
