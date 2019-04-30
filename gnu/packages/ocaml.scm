@@ -4621,6 +4621,7 @@ packages.")
               (uri (git-reference
                      (url "https://github.com/janestreet/ppx_typerep_conv.git")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0a13dpfrrg0rsm8qni1bh7pqcda30l70z8r6yzi5a64bmwk7g5ah"))))
