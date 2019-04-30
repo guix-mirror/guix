@@ -4882,6 +4882,7 @@ thousands of times faster than fork.
               (uri (git-reference
                      (url "https://github.com/janestreet/core.git")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0pzl8n09z4f3i7z2wq4cjxfqrr8mj6xcdp7rbg0nxap2zdhjgvrq"))))
