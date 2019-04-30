@@ -4214,6 +4214,7 @@ storage of large amounts of data.")
               (uri (git-reference
                      (url "https://github.com/janestreet/ppx_hash.git")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1p0ic6aijxlrdggpmycj12q3cy9xksbq2vq727215maz4snvlf5p"))))
