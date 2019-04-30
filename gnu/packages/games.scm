@@ -291,9 +291,9 @@ Plenty of classic platforming in four nice colors guaranteed!
 The game includes a built-in editor so you can design and share your own maps.")
     (license license:gpl2+)))
 
-(define-public armagetron-advanced
+(define-public armagetronad
   (package
-    (name "armagetron-advanced")
+    (name "armagetronad")
     (version "0.2.8.3.4")
     (source (origin
               (method url-fetch)
@@ -320,8 +320,8 @@ the more advanced player there are new game modes and a wide variety of
 physics settings to tweak as well.")
     (license license:gpl2+)))
 
-(define-public armagetronad
-  (deprecated-package "armagetronad" armagetron-advanced))
+(define-public armagetron-advanced
+  (deprecated-package "armagetron-advanced" armagetronad))
 
 (define-public bastet
   (package
@@ -387,7 +387,7 @@ Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
-(define-public cataclysm-dark-days-ahead
+(define-public cataclysm-dda
   (let ((commit "9c732a5de48928691ab863d3ab275ca7b0e522fc"))
     (package
       (name "cataclysm-dda")
@@ -452,8 +452,8 @@ things far stranger and deadlier, and against the others like yourself, that
 want what you have.")
       (license license:cc-by-sa3.0))))
 
-(define-public cataclysm-dda
-  (deprecated-package "cataclysm-dda" cataclysm-dark-days-ahead))
+(define-public cataclysm-dark-days-ahead
+  (deprecated-package "cataclysm-dark-days-ahead" cataclysm-dda))
 
 (define-public cowsay
   (package
@@ -1315,9 +1315,9 @@ can be explored and changed freely.")
     ;; state "GNU General Public Licence" without specifying a version.
     (license license:gpl1+)))
 
-(define-public l-abbaye-des-morts
+(define-public abbaye
   (package
-    (name "l-abbaye-des-morts")
+    (name "abbaye")
     (version "2.0.1")
     (source
      (origin
@@ -1369,8 +1369,8 @@ them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
     (license license:gpl3)))
 
-(define-public abbaye
-  (deprecated-package "abbaye" l-abbaye-des-morts))
+(define-public l-abbaye-des-morts
+  (deprecated-package "l-abbaye-des-morts" abbaye))
 
 (define-public angband
   (package
@@ -2218,9 +2218,9 @@ the higher you go.  The game features multiplayer, unlimited FPS, smooth floor
 falling, themeable graphics and sounds, and replays.")
     (license license:gpl3+)))
 
-(define-public the-battle-for-wesnoth
+(define-public wesnoth
   (package
-    (name "the-battle-for-wesnoth")
+    (name "wesnoth")
     (version "1.14.6")
     (source (origin
               (method url-fetch)
@@ -2258,13 +2258,13 @@ experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
 
-(define-public wesnoth
-  (deprecated-package "wesnoth" the-battle-for-wesnoth))
+(define-public the-battle-for-wesnoth
+  (deprecated-package "the-battle-for-wesnoth" wesnoth))
 
-(define-public the-battle-for-wesnoth-server
+(define-public wesnoth-server
   (package
-    (inherit the-battle-for-wesnoth)
-    (name "the-battle-for-wesnoth-server")
+    (inherit wesnoth)
+    (name "wesnoth-server")
     (inputs
      `(("boost" ,boost)
        ("icu4c" ,icu4c)
@@ -2277,8 +2277,8 @@ next campaign.")
     (description "This package contains a dedicated server for @emph{The
 Battle for Wesnoth}.")))
 
-(define-public wesnoth-server
-  (deprecated-package "wesnoth-server" the-battle-for-wesnoth-server))
+(define-public the-battle-for-wesnoth-server
+  (deprecated-package "the-battle-for-wesnoth-server" wesnoth-server))
 
 (define-public gamine
   (package
@@ -3253,9 +3253,9 @@ tactics.")
                    license:gpl2+
                    license:lgpl2.1+))))
 
-(define-public project-starfighter
+(define-public starfighter
   (package
-    (name "project-starfighter")
+    (name "starfighter")
     (version "1.7")
     (source (origin
               (method url-fetch)
@@ -3288,8 +3288,8 @@ in strikes against the evil corporation.")
                    license:cc0
                    license:public-domain))))
 
-(define-public starfighter
-  (deprecated-package "starfighter" project-starfighter))
+(define-public project-starfighter
+  (deprecated-package "project-starfighter" starfighter))
 
 (define-public chromium-bsu
   (package
@@ -4119,9 +4119,9 @@ over 100 user-created campaigns.")
                    license:cc-by3.0
                    license:cc-by-sa3.0))))
 
-(define-public kiki-the-nano-bot
+(define-public kiki
   (package
-    (name "kiki-the-nano-bot")
+    (name "kiki")
     (version "1.0.2")
     (source (origin
               (method url-fetch)
@@ -4215,8 +4215,8 @@ small robot living in the nano world, repair its maker.")
     ;; for a statement from the author.
     (license license:public-domain)))
 
-(define-public kiki
-  (deprecated-package "kiki" kiki-the-nano-bot))
+(define-public kiki-the-nano-bot
+  (deprecated-package "kiki-the-nano-bot" kiki))
 
 (define-public teeworlds
   (package
@@ -4438,9 +4438,9 @@ shapes are arranged in a series of increasingly complex patterns, forming
  becoming difficult enough to tax even the brightest of minds.")
     (license license:gpl2+)))
 
-(define-public fish-fillets-ng
+(define-public fillets-ng
   (package
-    (name "fish-fillets-ng")
+    (name "fillets-ng")
     (version "1.0.1")
     (source (origin
               (method url-fetch)
@@ -4507,12 +4507,12 @@ underwater realm quarrel among themselves or comment on the efforts of your
 fish.  The whole game is accompanied by quiet, comforting music.")
     (license license:gpl2+)))
 
-(define-public fillets-ng
-  (deprecated-package "fillets-ng" fish-fillets-ng))
+(define-public fish-fillets-ng
+  (deprecated-package "fish-fillets-ng" fillets-ng))
 
-(define-public dungeon-crawl-stone-soup
+(define-public crawl
   (package
-    (name "dungeon-crawl-stone-soup")
+    (name "crawl")
     (version "0.23.2")
     (source
      (origin
@@ -4589,16 +4589,16 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
                    license:zlib
                    license:asl2.0))))
 
-(define-public crawl
-  (deprecated-package "crawl" dungeon-crawl-stone-soup))
+(define-public dungeon-crawl-stone-soup
+  (deprecated-package "dungeon-crawl-stone-soup" crawl))
 
 ;; The linter here claims that patch file names should start with the package
 ;; name. But, in this case, the patches are inherited from crawl with the
 ;; "crawl-" prefix instead of "crawl-tiles-".
-(define-public dungeon-crawl-stone-soup-tiles
+(define-public crawl-tiles
   (package
-    (inherit dungeon-crawl-stone-soup)
-    (name "dungeon-crawl-stone-soup-tiles")
+    (inherit crawl)
+    (name "crawl-tiles")
     (arguments
      (substitute-keyword-arguments
          (package-arguments crawl)
@@ -4628,8 +4628,8 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
        ("which" ,which)))
     (synopsis "Graphical roguelike dungeon crawler game")))
 
-(define-public crawl-tiles
-  (deprecated-package "crawl-tiles" dungeon-crawl-stone-soup-tiles))
+(define-public dungeon-crawl-stone-soup-tiles
+  (deprecated-package "dungeon-crawl-stone-soup-tiles" crawl-tiles))
 
 (define-public lugaru
   (package
@@ -4913,9 +4913,9 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 \"adventure 2.5\" and \"430-point adventure\".")
       (license license:bsd-2))))
 
-(define-public tales-of-maj-eyal
+(define-public tome4
   (package
-    (name "tales-of-maj-eyal")
+    (name "tome4")
     (version "1.5.10")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
@@ -5036,8 +5036,8 @@ intuitive mouse control, streamlined mechanics and deep, challenging combat,
 Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
     (license license:gpl3+)))
 
-(define-public tome4
-  (deprecated-package "tome4" tales-of-maj-eyal))
+(define-public tales-of-maj-eyal
+  (deprecated-package "tales-of-maj-eyal" tome4))
 
 (define-public quakespasm
   (package
@@ -6276,9 +6276,9 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
     (home-page "https://www.stepmania.com")
     (license license:expat)))
 
-(define-public battle-tanks
+(define-public btanks
   (package
-    (name "battle-tanks")
+    (name "btanks")
     (version "0.9.8083")
     (source
      (origin
@@ -6362,8 +6362,8 @@ and cooperative.")
     ;; developers.
     (license (list license:gpl2+ license:lgpl2.1+))))
 
-(define-public btanks
-  (deprecated-package "btanks" battle-tanks))
+(define-public battle-tanks
+  (deprecated-package "battle-tanks" btanks))
 
 (define-public slingshot
   (package
@@ -6519,9 +6519,9 @@ as a unique casting system where the player draws runes in real time to effect
 the desired spell.")
     (license license:gpl3+)))
 
-(define-public the-legend-of-edgar
+(define-public edgar
   (package
-    (name "the-legend-of-edgar")
+    (name "edgar")
     (version "1.31")
     (source
      (origin
@@ -6564,8 +6564,8 @@ a fortress beyond the forbidden swamp.")
     (home-page "https://www.parallelrealities.co.uk/games/edgar/")
     (license license:gpl2+)))
 
-(define-public edgar
-  (deprecated-package "edgar" the-legend-of-edgar))
+(define-public the-legend-of-edgar
+  (deprecated-package "the-legend-of-edgar" edgar))
 
 (define-public openclonk
   (package
