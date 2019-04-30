@@ -12019,6 +12019,7 @@ This code is still alpha.")
        (uri (git-reference
              (url "https://github.com/egh/zotxt-emacs.git")
              (commit "23a4a9f74a658222027d53a9a83cd4bcc583ca8b")))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "09fq3w9yk9kn6bz7y9kgpiw612dvj3yzsdk734js6zgb0p8lfd2c"))))
     (build-system emacs-build-system)
