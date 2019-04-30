@@ -12511,6 +12511,7 @@ e.g: @code{from:Peter to:Anne flag:attach search term}.")
        (uri (git-reference
              (url "https://github.com/emacs-helm/helm-pass")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "0vglaknmir3yv4iwibwn8r40ran8d04gcyp99hx73ldmf3zqpnxv"))))
