@@ -7908,6 +7908,7 @@ the actual transformations.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0lvwvq6sl80sha9fq5m4568sg534dhmifyjqw75bqddcbf3by84x"))))
