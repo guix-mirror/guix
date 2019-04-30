@@ -4251,6 +4251,7 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
        (uri (git-reference
              (url "https://github.com/m2ym/cl-syntax.git")
              (commit "03f0c329bbd55b8622c37161e6278366525e2ccc")))
+       (file-name (git-file-name "cl-syntax" version))
        (sha256
         (base32 "17ran8xp77asagl31xv8w819wafh6whwfc9p6dgx22ca537gyl4y"))))
     (build-system asdf-build-system/sbcl)
