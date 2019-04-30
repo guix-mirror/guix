@@ -109,6 +109,7 @@ readers and is needed to communicate with such devices through the
        (uri (git-reference
              (url "https://github.com/Fedict/eid-mw")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1q82fw63xzrnrgh1wyh457hal6vfdl6swqfq7l6kviywiwlzx7kd"))))
     (build-system glib-or-gtk-build-system)
