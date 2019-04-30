@@ -686,13 +686,13 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
 (define-public maven-artifact
   (package
     (name "maven-artifact")
-    (version "3.6.0")
+    (version "3.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/"
                                   "maven-3/" version "/source/"
                                   "apache-maven-" version "-src.tar.gz"))
-              (sha256 (base32 "17jrqfqwn569jgnv8m4pqc27csssb0rf6mznpq61l5bnbd6hl75k"))
+              (sha256 (base32 "0grw9zp166ci53rd7qkyy2qmwmik37xhiz1z84jpm0msyvzj2n82"))
               (modules '((guix build utils)))
               (snippet
                '(begin
