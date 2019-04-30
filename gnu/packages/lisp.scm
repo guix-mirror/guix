@@ -3896,6 +3896,7 @@ backtrace portably.")
        (uri (git-reference
              (url "https://github.com/jdz/rfc2388.git")
              (commit commit)))
+       (file-name (git-file-name "rfc2388" version))
        (sha256
         (base32 "0phh5n3clhl9ji8jaxrajidn22d3f0aq87mlbfkkxlnx2pnw694k"))))
      (build-system asdf-build-system/sbcl)
