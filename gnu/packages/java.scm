@@ -3225,7 +3225,7 @@ sharing common test data, and test runners for running tests.")
 (define-public java-plexus-utils
   (package
     (name "java-plexus-utils")
-    (version "3.0.24")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/codehaus-plexus/"
@@ -3233,7 +3233,7 @@ sharing common test data, and test runners for running tests.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mlwpc6fms24slygv5yvi6fi9hcha2fh0v73p5znpi78bg36i2js"))))
+                "1ihfigar20lvk4pinii7dq05i173xphhw4iyrk6gjfy04m01j2lz"))))
     (build-system ant-build-system)
     ;; FIXME: The default build.xml does not include a target to install
     ;; javadoc files.
@@ -3266,7 +3266,8 @@ cli/shell/BourneShell.java"
                (delete-file "cli/CommandlineTest.java"))
              #t)))))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))
     (home-page "http://codehaus-plexus.github.io/plexus-utils/")
     (synopsis "Common utilities for the Plexus framework")
     (description "This package provides various Java utility classes for the
