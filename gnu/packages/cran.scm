@@ -792,14 +792,14 @@ application framework for R, making it easy to create attractive dashboards.")
 (define-public r-shinyfiles
   (package
     (name "r-shinyfiles")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinyFiles" version))
        (sha256
         (base32
-         "0dlcjrw96x72grg6j915070x8x98l7629pn86gf148iknflm7gd5"))))
+         "01as3l9ffj5dwac0vviais2x5l3027zxlj67kcvkdwxaj5hql33i"))))
     (properties `((upstream-name . "shinyFiles")))
     (build-system r-build-system)
     (propagated-inputs
