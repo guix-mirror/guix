@@ -164,7 +164,6 @@
     "third_party/pdfium/third_party/agg23" ;Expat
     "third_party/pdfium/third_party/base" ;BSD-3
     "third_party/pdfium/third_party/bigint" ;Public domain, BSD-3
-    "third_party/pdfium/third_party/libopenjpeg20" ;BSD-2
     "third_party/pdfium/third_party/skia_shared" ;BSD-3
     "third_party/pdfium/third_party/freetype/include/pstables.h" ;FreeType
     "third_party/ply" ;BSD-3
@@ -460,7 +459,7 @@ from forcing GEXP-PROMISE."
              "use_system_lcms2=true"
              "use_system_libdrm=true"
              "use_system_libjpeg=true"
-             "use_system_libopenjpeg=true"
+             "use_system_libopenjpeg2=true"
              "use_system_libpng=true"
              "use_system_zlib=true"
              "use_gnome_keyring=false"  ;deprecated by libsecret
