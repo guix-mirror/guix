@@ -1353,6 +1353,29 @@ italics shapes.  This package provides only TrueType files (TTF).")
     (home-page "https://software.sil.org/gentium/")
     (license license:silofl1.1)))
 
+(define-public font-sil-andika
+  (package
+    (name "font-sil-andika")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/andika/Andika-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "01zm7p32gxfwmv7h3cfj2vx59846w2y6rxqy67grn2dyjh8pljv0"))))
+    ;; As for Gentium (see above), the TTF files are considered source.
+    (build-system font-build-system)
+    (synopsis "Sans serif font designed especially for literacy use")
+    (description
+     "Andika SIL is a sans serif, Unicode-compliant font designed especially
+for literacy use, taking into account the needs of beginning readers.  The
+focus is on clear, easy-to-perceive letterforms that will not be readily
+confused with one another.  This package provides only TrueType files (TTF).")
+    (home-page "https://software.sil.org/andika/")
+    (license license:silofl1.1)))
+
 (define-public font-sil-charis
   (package
     (name "font-sil-charis")
