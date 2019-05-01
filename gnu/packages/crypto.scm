@@ -131,7 +131,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public signify
   (package
     (name "signify")
-    (version "24")
+    (version "25")
     (home-page "https://github.com/aperezdc/signify")
     (source (origin
               (method git-fetch)
@@ -140,7 +140,7 @@ communication, encryption, decryption, signatures, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0grdlrpxcflzmzzc30r8rvsmamvbsgqyni59flzzk4w5hpjh464w"))))
+                "0zg0rffxwj2a71s1bllhrn491xsmirg9sshpq8f3vl25lv4c2cnq"))))
     (build-system gnu-build-system)
     ;; TODO Build with libwaive (described in README.md), to implement something
     ;; like OpenBSD's pledge().
