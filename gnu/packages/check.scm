@@ -1497,13 +1497,13 @@ instantly.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "4.7.19")
+    (version "4.18.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "18740bkpvj4ygmvzxnhakxdmj2igvgyayczyajll9gz5x47d9mjy"))))
+                "0a35nwqyjnm4cphi43xracqpkws0ip61mndvqb1iqq7gkva83lb1"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
