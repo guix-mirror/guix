@@ -1950,14 +1950,14 @@ or excesses over a high threshold.")
 (define-public r-lmtest
   (package
     (name "r-lmtest")
-    (version "0.9-36")
+    (version "0.9-37")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lmtest" version))
        (sha256
         (base32
-         "0sym9sm1vl6bbgq01jhz1plxqmgh8hrgrn7rw0mwvsalcn6id7xy"))))
+         "02nasm0j2vwkhz11dxqixs23msy1s3yj0jps6949fmgh9gwjkjfx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-zoo" ,r-zoo)))
