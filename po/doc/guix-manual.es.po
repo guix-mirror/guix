@@ -46,7 +46,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.0.0-pre2\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2019-04-24 13:22+0200\n"
-"PO-Revision-Date: 2019-04-27 21:41+0200\n"
+"PO-Revision-Date: 2019-05-01 11:31+0200\n"
 "Last-Translator: Miguel Ángel Arruga Vivas <rosen644835@gmail.com>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -27715,7 +27715,7 @@ msgstr "Es una lista de servicios que se construye en base a @var{%base-services
 #. type: defvr
 #: doc/guix.texi:14563
 msgid "In particular, it adds a graphical login manager (@pxref{X Window, @code{gdm-service-type}}), screen lockers, a network management tool (@pxref{Networking Services, @code{network-manager-service-type}}), energy and color management services, the @code{elogind} login and seat manager, the Polkit privilege service, the GeoClue location service, the AccountsService daemon that allows authorized users change system passwords, an NTP client (@pxref{Networking Services}), the Avahi daemon, and has the name service switch service configured to be able to use @code{nss-mdns} (@pxref{Name Service Switch, mDNS})."
-msgstr "En particular, añade un gestor de ingreso al sistema gráfico (@pxref{X Window, @code{gdm-service-type}}), herramientas para el bloqueo de la pantalla, una herramienta de gestión de redes (@pxref{Networking Services, @code{network-manager-service-type}}), servicios de gestión de la energía y el color, el gestor de asientos e ingresos al sistema @code{elogind}, el servicio de privilegios Polkit, el servicio de geolocalización GeoClue, el daemon AccountsService que permite a las usuarias autoriadas el cambio de contraseñas del sistema, un cliente NTP (@pxref{Networking Services}), el daemon Avahi y configura el servicio del selector de servicios de nombres para que pueda usar @code{nss-mdns} (@pref{Name Service Switch, mDNS}). "
+msgstr "En particular, añade un gestor de ingreso al sistema gráfico (@pxref{X Window, @code{gdm-service-type}}), herramientas para el bloqueo de la pantalla, una herramienta de gestión de redes (@pxref{Networking Services, @code{network-manager-service-type}}), servicios de gestión de la energía y el color, el gestor de asientos e ingresos al sistema @code{elogind}, el servicio de privilegios Polkit, el servicio de geolocalización GeoClue, el daemon AccountsService que permite a las usuarias autoriadas el cambio de contraseñas del sistema, un cliente NTP (@pxref{Networking Services}), el daemon Avahi y configura el servicio del selector de servicios de nombres para que pueda usar @code{nss-mdns} (@pxref{Name Service Switch, mDNS}). "
 
 #. type: Plain text
 #: doc/guix.texi:14568
