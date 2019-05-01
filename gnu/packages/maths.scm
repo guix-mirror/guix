@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4921,3 +4922,72 @@ coordinated fashion, as part of the Great Internet Mersenne Prime
 Search (GIMPS).  Mlucas also includes a simple Python script for assignment
 management via the GIMPS project's Primenet server.")
     (license license:gpl2+)))
+
+(define-public nauty
+  (package
+    (name "nauty")
+    (version "2.6r11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pallini.di.uniroma1.it/"
+                    "nauty" (string-join (string-split version #\.) "")
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "05z6mk7c31j70md83396cdjmvzzip1hqb88pfszzc6k4gy8h3m2y"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "lib"))
+    (arguments
+     `(#:test-target "checks"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Default make target does not build all available
+         ;; executables.  Create them now.
+         (add-after 'build 'build-extra-programs
+           (lambda _
+             (for-each (lambda (target) (invoke "make" target))
+                       '("blisstog" "bliss2dre" "checks6" "sumlines"))
+             #t))
+         ;; Upstream does not provide any install target.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib-output (assoc-ref outputs "lib"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/nauty/"))
+                    (include (string-append lib-output "/include/nauty"))
+                    (lib (string-append lib-output "/lib/nauty")))
+               (for-each (lambda (f) (install-file f bin))
+                         '("dreadnaut" "NRswitchg" "addedgeg" "amtog" "biplabg"
+                           "blisstog" "bliss2dre" "catg" "checks6" "complg"
+                           "converseg" "copyg" "countg" "cubhamg" "deledgeg"
+                           "delptg" "directg" "dretodot" "dretog" "genbg"
+                           "genbgL" "geng" "genquarticg" "genrang" "genspecialg"
+                           "gentourng" "gentreeg" "hamheuristic" "labelg"
+                           "linegraphg" "listg" "multig" "newedgeg" "pickg"
+                           "planarg" "ranlabg" "shortg" "showg" "subdivideg"
+                           "sumlines" "twohamg" "vcolg" "watercluster2"))
+               (for-each (lambda (f) (install-file f include))
+                         (find-files "." "\\.h$"))
+               (for-each (lambda (f) (install-file f lib))
+                         (find-files "." "\\.a$"))
+               (for-each (lambda (f) (install-file f doc))
+                         (append '("formats.txt" "README" "schreier.txt")
+                                 (find-files "." "\\.pdf$")))))))))
+    (inputs
+     `(("gmp" ,gmp)))                   ;for sumlines
+    (home-page "https://pallini.di.uniroma1.it/")
+    (synopsis "Library for graph automorphisms")
+    (description "@code{nauty} (No AUTomorphisms, Yes?) is a set of
+procedures for computing automorphism groups of graphs and digraphs.
+
+@code{nauty} computes graph information in the form of a set of
+generators, the size of the group, and the orbits of the group; it can
+also produce a canonical label.  The @code{nauty} suite is written in
+C and comes with a command-line interface, a collection of
+command-line tools, and an Application Programming Interface (API).
+
+This package provides the static libraries required to run programs
+compiled against the nauty library.")
+    (license license:asl2.0)))
