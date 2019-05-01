@@ -191,7 +191,9 @@
                                 ;; arm can be a lot slower, so a time-related test fails
                                 "ext/fileinfo/tests/cve-2014-3538-nojit.phpt"
                                 "ext/pcre/tests/bug76514.phpt"
-                                "ext/pcre/tests/preg_match_error3.phpt")))
+                                "ext/pcre/tests/preg_match_error3.phpt"
+                                "ext/standard/tests/general_functions/var_export-locale.phpt"
+                                "ext/standard/tests/general_functions/var_export_basic1.phpt")))
                    '())
 
              ;; Drop tests that are known to fail.
