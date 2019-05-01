@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,7 +98,7 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.12.15")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -105,7 +106,7 @@ system to use the host GPU to accelerate 3D rendering.")
                 "spice-protocol-" version ".tar.bz2"))
               (sha256
                (base32
-                "06b461i4jv741in8617jjpfk28wk7zs9p7841njkf4sbm8xv4kcb"))))
+                "1b3f44c13pqsp7aabmcinfbmgl79038bp5548l5pjs16lcfam95n"))))
     (build-system gnu-build-system)
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
@@ -113,6 +114,19 @@ Environments) is a remote-display system built for virtual environments
 which allows users to view a desktop computing environment.")
     (home-page "https://www.spice-space.org")
     (license (list license:bsd-3 license:lgpl2.1+))))
+
+(define-public spice-protocol-0.12
+  (package
+    (inherit spice-protocol)
+    (version "0.12.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.spice-space.org/download/releases/"
+                    "spice-protocol-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "06b461i4jv741in8617jjpfk28wk7zs9p7841njkf4sbm8xv4kcb"))))))
 
 (define-public spice-gtk
   (package
@@ -134,7 +148,7 @@ which allows users to view a desktop computing environment.")
         ("gst-plugins-good" ,gst-plugins-good)
         ("gst-plugins-bad" ,gst-plugins-bad)
         ("gst-plugins-ugly" ,gst-plugins-ugly)
-        ("spice-protocol" ,spice-protocol)
+        ("spice-protocol" ,spice-protocol-0.12)
 
         ;; These are required by the pkg-config files.
         ("gtk+" ,gtk+)
