@@ -283,6 +283,11 @@ INPUTS is a list of inputs (as for packages)."
 
            (sql-schema #$schema)
 
+           ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
+           (setenv "GUIX_LOCPATH"
+                   #+(file-append glibc-utf8-locales "/lib/locale"))
+           (setlocale LC_ALL "en_US.utf8")
+
            (let ((inputs
                   '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
                              (map canonical-package
@@ -378,6 +383,11 @@ the image."
                         (ice-9 binary-ports))
 
            (sql-schema #$schema)
+
+           ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
+           (setenv "GUIX_LOCPATH"
+                   #+(file-append glibc-utf8-locales "/lib/locale"))
+           (setlocale LC_ALL "en_US.utf8")
 
            (let ((inputs
                   '#$(append (list qemu parted e2fsprogs dosfstools)
