@@ -132,14 +132,15 @@ communication, encryption, decryption, signatures, etc.")
   (package
     (name "signify")
     (version "24")
+    (home-page "https://github.com/aperezdc/signify")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/aperezdc/signify/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0594vyvkq176xxzaz9xbq8qs0xdnr8s9gkd1prblwpdvnzmw0xvc"))))
+                "0grdlrpxcflzmzzc30r8rvsmamvbsgqyni59flzzk4w5hpjh464w"))))
     (build-system gnu-build-system)
     ;; TODO Build with libwaive (described in README.md), to implement something
     ;; like OpenBSD's pledge().
@@ -159,7 +160,6 @@ communication, encryption, decryption, signatures, etc.")
     (description "The signify utility creates and verifies cryptographic
 signatures using the elliptic curve Ed25519.  This is a Linux port of the
 OpenBSD tool of the same name.")
-    (home-page "https://github.com/aperezdc/signify")
     ;; This package includes third-party code that was originally released under
     ;; various non-copyleft licenses. See the source files for clarification.
     (license (list license:bsd-3 license:bsd-4 license:expat license:isc
