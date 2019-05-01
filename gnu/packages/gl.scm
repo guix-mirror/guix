@@ -120,7 +120,7 @@ as ASCII text.")
      "Freeglut is a completely Free/OpenSourced alternative to
 the OpenGL Utility Toolkit (GLUT) library.  GLUT was originally
 written by Mark Kilgard to support the sample programs in the
-second edition OpenGL 'RedBook'.  Since then, GLUT has been used
+second edition OpenGL @code{RedBook}.  Since then, GLUT has been used
 in a wide variety of practical applications because it is simple,
 widely available and highly portable.
 
@@ -158,6 +158,8 @@ the X-Consortium license.")
                (base32
                 "0nsn4s6vnv5xcgxcw6q031amvh2zfj2smy1r5mbnjj2548hxcn2l"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     ;; The pkg-config file lists "freetype2" as Requires.private.
     (propagated-inputs `(("freetype" ,freetype)))
     (inputs `(("libx11" ,libx11)

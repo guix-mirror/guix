@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -38,7 +38,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml))
 
 (define-public tcc
   (package
@@ -257,3 +258,32 @@ typing conventions?
 every project that needs to deal with sizes in bytes.  It is written in the C
 language with thin bindings for other languages.")
     (license license:lgpl2.1+)))
+
+(define-public udunits
+  (package
+    (name "udunits")
+    (version "2.2.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.unidata.ucar.edu/pub/udunits/"
+                                  "udunits-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v9mqw4drnkzkm57331ail6yvs9485jmi37s40lhvmf7r5lli3rn"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("expat" ,expat)))
+    (home-page "https://www.unidata.ucar.edu/software/udunits/")
+    (synopsis "C library for units of physical quantities and value-conversion utils")
+    (description
+     "The UDUNITS-2 package provides support for units of physical quantities.
+Its three main components are:
+
+@enumerate
+@item @code{udunits2lib}, a C library for units of physical quantities;
+@item @code{udunits2prog}, a utility for obtaining the definition of a unit
+  and for converting numeric values between compatible units; and
+@item an extensive database of units.
+@end enumerate\n")
+    ;; Like the BSD-3 license but with an extra anti patent clause.
+    (license (license:non-copyleft "file://COPYRIGHT"))))

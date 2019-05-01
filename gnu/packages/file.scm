@@ -43,7 +43,9 @@
 
    ;; When cross-compiling, this package depends upon a native install of
    ;; itself.
-   (self-native-input? #t)
+   (native-inputs (if (%current-target-system)
+                      `(("self" ,this-package))
+                      '()))
 
    (synopsis "File type guesser")
    (description

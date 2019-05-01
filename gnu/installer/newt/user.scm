@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,18 +29,31 @@
   #:use-module (srfi srfi-26)
   #:export (run-user-page))
 
-(define (run-user-add-page)
+(define* (run-user-add-page #:key (name "") (real-name "")
+                            (home-directory ""))
+  "Run a form to enter the user name, home directory, and password.  Use NAME,
+REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
   (define (pad-label label)
     (string-pad-right label 20))
 
   (let* ((label-name
           (make-label -1 -1 (pad-label (G_ "Name"))))
+         (label-real-name
+          (make-label -1 -1 (pad-label (G_ "Real name"))))
          (label-home-directory
           (make-label -1 -1 (pad-label (G_ "Home directory"))))
+         (label-password
+          (make-label -1 -1 (pad-label (G_ "Password"))))
          (entry-width 30)
-         (entry-name (make-entry -1 -1 entry-width))
-         (entry-home-directory (make-entry -1 -1 entry-width))
-         (entry-grid (make-grid 2 2))
+         (entry-name (make-entry -1 -1 entry-width
+                                 #:initial-value name))
+         (entry-real-name (make-entry -1 -1 entry-width
+                                      #:initial-value real-name))
+         (entry-home-directory (make-entry -1 -1 entry-width
+                                           #:initial-value home-directory))
+         (entry-password (make-entry -1 -1 entry-width
+                                     #:flags FLAG-PASSWORD))
+         (entry-grid (make-grid 2 5))
          (button-grid (make-grid 1 1))
          (ok-button (make-button -1 -1 (G_ "OK")))
          (grid (make-grid 1 2))
@@ -50,8 +64,12 @@
 
     (set-entry-grid-field 0 0 label-name)
     (set-entry-grid-field 1 0 entry-name)
-    (set-entry-grid-field 0 1 label-home-directory)
-    (set-entry-grid-field 1 1 entry-home-directory)
+    (set-entry-grid-field 0 1 label-real-name)
+    (set-entry-grid-field 1 1 entry-real-name)
+    (set-entry-grid-field 0 2 label-home-directory)
+    (set-entry-grid-field 1 2 entry-home-directory)
+    (set-entry-grid-field 0 3 label-password)
+    (set-entry-grid-field 1 3 entry-password)
 
     (set-grid-field button-grid 0 0 GRID-ELEMENT-COMPONENT ok-button)
 
@@ -59,11 +77,17 @@
      entry-name
      (lambda (component)
        (set-entry-text entry-home-directory
-                       (string-append "/home/" (entry-value entry-name)))))
+                       (string-append "/home/" (entry-value entry-name)))
+
+       (when (string-null? (entry-value entry-real-name))
+         (set-entry-text entry-real-name
+                         (string-titlecase (entry-value entry-name))))))
 
     (add-components-to-form form
-                            label-name label-home-directory
-                            entry-name entry-home-directory
+                            label-name label-real-name
+                            label-home-directory label-password
+                            entry-name entry-real-name
+                            entry-home-directory entry-password
                             ok-button)
 
     (make-wrapped-grid-window (vertically-stacked-grid
@@ -82,18 +106,56 @@
             (when (eq? exit-reason 'exit-component)
               (cond
                ((components=? argument ok-button)
-                (let ((name (entry-value entry-name))
-                      (home-directory (entry-value entry-home-directory)))
+                (let ((name           (entry-value entry-name))
+                      (real-name      (entry-value entry-real-name))
+                      (home-directory (entry-value entry-home-directory))
+                      (password       (entry-value entry-password)))
                   (if (or (string=? name "")
                           (string=? home-directory ""))
                       (begin
                         (error-page)
                         (run-user-add-page))
-                      (user
-                       (name name)
-                       (home-directory home-directory))))))))
+                      (let ((password (confirm-password password)))
+                        (if password
+                            (user
+                             (name name)
+                             (real-name real-name)
+                             (home-directory home-directory)
+                             (password password))
+                            (run-user-add-page #:name name
+                                               #:real-name real-name
+                                               #:home-directory
+                                               home-directory)))))))))
           (lambda ()
             (destroy-form-and-pop form)))))))
+
+(define* (confirm-password password #:optional (try-again (const #f)))
+  "Ask the user to confirm PASSWORD, a possibly empty string.  Call TRY-AGAIN,
+a thunk, if the confirmation doesn't match PASSWORD, and return its result."
+  (define confirmation
+    (run-input-page (G_ "Please confirm the password.")
+                    (G_ "Password confirmation required")
+                    #:allow-empty-input? #t
+                    #:input-flags FLAG-PASSWORD))
+
+  (if (string=? password confirmation)
+      password
+      (begin
+        (run-error-page
+         (G_ "Password mismatch, please try again.")
+         (G_ "Password error"))
+        (try-again))))
+
+(define (run-root-password-page)
+  ;; TRANSLATORS: Leave "root" untranslated: it refers to the name of the
+  ;; system administrator account.
+  (define password
+    (run-input-page (G_ "Please choose a password for the system \
+administrator (\"root\").")
+                    (G_ "System administrator password")
+                    #:input-flags FLAG-PASSWORD))
+
+  (confirm-password password run-root-password-page))
 
 (define (run-user-page)
   (define (run users)
@@ -169,7 +231,12 @@
                   (run-error-page (G_ "Please create at least one user.")
                                   (G_ "No user"))
                   (run users))
-                users))))
+                (reverse users)))))
           (lambda ()
             (destroy-form-and-pop form))))))
-  (run '()))
+
+  ;; Add a "root" user simply to convey the root password.
+  (cons (user (name "root")
+              (home-directory "/root")
+              (password (run-root-password-page)))
+        (run '())))

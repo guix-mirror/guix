@@ -126,6 +126,8 @@
                                               (assoc-ref %outputs "out")
                                               "/libexec/samba-wrapper")
                                "--audio-drv-list=alsa,pa,sdl")
+       ;; Make build and test output verbose to facilitate investigation upon failure.
+       #:make-flags '("V=1")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -177,10 +179,6 @@ exec smbd $@")))
                (chmod "samba-wrapper" #o755)
                (install-file "samba-wrapper" libexec))
              #t))
-         (add-before 'check 'make-gtester-verbose
-           (lambda _
-             ;; Make GTester verbose to facilitate investigation upon failure.
-             (setenv "V" "1") #t))
          (add-before 'check 'disable-test-qga
            (lambda _
              (substitute* "tests/Makefile.include"
@@ -1089,11 +1087,11 @@ virtual machines.")
     (home-page "https://github.com/projectatomic/bubblewrap")
     (synopsis "Unprivileged sandboxing tool")
     (description "Bubblewrap is aimed at running applications in a sandbox,
-where it has restricted access to parts of the operating system or user data
-such as the home directory.  Bubblewrap always creates a new mount namespace,
-and the user can specify exactly what parts of the filesystem should be visible
-in the sandbox.  Any such directories specified is mounted nodev by default,
-and can be made readonly.")
+restricting their access to parts of the operating system or user data such as
+the home directory.  Bubblewrap always creates a new mount namespace, and the
+user can specify exactly what parts of the file system should be made visible
+in the sandbox.  These directories are mounted with the @code{nodev} option
+by default and can be made read-only.")
     (license license:lgpl2.0+)))
 
 (define-public bochs

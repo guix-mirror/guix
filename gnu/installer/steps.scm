@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,16 +113,24 @@ return the accumalated result so far."
 
   (define* (skip-to-step step result
                          #:key todo-steps done-steps)
-    (match (list todo-steps done-steps)
-      (((todo . rest-todo) (prev-done ... last-done))
-       (if (eq? (installer-step-id todo)
-                (installer-step-id step))
+    (match todo-steps
+      ((todo . rest-todo)
+       (let ((found? (eq? (installer-step-id todo)
+                          (installer-step-id step))))
+         (cond
+          (found?
            (run result
                 #:todo-steps todo-steps
-                #:done-steps done-steps)
-           (skip-to-step step (pop-result result)
-                         #:todo-steps (cons last-done todo-steps)
-                         #:done-steps prev-done)))))
+                #:done-steps done-steps))
+          ((and (not found?)
+                (null? done-steps))
+           (error (format #f "Step ~a not found" (installer-step-id step))))
+          (else
+           (match done-steps
+             ((prev-done ... last-done)
+              (skip-to-step step (pop-result result)
+                            #:todo-steps (cons last-done todo-steps)
+                            #:done-steps prev-done)))))))))
 
   (define* (run result #:key todo-steps done-steps)
     (match todo-steps
@@ -215,7 +223,7 @@ found in RESULTS."
                   '())))
           steps))
         (modules '((use-modules (gnu))
-                   (use-service-modules desktop))))
+                   (use-service-modules desktop networking ssh xorg))))
     `(,@modules
       ()
       (operating-system ,@configuration))))

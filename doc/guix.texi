@@ -13,8 +13,12 @@
 @set OPENPGP-SIGNING-KEY-ID 3CE464558A84FDC69DB40CFB090B11993D9AEBB5
 @set KEY-SERVER pool.sks-keyservers.net
 
+@c Base URL for downloads.
+@set BASE-URL https://ftp.gnu.org/gnu/guix
+
 @c The official substitute server used by default.
 @set SUBSTITUTE-SERVER ci.guix.info
+@set SUBSTITUTE-URL https://@value{SUBSTITUTE-SERVER}
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès@*
@@ -108,10 +112,11 @@ package management tool written for the GNU system.
 @c TRANSLATORS: You can replace the following paragraph with information on
 @c how to join your own translation team and how to report issues with the
 @c translation.
-This manual is also available in French (@pxref{Top,,, guix.fr, Manuel de
-référence de GNU Guix}) and German (@pxref{Top,,, guix.de, Referenzhandbuch
-zu GNU Guix}).  If you would like to translate it in your native language,
-consider joining the
+This manual is also available in Simplified Chinese (@pxref{Top,,, guix.zh_CN,
+GNU Guix参考手册}), French (@pxref{Top,,, guix.fr, Manuel de référence de GNU
+Guix}), German (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}), and
+Spanish (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}).  If you
+would like to translate it in your native language, consider joining the
 @uref{https://translationproject.org/domain/guix-manual.html, Translation
 Project}.
 
@@ -251,6 +256,7 @@ System Configuration
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Keyboard Layout::             How the system interprets key strokes.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
@@ -513,13 +519,22 @@ dependencies.  This is often quicker than installing from source, which
 is described in the next sections.  The only requirement is to have
 GNU@tie{}tar and Xz.
 
+@c Note duplicated from the ``Installation'' node.
+@quotation Note
+We recommend the use of this
+@uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
+shell installer script}.  The script automates the download, installation, and
+initial configuration steps described below.  It should be run as the root
+user.
+@end quotation
+
 Installing goes along these lines:
 
 @enumerate
 @item
 @cindex downloading Guix binary
 Download the binary tarball from
-@indicateurl{https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
+@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz},
 where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
 already running the kernel Linux, and so on.
 
@@ -528,7 +543,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
 @example
-$ wget https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 $ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 @end example
 
@@ -675,14 +690,8 @@ You can confirm that Guix is working by installing a sample package into
 the root profile:
 
 @example
-# guix package -i hello
+# guix install hello
 @end example
-
-The @code{guix} package must remain available in @code{root}'s profile,
-or it would become subject to garbage collection---in which case you
-would find yourself badly handicapped by the lack of the @command{guix}
-command.  In other words, do not remove @code{guix} by running
-@code{guix package -r guix}.
 
 The binary installation tarball can be (re)produced and verified simply
 by running the following command in the Guix source tree:
@@ -1569,7 +1578,7 @@ available with Guix and then define the @code{GUIX_LOCPATH} environment
 variable:
 
 @example
-$ guix package -i glibc-locales
+$ guix install glibc-locales
 $ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
 @end example
 
@@ -1669,7 +1678,7 @@ Multiple Outputs}).  For instance, the following command installs fonts
 for Chinese languages:
 
 @example
-guix package -i font-adobe-source-han-sans:cn
+guix install font-adobe-source-han-sans:cn
 @end example
 
 @cindex @code{xterm}
@@ -1794,25 +1803,14 @@ available.
 @node Limitations
 @section Limitations
 
-As of version @value{VERSION}, Guix System is
-not production-ready.  It may contain bugs and lack important
-features.  Thus, if you are looking for a stable production system that
-respects your freedom as a computer user, a good solution at this point
-is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
-the more established GNU/Linux distributions}.  We hope you can soon switch
-to the Guix System without fear, of course.  In the meantime, you can
-also keep using your distribution and try out the package manager on top
-of it (@pxref{Installation}).
+We consider Guix System to be ready for a wide range of ``desktop'' and server
+use cases.  The reliability guarantees it provides---transactional upgrades
+and rollbacks, reproducibility---make it a solid foundation.
 
-Before you proceed with the installation, be aware of the following
-noteworthy limitations applicable to version @value{VERSION}:
+Nevertheless, before you proceed with the installation, be aware of the
+following noteworthy limitations applicable to version @value{VERSION}:
 
 @itemize
-@item
-The installation process does not include a graphical user interface and
-requires familiarity with GNU/Linux (see the following subsections to
-get a feel of what that means.)
-
 @item
 Support for the Logical Volume Manager (LVM) is missing.
 
@@ -1821,18 +1819,14 @@ More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
 @item
-More than 8,500 packages are available, but you might
-occasionally find that a useful package is missing.
-
-@item
 GNOME, Xfce, LXDE, and Enlightenment are available (@pxref{Desktop Services}),
-as well as a number of X11 window managers.  However, some graphical
-applications may be missing, as well as KDE.
+as well as a number of X11 window managers.  However, KDE is currently
+missing.
 @end itemize
 
-You have been warned!  But more than a disclaimer, this is an invitation
-to report issues (and success stories!), and to join us in improving it.
-@xref{Contributing}, for more info.
+More than a disclaimer, this is an invitation to report issues (and success
+stories!), and to join us in improving it.  @xref{Contributing}, for more
+info.
 
 
 @node Hardware Considerations
@@ -1855,7 +1849,7 @@ devices.  WiFi devices known to work include those using Atheros chips
 driver, and those using Broadcom/AirForce chips (BCM43xx with
 Wireless-Core Revision 5), which corresponds to the @code{b43-open}
 Linux-libre driver.  Free firmware exists for both and is available
-out-of-the-box on Guix System, as part of @var{%base-firmware}
+out-of-the-box on Guix System, as part of @code{%base-firmware}
 (@pxref{operating-system Reference, @code{firmware}}).
 
 @cindex RYF, Respects Your Freedom
@@ -1875,7 +1869,7 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{https://alpha.gnu.org/gnu/guix/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
+@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
 where @var{system} is one of:
 
 @table @code
@@ -1891,7 +1885,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget https://alpha.gnu.org/gnu/guix/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
 $ gpg --verify guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
 @end example
 
@@ -2499,7 +2493,7 @@ emacs-guix, The Emacs-Guix Reference Manual}), after installing
 with it):
 
 @example
-guix package -i emacs-guix
+guix install emacs-guix
 @end example
 
 @menu
@@ -2617,6 +2611,7 @@ is:
 @example
 guix package @var{options}
 @end example
+
 @cindex transactions
 Primarily, @var{options} specifies the operations to be performed during
 the transaction.  Upon completion, a new profile is created, but
@@ -2630,6 +2625,24 @@ For example, to remove @code{lua} and install @code{guile} and
 guix package -r lua -i guile guile-cairo
 @end example
 
+@cindex aliases, for @command{guix package}
+For your convenience, we also provide the following aliases:
+
+@itemize
+@item
+@command{guix search} is an alias for @command{guix package -s},
+@item
+@command{guix install} is an alias for @command{guix package -i},
+@item
+@command{guix remove} is an alias for @command{guix package -r},
+@item
+and @command{guix upgrade} is an alias for @command{guix package -u}.
+@end itemize
+
+These aliases are less expressive than @command{guix package} and provide
+fewer options, so in some cases you'll probably want to use @command{guix
+package} directly.
+
 @command{guix package} also supports a @dfn{declarative approach}
 whereby the user specifies the exact set of packages to be available and
 passes it @i{via} the @option{--manifest} option
@@ -2642,7 +2655,7 @@ current generation of the user's default profile.  Thus, users can add
 @file{$HOME/.guix-profile/bin} to their @code{PATH} environment
 variable, and so on.
 @cindex search paths
-If you are not using the Guix System Distribution, consider adding the
+If you are not using Guix System, consider adding the
 following lines to your @file{~/.bash_profile} (@pxref{Bash Startup
 Files,,, bash, The GNU Bash Reference Manual}) so that newly-spawned
 shells get all the right environment variable definitions:
@@ -2942,12 +2955,13 @@ name: gmp
 @dots{}
 @end example
 
-It is also possible to refine search results using several @code{-s}
-flags.  For example, the following command returns a list of board
-games:
+It is also possible to refine search results using several @code{-s} flags to
+@command{guix package}, or several arguments to @command{guix search}.  For
+example, the following command returns a list of board games (this time using
+the @command{guix search} alias):
 
 @example
-$ guix package -s '\<board\>' -s game | recsel -p name
+$ guix search '\<board\>' game | recsel -p name
 name: gnubg
 @dots{}
 @end example
@@ -2962,7 +2976,7 @@ for cryptographic libraries, filters out Haskell, Perl, Python, and Ruby
 libraries, and prints the name and synopsis of the matching packages:
 
 @example
-$ guix package -s crypto -s library | \
+$ guix search crypto library | \
     recsel -e '! (name ~ "^(ghc|perl|python|ruby)")' -p name,synopsis
 @end example
 
@@ -3129,7 +3143,7 @@ could use the information gathered to determine, for instance, whether
 your system has unpatched security vulnerabilities.
 
 Substitutes from the official build farm are enabled by default when
-using the Guix System Distribution (@pxref{GNU Distribution}).  However,
+using Guix System (@pxref{GNU Distribution}).  However,
 they are disabled by default when using Guix on a foreign distribution,
 unless you have explicitly enabled them via one of the recommended
 installation steps (@pxref{Installation}).  The following paragraphs
@@ -3319,7 +3333,7 @@ like to discuss this project, join us on @email{guix-devel@@gnu.org}.
 
 Often, packages defined in Guix have a single @dfn{output}---i.e., the
 source package leads to exactly one directory in the store.  When running
-@command{guix package -i glibc}, one installs the default output of the
+@command{guix install glibc}, one installs the default output of the
 GNU libc package; the default output is called @code{out}, but its name
 can be omitted as shown in this command.  In this particular case, the
 default output of @code{glibc} contains all the C header files, shared
@@ -3335,14 +3349,14 @@ separate output, called @code{doc}.  To install the main GLib output,
 which contains everything but the documentation, one would run:
 
 @example
-guix package -i glib
+guix install glib
 @end example
 
 @cindex documentation
 The command to install its documentation is:
 
 @example
-guix package -i glib:doc
+guix install glib:doc
 @end example
 
 Some packages install programs with different ``dependency footprints''.
@@ -3384,7 +3398,7 @@ deleted.  The set of garbage collector roots (``GC roots'' for short)
 includes default user profiles; by default, the symlinks under
 @file{/var/guix/gcroots} represent these GC roots.  New GC roots can be
 added with @command{guix build --root}, for example (@pxref{Invoking
-guix build}).
+guix build}).  The @command{guix gc --list-roots} command lists them.
 
 Prior to running @code{guix gc --collect-garbage} to make space, it is
 often useful to remove old generations from user profiles; that way, old
@@ -3437,8 +3451,22 @@ as @code{500MiB}, as described above.
 When @var{free} or more is already available in @file{/gnu/store}, do
 nothing and exit immediately.
 
+@item --delete-generations[=@var{duration}]
+@itemx -d [@var{duration}]
+Before starting the garbage collection process, delete all the generations
+older than @var{duration}, for all the user profiles; when run as root, this
+applies to all the profiles @emph{of all the users}.
+
+For example, this command deletes all the generations of all your profiles
+that are older than 2 months (except generations that are current), and then
+proceeds to free space until at least 10 GiB are available:
+
+@example
+guix gc -d 2m -F 10G
+@end example
+
 @item --delete
-@itemx -d
+@itemx -D
 Attempt to delete all the store files and directories specified as
 arguments.  This fails if some of the files are not in the store, or if
 they are still live.
@@ -3449,6 +3477,10 @@ List store items corresponding to cached build failures.
 This prints nothing unless the daemon was started with
 @option{--cache-failures} (@pxref{Invoking guix-daemon,
 @option{--cache-failures}}).
+
+@item --list-roots
+List the GC roots owned by the user; when run as root, list @emph{all} the GC
+roots.
 
 @item --clear-failures
 Remove the specified store items from the failed-build cache.
@@ -3620,7 +3652,7 @@ Generation 3	Jun 13 2018 23:31:07	(current)
   69 packages upgraded: borg@@1.1.6, cheese@@3.28.0, @dots{}
 @end example
 
-@ref{Invoking guix describe, @command{guix describe}}, for other ways to
+@xref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
 This @code{~/.config/guix/current} profile works like any other profile
@@ -3642,8 +3674,9 @@ but it supports the following options:
 @item --url=@var{url}
 @itemx --commit=@var{commit}
 @itemx --branch=@var{branch}
-Download code from the specified @var{url}, at the given @var{commit} (a valid
-Git commit ID represented as a hexadecimal string), or @var{branch}.
+Download code for the @code{guix} channel from the specified @var{url}, at the
+given @var{commit} (a valid Git commit ID represented as a hexadecimal
+string), or @var{branch}.
 
 @cindex @file{channels.scm}, configuration file
 @cindex configuration file for channels
@@ -3658,6 +3691,14 @@ Read the list of channels from @var{file} instead of
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
 
+@item --news
+@itemx -N
+Display the list of packages added or upgraded since the previous generation.
+
+This is the same information as displayed upon @command{guix pull} completion,
+but without ellipses; it is also similar to the output of @command{guix pull
+-l} for the last generation (see below).
+
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
 List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
@@ -3665,7 +3706,7 @@ is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
 
-@ref{Invoking guix describe}, for a way to display information about the
+@xref{Invoking guix describe}, for a way to display information about the
 current generation only.
 
 @item --profile=@var{profile}
@@ -4556,9 +4597,11 @@ Run @var{command} within an isolated container.  The current working
 directory outside the container is mapped inside the container.
 Additionally, unless overridden with @code{--user}, a dummy home
 directory is created that matches the current user's home directory, and
-@file{/etc/passwd} is configured accordingly.  The spawned process runs
-as the current user outside the container, but has root privileges in
-the context of the container.
+@file{/etc/passwd} is configured accordingly.
+
+The spawned process runs as the current user outside the container.  Inside
+the container, it has the same UID and GID as the current user, unless
+@option{--user} is passed (see below.)
 
 @item --network
 @itemx -N
@@ -4586,8 +4629,9 @@ the environment.
 @itemx -u @var{user}
 For containers, use the username @var{user} in place of the current
 user.  The generated @file{/etc/passwd} entry within the container will
-contain the name @var{user}; the home directory will be
-@file{/home/USER}; and no user GECOS data will be copied.  @var{user}
+contain the name @var{user}, the home directory will be
+@file{/home/@var{user}}, and no user GECOS data will be copied.  Furthermore,
+the UID and GID inside the container are 1000.  @var{user}
 need not exist on the system.
 
 Additionally, any shared or exposed path (see @code{--share} and
@@ -4963,7 +5007,7 @@ module exports a variable named @code{emacs}, which is bound to a
 
 The @code{(gnu packages @dots{})} module name space is
 automatically scanned for packages by the command-line tools.  For
-instance, when running @code{guix package -i emacs}, all the @code{(gnu
+instance, when running @code{guix install emacs}, all the @code{(gnu
 packages @dots{})} modules are scanned until one that exports a package
 object whose name is @code{emacs} is found.  This package search
 facility is implemented in the @code{(gnu packages)} module.
@@ -5360,10 +5404,6 @@ more.  To ensure that libraries written in those languages can find
 library code they depend on at run time, run-time dependencies must be
 listed in @code{propagated-inputs} rather than @code{inputs}.
 
-@item @code{self-native-input?} (default: @code{#f})
-This is a Boolean field telling whether the package should use itself as
-a native input when cross-compiling.
-
 @item @code{outputs} (default: @code{'("out")})
 The list of output names of the package.  @xref{Packages with Multiple
 Outputs}, for typical uses of additional outputs.
@@ -5406,6 +5446,27 @@ automatically corrected.
 @end table
 @end deftp
 
+@deffn {Scheme Syntax} this-package
+When used in the @emph{lexical scope} of a package field definition, this
+identifier resolves to the package being defined.
+
+The example below shows how to add a package as a native input of itself when
+cross-compiling:
+
+@example
+(package
+  (name "guile")
+  ;; ...
+
+  ;; When cross-compiled, Guile, for example, depends on
+  ;; a native version of itself.  Add it here.
+  (native-inputs (if (%current-target-system)
+                     `(("self" ,this-package))
+                     '())))
+@end example
+
+It is an error to refer to @code{this-package} outside a package definition.
+@end deffn
 
 @node origin Reference
 @subsection @code{origin} Reference
@@ -5816,6 +5877,11 @@ list of flags passed to the @code{dune} command during the build.
 The @code{#:jbuild?} parameter can be passed to use the @code{jbuild}
 command instead of the more recent @code{dune} command while building
 a package.  Its default value is @code{#f}.
+
+The @code{#:package} parameter can be passed to specify a package name, which
+is useful when a package contains multiple packages and you want to build
+only one of them.  This is equivalent to passing the @code{-p} argument to
+@code{dune}.
 @end defvr
 
 @defvr {Scheme Variable} go-build-system
@@ -6185,6 +6251,33 @@ is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
 This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
 is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
 @end table
+@end defvr
+
+@defvr {Scheme Variable} linux-module-build-system
+@var{linux-module-build-system} allows building Linux kernel modules.
+
+@cindex build phases
+This build system is an extension of @var{gnu-build-system}, but with the
+following phases changed:
+
+@table @code
+
+@item configure
+This phase configures the environment so that the Linux kernel's Makefile
+can be used to build the external kernel module.
+
+@item build
+This phase uses the Linux kernel's Makefile in order to build the external
+kernel module.
+
+@item install
+This phase uses the Linux kernel's Makefile in order to install the external
+kernel module.
+@end table
+
+It is possible and useful to specify the Linux kernel to use for building
+the module (in the "arguments" form of a package using the
+linux-module-build-system, use the key #:linux to specify it).
 @end defvr
 
 Lastly, for packages that do not need anything as sophisticated, a
@@ -7973,7 +8066,9 @@ The following derivations will be built:
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
-the system type of the build host.
+the system type of the build host.  The @command{guix build} command allows
+you to repeat this option several times, in which case it builds for all the
+specified systems; other commands ignore extraneous @option{-s} options.
 
 @quotation Note
 The @code{--system} flag is for @emph{native} compilation and must not
@@ -10016,14 +10111,14 @@ on @var{a} and @var{a} has no substitutes, only @var{a} is listed, even though
 @var{b} usually lacks substitutes as well.  The result looks like this:
 
 @example
-$ guix weather --substitute-urls=https://ci.guix.info -c 10
+$ guix weather --substitute-urls=@value{SUBSTITUTE-URL} -c 10
 computing 8,983 package derivations for x86_64-linux...
-looking for 9,343 store items on https://ci.guix.info...
-updating substitutes from 'https://ci.guix.info'... 100.0%
-https://ci.guix.info
+looking for 9,343 store items on @value{SUBSTITUTE-URL}...
+updating substitutes from '@value{SUBSTITUTE-URL}'... 100.0%
+@value{SUBSTITUTE-URL}
   64.7% substitutes available (6,047 out of 9,343)
 @dots{}
-2502 packages are missing from 'https://ci.guix.info' for 'x86_64-linux', among which:
+2502 packages are missing from '@value{SUBSTITUTE-URL}' for 'x86_64-linux', among which:
     58  kcoreaddons@@5.49.0      /gnu/store/@dots{}-kcoreaddons-5.49.0
     46  qgpgme@@1.11.1           /gnu/store/@dots{}-qgpgme-1.11.1
     37  perl-http-cookiejar@@0.008  /gnu/store/@dots{}-perl-http-cookiejar-0.008
@@ -10100,7 +10195,7 @@ ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @chapter System Configuration
 
 @cindex system configuration
-The Guix System Distribution supports a consistent whole-system configuration
+Guix System supports a consistent whole-system configuration
 mechanism.  By that we mean that all aspects of the global system
 configuration---such as the available system services, timezone and
 locale settings, user accounts---are declared in a single place.  Such
@@ -10127,6 +10222,7 @@ instance to support new system services.
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Keyboard Layout::             How the system interprets key strokes.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
@@ -10393,12 +10489,34 @@ The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
 
-@item @code{kernel-arguments} (default: @code{'()})
+@item @code{kernel-arguments} (default: @code{'("quiet")})
 List of strings or gexps representing additional arguments to pass on
 the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{Bootloader Configuration}.
+
+@item @code{label}
+This is the label (a string) as it appears in the bootloader's menu entry.
+The default label includes the kernel name and version.
+
+@item @code{keyboard-layout} (default: @code{#f})
+This field specifies the keyboard layout to use in the console.  It can be
+either @code{#f}, in which case the default keyboard layout is used (usually
+US English), or a @code{<keyboard-layout>} record.
+
+This keyboard layout is in effect as soon as the kernel has booted.  For
+instance, it is the keyboard layout in effect when you type a passphrase if
+your root file system is on a @code{luks-device-mapping} mapped device
+(@pxref{Mapped Devices}).
+
+@quotation Note
+This does @emph{not} specify the keyboard layout used by the bootloader, nor
+that used by the graphical display server.  @xref{Bootloader Configuration},
+for information on how to specify the bootloader's keyboard layout.  @xref{X
+Window}, for information on how to specify the keyboard layout used by the X
+Window System.
+@end quotation
 
 @item @code{initrd-modules} (default: @code{%base-initrd-modules})
 @cindex initrd
@@ -10506,6 +10624,13 @@ details.
 @item @code{services} (default: @var{%base-services})
 A list of service objects denoting system services.  @xref{Services}.
 
+@cindex essential services
+@item @code{essential-services} (default: ...)
+The list of ``essential services''---i.e., things like instances of
+@code{system-service-type} and @code{host-name-service-type} (@pxref{Service
+Reference}), which are derived from the operating system definition itself.
+As a user you should @emph{never} need to touch this field.
+
 @item @code{pam-services} (default: @code{(base-pam-services)})
 @cindex PAM
 @cindex pluggable authentication modules
@@ -10527,6 +10652,27 @@ is that only @code{root} and members of the @code{wheel} group may use
 @code{sudo}.
 
 @end table
+
+@deffn {Scheme Syntax} this-operating-system
+When used in the @emph{lexical scope} of an operating system field definition,
+this identifier resolves to the operating system being defined.
+
+The example below shows how to refer to the operating system being defined in
+the definition of the @code{label} field:
+
+@example
+(use-modules (gnu) (guix))
+
+(operating-system
+  ;; ...
+  (label (package-full-name
+          (operating-system-kernel this-operating-system))))
+@end example
+
+It is an error to refer to @code{this-operating-system} outside an operating
+system definition.
+@end deffn
+
 @end deftp
 
 @node File Systems
@@ -10610,10 +10756,15 @@ corresponding device mapping established.
 This is a list of symbols denoting mount flags.  Recognized flags
 include @code{read-only}, @code{bind-mount}, @code{no-dev} (disallow
 access to special files), @code{no-suid} (ignore setuid and setgid
-bits), and @code{no-exec} (disallow program execution.)
+bits), @code{no-atime} (do not update file access times), and @code{no-exec}
+(disallow program execution).  @xref{Mount-Unmount-Remount,,, libc, The GNU C
+Library Reference Manual}, for more information on these flags.
 
 @item @code{options} (default: @code{#f})
-This is either @code{#f}, or a string denoting mount options.
+This is either @code{#f}, or a string denoting mount options passed to the
+file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C Library
+Reference Manual}, for details and run @command{man 8 mount} for options for
+various file systems.
 
 @item @code{mount?} (default: @code{#t})
 This value indicates whether to automatically mount the file system when
@@ -10902,7 +11053,6 @@ this field must contain the encrypted password, as a string.  You can use the
 @example
 (user-account
   (name "charlie")
-  (home-directory "/home/charlie")
   (group "users")
 
   ;; Specify a SHA-512-hashed initial password.
@@ -10968,6 +11118,138 @@ find on a GNU/Linux system, such as the ``nobody'' account.
 Note that the ``root'' account is not included here.  It is a
 special-case and is automatically added whether or not it is specified.
 @end defvr
+
+@node Keyboard Layout
+@section Keyboard Layout
+
+@cindex keyboard layout
+@cindex keymap
+To specify what each key of your keyboard does, you need to tell the operating
+system what @dfn{keyboard layout} you want to use.  The default, when nothing
+is specified, is the US English QWERTY layout for 105-key PC keyboards.
+However, German speakers will usually prefer the German QWERTZ layout, French
+speakers will want the AZERTY layout, and so on; hackers might prefer Dvorak
+or bépo, and they might even want to further customize the effect of some of
+the keys.  This section explains how to get that done.
+
+@cindex keyboard layout, definition
+There are three components that will want to know about your keyboard layout:
+
+@itemize
+@item
+The @emph{bootloader} may want to know what keyboard layout you want to use
+(@pxref{Bootloader Configuration, @code{keyboard-layout}}).  This is useful if
+you want, for instance, to make sure that you can type the passphrase of your
+encrypted root partition using the right layout.
+
+@item
+The @emph{operating system kernel}, Linux, will need that so that the console
+is properly configured (@pxref{operating-system Reference,
+@code{keyboard-layout}}).
+
+@item
+The @emph{graphical display server}, usually Xorg, also has its own idea of
+the keyboard layout (@pxref{X Window, @code{keyboard-layout}}).
+@end itemize
+
+Guix allows you to configure all three separately but, fortunately, it allows
+you to share the same keyboard layout for all three components.
+
+@cindex XKB, keyboard layouts
+Keyboard layouts are represented by records created by the
+@code{keyboard-layout} procedure of @code{(gnu system keyboard)}.  Following
+the X Keyboard extension (XKB), each layout has four attributes: a name (often
+a language code such as ``fi'' for Finnish or ``jp'' for Japanese), an
+optional variant name, an optional keyboard model name, and a possibly empty
+list of additional options.  In most cases the layout name is all you care
+about.  Here are a few example:
+
+@example
+;; The German QWERTZ layout.  Here we assume a standard
+;; "pc105" keyboard model.
+(keyboard-layout "de")
+
+;; The bépo variant of the French layout.
+(keyboard-layout "fr" "bepo")
+
+;; The Catalan layout.
+(keyboard-layout "es" "cat")
+
+;; The Latin American Spanish layout.  In addition, the
+;; "Caps Lock" key is used as an additional "Ctrl" key,
+;; and the "Menu" key is used as a "Compose" key to enter
+;; accented letters.
+(keyboard-layout "latam"
+                 #:options '("ctrl:nocaps" "compose:menu"))
+
+;; The Russian layout for a ThinkPad keyboard.
+(keyboard-layout "ru" #:model "thinkpad")
+
+;; The "US international" layout, which is the US layout plus
+;; dead keys to enter accented characters.  This is for an
+;; Apple MacBook keyboard.
+(keyboard-layout "us" "intl" #:model "macbook78")
+@end example
+
+See the @file{share/X11/xkb} directory of the @code{xkeyboard-config} package
+for a complete list of supported layouts, variants, and models.
+
+@cindex keyboard layout, configuration
+Let's say you want your system to use the Turkish keyboard layout throughout
+your system---bootloader, console, and Xorg.  Here's what your system
+configuration would look like:
+
+@findex set-xorg-configuration
+@lisp
+;; Using the Turkish layout for the bootloader, the console,
+;; and for Xorg.
+
+(operating-system
+  ;; ...
+  (keyboard-layout (keyboard-layout "tr"))  ;for the console
+  (bootloader (bootloader-configuration
+                (bootloader grub-efi-bootloader)
+                (target "/boot/efi")
+                (keyboard-layout keyboard-layout))) ;for GRUB
+  (services (cons (set-xorg-configuration
+                    (xorg-configuration             ;for Xorg
+                      (keyboard-layout keyboard-layout)))
+                  %desktop-services)))
+@end lisp
+
+In the example above, for GRUB and for Xorg, we just refer to the
+@code{keyboard-layout} field defined above, but we could just as well refer to
+a different layout.  The @code{set-xorg-configuration} procedure communicates
+the desired Xorg configuration to the graphical log-in manager, by default
+GDM.
+
+We've discussed how to specify the @emph{default} keyboard layout of your
+system when it starts, but you can also adjust it at run time:
+
+@itemize
+@item
+If you're using GNOME, its settings panel has a ``Region & Language'' entry
+where you can select one or more keyboard layouts.
+
+@item
+Under Xorg, the @command{setxkbmap} command (from the same-named package)
+allows you to change the current layout.  For example, this is how you would
+change the layout to US Dvorak:
+
+@example
+setxkbmap us dvorak
+@end example
+
+@item
+The @code{loadkeys} command changes the keyboard layout in effect in the Linux
+console.  However, note that @code{loadkeys} does @emph{not} use the XKB
+keyboard layout categorization described above.  The command below loads the
+French bépo layout:
+
+@example
+loadkeys fr-bepo
+@end example
+@end itemize
 
 @node Locales
 @section Locales
@@ -11860,29 +12142,6 @@ This is the name of the file where some random bytes are saved by
 @var{urandom-seed-service} to seed @file{/dev/urandom} when rebooting.
 It defaults to @file{/var/lib/random-seed}.
 @end defvr
-
-@cindex keymap
-@cindex keyboard
-@deffn {Scheme Procedure} console-keymap-service @var{files} ...
-@cindex keyboard layout
-Return a service to load console keymaps from @var{files} using
-@command{loadkeys} command.  Most likely, you want to load some default
-keymap, which can be done like this:
-
-@example
-(console-keymap-service "dvorak")
-@end example
-
-Or, for example, for a Swedish keyboard, you may need to combine
-the following keymaps:
-@example
-(console-keymap-service "se-lat6" "se-fi-lat6")
-@end example
-
-Also you can specify a full file name (or file names) of your keymap(s).
-See @code{man loadkeys} for details.
-
-@end deffn
 
 @cindex mouse
 @cindex gpm
@@ -13161,7 +13420,13 @@ Package object of the Open vSwitch.
 Support for the X Window graphical display system---specifically
 Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
-started by the @dfn{login manager}, by default SLiM.
+started by the @dfn{login manager}, by default the GNOME Display Manager (GDM).
+
+@cindex GDM
+@cindex GNOME, login manager
+GDM of course allows users to log in into window managers and desktop
+environments other than GNOME; for those using GNOME, GDM is required for
+features such as automatic screen locking.
 
 @cindex window manager
 To use X11, you must install at least one @dfn{window manager}---for
@@ -13169,21 +13434,57 @@ example the @code{windowmaker} or @code{openbox} packages---preferably
 by adding it to the @code{packages} field of your operating system
 definition (@pxref{operating-system Reference, system-wide packages}).
 
-@defvr {Scheme Variable} slim-service-type
-This is the type for the SLiM graphical login manager for X11.
+@defvr {Scheme Variable} gdm-service-type
+This is the type for the @uref{https://wiki.gnome.org/Projects/GDM/, GNOME
+Desktop Manager} (GDM), a program that manages graphical display servers and
+handles graphical user logins.  Its value must be a @code{gdm-configuration}
+(see below.)
 
 @cindex session types (X11)
 @cindex X11 session types
-SLiM looks for @dfn{session types} described by the @file{.desktop} files in
-@file{/run/current-system/profile/share/xsessions} and allows users to
-choose a session from the log-in screen using @kbd{F1}.  Packages such
-as @code{xfce}, @code{sawfish}, and @code{ratpoison} provide
-@file{.desktop} files; adding them to the system-wide set of packages
-automatically makes them available at the log-in screen.
+GDM looks for @dfn{session types} described by the @file{.desktop} files in
+@file{/run/current-system/profile/share/xsessions} and allows users to choose
+a session from the log-in screen.  Packages such as @code{gnome}, @code{xfce},
+and @code{i3} provide @file{.desktop} files; adding them to the system-wide
+set of packages automatically makes them available at the log-in screen.
 
 In addition, @file{~/.xsession} files are honored.  When available,
 @file{~/.xsession} must be an executable that starts a window manager
 and/or other X clients.
+@end defvr
+
+@deftp {Data Type} gdm-configuration
+@table @asis
+@item @code{auto-login?} (default: @code{#f})
+@itemx @code{default-user} (default: @code{#f})
+When @code{auto-login?} is false, GDM presents a log-in screen.
+
+When @code{auto-login?} is true, GDM logs in directly as
+@code{default-user}.
+
+@item @code{gnome-shell-assets} (default: ...)
+List of GNOME Shell assets needed by GDM: icon theme, fonts, etc.
+
+@item @code{xorg-configuration} (default: @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
+
+@item @code{xsession} (default: @code{(xinitrc)})
+Script to run before starting a X session.
+
+@item @code{dbus-daemon} (default: @code{dbus-daemon-wrapper})
+File name of the @code{dbus-daemon} executable.
+
+@item @code{gdm} (default: @code{gdm})
+The GDM package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} slim-service-type
+This is the type for the SLiM graphical login manager for X11.
+
+Like GDM, SLiM looks for session types described by @file{.desktop} files and
+allows users to choose a session from the log-in screen using @kbd{F1}.  It
+also honors @file{~/.xsession} files.
 @end defvr
 
 @deftp {Data Type} slim-configuration
@@ -13218,8 +13519,8 @@ your user profile.  Failing to do that, if @code{auto-login-session} is
 false, you will be unable to log in.
 @end quotation
 
-@item @code{startx} (default: @code{(xorg-start-command)})
-The command used to start the X11 graphical server.
+@item @code{xorg-configuration} (default @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
 
 @item @code{xauth} (default: @code{xauth})
 The XAuth package to use.
@@ -13295,8 +13596,8 @@ Script to run before starting a wayland session.
 @item @code{sessions-directory} (default "/run/current-system/profile/share/wayland-sessions")
 Directory to look for desktop files starting wayland sessions.
 
-@item @code{xorg-server-path} (default @code{xorg-start-command})
-Path to xorg-server.
+@item @code{xorg-configuration} (default @code{(xorg-configuration)})
+Configuration of the Xorg graphical server.
 
 @item @code{xauth-path} (default @code{#~(string-append #$xauth "/bin/xauth")})
 Path to xauth.
@@ -13318,9 +13619,6 @@ Directory to look for desktop files starting X sessions.
 
 @item @code{minimum-vt} (default: 7)
 Minimum VT to use.
-
-@item @code{xserver-arguments} (default "-nolisten tcp")
-Arguments to pass to xorg-server.
 
 @item @code{auto-login-user} (default "")
 User to use for auto-login.
@@ -13347,98 +13645,72 @@ type @code{<sddm-configuration>}.
 @end example
 @end deffn
 
-@deffn {Scheme Procedure} xorg-start-command [#:guile] @
-  [#:modules %default-xorg-modules] @
-  [#:fonts %default-xorg-fonts] @
-  [#:configuration-file (xorg-configuration-file @dots{})] @
-  [#:xorg-server @var{xorg-server}]
-  [#:xserver-arguments '("-nolisten" "tcp")]
-Return a @code{startx} script in which @var{modules}, a list of X module
-packages, and @var{fonts}, a list of X font directories, are available.  See
-@code{xorg-wrapper} for more details on the arguments.  The result should be
-used in place of @code{startx}.
+@cindex Xorg, configuration
+@deftp {Data Type} xorg-configuration
+This data type represents the configuration of the Xorg graphical display
+server.  Note that there is not Xorg service; instead, the X server is started
+by a ``display manager'' such as GDM, SDDM, and SLiM.  Thus, the configuration
+of these display managers aggregates an @code{xorg-configuration} record.
+
+@table @asis
+@item @code{modules} (default: @code{%default-xorg-modules})
+This is a list of @dfn{module packages} loaded by the Xorg
+server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
+
+@item @code{fonts} (default: @code{%default-xorg-fonts})
+This is a list of font directories to add to the server's @dfn{font path}.
+
+@item @code{drivers} (default: @code{'()})
+This must be either the empty list, in which case Xorg chooses a graphics
+driver automatically, or a list of driver names that will be tried in this
+order---e.g., @code{("modesetting" "vesa")}.
+
+@item @code{resolutions} (default: @code{'()})
+When @code{resolutions} is the empty list, Xorg chooses an appropriate screen
+resolution.  Otherwise, it must be a list of resolutions---e.g., @code{((1024
+768) (640 480))}.
+
+@cindex keyboard layout, for Xorg
+@cindex keymap, for Xorg
+@item @code{keyboard-layout} (default: @code{#f})
+If this is @code{#f}, Xorg uses the default keyboard layout---usually US
+English (``qwerty'') for a 105-key PC keyboard.
+
+Otherwise this must be a @code{keyboard-layout} object specifying the keyboard
+layout in use when Xorg is running.  @xref{Keyboard Layout}, for more
+information on how to specify the keyboard layout.
+
+@item @code{extra-config} (default: @code{'()})
+This is a list of strings or objects appended to the configuration file.  It
+is used to pass extra text to be added verbatim to the configuration file.
+
+@item @code{server} (default: @code{xorg-server})
+This is the package providing the Xorg server.
+
+@item @code{server-arguments} (default: @code{%default-xorg-server-arguments})
+This is the list of command-line arguments to pass to the X server.  The
+default is @code{-nolisten tcp}.
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} set-xorg-configuration @var{config} @
+  [@var{login-manager-service-type}]
+Tell the log-in manager (of type @var{login-manager-service-type}) to use
+@var{config}, an <xorg-configuration> record.
+
+Since the Xorg configuration is embedded in the log-in manager's
+configuration---e.g., @code{gdm-configuration}---this procedure provides a
+shorthand to set the Xorg configuration.
+@end deffn
+
+@deffn {Scheme Procedure} xorg-start-command [@var{config}]
+Return a @code{startx} script in which the modules, fonts, etc. specified
+in @var{config}, are available.  The result should be used in place of
+@code{startx}.
 
 Usually the X server is started by a login manager.
 @end deffn
 
-@cindex @code{-listen tcp}, for X11.
-This procedure is useful to override command line options for the X server,
-such as having it listen to over TCP:
-
-@example
-(operating-system
-  ...
-  (services
-    (modify-services %desktop-services
-      (slim-service-type config =>
-        (slim-configuration
-          (inherit config)
-          (startx (xorg-start-command
-                   #:xserver-arguments '("-listen" "tcp"))))))))
-@end example
-
-@deffn {Scheme Procedure} xorg-configuration-file @
-  [#:modules %default-xorg-modules] @
-  [#:fonts %default-xorg-fonts] @
-  [#:drivers '()] [#:resolutions '()] [#:extra-config '()]
-Return a configuration file for the Xorg server containing search paths for
-all the common drivers.
-
-@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
-server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
-@var{fonts} must be a list of font directories to add to the server's
-@dfn{font path}.
-
-@var{drivers} must be either the empty list, in which case Xorg chooses a
-graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{("modesetting" "vesa")}.
-
-Likewise, when @var{resolutions} is the empty list, Xorg chooses an
-appropriate screen resolution; otherwise, it must be a list of
-resolutions---e.g., @code{((1024 768) (640 480))}.
-
-Last, @var{extra-config} is a list of strings or objects appended to the
-configuration file.  It is used to pass extra text to be
-added verbatim to the configuration file.
-
-@cindex keymap
-@cindex keyboard layout
-This procedure is especially useful to configure a different keyboard layout
-than the default US keymap.  For instance, to use the ``bépo'' keymap by
-default on the display manager:
-
-@example
-(define bepo-evdev
-  "Section \"InputClass\"
-        Identifier \"evdev keyboard catchall\"
-        Driver \"evdev\"
-        MatchIsKeyboard \"on\"
-        Option \"xkb_layout\" \"fr\"
-        Option \"xkb_variant\" \"bepo\"
-EndSection")
-
-(operating-system
-  ...
-  (services
-    (modify-services %desktop-services
-      (slim-service-type config =>
-        (slim-configuration
-          (inherit config)
-          (startx (xorg-start-command
-                   #:configuration-file
-                   (xorg-configuration-file
-                     #:extra-config
-                     (list bepo-evdev)))))))))
-@end example
-
-The @code{MatchIsKeyboard} line specifies that we only apply the configuration
-to keyboards.  Without this line, other devices such as touchpad may not work
-correctly because they will be attached to the wrong driver.  In this example,
-the user typically used @code{setxkbmap fr bepo} to set their favorite keymap
-once logged in.  The first argument corresponds to the layout, while the second
-argument corresponds to the variant.  The @code{xkb_variant} line can be omitted
-to select the default variant.
-@end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{program}]
 Add @var{package}, a package for a screen locker or screen saver whose
@@ -14301,7 +14573,7 @@ The @code{(gnu services desktop)} module provides services that are
 usually useful in the context of a ``desktop'' setup---that is, on a
 machine running a graphical display server, possibly with graphical user
 interfaces, etc.  It also defines services that provide specific desktop
-environments like GNOME, XFCE or MATE.
+environments like GNOME, Xfce or MATE.
 
 To simplify things, the module defines a variable containing the set of
 services that users typically expect on a machine with a graphical
@@ -14312,7 +14584,7 @@ This is a list of services that builds upon @var{%base-services} and
 adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
-@code{slim-service}}), screen lockers, a network management tool
+@code{gdm-service-type}}), screen lockers, a network management tool
 (@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
 management services, the @code{elogind} login and seat manager, the
 Polkit privilege service, the GeoClue location service, the
@@ -14326,16 +14598,16 @@ The @var{%desktop-services} variable can be used as the @code{services}
 field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
-Additionally, the @code{gnome-desktop-service},
+Additionally, the @code{gnome-desktop-service-type},
 @code{xfce-desktop-service}, @code{mate-desktop-service-type} and
-@code{enlightenment-desktop-service-type} procedures can add GNOME, XFCE, MATE
+@code{enlightenment-desktop-service-type} procedures can add GNOME, Xfce, MATE
 and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
 services like the backlight adjustment helpers and the power management
 utilities are added to the system, extending @code{polkit} and @code{dbus}
 appropriately, allowing GNOME to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
-adding a service made by @code{gnome-desktop-service} adds the GNOME
-metapackage to the system profile.  Likewise, adding the XFCE service
+adding a service made by @code{gnome-desktop-service-type} adds the GNOME
+metapackage to the system profile.  Likewise, adding the Xfce service
 not only adds the @code{xfce} metapackage to the system profile, but it
 also gives the Thunar file manager the ability to open a ``root-mode''
 file management window, if the user authenticates using the
@@ -14351,25 +14623,50 @@ functionality to work as expetected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
-called Wayland, you need to use the @code{sddm-service} instead of the
-@code{slim-service} for the graphical login manager.  You should then
+called Wayland, you need to use the @code{sddm-service} instead of
+GDM as the graphical login manager.  You should then
 select the ``GNOME (Wayland)'' session in SDDM.  Alternatively you can
 also try starting GNOME on Wayland manually from a TTY with the
 command ``XDG_SESSION_TYPE=wayland exec dbus-run-session
 gnome-session``.  Currently only GNOME has support for Wayland.
 
-@deffn {Scheme Procedure} gnome-desktop-service
-Return a service that adds the @code{gnome} package to the system
-profile, and extends polkit with the actions from
-@code{gnome-settings-daemon}.
-@end deffn
+@defvr {Scheme Variable} gnome-desktop-service-type
+This is the type of the service that adds the @uref{https://www.gnome.org,
+GNOME} desktop environment.  Its value is a @code{gnome-desktop-configuration}
+object (see below.)
 
-@deffn {Scheme Procedure} xfce-desktop-service
-Return a service that adds the @code{xfce} package to the system profile,
-and extends polkit with the ability for @code{thunar} to manipulate the
-file system as root from within a user session, after the user has
-authenticated with the administrator's password.
-@end deffn
+This service adds the @code{gnome} package to the system profile, and extends
+polkit with the actions from @code{gnome-settings-daemon}.
+@end defvr
+
+@deftp {Data Type} gnome-desktop-configuration
+Configuration record for the GNOME desktop environment.
+
+@table @asis
+@item @code{gnome} (default @code{gnome})
+The GNOME package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} xfce-desktop-service-type
+This is the type of a service to run the @uref{Xfce, https://xfce.org/}
+desktop environment.  Its value is an @code{xfce-desktop-configuration} object
+(see below.)
+
+This service that adds the @code{xfce} package to the system profile, and
+extends polkit with the ability for @code{thunar} to manipulate the file
+system as root from within a user session, after the user has authenticated
+with the administrator's password.
+@end defvr
+
+@deftp {Data Type} xfce-desktop-configuration
+Configuration record for the Xfce desktop environment.
+
+@table @asis
+@item @code{xfce} (default @code{xfce})
+The Xfce package to use.
+@end table
+@end deftp
 
 @deffn {Scheme Variable} mate-desktop-service-type
 This is the type of the service that runs the @uref{https://mate-desktop.org/,
@@ -14402,9 +14699,9 @@ The enlightenment package to use.
 @end table
 @end deftp
 
-Because the GNOME, XFCE and MATE desktop services pull in so many packages,
+Because the GNOME, Xfce and MATE desktop services pull in so many packages,
 the default @code{%desktop-services} variable doesn't include any of
-them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
+them by default.  To add GNOME, Xfce or MATE, just @code{cons} them onto
 @code{%desktop-services} in the @code{services} field of your
 @code{operating-system}:
 
@@ -14414,8 +14711,8 @@ them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
 (operating-system
   ...
   ;; cons* adds items to the list given as its last argument.
-  (services (cons* (gnome-desktop-service)
-                   (xfce-desktop-service)
+  (services (cons* (service gnome-desktop-service-type)
+                   (service xfce-desktop-service)
                    %desktop-services))
   ...)
 @end example
@@ -16381,6 +16678,36 @@ the above example, there doesn't need to be a @code{postmaster} entry in
 the @code{operating-system}'s @code{user-accounts} in order to deliver
 the @code{postmaster} mail to @code{bob} (which subsequently would
 deliver mail to @code{bob@@example.com} and @code{bob@@example2.com}).
+
+@subsubheading GNU Mailutils IMAP4 Daemon
+@cindex GNU Mailutils IMAP4 Daemon
+
+@deffn {Scheme Variable} imap4d-service-type
+This is the type of the GNU Mailutils IMAP4 Daemon (@pxref{imap4d,,,
+mailutils, GNU Mailutils Manual}), whose value should be an
+@code{imap4d-configuration} object as in this example:
+
+@example
+(service imap4d-service-type
+         (imap4d-configuration
+           (config-file (local-file "imap4d.conf"))))
+@end example
+@end deffn
+
+@deftp {Data Type} imap4d-configuration
+Data type representing the configuration of @command{imap4d}.
+
+@table @asis
+@item @code{package} (default: @code{mailutils})
+The package that provides @command{imap4d}.
+
+@item @code{config-file} (default: @code{%default-imap4d-config-file})
+File-like object of the configuration file to use, by default it will listen
+on TCP port 143 of @code{localhost}.  @xref{Conf-imap4d,,, mailutils, GNU
+Mailutils Manual}, for details.
+
+@end table
+@end deftp
 
 @node Messaging Services
 @subsection Messaging Services
@@ -19130,6 +19457,26 @@ Its default is the first provided domain.
 The first domain provided will be the subject CN of the certificate, and
 all domains will be Subject Alternative Names on the certificate.
 
+@item @code{challenge} (default: @code{#f})
+The challenge type that has to be run by certbot.  If @code{#f} is specified,
+default to the HTTP challenge.  If a value is specified, defaults to the
+manual plugin (see @code{authentication-hook}, @code{cleanup-hook} and
+the documentation at @url{https://certbot.eff.org/docs/using.html#hooks}).
+
+@item @code{authentication-hook} (default: @code{#f})
+Command to be run in a shell once for each certificate challenge to be
+answered.  For this command, the shell variable @code{$CERTBOT_DOMAIN}
+will contain the domain being authenticated, @code{$CERTBOT_VALIDATION}
+contains the validation string and @code{$CERTBOT_TOKEN} contains the
+file name of the resource requested when performing an HTTP-01 challenge.
+
+@item @code{cleanup-hook} (default: @code{#f})
+Command to be run in a shell once for each certificate challenge that
+have been answered by the @code{auth-hook}.  For this command, the shell
+variables available in the @code{auth-hook} script are still available, and
+additionally @code{$CERTBOT_AUTH_OUTPUT} will contain the standard output
+of the @code{auth-hook} script.
+
 @item @code{deploy-hook} (default: @code{#f})
 Command to be run in a shell once for each successfully issued
 certificate.  For this command, the shell variable
@@ -19511,6 +19858,45 @@ When set, this forbids queries of the ANY type.
 The delay between a modification in memory and on disk.  0 means immediate
 synchronization.
 
+@item @code{zonefile-load} (default: @code{#f})
+The way the zone file contents are applied during zone load.  Possible values
+are:
+
+@itemize
+@item @code{#f} for using the default value from Knot,
+@item @code{'none} for not using the zone file at all,
+@item @code{'difference} for computing the difference between already available
+contents and zone contents and applying it to the current zone contents,
+@item @code{'difference-no-serial} for the same as @code{'difference}, but
+ignoring the SOA serial in the zone file, while the server takes care of it
+automatically.
+@item @code{'whole} for loading zone contents from the zone file.
+@end itemize
+
+@item @code{journal-content} (default: @code{#f})
+The way the journal is used to store zone and its changes.  Possible values
+are @code{'none} to not use it at all, @code{'changes} to store changes and
+@code{'all} to store contents.  @code{#f} does not set this option, so the
+default value from Knot is used.
+
+@item @code{max-journal-usage} (default: @code{#f})
+The maximum size for the journal on disk.  @code{#f} does not set this option,
+so the default value from Knot is used.
+
+@item @code{max-journal-depth} (default: @code{#f})
+The maximum size of the history.  @code{#f} does not set this option, so the
+default value from Knot is used.
+
+@item @code{max-zone-size} (default: @code{#f})
+The maximum size of the zone file.  This limit is enforced for incoming
+transfer and updates.  @code{#f} does not set this option, so the default
+value from Knot is used.
+
+@item @code{dnssec-policy} (default: @code{#f})
+A reference to a @code{knot-policy-configuration} record, or the special
+name @code{"default"}.  If the value is @code{#f}, there is no dnssec signing
+on this zone.
+
 @item @code{serial-policy} (default: @code{'increment})
 A policy between @code{'increment} and @code{'unixtime}.
 
@@ -19527,6 +19913,19 @@ The Knot package.
 
 @item @code{run-directory} (default: @code{"/var/run/knot"})
 The run directory.  This directory will be used for pid file and sockets.
+
+@item @code{includes} (default: @code{'()})
+A list of strings or file-like objects denoting other files that must be
+included at the top of the configuration file.
+
+@cindex secrets, Knot service
+This can be used to manage secrets out-of-band.  For example, secret
+keys may be stored in an out-of-band file not managed by Guix, and
+thus not visible in @file{/gnu/store}---e.g., you could store secret
+key configuration in @file{/etc/knot/secrets.conf} and add this file
+to the @code{includes} list.
+
+It can also be used to add configuration not supported by this interface.
 
 @item @code{listen-v4} (default: @code{"0.0.0.0"})
 An ip address on which to listen.
@@ -21624,7 +22023,7 @@ emulated:
 @example
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm" "aarch64" "ppc"))))
+           (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))))
 @end example
 
 In this example, we enable transparent emulation for the ARM and aarch64
@@ -22915,7 +23314,7 @@ The port to bind the server to.
 @cindex fingerprint
 @subsubheading Fingerprint Service
 
-The @code{(gnu services fingerprint)} module provides a DBus service to
+The @code{(gnu services authentication)} module provides a DBus service to
 read and identify fingerprints via a fingerprint sensor.
 
 @defvr {Scheme Variable} fprintd-service-type
@@ -23261,7 +23660,7 @@ pointed to by the @code{GIT_SSL_CAINFO} environment variable.  Thus, you
 would typically run something like:
 
 @example
-$ guix package -i nss-certs
+$ guix install nss-certs
 $ export SSL_CERT_DIR="$HOME/.guix-profile/etc/ssl/certs"
 $ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 $ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
@@ -23272,7 +23671,7 @@ variable to point to a certificate bundle, so you would have to run
 something like this:
 
 @example
-$ guix package -i nss-certs
+$ guix install nss-certs
 $ export CURL_CA_BUNDLE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 @end example
 
@@ -23528,6 +23927,7 @@ here is how to use it and customize it further.
 @cindex initial RAM disk
 @deffn {Scheme Procedure} raw-initrd @var{file-systems} @
        [#:linux-modules '()] [#:mapped-devices '()] @
+       [#:keyboard-layout #f] @
        [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
 Return a derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
@@ -23539,6 +23939,12 @@ the root file system specified on the kernel command line via @code{--root}.
 include @code{e2fsck/static} or other packages needed by the initrd to check
 the root file system.
 
+When true, @var{keyboard-layout} is a @code{<keyboard-layout>} record denoting
+the desired console keyboard layout.  This is done before @var{mapped-devices}
+are set up and before @var{file-systems} are mounted such that, should the
+user need to enter a passphrase or use the REPL, this happens using the
+intended keyboard layout.
+
 When @var{qemu-networking?} is true, set up networking with the standard QEMU
 parameters.  When @var{virtio?} is true, load additional modules so that the
 initrd can be used as a QEMU guest with para-virtualized I/O drivers.
@@ -23548,13 +23954,20 @@ to it are lost.
 @end deffn
 
 @deffn {Scheme Procedure} base-initrd @var{file-systems} @
-       [#:mapped-devices '()] [#:qemu-networking? #f] [#:volatile-root? #f]@
+       [#:mapped-devices '()] [#:keyboard-layout #f] @
+       [#:qemu-networking? #f] [#:volatile-root? #f] @
        [#:linux-modules '()]
 Return as a file-like object a generic initrd, with kernel
 modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
 on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
 mappings to realize before @var{file-systems} are mounted.
+
+When true, @var{keyboard-layout} is a @code{<keyboard-layout>} record denoting
+the desired console keyboard layout.  This is done before @var{mapped-devices}
+are set up and before @var{file-systems} are mounted such that, should the
+user need to enter a passphrase or use the REPL, this happens using the
+intended keyboard layout.
 
 @var{qemu-networking?} and @var{volatile-root?} behaves as in @code{raw-initrd}.
 
@@ -23648,6 +24061,19 @@ current system.
 @item @code{timeout} (default: @code{5})
 The number of seconds to wait for keyboard input before booting.  Set to
 0 to boot immediately, and to -1 to wait indefinitely.
+
+@cindex keyboard layout, for the bootloader
+@item @code{keyboard-layout} (default: @code{#f})
+If this is @code{#f}, the bootloader's menu (if any) uses the default keyboard
+layout, usually US@tie{}English (``qwerty'').
+
+Otherwise, this must be a @code{keyboard-layout} object (@pxref{Keyboard
+Layout}).
+
+@quotation Note
+This option is currently ignored by bootloaders other than @code{grub} and
+@code{grub-efi}.
+@end quotation
 
 @item @code{theme} (default: @var{#f})
 The bootloader theme object describing the theme to use.  If no theme
@@ -23749,7 +24175,7 @@ must @emph{not} be an OS device name such as @file{/dev/sda1}.
 @end deftp
 
 @c FIXME: Write documentation once it's stable.
-Fow now only GRUB has theme support. GRUB themes are created using
+For now only GRUB has theme support. GRUB themes are created using
 the @code{grub-theme} form, which is not documented yet.
 
 @defvr {Scheme Variable} %default-theme
@@ -24221,13 +24647,23 @@ example graph.
 @section Running Guix in a Virtual Machine
 
 @cindex virtual machine
-To run Guix in a virtual machine (VM), one can either use the
-pre-built Guix VM image distributed at
-@indicateurl{https://alpha.gnu.org/gnu/guix/guix-system-vm-image-@value{VERSION}.@var{system}.xz}
-, or build their own virtual machine image using @command{guix system
-vm-image} (@pxref{Invoking guix system}).  The returned image is in
-qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
-efficiently use.
+To run Guix in a virtual machine (VM), one can use the pre-built Guix VM image
+distributed at
+@indicateurl{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.@var{system}.xz}
+This image is a compressed image in QCOW format.  You will first need to
+decompress with @command{xz -d}, and then you can pass it to an emulator such
+as QEMU (see below for details).
+
+This image boots the Xfce graphical environment and it contains some
+commonly-used tools.  You can install more software in the image by running
+@command{guix package} in a terminal (@pxref{Invoking guix package}).  You can
+also reconfigure the system based on its initial configuration file available
+as @file{/etc/config.scm} (@pxref{Using the Configuration System}).
+
+Instead of using this pre-built image, one can also build their own virtual
+machine image using @command{guix system vm-image} (@pxref{Invoking guix
+system}).  The returned image is in qcow2 format, which the
+@uref{http://qemu.org/, QEMU emulator} can efficiently use.
 
 @cindex QEMU
 If you built your own image, you must copy it out of the store
@@ -24240,7 +24676,9 @@ vm-image} on x86_64 hardware:
 @example
 $ qemu-system-x86_64 \
    -net user -net nic,model=virtio \
-   -enable-kvm -m 256 /tmp/qemu-image
+   -enable-kvm -m 512 \
+   -device virtio-blk,drive=myhd \
+   -drive if=none,file=/tmp/qemu-image,id=myhd
 @end example
 
 Here is what each of these options means:
@@ -24266,12 +24704,20 @@ If your system has hardware virtualization extensions, enabling the
 virtual machine support (KVM) of the Linux kernel will make things run
 faster.
 
-@item -m 256
+@c To run Xfce + 'guix pull', we need at least 1G of RAM.
+@item -m 1024
 RAM available to the guest OS, in mebibytes.  Defaults to 128@tie{}MiB,
 which may be insufficient for some operations.
 
-@item /tmp/qemu-image
-The file name of the qcow2 image.
+@item -device virtio-blk,drive=myhd
+Create a @code{virtio-blk} drive called ``myhd''.  @code{virtio-blk} is a
+``paravirtualization'' mechanism for block devices that allows QEMU to achieve
+better performance than if it were emulating a complete disk drive.  See the
+QEMU and KVM documentation for more info.
+
+@item -drive if=none,file=/tmp/qemu-image,id=myhd
+Use our QCOW image, the @file{/tmp/qemu-image} file, as the backing store the
+the ``myhd'' drive.
 @end table
 
 The default @command{run-vm.sh} script that is returned by an invocation of
@@ -24287,11 +24733,10 @@ network connectivity, for example @command{guix download}.
 
 @cindex SSH
 @cindex SSH server
-To enable SSH inside a VM you need to add a SSH server like @code{(dropbear-service)}
-or @code{(lsh-service)} to your VM.  The @code{(lsh-service}) doesn't currently
-boot unsupervised.  It requires you to type some characters to initialize the
-randomness generator.  In addition you need to forward the SSH port, 22 by
-default, to the host.  You can do this with
+To enable SSH inside a VM you need to add an SSH server like
+@code{openssh-service-type} to your VM (@pxref{Networking Services,
+@code{openssh-service-type}}).  In addition you need to forward the SSH port,
+22 by default, to the host.  You can do this with
 
 @example
 `guix system vm config.scm` -net user,hostfwd=tcp::10022-:22
@@ -24435,23 +24880,23 @@ exception is the @dfn{boot service type}, which is the ultimate service.
 Optionally, a default value for instances of this type.
 @end enumerate
 
-In this example, @var{guix-service-type} extends three services:
+In this example, @code{guix-service-type} extends three services:
 
-@table @var
+@table @code
 @item shepherd-root-service-type
-The @var{guix-shepherd-service} procedure defines how the Shepherd
+The @code{guix-shepherd-service} procedure defines how the Shepherd
 service is extended.  Namely, it returns a @code{<shepherd-service>}
 object that defines how @command{guix-daemon} is started and stopped
 (@pxref{Shepherd Services}).
 
 @item account-service-type
-This extension for this service is computed by @var{guix-accounts},
+This extension for this service is computed by @code{guix-accounts},
 which returns a list of @code{user-group} and @code{user-account}
 objects representing the build user accounts (@pxref{Invoking
 guix-daemon}).
 
 @item activation-service-type
-Here @var{guix-activation} is a procedure that returns a gexp, which is
+Here @code{guix-activation} is a procedure that returns a gexp, which is
 a code snippet to run at ``activation time''---e.g., when the service is
 booted.
 @end table
@@ -24476,7 +24921,7 @@ value is omitted, the default value specified by
 (service guix-service-type)
 @end example
 
-@var{guix-service-type} is quite simple because it extends other
+@code{guix-service-type} is quite simple because it extends other
 services but is not extensible itself.
 
 @c @subsubsubsection Extensible Service Types
@@ -24502,7 +24947,7 @@ The service type for an @emph{extensible} service looks like this:
 This is the service type for the
 @uref{https://wiki.gentoo.org/wiki/Project:Eudev, eudev device
 management daemon}.  Compared to the previous example, in addition to an
-extension of @var{shepherd-root-service-type}, we see two new fields:
+extension of @code{shepherd-root-service-type}, we see two new fields:
 
 @table @code
 @item compose
@@ -24529,7 +24974,7 @@ them (@pxref{Invoking guix system}).
 @end table
 
 There can be only one instance of an extensible service type such as
-@var{udev-service-type}.  If there were more, the
+@code{udev-service-type}.  If there were more, the
 @code{service-extension} specifications would be ambiguous.
 
 Still here?  The next section provides a reference of the programming
@@ -24603,7 +25048,7 @@ Here is an example of how a service is created and manipulated:
 
 The @code{modify-services} form provides a handy way to change the
 parameters of some of the services of a list such as
-@var{%base-services} (@pxref{Base Services, @code{%base-services}}).  It
+@code{%base-services} (@pxref{Base Services, @code{%base-services}}).  It
 evaluates to a list of services.  Of course, you could always use
 standard list combinators such as @code{map} and @code{fold} to do that
 (@pxref{SRFI-1, List Library,, guile, GNU Guile Reference Manual});
@@ -24784,8 +25229,8 @@ You can actually generate such a graph for any operating system
 definition using the @command{guix system shepherd-graph} command
 (@pxref{system-shepherd-graph, @command{guix system shepherd-graph}}).
 
-The @var{%shepherd-root-service} is a service object representing
-PID@tie{}1, of type @var{shepherd-root-service-type}; it can be extended
+The @code{%shepherd-root-service} is a service object representing
+PID@tie{}1, of type @code{shepherd-root-service-type}; it can be extended
 by passing it lists of @code{<shepherd-service>} objects.
 
 @deftp {Data Type} shepherd-service
@@ -24802,6 +25247,12 @@ shepherd, The GNU Shepherd Manual}).  @xref{Slots of services, the
 
 @item @code{requirements} (default: @code{'()})
 List of symbols denoting the Shepherd services this one depends on.
+
+@cindex one-shot services, for the Shepherd
+@item @code{one-shot?} (default: @code{#f})
+Whether this service is @dfn{one-shot}.  One-shot services stop immediately
+after their @code{start} action has completed.  @xref{Slots of services,,,
+shepherd, The GNU Shepherd Manual}, for more info.
 
 @item @code{respawn?} (default: @code{#t})
 Whether to restart the service when it stops, for instance when the
@@ -24833,10 +25284,10 @@ A documentation string, as shown when running:
 herd doc @var{service-name}
 @end example
 
-where @var{service-name} is one of the symbols in @var{provision}
+where @var{service-name} is one of the symbols in @code{provision}
 (@pxref{Invoking herd,,, shepherd, The GNU Shepherd Manual}).
 
-@item @code{modules} (default: @var{%default-modules})
+@item @code{modules} (default: @code{%default-modules})
 This is the list of modules that must be in scope when @code{start} and
 @code{stop} are evaluated.
 
@@ -25002,7 +25453,7 @@ installs the debugging information for the GNU C Library and for GNU
 Guile:
 
 @example
-guix package -i glibc:debug guile:debug
+guix install glibc:debug guile:debug
 @end example
 
 GDB must then be told to look for debug files in the user's profile, by
@@ -25083,7 +25534,7 @@ order of magnitudes lower than a full rebuild of the dependency chain.
 @cindex replacements of packages, for grafts
 For instance, suppose a security update needs to be applied to Bash.
 Guix developers will provide a package definition for the ``fixed''
-Bash, say @var{bash-fixed}, in the usual way (@pxref{Defining
+Bash, say @code{bash-fixed}, in the usual way (@pxref{Defining
 Packages}).  Then, the original package definition is augmented with a
 @code{replacement} field pointing to the package containing the bug fix:
 
@@ -25098,14 +25549,14 @@ Packages}).  Then, the original package definition is augmented with a
 From there on, any package depending directly or indirectly on Bash---as
 reported by @command{guix gc --requisites} (@pxref{Invoking guix
 gc})---that is installed is automatically ``rewritten'' to refer to
-@var{bash-fixed} instead of @var{bash}.  This grafting process takes
+@code{bash-fixed} instead of @code{bash}.  This grafting process takes
 time proportional to the size of the package, usually less than a
 minute for an ``average'' package on a recent machine.  Grafting is
 recursive: when an indirect dependency requires grafting, then grafting
 ``propagates'' up to the package that the user is installing.
 
 Currently, the length of the name and version of the graft and that of
-the package it replaces (@var{bash-fixed} and @var{bash} in the example
+the package it replaces (@code{bash-fixed} and @code{bash} in the example
 above) must be equal.  This restriction mostly comes from the fact that
 grafting works by patching files, including binary files, directly.
 Other restrictions may apply: for instance, when adding a graft to a

@@ -72,16 +72,14 @@ operating system functions.")
 
 (define-public rct
   (let* ((commit "b3e6f41d9844ef64420e628e0c65ed98278a843a")
-         (revision "2")
-         (version (git-version "0.0.0" revision commit)))
+         (revision "2"))
     (package
       (name "rct")
-      (version version)
-      (home-page "https://github.com/Andersbakken/rct")
+      (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url home-page)
+                      (url "https://github.com/Andersbakken/rct")
                       (commit commit)))
                 (sha256
                  (base32
@@ -99,6 +97,7 @@ operating system functions.")
       (inputs
        `(("openssl" ,openssl)
          ("zlib" ,zlib)))
+      (home-page "https://github.com/Andersbakken/rct")
       (synopsis "C++ library providing Qt-like APIs on top of the STL")
       (description "Rct is a set of C++ tools that provide nicer (more Qt-like)
  APIs on top of Standard Template Library (@dfn{STL}) classes.")

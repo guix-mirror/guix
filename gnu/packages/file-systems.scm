@@ -322,7 +322,7 @@ network.  LIBNFS offers three different APIs, for different use :
        `(("bzip2" ,bzip2)
          ("fuse" ,fuse)
          ("zlib" ,zlib)))
-      (synopsis "Read-only FUSE driver for the APFS filesystem")
+      (synopsis "Read-only FUSE driver for the APFS file system")
       (description "APFS-FUSE is a read-only FUSE driver for the @dfn{Apple File
 System} (APFS).  It is currently in an experimental state — it may not be able
 to read all files, and it does not support all the compression methods in

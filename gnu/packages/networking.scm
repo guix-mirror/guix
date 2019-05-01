@@ -161,7 +161,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
 (define-public socat
   (package
     (name "socat")
-    (version "1.7.3.2")
+    (version "1.7.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -169,7 +169,7 @@ residing in IPv4-only networks, even when they are behind a NAT device.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0lcj6zpra33xhgvhmz9l3cqz10v8ybafb8dd1yqkwf1rhy01ymp3"))))
+                "0jnhjijyq74g3wa4ph0am83z6vq7qna7ac0xqjma8s4197z3zmhd"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ;no 'check' phase
     (inputs `(("openssl" ,openssl)))
@@ -547,7 +547,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.4.1")
+    (version "5.4.2")
     (source
      (origin
        (method url-fetch)
@@ -555,7 +555,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0l7chmlvsl22r5cfm6fpm999z2n3sjrnx3ha8f8kf42cn4gmkriy"))))
+         "0mqzs0g2qxd29ihammisg9qf4503sr7d4zas26zjz4an78xkmqzf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -590,15 +590,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32
-         "17h0ixq7yr6scscjkidaj3dh5x6dfd3f97ggdxlklkz9nbsk0kxw"))))
+        (base32 "13605bpnnbqsdr8ybqnscbz9g422zmyymn4q5aci28vc1wylr1l6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -894,6 +893,30 @@ attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
 
+(define-public perl-danga-socket
+  (package
+    (name "perl-danga-socket")
+    (version "1.61")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BR/BRADFITZ/"
+                           "Danga-Socket-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nciapvxnc922ms304af0vavz1kgyr45ard8wc659k9srqar4hwf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sys-syscall" ,perl-sys-syscall)))
+    (home-page "https://metacpan.org/release/Danga-Socket")
+    (synopsis "Event loop and event-driven async socket base class")
+    (description
+     "Danga::Socket is an abstract base class for objects backed by a socket
+which provides the basic framework for event-driven asynchronous IO, designed
+to be fast.  Danga::Socket is both a base class for objects, and an event
+loop.")
+    (license license:perl-license)))
+
 (define-public perl-data-validate-ip
   (package
     (name "perl-data-validate-ip")
@@ -924,7 +947,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.19")
+  (version "1.20")
   (source
     (origin
       (method url-fetch)
@@ -935,7 +958,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "1myc23vz0m42yyg8iw7bf1pdrmx9ql6fhl2vwk1vwf55v6yphqi0"))))
+       (base32 "06z09igd42s0kg2ps5k7vpypg77zswfryqzbyalbllvjd0mnknbz"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -1108,8 +1131,8 @@ offline emulation of DNS.")
   (home-page "https://metacpan.org/release/Geo-IP")
   (synopsis
     "Look up location and network information by IP Address in Perl")
-  (description "The Perl module 'Geo::IP'.  It looks up location and network
-information by IP Address.")
+  (description "The Perl module @code{Geo::IP}.  It looks up location and
+network information by IP Address.")
   (license license:perl-license)))
 
 (define-public perl-io-socket-inet6
@@ -2177,84 +2200,80 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
     (license license:gpl3+)))
 
 (define-public hcxtools
-  (let* ((commit "2ecfc9a06c2028c47522ea566ccd82b2c1f94647"))
-    (package
-      (name "hcxtools")
-      (version (git-version "0.0.0" "1" commit))
-      (home-page "https://github.com/ZerBea/hcxtools")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1hzwrpmxjxl674if0pp5iq06mdi24k7ni7bh1h20isp4s40201n3"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (inputs
-       `(("curl" ,curl)
-         ("libpcap" ,libpcap)
-         ("openssl" ,openssl)
-         ("zlib" ,zlib)))
-      (arguments
-       `(#:make-flags (list "CC=gcc"
-                            (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
-         #:tests? #f                    ;no tests
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'unpack 'set-environment
-             (lambda* (#:key inputs #:allow-other-keys)
-               (setenv "C_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "curl")
-                                    "/include:"
-                                    (assoc-ref inputs "libpcap")
-                                    "/include:"
-                                    (assoc-ref inputs "openssl")
-                                    "/include:"
-                                    (assoc-ref inputs "zlib")
-                                    "/include:"
+  (package
+    (name "hcxtools")
+    (version "5.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ZerBea/hcxtools.git")
+             (commit version)))
+       (sha256
+        (base32 "1bkl0j6m5q091fas99s83aclcc5kfwacmkgmyg8565z2npvnj7nf"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("curl" ,curl)
+       ("libpcap" ,libpcap)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'set-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "C_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "curl") "/include:"
+                                    (assoc-ref inputs "libpcap") "/include:"
+                                    (assoc-ref inputs "openssl") "/include:"
+                                    (assoc-ref inputs "zlib") "/include:"
                                     (getenv "C_INCLUDE_PATH")))
              #t)))))
-      (synopsis "Capture wlan traffic to hashcat and John the Ripper")
-      (description
-       "This package contains a small set of tools to capture and convert
+    (home-page "https://github.com/ZerBea/hcxtools")
+    (synopsis "Capture wlan traffic to hashcat and John the Ripper")
+    (description
+     "This package contains a small set of tools to capture and convert
 packets from wireless devices for use with hashcat or John the Ripper.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public hcxdumptool
-  (let* ((commit "f4799b5da82c5b030a6d99b02d1c1b9dc838ad36"))
-    (package
-      (name "hcxdumptool")
-      (version (git-version "0.0.0" "1" commit))
-      (home-page "https://github.com/ZerBea/hcxdumptool")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0qlsin0rws9sshn12faq4spmd0ffzssal36s71vhv6gkhhga7abl"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "CC=gcc"
-                            (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
-         #:tests? #f                    ;no tests
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))
-      (synopsis "Small tool to capture packets from wlan devices")
-      (description
-       "Small tool to capture packets from WLAN devices.  After capturing,
+  (package
+    (name "hcxdumptool")
+    (version "5.1.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ZerBea/hcxdumptool.git")
+             (commit version)))
+       (sha256
+        (base32 "0h2cc2dfpc83325hwqkxwn0p8qfq5gh1dg0yb1nr8bnffy0b4r4v"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/ZerBea/hcxdumptool")
+    (synopsis "Small tool to capture packets from wlan devices")
+    (description
+     "Small tool to capture packets from WLAN devices.  After capturing,
 upload the \"uncleaned\" cap to @url{https://wpa-sec.stanev.org/?submit} to
 see if the access point or the client is vulnerable to a dictionary attack.
 Convert the cap file to hccapx format and/or to WPA-PMKID-PBKDF2
 hashline (16800) with @command{hcxpcaptool} from the @code{hcxtools} package
 and check if the WLAN key or the master key was transmitted unencrypted.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public dante
   (package

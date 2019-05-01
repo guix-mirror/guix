@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,18 +98,14 @@ listing the files modified by a patch.")
 (define-public quilt
   (package
     (name "quilt")
-    (version "0.65")
+    (version "0.66")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://savannah/quilt/"
-                          name "-" version ".tar.gz"))
-      (sha256
-       (base32
-        "06b816m2gz9jfif7k9v2hrm7fz76zjg5pavf7hd3ifybwn4cgjzn"))
-      (patches (search-patches "quilt-test-fix-regex.patch"
-                               "quilt-getopt-second-separator.patch"
-                               "quilt-getopt-nondigit-param.patch"))))
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/quilt/"
+                           "quilt-" version ".tar.gz"))
+       (sha256
+        (base32 "01vfvk4pqigahx82fhaaffg921ivd3k7rylz1yfvy4zbdyd32jri"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gnu-gettext)))
@@ -216,7 +212,7 @@ refreshed, and more.")
          #:python ,python-2))                    ;not compatible with Python 3
       (synopsis "Patch tracking tool")
       (description
-       "'Patches' is a patch-tracking tool initially written for the QEMU
+       "@code{Patches} is a patch-tracking tool initially written for the QEMU
 project.  It provides commands that build a database of patches from a mailing
 list, and commands that can search that database.  It allows users to track
 the status of a patch, apply patches, and search for patches---all that from
@@ -248,7 +244,7 @@ GiB).")
 (define-public meld
   (package
     (name "meld")
-    (version "3.20.0")
+    (version "3.20.1")
     (source
      (origin
        (method url-fetch)
@@ -256,8 +252,7 @@ GiB).")
                            (version-major+minor version)
                            "/meld-" version ".tar.xz"))
        (sha256
-        (base32
-         "11khi1sg02k3b9qdag3r939cwi27cql4kjim7jhxf9ckfhpzwh6b"))))
+        (base32 "0jdj7kd6vj1mdc16gvrj1kar88b2j5875ajq18fx7cbc9ny46j55"))))
     (build-system python-build-system)
     (native-inputs
      `(("intltool" ,intltool)

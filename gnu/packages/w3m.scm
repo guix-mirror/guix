@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -76,8 +76,8 @@
     (home-page "http://w3m.sourceforge.net/")
     (synopsis "Text-mode web browser")
     (description
-     "w3m is a text-based web browser as well as a pager like 'more' or
-'less'.  With w3m you can browse web pages through a terminal emulator
+     "w3m is a text-based web browser as well as a pager like @code{more} or
+@code{less}.  With w3m you can browse web pages through a terminal emulator
 window.  Moreover, w3m can be used as a text formatting tool which
 typesets HTML into plain text.")
     (license (x11-style "file://doc/README"

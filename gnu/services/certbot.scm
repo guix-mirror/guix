@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,12 @@
                        (default #f))
   (domains             certificate-configuration-domains
                        (default '()))
+  (challenge           certificate-configuration-challenge
+                       (default #f))
+  (authentication-hook certificate-authentication-hook
+                       (default #f))
+  (cleanup-hook        certificate-cleanup-hook
+                       (default #f))
   (deploy-hook         certificate-configuration-deploy-hook
                        (default #f)))
 
@@ -81,17 +88,32 @@
             (commands
              (map
               (match-lambda
-                (($ <certificate-configuration> custom-name domains
+                (($ <certificate-configuration> custom-name domains challenge
+                                                authentication-hook cleanup-hook
                                                 deploy-hook)
                  (let ((name (or custom-name (car domains))))
-                   (append
-                    (list name certbot "certonly" "-n" "--agree-tos"
-                          "-m" email
-                          "--webroot" "-w" webroot
-                          "--cert-name" name
-                          "-d" (string-join domains ","))
-                    (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
-                    (if deploy-hook `("--deploy-hook" ,deploy-hook) '())))))
+                   (if challenge
+                     (append
+                      (list name certbot "certonly" "-n" "--agree-tos"
+                            "-m" email
+                            "--manual"
+                            (string-append "--preferred-challenges=" challenge)
+                            "--cert-name" name
+                            "-d" (string-join domains ","))
+                      (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
+                      (if authentication-hook
+                          `("--manual-auth-hook" ,authentication-hook)
+                          '())
+                      (if cleanup-hook `("--manual-cleanup-hook" ,cleanup-hook) '())
+                      (if deploy-hook `("--deploy-hook" ,deploy-hook) '()))
+                     (append
+                      (list name certbot "certonly" "-n" "--agree-tos"
+                            "-m" email
+                            "--webroot" "-w" webroot
+                            "--cert-name" name
+                            "-d" (string-join domains ","))
+                      (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
+                      (if deploy-hook `("--deploy-hook" ,deploy-hook) '()))))))
               certificates)))
        (program-file
         "certbot-command"

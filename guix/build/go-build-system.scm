@@ -42,7 +42,7 @@
 ;; structure called a 'workspace' [1].  This workspace can be found by Go via
 ;; the GOPATH environment variable.  Typically, all Go source code and compiled
 ;; objects are kept in a single workspace, but GOPATH may be a list of
-;; directories [2].  In this go-build-system we create a filesystem union of
+;; directories [2].  In this go-build-system we create a file system union of
 ;; the Go-language dependencies. Previously, we made GOPATH a list of store
 ;; directories, but stopped because Go programs started keeping references to
 ;; these directories in Go 1.11:
@@ -127,7 +127,7 @@
 ;; Code:
 
 (define* (setup-go-environment #:key inputs outputs #:allow-other-keys)
-  "Prepare a Go build environment for INPUTS and OUTPUTS.  Build a filesystem
+  "Prepare a Go build environment for INPUTS and OUTPUTS.  Build a file system
 union of INPUTS.  Export GOPATH, which helps the compiler find the source code
 of the package being built and its dependencies, and GOBIN, which determines
 where executables (\"commands\") are installed to.  This phase is sometimes used

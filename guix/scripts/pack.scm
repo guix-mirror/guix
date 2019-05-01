@@ -126,13 +126,9 @@ dependencies are registered."
 
   (define build
     (with-extensions gcrypt-sqlite3&co
-      ;; XXX: Adding (gnu build install) just to work around
-      ;; <https://bugs.gnu.org/15602>: that way, (guix build store-copy) is
-      ;; copied last and the 'store-info-XXX' macros are correctly expanded.
       (with-imported-modules (source-module-closure
                               '((guix build store-copy)
-                                (guix store database)
-                                (gnu build install)))
+                                (guix store database)))
         #~(begin
             (use-modules (guix store database)
                          (guix build store-copy)
@@ -633,7 +629,7 @@ please email '~a'~%")
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
     (debug . 0)
-    (verbosity . 2)
+    (verbosity . 1)
     (symlinks . ())
     (compressor . ,(first %compressors))))
 

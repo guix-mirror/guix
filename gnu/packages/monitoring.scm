@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,7 +152,7 @@ etc. via a Web interface.  Features include:
 (define-public zabbix-agentd
   (package
     (name "zabbix-agentd")
-    (version "4.0.2")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
@@ -161,7 +161,7 @@ etc. via a Web interface.  Features include:
              "/zabbix-" version ".tar.gz"))
        (sha256
         (base32
-         "033qb4b9y02jp2ijj8ny0a0yk1mzj0a8ihxrv11h7ln8kpl55vqw"))))
+         "1b9wx6z15jfg8yakb7mlaqqri1ia9i12rgk58c3nparzsjdd9p2c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -427,16 +427,16 @@ written in Go with pluggable metric collectors.")
 (define-public fswatch
   (package
     (name "fswatch")
-    (version "1.13.0")
+    (version "1.14.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                       (url "https://github.com/emcrisostomo/fswatch.git")
                       (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r9m3rysqa1kdgghv2i6sv4zrd0v8idsbrp627ys642dl39svir3"))))
+                "1ihn7wp3y7ml2lm8drz2hc6fmgj8kygbygnw8mz7gjax88f9dbx7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

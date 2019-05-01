@@ -41,18 +41,20 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages video))
 
+;; ETL, synfig, and Synfig Studio are updated in tandem.
+(define synfig-version "1.2.2")
+
 (define-public etl
   (package
     (name "etl")
-    (version "0.04.22")
+    (version synfig-version)
     (source (origin
               (method url-fetch)
-              ;; Keep this synchronized with the synfig release version.
               (uri (string-append "mirror://sourceforge/synfig/releases/"
-                                  "1.2.0/source/ETL-" version ".tar.gz"))
+                                  version "/source/ETL-" version ".tar.gz"))
               (sha256
                (base32
-                "0ii73nsd3xzkhz6w1rnxwphl637j9w82xiy6apa9vin2isdynnmc"))))
+                "12sd8pz8l5xcxcmapkvih3brihdhdb6xmxisr9a415lydid9rh8d"))))
     (build-system gnu-build-system)
     (home-page "https://www.synfig.org")
     (synopsis "Extended C++ template library")
@@ -65,7 +67,7 @@ C++ @dfn{Standard Template Library} (STL).")
 (define-public synfig
   (package
     (name "synfig")
-    (version "1.2.0")
+    (version synfig-version)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/synfig/releases/"
@@ -73,7 +75,7 @@ C++ @dfn{Standard Template Library} (STL).")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1gqx4gn4c73rqwhsgzx0a460gr9hadmi28csp75rx30qavqsj7k1"))))
+                "1vy27kl68sbg41sfasa58k3p2nc1xfalvzk3k9gich9h90rpnpsz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -131,7 +133,8 @@ C++ @dfn{Standard Template Library} (STL).")
        ("openexr" ,openexr)
        ("pango" ,pango)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.synfig.org")
     (synopsis "Vector-based 2D animation renderer")
     (description
@@ -143,7 +146,7 @@ for tweening, preventing the need to hand-draw each frame.")
 (define-public synfigstudio
   (package
     (name "synfigstudio")
-    (version "1.2.0")
+    (version synfig-version)
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/synfig/releases/"
@@ -151,16 +154,14 @@ for tweening, preventing the need to hand-draw each frame.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "0fbckfbw8dzf0m2wv7vlmw492k1dqa3zf510z019d0as3zpnp6qm"))
+                "1ql92kh9z8w2j9yi3pr7hn7wh2r2j35xynwv9xlwyd7niackgykn"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* "src/synfigapp/pluginmanager.cpp"
                     (("xmlpp::Node\\* n =")    "const xmlpp::Node* n =")
                     (("xmlpp::Node::NodeList") "xmlpp::Node::const_NodeList"))
-                  #t))
-              (patches
-               (search-patches "synfigstudio-fix-ui-with-gtk3.patch"))))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

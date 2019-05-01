@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -384,14 +384,14 @@ for long periods of working with computers (8 or more hours per day).")
     (name "font-adobe-source-han-sans")
     (version "1.004")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/adobe-fonts/source-han-sans/archive/"
-                    version "R.tar.gz"))
-              (file-name (string-append "source-han-sans-" version "R.tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/adobe-fonts/source-han-sans.git")
+                     (commit (string-append version "R"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ssx0fw90sy6mj8fv8fv4dgzszpqwbmwpjnlx16g4pvaqzdmybbz"))))
+                "0zm884d8fp5gvirq324050kqv7am9khyqhs9kk4r4rr3jzn61jpk"))))
     (outputs '("out"                 ; OpenType/CFF Collection (OTC), 121 MiB.
                "cn" "jp" "kr" "tw")) ; Region-specific Subset OpenType/CFF.
     (build-system trivial-build-system)
@@ -400,20 +400,12 @@ for long periods of working with computers (8 or more hours per day).")
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let ((tar  (string-append (assoc-ref %build-inputs
-                                               "tar")
-                                    "/bin/tar"))
-               (PATH (string-append (assoc-ref %build-inputs
-                                               "gzip")
-                                    "/bin"))
-               (install-opentype-fonts
+         (let ((install-opentype-fonts
                 (lambda (fonts-dir out)
                   (copy-recursively fonts-dir
                                     (string-append (assoc-ref %outputs out)
                                                    "/share/fonts/opentype")))))
-           (setenv "PATH" PATH)
-           (invoke tar "xvf" (assoc-ref %build-inputs "source"))
-           (chdir (string-append "source-han-sans-" ,version "R"))
+           (chdir (assoc-ref %build-inputs "source"))
            (install-opentype-fonts "OTC" "out")
            (install-opentype-fonts "SubsetOTF/CN" "cn")
            (install-opentype-fonts "SubsetOTF/JP" "jp")
@@ -421,9 +413,6 @@ for long periods of working with computers (8 or more hours per day).")
            (install-opentype-fonts "SubsetOTF/TW" "tw")
            (for-each delete-file (find-files %output "\\.zip$"))
            #t))))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("tar" ,tar)))
     (home-page "https://github.com/adobe-fonts/source-han-sans")
     (synopsis "Pan-CJK fonts")
     (description
@@ -933,13 +922,14 @@ Sans Pro family.")
     (name "font-fira-sans")
     (version "4.202")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mozilla/Fira/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mozilla/Fira.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r6zdnqqp4bgq5nmgqbj0vvj7x1h9w912851ggbl9wc7fdjnjqnq"))))
+                "116j26gdj5g1r124b4669372f7490vfjqw7apiwp2ggl0am5xd0w"))))
     (build-system font-build-system)
     (home-page "https://mozilla.github.io/Fira/")
     (synopsis "Mozilla's Fira Sans Font")
@@ -997,13 +987,14 @@ vector graphics.")
     (version "1.11.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/sunaku/tamzen-font/archive/"
-                           "Tamzen-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/sunaku/tamzen-font.git")
+              (commit (string-append "Tamzen-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ryd7gp6qiwaqw73jqbmh4kwlriyd8xykh4j7z90z8xp9fm7lrys"))))
+         "17kgmvg6q32mqhx9g44hjvzv0si0mnpprga4z7na930g2zdd8846"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1011,30 +1002,19 @@ vector graphics.")
        (begin
          (use-modules (guix build utils))
 
-         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
-                                        "/bin/tar"))
-               (PATH     (string-append (assoc-ref %build-inputs "gzip")
-                                        "/bin"))
-               (font-dir (string-append %output "/share/fonts/misc"))
-               (psf-dir (string-append %output "/share/kbd/consolefonts"))
-               (src-pcf-dir (string-append "tamzen-font-Tamzen-"
-                                            ,version "/pcf")))
-           (setenv "PATH" PATH)
-           (invoke tar "xvf" (assoc-ref %build-inputs "source"))
+         (let* ((out      (assoc-ref %outputs "out"))
+                (font-dir (string-append out "/share/fonts/misc"))
+                (psf-dir  (string-append out "/share/kbd/consolefonts")))
+           (chdir (assoc-ref %build-inputs "source"))
            (mkdir-p font-dir)
            (mkdir-p psf-dir)
-           (chdir src-pcf-dir)
            (for-each (lambda (pcf)
                        (install-file pcf font-dir))
-                     (find-files "." "\\.pcf$"))
-           (chdir "../psf")
+                     (find-files "pcf" "\\.pcf$"))
            (for-each (lambda (psf)
                        (install-file psf psf-dir))
-                     (find-files "." "\\.psf$"))
+                     (find-files "psf" "\\.psf$"))
            #t))))
-    (native-inputs
-     `(("tar" ,tar)
-       ("gzip" ,gzip)))
     (home-page "https://github.com/sunaku/tamzen-font")
     (synopsis "Monospaced bitmap font for console and X11")
     (description
@@ -1106,15 +1086,15 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
 (define-public font-iosevka
   (package
     (name "font-iosevka")
-    (version "1.12.5")
-    (source (origin
-              (method url-fetch/zipbomb)
-              (uri (string-append
-                    "https://github.com/be5invis/Iosevka/releases/download/v"
-                    version "/iosevka-pack-" version ".zip"))
-              (sha256
-               (base32
-                "0s3g6mk0ngwsrw9h9dqinb50cd9i8zhqdcmmh93fhyf4d87yfwyi"))))
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/ttc-iosevka-" version ".zip"))
+       (sha256
+        (base32 "14jfv6pkh1w44m89z2fn44kgmmqaf0057lk71advwfbm3q313y0x"))))
     (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
@@ -1124,6 +1104,20 @@ by Pragmata Pro, M+, and PF DIN Mono, designed to be the ideal font for
 programming.  Iosevka is completely generated from its source code.")
     (license (list license:silofl1.1 ; build artifacts (i.e. the fonts)
                    license:bsd-3)))) ; supporting code
+
+(define-public font-iosevka-slab
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-slab")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/ttc-iosevka-slab-" version ".zip"))
+       (sha256
+        (base32 "186d0pl13znysll3hvzm1ixn7ad616g6dhla55sbh6ki2j04b8ml"))))))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
@@ -1162,14 +1156,14 @@ monospace, slab-serif fonts.")
     (name "font-google-material-design-icons")
     (version "3.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/google/material-design-icons/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/material-design-icons.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "018i3za9r6kf6svci33z09lc5pr5yz4164m8gzzwjzzqcrng0p5j"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "17q5brcqyyc8gbjdgpv38p89s60cwxjlwy2ljnrvas5cj0s62np0"))))
     (build-system font-build-system)
     (home-page "http://google.github.io/material-design-icons")
     (synopsis "Icon font of Google Material Design icons")
@@ -1188,13 +1182,14 @@ resolutions.")
     (version "20160623")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/antijingoist/open-dyslexic/"
-                           "archive/" version "-Stable.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/antijingoist/open-dyslexic.git")
+              (commit (string-append version "-Stable"))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0al0j9kb32kfavcpq1kigsd36yzvf5yhzqhds0jkh7ngbxyxwkx4"))))
+         "0nr7s92nk1kbr459154idnib977ixc70z6g9mbra3lp73nyrmyvz"))))
     (build-system font-build-system)
     (home-page "https://opendyslexic.org")
     (synopsis "Font for dyslexics and high readability")
@@ -1401,4 +1396,31 @@ files (TTF).")
      "Mononoki is a typeface by Matthias Tellen, created to enhance code
 formatting.")
     (home-page "https://madmalik.github.io/mononoki/")
+    (license license:silofl1.1)))
+
+(define-public font-public-sans
+  (package
+    (name "font-public-sans")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uswds/public-sans.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12ccj7ph3pg962d52d3slbvd44gwfm6bb2846dxyf1xc5h2iwhdv"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; remove versions of predecessor font
+                  (delete-file-recursively "fonts/_archive")
+                  #t))))
+    (build-system font-build-system)
+    (home-page "https://public-sans.digital.gov/")
+    (synopsis "Neutral typeface for interfaces, text, and headings")
+    (description
+     "Public Sans is a strong, neutral, sans-serif typeface for text or
+display based on Libre Franklin.")
     (license license:silofl1.1)))

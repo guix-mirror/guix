@@ -43,7 +43,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "18.09.3")
+(define %docker-version "18.09.5")
 
 (define-public python-docker-py
   (package
@@ -227,6 +227,8 @@ network attachments.")
     (home-page "http://containerd.io/")
     (license license:asl2.0)))
 
+;; TODO: Patch out modprobes for ip_vs, nf_conntrack,
+;; brige, nf_conntrack_netlink, aufs.
 (define-public docker
   (package
     (name "docker")
@@ -239,10 +241,11 @@ network attachments.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "06yr5xwr181lalh8z1lk07nxlp7hn38aq8cyqjk617dfy4lz0ixx"))
+       (base32 "0cirpd9l2qazp2jyanwzvrkx2m98nksjdvn43ff38p89w6133ipb"))
       (patches
        (search-patches "docker-engine-test-noinstall.patch"
-                       "docker-fix-tests.patch"))))
+                       "docker-fix-tests.patch"
+                       "docker-use-fewer-modprobes.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules
@@ -484,7 +487,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "09j1i668p330gjz5vw5pss8ghxh1mz7rl2q9ykp02q9p112zhy4j"))))
+       (base32 "0mxxjzkwdny8p2dmyjich7x1gn7hdlfppzjy2skk2k5bwv7nxpmi"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"

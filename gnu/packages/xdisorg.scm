@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -402,13 +402,11 @@ rasterisation.")
                 "-Dtegra=true"
                 "-Dfreedreno-kgsl=true"))
              (_ '())))
-       ,@(if (string=? (%current-system) "armhf-linux")
-             '(#:phases
-               (modify-phases %standard-phases
-                 (replace 'check
-                   (lambda _
-                     (invoke "meson" "test" "--timeout-multiplier" "5")))))
-             '())))
+
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "meson" "test" "--timeout-multiplier" "5"))))))
     (inputs
      `(("libpciaccess" ,libpciaccess)))
     (native-inputs
@@ -576,7 +574,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.5.2")
+    (version "5.5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -585,7 +583,7 @@ selection's dimensions to stdout.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "14mfxdm39kc5jk8wysrzx05ag2g4sk9l24i8m5pzqn8j611150v3"))))
+                "1kbxsz8whfxl5blwsvpva2q95zwy72argwhi1cfqh5lrhzq5zrpp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -959,7 +957,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.32")
+    (version "0.33")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -967,7 +965,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
-                "102kz0q7i0bjsnl6yy83vcj2rpir12rs2d4xr0wvhw84rs5sp7bb"))))
+                "1wnv34y7m9l6avlvwqvfrnksfnsz1lbgb412dn6s7x1h3wvs7y4l"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

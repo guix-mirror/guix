@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
@@ -196,9 +196,11 @@
                       ,patch-makefile-phase)
                     (add-after 'unpack 'remove-unneeded-shebang
                       ,remove-shebang-phase)))))
-    (self-native-input? #t)           ; for `tic'
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(,@(if (%current-target-system)
+             `(("self" ,this-package))            ;for `tic'
+             '())
+       ("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
             (variable "TERMINFO_DIRS")

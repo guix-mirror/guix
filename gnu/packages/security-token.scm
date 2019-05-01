@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,14 +29,17 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
@@ -51,6 +54,10 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
@@ -95,15 +102,16 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "4.4.13")
+    (version "4.4.16")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/Fedict/eid-mw")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "14bgn2k0xbd6241qdghg787pgxy7k9rvcspaf74zwwyibaqknzyx"))))
+        (base32 "1q82fw63xzrnrgh1wyh457hal6vfdl6swqfq7l6kviywiwlzx7kd"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -161,7 +169,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 (define-public pcsc-lite
   (package
     (name "pcsc-lite")
-    (version "1.8.24")
+    (version "1.8.25")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -169,7 +177,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0s3mv6csbi9303vvis0hilm71xsmi6cqkbh2kiipdisydbx6865q"))))
+                "14l7irs1nsh8b036ag4cfy8wryyysch78scz5dw6xxqwqgnpjvfp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-usbdropdir=/var/lib/pcsc/drivers"
@@ -312,7 +320,7 @@ and other operations.  It includes a library and a command-line tool.")
 (define-public yubikey-personalization
   (package
     (name "yubikey-personalization")
-    (version "1.19.0")
+    (version "1.19.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -320,7 +328,7 @@ and other operations.  It includes a library and a command-line tool.")
                     "/Releases/ykpers-" version ".tar.gz"))
               (sha256
                (base32
-                "104lc0nnqdr365fa7c4vrq67rxp1dp8idndsh9jlhnj9dnhszj1b"))))
+                "0jhvnavjrpwzmmjcw486df5s48j53njqgyz36yz3dskbaz3kwlfr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-udevrulesdir="
@@ -341,3 +349,205 @@ and other operations.  It includes a library and a command-line tool.")
 line tools for personalizing YubiKeys.  You can use these to set an AES key,
 retrieve a YubiKey's serial number, and so forth.")
     (license license:bsd-2)))
+
+(define-public python-pyscard
+  (package
+    (name "python-pyscard")
+    (version "1.9.8")
+    (source (origin
+              (method url-fetch)
+              ;; The maintainer publishes releases on various sites, but
+              ;; SourceForge is apparently the only one with a signed release.
+              (uri (string-append
+                    "mirror://sourceforge/pyscard/pyscard/pyscard%20"
+                    version "/pyscard-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15fh00z1an6r5j7hrz3jlq0rb3jygwf3x4jcwsa008bv8vpcg7gm"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Tell pyscard where to find the PCSC include directory.
+         (add-after 'unpack 'patch-platform-include-dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pcsc-include-dir (string-append
+                                      (assoc-ref inputs "pcsc-lite")
+                                      "/include/PCSC")))
+               (substitute* "setup.py"
+                 (("platform_include_dirs = \\[.*?\\]")
+                  (string-append
+                   "platform_include_dirs = ['" pcsc-include-dir "']")))
+               #t)))
+         ;; pyscard wants to dlopen libpcsclite, so tell it where it is.
+         (add-after 'unpack 'patch-dlopen
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "smartcard/scard/winscarddll.c"
+               (("lib = \"libpcsclite\\.so\\.1\";")
+                (simple-format #f
+                               "lib = \"~a\";"
+                               (string-append (assoc-ref inputs "pcsc-lite")
+                                              "/lib/libpcsclite.so.1"))))
+             #t)))))
+    (inputs
+     `(("pcsc-lite" ,pcsc-lite)))
+    (native-inputs
+     `(("swig" ,swig)))
+    (home-page "https://github.com/LudovicRousseau/pyscard")
+    (synopsis "Smart card library for Python")
+    (description
+     "The pyscard smart card library is a framework for building smart card
+aware applications in Python.  The smart card module is built on top of the
+PCSC API Python wrapper module.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pyscard
+  (package-with-python2 python-pyscard))
+
+(define-public libu2f-host
+  (package
+    (name "libu2f-host")
+    (version "1.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://developers.yubico.com"
+                "/libu2f-host/Releases/libu2f-host-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hnh3f4scx07v9jfkr1nnxasmydk1cmivn0nijcp2p75bc1fznip"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-gtk-doc"
+             (string-append "--with-udevrulesdir="
+                            (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Avoid a network connection attempt during the build.
+             (substitute* "gtk-doc/u2f-host-docs.xml"
+               (("http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/docbookx.dtd")))
+             #t)))))
+    (inputs
+     `(("json-c" ,json-c)
+       ("hidapi" ,hidapi)))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("gengetopt" ,gengetopt)
+       ("pkg-config" ,pkg-config)
+       ("gtk-doc" ,gtk-doc)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("eudev" ,eudev)))
+    (home-page "https://developers.yubico.com/libu2f-host/")
+    ;; TRANSLATORS: The U2F protocol has a "server side" and a "host side".
+    (synopsis "U2F host-side C library and tool")
+    (description
+     "Libu2f-host provides a C library and command-line tool that implements
+the host-side of the Universal 2nd Factor (U2F) protocol.  There are APIs to
+talk to a U2F device and perform the U2F Register and U2F Authenticate
+operations.")
+    ;; Most files are LGPLv2.1+, but some files are GPLv3+.
+    (license (list license:lgpl2.1+ license:gpl3+))))
+
+(define-public python-fido2
+  (package
+    (name "python-fido2")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/Yubico/python-fido2/releases/download/"
+                version "/fido2-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pl8d2pr6jzqj4y9qiaddhjgnl92kikjxy0bgzm2jshkzzic8mp3"))
+              (snippet
+               ;; Remove bundled dependency.
+               #~(delete-file "fido2/public_suffix_list.dat"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'install-public-suffix-list
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file
+              (string-append (assoc-ref inputs "public-suffix-list")
+                             "/share/public-suffix-list-"
+                             ,(package-version public-suffix-list)
+                             "/public_suffix_list.dat")
+              "fido2/public_suffix_list.dat")
+             #t)))))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pyfakefs" ,python-pyfakefs)
+       ("public-suffix-list" ,public-suffix-list)))
+    (home-page "https://github.com/Yubico/python-fido2")
+    (synopsis "Python library for communicating with FIDO devices over USB")
+    (description
+     "This Python library provides functionality for communicating with a Fast
+IDentity Online (FIDO) device over Universal Serial Bus (USB) as well as
+verifying attestation and assertion signatures.  It aims to support the FIDO
+Universal 2nd Factor (U2F) and FIDO 2.0 protocols for communicating with a USB
+authenticator via the Client-to-Authenticator Protocol (CTAP 1 and 2).  In
+addition to this low-level device access, classes defined in the
+@code{fido2.client} and @code{fido2.server} modules implement higher level
+operations which are useful when interfacing with an Authenticator, or when
+implementing a Relying Party.")
+    ;; python-fido2 contains some derivative files originally from pyu2f
+    ;; (https://github.com/google/pyu2f).  These files are licensed under the
+    ;; Apache License, version 2.0.  The maintainers have customized these
+    ;; files for internal use, so they are not really a bundled dependency.
+    (license (list license:bsd-2 license:asl2.0))))
+
+(define-public python2-fido2
+  (package-with-python2 python-fido2))
+
+(define-public python-yubikey-manager
+  (package
+    (name "python-yubikey-manager")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://developers.yubico.com/yubikey-manager/Releases"
+                    "/yubikey-manager-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11rsmcaj60k3y5m5gdhr2nbbz0w5dm3m04klyxz0fh5hnpcmr7fm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-pyscard" ,python-pyscard)
+       ("python-pyusb" ,python-pyusb)
+       ("python-click" ,python-click)
+       ("python-cryptography" ,python-cryptography)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-fido2" ,python-fido2)))
+    (inputs
+     `(("yubikey-personalization" ,yubikey-personalization)
+       ("pcsc-lite" ,pcsc-lite)
+       ("libusb" ,libusb)))
+    (native-inputs
+     `(("swig" ,swig)
+       ("python-mock" ,python-mock)))
+    (home-page "https://developers.yubico.com/yubikey-manager/")
+    (synopsis "Command line tool and library for configuring a YubiKey")
+    (description
+     "Python library and command line tool for configuring a YubiKey.  Note
+that after installing this package, you might still need to add appropriate
+udev rules to your system configuration to be able to configure the YubiKey as
+an unprivileged user.")
+    (license license:bsd-2)))
+
+(define-public python2-yubikey-manager
+  (package-with-python2 python-yubikey-manager))

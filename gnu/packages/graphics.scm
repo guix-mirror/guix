@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -354,33 +354,23 @@ exception-handling library.")
     (version "1.10.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/OGRECave/" name
-                           "/archive/v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/OGRECave/ogre.git")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "13bdh9v4026qf8w8rbfln2rmwf0rby1a8fz55zpdvpy105i6cbpz"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "072rzw9mxymbiypgkrbkk9h10rgly6gczik4dlmssk6xkpqckaqr"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
-           (lambda _
-             ;; It expects googletest source to be downloaded and
-             ;; be in a specific place.
-             (substitute* "Tests/CMakeLists.txt"
-               (("URL(.*)$" _ suffix)
-                (string-append "URL " suffix
-                               "\t\tURL_HASH "
-                               "MD5=16877098823401d1bf2ed7891d7dce36\n")))
-             #t))
-         (add-before 'build 'pre-build
            (lambda* (#:key inputs #:allow-other-keys)
-             (copy-file (assoc-ref inputs "googletest-source")
-                        (string-append (getcwd)
-                                       "/Tests/googletest-prefix/src/"
-                                       "release-1.8.0.tar.gz"))
+             (substitute* "Tests/CMakeLists.txt"
+               (("URL(.*)$")
+                (string-append "URL " (assoc-ref inputs "googletest-source"))))
              #t)))
        #:configure-flags
        (list "-DOGRE_BUILD_TESTS=TRUE"
@@ -547,6 +537,32 @@ virtual reality, scientific visualization and modeling.")
     ;; The 'LICENSE' file explains that the source is licensed under
     ;; LGPL 2.1, but with 4 exceptions. This version is called OSGPL.
     (license license:lgpl2.1)))
+
+;; We need this for simgear
+(define-public openscenegraph-3.4
+  (package (inherit openscenegraph)
+    (name "openscenegraph")
+    (version "3.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openscenegraph/OpenSceneGraph")
+             (commit (string-append "OpenSceneGraph-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1fbzg1ihjpxk6smlq80p3h3ggllbr16ihd2fxpfwzam8yr8yxip9"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openscenegraph)
+       ((#:configure-flags flags)
+        `(cons
+          ;; The jpeg plugin requires conversion between integers and booleans
+          "-DCMAKE_CXX_FLAGS=-fpermissive"
+          ,flags))))
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ,@(package-inputs openscenegraph)))))
 
 (define-public povray
   (package

@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,7 @@
 
 (define-module (gnu packages rdf)
   #:use-module ((guix licenses)
-                #:select (non-copyleft isc gpl2 lgpl2.1 lgpl2.1+))
+                #:select (non-copyleft asl2.0 isc gpl2 lgpl2.1 lgpl2.1+ lgpl3+))
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix download)
@@ -118,6 +119,37 @@ HTML and JSON.")
 full-featured indexing and searching API.  It is a port of the very popular
 Java Lucene text search engine API to C++.")
     (license lgpl2.1)))
+
+(define-public lucene++
+  (package
+    (name "lucene++")
+    (version "3.0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/luceneplusplus/LucenePlusPlus")
+                     (commit (string-append "rel_" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06b37fly6l27zc6kbm93f6khfsv61w792j8xihfagpcm9cfz2zi1"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; CXX_FLAGS suggested in a closed issue on github:
+       ;; https://github.com/luceneplusplus/LucenePlusPlus/issues/100
+       (list "-Wno-dev" "-DCMAKE_CXX_FLAGS=-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT"
+             ;; Install in lib64 break rpath
+             "-DCMAKE_INSTALL_LIBDIR:PATH=lib")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)))
+    (home-page "https://github.com/luceneplusplus/LucenePlusPlus")
+    (synopsis "Text search engine")
+    (description "Lucene++ is an up to date C++ port of the popular Java
+Lucene library, a high-performance, full-featured text search engine.")
+    (license (list asl2.0 lgpl3+)))); either asl or lgpl.
 
 (define-public lrdf
   (package

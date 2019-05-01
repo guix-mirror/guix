@@ -163,14 +163,14 @@ from digital cameras.")
 (define-public gphoto2
   (package
     (name "gphoto2")
-    (version "2.5.17")
+    (version "2.5.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/gphoto/" version
                                   "/gphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kslwclyyzvnxjw3gdzhlagj7l5f8lba833ipr9s0s0c4hwi0mxa"))))
+                "1xj80abkzvqrd6g1j1q946lhbp03gyapyxdwbhc0y14g1ash6vx3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -204,10 +204,13 @@ MTP, and much more.")
     ;; Files are typically under LGPLv2+, but 'COPYING' says GPLv2+.
     (license license:gpl2+)))
 
+;; Note: See <https://metacpan.org/pod/Image::ExifTool> for the latest
+;; release.  The versions at <https://www.sno.phy.queensu.ca/~phil/exiftool/>
+;; are not meant for production use according to the Changes file.
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "11.31")
+    (version "11.30")
     (source
      (origin
        (method url-fetch)
@@ -218,7 +221,7 @@ MTP, and much more.")
              (string-append "https://www.sno.phy.queensu.ca/~phil/exiftool/"
                             "Image-ExifTool-" version ".tar.gz")))
        (sha256
-        (base32 "1kplb7hvhrhqxkr4ddc44q7a3fs0r8svv2jlh325nwkfi7aa5kz5"))))
+        (base32 "0vkjb2c1a3jdlq8rx1jywx4p3f1bmgjn7rzfwx6dxgij2lx76lrs"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -357,7 +360,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
@@ -365,7 +368,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "09ihbj0602spgc5lfbskf9am38n03gam2r8v3kj4dyfgxqr37ib3"))))
+        (base32 "0igvgyd042j7hm4y8fcm6dc1qqjs4d1r7y6f0pzpa0x416xyzfcw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -496,28 +499,28 @@ a complete panorama and stitch any series of overlapping pictures.")
 (define-public rawtherapee
   (package
     (name "rawtherapee")
-    (version "5.5")
+    (version "5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://rawtherapee.com/shared/source/"
                                   "rawtherapee-" version ".tar.xz"))
               (sha256
                (base32
-                "1w28a2rnxnw8hs7s8x8zkccgi5z5y653602jg7g86lfx6zxwjsf1"))))
+                "0x0dcfp6f3j08gr11wq5ah4prp790xy4iadbgsm9kgc0jlalpspr"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; no test suite
+     '(#:tests? #f                      ; no test suite
        #:build-type "release"
        #:configure-flags
        (list (string-append "-DLENSFUNDBDIR="
                             (assoc-ref %build-inputs "lensfun")
                             "/share/lensfun")
-             ; Don't optimize the build for the host machine. See the file
-             ; 'ProcessorTargets.cmake' in the source distribution for more
-             ; information.
+             ;; Don't optimize the build for the host machine. See the file
+             ;; 'ProcessorTargets.cmake' in the source distribution for more
+             ;; information.
              "-DPROC_TARGET_NUMBER=1"
-             ; These flags are recommended by upstream for distributed packages.
-             ; See the file 'RELEASE_NOTES.txt' in the source distribution.
+             ;; These flags are recommended by upstream for distributed packages.
+             ;; See the file 'RELEASE_NOTES.txt' in the source distribution.
              "-O3"
              "-DCACHE_NAME_SUFFIX=\"\"")))
     (native-inputs
@@ -535,6 +538,7 @@ a complete panorama and stitch any series of overlapping pictures.")
        ("libiptcdata" ,libiptcdata)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
        ("libsigc++" ,libsigc++)
        ("libtiff" ,libtiff)
        ("zlib" ,zlib)))

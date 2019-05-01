@@ -86,12 +86,12 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
       --branch=BRANCH    download the tip of the specified BRANCH"))
   (display (G_ "
+  -N, --news             display news compared to the previous generation"))
+  (display (G_ "
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
   (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
-  (display (G_ "
-  -n, --dry-run          show what would be pulled and built"))
   (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
@@ -119,6 +119,9 @@ Download and deploy the latest version of Guix.\n"))
                  (lambda (opt name arg result)
                    (cons `(query list-generations ,(or arg ""))
                          result)))
+         (option '(#\N "news") #f #f
+                 (lambda (opt name arg result)
+                   (cons '(query display-news) result)))
          (option '("url") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'repository-url arg
@@ -164,24 +167,33 @@ Download and deploy the latest version of Guix.\n"))
 (define indirect-root-added
   (store-lift add-indirect-root))
 
-(define (display-profile-news profile)
-  "Display what's up in PROFILE--new packages, and all that."
+(define* (display-profile-news profile #:key concise?
+                               current-is-newer?)
+  "Display what's up in PROFILE--new packages, and all that.  If
+CURRENT-IS-NEWER? is true, assume that the current process represents the
+newest generation of PROFILE.x"
   (match (memv (generation-number profile)
                (reverse (profile-generations profile)))
     ((current previous _ ...)
-     (newline)
-     (let ((old (fold-available-packages
-                 (lambda* (name version result
-                                #:key supported? deprecated?
-                                #:allow-other-keys)
-                   (if (and supported? (not deprecated?))
-                       (alist-cons name version result)
-                       result))
-                 '()))
-           (new (profile-package-alist
-                 (generation-file-name profile current))))
-       (display-new/upgraded-packages old new
-                                      #:heading (G_ "New in this revision:\n"))))
+     (let ((these (fold-available-packages
+                   (lambda* (name version result
+                                  #:key supported? deprecated?
+                                  #:allow-other-keys)
+                     (if (and supported? (not deprecated?))
+                         (alist-cons name version result)
+                         result))
+                   '()))
+           (those (profile-package-alist
+                   (generation-file-name profile
+                                         (if current-is-newer?
+                                             previous
+                                             current)))))
+       (let ((old (if current-is-newer? those these))
+             (new (if current-is-newer? these those)))
+         (display-new/upgraded-packages old new
+                                        #:concise? concise?
+                                        #:heading
+                                        (G_ "New in this revision:\n")))))
     (_ #t)))
 
 (define* (build-and-install instances profile
@@ -197,7 +209,8 @@ true, display what would be built without actually building it."
                       #:hooks %channel-profile-hooks
                       #:dry-run? dry-run?)
       (munless dry-run?
-        (return (display-profile-news profile))
+        (return (newline))
+        (return (display-profile-news profile #:concise? #t))
         (match (which "guix")
           (#f (return #f))
           (str
@@ -377,36 +390,66 @@ of packages upgraded in ALIST2."
                                alist2)))
     (values new upgraded)))
 
+(define* (ellipsis #:optional (port (current-output-port)))
+  "Return HORIZONTAL ELLIPSIS three dots if PORT's encoding cannot represent
+it."
+  (match (port-encoding port)
+    ("UTF-8" "…")
+    (_       "...")))
+
 (define* (display-new/upgraded-packages alist1 alist2
-                                        #:key (heading ""))
+                                        #:key (heading "") concise?)
   "Given the two package name/version alists ALIST1 and ALIST2, display the
 list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
-and ALIST2 differ, display HEADING upfront."
+and ALIST2 differ, display HEADING upfront.  When CONCISE? is true, do not
+display long package lists that would fill the user's screen."
+  (define (pretty str column)
+    (indented-string (fill-paragraph str (- (%text-width) 4)
+                                     column)
+                     4))
+
+  (define concise/max-item-count
+    ;; Maximum number of items to display when CONCISE? is true.
+    12)
+
+  (define list->enumeration
+    (if concise?
+        (lambda* (lst #:optional (max concise/max-item-count))
+          (if (> (length lst) max)
+              (string-append (string-join (take lst max) ", ")
+                             ", " (ellipsis))
+              (string-join lst ", ")))
+        (cut string-join <> ", ")))
+
   (let-values (((new upgraded) (new/upgraded-packages alist1 alist2)))
+    (define new-count (length new))
+    (define upgraded-count (length upgraded))
+
     (unless (and (null? new) (null? upgraded))
       (display heading))
 
-    (match (length new)
+    (match new-count
       (0 #t)
       (count
        (format #t (N_ "  ~h new package: ~a~%"
                       "  ~h new packages: ~a~%" count)
                count
-               (indented-string
-                (fill-paragraph (string-join (sort (map first new) string<?)
-                                             ", ")
-                                (- (%text-width) 4) 30)
-                4))))
-    (match (length upgraded)
+               (pretty (list->enumeration (sort (map first new) string<?))
+                       30))))
+    (match upgraded-count
       (0 #t)
       (count
        (format #t (N_ "  ~h package upgraded: ~a~%"
                       "  ~h packages upgraded: ~a~%" count)
                count
-               (indented-string
-                (fill-paragraph (string-join (sort upgraded string<?) ", ")
-                                (- (%text-width) 4) 35)
-                4))))))
+               (pretty (list->enumeration (sort upgraded string<?))
+                       35))))
+
+    (when (and concise?
+               (or (> new-count concise/max-item-count)
+                   (> upgraded-count concise/max-item-count)))
+      (display-hint (G_ "Run @command{guix pull --news} to view the complete
+list of package changes.")))))
 
 (define (display-profile-content-diff profile gen1 gen2)
   "Display the changes in PROFILE GEN2 compared to generation GEN1."
@@ -446,7 +489,12 @@ and ALIST2 differ, display HEADING upfront."
                (()
                 (exit 1))
                ((numbers ...)
-                (list-generations profile numbers)))))))))
+                (list-generations profile numbers)))))))
+    (('display-news)
+     ;; Display profile news, with the understanding that this process
+     ;; represents the newest generation.
+     (display-profile-news profile
+                           #:current-is-newer? #t))))
 
 (define (channel-list opts)
   "Return the list of channels to use.  If OPTS specify a channel file,
@@ -486,24 +534,22 @@ Use '~/.config/guix/channels.scm' instead."))
         (url (or (assoc-ref opts 'repository-url)
                  (environment-variable))))
     (if (or ref url)
-        (match channels
-          ((one)
-           ;; When there's only one channel, apply '--url', '--commit', and
-           ;; '--branch' to this specific channel.
-           (let ((url (or url (channel-url one))))
-             (list (match ref
+        (match (find guix-channel? channels)
+          ((? channel? guix)
+           ;; Apply '--url', '--commit', and '--branch' to the 'guix' channel.
+           (let ((url (or url (channel-url guix))))
+             (cons (match ref
                      (('commit . commit)
-                      (channel (inherit one)
+                      (channel (inherit guix)
                                (url url) (commit commit) (branch #f)))
                      (('branch . branch)
-                      (channel (inherit one)
+                      (channel (inherit guix)
                                (url url) (commit #f) (branch branch)))
                      (#f
-                      (channel (inherit one) (url url)))))))
-          (_
-           ;; Otherwise bail out.
-           (leave
-            (G_ "'--url', '--commit', and '--branch' are not applicable~%"))))
+                      (channel (inherit guix) (url url))))
+                   (remove guix-channel? channels))))
+          (#f                           ;no 'guix' channel, failure will ensue
+           channels))
         channels)))
 
 
@@ -515,11 +561,11 @@ Use '~/.config/guix/channels.scm' instead."))
             (cache    (string-append (cache-directory) "/pull"))
             (channels (channel-list opts))
             (profile  (or (assoc-ref opts 'profile) %current-profile)))
-       (ensure-default-profile)
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
              (else
               (with-store store
+                (ensure-default-profile)
                 (with-status-verbosity (assoc-ref opts 'verbosity)
                   (parameterize ((%current-system (assoc-ref opts 'system))
                                  (%graft? (assoc-ref opts 'graft?))

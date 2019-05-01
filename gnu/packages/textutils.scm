@@ -519,7 +519,7 @@ in a portable way.")
      (origin
        (method url-fetch)
        (uri (string-append "http://www.lbreyer.com/gpl/"
-                           name "-" version ".tar.gz"))
+                           "dbacl-" version ".tar.gz"))
        (sha256
         (base32
          "0224g6x71hyvy7jikfxmgcwww1r5lvk0jx36cva319cb9nmrbrq7"))))

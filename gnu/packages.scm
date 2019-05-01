@@ -32,6 +32,7 @@
                           mkdir-p))
   #:autoload   (guix profiles) (packages->manifest)
   #:use-module (guix describe)
+  #:use-module (guix deprecation)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:autoload   (ice-9 binary-ports) (put-bytevector)
@@ -55,6 +56,7 @@
             fold-packages
             fold-available-packages
 
+            find-newest-available-packages
             find-packages-by-name
             find-package-locations
             find-best-packages-by-name
@@ -189,6 +191,29 @@ flags."
               (string-append directory "/gnu/packages/patches")
               directory))
         %load-path)))
+
+;; This procedure is used by Emacs-Guix up to 0.5.1.1, so keep it for now.
+;; See <https://github.com/alezost/guix.el/issues/30>.
+(define-deprecated find-newest-available-packages
+  find-packages-by-name
+  (mlambda ()
+    "Return a vhash keyed by package names, and with
+associated values of the form
+
+  (newest-version newest-package ...)
+
+where the preferred package is listed first."
+    (fold-packages (lambda (p r)
+                     (let ((name    (package-name p))
+                           (version (package-version p)))
+                       (match (vhash-assoc name r)
+                         ((_ newest-so-far . pkgs)
+                          (case (version-compare version newest-so-far)
+                            ((>) (vhash-cons name `(,version ,p) r))
+                            ((=) (vhash-cons name `(,version ,p ,@pkgs) r))
+                            ((<) r)))
+                         (#f (vhash-cons name `(,version ,p) r)))))
+                   vlist-null)))
 
 (define (fold-available-packages proc init)
   "Fold PROC over the list of available packages.  For each available package,

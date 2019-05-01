@@ -54,10 +54,6 @@
 ;;; available at this point.
 ;;;
 
-(define %dependency-variables
-  ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2))
-
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
   '(%guix-package-name
@@ -313,7 +309,11 @@ interface (FFI) of Guile.")
                           (cons (string-append #$guile-gcrypt "/lib/guile/"
                                                (effective-version)
                                                "/site-ccache")
-                                %load-compiled-path)))
+                                %load-compiled-path))
+
+                        ;; Disable position recording to save time and space
+                        ;; when loading the package modules.
+                        (read-disable 'positions))
 
                       (use-modules (guix store)
                                    (guix self)
@@ -399,6 +399,9 @@ files."
   (mlet %store-monad ((build  (build-program source version guile-version
                                              #:pull-version pull-version))
                       (system (if system (return system) (current-system)))
+
+                      ;; Note: Use the deprecated names here because the
+                      ;; caller might be Guix <= 0.16.0.
                       (port   ((store-lift nix-server-socket)))
                       (major  ((store-lift nix-server-major-version)))
                       (minor  ((store-lift nix-server-minor-version))))

@@ -553,9 +553,9 @@ wrapper for the cross-linker for that target, called 'TARGET-ld'."
                        #t)))))
     (synopsis "The linker wrapper")
     (description
-     "The linker wrapper (or 'ld-wrapper') wraps the linker to add any
-missing '-rpath' flags, and to detect any misuse of libraries outside of the
-store.")
+     "The linker wrapper (or @code{ld-wrapper}) wraps the linker to add any
+missing @code{-rpath} flags, and to detect any misuse of libraries outside of
+the store.")
     (home-page "https://www.gnu.org/software/guix//")
     (license gpl3+)))
 
@@ -961,8 +961,8 @@ with the Linux kernel.")
     (synopsis "All the locales supported by the GNU C Library")
     (description
      "This package provides all the locales supported by the GNU C Library,
-more than 400 in total.  To use them set the 'LOCPATH' environment variable to
-the 'share/locale' sub-directory of this package.")
+more than 400 in total.  To use them set the @code{LOCPATH} environment variable
+to the @code{share/locale} sub-directory of this package.")
     (outputs '("out"))                            ;110+ MiB
     (native-search-paths '())
     (arguments
@@ -1099,7 +1099,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2018i")
+    (version "2019a")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1107,7 +1107,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1n80ih8agibagic401smqscz3xxqvs5bm5x3lk803g539kw5xi42"))))
+               "0wlpqm4asvi0waaz24xj20iq40gqfypmb4nldjhkfgm09bgnsdlh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1157,7 +1157,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1p1jxlnryaxknj0l768h3dmlk2jpqz5n5d24w9c9vyx6dj3xpb5a"))))))
+                            "1x9z8fpgnhzlsnps0hamb54ymaskjab7ys9m4i4gpk9hpiig2fc7"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)

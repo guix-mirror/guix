@@ -48,16 +48,15 @@
 (define-public flashrom
   (package
     (name "flashrom")
-    ;; XXX: The CFLAGS=... line below can probably be removed when updating.
-    (version "1.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://download.flashrom.org/releases/flashrom-"
+                    "https://download.flashrom.org/releases/flashrom-v"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0r7fkpfc8w51n8ffbhclj4wa3kwrk0ijv1acwpw5myx5bchzl0ip"))))
+                "0i6yrrl69hrqmwd7azj7x3j46m0qpvzmk3b5basym7mnlpfzhyfm"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
@@ -67,9 +66,6 @@
     (arguments
      '(#:make-flags
        (list "CC=gcc"
-             ;; The default includes ‘-Wall -Werror’, causing the build to fail
-             ;; with deprecation warnings against libusb versions >= 1.0.22.
-             "CFLAGS=-Os -Wshadow"
              (string-append "PREFIX=" %output)
              "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
        #:tests? #f                      ; no 'check' target
@@ -131,15 +127,14 @@ brick your device.")
 (define-public avrdude
   (package
     (name "avrdude")
-    (version "6.1")
+    (version "6.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://savannah/avrdude/avrdude-"
                           version ".tar.gz"))
       (sha256
-       (base32
-        "0frxg0q09nrm95z7ymzddx7ysl77ilfbdix1m81d9jjpiv5bm64y"))))
+       (base32 "15m1w1qad3dj7r8n5ng1qqcaiyx1gyd6hnc3p2apgjllccdp77qg"))))
     (build-system gnu-build-system)
     (inputs
      `(("libelf" ,libelf)
@@ -152,8 +147,8 @@ brick your device.")
     (synopsis "AVR downloader and uploader")
     (description
      "AVRDUDE is a utility to download/upload/manipulate the ROM and
-EEPROM contents of AVR microcontrollers using the in-system programming
-technique (ISP).")
+EEPROM contents of AVR microcontrollers using the @acronym{ISP, in-system
+programming} technique.")
     (license license:gpl2+)))
 
 (define-public dfu-programmer

@@ -51,7 +51,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -483,6 +483,8 @@ concepts.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
+             ;; XXX: A Python 2 test fails when HOME=/homeless-shelter.
+             (setenv "HOME" "/tmp")
              (invoke "python" "sh.py" "test"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)))
@@ -622,24 +624,27 @@ version identifier.")
 (define-public python-serpent
   (package
     (name "python-serpent")
-    (version "1.27")
+    (version "1.28")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "serpent" version))
        (sha256
-        (base32
-         "04p9dsrm5pv8vhk3flvih55kgvlzpi38hlaykdiakddmgwqw93bg"))))
+        (base32 "1arnckykpkvv2qrp49l1k7q5mr5pisswl0rvdx98x8wsl1n361pk"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pytz" ,python-pytz)))
     (home-page "https://github.com/irmen/Serpent")
     (synopsis "Serializer for literal Python expressions")
     (description
-     "Serpent provides ast.literal_eval() compatible object tree
-serialization.  It serializes an object tree into bytes (utf-8 encoded string)
-that can be decoded and then passed as-is to ast.literal_eval() to rebuild it
-as the original object tree.  As such it is safe to send serpent data to other
-machines over the network for instance (because only safe literals are
-encoded).")
+     "Serpent provides @code{ast.literal_eval()}-compatible object tree
+serialization.  It serializes an object tree into bytes (an utf-8 encoded
+string) that can be decoded and then passed as-is to @code{ast.literal_eval()}
+to rebuild the original object tree.
+
+Because only safe literals are encoded, it is safe to send serpent data to
+other machines, such as over the network.")
     (license license:expat)))
 
 (define-public python-setuptools
@@ -896,7 +901,7 @@ of @code{xmlfile}.")
 (define-public python-openpyxl
   (package
     (name "python-openpyxl")
-    (version "2.6.0")
+    (version "2.6.2")
     (source
      (origin
        ;; We use the upstream repository, as the tests are not included in the
@@ -907,8 +912,7 @@ of @code{xmlfile}.")
              (changeset version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32
-         "1x47ngn7ybaqdbvg90c8h2x0j6yfdfj25gjfinp2w5rf62gsany7"))))
+        (base32 "1qhij6kcvdxqjy4g6193nsv4q7fy8n4fwyd3c2z047idlm6s3j4w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1729,6 +1733,37 @@ from git information.
 (define-public python2-pbr
   (package-with-python2 python-pbr))
 
+(define-public python-pyrsistent
+  (package
+    (name "python-pyrsistent")
+    (version "0.14.11")
+    (home-page "https://github.com/tobgu/pyrsistent")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyrsistent" version))
+              (sha256
+               (base32
+                "1qkh74bm296mp5g3r11lgsksr6bh4w1bf8pji4nmxdlfj542ga1w"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (synopsis "Persistent data structures for Python")
+    (description
+     "Pyrsistent is a number of persistent collections (by some referred to as
+functional data structures).  Persistent in the sense that they are immutable.
+
+All methods on a data structure that would normally mutate it instead return a
+new copy of the structure containing the requested updates.  The original
+structure is left untouched.")
+    (license license:expat)))
+
+(define-public python2-pyrsistent
+  (package-with-python2 python-pyrsistent))
+
 (define-public python-exif-read
   (package
     (name "python-exif-read")
@@ -1899,21 +1934,28 @@ between Julian dates and Gregorian dates.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.6.0")
+    (version "3.0.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "jsonschema" version))
              (sha256
               (base32
-               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
+               "03g20i1xfg4qdlk4475pl4pp7y0h37g1fbgs5qhy678q9xb822hc"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (invoke "nosetests"))))))
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
+             (invoke "trial" "jsonschema"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-vcversioner" ,python-vcversioner)))
+     `(("python-setuptools_scm" ,python-setuptools-scm)
+       ("python-twisted" ,python-twisted)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-six" ,python-six)))
     (home-page "https://github.com/Julian/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
@@ -1925,11 +1967,9 @@ between Julian dates and Gregorian dates.")
   (let ((jsonschema (package-with-python2
                      (strip-python2-variant python-jsonschema))))
     (package (inherit jsonschema)
-             (native-inputs
-              `(("python2-mock" ,python2-mock)
-                ,@(package-native-inputs jsonschema)))
              (propagated-inputs
-              `(("python2-functools32" ,python2-functools32))))))
+              `(("python2-functools32" ,python2-functools32)
+                ,@(package-propagated-inputs jsonschema))))))
 
 (define-public python-schema
   (package
@@ -2638,6 +2678,292 @@ and several other projects.")
 (define-public python2-guzzle-sphinx-theme
   (package-with-python2 python-guzzle-sphinx-theme))
 
+(define-public python-bumpversion
+  (package
+    (name "python-bumpversion")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bumpversion" version))
+       (sha256
+        (base32
+         "0zn7694yfipxg35ikkfh7kvgl2fissha3dnqad2c5bvsvmrwhi37"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/peritus/bumpversion")
+    (synopsis "Tool to bump software version")
+    (description "This tool provides a command-line interface (CLI) to bump a
+software version simply.")
+    (license license:expat)))
+
+(define-public python-deprecated
+  (package
+    (name "python-deprecated")
+    (version "1.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tantale/deprecated.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "14909glxxwwc4b9qpz2b9jdriwzi5n65ichw85xqppap5f79wcwz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-wrapt" ,python-wrapt)))
+    (native-inputs
+     `(("python-bumpversion" ,python-bumpversion)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-sphinx" ,python-sphinx)
+       ("python-tox" ,python-tox)))
+    (home-page "https://github.com/tantale/deprecated")
+    (synopsis "Python decorator to deprecate classes, functions or methods")
+    (description "The @code{deprecated} decorator provides a convenient way to deprecate
+to deprecate classes, functions or methods.")
+    (license license:expat)))
+
+(define-public python-pygithub
+  (package
+    (name "python-pygithub")
+    (version "1.43.7")
+    (source
+     ;; We fetch from the Git repo because there are no tests in the PyPI
+     ;; archive.
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PyGithub/PyGithub.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ww92zz0ja9w6rw83vphmn8rwmcn6abg16j4q7zxjc0rrg2cfj9i"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ;; Some tests rely on the network.
+                  (add-after 'unpack 'disable-failing-tests
+                    (lambda _
+                      (substitute* "tests/Issue142.py"
+                        (("testDecodeJson") "disabled_testDecodeJson"))
+                      #t))
+                  (add-before 'check 'prepare-for-tests
+                    (lambda _
+                      (for-each (lambda (f)
+                                  (chmod f #o666))
+                                (find-files "./tests"))
+                      (system* "python" "-m" "lib2to3" "-w" "-n" "tests")
+                      (setenv "PYTHONPATH"
+                              (string-append "./tests:" (getenv "PYTHONPATH")))
+                      #t)))))
+    (propagated-inputs
+     `(("python-deprecated" ,python-deprecated)
+       ("python-pyjwt" ,python-pyjwt)
+       ("python-requests" ,python-requests)))
+    (native-inputs `(("python-httpretty" ,python-httpretty)))
+    (home-page "https://pygithub.readthedocs.io/en/latest/")
+    (synopsis "Python library for the GitHub API")
+    (description "This library allows managing GitHub resources such as
+repositories, user profiles, and organizations in your Python applications,
+using version 3 of the GitHub application programming interface (API).")
+    (license license:lgpl3+)))
+
+(define-public python-rellu
+  (package
+    (name "python-rellu")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "rellu" version))
+       (sha256
+        (base32
+         "1w0arpj1sm7vh29nrbnca4pnp8sx42l07r17inwqcjjf9bhng66x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-invoke" ,python-invoke)
+       ("python-pygithub" ,python-pygithub)))
+    (home-page "https://github.com/robotframework/rellu")
+    (synopsis "Utilities to create PyPI releases")
+    (description "This collection of utilities contains tooling and templates
+to assist in creating releases on GitHub and publishing them on PyPI.  It is
+designed to be used by Robot Framework and tools and libraries in its
+ecosystem, but can naturally be used also by other projects.")
+    (license license:asl2.0)))
+
+(define-public python-robotframework
+  (package
+    (name "python-robotframework")
+    (version "3.1.1")
+    ;; There are no tests in the PyPI archive.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robotframework/robotframework.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aaiamc9l35m5sf7xl2qc5q9308v7sz3p1qgzcslsjxzddphyn4v"))
+       (patches (search-patches
+                 "python-robotframework-honor-source-date-epoch.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'build-and-install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((doc-output (assoc-ref outputs "doc"))
+                             (doc (string-append doc-output "/share/"
+                                                 ,name "-" ,version "/")))
+                        (invoke "invoke" "library-docs" "all")
+                        (mkdir-p doc)
+                        (copy-recursively "doc/libraries"
+                                          (string-append doc "/libraries"))
+                        #t)))
+                  (replace 'check
+                    (lambda _
+                      (invoke "python" "utest/run.py"))))))
+    (native-inputs
+     `(("python-invoke" ,python-invoke)
+       ("python-rellu" ,python-rellu)
+       ("python:tk" ,python "tk")))     ;used when building the HTML doc
+    (outputs '("out" "doc"))
+    (home-page "https://robotframework.org")
+    (synopsis "Generic automation framework")
+    (description "Robot Framework is a generic automation framework for
+acceptance testing, acceptance test driven development (ATDD), and robotic
+process automation (RPA).")
+    (license license:asl2.0)))
+
+(define-public python-robotframework-lint
+  ;; There is no properly tagged release; the commit below seems to correspond
+  ;; to the 0.9 stable release available from PyPI.  The tests are not
+  ;; included in the PyPI archive, so we fetch the sources from the upstream
+  ;; Git repo.
+  (let ((commit "e851879bab1f63e4e53b34a4dc8a67ed95102830")
+        (revision "1"))
+    (package
+      (name "python-robotframework-lint")
+      (version (git-version "0.9.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/boakley/robotframework-lint.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1p6fknqg5sb9qz5857ji4a877657vgfjm5v3zn45994parx6ml1m"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "python" "-m" "robot" "-A"
+                       "tests/conf/default.args" "tests"))))))
+      (propagated-inputs
+       `(("python-robotframework" ,python-robotframework)))
+      (home-page "https://github.com/boakley/robotframework-lint/")
+      (synopsis "Static analysis tool (linter) for Robot Framework")
+      (description "This package provides the @code{rflint} command-line
+utility, a static analysis tool (linter) for Robot Framework source files.")
+      (license license:asl2.0))))
+
+(define-public python-robotframework-sshlibrary
+  (package
+    (name "python-robotframework-sshlibrary")
+    (version "3.3.0")
+    ;; There are no tests in the PyPI archive.
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robotframework/SSHLibrary.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1mk6dz2jqqndbx4yji09012q6rmadnqdywi7czvj62b0s07dr3r2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-and-install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((doc-output (assoc-ref outputs "doc"))
+                    (doc (string-append doc-output "/share/"
+                                        ,name "-" ,version "/")))
+               (invoke "chmod" "-R" "+w" "docs")
+               (invoke "invoke" "kw-docs" "project-docs")
+               (mkdir-p doc)
+               (for-each delete-file (find-files "docs" "\\.rst"))
+               (copy-recursively "docs" doc)
+               #t)))
+         (replace 'check
+           (lambda _
+             ;; Some tests require an SSH server; we remove them.
+             (delete-file "utest/test_client_api.py")
+             (delete-file "utest/test_scp.py")
+             (invoke "python" "utest/run.py"))))))
+    (propagated-inputs
+     `(("python-robotframework" ,python-robotframework)
+       ("python-paramiko" ,python-paramiko)
+       ("python-scp" ,python-scp)))
+    (native-inputs
+     `(("openssh" ,openssh)
+       ("which" ,which)
+       ;; To generate the documentation
+       ("python-docutils" ,python-docutils)
+       ("python-invoke" ,python-invoke)
+       ("python-pygments" ,python-pygments)
+       ("python-rellu" ,python-rellu)))
+    (outputs '("out" "doc"))
+    (home-page "https://github.com/robotframework/SSHLibrary")
+    (synopsis "Robot Framework library for SSH and SFTP")
+    (description "SSHLibrary is a Robot Framework library providing support
+for SSH and SFTP.  It has the following main usages:
+@itemize @bullet
+@item Executing commands on the remote machine, either blocking or non-blocking.
+@item Writing and reading in an interactive shell.
+@item Transferring files and directories over SFTP.
+@item Ensuring that files and directories exist on the remote machine.
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python-scp
+  (package
+    (name "python-scp")
+    (version "0.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scp" version))
+       (sha256
+        (base32
+         "1crlpw9lnn58fs1c1rmh7s7s9y5gkgpgjsqlvg9qa51kq1knx7gg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))                     ;tests require an SSH server
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)))
+    (home-page "https://github.com/jbardin/scp.py")
+    (synopsis "SCP protocol module for Python and Paramiko")
+    (description "The scp module extends the Paramiko library to send and
+receive files via the SCP1 protocol, as implemented by the OpenSSH
+@command{scp} program.")
+    (license license:gpl2+)))
+
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
@@ -2772,14 +3098,14 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.25.0")
+    (version "0.26.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "1xabnaqd4n72myrc3mxl2y33vr2p7c9c5a87n77p9k327ckvdx01"))))
+         "1vs9ckfmm534n1hq3m871916wsjvi5h4gyj6wlzg13ck6506lx0s"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
@@ -3356,24 +3682,16 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.27.4")
+    (version "0.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
-        (base32
-         "15c1mhwwjc7nr8hn5gm21hcfhw61jmwb0vngpjhlm3y5565wg2pz"))))
+        (base32 "0lngsaz029d4fjcwhl17pr59nh9gwl6hwfin36nph60fgsmfdg3d"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f; tests don't run correctly in our environment
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-dependency-versioning
-           (lambda _
-             (substitute* "setup.py"
-               (("<") "<="))
-             #t)))))
+     '(#:tests? #f))            ; tests don't run correctly in our environment
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-cffi" ,python-cffi)
@@ -4460,13 +4778,13 @@ memoizing PEG/Packrat parser in Python.")
     (version "0.13.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/pygridtools/gridmap/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pygridtools/gridmap.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1gzjg2k6f14i1msm2b0ax8d9ds1hvk6qd5nlaivg8m4cxqp4cp1x"))))
+        (base32 "1478lbwsr1w24cii2x01m2910fvh8r43ghnb78nc972a96hqiknm"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Requires python-cherrypy.
@@ -4491,13 +4809,13 @@ cluster without needing to write any wrapper code yourself.")
     (version "1.0.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/nickstenning/honcho/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nickstenning/honcho.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0zizn61n5z5hq421hkypk9pw8s6fpxw30f4hsg7k4ivwzy3gjw9j"))))
+        (base32 "11bd87474qpif20xdcn0ra1idj5k16ka51i658wfpxwc6nzsn92b"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -5648,7 +5966,7 @@ It is written entirely in Python.")
     (synopsis "Backport of additions to the 'collections.abc' module")
     (description
      "Python-backports-abc provides a backport of additions to the
-'collections.abc' module in Python-3.5.")
+@code{collections.abc} module in Python-3.5.")
     (license license:psfl)))
 
 (define-public python2-backports-abc
@@ -6038,14 +6356,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.0.1")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "0z6v8649sr434d5r5zmrhydka7v7f9yas4bwcgkcs0650jdhybnh"))))
+         "0l62x154r9mgdvfap06gf0nkrmjd7xixlfshsxcdif2nlrlnyjpw"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -6616,14 +6934,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.7")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "05jam7d31767dr12x0rbvvs8lxnpb1mhdb2zdlfxgh83z6k3hjk8"))))
+         "01rlkigdxg17sf9yar1jl8n18ls59367wqh59hnawlyg53vb6my3"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
@@ -6713,14 +7031,15 @@ Python Package Index (PyPI).")
     (name "python-tlsh")
     (version "3.4.5")
     (home-page "https://github.com/trendmicro/tlsh")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/trendmicro/tlsh/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1x1vahd4zg5kpyr9h9hs3fvh460p25rjy4cclwdnbbw8x3vc30q3"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trendmicro/tlsh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ydliir308xn4ywy705mmsh7863ldlixdvpqwdhbipzq9vfpmvll"))))
     (build-system cmake-build-system)
     (arguments
      '(#:out-of-source? #f
@@ -6838,7 +7157,9 @@ Python's @code{ctypes} foreign function interface (FFI).")
                            (string-append "'" file "/lib/libmagic.so'")))
                         #t))))))
     (inputs `(("file" ,file)))
-    (self-native-input? #f)
+    (native-inputs (if (%current-target-system)
+                       `(("self" ,this-package))
+                       '()))
     (synopsis "Python bindings to the libmagic file type guesser.  Note that
 this module and the python-magic module both provide a \"magic.py\" file;
 these two modules, which are different and were developed separately, both
@@ -9354,23 +9675,19 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "17.5.0")
+    (version "19.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "1sh2h23nnizcdyrl2rn7zxijglikxwz7z7grqpvq496zy2aa967i"))))
+                "1gmb8d57s13d8znvqnxi47vqzqz141z443dbxg9wjkp8ia9f220p"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Some tests are failing.
-       ;; #:phases
-       ;; (modify-phases %standard-phases
-       ;;   (replace 'check
-       ;;     (lambda _
-       ;;       (zero? (system* "./bin/trial" "twisted")))))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)
+       ("python-pyhamcrest" ,python-pyhamcrest)
        ("python-incremental" ,python-incremental)
        ("python-hyperlink" ,python-hyperlink)
        ("python-constantly" ,python-constantly)
@@ -10204,20 +10521,21 @@ discovery, monitoring and configuration.")
     (name "python-schematics")
     (version "1.1.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/schematics/schematics/archive/v" version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "19v1i69bf3bzarfxmbv0v6ivpcn758x3shvbiy9l2hy0lvqwnp6l"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/schematics/schematics.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xdqskycznqc7mfp60bhw1zq8wx7yx1dvmbq3brnm1dx3xnqa0zd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
     (arguments
-     `(#:tests? #f)) ; requires a bunch of not very nice packages with fixed
-                     ; version requirements (eg python-coveralls)
+     ;; The tests require a bunch of not very nice packages with fixed
+     ;; version requirements (e.g. python-coveralls).
+     `(#:tests? #f))
     (home-page "https://github.com/schematics/schematics")
     (synopsis "Python Data Structures for Humans")
     (description "Python Data Structures for Humans.")
@@ -10307,12 +10625,12 @@ Python to manipulate OpenDocument 1.2 files.")
     (description
      "Natsort lets you apply natural sorting on lists instead of
 lexicographical.  If you use the built-in @code{sorted} method in python
-on a list such as @code{['a20', 'a9', 'a1', 'a4', 'a10']}, it would be
-returned as @code{['a1', 'a10', 'a20', 'a4', 'a9']}.  Natsort provides a
-function @code{natsorted} that identifies numbers and sorts them separately
-from strings.  It can also sort version numbers, real numbers, mixed types
-and more, and comes with a shell command @command{natsort} that exposes this
-functionality in the command line.")
+on a list such as @code{[@code{a20}, @code{a9}, @code{a1}, @code{a4},
+@code{a10}]}, it would be returned as @code{[@code{a1}, @code{a10}, @code{a20},
+@code{a4}, @code{a9}]}.  Natsort provides a function @code{natsorted} that
+identifies numbers and sorts them separately from strings.  It can also sort
+version numbers, real numbers, mixed types and more, and comes with a shell
+command @command{natsort} that exposes this functionality in the command line.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-natsort))))))
 
@@ -10804,16 +11122,17 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.3.3")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "1a0wbil552wsmklwd89ssmgz3pjd86qa9i7jh8wqb9wslc8a2qjr"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+           "17xbrgi23l87yg6h0qcknssp2q812miiy33qw6v45v5gx0jwv5xh"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/marcelm/xopen/")
     (synopsis "Open compressed files transparently")
     (description "This module provides an @code{xopen} function that works like
@@ -11265,13 +11584,13 @@ instead of servers and network commands.")
 (define-public python-automat
   (package
     (name "python-automat")
-    (version "0.6.0")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Automat" version))
               (sha256
                (base32
-                "1a7nsrljysfmdqmpn2apfa1gg6rfah4y9sizvns8gb08rx7d07rw"))))
+                "03ivg70n3b1cbcd2zvjhk8y4kmqxcvhmili39lmgx09dza1qpmyb"))))
     (build-system python-build-system)
     ;; We disable the tests because they require python-twisted, while
     ;; python-twisted depends on python-automat.  Twisted is optional, but the
@@ -11298,13 +11617,13 @@ transducers).")
 (define-public python-m2r
   (package
     (name "python-m2r")
-    (version "0.1.12")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "m2r" version))
               (sha256
                (base32
-                "1axrwnf425sz4qz3c0qc7yhhki4myzb8rki7pczcsgzznzmqdyxd"))))
+                "16gdm8i06jjmlpvckpfmlkr4693dh0vs192vgsqn84fsdkbbm45z"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
@@ -12541,13 +12860,13 @@ Swagger 2.0).")
     (version "0.6.3")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/rochacbruno/flasgger/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/rochacbruno/flasgger.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
-          (base32
-            "1gqzlm0rb55fdpsy5ipkganlx9cnpi454fqyycr03jm22zql14ay"))))
+          (base32 "0yydxsyjnc0clbrjqb1n7587l6cdqvwdagwxk5hkx01qwdfbkvpn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13053,13 +13372,13 @@ executed more than a given number of times during a given period.")
     (version "0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/kovidgoyal/dukpy/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kovidgoyal/dukpy.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0pj39rfwlzivqm5hkrsza7gssg6ggpxlq5ivc8f3h7x5pfgc6y6c"))))
+        (base32 "13h21nqzasv4zj32xs61brmc106pr2cx243672crcmwxxnjgaxls"))))
     (build-system python-build-system)
     (home-page "https://github.com/kovidgoyal/dukpy")
     (synopsis "Run JavaScript in python")
@@ -13508,11 +13827,12 @@ and works only with Python 2 and NumPy < 1.9.")
     (synopsis "Send files to the user's @file{~/Trash} directory")
     (description "This package provides a Python library to send files to the
 user's @file{~/Trash} directory.")
+    (properties `((python2-variant . ,(delay python2-send2trash))))
     (license license:bsd-3)))
 
 (define-public python2-send2trash
   (package
-    (inherit (package-with-python2 python-send2trash))
+    (inherit (package-with-python2 (strip-python2-variant python-send2trash)))
     (arguments
      (substitute-keyword-arguments (package-arguments python-send2trash)
        ((#:phases phases)
@@ -13521,8 +13841,7 @@ user's @file{~/Trash} directory.")
              (lambda _
                (setenv "PYTHONPATH"
                        (string-append (getcwd) ":" (getenv "PYTHONPATH")))
-               #t))))))
-    (properties `((python2-variant . ,(delay python-send2trash))))))
+               #t))))))))
 
 (define-public python-yapf
   (package
@@ -14125,16 +14444,15 @@ manager compatible with @code{asyncio}.")
   (package
     (name "python-glob2")
     (version "0.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/miracle2k/python-glob2/archive/"
-                    version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "0ja168f0dz4kbz4m06dm0rd3acaypk6hjx2km541pw22y9s40mag"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miracle2k/python-glob2.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lm1xz3k3l0k1c5bcp9hlzmi3gp5j8dl1k3xhpiq5mnm0xq6n163"))))
     (build-system python-build-system)
     (home-page "https://github.com/miracle2k/python-glob2/")
     (synopsis "Extended Version of the python buildin glob module")
@@ -14346,7 +14664,7 @@ introspection.")
     (synopsis "File transport adapter for Requests")
     (description
      "Requests-File is a transport adapter for use with the Requests Python
-library to allow local filesystem access via file:// URLs.")
+library to allow local file system access via @code{file://} URLs.")
     (license license:asl2.0)))
 
 (define-public python2-requests-file
@@ -14549,14 +14867,14 @@ tool).")
 (define-public python-anndata
   (package
     (name "python-anndata")
-    (version "0.6.9")
+    (version "0.6.18")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "anndata" version))
        (sha256
         (base32
-         "1fh461xyyc7pcrjfgd013bdc2alf53r46ss3gfw3431mbb1gappi"))))
+         "03x83yjaccbqszj7x4fwwmpil0ai59yx64d1zmf2691za3j03w73"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
@@ -14575,16 +14893,15 @@ object-oriented library such as @code{scikit-learn}.")
 (define-public python-dill
   (package
     (name "python-dill")
-    (version "0.2.8.2")
+    (version "0.2.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dill" version))
        (sha256
-        (base32
-         "1cymzn9fxwdy33h21zkk4gqgzvd25110hh3zdqnvnwa3p52c4kb2"))))
+        (base32 "0vwqyi6hyz2r29zydc78dqymkbc5y7gia16xcdh215cikxph9mpn"))))
     (build-system python-build-system)
-    ;; FIXME: The check phase fails with "don't know how to make test".
+    ;; FIXME: The check phase fails with "don't know how to make test from: …".
     (arguments '(#:tests? #f))
     (home-page "https://pypi.org/project/dill")
     (synopsis "Serialize all of Python")
@@ -14593,7 +14910,7 @@ and de-serializing Python objects to the majority of the built-in Python
 types.  Dill provides the user the same interface as the @code{pickle} module,
 and also includes some additional features.  In addition to pickling Python
 objects, @code{dill} provides the ability to save the state of an interpreter
-session in a single command.  Hence, it would be feasable to save a
+session in a single command.  Hence, it would be feasible to save a
 interpreter session, close the interpreter, ship the pickled file to another
 computer, open a new interpreter, unpickle the session and thus continue from
 the saved state of the original interpreter session.")
@@ -14818,14 +15135,14 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.1.4")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
         (base32
-         "1hrnfz4pzawikz9b622vjz2500n7hs25nz9msy1k8l4g7l2kr6ky"))))
+         "1y0dqcp72ixwblgway0jpvfirlxfcmwrjiivdq96firj1hw127sd"))))
     (build-system python-build-system)
     ;; A single test out of 5000+ fails.  This test is marked as xfail when
     ;; pytest-xdist is used.
@@ -15229,3 +15546,45 @@ and dates in \"human readable\" forms.  For example, it would display
     (description "This is a collection of well-tested, simple modules and
 functions that aim to reduce boilerplate when working with data.")
     (license license:bsd-2)))
+
+(define-public python-annoy
+  (package
+    (name "python-annoy")
+    (version "1.15.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "annoy" version))
+       (sha256
+        (base32
+         "1rxn6snn0r32r07g45hdjhh8aa1xzx6fjrm8g62d8vzp46z7rzrp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/spotify/annoy/")
+    (synopsis "Approximate nearest neighbors library")
+    (description
+     "Annoy is a C++ library with Python bindings to search for points in
+space that are close to a given query point.  It also creates large read-only
+file-based data structures that are @code{mmap}ped into memory so that many
+processes may share the same data.")
+    (license license:asl2.0)))
+
+(define-public python-sphinxcontrib-svg2pdfconverter
+  (package
+    (name "python-sphinxcontrib-svg2pdfconverter")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-svg2pdfconverter" version))
+              (sha256
+               (base32
+                "1abvbgkkii13q8nsb10r0gc5lm0p9iq1iwhfhakn5ifn6asa0183"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter/releases")
+    (synopsis "Sphinx SVG to PDF converter extension")
+    (description "A Sphinx extension to convert SVG images to PDF in case the builder does not support
+SVG images natively (e.g. LaTeX).")
+    (license license:bsd-3)))

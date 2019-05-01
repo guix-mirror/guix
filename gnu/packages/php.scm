@@ -58,7 +58,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.3.3")
+    (version "7.3.4")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -66,7 +66,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cxrpaz5cvx1qq9klwgvcyvcly865sxpn4bdk82wpl43l5wkxc3b"))
+                "10rvj9dn41213w0q2l123rn6sycr29syik88czprhpv5z2hrzrvg"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -86,7 +86,7 @@
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (let-syntax ((with (syntax-rules ()
                             ((_ option input)
                              (string-append option "="
@@ -181,6 +181,20 @@
 
              (substitute* "ext/standard/tests/streams/bug60602.phpt"
                (("'ls'") (string-append "'" (which "ls") "'")))
+
+             ,@(if (string-prefix? "arm" (or (%current-system)
+                                             (%current-target-system)))
+                   ;; Drop tests known to fail on armhf.
+                   '((for-each delete-file
+                              (list
+                                "ext/calendar/tests/unixtojd_error1.phpt"
+                                ;; arm can be a lot slower, so a time-related test fails
+                                "ext/fileinfo/tests/cve-2014-3538-nojit.phpt"
+                                "ext/pcre/tests/bug76514.phpt"
+                                "ext/pcre/tests/preg_match_error3.phpt"
+                                "ext/standard/tests/general_functions/var_export-locale.phpt"
+                                "ext/standard/tests/general_functions/var_export_basic1.phpt")))
+                   '())
 
              ;; Drop tests that are known to fail.
              (for-each delete-file

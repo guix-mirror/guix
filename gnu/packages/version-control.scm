@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,10 +46,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system haskell)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages apr)
@@ -69,12 +69,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
-  #:use-module (gnu packages haskell)
-  #:use-module (gnu packages haskell-check)
-  #:use-module (gnu packages haskell-crypto)
-  #:use-module (gnu packages haskell-web)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages nano)
@@ -408,7 +403,7 @@ as well as the classic centralized workflow.")
                          ,@(transitive-input-references
                             'inputs
                             (map (lambda (l)
-                                   (assoc l (inputs)))
+                                   (assoc l (package-inputs this-package)))
                                  '("perl-authen-sasl"
                                    "perl-net-smtp-ssl"
                                    "perl-io-socket-ssl")))))))
@@ -421,7 +416,7 @@ as well as the classic centralized workflow.")
                          ,@(transitive-input-references
                             'inputs
                             (map (lambda (l)
-                                   (assoc l (inputs)))
+                                   (assoc l (package-inputs this-package)))
                                  '("perl-cgi")))))))
 
               ;; Tell 'git-submodule' where Perl is.
@@ -529,13 +524,14 @@ everything from small to very large projects with speed and efficiency.")
     (name "libgit2")
     (version "0.28.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/libgit2/libgit2/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/libgit2/libgit2.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0swk2dyq5a4p1jn5wvbcsrxckhh808vifxz5y8w663avg541188c"))
+                "0j5p0hhz2wizvgkf0nbpd8g32mb5bg1vp8ckpbhb0pq38ja4h43r"))
               (patches (search-patches "libgit2-avoid-python.patch"
                                        "libgit2-mtime-0.patch"))
 
@@ -557,6 +553,10 @@ everything from small to very large projects with speed and efficiency.")
              (substitute* "tests/clar/fs.h"
                (("/bin/cp") (which "cp"))
                (("/bin/rm") (which "rm")))
+             #t))
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
              #t))
          ;; Run checks more verbosely.
          (replace 'check
@@ -584,14 +584,15 @@ write native speed custom Git applications in any language with bindings.")
   (package
     (name "git-crypt")
     (version "0.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/AGWA/git-crypt"
-                                  "/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0454fdmgm5f3razkn8n03lfqm5zyzvr4r2528zmlxiwba9518l2i"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AGWA/git-crypt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x9209n3k49k998saadr2d0lmvs01smjinx7gzzyjdwj9l904sii"))))
     (build-system gnu-build-system)
     (inputs
      `(("git" ,git)
@@ -778,14 +779,13 @@ a built-in cache to decrease server I/O pressure.")
     (version "0.5.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/davisp/ghp-import/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/davisp/ghp-import.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0x887v690xsac2hzjkpbvp3a6crh3m08mqbk3nb4xwc9dnk869q7"))))
+        (base32 "12pmw3zz3i57ljnm0rxdyjqdyhisbvy18mjwkb3bzp5pgzs2f45c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1033,14 +1033,15 @@ manipulate them in various ways.")
   (package
     (name "vcsh")
     (version "1.20151229")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/RichiH/vcsh/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ym3swkh738c3vciffvlr96vqzhwmzkb8ajqzap8f0j9n039a1mf"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/RichiH/vcsh.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1grpj45nbpv4j60vd2kg4rj53zrm0bc0h9l4pfd3c2mwbvywm6ab"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -1107,15 +1108,15 @@ also walk each side of a merge and test those changes individually.")
   (package
     (name "gitolite")
     (version "3.6.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/sitaramc/gitolite/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1idxipg0df80bhjcxgwxs3lllqnkvhwpinmfv1xvg1l98fxiapgp"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sitaramc/gitolite.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rmyzr66lxh2ildf3h1nh3hh2ndwk21rjdin50r5vhwbdd7jg8vb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -1366,7 +1367,7 @@ following features:
     (home-page "https://subversion.apache.org/")
     (synopsis "Revision control system")
     (description
-     "Subversion (aka. ``svn'') exists to be recognized and adopted as a
+     "@dfn{Subversion} (svn) exists to be recognized and adopted as a
 centralized version control system characterized by its
 reliability as a safe haven for valuable data; the simplicity of its model and
 usage; and its ability to support the needs of a wide variety of users and
@@ -1778,14 +1779,15 @@ output of the @code{git} command.")
   (package
     (name "findnewest")
     (version "0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/0-wiz-0/findnewest/archive/findnewest-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1ydis4y0amkgfr4y60sn076f1l41ya2kn89kfd9fqf44f9ccgb5r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/0-wiz-0/findnewest.git")
+             (commit (string-append "findnewest-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1x1cbn2b27h5r0ah5xc06fkalfdci2ngrgd4wibxjw0h88h0nvgq"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
@@ -1849,15 +1851,15 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
   (package
     (name "git-annex-remote-hubic")
     (version "0.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Schnouki/" name "/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "196g3jkaybjx11nbr51n0cjps3wjzb145ab76y717diqvvxp5v4r"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Schnouki/git-annex-remote-hubic.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "16y9sk67hfi17h9n2kkffyabfccksh5rab40hhk69v6cxmbpn2sx"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (native-inputs
@@ -1968,180 +1970,6 @@ a built-in wiki, built-in file browsing, built-in tickets system, etc.")
 be served with a HTTP file server of your choice.")
     (license license:expat)))
 
-;; Darcs has no https support: http://irclog.perlgeek.de/darcs/2016-09-17
-;; http://darcs.net/manual/Configuring_darcs.html#SECTION00440070000000000000
-;; and results of search engines will show that if the protocol is http, https
-;; is never mentioned.
-(define-public darcs
-  (package
-    (name "darcs")
-    (version "2.14.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/darcs/"
-                           "darcs-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0zm2486gyhiga1amclbg92cd09bvki6vgh0ll75hv5kl72j61lb5"))
-       (modules '((guix build utils)))
-       ;; Remove time-dependent code for reproducibility.
-       (snippet
-        '(begin
-           (substitute* "darcs/darcs.hs"
-             (("__DATE__") "\"1970-01-01\"")
-             (("__TIME__") "\"00:00:00\""))
-           #t))))
-    (build-system haskell-build-system)
-    (arguments
-     `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
-                           "-fnetwork-uri" "-fhttp" "--flag=executable"
-                           "--flag=library")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'patch-source-shebangs 'patch-sh
-           (lambda _
-             (substitute* "tests/issue538.sh"
-               (("/bin/sh") (which "sh")))
-             #t)))))
-    (inputs
-     `(("ghc-cmdargs" ,ghc-cmdargs)
-       ("ghc-split" ,ghc-split)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-findbin" ,ghc-findbin)
-       ("ghc-hunit" ,ghc-hunit)
-       ("ghc-async" ,ghc-async)
-       ("ghc-attoparsec" ,ghc-attoparsec)
-       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-cryptohash" ,ghc-cryptohash)
-       ("ghc-data-ordlist" ,ghc-data-ordlist)
-       ("ghc-fgl" ,ghc-fgl)
-       ("ghc-system-filepath" ,ghc-system-filepath)
-       ("ghc-graphviz" ,ghc-graphviz)
-       ("ghc-hashable" ,ghc-hashable)
-       ("ghc-html" ,ghc-html)
-       ("ghc-mmap" ,ghc-mmap)
-       ("ghc-old-time" ,ghc-old-time)
-       ("ghc-parsec" ,ghc-parsec)
-       ("ghc-random" ,ghc-random)
-       ("ghc-regex-applicative" ,ghc-regex-applicative)
-       ("ghc-regex-compat-tdfa" ,ghc-regex-compat-tdfa)
-       ("ghc-sandi" ,ghc-sandi)
-       ("ghc-shelly" ,ghc-shelly)
-       ("ghc-tar" ,ghc-tar)
-       ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-vector" ,ghc-vector)
-       ("ghc-zip-archive" ,ghc-zip-archive)
-       ("ghc-zlib" ,ghc-zlib)
-       ("ghc-http" ,ghc-http)
-       ("curl" ,curl)
-       ("ghc" ,ghc)
-       ("ncurses" ,ncurses)
-       ("perl" ,perl)
-       ("libiconv" ,libiconv)
-       ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "http://darcs.net")
-    (synopsis "Distributed Revision Control System")
-    (description
-     "Darcs is a revision control system.  It is:
-
-@enumerate
-@item Distributed: Every user has access to the full command set, removing boundaries
-between server and client or committer and non-committers.
-@item Interactive: Darcs is easy to learn and efficient to use because it asks you
-questions in response to simple commands, giving you choices in your work flow.
-You can choose to record one change in a file, while ignoring another.  As you update
-from upstream, you can review each patch name, even the full diff for interesting
-patches.
-@item Smart: Originally developed by physicist David Roundy, darcs is based on a
-unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
-@end enumerate")
-    (license license:gpl2)))
-
-(define-public java-jgit
-  (package
-    (name "java-jgit")
-    (version "4.7.0.201704051617-r")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://repo1.maven.org/maven2/"
-                                  "org/eclipse/jgit/org.eclipse.jgit/"
-                                  version "/org.eclipse.jgit-"
-                                  version "-sources.jar"))
-              (sha256
-               (base32
-                "13ii4jn02ynzq6i7gsyi21k2i94jpc85wf6bcm31q4cyvzv0mk4k"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:tests? #f                      ; There are no tests to run.
-       #:jar-name "jgit.jar"
-       ;; JGit must be built with a JDK supporting Java 8.
-       #:jdk ,icedtea-8
-       ;; Target our older default JDK.
-       #:make-flags (list "-Dtarget=1.7")
-       #:phases
-       (modify-phases %standard-phases
-         ;; The jar file generated by the default build.xml does not include
-         ;; the text properties files, so we need to add them.
-         (add-after 'build 'add-properties
-           (lambda* (#:key jar-name #:allow-other-keys)
-             (with-directory-excursion "src"
-               (apply invoke "jar" "-uf"
-                      (string-append "../build/jar/" jar-name)
-                      (find-files "." "\\.properties$")))
-             #t)))))
-    (inputs
-     `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
-       ("java-javaewah" ,java-javaewah)
-       ("java-jsch" ,java-jsch)
-       ("java-slf4j-api" ,java-slf4j-api)))
-    (home-page "https://eclipse.org/jgit/")
-    (synopsis "Java library implementing the Git version control system")
-    (description "JGit is a lightweight, pure Java library implementing the
-Git version control system, providing repository access routines, support for
-network protocols, and core version control algorithms.")
-    (license license:edl1.0)))
-
-;; For axoloti.  This package can still be built with icedtea-7, which is
-;; currently used as the default JDK.
-(define-public java-jgit-4.2
-  (package (inherit java-jgit)
-    (version "4.2.0.201601211800-r")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://repo1.maven.org/maven2/"
-                                  "org/eclipse/jgit/org.eclipse.jgit/"
-                                  version "/org.eclipse.jgit-"
-                                  version "-sources.jar"))
-              (sha256
-               (base32
-                "15gm537iivhnzlkjym4x3wn5jqdjdragsw9pdpzqqg21nrc817mm"))))
-    (build-system ant-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments java-jgit)
-       ;; Build for default JDK.
-       ((#:jdk _) icedtea-7)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'use-latest-javaewah-API
-             (lambda _
-               (substitute* "src/org/eclipse/jgit/internal/storage/file/BitmapIndexImpl.java"
-                 (("wordinbits") "WORD_IN_BITS"))
-               #t))))))
-    (inputs
-     `(("java-javaewah" ,java-javaewah)
-       ("java-jsch" ,java-jsch)
-       ("java-slf4j-api" ,java-slf4j-api)))))
-
 (define-public gource
   (package
     (name "gource")
@@ -2230,133 +2058,6 @@ cases like all those little scripts in your @file{~/bin} directory, or a
 directory full of HOWTOs.")
     (license license:bsd-2)))
 
-(define-public git-annex
-  (package
-    (name "git-annex")
-    (version "6.20180926")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "git-annex/git-annex-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1251rj8h63y30sfqk0zh670yhz14p256y59n3590pg015pf3575d"))))
-    (build-system haskell-build-system)
-    (arguments
-     `(#:configure-flags
-       '("--flags=-Android -Assistant -Pairing -S3 -Webapp -WebDAV")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-shell
-           (lambda _
-             (substitute* "Utility/Shell.hs"
-               (("/bin/sh") (which "sh")))
-             #t))
-         (add-before 'configure 'factor-setup
-           (lambda _
-             ;; Factor out necessary build logic from the provided
-             ;; `Setup.hs' script.  The script as-is does not work because
-             ;; it cannot find its dependencies, and there is no obvious way
-             ;; to tell it where to look.  Note that we do not preserve the
-             ;; code that installs man pages here.
-             (call-with-output-file "PreConf.hs"
-               (lambda (out)
-                 (format out "import qualified Build.Configure as Configure~%")
-                 (format out "main = Configure.run Configure.tests~%")))
-             (call-with-output-file "Setup.hs"
-               (lambda (out)
-                 (format out "import Distribution.Simple~%")
-                 (format out "main = defaultMain~%")))
-             #t))
-         (add-before 'configure 'pre-configure
-           (lambda _
-             (invoke "runhaskell" "PreConf.hs")
-             #t))
-         (replace 'check
-           (lambda _
-             ;; We need to set the path so that Git recognizes
-             ;; `git annex' as a custom command.
-             (setenv "PATH" (string-append (getenv "PATH") ":"
-                                           (getcwd) "/dist/build/git-annex"))
-             (with-directory-excursion "dist/build/git-annex"
-               (symlink "git-annex" "git-annex-shell"))
-             (invoke "git-annex" "test")
-             #t))
-         (add-after 'install 'install-symlinks
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (symlink (string-append bin "/git-annex")
-                        (string-append bin "/git-annex-shell"))
-               (symlink (string-append bin "/git-annex")
-                        (string-append bin "/git-remote-tor-annex"))
-               #t))))))
-    (inputs
-     `(("curl" ,curl)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-async" ,ghc-async)
-       ("ghc-bloomfilter" ,ghc-bloomfilter)
-       ("ghc-byteable" ,ghc-byteable)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-crypto-api" ,ghc-crypto-api)
-       ("ghc-cryptonite" ,ghc-cryptonite)
-       ("ghc-data-default" ,ghc-data-default)
-       ("ghc-disk-free-space" ,ghc-disk-free-space)
-       ("ghc-dlist" ,ghc-dlist)
-       ("ghc-edit-distance" ,ghc-edit-distance)
-       ("ghc-esqueleto" ,ghc-esqueleto)
-       ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-feed" ,ghc-feed)
-       ("ghc-free" ,ghc-free)
-       ("ghc-hslogger" ,ghc-hslogger)
-       ("ghc-http-client" ,ghc-http-client)
-       ("ghc-http-conduit" ,ghc-http-conduit)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-ifelse" ,ghc-ifelse)
-       ("ghc-memory" ,ghc-memory)
-       ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-monad-logger" ,ghc-monad-logger)
-       ("ghc-network" ,ghc-network)
-       ("ghc-old-locale" ,ghc-old-locale)
-       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-persistent" ,ghc-persistent)
-       ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
-       ("ghc-persistent-template" ,ghc-persistent-template)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-random" ,ghc-random)
-       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-resourcet" ,ghc-resourcet)
-       ("ghc-safesemaphore" ,ghc-safesemaphore)
-       ("ghc-sandi" ,ghc-sandi)
-       ("ghc-securemem" ,ghc-securemem)
-       ("ghc-socks" ,ghc-socks)
-       ("ghc-split" ,ghc-split)
-       ("ghc-stm" ,ghc-stm)
-       ("ghc-stm-chans" ,ghc-stm-chans)
-       ("ghc-tagsoup" ,ghc-tagsoup)
-       ("ghc-text" ,ghc-text)
-       ("ghc-unix-compat" ,ghc-unix-compat)
-       ("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-uuid" ,ghc-uuid)
-       ("git" ,git)
-       ("rsync" ,rsync)))
-    (native-inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
-       ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
-    (home-page "https://git-annex.branchable.com/")
-    (synopsis "Manage files with Git, without checking in their contents")
-    (description "This package allows managing files with Git, without
-checking the file contents into Git.  It can store files in many places,
-such as local hard drives and cloud storage services.  It can also be
-used to keep a folder in sync between computers.")
-    ;; The web app is released under the AGPLv3+.
-    (license (list license:gpl3+
-                   license:agpl3+))))
-
 (define-public git-when-merged
   ;; Use an unreleased version to get a PY3 compatibility fix.
   (let ((commit "ab6af7865a0ba55ba364a6c507e0be6f84f31c6d"))
@@ -2413,18 +2114,18 @@ how information about the merge is displayed.")
   (package
     (name "git-imerge")
     (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/mhagger/git-imerge/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0a6ay8fpgz3yd84jc40w41x0rcfpan6bcq4wd1hxiiqwb51jysb2"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mhagger/git-imerge.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vi1w3f0yk4gqhxj2hzqafqq28rihyhyfnp8x7xzib96j2si14a4"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; The are only manual test scripts.
+     `(#:tests? #f                      ; only manual test scripts
        #:make-flags (list (string-append "DESTDIR=" %output)
                           "PREFIX=")
        #:phases
@@ -2454,3 +2155,27 @@ design goals are to reduce the pain of resolving merge conflicts by finding
 the smallest possible conflicts and to allow a merge to be saved, tested,
 interrupted, published, and collaborated on while in progress.")
     (license license:gpl2+)))
+
+(define-public git-lfs
+  (package
+    (name "git-lfs")
+    (version "2.7.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/git-lfs/git-lfs")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10v38w8qfz0x8750kv31n8gg2dimvq4wz40m374pd1xaypfs9670"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/git-lfs/git-lfs"))
+    (home-page "https://git-lfs.github.com/")
+    (synopsis "Git extension for versioning large files")
+    (description
+     "Git Large File Storage (LFS) replaces large files such as audio samples,
+videos, datasets, and graphics with text pointers inside Git, while storing the
+file contents on a remote server.")
+    (license license:expat)))

@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -106,7 +108,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.12.3-P4")
+    (version "9.12.4-P1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -114,7 +116,9 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "01pj47z5582rd538dmbzf1msw4jc8j4zr0zx4ciy88r6qr9l80fi"))))
+                "1if7zc5gzrfd28csc63v9bjwrc0rgvm1x9yx058946hc5gp5lyp2"))
+              (patches
+               (search-patches "bind-fix-unused-pk11-ecc-constants.patch"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -122,7 +126,9 @@ and BOOTP/TFTP for network booting of diskless machines.")
      `(("libcap" ,libcap)
        ("libxml2" ,libxml2)
        ("openssl" ,openssl)
-       ("p11-kit" ,p11-kit)))
+       ("p11-kit" ,p11-kit)
+       ("python" ,python)
+       ("python-ply" ,python-ply)))
     (native-inputs `(("perl" ,perl)
                      ("net-tools" ,net-tools)))
     (arguments
@@ -294,14 +300,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.1.26")
+    (version "4.1.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1x0mvj4872dzj1rr9adnchdm4dhn41xmc459p5j4s0r13m1l32lz"))))
+        (base32 "1sjfbwr4vq25304hr9vmd9j821g2vzv8lpy95hpsravc80q5zaqv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -569,23 +575,21 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://secure.nic.cz/files/knot-dns/"
-                                  "knot-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1vw7xx7bm440jwrpvdd04vrp6ccz2b11swcn9msvs62hf0kdjjj9"))
-              (patches
-               (search-patches "knot-include-system-lmdb-header.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete bundled libraries.
-                  (with-directory-excursion "src/contrib"
-                    (delete-file-recursively "lmdb"))
-                  #t))))
+    (version "2.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://secure.nic.cz/files/knot-dns/"
+                           "knot-" version ".tar.xz"))
+       (sha256
+        (base32 "1im2wb8hl394mzni1wavmvfqd7il8s28kcz8w3s4v05nbhzg06xj"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled libraries.
+           (with-directory-excursion "src/contrib"
+             (delete-file-recursively "lmdb"))
+           #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -809,3 +813,53 @@ mDNS resolver as well as an announcer.  mDNS (Multicast Domain Name System) is
 a zero-config service that allows one to resolve host names to IP addresses in
 local networks.")
     (license license:lgpl2.1)))
+
+(define-public public-suffix-list
+  ;; Mozilla releases the official list here:
+  ;;
+  ;;   https://publicsuffix.org/list/public_suffix_list.dat
+  ;;
+  ;; However, Mozilla syncs that file from the GitHub repository periodically,
+  ;; so its contents will change over time.  If you update this commit, please
+  ;; make sure that the new commit refers to a list which is identical to the
+  ;; officially published list available from the URL above.
+  (let ((commit "9375b697baddb0827a5995c81bd3c75877a0b35d"))
+    (package
+      (name "public-suffix-list")
+      (version (git-version "0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/publicsuffix/list.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1sm7pni01rnl4ldzi8z8nc4cbgq8nxda9gwc68v0s3ij7jd1jmik"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let* ((out (assoc-ref %outputs "out"))
+                  ;; Install to /share because that is where "read-only
+                  ;; architecture-independent data files" should go (see:
+                  ;; (standards) Directory Variables).  Include the version in
+                  ;; the directory name so that if multiple versions are ever
+                  ;; installed in the same profile, they will not conflict.
+                  (destination (string-append
+                                out "/share/public-suffix-list-" ,version))
+                  (source (assoc-ref %build-inputs "source")))
+             (with-directory-excursion source
+             (install-file "public_suffix_list.dat" destination)
+             (install-file "LICENSE" destination))
+             #t))))
+      (home-page "https://publicsuffix.org/")
+      (synopsis "Database of current and historical DNS suffixes")
+      (description "This is the Public Suffix List maintained by Mozilla.  A
+\"public suffix\" is one under which Internet users can (or historically
+could) directly register names in the Domain Name System (DNS).  Some examples
+of public suffixes are .com, .co.uk and pvt.k12.ma.us.  This is a list of all
+known public suffixes.")
+      (license license:mpl2.0))))

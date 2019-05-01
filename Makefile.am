@@ -54,6 +54,7 @@ nodist_noinst_SCRIPTS =				\
 # Modules that are not compiled but are installed nonetheless, such as
 # build-side modules with unusual dependencies.
 MODULES_NOT_COMPILED =				\
+  guix/build/po.scm				\
   guix/man-db.scm
 
 include gnu/local.mk
@@ -120,6 +121,7 @@ MODULES =					\
   guix/build-system/gnu.scm			\
   guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
+  guix/build-system/linux-module.scm		\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/ocaml.scm			\
@@ -138,6 +140,7 @@ MODULES =					\
   guix/store.scm				\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\
+  guix/colors.scm				\
   guix/i18n.scm					\
   guix/ui.scm					\
   guix/status.scm				\
@@ -172,6 +175,7 @@ MODULES =					\
   guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
+  guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
@@ -220,6 +224,10 @@ MODULES =					\
   guix/scripts/archive.scm			\
   guix/scripts/import.scm			\
   guix/scripts/package.scm			\
+  guix/scripts/install.scm			\
+  guix/scripts/remove.scm			\
+  guix/scripts/upgrade.scm			\
+  guix/scripts/search.scm			\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\
@@ -276,7 +284,8 @@ endif BUILD_DAEMON_OFFLOAD
 # Scheme implementation of the build daemon and related functionality.
 STORE_MODULES =					\
   guix/store/database.scm			\
-  guix/store/deduplication.scm
+  guix/store/deduplication.scm			\
+  guix/store/roots.scm
 
 MODULES += $(STORE_MODULES)
 
@@ -292,6 +301,7 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/5.0-i686.conf	\
   gnu/packages/aux-files/linux-libre/5.0-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.0-arm-veyron.conf       \
   gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.19-x86_64.conf	\
@@ -306,6 +316,7 @@ AUX_FILES =						\
 
 # Templates, examples.
 EXAMPLES =					\
+  gnu/system/examples/asus-c201.tmpl		\
   gnu/system/examples/bare-bones.tmpl		\
   gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\
@@ -405,7 +416,8 @@ SCM_TESTS =					\
   tests/pypi.scm				\
   tests/import-utils.scm			\
   tests/store-database.scm			\
-  tests/store-deduplication.scm
+  tests/store-deduplication.scm			\
+  tests/store-roots.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
@@ -417,6 +429,7 @@ SH_TESTS =					\
   tests/guix-pack-localstatedir.sh		\
   tests/guix-pack-relocatable.sh		\
   tests/guix-package.sh				\
+  tests/guix-package-aliases.sh			\
   tests/guix-package-net.sh			\
   tests/guix-system.sh				\
   tests/guix-archive.sh				\
@@ -677,6 +690,13 @@ GUIX_SYSTEM_IMAGE_BASE = guix-system-install-$(PACKAGE_VERSION)
 # Prefix of the Guix VM image file name.
 GUIX_SYSTEM_VM_IMAGE_BASE = guix-system-vm-image-$(PACKAGE_VERSION)
 
+# Flags for 'guix system vm-image'.  By default create a VM image that appears
+# to have a 20G hard disk.
+GUIX_SYSTEM_VM_IMAGE_FLAGS ?= --image-size=30G
+
+# Return the sequence of '-s' flags for the given systems.
+system_flags = $(foreach system,$(1),-s $(system))
+
 # The release process works in several phases:
 #
 #   0. We assume the developer created a 'vX.Y' tag.
@@ -694,6 +714,7 @@ GUIX_SYSTEM_VM_IMAGE_BASE = guix-system-vm-image-$(PACKAGE_VERSION)
 # issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
 release: dist
 	cd po; git checkout .
+	cd doc; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
 	  exit 1 ;						\
@@ -706,6 +727,9 @@ release: dist
 	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
+	$(top_builddir)/pre-inst-env guix build guix	\
+	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
+	      -v1 --no-grafts -K
 	rm -f $(BINARY_TARBALLS)
 	$(MAKE) $(BINARY_TARBALLS)
 	for system in $(SUPPORTED_SYSTEMS) ; do					\
@@ -717,6 +741,9 @@ release: dist
 	   "`git rev-parse HEAD`"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
+	$(top_builddir)/pre-inst-env guix build guix			\
+	      $(call system_flags,$(GUIX_SYSTEM_SUPPORTED_SYSTEMS))	\
+	      -v1 --no-grafts -K
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
@@ -733,7 +760,7 @@ release: dist
 	done
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
-	    guix system vm-image							\
+	    guix system vm-image $(GUIX_SYSTEM_VM_IMAGE_FLAGS)				\
 	    --system=$$system								\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\

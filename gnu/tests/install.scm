@@ -74,8 +74,7 @@
                   (name "alice")
                   (comment "Bob's sister")
                   (group "users")
-                  (supplementary-groups '("wheel" "audio" "video"))
-                  (home-directory "/home/alice"))
+                  (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type
                              (marionette-configuration
@@ -357,8 +356,7 @@ per %test-installed-os, this test is expensive in terms of CPU and storage.")
                   (name "alice")
                   (comment "Bob's sister")
                   (group "users")
-                  (supplementary-groups '("wheel" "audio" "video"))
-                  (home-directory "/home/alice"))
+                  (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type
                              (marionette-configuration
@@ -435,12 +433,10 @@ reboot\n")
                          %base-file-systems))
     (users (cons* (user-account
                    (name "alice")
-                   (group "users")
-                   (home-directory "/home/alice"))
+                   (group "users"))
                   (user-account
                    (name "charlie")
-                   (group "users")
-                   (home-directory "/home/charlie"))
+                   (group "users"))
                   %base-user-accounts))
     (services (cons (service marionette-service-type
                              (marionette-configuration
@@ -508,8 +504,8 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 guix build isc-dhcp
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 100M \\
-  mkpart primary ext2 100M 1.2G \\
+  mkpart primary ext2 3M 400M \\
+  mkpart primary ext2 400M 2.1G \\
   set 1 boot on \\
   set 1 bios_grub on
 mkfs.ext4 -L root-fs /dev/vdb2
@@ -518,6 +514,7 @@ mount /dev/vdb2 /mnt
 mkdir /mnt/gnu
 mount /dev/vdb3 /mnt/gnu
 df -h /mnt
+df -h /mnt/gnu
 herd start cow-store /mnt
 mkdir /mnt/etc
 cp /etc/target-config.scm /mnt/etc/config.scm
@@ -655,7 +652,6 @@ by 'mdadm'.")
     (users (cons (user-account
                   (name "charlie")
                   (group "users")
-                  (home-directory "/home/charlie")
                   (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type
@@ -776,7 +772,6 @@ build (current-guix) and then store a couple of full system images.")
     (users (cons (user-account
                   (name "charlie")
                   (group "users")
-                  (home-directory "/home/charlie")
                   (supplementary-groups '("wheel" "audio" "video")))
                  %base-user-accounts))
     (services (cons (service marionette-service-type

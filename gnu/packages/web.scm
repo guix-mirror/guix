@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,7 +86,6 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -102,6 +102,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages base)
   #:use-module (gnu packages package-management)
@@ -125,14 +126,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.38")
+    (version "2.4.39")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0jiriyyf3pm6axf4mrz6c2z08yhs21hb4d23viq87jclm5bmiikx"))))
+               "18ngvsjq65qxk3biggnkhkq8jlll9dsg9n3csra9p99sfw2rvjml"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -198,14 +199,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.15.9")
+    (version "1.15.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hxfsz1117r91b9fb5hjddyrf1czvb36lh1z7zalqqdskfcbmkz4"))))
+                "1giavdph0jqhywdkj4650s5qhz6qfd6nrv74k9q005yy2ym90nrx"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -2900,7 +2901,7 @@ fields in the request.")
     (home-page "https://metacpan.org/release/HTTP-Parser")
     (synopsis "Parse HTTP/1.1 requests")
     (description "This is an HTTP request parser.  It takes chunks of text as
-received and returns a 'hint' as to what is required, or returns the
+received and returns a @code{hint} as to what is required, or returns the
 HTTP::Request when a complete request has been read.  HTTP/1.1 chunking is
 supported.")
     (license l:perl-license)))
@@ -3007,6 +3008,33 @@ http-based UI to your existing tools.")
     (description "This is a very simple HTTP/1.1 client, designed for doing
 simple requests without the overhead of a large framework like LWP::UserAgent.
 It supports proxies and redirection.  It also correctly resumes after EINTR.")
+    (license l:perl-license)))
+
+(define-public perl-http-tinyish
+  (package
+    (name "perl-http-tinyish")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MI/MIYAGAWA/HTTP-Tinyish-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "199sa722amvwhq0czjfb7psj3hbqmvni5vxkrm579r5943pg0rax"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-which" ,perl-file-which)
+       ("perl-ipc-run3" ,perl-ipc-run3)))
+    (home-page "https://metacpan.org/release/HTTP-Tinyish")
+    (synopsis "@code{HTTP::Tiny} compatible HTTP client wrappers")
+    (description
+     "@code{HTTP::Tinyish} is a wrapper module for @acronym{LWP,libwww-perl},
+@code{HTTP::Tiny}, curl and wget.
+
+It provides an API compatible to HTTP::Tiny.")
     (license l:perl-license)))
 
 (define-public perl-io-html
@@ -3374,6 +3402,35 @@ application frameworks.  Plack is like Ruby's Rack or Python's Paste for
 WSGI.")
     (license l:perl-license)))
 
+(define-public perl-plack-middleware-deflater
+  (package
+    (name "perl-plack-middleware-deflater")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/K/KA/KAZEBURO/"
+             "Plack-Middleware-Deflater-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xf2visi16hgwgyp9q0cjr10ikbn474hjia5mj8mb2scvbkrbni8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-install" ,perl-module-install)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "https://metacpan.org/release/Plack-Middleware-Deflater")
+    (synopsis "Compress response body with Gzip or Deflate")
+    (description
+     "Plack::Middleware::Deflater is a middleware to encode your response body
+in gzip or deflate, based on \"Accept-Encoding\" HTTP request header.  It
+would save the bandwidth a little bit but should increase the Plack server
+load, so ideally you should handle this on the frontend reverse proxy
+servers.")
+    (license l:perl-license)))
+
 (define-public perl-plack-middleware-fixmissingbodyinredirect
   (package
     (name "perl-plack-middleware-fixmissingbodyinredirect")
@@ -3467,7 +3524,7 @@ required.")
     (synopsis "Supports app to run as a reverse proxy backend")
     (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
 which are changed by reverse-proxy.  You can specify the reverse proxy address
-and stop fake requests using 'enable_if' directive in your app.psgi.")
+and stop fake requests using @code{enable_if} directive in your app.psgi.")
     (license l:perl-license)))
 
 (define-public perl-plack-test-externalserver
@@ -3477,7 +3534,7 @@ and stop fake requests using 'enable_if' directive in your app.psgi.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Plack-Test-ExternalServer-" version ".tar.gz"))
        (sha256
         (base32 "1l1yj1l25679x7cbpd27ii7s1f1ajpkspif9xqnl21hczrbmrbsv"))))
@@ -4608,14 +4665,15 @@ handling many of the web standards in use today.")
 (define-public surfraw
   (package
     (name "surfraw")
-    (version "2.2.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://surfraw.alioth.debian.org/dist/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fy4ph5h9kp0jzj1m6pfylxnnmgdk0mmdppw76z9jhna4jndk5xa"))))
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/surfraw/Surfraw/uploads/"
+                           "2de827b2786ef2fe43b6f07913ca7b7f/"
+                           "surfraw-" version ".tar.gz"))
+       (sha256
+        (base32 "099nbif0x5cbcf18snc58nx1a3q7z0v9br9p2jiq9pcc7ic2015d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4753,14 +4811,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.50")
+  (version "5.53")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0j811iakljjxw39qchmqf235jdkwixb0i4xxjyi55f08558947cm"))))
+       (base32 "119560alb8k0qz2zkjb2i80ikmn76fa6dg681fvrw9hlxsb9hhw0"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.
@@ -5096,7 +5154,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.9.0")
+    (version "2.9.2")
     (home-page "https://github.com/nodejs/http-parser")
     (source (origin
               (method git-fetch)
@@ -5105,7 +5163,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qa3rh9x4as2fc2p0y2hah83iqs7jr5106a8anv317359dgf3ssj"))))
+                "1qs6x3n2nrcj1wiik5pg5i16inykf7rcfdfdy7rwyzf40pvdl3c2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -5123,6 +5181,36 @@ high-performance HTTP applications.  It does not make any syscalls nor
 allocations, it does not buffer data, it can be interrupted at anytime.
 Depending on your architecture, it only requires about 40 bytes of data per
 message stream (in a web server that is per connection).")
+    (license l:expat)))
+
+(define-public python-httpretty
+  (package
+    (name "python-httpretty")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpretty" version))
+       (sha256
+        (base32 "1p1rb4mpngh0632xrmdfhvc8yink519yfkqz97d2ww3y0x2jvd81"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-httplib2" ,python-httplib2)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-nose-randomly" ,python-nose-randomly)
+       ("python-rednose" ,python-rednose)
+       ("python-requests" ,python-requests)
+       ("python-sure" ,python-sure)
+       ("python-tornado" ,python-tornado)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://httpretty.readthedocs.io")
+    (synopsis "HTTP client mock for Python")
+    (description "@code{httpretty} is a helper for faking web requests,
+inspired by Ruby's @code{fakeweb}.")
     (license l:expat)))
 
 (define-public python2-httpretty
@@ -5347,8 +5435,7 @@ Instagram and YouTube.")
              (url "https://github.com/linkchecker/linkchecker")
              (commit (string-append "v" version))))
        (patches
-        (search-patches
-         "linkchecker-mark-more-tests-that-require-the-network.patch"))
+        (search-patches "linkchecker-tests-require-network.patch"))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -6420,9 +6507,38 @@ compressed JSON header blocks.
        `(("guile" ,guile-2.2)
          ("guile-commonmark" ,guile-commonmark)
          ("guile-json" ,guile-json)))
-    (home-page "https://github.com/UMCUGenetics/hpcguix-web")
+      (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
-    (license l:agpl3+))))
+      (license l:agpl3+))))
+
+(define-public httrack
+  (package
+    (name "httrack")
+    (version "3.49.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://mirror.httrack.com/historical/"
+                                  "httrack-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09a0gm67nml86qby1k1gh7rdxamnrnzwr6l9r5iiq94favjs0xrl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libressl" ,libressl)
+       ("zlib" ,zlib)))
+    (home-page "https://www.httrack.com/")
+    (synopsis "Easy-to-use offline browser utility")
+    (description "HTTrack allows you to download a World Wide Web site from
+the Internet to a local directory, building recursively all directories,
+getting HTML, images, and other files from the server to your computer.
+
+HTTrack arranges the original site's relative link-structure.  Simply open
+a page of the ``mirrored'' website in your browser, and you can browse the
+site from link to link, as if you were viewing it online.  HTTrack can also
+update an existing mirrored site, and resume interrupted downloads.
+
+HTTrack is fully configurable, and has an integrated help system.")
+    (license l:gpl3+)))

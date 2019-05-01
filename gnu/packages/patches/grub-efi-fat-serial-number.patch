@@ -1,0 +1,27 @@
+Change 'grub-mkrescue' to honor the 'GRUB_FAT_SERIAL_NUMBER'
+environment variable.  That way, the caller can specify a fixed
+serial number (instead of the randomly chosen one) to create EFI
+images (the 'efi.img' file) that are reproducible bit-for-bit.
+
+Patch by Ludovic Courtès <ludo@gnu.org>.
+
+--- grub-2.02/util/grub-mkrescue.c	2019-04-20 19:15:26.180242812 +0200
++++ grub-2.02/util/grub-mkrescue.c	2019-04-20 21:56:34.672370849 +0200
+@@ -788,8 +788,15 @@ main (int argc, char *argv[])
+ 
+       efiimgfat = grub_util_path_concat (2, iso9660_dir, "efi.img");
+       int rv;
+-      rv = grub_util_exec ((const char * []) { "mformat", "-C", "-f", "2880", "-L", "16", "-i",
+-	    efiimgfat, "::", NULL });
++
++      const char *fat_serial_number = getenv ("GRUB_FAT_SERIAL_NUMBER");
++      const char *mformat_args[] =
++	{ "mformat", "-C", "-f", "2880", "-L", "16",
++	  fat_serial_number != NULL ? "-N" : "-C",
++	  fat_serial_number != NULL ? fat_serial_number : "-C",
++	  "-i", efiimgfat, "::", NULL };
++
++      rv = grub_util_exec (mformat_args);
+       if (rv != 0)
+ 	grub_util_error ("`%s` invocation failed\n", "mformat");
+       rv = grub_util_exec ((const char * []) { "mcopy", "-s", "-i", efiimgfat, efidir_efi, "::/", NULL });

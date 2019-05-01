@@ -82,6 +82,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
@@ -239,32 +240,19 @@ ElasticSearch server")
 (define-public leveldb
   (package
     (name "leveldb")
-    (version "1.20")
+    (version "1.21")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/leveldb"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/leveldb")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r36bcrj6b2afsp4aw1gjai3jbs1c7734pxpc1jz7hh9nasyiazm"))))
-    (build-system gnu-build-system)
+                "00v0w6883z7a6204894j59nd5v6dazn3c8hvh3sbczv4wiabppw2"))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           ;; There is no install target, so we do it here.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (include (string-append out "/include")))
-               (for-each (lambda (file)
-                           (install-file file lib))
-                         (find-files "out-shared" "^libleveldb\\.so.*$"))
-               (copy-recursively "include" include)
-               #t))))))
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
     (inputs
      `(("snappy" ,snappy)))
     (home-page "http://leveldb.org/")
@@ -277,14 +265,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.12")
+    (version "1.5.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "0aav15f0lh8k4i62aza2bdv4s8vv65j38pz2zc4v45snd3arfby0"))))
+        (base32 "0qsdkjrns4f02lmabq8c7mzl5n4382q2p6a0dvmsjdcpjisagqb1"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -987,7 +975,7 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
     (home-page "https://github.com/tialaramex/sparql-query/")
     (synopsis "Command-line tool for accessing SPARQL endpoints over HTTP")
     (description "Sparql-query is a command-line tool for accessing SPARQL
-endpoints over HTTP.  It has been intentionally designed to 'feel' similar to
+endpoints over HTTP.  It has been intentionally designed to @code{feel} similar to
 tools for interrogating SQL databases.  For example, you can enter a query over
 several lines, using a semi-colon at the end of a line to indicate the end of
 your query.  It also supports readline so that you can more easily recall and
@@ -996,6 +984,92 @@ for example from a shell script.")
     ;; Some files (like scan-sparql.c) contain a GPLv3+ license header, while
     ;; others (like sparql-query.c) contain a GPLv2+ license header.
     (license (list license:gpl3+))))
+
+(define-public sqitch
+  (package
+    (name "sqitch")
+    (version "0.9999")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1cvj8grs3bzc4g7dw1zc26g4biv1frav18sq0fkvi2kk0q1aigzm"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-check-environment
+           (lambda _
+             (setenv "TZ" "UTC")
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PERL5LIB")))
+               (wrap-program (string-append out "/bin/sqitch")
+                 `("PERL5LIB" ":" prefix
+                   (,(string-append out "/lib/perl5/site_perl"
+                                    ":"
+                                    path)))))
+             #t)))))
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-io-pager" ,perl-io-pager)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-dir" ,perl-test-dir)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-file" ,perl-test-file)
+       ("perl-test-file-contents" ,perl-test-file-contents)
+       ("perl-test-mockmodule" ,perl-test-mockmodule)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-warn" ,perl-test-warn)))
+    (inputs
+     `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
+       ("perl-clone" ,perl-clone)
+       ("perl-config-gitlike" ,perl-config-gitlike)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-dbd-pg" ,perl-dbd-pg)
+       ("perl-dbi" ,perl-dbi)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-encode-locale" ,perl-encode-locale)
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-ipc-run3" ,perl-ipc-run3)
+       ("perl-ipc-system-simple" ,perl-ipc-system-simple)
+       ("perl-libintl-perl" ,perl-libintl-perl)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-moo" ,perl-moo)
+       ("perl-mysql-config" ,perl-mysql-config)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
+       ("perl-string-formatter" ,perl-string-formatter)
+       ("perl-string-shellquote" ,perl-string-shellquote)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-template-tiny" ,perl-template-tiny)
+       ("perl-template-toolkit" ,perl-template-toolkit)
+       ("perl-throwable" ,perl-throwable)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-type-tiny" ,perl-type-tiny)
+       ("perl-type-tiny-xs" ,perl-type-tiny-xs)
+       ("perl-uri" ,perl-uri)
+       ("perl-uri-db" ,perl-uri-db)))
+    (home-page "https://sqitch.org/")
+    (synopsis "Database change management tool")
+    (description
+     "Sqitch is a standalone change management system for database schemas,
+which uses SQL to describe changes.")
+    (license license:x11)))
 
 (define-public sqlcrush
   ;; Unfortunately, there is no proper upstream release and may never be.
@@ -1331,6 +1405,29 @@ capable RDBMS working for your Perl project you simply have to install this
 module, and nothing else.")
     (license license:perl-license)
     (home-page "https://metacpan.org/release/DBD-SQLite")))
+
+(define-public perl-mysql-config
+  (package
+    (name "perl-mysql-config")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DARREN/MySQL-Config-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1svn7ccw2gc4cazvc58j84rxhnc9vs01zpird0l8460598j475qr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/MySQL-Config")
+    (synopsis "Parse and utilize MySQL's /etc/my.cnf and ~/.my.cnf files")
+    (description
+     "@code{MySQL::Config} emulates the @code{load_defaults} function from
+libmysqlclient.  It will fill an aray with long options, ready to be parsed by
+@code{Getopt::Long}.")
+    (license license:perl-license)))
 
 (define-public perl-sql-abstract
   (package
@@ -1845,13 +1942,13 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.25")
+    (version "4.0.26")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
-        (base32 "1bbwrb812w5i0x56jfn0l86mxc2ck904hl8y87mziay96znwia0f"))
+        (base32 "1qrxnf7ji5hml7z4y669k4wmk3iz2pcsr05bnn1n912asash09z5"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
@@ -2092,13 +2189,13 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "12sr36646sipf9ac3n2xh8z0w5pz4d3dvw5qjv2kzvcls6wvf7vq"))))
+       (base32 "06c3lcv7nijsgqsjaaa4djrwlzgh9f910zlqxkmgq22h6jl4rici"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
@@ -2474,15 +2571,15 @@ reasonable substitute.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "0m1b88wg1w6xdwg0siky5k86x8sh6smhbr42ixz41ra81lv34jbj"))))
+        (base32 "0wwj8il4c3aff15xwwcjfci367zxsakq05ps1a2il6yavp91i94c"))))
     (build-system python-build-system)
-    ;; Tests require a running Redis server
+    ;; Tests require a running Redis server.
     (arguments '(#:tests? #f))
     ;; As long as we are not running test, we do not need this input :-)
     ;;(native-inputs

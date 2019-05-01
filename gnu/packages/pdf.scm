@@ -1034,7 +1034,7 @@ multiple files.")
 (define-public pdfpc
   (package
     (name "pdfpc")
-    (version "4.2.1")
+    (version "4.3.2")
     (source
      (origin
        (method git-fetch)
@@ -1043,8 +1043,7 @@ multiple files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1rmsrpf5vlqhnyyrhq8apndny88ld2qvfjx6258653pqbimv7mx5"))))
+        (base32 "15y6g92fp6x6dwwhrhkfny5z20w7pq9c8w19fh2vzff9aa6m2h9z"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no test target
     (inputs

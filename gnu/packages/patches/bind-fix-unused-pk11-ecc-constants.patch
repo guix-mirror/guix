@@ -1,0 +1,43 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Thu, 25 Apr 2019 04:36:52 +0200
+Subject: [PATCH] gnu: bind: Fix unused PKCS#11 ECC constants.
+
+Without this patch, the build fails:
+
+  pkcs11-keygen.c: In function ‘main’:
+  pkcs11-keygen.c:424:32: error: ‘pk11_ecc_prime256v1’ undeclared (first use in this function)
+      public_template[4].pValue = pk11_ecc_prime256v1;
+                                  ^
+  pkcs11-keygen.c:424:32: note: each undeclared identifier is reported only once for each function it appears in
+  pkcs11-keygen.c:428:32: error: ‘pk11_ecc_secp384r1’ undeclared (first use in this function)
+      public_template[4].pValue = pk11_ecc_secp384r1;
+                                  ^
+  make[2]: *** [Makefile:217: pkcs11-keygen.o] Error 1
+
+Fix copied verbatim from upstream[0].
+
+[0]: https://gitlab.isc.org/isc-projects/bind9/issues/935
+
+---
+--- orig-bind-9.11.6/bin/pkcs11/pkcs11-keygen.c	2019-02-27 15:28:15.000000000 -0800
++++ bind-9.11.6/bin/pkcs11/pkcs11-keygen.c	2019-03-11 09:20:50.955257469 -0700
+@@ -403,6 +403,10 @@
+ 		public_template[RSA_PUBLIC_EXPONENT].ulValueLen = expsize;
+ 		break;
+ 	case key_ecc:
++#if !defined(HAVE_PKCS11_ECDSA)
++		fprintf(stderr, "prime256v1 and secp3841r1 is not supported\n");
++		usage();
++#else
+ 		op_type = OP_EC;
+ 		if (bits == 0)
+ 			bits = 256;
+@@ -429,7 +433,7 @@
+ 			public_template[4].ulValueLen =
+ 				sizeof(pk11_ecc_secp384r1);
+ 		}
+-
++#endif
+ 		break;
+ 	case key_ecx:
+ #if !defined(CKM_EDDSA_KEY_PAIR_GEN)

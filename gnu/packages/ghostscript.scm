@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -47,6 +47,7 @@
 (define-public lcms
   (package
    (name "lcms")
+   (replacement lcms/fixed)
    (version "2.9")
    (source (origin
             (method url-fetch)
@@ -66,6 +67,14 @@ Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
    (home-page "http://www.littlecms.com/")
    (properties '((cpe-name . "little_cms_color_engine")))))
+
+(define lcms/fixed
+  (package
+    (inherit lcms)
+    (source
+      (origin
+        (inherit (package-source lcms))
+        (patches (search-patches "lcms-CVE-2018-16435.patch"))))))
 
 (define-public libpaper
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +34,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 vlist)
   #:export (profile?
             profile-file
             profile-self-size
@@ -142,11 +143,20 @@ profile of ITEMS and their requisites."
                                            (lambda (size)
                                              (return (cons item size)))))
                                     refs)))
+    (define size-table
+      (fold (lambda (pair result)
+              (match pair
+                ((item . size)
+                 (vhash-cons item size result))))
+            vlist-null sizes))
+
     (define (dependency-size item)
       (mlet %store-monad ((deps (requisites* (list item))))
         (foldm %store-monad
                (lambda (item total)
-                 (return (+ (assoc-ref sizes item) total)))
+                 (return (+ (match (vhash-assoc item size-table)
+                              ((_ . size) size))
+                            total)))
                0
                (delete-duplicates (cons item deps)))))
 

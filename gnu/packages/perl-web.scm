@@ -21,9 +21,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (guix packages)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (guix download)
-  #:use-module (guix build-system perl))
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages web))
 
 (define-public perl-mojolicious
   (package
@@ -48,6 +50,33 @@ used are outdated now, the idea behind it is not.  Mojolicious is a new
 endeavor to implement this idea using modern technologies.")
     (license license:artistic2.0)))
 
+(define-public perl-uri-db
+  (package
+    (name "perl-uri-db")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DW/DWHEELER/URI-db-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0n56xxlw7c39pfar0dxckr9mbmp6yrzk53ic0cb24raiykm9v6f4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)
+       ("perl-uri-nested" ,perl-uri-nested)))
+    (home-page "https://metacpan.org/release/URI-db")
+    (synopsis "Handle database URIs")
+    (description
+     "This module defines a format for database URIs, and provides a @{URI}
+class to handle these.")
+    (license license:perl-license)))
+
 (define-public perl-uri-escape
   (package
     (name "perl-uri-escape")
@@ -55,7 +84,7 @@ endeavor to implement this idea using modern technologies.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/URI-"
+       (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/URI-"
                            version ".tar.gz"))
        (sha256
         (base32
@@ -69,4 +98,30 @@ endeavor to implement this idea using modern technologies.")
 percent-decode URI strings as defined by RFC 3986.  Percent-encoding URI's is
 informally called URI escaping.  This is the terminology used by this module,
 which predates the formalization of the terms by the RFC by several years.")
+    (license license:perl-license)))
+
+(define-public perl-uri-nested
+  (package
+    (name "perl-uri-nested")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DW/DWHEELER/URI-Nested-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1bzg6f11m8wfnmycflvp858rs99xknsx8hkip0xcdfjzlqwi75z1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)))
+    (home-page "https://metacpan.org/release/URI-Nested")
+    (synopsis "Nested URIs")
+    (description
+     "@code{URI::Nested} provides support for nested URIs, where the scheme is
+a prefix, and the remainder of the URI is another URI.")
     (license license:perl-license)))

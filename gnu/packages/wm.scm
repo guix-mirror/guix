@@ -8,17 +8,18 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -181,7 +182,19 @@ commands would.")
        (list "--disable-builddir")
 
        ;; The test suite requires the unpackaged Xephyr X server.
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-session-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (i3 (string-append out "/bin/i3"))
+                    (i3-with-shmlog (string-append out "/bin/i3-with-shmlog")))
+               (substitute* (string-append out "/share/xsessions/i3.desktop")
+                 (("Exec=i3") (string-append "Exec=" i3)))
+               (substitute* (string-append out "/share/xsessions/i3-with-shmlog.desktop")
+                 (("Exec=i3-with-shmlog") (string-append "Exec=" i3-with-shmlog)))
+               #t))))))
     (inputs
      `(("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
@@ -218,6 +231,36 @@ resized.
 
 i3 uses a plain-text configuration file, and can be extended and controlled from
 many programming languages.")
+    (license license:bsd-3)))
+
+(define-public i3lock
+  (package
+    (name "i3lock")
+    (version "2.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://i3wm.org/i3lock/i3lock-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "015dn534m7cxjvqdncpvaq9p8b2r4w5hp1yanbdy2abmhbcc7a7j"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("libev" ,libev)
+       ("linux-pam" ,linux-pam)
+       ("libxcb" ,libxcb)
+       ("libxkbcommon" ,libxkbcommon)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-xrm" ,xcb-util-xrm)))
+    (home-page "https://i3wm.org/i3lock/")
+    (synopsis "Lightweight screen locker")
+    (description
+     "i3lock is a simple X11 screen locker developed alongside the i3 project.
+Despite the name it should work with any X11 window manager.")
     (license license:bsd-3)))
 
 (define-public i3blocks
@@ -536,7 +579,7 @@ tiled on several screens.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
-                                  name "-" version ".tar.gz"))
+                                  "xmobar-" version ".tar.gz"))
               (sha256
                (base32
                 "1xh87asg8y35srvp7d3gyyy4bkxsw122liihxgzgm8pqv2z3h4zd"))))
@@ -793,6 +836,13 @@ experience.")
              ;; There aren't any tests, so just make sure the binary
              ;; gets built and can be run successfully.
              (invoke "../build/awesome" "-v")))
+         (add-after 'install 'patch-session-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (awesome (string-append out "/bin/awesome")))
+               (substitute* (string-append out "/share/xsessions/awesome.desktop")
+                 (("Exec=awesome") (string-append "Exec=" awesome)))
+               #t)))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((awesome (assoc-ref outputs "out"))
@@ -811,7 +861,7 @@ experience.")
      "Awesome has been designed as a framework window manager.  It is fast, small,
 dynamic and extensible using the Lua programming language.")
     (license license:gpl2+)
-    (home-page "https://awesome.naquadah.org/")))
+    (home-page "https://awesomewm.org/")))
 
 (define-public menumaker
   (package
@@ -1048,14 +1098,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.3.0")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jaagr/polybar/releases/"
-                           "download/" version "/polybar.tar"))
+                           "download/" version "/polybar-" version ".tar"))
        (sha256
-        (base32 "0sjh3xmf11g09spi88zj7xsc3a3vv78kixab6n5i7436py7xwzb4"))
+        (base32 "0758na059vpgnsrcdrxmh9wsahs80wnmizb9g7bmixlrkxr2m65h"))
        (file-name (string-append name "-" version ".tar"))))
     (build-system cmake-build-system)
     (arguments
@@ -1160,6 +1210,7 @@ modules for building a Wayland compositor.")
               ("elogind" ,elogind)
               ("gdk-pixbuf" ,gdk-pixbuf)
               ("json-c" ,json-c)
+              ("libevdev" ,libevdev)
               ("libinput" ,libinput)
               ("libxkbcommon" ,libxkbcommon)
               ("pango" ,pango)

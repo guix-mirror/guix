@@ -39,6 +39,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:export (upstream-source
@@ -344,10 +345,10 @@ values: the item from LST1 and the item from LST2 that match PRED."
 
 (define* (package-update/url-fetch store package source
                                    #:key key-download)
-  "Return the version, tarball, and input changes needed to update PACKAGE to
+  "Return the version, tarball, and SOURCE, to update PACKAGE to
 SOURCE, an <upstream-source>."
   (match source
-    (($ <upstream-source> _ version urls signature-urls changes)
+    (($ <upstream-source> _ version urls signature-urls)
      (let*-values (((archive-type)
                     (match (and=> (package-source package) origin-uri)
                       ((? string? uri)
@@ -371,7 +372,7 @@ SOURCE, an <upstream-source>."
                            (or signature-urls (circular-list #f)))))
        (let ((tarball (download-tarball store url signature-url
                                         #:key-download key-download)))
-         (values version tarball changes))))))
+         (values version tarball source))))))
 
 (define %method-updates
   ;; Mapping of origin methods to source update procedures.
@@ -404,36 +405,57 @@ this method: ~s")
     (#f
      (values #f #f #f))))
 
-(define (update-package-source package version hash)
-  "Modify the source file that defines PACKAGE to refer to VERSION,
-whose tarball has SHA256 HASH (a bytevector).  Return the new version string
-if an update was made, and #f otherwise."
-  (define (update-expression expr old-version version old-hash hash)
-    ;; Update package expression EXPR, replacing occurrences OLD-VERSION by
-    ;; VERSION and occurrences of OLD-HASH by HASH (base32 representation
-    ;; thereof).
-    (let ((old-hash (bytevector->nix-base32-string old-hash))
-          (hash     (bytevector->nix-base32-string hash)))
-      (string-replace-substring
-       (string-replace-substring expr old-hash hash)
-       old-version version)))
+(define* (update-package-source package source hash)
+  "Modify the source file that defines PACKAGE to refer to SOURCE, an
+<upstream-source> whose tarball has SHA256 HASH (a bytevector).  Return the
+new version string if an update was made, and #f otherwise."
+  (define (update-expression expr replacements)
+    ;; Apply REPLACEMENTS to package expression EXPR, a string.  REPLACEMENTS
+    ;; must be a list of replacement pairs, either bytevectors or strings.
+    (fold (lambda (replacement str)
+            (match replacement
+              (((? bytevector? old-bv) . (? bytevector? new-bv))
+               (string-replace-substring
+                str
+                (bytevector->nix-base32-string old-bv)
+                (bytevector->nix-base32-string new-bv)))
+              ((old . new)
+               (string-replace-substring str old new))))
+          expr
+          replacements))
 
   (let ((name        (package-name package))
+        (version     (upstream-source-version source))
         (version-loc (package-field-location package 'version)))
     (if version-loc
         (let* ((loc         (package-location package))
                (old-version (package-version package))
                (old-hash    (origin-sha256 (package-source package)))
+               (old-url     (match (origin-uri (package-source package))
+                              ((? string? url) url)
+                              (_ #f)))
+               (new-url     (match (upstream-source-urls source)
+                              ((first _ ...) first)))
                (file        (and=> (location-file loc)
                                    (cut search-path %load-path <>))))
           (if file
-              (and (edit-expression
-                    ;; Be sure to use absolute filename.
-                    (assq-set! (location->source-properties loc)
-                               'filename file)
-                    (cut update-expression <>
-                         old-version version old-hash hash))
-                   version)
+              ;; Be sure to use absolute filename.  Replace the URL directory
+              ;; when OLD-URL is available; this is useful notably for
+              ;; mirror://cpan/ URLs where the directory may change as a
+              ;; function of the person who uploads the package.  Note that
+              ;; package definitions usually concatenate fragments of the URL,
+              ;; which is why we only attempt to replace a subset of the URL.
+              (let ((properties (assq-set! (location->source-properties loc)
+                                           'filename file))
+                    (replacements `((,old-version . ,version)
+                                    (,old-hash . ,hash)
+                                    ,@(if (and old-url new-url)
+                                          `((,(dirname old-url) .
+                                             ,(dirname new-url)))
+                                          '()))))
+                (and (edit-expression properties
+                                      (cut update-expression <> replacements))
+                     version))
               (begin
                 (warning (G_ "~a: could not locate source file")
                          (location-file loc))

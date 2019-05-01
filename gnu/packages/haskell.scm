@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -833,6 +833,28 @@ code pages on Windows.  On all other operating systems, the library does
 nothing.")
   (license license:bsd-3)))
 
+(define-public ghc-libffi
+  (package
+    (name "ghc-libffi")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "libffi/libffi-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g7jnhng3j7z5517aaqga0144aamibsbpgm3yynwyfzkq1kp0f28"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libffi" ,libffi)))
+    (home-page "http://hackage.haskell.org/package/libffi")
+    (synopsis "Haskell binding to libffi")
+    (description
+     "A binding to libffi, allowing C functions of types only known at runtime
+to be called from Haskell.")
+    (license license:bsd-3)))
+
 (define-public ghc-newtype-generics
   (package
     (name "ghc-newtype-generics")
@@ -1157,7 +1179,7 @@ them.")
     (synopsis
      "Support for manipulating Haskell source code")
     (description
-     "The 'haskell-src' package provides support for manipulating Haskell
+     "The @code{haskell-src} package provides support for manipulating Haskell
 source code.  The package provides a lexer, parser and pretty-printer, and a
 definition of a Haskell abstract syntax tree (AST).  Common uses of this
 package are to parse or generate Haskell 98 code.")
@@ -1313,7 +1335,7 @@ Happy works in a similar way to the yacc tool for C.")
 (define-public ghc-haskell-lexer
   (package
     (name "ghc-haskell-lexer")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -1321,8 +1343,7 @@ Happy works in a similar way to the yacc tool for C.")
              "https://hackage.haskell.org/package/haskell-lexer/haskell-lexer-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "0rj3r1pk88hh3sk3mj61whp8czz5kpxhbc78xlr04bxwqjrjmm6p"))))
+        (base32 "1wyxd8x33x4v5vxyzkhm610pl86gbkc8y439092fr1735q9g7kfq"))))
     (build-system haskell-build-system)
     (home-page "http://hackage.haskell.org/package/haskell-lexer")
     (synopsis "Fully compliant Haskell 98 lexer")
@@ -2360,11 +2381,11 @@ literals.")
      "Compression and decompression in the gzip and zlib formats")
     (description
      "This package provides a pure interface for compressing and decompressing
-streams of data represented as lazy 'ByteString's.  It uses the zlib C library
-so it has high performance.  It supports the 'zlib', 'gzip' and 'raw'
-compression formats.  It provides a convenient high level API suitable for
-most tasks and for the few cases where more control is needed it provides
-access to the full zlib feature set.")
+streams of data represented as lazy @code{ByteString}s.  It uses the zlib C
+library so it has high performance.  It supports the @code{zlib}, @code{gzip}
+and @code{raw} compression formats.  It provides a convenient high level API
+suitable for most tasks and for the few cases where more control is needed it
+provides access to the full zlib feature set.")
     (license license:bsd-3)))
 
 (define-public ghc-stm
@@ -2467,7 +2488,7 @@ are not exception safe and can be broken by @code{killThread}.")
      "An efficient packed, immutable Unicode text type (both strict and
 lazy), with a powerful loop fusion optimization framework.
 
-The 'Text' type represents Unicode character strings, in a time and
+The @code{Text} type represents Unicode character strings, in a time and
 space-efficient manner.  This package provides text processing
 capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
@@ -3800,10 +3821,10 @@ writing to stdout and other handles.")
      "https://github.com/basvandijk/case-insensitive")
     (synopsis "Case insensitive string comparison")
     (description
-     "The module 'Data.CaseInsensitive' provides the 'CI' type constructor
-which can be parameterised by a string-like type like: 'String', 'ByteString',
-'Text', etc..  Comparisons of values of the resulting type will be insensitive
-to cases.")
+     "The module @code{Data.CaseInsensitive} provides the @code{CI} type
+constructor which can be parameterised by a string-like type like:
+@code{String}, @code{ByteString}, @code{Text}, etc.  Comparisons of values of
+the resulting type will be insensitive to cases.")
     (license license:bsd-3)))
 
 (define-public ghc-syb
@@ -3830,7 +3851,7 @@ to cases.")
     (description "This package contains the generics system described in the
 /Scrap Your Boilerplate/ papers (see
 @uref{http://www.cs.uu.nl/wiki/GenericProgramming/SYB, the website}).  It
-defines the 'Data' class of types permitting folding and unfolding of
+defines the @code{Data} class of types permitting folding and unfolding of
 constructor applications, instances of this class for primitive types, and a
 variety of traversals.")
     (license license:bsd-3)))
@@ -4323,8 +4344,8 @@ interface.")
      "https://github.com/haskell/network-uri")
     (synopsis "Library for URI manipulation")
     (description "This package provides an URI manipulation interface.  In
-'network-2.6' the 'Network.URI' module was split off from the 'network'
-package into this package.")
+@code{network-2.6} the @code{Network.URI} module was split off from the
+@code{network} package into this package.")
     (license license:bsd-3)))
 
 (define-public ghc-ansi-terminal
@@ -5724,7 +5745,7 @@ using a simple box model.")
     (description
      "This package provides a @code{GHC.Generics}-based
 @code{Control.DeepSeq.Generics.genericRnf} function which can be used for
-providing an 'rnf' implementation.")
+providing an @code{rnf} implementation.")
     (license license:bsd-3)))
 
 (define-public ghc-string-qq
@@ -8462,6 +8483,7 @@ JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
          (uri (git-reference
                (url "https://github.com/bitemyapp/esqueleto")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0lz1qxms7cfg5p3j37inlych0r2fwhm8xbarcys3df9m7jy9nixa"))))
@@ -9430,7 +9452,7 @@ the community, with the missing features being added with pull-requests.")
      `(("ghc-rebase" ,ghc-rebase)))
     (home-page "https://github.com/nikita-volkov/rerebase")
     (synopsis "Reexports from ``base'' with many other standard libraries")
-    (description "A rich drop-in replacement for ``base''.  For details and
+    (description "A rich drop-in replacement for @code{base}.  For details and
 documentation please visit @uref{https://github.com/nikita-volkov/rerebase,
 the project's home page}.")
     (license license:expat)))

@@ -331,11 +331,12 @@ deserializing JSON.")
     (synopsis "Provide simple serialisation/deserialisation of objects to/from JSON")
     (description "This is a simple role that provides methods to instantiate a
 class from a JSON string that (hopefully,) represents it, and to serialise an
-object of the class to a JSON string.  The JSON created from an instance should
-round trip to a new instance with the same values for the @quot{public
-attributes}.  @quot{Private} attributes (that is ones without accessors,) will
-be ignored for both serialisation and de-serialisation.  The exact behaviour
-depends on that of @code{JSON::Marshal} and @code{JSON::Unmarshal} respectively.")
+object of the class to a JSON string.  The JSON created from an instance
+should round trip to a new instance with the same values for the public
+attributes.  Private attributes (that is ones without accessors,) will be
+ignored for both serialisation and de-serialisation.  The exact behaviour
+depends on that of @code{JSON::Marshal} and @code{JSON::Unmarshal}
+respectively.")
     (license license:artistic2.0)))
 
 (define-public perl6-json-fast
@@ -492,13 +493,13 @@ licences therein.")
 specification - the META file data can be read, created, parsed and written in a
 manner that is conformant with the specification.
 
-Where they are known about it also makes allowance for @quot{customary} usage in
+Where they are known about it also makes allowance for customary usage in
 existing software (such as installers and so forth.)
 
-The intent of this is allow the generation and testing of META files for module
-authors, so it can provide meta-information whether the attributes are mandatory
-as per the spec and where known the places that @quot{customary} attributes are
-used.")
+The intent of this is allow the generation and testing of META files for
+module authors, so it can provide meta-information whether the attributes are
+mandatory as per the spec and where known the places that customary attributes
+are used.")
     (license license:artistic2.0)))
 
 (define-public perl6-mime-base64

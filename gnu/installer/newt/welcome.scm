@@ -95,9 +95,11 @@ installation and reboot."
    (G_ "GNU Guix install")
    (G_ "Welcome to GNU Guix system installer!
 
-Please note that the present graphical installer is still under heavy \
-development, so you might want to prefer using the shell based process. \
-The documentation is accessible at any time by pressing CTRL-ALT-F2.")
+You will be guided through a graphical installation program.
+
+If you are familiar with GNU/Linux and you want tight control over \
+the installation process, you can instead choose manual installation.  \
+Documentation is accessible at any time by pressing Ctrl-Alt-F2.")
    logo
    #:listbox-items
    `((,(G_ "Graphical install using a terminal based interface")

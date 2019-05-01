@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,15 +30,24 @@
   #:use-module (newt)
   #:export (run-final-page))
 
+(define* (strip-prefix file #:optional (prefix (%installer-target-dir)))
+  "Strip PREFIX from FILE, if PREFIX actually is a prefix of FILE."
+  (if (string-prefix? prefix file)
+      (string-drop file (string-length prefix))
+      file))
+
 (define (run-config-display-page)
   (let ((width (%configuration-file-width))
         (height (nearest-exact-integer
                  (/ (screen-rows) 2))))
     (run-file-textbox-page
-     #:info-text (G_ "We're now ready to proceed with the installation! \
+     #:info-text (format #f (G_ "\
+We're now ready to proceed with the installation! \
 A system configuration file has been generated, it is displayed below.  \
+This file will be available as '~a' on the installed system.  \
 The new system will be created from this file once you've pressed OK.  \
 This will take a few minutes.")
+                         (strip-prefix (%installer-configuration-file)))
      #:title (G_ "Configuration file")
      #:file (%installer-configuration-file)
      #:info-textbox-width width
@@ -55,7 +65,10 @@ This will take a few minutes.")
    (G_ "Reboot")
    (G_ "Congratulations!  Installation is now complete.  \
 You may remove the device containing the installation image and \
-press the button to reboot.")))
+press the button to reboot."))
+
+  ;; Return success so that the installer happily reboots.
+  'success)
 
 (define (run-install-failed-page)
   (choice-window
@@ -65,22 +78,25 @@ press the button to reboot.")))
    (G_ "The final system installation step failed.  You can retry the \
 last step, or restart the installer.")))
 
-(define (run-install-shell)
+(define* (run-install-shell locale
+                            #:key (users '()))
   (clear-screen)
   (newt-suspend)
-  (let ((install-ok? (install-system)))
+  (let ((install-ok? (install-system locale #:users users)))
     (newt-resume)
     install-ok?))
 
 (define (run-final-page result prev-steps)
-  (let* ((configuration (format-configuration prev-steps result))
+  (let* ((configuration   (format-configuration prev-steps result))
          (user-partitions (result-step result 'partition))
+         (locale          (result-step result 'locale))
+         (users           (result-step result 'user))
          (install-ok?
           (with-mounted-partitions
            user-partitions
            (configuration->file configuration)
            (run-config-display-page)
-           (run-install-shell))))
+           (run-install-shell locale #:users users))))
     (if install-ok?
         (run-install-success-page)
         (run-install-failed-page))))

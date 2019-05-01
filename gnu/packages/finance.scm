@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -139,7 +139,7 @@ line client and a client based on Qt.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.1.2")
+    (version "3.1.3")
     (source
      (origin
        (method git-fetch)
@@ -148,8 +148,7 @@ line client and a client based on Qt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hwnipj2m9p95hhyv6kyq54m27g14r58gnsy2my883kxhpcyb2vc"))
-       (patches (search-patches "ledger-fix-uninitialized.patch"))))
+        (base32 "0bfnrqrd6wqgsngfpqi30xh6yy86pwl25iwzrqy44q31r0zl4mm3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -242,6 +241,13 @@ in ability, and easy to use.")
          #:tests? #f ; there are none
          #:phases
          (modify-phases %standard-phases
+           (add-before 'build 'patch-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((ledger (assoc-ref inputs "ledger")))
+                 (make-file-writable "ledger-exec.el")
+                 (emacs-substitute-variables "ledger-exec.el"
+                   ("ledger-binary-path" (string-append ledger "/bin/ledger"))))
+               #t))
            (add-after 'build 'build-doc
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((target (string-append (assoc-ref outputs "out")
@@ -261,6 +267,8 @@ in ability, and easy to use.")
                  (rename-file orig-dir dest-dir)
                  (emacs-generate-autoloads ,name dest-dir)
                  #t))))))
+      (inputs
+       `(("ledger" ,ledger)))
       (native-inputs
        `(("emacs-minimal" ,emacs-minimal)
          ("texinfo" ,texinfo)))
@@ -391,7 +399,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "3.3.6")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
@@ -402,7 +410,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "110apc376wm4yd9ghpffiipwdn8rzyr3z7ncpp2516wbz4mmyhxc"))
+         "16fi03f23yb5r9s64x1a9wrxnvivlbawvrbq4d486yclzl1r7y48"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -628,7 +636,7 @@ Monero GUI client.")
 (define-public python-trezor-agent
   (package
     (name "python-trezor-agent")
-    (version "0.13.0")
+    (version "0.13.1")
     (source
      (origin
        (method git-fetch)
@@ -637,7 +645,7 @@ Monero GUI client.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i4igkxi8fwdlbhg6nx27lhnc9v9nmrw4j5fvpnc202n6yjlc7x7"))))
+        (base32 "0q99vbfd3h85s8rnjipnmldixabqmmlk5w9karv6f0rhyi54f4zv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -734,14 +742,14 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.11.1")
+    (version "0.11.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "064yds8f4px0c6grkkanpdjx022g4q87ihzhkmdv9qanv0hz6hv0"))))
+            "1f0zfki12mnhidkfxpx2lpq1xim8f35i2d64bx9lf4m26xxv9x56"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -780,14 +788,14 @@ TREZOR Hardware Wallet.")
 (define-public python-keepkey
   (package
     (name "python-keepkey")
-    (version "6.0.2")
+    (version "6.0.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "keepkey" version))
         (sha256
           (base32
-            "16j8hnxj9r4b2w6kfncmny09pb1al8ppmn59qxzl3qmh1xhpy45g"))))
+            "0z3d0m6364v9dv0njs4cd5m5ai6j6v35xaaxfxl90m9vmyxy81vd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -926,7 +934,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.52.0")
+    (version "0.53.0")
     (source
      (origin
        (method git-fetch)
@@ -937,7 +945,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07liba2d21hb8m3n6yccfamq9yq0ryywh18vs9g2sgywfsnv82lh"))))
+         "1km585xlv6dm693s5x6apcnx3ixvz08g8yjfclszhy4jakhpv0ya"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".

@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -56,14 +56,14 @@
 (define-public cifs-utils
   (package
     (name "cifs-utils")
-    (version "6.8")
+    (version "6.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/linux-cifs/"
-                           name "/" name "-" version ".tar.bz2"))
+                           "cifs-utils/cifs-utils-" version ".tar.bz2"))
        (sha256 (base32
-                "0ygz3pagjpaj5ky11hzh4byyymb7fpmqiqkprn11zwj31h2zdlg7"))))
+                "175cp509wn1zv8p8mv37hkf6sxiskrsxdnq22mhlsg61jazz3n0q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -80,7 +80,8 @@
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-root-sbin
-           (lambda _ ; Don't try to install in "/sbin".
+           (lambda _
+             ;; Don't try to install into "/sbin".
              (setenv "ROOTSBINDIR"
                      (string-append (assoc-ref %outputs "out") "/sbin"))
              #t)))))
@@ -144,7 +145,7 @@ the Linux kernel CIFS client.")
     (home-page "https://github.com/ndevilla/iniparser")
     (synopsis "Standalone ini file parsing library")
     (description
-     "iniparser is a free stand-alone `ini' file parsing library (Windows
+     "iniparser is a free stand-alone @code{ini} file parsing library (Windows
 configuration files).  It is written in portable ANSI C and should compile
 anywhere.")
     (license x11)))
@@ -152,14 +153,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.10.0")
+    (version "4.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0n1ld77y8sydkpx6l8i2hqa1k7hpkr8df91pg849glc4b85407wz"))))
+               "112yizx9cpjhi8c7mh9znqg0c9dkj3383hwr8dhgpykl3g2zv347"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

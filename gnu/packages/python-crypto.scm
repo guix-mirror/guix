@@ -336,13 +336,13 @@ password storage.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2018.11.29")
+    (version "2019.3.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1dvccavd2fzq4j37w0sznylp92ps14zi6gvlxzm23in0yhzciya7"))))
+                "1bnpw7hrf9i1l9gfxjnzi45hkrvzz0pyn9ia8m4mw7sxhgb08qdj"))))
     (build-system python-build-system)
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
@@ -970,14 +970,14 @@ derivation function.")
 (define-public python-service-identity
   (package
     (name "python-service-identity")
-    (version "17.0.0")
+    (version "18.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "service_identity" version))
        (sha256
         (base32
-         "1aq24cn3nnsjr9g797dayhx4g653h6bd41ksqhidzq0rvarzn0a0"))))
+         "0b9f5qiqjy8ralzgwjgkhx82h6h8sa7532psmb8mkd65md5aan08"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)

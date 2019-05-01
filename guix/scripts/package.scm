@@ -58,7 +58,11 @@
             delete-generations
             delete-matching-generations
             display-search-paths
-            guix-package))
+            guix-package
+
+            (%options . %package-options)
+            (%default-options . %package-default-options)
+            guix-package*))
 
 (define %store
   (make-parameter #f))
@@ -278,11 +282,19 @@ path definition to be returned."
                 (evaluate-search-paths search-paths profiles
                                        getenv))))
 
+(define (absolutize file)
+  "Return an absolute file name equivalent to FILE, but without resolving
+symlinks like 'canonicalize-path' would do."
+  (if (string-prefix? "/" file)
+      file
+      (string-append (getcwd) "/" file)))
+
 (define* (display-search-paths entries profiles
                                #:key (kind 'exact))
   "Display the search path environment variables that may need to be set for
 ENTRIES, a list of manifest entries, in the context of PROFILE."
-  (let* ((profiles (map user-friendly-profile profiles))
+  (let* ((profiles (map (compose user-friendly-profile absolutize)
+                        profiles))
          (settings (search-path-environment-variables entries profiles
                                                       #:kind kind)))
     (unless (null? settings)
@@ -891,6 +903,11 @@ processed, #f otherwise."
     (parse-command-line args %options (list %default-options #f)
                         #:argument-handler handle-argument))
 
+  (guix-package* opts))
+
+(define (guix-package* opts)
+  "Run the 'guix package' command on OPTS, an alist resulting for command-line
+option processing with 'parse-command-line'."
   (with-error-handling
     (or (process-query opts)
         (parameterize ((%store  (open-connection))

@@ -115,7 +115,7 @@ configurable through a graphical wizard.")
 (define-public termite
   (package
     (name "termite")
-    (version "14")
+    (version "15")
     (source
       (origin
         (method git-fetch)
@@ -127,7 +127,7 @@ configurable through a graphical wizard.")
         (file-name (string-append name "-" version "-checkout"))
         (sha256
          (base32
-          "0dmz9rpc2fdvcwhcmjnhb48ixn403gxpq03g334d1hgjw2hsyx7x"))))
+          "0hp1x6lj098m3jgna274wv5dv60lnzg22297di68g4hw9djjyd2k"))))
     (build-system gnu-build-system)
     (arguments
       `(#:phases
@@ -249,10 +249,14 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                   "0q62kjsvy2iwy8adfiygx2bfwlh83rphgxbis95ycspqidg9py87"))
                 (patches
                  (search-patches "kmscon-runtime-keymap-switch.patch"))
-                (modules '((guix build utils)))))
+                (modules '((guix build utils)))
+                (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases (modify-phases %standard-phases
+       `(;; The closure of MESA is huge so we'd rather avoid it.
+         #:disallowed-references (,mesa)
+
+         #:phases (modify-phases %standard-phases
                     (replace 'bootstrap
                       (lambda _
                         (setenv "NOCONFIGURE" "indeed")
@@ -285,7 +289,10 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
          ("libtsm" ,libtsm)
          ("libxkbcommon" ,libxkbcommon)
          ("logind" ,elogind)
-         ("mesa" ,mesa)
+         ;; MESA can be used for accelerated video output via OpenGLESv2, but
+         ;; it's a bit dependency that we'd rather avoid in the installation
+         ;; image.
+         ;; ("mesa" ,mesa)
          ("pango" ,pango)
          ("udev" ,eudev)))
       (synopsis "Linux KMS-based terminal emulator")
@@ -377,7 +384,7 @@ to all types of devices that provide serial consoles.")
 (define-public beep
   (package
     (name "beep")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method git-fetch)
@@ -390,7 +397,7 @@ to all types of devices that provide serial consoles.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gramwa2zm59kqjhv96fi8vg7l6lyffv02h0310vb90naschi99g"))))
+        (base32 "1bk7g63qpiclbq20iz2x238by8s1b2iafdim7i6dq1i5n01s7lgx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1042,8 +1049,8 @@ comfortably in a pager or editor.
          (add-after 'unpack 'insert-googletests
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((tests (assoc-ref inputs "googletest")))
-               (invoke "tar" "xvf" tests "-C" "external/googletest"
-                       "--strip-components=1"))))
+               (copy-recursively tests "external/googletest"))
+             #t))
          (add-after 'install 'dont-provide-gtest-libraries
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

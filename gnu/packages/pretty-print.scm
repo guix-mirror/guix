@@ -3,7 +3,8 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -162,7 +163,7 @@ different programming languages.")
 (define-public fmt
   (package
     (name "fmt")
-    (version "4.1.0")
+    (version "5.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -170,14 +171,10 @@ different programming languages.")
                     version "/fmt-" version ".zip"))
               (sha256
                (base32
-                "1swyqw3dn2vx5sw2yh5vk0vrvrkp7fv07cj4272yxl5rrq1byjcx"))))
+                "0p51nhmvjniqlffmmb9djhprnclvm448f2vkdxymvxw307hl21sc"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
-    (arguments
-     `(#:configure-flags
-       (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib"))))
     (home-page "http://fmtlib.net/")
     (synopsis "Small and fast C++ formatting library")
     (description
@@ -244,14 +241,14 @@ seen in a terminal.")
 (define-public highlight
   (package
     (name "highlight")
-    (version "3.49")
+    (version "3.50")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.andre-simon.de/zip/highlight-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "1zlhmlq5fnsxxmm04qfchhl4w2iw5fa6sn81c34q6k2m1m77g6aj"))))
+        (base32 "0frcq12zy3dqfhwwzylm10ydp7zp51w9jlijm23zvx09daslg1bl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

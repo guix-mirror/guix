@@ -103,6 +103,8 @@
             accountsservice-service-type
             accountsservice-service
 
+            cups-pk-helper-service-type
+
             gnome-desktop-configuration
             gnome-desktop-configuration?
             gnome-desktop-service
@@ -149,46 +151,6 @@
     (match (assoc-ref (package-direct-inputs package) input)
       ((package . _) package))))
 
-
-(define (wrapped-dbus-service service program variable value)
-  "Return a wrapper for @var{service}, a package containing a D-Bus service,
-where @var{program} is wrapped such that environment variable @var{variable}
-is set to @var{value} when the bus daemon launches it."
-  (define wrapper
-    (program-file (string-append (package-name service) "-program-wrapper")
-                  #~(begin
-                      (setenv #$variable #$value)
-                      (apply execl (string-append #$service "/" #$program)
-                             (string-append #$service "/" #$program)
-                             (cdr (command-line))))))
-
-  (define build
-    (with-imported-modules '((guix build utils))
-      #~(begin
-          (use-modules (guix build utils))
-
-          (define service-directory
-            "/share/dbus-1/system-services")
-
-          (mkdir-p (dirname (string-append #$output
-                                           service-directory)))
-          (copy-recursively (string-append #$service
-                                           service-directory)
-                            (string-append #$output
-                                           service-directory))
-          (symlink (string-append #$service "/etc") ;for etc/dbus-1
-                   (string-append #$output "/etc"))
-
-          (for-each (lambda (file)
-                      (substitute* file
-                        (("Exec[[:blank:]]*=[[:blank:]]*([[:graph:]]+)(.*)$"
-                          _ original-program arguments)
-                         (string-append "Exec=" #$wrapper arguments
-                                        "\n"))))
-                    (find-files #$output "\\.service$")))))
-
-  (computed-file (string-append (package-name service) "-wrapper")
-                 build))
 
 
 ;;;
@@ -257,8 +219,8 @@ is set to @var{value} when the bus daemon launches it."
 (define (upower-dbus-service config)
   (list (wrapped-dbus-service (upower-configuration-upower config)
                               "libexec/upowerd"
-                              "UPOWER_CONF_FILE_NAME"
-                              (upower-configuration-file config))))
+                              `(("UPOWER_CONF_FILE_NAME"
+                                 ,(upower-configuration-file config))))))
 
 (define (upower-shepherd-service config)
   "Return a shepherd service for UPower with CONFIG."
@@ -389,8 +351,8 @@ users are allowed."
 (define (geoclue-dbus-service config)
   (list (wrapped-dbus-service (geoclue-configuration-geoclue config)
                               "libexec/geoclue"
-                              "GEOCLUE_CONFIG_FILE"
-                              (geoclue-configuration-file config))))
+                              `(("GEOCLUE_CONFIG_FILE"
+                                 ,(geoclue-configuration-file config))))))
 
 (define %geoclue-accounts
   (list (user-group (name "geoclue") (system? #t))
@@ -742,8 +704,8 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
 (define (elogind-dbus-service config)
   (list (wrapped-dbus-service (elogind-package config)
                               "libexec/elogind/elogind"
-                              "ELOGIND_CONF_FILE"
-                              (elogind-configuration-file config))))
+                              `(("ELOGIND_CONF_FILE"
+                                 ,(elogind-configuration-file config))))))
 
 (define (pam-extension-procedure config)
   "Return an extension for PAM-ROOT-SERVICE-TYPE that ensures that all the PAM
@@ -884,9 +846,12 @@ rules."
           (service-extension profile-service-type
                              (compose list
                                       gnome-package))))
+   (default-value (gnome-desktop-configuration))
    (description "Run the GNOME desktop environment.")))
 
-(define* (gnome-desktop-service #:key (config (gnome-desktop-configuration)))
+(define-deprecated (gnome-desktop-service #:key (config
+                                                 (gnome-desktop-configuration)))
+  gnome-desktop-service-type
   "Return a service that adds the @code{gnome} package to the system profile,
 and extends polkit with the actions from @code{gnome-settings-daemon}."
   (service gnome-desktop-service-type config))
@@ -942,10 +907,13 @@ and extends polkit with the actions from @code{mate-settings-daemon}."
                                        "thunar")
                                       xfce-package))
           (service-extension profile-service-type
-                             (compose list
-                                      xfce-package))))))
+                             (compose list xfce-package))))
+   (default-value (xfce-desktop-configuration))
+   (description "Run the Xfce desktop environment.")))
 
-(define* (xfce-desktop-service #:key (config (xfce-desktop-configuration)))
+(define-deprecated (xfce-desktop-service #:key (config
+                                                (xfce-desktop-configuration)))
+  xfce-desktop-service-type
   "Return a service that adds the @code{xfce} package to the system profile,
 and extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
@@ -1072,7 +1040,7 @@ dispatches events from it.")))
 
 (define %desktop-services
   ;; List of services typically useful for a "desktop" use case.
-  (cons* (service slim-service-type)
+  (cons* (service gdm-service-type)
 
          ;; Screen lockers are a pretty useful thing and these are small.
          (screen-locker-service slock)

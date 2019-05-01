@@ -111,7 +111,7 @@ applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.8.1")
+   (version "1.8.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -119,7 +119,7 @@ applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "0ngif3ynk6xqzy5nlfjs7bsmfm81g9f145av0z86kf0vbgrigda0"))
+              "0rqd37pc80nm2pz4sa2m9pfc48axys7jwq1l7z0vii5nyvchg0q8"))
             (patches
              (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))
    (build-system gnu-build-system)
@@ -143,18 +143,35 @@ a server that supports the SSH-2 protocol.")
    (license license:bsd-3)
    (home-page "https://www.libssh2.org/")))
 
+;; XXX A hidden special obsolete libssh2 for temporary use in the curl package.
+;; <https://bugs.gnu.org/34927>
+(define-public libssh2-1.8.0
+  (hidden-package
+    (package
+      (inherit libssh2)
+      (version "1.8.0")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://www.libssh2.org/download/libssh2-"
+                      version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
+                (patches
+                 (search-patches "libssh2-fix-build-failure-with-gcrypt.patch")))))))
+
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.9p1")
+   (version "8.0p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
-             (patches (search-patches "openssh-CVE-2018-20685.patch"))
              (sha256
               (base32
-               "1b8sy6v0b8v4ggmknwcqx3y1rjcpsll0f1f8f4vyv11x4ni3njvb"))))
+               "0s7xh4s0qcipnjh9ls5blxcpvhyd116z9dxn3q1yi64lwrwki55x"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)
                     ("pkg-config" ,pkg-config)))
@@ -451,7 +468,7 @@ TCP, not the SSH protocol.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2019.77")
+    (version "2019.78")
     (source
      (origin
        (method url-fetch)
@@ -459,7 +476,7 @@ TCP, not the SSH protocol.")
              "https://matt.ucc.asn.au/dropbear/releases/"
              "dropbear-" version ".tar.bz2"))
        (sha256
-        (base32 "13a55fcy2mx2pvsfj6dh9107k4wnbd9ybdyi3w3ivgikwvmph7yr"))))
+        (base32 "19242qlr40pbqfqd0gg6h8qpj38q6lgv03ja6sahj9vj2abnanaj"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))  ; there is no "make check" or anything similar
     ;; TODO: Investigate unbundling libtommath and libtomcrypt or at least

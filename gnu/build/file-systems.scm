@@ -575,6 +575,8 @@ corresponds to the symbols listed in FLAGS."
        (logior MS_NODEV (loop rest)))
       (('no-exec rest ...)
        (logior MS_NOEXEC (loop rest)))
+      (('no-atime rest ...)
+       (logior MS_NOATIME (loop rest)))
       (()
        0))))
 

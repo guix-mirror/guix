@@ -33,6 +33,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -112,6 +113,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
@@ -392,7 +394,7 @@ formats like PNG, SVG, PDF and EPS.")
        ("libsoup" ,libsoup)))
     (propagated-inputs
      `(("gcr" ,gcr)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("liboauth" ,liboauth)
        ("libxml2" ,libxml2)))
     (home-page "https://wiki.gnome.org/Projects/libgdata")
@@ -2322,7 +2324,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.54.2.a")
+    (version "0.56.2.a")
     (home-page "https://github.com/thestinger/vte-ng")
     (source (origin
               (method git-fetch)
@@ -2330,10 +2332,11 @@ editors, IDEs, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r7d9m07cpdr4f7rw3yx33hmp4jmsk0dn5byq5wgksb2qjbc4ags"))))
+                "1lmba6i0abifmvvfb1q63ql6zh6d38148kp6skmkggiib2hi5dki"))))
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
+       ("gcc" ,gcc-7)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
@@ -2342,6 +2345,9 @@ editors, IDEs, etc.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
                     (lambda _
+                      ;; Work around GCC7 problem: <https://bugs.gnu.org/30756>.
+                      (for-each unsetenv '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
+
                       (setenv "NOCONFIGURE" "true")
                       (invoke "sh" "autogen.sh"))))))
   (synopsis "Enhanced VTE terminal widget")
@@ -2665,7 +2671,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.66.0")
+    (version "2.66.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2673,7 +2679,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08c9kkdhzy504gv23pfdm4sq3dd3j20sikwz6gv0qrwcdjnw5bai"))))
+                "1zs3bhspwg7fggxd7x1rrggpkcf2j9ch6dhncq9syh252z0vcb2a"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -4308,15 +4314,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.52")
+    (version "0.9.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/d95bf72958276c80dfaca8cce0e4e92c/"
+                                  "uploads/3b2ceb7eb15860587db6886bfdd8a91e/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1s3b0rkm8sxmhzzi624snzqvz61i1rja5wxyzw6jg2kcdjcylwln"))))
+                "1s9gkzxa6457v6bh0q8n1ijq1chd2jwgvhk5kppsnya7kxvsx8qh"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -4375,9 +4381,9 @@ a secret password store, an adblocker, and a modern UI.")
     (version "3.28.3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/epiphany/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "epiphany-" version ".tar.xz"))
               (sha256
                (base32
                 "1xz6xl6b0iihvczyr0cs1z5ifvpai6anb4m0ng1caiph06klc1b9"))))
@@ -5061,7 +5067,23 @@ window manager.")
               (sha256
                (base32
                 "035lmm21imr7ddpzffqabv53g3ggjscmqvlzy3j1qkv00zrlxg47"))))
+    (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--libdir=" (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-libgoa-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (assoc-ref outputs "lib")))
+               (substitute* '("src/goa/Makefile.in" "src/goa/goa-1.0.pc.in")
+                 (("@prefix@") lib)
+                 (("@exec_prefix@") lib)
+                 (("@libdir@") (string-append lib "/lib"))
+                 (("@includedir@") (string-append lib "/include"))
+                 (("@datadir@") (string-append lib "/share")))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -5098,6 +5120,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (sha256
                (base32
                 "11sq795115vrcgxl9svscm6wg8isjj784c3d84qzb6z47zq92zj3"))))
+    (outputs '("out" "libedataserverui"))
     (build-system cmake-build-system)
     (arguments
      '(;; XXX FIXME: 11/85 tests are failing.
@@ -5138,7 +5161,28 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                ;; CMakeLists.txt hard-codes runpath to just the libdir.
                ;; Remove it so the configure flag is respected.
                (("SET\\(CMAKE_INSTALL_RPATH .*") ""))
-             #t)))))
+             #t))
+         (add-after 'install 'split
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (libedsui (assoc-ref outputs "libedataserverui")))
+               (for-each (lambda (file)
+                           (mkdir-p (dirname (string-append libedsui file)))
+                           (rename-file (string-append out file)
+                                        (string-append libedsui file)))
+                         '("/lib/pkgconfig/libedataserverui-1.2.pc"
+                           "/lib/libedataserverui-1.2.so"
+                           "/lib/libedataserverui-1.2.so.2"
+                           "/lib/libedataserverui-1.2.so.2.0.0"
+                           "/lib/girepository-1.0/EDataServerUI-1.2.typelib"
+                           "/include/evolution-data-server/libedataserverui"
+                           "/share/gir-1.0/EDataServerUI-1.2.gir"
+                           "/share/vala/vapi/libedataserverui-1.2.vapi"
+                           "/share/vala/vapi/libedataserverui-1.2.deps"))
+               (substitute* (string-append libedsui "/lib/pkgconfig/"
+                                           "libedataserverui-1.2.pc")
+                 ((out) libedsui))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -5158,7 +5202,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
     (inputs
      `(("bdb" ,bdb)
        ("gcr" ,gcr)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("json-glib" ,json-glib)
        ("libgweather" ,libgweather)
        ("mit-krb5" ,mit-krb5)
@@ -5554,7 +5598,7 @@ libxml2.")
        (modify-phases %standard-phases
          (add-before
           'configure 'pre-configure
-          (lambda* (#:key inputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; We don't have <systemd/sd-daemon.h>.
             (substitute* '("common/gdm-log.c"
                            "daemon/gdm-server.c"
@@ -5622,7 +5666,40 @@ libxml2.")
               (("\"gnome-session\"")
                (string-append "\"" (assoc-ref inputs "gnome-session")
                               "/bin/gnome-session\"")))
+            ;; Do not automatically select the placeholder session.
+            (substitute* "daemon/gdm-session.c"
+              (("!g_str_has_suffix [(]base_name, \"\\.desktop\"[)]")
+               (string-append "!g_str_has_suffix (base_name, \".desktop\") || "
+                              "(g_strcmp0(search_dirs[i], \""
+                              (assoc-ref outputs "out") "/share/gdm/BuiltInSessions/"
+                              "\") == 0 && "
+                              "g_strcmp0(base_name, \"fail.desktop\") == 0)"))
+              (("g_error [(]\"GdmSession: no session desktop files installed, aborting\\.\\.\\.\"[)];")
+               "{ self->priv->fallback_session_name = g_strdup(\"fail\"); goto out; }"))
             #t))
+         ;; GDM requires that there be at least one desktop entry
+         ;; file.  This phase installs a hidden one that simply
+         ;; fails.  This enables users to use GDM with a
+         ;; '~/.xsession' script with no other desktop entry files.
+         ;; See <https://bugs.gnu.org/35068>.
+         (add-after 'install 'install-placeholder-desktop-entry
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sessions (string-append out "/share/gdm/BuiltInSessions"))
+                    (fail (string-append sessions "/fail.desktop")))
+               (mkdir-p sessions)
+               (with-output-to-file fail
+                 (lambda ()
+                   (for-each
+                    display
+                    '("[Desktop Entry]\n"
+                      "Encoding=UTF-8\n"
+                      "Type=Application\n"
+                      "Name=Fail\n"
+                      "Comment=This session fails immediately.\n"
+                      "NoDisplay=true\n"
+                      "Exec=false\n"))))
+               #t)))
          ;; GDM needs GNOME Session to run these applications.  We link
          ;; their autostart files in `share/gdm/greeter/autostart'
          ;; because GDM explicitly tells GNOME Session to look there.
@@ -5774,6 +5851,7 @@ devices using the GNOME desktop.")
        ("gnome-bluetooth" ,gnome-bluetooth)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("grilo" ,grilo)
        ("ibus" ,ibus)
@@ -5859,6 +5937,17 @@ properties, screen resolution, and other GNOME parameters.")
              ;; Convert the logo from SVG to PNG.
              (invoke "inkscape" "--export-png=data/theme/guix-logo.png"
                      "data/theme/guix-logo.svg")))
+         (add-before 'configure 'record-absolute-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "js/misc/ibusManager.js"
+               (("'ibus-daemon'")
+                (string-append "'" (assoc-ref inputs "ibus")
+                               "/bin/ibus-daemon'")))
+             (substitute* "js/ui/status/keyboard.js"
+               (("'gkbd-keyboard-display'")
+                (string-append "'" (assoc-ref inputs "libgnomekbd")
+                               "/bin/gkbd-keyboard-display'")))
+             #t))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Tests require a running X server.
@@ -5878,7 +5967,8 @@ properties, screen resolution, and other GNOME parameters.")
                  `("LD_LIBRARY_PATH" ":" prefix
                    ,(map (lambda (pkg)
                            (string-append (assoc-ref inputs pkg) "/lib"))
-                         '("gnome-bluetooth" "librsvg" "libgweather"))))
+                         '("gdk-pixbuf"
+                           "gnome-bluetooth" "librsvg" "libgweather"))))
                (for-each
                 (lambda (prog)
                   (wrap-program (string-append out "/bin/" prog)
@@ -5915,15 +6005,16 @@ properties, screen resolution, and other GNOME parameters.")
        ("evolution-data-server" ,evolution-data-server)
        ("gcr" ,gcr)
        ("gdm" ,gdm)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("gjs" ,gjs)
        ("gnome-bluetooth" ,gnome-bluetooth)
-       ("gnome-control-center" ,gnome-control-center)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("gst-plugins-base" ,gst-plugins-base)
        ("ibus" ,ibus)
        ("libcanberra" ,libcanberra)
        ("libcroco" ,libcroco)
+       ("libgnomekbd" ,libgnomekbd)               ;for gkbd-keyboard-display
        ("libgweather" ,libgweather)
        ("libsoup" ,libsoup)
        ("mesa-headers" ,mesa-headers)
@@ -6484,7 +6575,7 @@ library.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gnome-online-accounts" ,gnome-online-accounts)
+     `(("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("json-glib" ,json-glib)
        ("rest" ,rest)))
     (home-page "https://wiki.gnome.org/Projects/Zapojit")
@@ -6557,9 +6648,10 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("evolution-data-server" ,evolution-data-server)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libdazzle" ,libdazzle)
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libgweather" ,libgweather)
        ("geoclue" ,geoclue)))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
@@ -6607,11 +6699,12 @@ desktop.  It supports multiple calendars, month, week and year view.")
     (inputs
      `(("rest" ,rest)                   ; For Todoist plugin
        ("json-glib" ,json-glib)         ; For Todoist plugin
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libical" ,libical)
        ("libpeas" ,libpeas)
        ("python-pygobject" ,python-pygobject)
        ("evolution-data-server" ,evolution-data-server)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://wiki.gnome.org/Apps/Todo")
     (synopsis "GNOME's ToDo Application")
@@ -6940,7 +7033,7 @@ compiled.")
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
      `(("json-glib" ,json-glib)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("rest" ,rest)))
     (synopsis "GLib/GObject wrapper for the Facebook API")
     (description "This library allows you to use the Facebook API from
@@ -7822,6 +7915,7 @@ generic enough to work for everyone.")
        ("gtkspell3" ,gtkspell3)
        ("highlight" ,highlight)
        ("libcanberra" ,libcanberra)
+       ("libedataserverui" ,evolution-data-server "libedataserverui")
        ("libgweather" ,libgweather)
        ("libnotify" ,libnotify)
        ("libsoup" ,libsoup)

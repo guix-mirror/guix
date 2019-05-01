@@ -144,6 +144,8 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
     (setenv "GEM_VENDOR" vendor-dir)
 
     (or (zero?
+          ;; 'zero? system*' allows the custom error handling to function as
+          ;; expected, while 'invoke' raises its own exception.
          (apply system* "gem" "install" gem-file
                 "--verbose"
                 "--local" "--ignore-dependencies" "--vendor"

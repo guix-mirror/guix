@@ -2870,7 +2870,7 @@ conversion to (X)HTML.")
    `(("ruby-listen" ,ruby-listen)))
   (synopsis "Run a process, and restart when some monitored files change")
   (description
-    "Rerun is a tool to launch programs, then monitor the filesystem, and
+    "Rerun is a tool to launch programs, then monitor the file system, and
 restart the program when any of the monitored files change.  It's written in
 Ruby, but can be used for all programs.")
   (home-page "https://github.com/alexch/rerun/")
@@ -2986,12 +2986,13 @@ with processes on remote servers, via SSH2.")
     (version "1.2.2.rc2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/net-ssh/net-scp/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/net-ssh/net-scp.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0xyf17mhgvyz54xjj9ria4wnq3x62bhmkfgzqv8jwiip2bplv1nk"))))
+        (base32 "1nyn17sy71fn7zs3y6wbgcn35318c10flqgc0582409095x4h0sx"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
@@ -5260,8 +5261,8 @@ techniques and a terse syntax.")
        ("ruby-netrc" ,ruby-netrc)))
     (native-inputs
      `(("bundler" ,bundler)
-       ("ruby-webmock", ruby-webmock-2)
-       ("ruby-rspec", ruby-rspec)))
+       ("ruby-webmock" ,ruby-webmock-2)
+       ("ruby-rspec" ,ruby-rspec)))
     (synopsis "Simple HTTP and REST client for Ruby")
     (description
      "@code{rest-client} provides a simple HTTP and REST client for Ruby,
@@ -7679,14 +7680,15 @@ strings or files.")
   (package
     (name "ruby-sass-spec")
     (version "3.5.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sass/sass-spec/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0nx8lp7c9qa58w489crgqa3c489xsyarn1a8h4np9mwwfqm1h3rr"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sass/sass-spec.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zsw66830w0xlc7kxz6fm4b5nyb44vdsdgm9mgy06s5aixx83pwr"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-command-line-reporter-3" ,ruby-command-line-reporter-3)

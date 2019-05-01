@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,13 +43,17 @@
   #:use-module (srfi srfi-1)
   #:export (installer-program))
 
-(define not-config?
-  ;; Select (guix …) and (gnu …) modules, except (guix config).
+(define module-to-import?
+  ;; Return true for modules that should be imported.  For (gnu system …) and
+  ;; (gnu packages …) modules, we simply add the whole 'guix' package via
+  ;; 'with-extensions' (to avoid having to rebuild it all), which is why these
+  ;; modules are excluded here.
   (match-lambda
     (('guix 'config) #f)
-    (('guix rest ...) #t)
-    (('gnu rest ...) #t)
-    (rest #f)))
+    (('gnu 'installer _ ...) #t)
+    (('gnu 'build _ ...) #t)
+    (('guix 'build _ ...) #t)
+    (_ #f)))
 
 (define* (build-compiled-file name locale-builder)
   "Return a file-like object that evalutes the gexp LOCALE-BUILDER and store
@@ -86,9 +91,17 @@ version of this file."
 
 (define apply-locale
   ;; Install the specified locale.
-  #~(lambda (locale-name)
-      (false-if-exception
-       (setlocale LC_ALL locale-name))))
+  (with-imported-modules (source-module-closure '((gnu services herd)))
+    #~(lambda (locale)
+        (false-if-exception
+         (setlocale LC_ALL locale))
+
+        ;; Restart the documentation viewer so it displays the manual in
+        ;; language that corresponds to LOCALE.
+        (with-error-to-port (%make-void-port "w")
+          (lambda ()
+            (stop-service 'term-tty2)
+            (start-service 'term-tty2 (list locale)))))))
 
 (define* (compute-locale-step #:key
                               locales-name
@@ -156,7 +169,8 @@ selected keymap."
                (lambda (models layouts)
                  ((installer-keymap-page current-installer)
                   layouts)))))
-        (#$apply-keymap result))))
+        (#$apply-keymap result)
+        result)))
 
 (define (installer-steps)
   (let ((locale-step (compute-locale-step
@@ -168,14 +182,6 @@ selected keymap."
                                         "/share/zoneinfo/zone.tab")))
     #~(lambda (current-installer)
         (list
-         ;; Welcome the user and ask him to choose between manual
-         ;; installation and graphical install.
-         (installer-step
-          (id 'welcome)
-          (compute (lambda _
-                     ((installer-welcome-page current-installer)
-                      #$(local-file "installer/aux-files/logo.txt")))))
-
          ;; Ask the user to choose a locale among those supported by
          ;; the glibc.  Install the selected locale right away, so that
          ;; the user may benefit from any available translation for the
@@ -186,6 +192,14 @@ selected keymap."
           (compute (lambda _
                      (#$locale-step current-installer)))
           (configuration-formatter locale->configuration))
+
+         ;; Welcome the user and ask them to choose between manual
+         ;; installation and graphical install.
+         (installer-step
+          (id 'welcome)
+          (compute (lambda _
+                     ((installer-welcome-page current-installer)
+                      #$(local-file "installer/aux-files/logo.txt")))))
 
          ;; Ask the user to select a timezone under glibc format.
          (installer-step
@@ -208,7 +222,8 @@ selected keymap."
           (id 'keymap)
           (description (G_ "Keyboard mapping selection"))
           (compute (lambda _
-                     (#$keymap-step current-installer))))
+                     (#$keymap-step current-installer)))
+          (configuration-formatter keyboard-layout->configuration))
 
          ;; Run a partitioning tool allowing the user to modify
          ;; partition tables, partitions and their mount points.
@@ -249,8 +264,7 @@ selected keymap."
           (description (G_ "Services"))
           (compute (lambda _
                      ((installer-services-page current-installer))))
-	  (configuration-formatter
-           desktop-environments->configuration))
+	  (configuration-formatter system-services->configuration))
 
 	 (installer-step
           (id 'final)
@@ -293,13 +307,16 @@ selected keymap."
      "gnu/installer"))
 
   (define installer-builder
+    ;; Note: Include GUIX as an extension to get all the (gnu system …), (gnu
+    ;; packages …), etc. modules.
     (with-extensions (list guile-gcrypt guile-newt
                            guile-parted guile-bytestructures
-                           guile-json)
+                           guile-json guile-git guix)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
+                                    (gnu services herd)
                                     (guix build utils))
-                                  #:select? not-config?)
+                                  #:select? module-to-import?)
                                ((guix config) => ,(make-config.scm)))
         #~(begin
             (use-modules (gnu installer record)
@@ -313,6 +330,9 @@ selected keymap."
                          (gnu installer timezone)
                          (gnu installer user)
                          (gnu installer newt)
+                         ((gnu installer newt keymap)
+                          #:select (keyboard-layout->configuration))
+                         (gnu services herd)
                          (guix i18n)
                          (guix build utils)
                          (ice-9 match))
@@ -324,16 +344,40 @@ selected keymap."
             ;; Add some binaries used by the installers to PATH.
             #$set-installer-path
 
+            ;; Arrange for language and territory name translations to be
+            ;; available.  We need them at run time, not just compile time,
+            ;; because some territories have several corresponding languages
+            ;; (e.g., "French" is always displayed as "français", but
+            ;; "Belgium" could be translated to Dutch, French, or German.)
+            (bindtextdomain "iso_639-3"           ;languages
+                            #+(file-append iso-codes "/share/locale"))
+            (bindtextdomain "iso_3166-1"          ;territories
+                            #+(file-append iso-codes "/share/locale"))
+
+            ;; Likewise for XKB keyboard layout names.
+            (bindtextdomain "xkeyboard-config"
+                            #+(file-append xkeyboard-config "/share/locale"))
+
             (let* ((current-installer newt-installer)
                    (steps (#$steps current-installer)))
               ((installer-init current-installer))
 
               (catch #t
                 (lambda ()
-                  (run-installer-steps
-                   #:rewind-strategy 'menu
-                   #:menu-proc (installer-menu-page current-installer)
-                   #:steps steps))
+                  (define results
+                    (run-installer-steps
+                     #:rewind-strategy 'menu
+                     #:menu-proc (installer-menu-page current-installer)
+                     #:steps steps))
+
+                  (match (result-step results 'final)
+                    ('success
+                     ;; We did it!  Let's reboot!
+                     (sync)
+                     (stop-service 'root))
+                    (_                            ;installation failed
+                     ;; TODO: Honor the result of 'run-install-failed-page'.
+                     #f)))
                 (const #f)
                 (lambda (key . args)
                   (let ((error-file "/tmp/last-installer-error"))
@@ -356,4 +400,5 @@ selected keymap."
        ;; some reason, unicode support is not correctly installed
        ;; when calling this in 'installer-builder'.
        (setenv "LANG" "en_US.UTF-8")
-       (system #$(program-file "installer-real" installer-builder)))))
+       (execl #$(program-file "installer-real" installer-builder)
+              "installer-real"))))

@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -91,6 +91,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
@@ -755,14 +756,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1.2")
+    (version "4.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0yrl6nij4b1pk1c4nbi80857dsd760gziiss2ls19awq8zj0lpxr"))))
+               "0gdnprc7gk4b7ckq8wbxbrj7i00r76r9a5g9mj7iln40512j0c0c"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -935,14 +936,14 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.5")
+    (version "3.4.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0b59qk5wpc5ksiha76jbhb859g5gxa4w0k6afh3kgvgajiivs73l"))))
+               "0gmqbhg5jjcfanrxrl657zn12lzz73sfs8xwryfy7n9rn6f2fwim"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -1326,6 +1327,14 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((ytdl (assoc-ref inputs "youtube-dl")))
+              (substitute* "player/lua/ytdl_hook.lua"
+                (("\"youtube-dl\",")
+                 (string-append "\"" ytdl "/bin/youtube-dl\",")))
+              #t)))
          (add-before
           'configure 'setup-waf
           (lambda* (#:key inputs #:allow-other-keys)
@@ -1437,7 +1446,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.03.18")
+    (version "2019.04.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1445,7 +1454,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0r31q7j3gg2zfw3b45jancxl7mmr2gin8dyfx5dgyyp92ss8hih7"))))
+                "1s43adnky8ayhjwmgmiqy6rmmygd4c23v36jhy2lzr2jpn8l53z1"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1841,7 +1850,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.7.2")
+    (version "2.7.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1849,7 +1858,7 @@ for use with HTML5 video.")
                    "avidemux_" version ".tar.gz"))
              (sha256
               (base32
-               "07fdz3y4iln7cizikdjj96dqvp2f8zzhs31ncxxwzdkngn5v8138"))
+               "17x2mnnr5h8pp764p55l1xcn2ljnzhbj8cykajlllvk4rc4qwxld"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1878,7 +1887,7 @@ for use with HTML5 video.")
        ("yasm" ,yasm)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
@@ -2853,7 +2862,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2018.10.17")
+    (version "2019.03.06")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2861,13 +2870,7 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1s69ipvdc6ldscp0cr1zpsll8xc3qcagr95nl84x7b1rbg4xjs3w"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          ;; As of glibc 2.26, <xlocale.h> no longer is.
-                          (substitute* "liveMedia/include/Locale.hh"
-                            (("xlocale\\.h") "locale.h"))
-                          #t))))
+                "1gasdl95yjabv811knkmy5laj21a54z1jdfq36jdj984k1nw5l0b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -3303,7 +3306,7 @@ create smoother and stable videos.")
 (define-public libopenshot
   (package
     (name "libopenshot")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3312,7 +3315,7 @@ create smoother and stable videos.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x4kv05pdq1pglb6y056aa7llc6iyibyhzg93k7zwj0q08cp5ixd"))
+                "0r1qmr8ar5n72603xkj9h065vbpznrqsq88kxxmn9n8djyyvk03k"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Allow overriding of the python installation dir
@@ -3321,9 +3324,7 @@ create smoother and stable videos.")
                              (string-append set " CACHE PATH "
                                             "\"Python bindings directory\")")))
                           (delete-file-recursively "thirdparty")
-                          #t))
-              (patches (search-patches "libopenshot-fixup-tests.patch"
-                                       "libopenshot-tests-with-system-libs.patch"))))
+                          #t))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -3367,7 +3368,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 (define-public openshot
   (package
     (name "openshot")
-    (version "2.4.3")
+    (version "2.4.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3376,10 +3377,15 @@ API.  It includes bindings for Python, Ruby, and other languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qdw1mli4y9qhrnllnkaf6ydgw5vfvdb90chs4i679k0x0jyb9a2"))))
+                "0mg63v36h7l8kv2sgf6x8c1n3ygddkqqwlciz7ccxpbm4x1idqba"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/images/fonts") #t))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)
+       ("font-ubuntu" ,font-ubuntu)
        ("libopenshot" ,libopenshot)
        ("python" ,python)
        ("python-pyqt" ,python-pyqt)
@@ -3388,8 +3394,20 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        ("qtsvg" ,qtsvg)))
     (arguments
      `(#:tests? #f                      ;no tests
+       #:modules ((guix build python-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%python-build-system-modules
+                            (guix build qt-utils))
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
+                  (add-after 'unpack 'patch-font-location
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((font (assoc-ref inputs "font-ubuntu")))
+                        (substitute* "src/classes/app.py"
+                          (("info.IMAGES_PATH") (string-append "\"" font "\""))
+                          (("fonts") "share/fonts/truetype")))
+                      #t))
                   (add-before 'install 'set-tmp-home
                     (lambda _
                       ;; src/classes/info.py "needs" to create several
@@ -3397,12 +3415,10 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                       (setenv "HOME" "/tmp")
                       #t))
                   (add-after 'install 'wrap-program
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (wrap-program (string-append (assoc-ref outputs "out")
-                                                   "/bin/openshot-qt")
-                        `("QT_PLUGIN_PATH" prefix
-                          ,(list (string-append (assoc-ref inputs "qtsvg")
-                                                "/lib/qt5/plugins/")))))))))
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (wrap-qt-program out "openshot-qt"))
+                      #t)))))
     (home-page "https://openshot.org")
     (synopsis "Video editor")
     (description "OpenShot takes your videos, photos, and music files and
@@ -3413,11 +3429,11 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
       (origin
         (method url-fetch)
-        (uri (list ;; The canonical download site
+        (uri (list ;; The canonical download site.
                    (string-append "https://downloads.videolan.org/pub/videolan/"
                                   "dav1d/" version "/dav1d-" version ".tar.xz")
 
@@ -3425,7 +3441,7 @@ transitions, and effects and then export your film to many common formats.")
                    (string-append "https://code.videolan.org/videolan/dav1d/-/"
                                   "archive/" version "/dav1d-" version ".tar.bz2")))
         (sha256
-         (base32 "0cp7harg2gf61v35hyki2ddk9yr0xli9bkk3smxblabmq9rv5cs3"))))
+         (base32 "1llf4v486avj83d31670vdd5nshbq10qrx9vwrm1j078dh4ax4q0"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

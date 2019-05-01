@@ -8,7 +8,10 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Adonay Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,21 +30,41 @@
 
 (define-module (gnu packages telephony)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages upnp)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
@@ -529,3 +552,357 @@ messaging communcations using the SIP protocol.  You can use it for direct IP
 phone to IP phone communication or in a network using a SIP proxy to route your
 calls and messages")
    (license license:gpl2+))))
+
+(define-public pjproject
+  (package
+    (name "pjproject")
+    (version "2.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.pjsip.org/release/" ;
+             version "/" name "-" version ".tar.bz2"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (let ((third-party-directories
+                  (list "BaseClasses" "bdsound" "bin" "g7221" "gsm"
+                        "ilbc" "lib" "milenage" "mp3" "speex" "srtp"
+                        "resample"
+                        ;; Keep only resample, build and README.txt.
+                        "build/baseclasses" "build/g7221" "build/gsm"
+                        "build/ilbc" "build/milenage" "build/samplerate"
+                        "build/speex" "build/srtp"
+                        "build/resample" "build/yuv")))
+             ;; Keep only Makefiles related to resample.
+             (for-each (lambda (file)
+                         (delete-file-recursively
+                          (string-append "third_party/" file)))
+                       third-party-directories)
+             #t)
+           (let ((third-party-dirs
+                  (list "gsm" "ilbc" "speex" "g7221" "srtp"
+                        "portaudio" "resample")))
+             (for-each
+              (lambda (dirs)
+                (substitute* "third_party/build/os-linux.mak"
+                  (((string-append "DIRS += " dirs)) "")))
+              third-party-dirs))))
+       (sha256
+        (base32
+         "0wiph6g51wanzwjjrpwsz63amgvly8g08jz033gnwqmppa584b4w"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("portaudio" ,portaudio)))
+    (propagated-inputs
+     ;; These packages are referenced in the Libs field of the pkg-config
+     ;; file that will be installed by pjproject.
+     `(("speex" ,speex)
+       ("libsrtp" ,libsrtp)
+       ("gnutls" ,gnutls)
+       ("util-linux" ,util-linux)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (arguments
+     `(;; FIXME make: No rule to make target
+       ;; 'pjlib-test-unknown-[something]-gnu'.
+       #:tests? #f
+       ;; #:test-target "selftest"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-dep
+           (lambda _ (invoke "make" "dep")))
+         (add-before 'patch-source-shebangs 'autoconf
+           (lambda _
+             (invoke "autoconf" "-vfi" "-o"
+                     "aconfigure" "aconfigure.ac")))
+         (add-before 'autoconf 'disable-some-tests
+           ;; Three of the six test programs fail due to missing network
+           ;; access.
+           (lambda _
+             (substitute* "Makefile"
+               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
+                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
+             #t)))))
+    (home-page "https://www.pjsip.org")
+    (synopsis "Session Initiation Protocol (SIP) stack")
+    (description "PJProject provides an implementation of the Session
+Initiation Protocol (SIP) and a multimedia framework.")
+    (license license:gpl2+)))
+
+(define %jami-version "20190319.4.a16a99f")
+
+(define* (jami-source #:key without-daemon)
+  (origin
+    (method url-fetch)
+    (uri (string-append "http://dl.jami.net/ring-release/tarballs/ring_"
+                        %jami-version
+                        ".tar.gz"))
+    (modules '((guix build utils)))
+    (snippet
+     (if without-daemon
+       '(begin
+          (delete-file-recursively "daemon/contrib"))
+       #f))
+    (sha256
+     (base32
+      "1c6n6sm7skw83v25g33g4jzbragz9j4przbzaz7asxw54jy33dwl"))))
+
+(define-public pjproject-jami
+  (package
+    (inherit pjproject)
+    (name "pjproject-jami")
+    (native-inputs
+     `(("savoir-faire-linux-patches" ,(jami-source))
+       ,@(package-native-inputs pjproject)))
+    (arguments
+     `(#:tests? #f
+       ;; See ring-project/daemon/contrib/src/pjproject/rules.mak.
+       #:configure-flags
+       (list "--disable-oss"
+             "--disable-sound"
+             "--disable-video"
+             "--enable-ext-sound"
+             "--disable-speex-aec"
+             "--disable-g711-codec"
+             "--disable-l16-codec"
+             "--disable-gsm-codec"
+             "--disable-g722-codec"
+             "--disable-g7221-codec"
+             "--disable-speex-codec"
+             "--disable-ilbc-codec"
+             "--disable-opencore-amr"
+             "--disable-silk"
+             "--disable-sdl"
+             "--disable-ffmpeg"
+             "--disable-v4l2"
+             "--disable-openh264"
+             "--disable-resample"
+             "--disable-libwebrtc"
+             ;; "-fPIC" is required for libring.  Bug?
+             "CFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
+             "CXXFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
+             ;; Now deviating from the rules.mak file.
+             "--enable-ssl=gnutls"
+             "--with-external-srtp")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'apply-patches
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((savoir-faire-linux-patches-directory "Savoir-faire Linux patches")
+                   ;; Comes from
+                   ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
+                   ;; WARNING: These amount for huge changes in pjproject.
+                   ;; Particularly, they add support for GnuTLS.
+                   (savoir-faire-linux-patches
+                    '("gnutls"
+                      "rfc2466"
+                      "ipv6"
+                      "ice_config"
+                      "multiple_listeners"
+                      "pj_ice_sess"
+                      "fix_turn_fallback"
+                      "fix_ioqueue_ipv6_sendto"
+                      "add_dtls_transport"
+                      "rfc6062")))
+               (mkdir-p savoir-faire-linux-patches-directory)
+               (invoke "tar" "-xvf" (assoc-ref inputs "savoir-faire-linux-patches")
+                       "-C" savoir-faire-linux-patches-directory "--strip-components=5" "ring-project/daemon/contrib/src/pjproject")
+               (for-each
+                (lambda (file)
+                  (invoke "patch" "--force" "-p1" "-i"
+                          (string-append savoir-faire-linux-patches-directory "/"
+                                         file ".patch")))
+                savoir-faire-linux-patches))
+             #t))
+         ;; TODO: We could use substitute-keyword-arguments instead of
+         ;; repeating the phases from pjproject, but somehow it does
+         ;; not work.
+         (add-before 'build 'build-dep
+           (lambda _ (invoke "make" "dep")))
+         (add-before 'patch-source-shebangs 'autoconf
+           (lambda _
+             (invoke "autoconf" "-v" "-f" "-i" "-o"
+                     "aconfigure" "aconfigure.ac")))
+         (add-before 'autoconf 'disable-some-tests
+           ;; Three of the six test programs fail due to missing network
+           ;; access.
+           (lambda _
+             (substitute* "Makefile"
+               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
+                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
+             #t)))))))
+
+(define-public libring
+  (package
+    (name "libring")
+    (version %jami-version)
+    (source (jami-source #:without-daemon #t))
+    (build-system gnu-build-system)
+    (inputs
+     ;; Missing (optional?) dep: libnatpmp.
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("dbus-c++" ,dbus-c++)
+       ("eudev" ,eudev)
+       ("ffmpeg" ,ffmpeg)
+       ("flac" ,flac)
+       ("gmp" ,gmp)
+       ("gsm" ,gsm)
+       ("jack" ,jack-1)
+       ("jsoncpp" ,jsoncpp)
+       ("libogg" ,libogg)
+       ("libva" ,libva)
+       ("opendht" ,opendht)
+       ("opus" ,opus)
+       ("pcre" ,pcre)
+       ("pulseaudio" ,pulseaudio)
+       ("libsamplerate" ,libsamplerate)
+       ("libsndfile" ,libsndfile)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("libupnp" ,libupnp)
+       ("libvorbis" ,libvorbis)
+       ("libx264" ,libx264)
+       ("libvdpau" ,libvdpau)
+       ("yaml-cpp" ,yaml-cpp)
+       ("zlib" ,zlib)
+       ("openssl" ,openssl)
+       ("libsecp256k1" ,libsecp256k1)
+       ("python" ,python)
+       ("python-wrapper" ,python-wrapper)
+       ("restbed" ,restbed)
+       ("libx11" ,libx11)
+       ;; TODO: Upstream seems to rely on a custom pjproject (a.k.a. pjsip) version.
+       ;; See https://git.jami.net/savoirfairelinux/ring-daemon/issues/24.
+       ("pjproject" ,pjproject-jami)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)
+       ("cppunit" ,cppunit)
+       ("perl" ,perl)))                 ; Needed for documentation.
+    (arguments
+     `(#:tests? #f         ; The tests fail to compile due to missing headers.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "daemon")
+             #t))
+         (add-before 'build 'add-lib-dir
+           (lambda _
+             (mkdir-p "src/lib")
+             #t)))))
+    (synopsis "Distributed multimedia communications platform")
+    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
+video and chat communication platform that requires no centralized server and
+leaves the power of privacy in the hands of the user.  It supports the SIP and
+IAX protocols, as well as decentralized calling using P2P-DHT.
+
+This package provides a library and daemon implementing the Jami core
+functionality.")
+    (home-page "https://jami.net/")
+    (license license:gpl3+)))
+
+(define-public libringclient
+  (package
+    (inherit libring)
+    (name "libringclient")
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("libring" ,libring)     ; For 'dring'.
+       ("qtbase" ,qtbase)       ; Qt is included in several installed headers.
+       ("qttools" ,qttools)))
+    (arguments
+     `(#:tests? #f                      ; There is no testsuite.
+       #:configure-flags
+       (list (string-append "-DRING_BUILD_DIR="
+                            (assoc-ref %build-inputs "libring") "/include"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "lrc")
+             #t))
+         (add-before 'configure 'fix-dbus-interfaces-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("\\$\\{CMAKE_INSTALL_PREFIX\\}(/share/dbus-1/interfaces)" _ dbus-interfaces-path-suffix)
+                (string-append (assoc-ref inputs "libring")
+                               dbus-interfaces-path-suffix))))))))
+    (synopsis "Distributed multimedia communications platform")
+    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
+video and chat communication platform that requires no centralized server and
+leaves the power of privacy in the hands of the user.  It supports the SIP and
+IAX protocols, as well as decentralized calling using P2P-DHT.
+
+This package provides a library common to all Jami clients.")
+    (home-page "https://jami.net")
+    (license license:gpl3+)))
+
+(define-public jami-client-gnome
+  (package
+    (inherit libring)
+    (name "jami-client-gnome")
+    (build-system cmake-build-system)
+    (inputs
+     `(("libringclient" ,libringclient)
+       ("gtk+" ,gtk+)
+       ("qrencode" ,qrencode)
+       ("libnotify" ,libnotify)
+       ("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("gettext" ,gnu-gettext)
+       ("libcanberra" ,libcanberra)
+       ("webkitgtk" ,webkitgtk)
+       ;; TODO: We must wrap ring-client-gnome to force using the
+       ;; `sqlite-with-column-metadata' package instead of `sqlite' or else it
+       ;; fails with:
+       ;;
+       ;;   /gnu/store/...-qtbase-5.11.2/lib/qt5/plugins/sqldrivers/libqsqlite.so:
+       ;;   undefined symbol: sqlite3_column_table_name16
+       ;;
+       ;; qtbase is built against sqlite-with-column-metadata but somehow
+       ;; jami-client-gnome ends up with both `sqlite' and
+       ;; `sqlite-with-column-metadata' as inputs and it seems that
+       ;; libqsqlite.so gets confused.
+       ("sqlite" ,sqlite-with-column-metadata)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")
+       ("doxygen" ,doxygen)))
+    (propagated-inputs
+     `(("libring" ,libring)             ; Contains `dring', the daemon, which is automatically by d-bus.
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("evolution-data-server" ,evolution-data-server)))
+    (arguments
+     `(#:tests? #f                      ; There is no testsuite.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "client-gnome")
+             #t))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (string-append (assoc-ref inputs "sqlite") "/lib")))
+               (wrap-program (string-append out "/bin/gnome-ring")
+                 `("LD_LIBRARY_PATH" ":" prefix (,path))))
+             #t)))))
+    (synopsis "Distributed multimedia communications platform")
+    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
+video and chat communication platform that requires no centralized server and
+leaves the power of privacy in the hands of the user.  It supports the SIP and
+IAX protocols, as well as decentralized calling using P2P-DHT.
+
+This package provides the Jami client for the GNOME desktop.")
+    (home-page "https://jami.net")
+    (license license:gpl3+)))

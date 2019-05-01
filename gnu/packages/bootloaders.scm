@@ -90,7 +90,8 @@
               (base32
                "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))
              (patches (search-patches "grub-check-error-efibootmgr.patch"
-                                      "grub-binutils-compat.patch"))))
+                                      "grub-binutils-compat.patch"
+                                      "grub-efi-fat-serial-number.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -378,7 +379,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2019.01")
+    (version "2019.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -386,7 +387,10 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "08hwsmh5xsb1gcxsv8gvx00bai938dm5y3889n8jif3a8rd7xgah"))))
+                "1vwv4bgbl7fjcm073zrphn17hnz5h5h778f88ivdsgbb2lnpgdvn"))
+              (patches
+               (search-patches
+                "u-boot-fix-mkimage-header-verification.patch"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -441,6 +445,10 @@ also initializes the boards (RAM etc).")
               (("def test_ctrl_c")
                "@pytest.mark.skip(reason='Guix has problems with SIGINT')
 def test_ctrl_c"))
+             ;; Test against the tools being installed rather than tools built
+             ;; for "sandbox" target.
+             (substitute* "test/image/test-imagetools.sh"
+               (("BASEDIR=sandbox") "BASEDIR=."))
              (for-each (lambda (file)
                               (substitute* file
                                   ;; Disable signatures, due to GPL/Openssl
@@ -483,12 +491,19 @@ def test_ctrl_c"))
            (delete 'check)
            (add-after 'install 'check
              (lambda* (#:key make-flags test-target #:allow-other-keys)
-               (apply invoke "make" "mrproper" make-flags)
-               (setenv "SDL_VIDEODRIVER" "dummy")
-               (setenv "PAGER" "cat")
-               (apply invoke "make" test-target make-flags)
-               (symlink "build-sandbox_spl" "sandbox")
-               (invoke "test/image/test-imagetools.sh"))))))
+               (invoke "test/image/test-imagetools.sh")))
+           ;; Only run full test suite on x86_64 systems, as many tests
+           ;; assume x86_64.
+           ,@(if (string-match "^x86_64-linux"
+                               (or (%current-target-system)
+                                   (%current-system)))
+                 '((add-after 'check 'check-x86
+                     (lambda* (#:key make-flags test-target #:allow-other-keys)
+                       (apply invoke "make" "mrproper" make-flags)
+                       (setenv "SDL_VIDEODRIVER" "dummy")
+                       (setenv "PAGER" "cat")
+                       (apply invoke "make" test-target make-flags))))
+                 '()))))
     (description "U-Boot is a bootloader used mostly for ARM boards.  It
 also initializes the boards (RAM etc).  This package provides its
 board-independent tools.")))
@@ -577,8 +592,32 @@ board-independent tools.")))
 (define-public u-boot-malta
   (make-u-boot-package "malta" "mips64el-linux-gnuabi64"))
 
-(define-public u-boot-beagle-bone-black
-  (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
+(define-public u-boot-am335x-boneblack
+  (let ((base (make-u-boot-package "am335x_evm" "arm-linux-gnueabihf")))
+    (package
+      (inherit base)
+      (name "u-boot-am335x-boneblack")
+      (description "U-Boot is a bootloader used mostly for ARM boards. It
+also initializes the boards (RAM etc).
+
+This U-Boot is built for the BeagleBone Black, which was removed upstream,
+adjusted from the am335x_evm build with several device trees removed so that
+it fits within common partitioning schemes.")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'patch-defconfig
+               ;; Patch out other devicetrees to build image small enough to
+               ;; fit within typical partitioning schemes where the first
+               ;; partition begins at sector 2048.
+               (lambda _
+                 (substitute* "configs/am335x_evm_defconfig"
+                   (("CONFIG_OF_LIST=.*$") "CONFIG_OF_LIST=\"am335x-evm am335x-boneblack\"\n"))
+                 #t)))))))))
+
+(define-public u-boot-am335x-evm
+  (make-u-boot-package "am335x_evm" "arm-linux-gnueabihf"))
 
 (define-public (make-u-boot-sunxi64-package board triplet)
   (let ((base (make-u-boot-package board triplet)))
@@ -637,7 +676,7 @@ board-independent tools.")))
 also initializes the boards (RAM etc).
 
 This U-Boot is built for Novena.  Be advised that this version, contrary
-to Novena upstream, does not load u-boot.img from the first patition.")
+to Novena upstream, does not load u-boot.img from the first partition.")
       (arguments
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
@@ -647,7 +686,7 @@ to Novena upstream, does not load u-boot.img from the first patition.")
                ;; allowing it to be installed at a device offset.
                (lambda _
                  (substitute* "configs/novena_defconfig"
-                   (("CONFIG_SPL_FAT_SUPPORT=y") "# CONFIG_SPL_FAT_SUPPORT is not set"))
+                   (("CONFIG_SPL_FS_FAT=y") "# CONFIG_SPL_FS_FAT is not set"))
                  #t)))))))))
 
 (define-public u-boot-cubieboard

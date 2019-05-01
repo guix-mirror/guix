@@ -79,8 +79,8 @@ unused by the time you create anything with that name, but a good shot."
 (define* (get-temp-link target #:optional (link-prefix (dirname target)))
   "Like mkstemp!, but instead of creating a new file and giving you the name,
 it creates a new hardlink to TARGET and gives you the name. Since
-cross-filesystem hardlinks don't work, the temp link must be created on the
-same filesystem - where in that filesystem it is can be controlled by
+cross-file-system hardlinks don't work, the temp link must be created on the
+same file system - where in that file system it is can be controlled by
 LINK-PREFIX."
   (let try ((tempname (tempname-in link-prefix)))
     (catch 'system-error

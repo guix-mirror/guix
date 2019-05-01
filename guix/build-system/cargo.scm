@@ -59,13 +59,17 @@ to NAME and VERSION."
 (define %cargo-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build cargo-build-system)
+    (json parser)
     ,@%cargo-utils-modules))
 
 (define* (cargo-build store name inputs
                       #:key
                       (tests? #t)
                       (test-target #f)
+                      (vendor-dir "guix-vendor")
                       (cargo-build-flags ''("--release"))
+                      (cargo-test-flags ''("--release"))
+                      (skip-build? #f)
                       (phases '(@ (guix build cargo-build-system)
                                   %standard-phases))
                       (outputs '("out"))
@@ -90,8 +94,11 @@ to NAME and VERSION."
                                  source))
                     #:system ,system
                     #:test-target ,test-target
+                    #:vendor-dir ,vendor-dir
                     #:cargo-build-flags ,cargo-build-flags
-                    #:tests? ,tests?
+                    #:cargo-test-flags ,cargo-test-flags
+                    #:skip-build? ,skip-build?
+                    #:tests? ,(and tests? (not skip-build?))
                     #:phases ,phases
                     #:outputs %outputs
                     #:search-paths ',(map search-path-specification->sexp

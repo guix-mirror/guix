@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,17 +31,11 @@
   #:export (run-locale-page))
 
 (define (run-language-page languages language->text)
-  (let ((title (G_ "Locale language")))
+  (define result
     (run-listbox-selection-page
-     #:title title
-     #:info-text (G_ "Choose the locale's language to be used for the \
-installation process. A locale is a regional variant of your language \
-encompassing number, date and currency format, among other details.
-
-Based on the language you choose, you will possibly be asked to \
-select a locale's territory, codeset and modifier in the next \
-steps. The locale will also be used as the default one for the \
-installed system.")
+     #:title (G_ "Locale language")
+     #:info-text (G_ "Choose the language to use for the \
+installation process and for the installed system.")
      #:info-textbox-width 70
      #:listbox-items languages
      #:listbox-item->text language->text
@@ -50,14 +45,19 @@ installed system.")
      (lambda _
        (raise
         (condition
-         (&installer-step-abort)))))))
+         (&installer-step-abort))))))
+
+  ;; Immediately install the chosen language so that the territory page that
+  ;; comes after (optionally) is displayed in the chosen language.
+  (setenv "LANGUAGE" result)
+
+  result)
 
 (define (run-territory-page territories territory->text)
   (let ((title (G_ "Locale location")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose your locale's location. This is a shortlist of \
-locations based on the language you selected.")
+     #:info-text (G_ "Choose a territory for this language.")
      #:listbox-items territories
      #:listbox-item->text territory->text
      #:button-text (G_ "Back")
@@ -71,8 +71,7 @@ locations based on the language you selected.")
   (let ((title (G_ "Locale codeset")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Choose your locale's codeset. If UTF-8 is available, \
- it should be preferred.")
+     #:info-text (G_ "Choose the locale encoding.")
      #:listbox-items codesets
      #:listbox-item->text identity
      #:listbox-default-item "UTF-8"
@@ -163,7 +162,13 @@ glibc locale string and return it."
          (run-language-page
           (sort-languages
            (delete-duplicates (map locale-language supported-locales)))
-          (cut language-code->language-name iso639-languages <>)))))
+          (lambda (language)
+            (let ((english (language-code->language-name iso639-languages
+                                                         language)))
+              (setenv "LANGUAGE" language)
+              (let ((native (gettext english "iso_639-3")))
+                (unsetenv "LANGUAGE")
+                native)))))))
      (installer-step
       (id 'territory)
       (compute
@@ -177,10 +182,11 @@ glibc locale string and return it."
            ;; supported by the previously selected language.
            (run-territory-page
             (delete-duplicates (map locale-territory locales))
-            (lambda (territory-code)
-              (if territory-code
-                  (territory-code->territory-name iso3166-territories
-                                                  territory-code)
+            (lambda (territory)
+              (if territory
+                  (let ((english (territory-code->territory-name
+                                  iso3166-territories territory)))
+                    (gettext english "iso_3166-1"))
                   (G_ "No location"))))))))
      (installer-step
       (id 'codeset)
@@ -191,9 +197,11 @@ glibc locale string and return it."
            ;; narrow down the search of a locale.
            (break-on-locale-found locales)
 
-           ;; Otherwise, ask for a codeset.
-           (run-codeset-page
-            (delete-duplicates (map locale-codeset locales)))))))
+           ;; Otherwise, choose a codeset.
+           (let ((codesets (delete-duplicates (map locale-codeset locales))))
+             (if (member "UTF-8" codesets)
+                 "UTF-8"                          ;don't even ask
+                 (run-codeset-page codesets)))))))
      (installer-step
       (id 'modifier)
       (compute

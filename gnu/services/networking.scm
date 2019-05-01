@@ -985,7 +985,14 @@ wireless networking."))))
                       (list (string-append #$connman
                                            "/sbin/connmand")
                             "-n" "-r"
-                            #$@(if disable-vpn? '("--noplugin=vpn") '()))))
+                            #$@(if disable-vpn? '("--noplugin=vpn") '()))
+
+                      ;; As connman(8) notes, when passing '-n', connman
+                      ;; "directs log output to the controlling terminal in
+                      ;; addition to syslog."  Redirect stdout and stderr
+                      ;; to avoid spamming the console (XXX: for some reason
+                      ;; redirecting to /dev/null doesn't work.)
+                      #:log-file "/var/log/connman.log"))
             (stop #~(make-kill-destructor)))))))
 
 (define connman-service-type
@@ -1060,12 +1067,13 @@ networking."))))
      (list (shepherd-service
             (documentation "Run the WPA supplicant daemon")
             (provision '(wpa-supplicant))
-            (requirement '(user-processes dbus-system loopback))
+            (requirement '(user-processes dbus-system loopback syslogd))
             (start #~(make-forkexec-constructor
                       (list (string-append #$wpa-supplicant
                                            "/sbin/wpa_supplicant")
                             (string-append "-P" #$pid-file)
                             "-B"        ;run in background
+                            "-s"        ;log to syslogd
                             #$@(if dbus?
                                    #~("-u")
                                    #~())
@@ -1154,7 +1162,8 @@ implements authentication, key negotiation and more for wireless networks.")
    (description
     "Run @uref{http://www.openvswitch.org, Open vSwitch}, a multilayer virtual
 switch designed to enable massive network automation through programmatic
-extension.")))
+extension.")
+   (default-value (openvswitch-configuration))))
 
 ;;;
 ;;; iptables

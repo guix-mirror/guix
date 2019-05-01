@@ -46,6 +46,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/grub.scm                       \
   %D%/bootloader/extlinux.scm                   \
   %D%/bootloader/u-boot.scm                     \
+  %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
@@ -230,6 +231,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gxmessage.scm			\
   %D%/packages/hardware.scm			\
   %D%/packages/haskell.scm			\
+  %D%/packages/haskell-apps.scm			\
   %D%/packages/haskell-check.scm		\
   %D%/packages/haskell-crypto.scm		\
   %D%/packages/haskell-web.scm			\
@@ -341,6 +343,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ninja.scm			\
   %D%/packages/node.scm				\
   %D%/packages/noweb.scm			\
+  %D%/packages/nss.scm				\
   %D%/packages/ntp.scm				\
   %D%/packages/nutrition.scm			\
   %D%/packages/nvi.scm				\
@@ -371,6 +374,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/php.scm				\
   %D%/packages/pkg-config.scm			\
   %D%/packages/plotutils.scm			\
+  %D%/packages/poedit.scm				\
   %D%/packages/polkit.scm			\
   %D%/packages/popt.scm				\
   %D%/packages/printers.scm			\
@@ -538,6 +542,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/accounts.scm			\
   %D%/system/file-systems.scm			\
   %D%/system/install.scm			\
+  %D%/system/keyboard.scm			\
   %D%/system/linux-container.scm		\
   %D%/system/linux-initrd.scm			\
   %D%/system/locale.scm				\
@@ -582,9 +587,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/virtualization.scm			\
   %D%/tests/web.scm
 
-if ENABLE_INSTALLER
-
-GNU_SYSTEM_MODULES +=                           \
+INSTALLER_MODULES =                             \
   %D%/installer.scm      			\
   %D%/installer/connman.scm			\
   %D%/installer/final.scm			\
@@ -616,12 +619,18 @@ GNU_SYSTEM_MODULES +=                           \
   %D%/installer/newt/welcome.scm		\
   %D%/installer/newt/wifi.scm	
 
+# Always ship the installer modules but compile them only when
+# ENABLE_INSTALLER is true.
+if ENABLE_INSTALLER
+GNU_SYSTEM_MODULES += $(INSTALLER_MODULES)
+else !ENABLE_INSTALLER
+MODULES_NOT_COMPILED += $(INSTALLER_MODULES)
+endif
+
 installerdir = $(guilemoduledir)/%D%/installer
 dist_installer_DATA =				\
   %D%/installer/aux-files/logo.txt	        \
   %D%/installer/aux-files/SUPPORTED
-
-endif ENABLE_INSTALLER
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
@@ -674,6 +683,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
+  %D%/packages/patches/bind-fix-unused-pk11-ecc-constants.patch	\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
@@ -728,6 +738,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/docker-engine-test-noinstall.patch	\
   %D%/packages/patches/docker-fix-tests.patch			\
+  %D%/packages/patches/docker-use-fewer-modprobes.patch		\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
@@ -742,7 +753,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
+  %D%/packages/patches/emacs-undohist-ignored.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
+  %D%/packages/patches/emacs-zones-called-interactively.patch	\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
@@ -767,6 +780,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-makedev.patch			\
   %D%/packages/patches/findutils-test-xargs.patch		\
+  %D%/packages/patches/flac-CVE-2017-6888.patch		\
   %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
@@ -862,6 +876,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/grub-binutils-compat.patch		\
   %D%/packages/patches/grub-check-error-efibootmgr.patch	\
+  %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/gst-plugins-good-libvpx-compat.patch	\
@@ -909,6 +924,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
+  %D%/packages/patches/idris-test-no-node.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/inkscape-poppler-compat3.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
@@ -928,6 +944,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/libziparchive-add-includes.patch		\
+  %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kiki-level-selection-crash.patch		\
   %D%/packages/patches/kiki-makefile.patch			\
   %D%/packages/patches/kiki-missing-includes.patch		\
@@ -937,7 +954,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/kio-search-smbd-on-PATH.patch		\
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
-  %D%/packages/patches/knot-include-system-lmdb-header.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
@@ -945,11 +961,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
+  %D%/packages/patches/kodi-set-libcurl-ssl-parameters.patch		\
   %D%/packages/patches/kodi-skip-test-449.patch		\
   %D%/packages/patches/laby-make-install.patch			\
+  %D%/packages/patches/lcms-CVE-2018-16435.patch		\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
-  %D%/packages/patches/ledger-fix-uninitialized.patch		\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -982,8 +999,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
-  %D%/packages/patches/libopenshot-fixup-tests.patch		\
-  %D%/packages/patches/libopenshot-tests-with-system-libs.patch	\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
@@ -1017,7 +1032,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
-  %D%/packages/patches/linkchecker-mark-more-tests-that-require-the-network.patch	\
+  %D%/packages/patches/linkchecker-tests-require-network.patch	\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
@@ -1065,6 +1080,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mrrescue-support-love-11.patch		\
   %D%/packages/patches/mrustc-0.8.0-fix-variable-length-integer-receiving.patch \
+  %D%/packages/patches/mtools-mformat-uninitialized.patch	\
   %D%/packages/patches/mumble-1.2.19-abs.patch			\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
@@ -1083,6 +1099,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
+  %D%/packages/patches/ntfs-3g-CVE-2019-9755.patch		\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
@@ -1093,6 +1110,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-Add-a-.file-directive.patch	\
   %D%/packages/patches/ocaml-enable-ocamldoc-reproducibility.patch	\
+  %D%/packages/patches/ocaml-dose3-add-unix-dependency.patch	\
+  %D%/packages/patches/ocaml-dose3-Fix-for-ocaml-4.06.patch	\
+  %D%/packages/patches/ocaml-dose3-dont-make-printconf.patch	\
+  %D%/packages/patches/ocaml-dose3-Install-mli-cmx-etc.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
@@ -1102,7 +1123,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
-  %D%/packages/patches/openssh-CVE-2018-20685.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
@@ -1181,6 +1201,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
+  %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\
@@ -1188,6 +1209,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
+  %D%/packages/patches/python-robotframework-honor-source-date-epoch.patch \
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
@@ -1201,9 +1223,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
-  %D%/packages/patches/quilt-test-fix-regex.patch		\
-  %D%/packages/patches/quilt-getopt-nondigit-param.patch	\
-  %D%/packages/patches/quilt-getopt-second-separator.patch	\
   %D%/packages/patches/qtwebkit-pbutils-include.patch		\
   %D%/packages/patches/randomjungle-disable-static-build.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
@@ -1215,7 +1234,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
   %D%/packages/patches/red-eclipse-remove-gamma-name-hack.patch	\
   %D%/packages/patches/reposurgeon-add-missing-docbook-files.patch	\
-  %D%/packages/patches/reptyr-fix-gcc-7.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rtags-separate-rct.patch			\
@@ -1252,8 +1270,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/snappy-add-O2-flag-in-CmakeLists.txt.patch	\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
-  %D%/packages/patches/soundtouch-CVE-2018-14044-14045.patch 	\
-  %D%/packages/patches/soundtouch-CVE-2018-1000223.patch 	\
   %D%/packages/patches/sssd-curl-compat.patch			\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
@@ -1263,7 +1279,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/swig-guile-gc.patch			\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
-  %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
   %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
@@ -1277,9 +1292,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/teensy-loader-cli-help.patch		\
   %D%/packages/patches/teeworlds-use-latest-wavpack.patch	\
   %D%/packages/patches/texinfo-5-perl-compat.patch		\
+  %D%/packages/patches/texlive-bin-CVE-2018-17407.patch		\
   %D%/packages/patches/texlive-bin-luatex-poppler-compat.patch	\
-  %D%/packages/patches/texlive-bin-pdftex-poppler-compat.patch	\
-  %D%/packages/patches/texlive-bin-xetex-poppler-compat.patch	\
   %D%/packages/patches/telegram-purple-adjust-test.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
@@ -1296,6 +1310,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
+  %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
   %D%/packages/patches/unzip-CVE-2014-8141.patch		\
@@ -1329,6 +1344,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wavpack-CVE-2018-6767.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
+  %D%/packages/patches/webkitgtk-sse2.patch			\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\

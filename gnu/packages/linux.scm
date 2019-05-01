@@ -77,7 +77,6 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libunwind)
@@ -90,6 +89,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -118,6 +118,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system linux-module)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -254,10 +255,17 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (file (string-append "linux-libre/" name)))
     (search-auxiliary-file file)))
 
+;; FIXME: merge into kernel-config
+(define* (kernel-config-veyron arch #:key variant)
+  "Return the absolute file name of the Linux-Libre build configuration file
+for ARCH and optionally VARIANT, or #f if there is no such configuration."
+  (let* ((name (string-append (if variant (string-append variant "-") "")
+                              (if (string=? "i386" arch) "i686" arch) "-veyron.conf"))
+         (file (string-append "linux-libre/" name)))
+    (search-auxiliary-file file)))
+
 (define %default-extra-linux-options
-  `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
-    ;; Modules required for initrd:
+  `(;; Modules required for initrd:
     ("CONFIG_NET_9P" . m)
     ("CONFIG_NET_9P_VIRTIO" . m)
     ("CONFIG_VIRTIO_BLK" . m)
@@ -383,7 +391,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                     (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
                ;; Install kernel image, kernel configuration and link map.
                (for-each (lambda (file) (install-file file out))
-                         (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map)$"))
+                         (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map|Module\\.symvers)$"))
                ;; Install device tree files
                (unless (null? (find-files "." "\\.dtb$"))
                  (mkdir-p dtbdir)
@@ -406,8 +414,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0.3")
-(define %linux-libre-hash "1ivdqr3y8r2hmv3a1g0a641cr2ckl3x4arapw0j6nwd0sbcyncam")
+(define %linux-libre-version "5.0.10")
+(define %linux-libre-hash "1lcwpxz5ival8nmnh19x4b1bn19bifhi3mlarx85d783jg47jc3h")
 
 (define %linux-libre-5.0-patches
   (list %boot-logo-patch
@@ -420,8 +428,30 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.30")
-(define %linux-libre-4.19-hash "1i15cs7zb53hagllgga8jaz0j1p9b22j93iczwc2w587zzhzlvng")
+(define-public vhba-module
+  (package
+    (name "vhba-module")
+    (version "20170610")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/cdemu/vhba-module-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1v6r0bgx0a65vlh36b1l2965xybngbpga6rp54k4z74xk0zwjw3r"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; TODO: No tests?
+     `(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Kernel module that emulates SCSI devices")
+    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
+between the CDemu userspace daemon and linux kernel.")
+    (license license:gpl2+)))
+
+(define %linux-libre-4.19-version "4.19.37")
+(define %linux-libre-4.19-hash "0cyw7sgvw0767pvnl2sg6j91az9x80m5pbpqmd1srzl06w2sff2j")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -434,8 +464,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.107")
-(define %linux-libre-4.14-hash "19i17b8sjjvi99vya1vncjalysdy027hp35rrla68gjs28dyas7r")
+(define %linux-libre-4.14-version "4.14.114")
+(define %linux-libre-4.14-hash "0hc6vk8wh6dlr8lbfd269n3drgbw2swfhlgqs9kl13104jrxqqv4")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -444,16 +474,22 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.164"
-                    "06bbynvijqlk92bpppmnjijyfwr0sk01krqdw4hpgbrvlg3wdlbk"
+  (make-linux-libre "4.9.171"
+                    "10975y9q2yycc85synwmrqqfhq89f3fn66jxq7p2myv1n9m22fx5"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.176"
-                    "0c300zqmsadahs2fpzxh6cn7q3h7jxq69msd17rh8v3wnvql8vzx"
+  (make-linux-libre "4.4.179"
+                    "025jl50sgi3bxj8hxlihqyfshmfphrg6z3cfi043qwkc8sbdy3af"
                     '("x86_64-linux" "i686-linux")
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:extra-options
+                    (append
+                     `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+                       ;; This option was removed upstream in version 4.7.
+                       ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
+                     %default-extra-linux-options)))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
@@ -462,6 +498,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.0-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-veyron
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-5.0-patches
+                    #:configuration-file kernel-config-veyron
+                    #:extra-version "arm-veyron"))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre %linux-libre-4.19-version
@@ -1426,14 +1470,14 @@ Linux-based operating systems.")
 (define-public bridge-utils
   (package
     (name "bridge-utils")
-    (version "1.5")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/bridge/bridge/"
-                                 "bridge-utils-" version ".tar.gz"))
-             (sha256
-              (base32
-               "12367cwqmi0yqphi6j8rkx97q8hw52yq2fx4k0xfclkcizxybya2"))))
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.kernel.org/pub/linux/utils/net/"
+                           "bridge-utils/bridge-utils-" version ".tar.xz"))
+       (sha256
+        (base32 "1j16kr44csyr4yqxly26l1yw2bh4nkiasgwvask2i2gvsnsyyryc"))))
     (build-system gnu-build-system)
 
     ;; The tarball lacks all the generated files.
@@ -1994,8 +2038,45 @@ system.")
     (description
      "This package contains keytable files and keyboard utilities compatible
 for systems using the Linux kernel.  This includes commands such as
-'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
+@code{loadkeys}, @code{setfont}, @code{kbdinfo}, and @code{chvt}.")
     (license license:gpl2+)))
+
+(define-public loadkeys-static
+  (package
+    (inherit kbd)
+    (name "loadkeys-static")
+    (arguments
+     (substitute-keyword-arguments (package-arguments kbd)
+       ((#:configure-flags flags ''())
+        `(append '("LDFLAGS=-static" "--disable-shared" "--disable-nls"
+                   "--disable-vlock"              ;so we don't need libpam
+                   "--disable-libkeymap")
+                 ,flags))
+       ((#:make-flags flags ''())
+        `(cons "LDFLAGS=-all-static" ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; The binary keeps references to gzip, among other things,
+                 ;; which we don't need in the initrd, so strip references.
+                 (remove-store-references "src/loadkeys")
+
+                 (install-file "src/loadkeys"
+                               (string-append out "/bin"))
+                 #t)))
+           (delete 'post-install)))
+       ((#:strip-flags _ '())
+        ''("--strip-all"))
+       ((#:allowed-references _ '())
+        '())))
+
+    (synopsis "Statically-linked @command{loadkeys} program")
+
+    ;; This package is meant to be used internally in the initrd so don't
+    ;; expose it.
+    (properties '((hidden? . #t)))))
 
 (define-public inotify-tools
   (package
@@ -2263,7 +2344,7 @@ mapper.  Kernel components are part of Linux-libre.")
        #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
     (description "Wireless Tools are used to manipulate the now-deprecated
-Linux Wireless Extensions; consider using 'iw' instead.  The Wireless
+Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless
 Extension was an interface allowing you to set Wireless LAN specific
 parameters and get the specific stats.  It is deprecated in favor the nl80211
 interface.")
@@ -2404,18 +2485,18 @@ country-specific regulations for the wireless spectrum.")
 (define-public lm-sensors
   (package
     (name "lm-sensors")
-    (version "3.4.0")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append
-                           "https://github.com/groeck/lm-sensors/archive/V"
-                           (string-join (string-split version #\.) "-")
-                           ".tar.gz")))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0knb09s9lvx0wzfsaizx3xq58q6kllqf7nkbwvir0wkgn31c2d73"))
-              (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
+    (version "3.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/groeck/lm-sensors.git")
+             (commit (string-append "V" (string-join
+                                         (string-split version #\.) "-")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mdrnb9r01z1xfdm6dpkywvf9yy9a4yzb59paih9sijwmigv19fj"))
+       (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
               ("perl" ,perl)
@@ -2472,7 +2553,7 @@ country-specific regulations for the wireless spectrum.")
                 (string-append (assoc-ref inputs "coreutils")
                                "/bin/readlink -f")))
              #t)))))
-    (home-page "http://jdelvare.nerim.net/devel.html#lmsensors")
+    (home-page "https://hwmon.wiki.kernel.org/lm_sensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
      "Lm-sensors is a hardware health monitoring package for Linux.  It allows
@@ -2621,7 +2702,7 @@ in a digital read-out.")
 with support in the Linux kernel.  perf can instrument CPU performance
 counters, tracepoints, kprobes, and uprobes (dynamic tracing).  It is capable
 of lightweight profiling.  This package contains the user-land tools and in
-particular the 'perf' command.")
+particular the @code{perf} command.")
     (license (package-license linux-libre))))
 
 (define-public pflask
@@ -3278,7 +3359,7 @@ write access to exFAT devices.")
     (home-page "https://sourceforge.net/projects/fuseiso/")
     (synopsis "Mount ISO file system images")
     (description
-     "FuseISO is a FUSE module to mount ISO filesystem images (.iso, .nrg,
+     "FuseISO is a FUSE module to mount ISO file system images (.iso, .nrg,
 .bin, .mdf and .img files).  It supports plain ISO9660 Level 1 and 2, Rock
 Ridge, Joliet, and zisofs.")
     (license license:gpl2)))
@@ -3585,6 +3666,7 @@ from userspace.")
               (method url-fetch)
               (uri (string-append "https://tuxera.com/opensource/"
                                   "ntfs-3g_ntfsprogs-" version ".tgz"))
+              (patches (search-patches "ntfs-3g-CVE-2019-9755.patch"))
               (sha256
                (base32
                 "1mb228p80hv97pgk3myyvgp975r9mxq56c6bdn1n24kngcfh4niy"))
@@ -3610,7 +3692,7 @@ from userspace.")
          ;; If users install ntfs-3g, they probably want to make it the
          ;; default driver as well, so we opt for sensible defaults and link
          ;; mount.ntfs to mount.ntfs-3g.  (libmount tries to run mount.ntfs to
-         ;; mount NTFS filesystems.)
+         ;; mount NTFS file systems.)
          (add-after 'install 'install-link
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3977,8 +4059,8 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
     (home-page "https://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
     (synopsis "Tools for loading and managing Linux kernel modules")
     (description
-     "Tools for loading and managing Linux kernel modules, such as `modprobe',
-`insmod', `lsmod', and more.")
+     "Tools for loading and managing Linux kernel modules, such as
+@code{modprobe}, @code{insmod}, @code{lsmod}, and more.")
     (license license:gpl2+)))
 
 (define-public mcelog
@@ -4057,7 +4139,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.4.0")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -4065,7 +4147,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0paj1szszpf8plykrd66jqg1x3kmqs395rbjskahld2bnplcfx1f"))))
+                "1s06h2cgk0xxwmhwj72z33bllafc1xqnxzk2yyra2rmg959778qw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))
@@ -4276,6 +4358,45 @@ set the screen to be pitch black at a vaĺue of 0 (or higher).
 
 Light is the successor of lightscript.")
     (license license:gpl3+)))
+
+(define-public brightnessctl
+  (let ((commit "6a791e7694aeeb5d027f71c6098e5182cf03371c"))
+    (package
+      (name "brightnessctl")
+      (version (git-version "0.4" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Hummer12007/brightnessctl/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1n1gb8ldgqv3vs565yhk1w4jfvrviczp94r8wqlkv5q6ab43c8w9"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f                    ; no tests
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" %output)
+                            (string-append "UDEVDIR=" %output "/lib/udev/rules.d/"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'adjust-udev-rules
+             (lambda _
+               (substitute* "90-brightnessctl.rules"
+                 (("/bin/") "/run/current-system/profile/bin/"))
+               #t)))))
+      (home-page "https://github.com/Hummer12007/brightnessctl")
+      (synopsis "Backlight and LED brightness control")
+      (description
+       "This program allows you read and control device brightness.  Devices
+include backlight and LEDs.  It can also preserve current brightness before
+applying the operation, such as on lid close.
+
+The appropriate permissions must be set on the backlight or LED control
+interface in sysfs, which can be accomplished with the included udev rules.")
+      (license license:expat))))
 
 (define-public tlp
   (package
@@ -5129,9 +5250,9 @@ file systems.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (home-page "https://github.com/jeremie-koenig/genext2fs")
-    (synopsis "Generate ext2 filesystem as a normal user")
-    (description "This package provides a program to general an ext2
-filesystem as a normal (non-root) user.  It does not require you to mount
+    (synopsis "Generate ext2 file system as a normal user")
+    (description "This package provides a program to generate an ext2
+file system as a normal (non-root) user.  It does not require you to mount
 the image file to copy files on it, nor does it require that you become
 the superuser to make device nodes.")
     (license license:gpl2)))

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -167,6 +167,15 @@ _guix_complete ()
 		else
 		    _guix_complete_available_package "$word_at_point"
 		fi
+	    elif _guix_is_command "install"
+	    then
+		_guix_complete_available_package "$word_at_point"
+	    elif _guix_is_command "remove"
+	    then
+		_guix_complete_installed_package "$word_at_point"
+	    elif _guix_is_command "upgrade"
+	    then
+		_guix_complete_installed_package "$word_at_point"
             elif _guix_is_command "build"
             then
                 if _guix_is_dash_L

@@ -26,6 +26,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages admin)
   #:use-module (guix gexp)
+  #:use-module ((guix packages) #:select (package-name))
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
@@ -33,6 +34,7 @@
             dbus-configuration?
             dbus-root-service-type
             dbus-service
+            wrapped-dbus-service
 
             polkit-service-type
             polkit-service))
@@ -228,6 +230,52 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
   (service dbus-root-service-type
            (dbus-configuration (dbus dbus)
                                (services services))))
+
+(define (wrapped-dbus-service service program variables)
+  "Return a wrapper for @var{service}, a package containing a D-Bus service,
+where @var{program} is wrapped such that @var{variables}, a list of name/value
+tuples, are all set as environment variables when the bus daemon launches it."
+  (define wrapper
+    (program-file (string-append (package-name service) "-program-wrapper")
+                  #~(begin
+                      (use-modules (ice-9 match))
+
+                      (for-each (match-lambda
+                                  ((variable value)
+                                   (setenv variable value)))
+                                '#$variables)
+
+                      (apply execl (string-append #$service "/" #$program)
+                             (string-append #$service "/" #$program)
+                             (cdr (command-line))))))
+
+  (define build
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+
+          (define service-directory
+            "/share/dbus-1/system-services")
+
+          (mkdir-p (dirname (string-append #$output
+                                           service-directory)))
+          (copy-recursively (string-append #$service
+                                           service-directory)
+                            (string-append #$output
+                                           service-directory))
+          (symlink (string-append #$service "/etc") ;for etc/dbus-1
+                   (string-append #$output "/etc"))
+
+          (for-each (lambda (file)
+                      (substitute* file
+                        (("Exec[[:blank:]]*=[[:blank:]]*([[:graph:]]+)(.*)$"
+                          _ original-program arguments)
+                         (string-append "Exec=" #$wrapper arguments
+                                        "\n"))))
+                    (find-files #$output "\\.service$")))))
+
+  (computed-file (string-append (package-name service) "-wrapper")
+                 build))
 
 
 ;;;

@@ -48,24 +48,6 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
-;; XXX A hidden special obsolete libssh2 for temporary use in the curl package.
-;; <https://bugs.gnu.org/34927>
-(define-public libssh2-1.8.0
-  (hidden-package
-    (package
-      (inherit libssh2)
-      (version "1.8.0")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://www.libssh2.org/download/libssh2-"
-                      version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
-                (patches
-                 (search-patches "libssh2-fix-build-failure-with-gcrypt.patch")))))))
-
 (define-public curl
   (package
    (name "curl")

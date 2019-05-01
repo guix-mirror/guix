@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,8 +42,8 @@
 (define (run-scheme-page)
   "Run a page asking the user for a partitioning scheme."
   (let* ((items
-          '((root . "Everything is one partition")
-            (root-home . "Separate /home partition")))
+          `((root . ,(G_ "Everything is one partition"))
+            (root-home . ,(G_ "Separate /home partition"))))
          (result (run-listbox-selection-page
                   #:info-text (G_ "Please select a partitioning scheme.")
                   #:title (G_ "Partition scheme")
@@ -53,7 +54,12 @@
     (car result)))
 
 (define (draw-formatting-page)
-  "Draw a page to indicate partitions are being formated."
+  "Draw a page asking for confirmation, and then indicating that partitions
+are being formatted."
+  (run-confirmation-page (G_ "We are about to format your hard disk.  All \
+its data will be lost.  Do you wish to continue?")
+                         (G_ "Format disk?")
+                         #:exit-button-procedure button-exit-action)
   (draw-info-page
    (format #f (G_ "Partition formatting is in progress, please wait."))
    (G_ "Preparing partitions")))
@@ -146,6 +152,10 @@ USER-PARTITIONS list. Return this list with password fields filled-in."
                 (file-name (user-partition-file-name user-part))
                 (password-page
                  (lambda ()
+                   ;; Note: Don't use FLAG-PASSWORD here because this is the
+                   ;; first bit of text that the user types in, so it's
+                   ;; probably safer if they can see that the keyboard layout
+                   ;; they chose is in effect.
                    (run-input-page
                     (format #f (G_ "Please enter the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
@@ -155,7 +165,8 @@ encryption of partition ~a (label: ~a).") file-name crypt-label)
                    (run-input-page
                     (format #f (G_ "Please confirm the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
-                    (G_ "Password confirmation required")))))
+                    (G_ "Password confirmation required")
+                    #:input-flags FLAG-PASSWORD))))
            (if crypt-label
                (let loop ()
                  (let ((password (password-page))
@@ -418,10 +429,10 @@ partition. Leave this field empty if you don't want to set a mounting point.")
           (run-listbox-selection-page
            #:info-text
            (if creation?
-               (G_ (format #f "Creating ~a partition starting at ~a of ~a."
-                           type-str start file-name))
-               (G_ (format #f "You are currently editing partition ~a."
-                           number-str)))
+               (format #f (G_ "Creating ~a partition starting at ~a of ~a.")
+                       type-str start file-name)
+               (format #f (G_ "You are currently editing partition ~a.")
+                       number-str))
            #:title (if creation?
                        (G_ "Partition creation")
                        (G_ "Partition edit"))
@@ -662,7 +673,8 @@ by pressing the Exit button.~%~%")))
           #:title (if guided?
                       (G_ "Guided partitioning")
                       (G_ "Manual partitioning"))
-          #:info-textbox-width 70
+          #:info-textbox-width 76         ;we need a lot of room for INFO-TEXT
+          #:listbox-height 12
           #:listbox-items (disk-items)
           #:listbox-item->text cdr
           #:sort-listbox-items? #f
@@ -713,9 +725,9 @@ by pressing the Exit button.~%~%")))
   "Run a page asking the user for a partitioning method."
   (define (run-page devices)
     (let* ((items
-            '((entire . "Guided - using the entire disk")
-              (entire-encrypted . "Guided - using the entire disk with encryption")
-              (manual . "Manual")))
+            `((entire . ,(G_ "Guided - using the entire disk"))
+              (entire-encrypted . ,(G_ "Guided - using the entire disk with encryption"))
+              (manual . ,(G_ "Manual"))))
            (result (run-listbox-selection-page
                     #:info-text (G_ "Please select a partitioning method.")
                     #:title (G_ "Partitioning method")

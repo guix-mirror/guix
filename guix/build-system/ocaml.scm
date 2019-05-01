@@ -28,9 +28,7 @@
   #:use-module (srfi srfi-1)
   #:export (%ocaml-build-system-modules
             package-with-ocaml4.01
-            package-with-ocaml4.02
             strip-ocaml4.01-variant
-            strip-ocaml4.02-variant
             default-findlib
             default-ocaml
             lower
@@ -94,14 +92,6 @@
   (let ((module (resolve-interface '(gnu packages ocaml))))
     (module-ref module 'ocaml4.01-findlib)))
 
-(define (default-ocaml4.02)
-  (let ((ocaml (resolve-interface '(gnu packages ocaml))))
-    (module-ref ocaml 'ocaml-4.02)))
-
-(define (default-ocaml4.02-findlib)
-  (let ((module (resolve-interface '(gnu packages ocaml))))
-    (module-ref module 'ocaml4.02-findlib)))
-
 (define* (package-with-explicit-ocaml ocaml findlib old-prefix new-prefix
                                        #:key variant-property)
   "Return a procedure of one argument, P.  The procedure creates a package
@@ -161,23 +151,11 @@ pre-defined variants."
                                "ocaml-" "ocaml4.01-"
                                #:variant-property 'ocaml4.01-variant))
 
-(define package-with-ocaml4.02
-  (package-with-explicit-ocaml (delay (default-ocaml4.02))
-                               (delay (default-ocaml4.02-findlib))
-                               "ocaml-" "ocaml4.02-"
-                               #:variant-property 'ocaml4.02-variant))
-
 (define (strip-ocaml4.01-variant p)
   "Remove the 'ocaml4.01-variant' property from P."
   (package
     (inherit p)
     (properties (alist-delete 'ocaml4.01-variant (package-properties p)))))
-
-(define (strip-ocaml4.02-variant p)
-  "Remove the 'ocaml4.02-variant' property from P."
-  (package
-    (inherit p)
-    (properties (alist-delete 'ocaml4.02-variant (package-properties p)))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target

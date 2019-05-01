@@ -492,14 +492,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.7.2")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ac2csl5jr56vahnxdynlvrhwlvcc1gqxvyifckc6cn5aj7ygd30"))))
+                "0g8i5hsl4kinpz1wp0a2zniidv3w2sd6awq8676fds516wcc6k0y"))))
     ;; TODO: autotools support has been deprecated, and new features like i18n
     ;; are only supported when building with cmake.
     (build-system gnu-build-system)
@@ -553,14 +553,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.9")
+    (version "0.6.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "03f8dk4kb7ya0pg7v0a0kqms4c7f2bqan5wl4ig0mcwpdmppj3b6"))))
+         "1vq89nhamciblyi5579bppnm4sb0zk5cg5hdipfpz174fxvl2wyd"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -578,7 +578,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -586,7 +586,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "1lx03cgi58z54xb7mhs6bc715lc00w5mpysf9n3q8zgn759fm0rj"))))
+                "0bzxwcpdd4ydh6d6mzpr0gxwhcb0x9ympk55fpvm1hcw9d28a716"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1693,18 +1693,19 @@ building the IRC clients and bots.")
 (define-public toxic
   (package
     (name "toxic")
-    (version "0.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/JFreegman/toxic/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1dx6z7k0zpsd7dpysdy23f0hnm49qlikb0mq8fg0y01dsz9vxgak"))
-              (file-name (git-file-name name version))))
+    (version "0.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JFreegman/toxic.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "09l2j3lwvrq7bf3051vjsnml9w63790ly3iylgf26gkrmld6k31w"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags
        (list
         "CC=gcc"
@@ -1721,7 +1722,7 @@ building the IRC clients and bots.")
      `(("c-toxcore" ,c-toxcore)
        ("curl" ,curl)
        ("freealut" ,freealut)
-       ("gdk-pixbuf" ,gdk-pixbuf) ; for libnotify.pc
+       ("gdk-pixbuf" ,gdk-pixbuf)       ; for libnotify.pc
        ("libconfig" ,libconfig)
        ("libnotify" ,libnotify)
        ("libpng" ,libpng)
@@ -1819,13 +1820,13 @@ QMatrixClient project.")
 (define-public hangups
   (package
     (name "hangups")
-    (version "0.4.6")
+    (version "0.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "hangups" version))
        (sha256
-        (base32 "0mvpfd5dc3zgcvwfidcd2qyn59xl5biv728mxifw0ls5rzkc9chs"))))
+        (base32 "1jw4i58cd4j1ymsnhv9224xsi26w8y0qrj6z4nw50dnbl45b6aaa"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1847,6 +1848,9 @@ QMatrixClient project.")
        ("python-reparser" ,python-reparser)
        ("python-requests" ,python-requests)
        ("python-urwid" ,python-urwid)))
+    (native-inputs
+     `(("python-httpretty" ,python-httpretty)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://hangups.readthedocs.io/")
     (synopsis "Instant messaging client for Google Hangouts")
     (description

@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -59,7 +59,6 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -67,6 +66,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -558,8 +558,8 @@ Java.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
-                          name "-" version ".tar.xz"))
+      (uri (string-append "https://dev-www.libreoffice.org/src/libpagemaker/"
+                          "libpagemaker-" version ".tar.xz"))
       (sha256 (base32
                "17ai8ajffr0ixxmmcv3k5vgjlcsix38ldb4fw2arild70pbsrbb6"))))
     (build-system gnu-build-system)
@@ -587,8 +587,8 @@ created by PageMaker version 6.x and 7.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
-                          name "-" version ".tar.xz"))
+      (uri (string-append "http://dev-www.libreoffice.org/src/libvisio/"
+                          "libvisio-" version ".tar.xz"))
       (sha256 (base32
                "1yahpfl13qk6178irv8jn5ppxdn7isafqisyqsdw0lqxcz9h447y"))))
     (build-system gnu-build-system)
@@ -617,8 +617,8 @@ Microsoft Visio documents of all versions.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/libwpd/" name "/"
-                          name "-" version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libwpd/libodfgen/"
+                          "libodfgen-" version "/libodfgen-" version ".tar.xz"))
       (sha256 (base32
                "0cdq48wlpp8m0qmndybv64r0m4vh0qsqx69cn6ms533cjlgljgij"))))
     (build-system gnu-build-system)
@@ -644,14 +644,14 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.14")
+    (version "0.3.15")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/" name "/" name "/" name "-"
-                          version "/" name "-" version ".tar.xz"))
+      (uri (string-append "mirror://sourceforge/libmwaw/libmwaw/libmwaw-"
+                          version "/libmwaw-" version ".tar.xz"))
       (sha256 (base32
-               "1s9wyf8pyh3fbazq2d2b6fgi7s7bid60viw2xbdkmn2ywlfbza5c"))))
+               "1cdhm9yhanyv3w4vr73zhgyynmkhhkp3dyld7m11jd2yy04vnh04"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)

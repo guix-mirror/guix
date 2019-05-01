@@ -52,7 +52,6 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages gnuzilla) ;nss
   #:use-module (gnu packages ghostscript) ;lcms
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages groovy)
@@ -64,6 +63,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wget)
@@ -3225,7 +3225,7 @@ sharing common test data, and test runners for running tests.")
 (define-public java-plexus-utils
   (package
     (name "java-plexus-utils")
-    (version "3.0.24")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/codehaus-plexus/"
@@ -3233,7 +3233,7 @@ sharing common test data, and test runners for running tests.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mlwpc6fms24slygv5yvi6fi9hcha2fh0v73p5znpi78bg36i2js"))))
+                "1ihfigar20lvk4pinii7dq05i173xphhw4iyrk6gjfy04m01j2lz"))))
     (build-system ant-build-system)
     ;; FIXME: The default build.xml does not include a target to install
     ;; javadoc files.
@@ -3266,7 +3266,8 @@ cli/shell/BourneShell.java"
                (delete-file "cli/CommandlineTest.java"))
              #t)))))
     (native-inputs
-     `(("java-junit" ,java-junit)))
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))
     (home-page "http://codehaus-plexus.github.io/plexus-utils/")
     (synopsis "Common utilities for the Plexus framework")
     (description "This package provides various Java utility classes for the
@@ -3415,14 +3416,14 @@ reusing it in maven.")
 (define-public java-plexus-archiver
   (package
     (name "java-plexus-archiver")
-    (version "3.5")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/codehaus-plexus/plexus-archiver"
                                   "/archive/plexus-archiver-" version ".tar.gz"))
               (sha256
                (base32
-                "0iv1j7khra6icqh3jndng3iipfmkc7l5jq2y802cm8r575v75pyv"))))
+                "0ry6i92gli0mvdmfih2vgs0lkf9yvx18h2ajxim66yg6yipnp0hg"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-archiver.jar"
@@ -3437,6 +3438,11 @@ reusing it in maven.")
              ;; Requires an older version of plexus container
              (delete-file
               "src/test/java/org/codehaus/plexus/archiver/DuplicateFilesTest.java")
+             #t))
+         (add-before 'check 'fix-test-building
+           (lambda _
+             (substitute* "build.xml"
+               (("srcdir=\"src/test\"") "srcdir=\"src/test/java\""))
              #t))
          (add-before 'build 'copy-resources
            (lambda _
@@ -3454,7 +3460,8 @@ reusing it in maven.")
        ("snappy" ,java-snappy)
        ("java-jsr305" ,java-jsr305)))
     (native-inputs
-     `(("junit" ,java-junit)
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("junit" ,java-junit)
        ("classworld" ,java-plexus-classworlds)
        ("xbean" ,java-geronimo-xbean-reflect)
        ("xz" ,java-tukaani-xz)
@@ -4027,16 +4034,18 @@ complex transformations and code analysis tools.")
   (package
     (name "java-cglib")
     (version "3.2.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/cglib/cglib/archive/RELEASE_"
-                    (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
-                    ".tar.gz"))
-              (file-name (string-append "cglib-" version ".tar.gz"))
-              (sha256
-               (base32
-                "162dvd4fln76ai8prfharf66pn6r56p3sxx683j5vdyccrd5hi1q"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cglib/cglib.git")
+             (commit (string-append
+                      "RELEASE_"
+                      (string-map (lambda (c) (if (char=? c #\.) #\_ c))
+                                  version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "186451jms2zfp47yd8kxd77az2cqal1my2br7klgyp8fpl4qfg8v"))))
     (build-system ant-build-system)
     (arguments
      `(;; FIXME: tests fail because junit runs
@@ -10294,7 +10303,7 @@ authentication, HTTP state management, and HTTP connection management.")
        ("java-commons-net" ,java-commons-net)
        ("java-jsch" ,java-jsch)))
     (home-page "http://commons.apache.org/proper/commons-vfs/")
-    (synopsis "Java filesystem library")
+    (synopsis "Java file system library")
     (description "Commons VFS provides a single API for accessing various
 different file systems.  It presents a uniform view of the files from various
 different sources, such as the files on local disk, on an HTTP server, or
@@ -10970,3 +10979,78 @@ class/interface/method definitions from source files complete with JavaDoc
 @code{@@tags}.  It is designed to be used by active code generators or
 documentation tools.")
     (license license:asl2.0)))
+
+(define-public java-jgit
+  (package
+    (name "java-jgit")
+    (version "4.7.0.201704051617-r")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/jgit/org.eclipse.jgit/"
+                                  version "/org.eclipse.jgit-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "13ii4jn02ynzq6i7gsyi21k2i94jpc85wf6bcm31q4cyvzv0mk4k"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f                      ; There are no tests to run.
+       #:jar-name "jgit.jar"
+       ;; JGit must be built with a JDK supporting Java 8.
+       #:jdk ,icedtea-8
+       ;; Target our older default JDK.
+       #:make-flags (list "-Dtarget=1.7")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The jar file generated by the default build.xml does not include
+         ;; the text properties files, so we need to add them.
+         (add-after 'build 'add-properties
+           (lambda* (#:key jar-name #:allow-other-keys)
+             (with-directory-excursion "src"
+               (apply invoke "jar" "-uf"
+                      (string-append "../build/jar/" jar-name)
+                      (find-files "." "\\.properties$")))
+             #t)))))
+    (inputs
+     `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
+       ("java-javaewah" ,java-javaewah)
+       ("java-jsch" ,java-jsch)
+       ("java-slf4j-api" ,java-slf4j-api)))
+    (home-page "https://eclipse.org/jgit/")
+    (synopsis "Java library implementing the Git version control system")
+    (description "JGit is a lightweight, pure Java library implementing the
+Git version control system, providing repository access routines, support for
+network protocols, and core version control algorithms.")
+    (license license:edl1.0)))
+
+;; For axoloti.  This package can still be built with icedtea-7, which is
+;; currently used as the default JDK.
+(define-public java-jgit-4.2
+  (package (inherit java-jgit)
+    (version "4.2.0.201601211800-r")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/eclipse/jgit/org.eclipse.jgit/"
+                                  version "/org.eclipse.jgit-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "15gm537iivhnzlkjym4x3wn5jqdjdragsw9pdpzqqg21nrc817mm"))))
+    (build-system ant-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-jgit)
+       ;; Build for default JDK.
+       ((#:jdk _) icedtea-7)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'use-latest-javaewah-API
+             (lambda _
+               (substitute* "src/org/eclipse/jgit/internal/storage/file/BitmapIndexImpl.java"
+                 (("wordinbits") "WORD_IN_BITS"))
+               #t))))))
+    (inputs
+     `(("java-javaewah" ,java-javaewah)
+       ("java-jsch" ,java-jsch)
+       ("java-slf4j-api" ,java-slf4j-api)))))

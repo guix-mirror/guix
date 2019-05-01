@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,7 +81,7 @@ nmc_wifi_strength_bars."
                  (message (G_ "Unable to find a wifi technology"))))))))
 
 (define (draw-scanning-page)
-  "Draw a page to indicate a wifi scan in in progress."
+  "Draw a page to indicate a wifi scan in progress."
   (draw-info-page (G_ "Scanning wifi for available networks, please wait.")
                   (G_ "Scan in progress")))
 

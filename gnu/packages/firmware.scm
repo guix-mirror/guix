@@ -377,7 +377,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package
     (name (string-append "arm-trusted-firmware-" platform))
-    (version "1.5")
+    (version "2.1")
     (source
       (origin
         (method git-fetch)
@@ -388,7 +388,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
         (file-name (git-file-name "arm-trusted-firmware" version))
        (sha256
         (base32
-         "1gm0bn2llzfzz9bfsz11fhwxj5lxvyrq7bc13fjj033nljzxn7k8"))))
+         "1gy5qskrjy8n3kxdcm1dx8b45l5b75n0pm8pq80wl6xic1ycy24r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -448,25 +448,10 @@ such as:
                    license:bsd-2)))) ; libfdt
 
 (define-public arm-trusted-firmware-sun50i-a64
-  (let ((base (make-arm-trusted-firmware "sun50i_a64"))
-        ;; Use unreleased version which enables additional features needed for
-        ;; LCD support
-        (commit "98aab97484b27e40aa74a93e5d1c1ac037a7e0b8")
-        (revision "2"))
+  (let ((base (make-arm-trusted-firmware "sun50i_a64")))
     (package
       (inherit base)
-      (name "arm-trusted-firmware-sun50i-a64")
-      (version (git-version "2.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/ARM-software/arm-trusted-firmware.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "0z5si034vcn4m68zaixc5v8fs1c7vxbh7n4hggxs55p0jg01dan5")))))))
+      (name "arm-trusted-firmware-sun50i-a64"))))
 
 (define-public arm-trusted-firmware-puma-rk3399
   (let ((base (make-arm-trusted-firmware "rk3399"))

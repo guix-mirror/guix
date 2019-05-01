@@ -41,37 +41,33 @@
   #:use-module (gnu packages xorg))
 
 (define-public spirv-headers
-  ;; Keep updated in accordance with
-  ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "8bea0a266ac9b718aa0818d9e3a47c0b77c2cb23")
-        (revision "4"))
-    (package
-      (name "spirv-headers")
-      (version (string-append "0.0-" revision "." (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/KhronosGroup/SPIRV-Headers")
-               (commit commit)))
-         (sha256
-          (base32
-           "01qyjghjz42hmyw9111zz20a1paf37ps39p4xbj8abjba65d8lqx"))
-         (file-name (string-append name "-" version "-checkout"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:tests? #f ;; No tests
-         #:phases (modify-phases %standard-phases
-                    (replace 'install
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (invoke "cmake" "-E" "copy_directory"
-                                        "../source/include/spirv"
-                                        (string-append (assoc-ref outputs "out")
-                                                       "/include/spirv")))))))
-      (home-page "https://github.com/KhronosGroup/SPIRV-Headers")
-      (synopsis "Machine-readable files from the SPIR-V Registry")
-      (description
-       "SPIRV-Headers is a repository containing machine-readable files from
+  (package
+    (name "spirv-headers")
+    (version "1.3.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/SPIRV-Headers")
+             (commit version)))
+       (sha256
+        (base32
+         "0m56smanfcczjfif4yfcqhjj4d4sc088kwg6dgia8fwdsjavdm4d"))
+      (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;; No tests
+       #:phases (modify-phases %standard-phases
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (invoke "cmake" "-E" "copy_directory"
+                                      "../source/include/spirv"
+                                      (string-append (assoc-ref outputs "out")
+                                                     "/include/spirv")))))))
+    (home-page "https://github.com/KhronosGroup/SPIRV-Headers")
+    (synopsis "Machine-readable files from the SPIR-V Registry")
+    (description
+     "SPIRV-Headers is a repository containing machine-readable files from
 the SPIR-V Registry.  This includes:
 @itemize
 @item Header files for various languages.
@@ -79,9 +75,9 @@ the SPIR-V Registry.  This includes:
 and for the GLSL.std.450 extended instruction set.
 @item The XML registry file.
 @end itemize\n")
-      (license (license:x11-style
-                (string-append "https://github.com/KhronosGroup/SPIRV-Headers/blob/"
-                               commit "/LICENSE"))))))
+    (license (license:x11-style
+              (string-append "https://github.com/KhronosGroup/SPIRV-Headers/blob/"
+                             version "/LICENSE")))))
 
 (define-public spirv-tools
   (package
@@ -124,7 +120,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
 (define-public glslang
   (package
     (name "glslang")
-    (version "7.11.3113")
+    (version "7.11.3188")
     (source
      (origin
        (method git-fetch)
@@ -133,7 +129,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
              (commit version)))
        (sha256
         (base32
-         "1kzv2b4q1fddxd7c0hc754nd6rw6y9vijb9fsi13xzzq9dficgb6"))
+         "04y4dd1cqdkd4qffmhgmg3agf9j07ii2w38vpp4jw53ir818bqdq"))
        (file-name (string-append name "-" version "-checkout"))))
     (build-system cmake-build-system)
     (arguments
@@ -163,7 +159,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.103")
+    (version "1.1.106")
     (source
      (origin
        (method git-fetch)
@@ -173,7 +169,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1q3c79rf3mma0vqmwnxwps588pnyzap4nn49hk41m39k79vniaz8"))))
+         "0idw7q715ikj575qmspvgq2gzc6c1sj581b8z3xnv6wz9qbzrmsd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -187,7 +183,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.1.102")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method git-fetch)
@@ -197,7 +193,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ccpklv251jcz2lxvd5ix5i3cg4wb7qq5xi6cwvniy1rw52z7h00"))))
+         "1ypjd2gfxdwldnqrrqy6bnjln5mml62a9k5pfi451srcxznijjai"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -238,7 +234,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.1.102")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method git-fetch)
@@ -248,7 +244,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0a8vmgyn7an21bb9vxba9laf9ghvk905vn7rm8frdl8qr2b7vyw3"))))
+         "0swqyk16mbkivyk79dpqbhpw05a7yrakqynywznr5zgqbc0z4gj8"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)

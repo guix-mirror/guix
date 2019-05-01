@@ -7,7 +7,8 @@
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,16 +29,21 @@
   #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu artwork)
   #:use-module (gnu packages)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages web)
@@ -406,6 +412,39 @@ to an auto mixer tool like pavucontrol.  It can optionally handle multimedia
 keys for controlling the audio volume.")
     (license gpl2+)))
 
+(define-public xfce4-whiskermenu-plugin
+  (package
+    (name "xfce4-whiskermenu-plugin")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1cnas2x7xi53v6ylq44040narhzd828dc0ysz8yk3qn2mmvp5yr2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("xfce4-panel" ,xfce4-panel)
+       ("garcon" ,garcon)
+       ("exo" ,exo)
+       ("gtk+" ,gtk+-2)))
+    (arguments
+      `(#:tests? #f)) ; no tests
+    (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-whiskermenu-plugin")
+    (synopsis "Application menu panel plugin for Xfce")
+    (description
+     "This package provides an alternative to the default application menu
+panel plugin for Xfce4.  It uses separate sections to display categories and
+applications, and includes a search bar to search for applications.")
+    ;; The main plugin code is covered by gpl2, but files in panel-plugin directory
+    ;; are covered by gpl2+.  The SVG icon is covered by gpl2.
+    (license (list gpl2 gpl2+))))
+
 (define-public xfce4-xkb-plugin
   (package
     (name "xfce4-xkb-plugin")
@@ -657,11 +696,40 @@ on the screen.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jzi851arljq5lza9inyq4ss513l62lbzbfm64a7x4320m8kb2h9"))))
+                "1jzi851arljq5lza9inyq4ss513l62lbzbfm64a7x4320m8kb2h9"))
+              (modules '((guix build utils)))
+              (snippet
+               #~(begin
+                   (copy-file #$(file-append %artwork-repository "/logo/Guix.svg")
+                              "backgrounds/guix-logo.svg")
+                   #t))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'prepare-background-image
+                    (lambda _
+                      ;; Stick a Guix logo in the background image.  XXX: It
+                      ;; has to go to the center because the image might be
+                      ;; truncated on the edges.  :-/
+                      (invoke "inkscape" "--export-dpi=120"
+                              "--export-png=/tmp/guix.png"
+                              "backgrounds/guix-logo.svg")
+                      (for-each (lambda (image)
+                                  (invoke "composite" "-gravity" "center"
+                                          "/tmp/guix.png" image
+                                          "/tmp/final.jpg")
+                                  (copy-file "/tmp/final.jpg" image))
+                                '(;; "backgrounds/xfce-blue.jpg"
+                                  "backgrounds/xfce-teal.jpg"))
+                      #t)))
+
+       #:disallowed-references (,inkscape ,imagemagick)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+
+       ("inkscape" ,inkscape)
+       ("imagemagick" ,imagemagick)))
     (inputs
      `(("exo" ,exo)
        ("garcon" ,garcon)
@@ -798,15 +866,15 @@ inhibit interface which allows applications to prevent automatic sleep.")
 (define-public ristretto
   (package
     (name "ristretto")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/ristretto/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "ristretto-" version ".tar.bz2"))
               (sha256
                (base32
-                "0r96r8r1qslr6cqvwldm99ha563adkw9v2zvaznxkpqn11v1374c"))))
+                "18nf01djwnbjc91bdlv3p0h6pwcq1kfnjgp6yaxhxv4kdi9f82rs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

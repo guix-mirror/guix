@@ -23,11 +23,12 @@
 
 (define-module (gnu packages search)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 x11))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 x11 perl-license))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
@@ -109,6 +110,31 @@ rich set of boolean query operators.")
        ("zlib" ,zlib)))
     (synopsis "Python bindings for the Xapian search engine library")
     (license gpl2+)))
+
+(define-public perl-search-xapian
+  (package
+    (name "perl-search-xapian")
+    (version "1.2.25.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/O/OL/OLLY/"
+                           "Search-Xapian-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hpa8gi38j0ibq8af6dy69lm1bl5jnq76nsa69dbrzbr88l5m594"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-devel-leak" ,perl-devel-leak)))
+    (inputs
+     `(("xapian" ,xapian)))
+    (home-page "https://metacpan.org/release/Search-Xapian")
+    (synopsis "Perl XS frontend to the Xapian C++ search library")
+    (description
+     "Search::Xapian wraps most methods of most Xapian classes.  The missing
+classes and methods should be added in the future.  It also provides a
+simplified, more 'perlish' interface to some common operations.")
+    (license perl-license)))
 
 (define-public libtocc
   (package
@@ -243,7 +269,7 @@ interfaces, or a C API.")
     (home-page "https://pagure.io/mlocate")
     (synopsis "Locate files on the file system")
     (description
-     "mlocate is a locate/updatedb implementation.  The 'm' stands for
+     "mlocate is a locate/updatedb implementation.  The @code{m} stands for
 \"merging\": @code{updatedb} reuses the existing database to avoid rereading
 most of the file system, which makes it faster and does not trash the system
 caches as much.  The locate(1) utility is intended to be completely compatible

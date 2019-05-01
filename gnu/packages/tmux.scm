@@ -38,7 +38,7 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "2.8")
+    (version "2.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -46,7 +46,7 @@
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "1fm22wva2znkcs5jczrnlxrpzsk2jlwdwy4dhzzyrbsgccsz6svz"))))
+               "10195hp5ydkwwmpcr7188fgx9daqwrslb1lylgrrkzc6yhr1541l"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -141,7 +141,7 @@ windows.")
 (define-public tmux-xpanes
   (package
     (name "tmux-xpanes")
-    (version "4.0.0")
+    (version "4.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -150,7 +150,7 @@ windows.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0px164ikhnzfls6dld4xhiyd9j5jp2rbmwfg11b1pxzm9mp7qk6r"))))
+                "11yz6rh2ckd1z8q80n8giv2gcz2i22fgf3pnfxq96qrzflb0d96a"))))
     (build-system trivial-build-system)
     (inputs
      `(("bash" ,bash)))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,10 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:export (run-keymap-page))
+  #:use-module (ice-9 i18n)
+  #:use-module (ice-9 match)
+  #:export (run-keymap-page
+            keyboard-layout->configuration))
 
 (define (run-layout-page layouts layout->text)
   (let ((title (G_ "Layout")))
@@ -61,14 +65,29 @@
 
 (define (sort-layouts layouts)
   "Sort LAYOUTS list by putting the US layout ahead and return it."
+  (define (layout<? layout1 layout2)
+    (let ((text1 (x11-keymap-layout-description layout1))
+          (text2 (x11-keymap-layout-description layout2)))
+      ;; XXX: We're calling 'gettext' more than once per item.
+      (string-locale<? (gettext text1 "xkeyboard-config")
+                       (gettext text2 "xkeyboard-config"))))
+
+  (define preferred
+    ;; Two-letter language tag for the preferred keyboard layout.
+    (or (getenv "LANGUAGE") "us"))
+
   (call-with-values
       (lambda ()
         (partition
          (lambda (layout)
-           (let ((name (x11-keymap-layout-name layout)))
-             (string=? name "us")))
+           ;; The 'synopsis' field is usually a language code (e.g., "en")
+           ;; while the 'name' field is a country code (e.g., "us").
+           (or (string=? (x11-keymap-layout-name layout) preferred)
+               (string=? (x11-keymap-layout-synopsis layout) preferred)))
          layouts))
-    (cut append <> <>)))
+    (lambda (main others)
+      (append (sort main layout<?)
+              (sort others layout<?)))))
 
 (define (sort-variants variants)
   "Sort VARIANTS list by putting the international variant ahead and return it."
@@ -94,7 +113,8 @@ names of the selected keyboard layout and variant."
          (run-layout-page
           (sort-layouts layouts)
           (lambda (layout)
-            (x11-keymap-layout-description layout))))))
+            (gettext (x11-keymap-layout-description layout)
+                     "xkeyboard-config"))))))
      ;; Propose the user to select a variant among those supported by the
      ;; previously selected layout.
      (installer-step
@@ -108,15 +128,24 @@ names of the selected keyboard layout and variant."
                 (run-variant-page
                  (sort-variants variants)
                  (lambda (variant)
-                   (x11-keymap-variant-description
-                    variant))))))))))
+                   (gettext (x11-keymap-variant-description variant)
+                            "xkeyboard-config"))))))))))
 
   (define (format-result result)
     (let ((layout (x11-keymap-layout-name
                    (result-step result 'layout)))
           (variant (and=> (result-step result 'variant)
                           (lambda (variant)
-                            (x11-keymap-variant-name variant)))))
+                            (gettext (x11-keymap-variant-name variant)
+                                     "xkeyboard-config")))))
       (list layout (or variant ""))))
   (format-result
    (run-installer-steps #:steps keymap-steps)))
+
+(define (keyboard-layout->configuration keymap)
+  "Return the operating system configuration snippet to install KEYMAP."
+  (match keymap
+    ((name "")
+     `((keyboard-layout (keyboard-layout ,name))))
+    ((name variant)
+     `((keyboard-layout (keyboard-layout ,name ,variant))))))

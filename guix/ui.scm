@@ -10,8 +10,6 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2013, 2014 Free Software Foundation, Inc.
-;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,6 +29,7 @@
 
 (define-module (guix ui)
   #:use-module (guix i18n)
+  #:use-module (guix colors)
   #:use-module (guix gexp)
   #:use-module (guix sets)
   #:use-module (guix utils)
@@ -118,8 +117,7 @@
             guix-warning-port
             warning
             info
-            guix-main
-            colorize-string))
+            guix-main))
 
 ;;; Commentary:
 ;;;
@@ -127,44 +125,123 @@
 ;;;
 ;;; Code:
 
-(define-syntax-rule (define-diagnostic name prefix)
-  "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
+(define-syntax highlight-argument
+  (lambda (s)
+    "Given FMT and ARG, expand ARG to a call that highlights it, provided FMT
+is a trivial format string."
+    (define (trivial-format-string? fmt)
+      (define len
+        (string-length fmt))
+
+      (let loop ((start 0))
+        (or (>= (+ 1 start) len)
+            (let ((tilde (string-index fmt #\~ start)))
+              (or (not tilde)
+                  (case (string-ref fmt (+ tilde 1))
+                    ((#\a #\A #\%) (loop (+ tilde 2)))
+                    (else          #f)))))))
+
+    ;; Be conservative: limit format argument highlighting to cases where the
+    ;; format string contains nothing but ~a escapes.  If it contained ~s
+    ;; escapes, this strategy wouldn't work.
+    (syntax-case s ()
+      ((_ "~a~%" arg)                          ;don't highlight whole messages
+       #'arg)
+      ((_ fmt arg)
+       (trivial-format-string? (syntax->datum #'fmt))
+       #'(%highlight-argument arg))
+      ((_ fmt arg)
+       #'arg))))
+
+(define* (%highlight-argument arg #:optional (port (guix-warning-port)))
+  "Highlight ARG, a format string argument, if PORT supports colors."
+  (cond ((string? arg)
+         (highlight arg port))
+        ((symbol? arg)
+         (highlight (symbol->string arg) port))
+        (else arg)))
+
+(define-syntax define-diagnostic
+  (syntax-rules ()
+    "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
 messages."
-  (define-syntax name
-    (lambda (x)
-      (define (augmented-format-string fmt)
-        (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
+    ((_ name (G_ prefix) colors)
+     (define-syntax name
+       (lambda (x)
+         (syntax-case x ()
+           ((name location (underscore fmt) args (... ...))
+            (and (string? (syntax->datum #'fmt))
+                 (free-identifier=? #'underscore #'G_))
+            #'(begin
+                (print-diagnostic-prefix prefix location
+                                         #:colors colors)
+                (format (guix-warning-port) (gettext fmt %gettext-domain)
+                        (highlight-argument fmt args) (... ...))))
+           ((name location (N-underscore singular plural n)
+                  args (... ...))
+            (and (string? (syntax->datum #'singular))
+                 (string? (syntax->datum #'plural))
+                 (free-identifier=? #'N-underscore #'N_))
+            #'(begin
+                (print-diagnostic-prefix prefix location
+                                         #:colors colors)
+                (format (guix-warning-port)
+                        (ngettext singular plural n %gettext-domain)
+                        (highlight-argument singular args) (... ...))))
+           ((name (underscore fmt) args (... ...))
+            (free-identifier=? #'underscore #'G_)
+            #'(name #f (underscore fmt) args (... ...)))
+           ((name (N-underscore singular plural n)
+                  args (... ...))
+            (free-identifier=? #'N-underscore #'N_)
+            #'(name #f (N-underscore singular plural n)
+                    args (... ...)))))))))
 
-      (syntax-case x ()
-        ((name (underscore fmt) args (... ...))
-         (and (string? (syntax->datum #'fmt))
-              (free-identifier=? #'underscore #'G_))
-         (with-syntax ((fmt*   (augmented-format-string #'fmt))
-                       (prefix (datum->syntax x prefix)))
-           #'(format (guix-warning-port) (gettext fmt*)
-                     (program-name) (program-name) prefix
-                     args (... ...))))
-        ((name (N-underscore singular plural n) args (... ...))
-         (and (string? (syntax->datum #'singular))
-              (string? (syntax->datum #'plural))
-              (free-identifier=? #'N-underscore #'N_))
-         (with-syntax ((s      (augmented-format-string #'singular))
-                       (p      (augmented-format-string #'plural))
-                       (prefix (datum->syntax x prefix)))
-           #'(format (guix-warning-port)
-                     (ngettext s p n %gettext-domain)
-                     (program-name) (program-name) prefix
-                     args (... ...))))))))
+;; XXX: This doesn't work well for right-to-left languages.
+;; TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
+;; "~a" is a placeholder for that phrase.
+(define-diagnostic warning (G_ "warning: ") %warning-color) ;emit a warning
+(define-diagnostic info (G_ "") %info-color)
+(define-diagnostic report-error (G_ "error: ") %error-color)
 
-(define-diagnostic warning "warning: ") ; emit a warning
-(define-diagnostic info "")
-
-(define-diagnostic report-error "error: ")
 (define-syntax-rule (leave args ...)
   "Emit an error message and exit."
   (begin
     (report-error args ...)
     (exit 1)))
+
+(define %warning-color (color BOLD MAGENTA))
+(define %info-color (color BOLD))
+(define %error-color (color BOLD RED))
+(define %hint-color (color BOLD CYAN))
+
+(define* (print-diagnostic-prefix prefix #:optional location
+                                  #:key (colors (color)))
+  "Print PREFIX as a diagnostic line prefix."
+  (define color?
+    (color-output? (guix-warning-port)))
+
+  (define location-color
+    (if color?
+        (cut colorize-string <> (color BOLD))
+        identity))
+
+  (define prefix-color
+    (if color?
+        (lambda (prefix)
+          (colorize-string prefix colors))
+        identity))
+
+  (let ((prefix (if (string-null? prefix)
+                    prefix
+                    (gettext prefix %gettext-domain))))
+    (if location
+        (format (guix-warning-port) "~a: ~a"
+                (location-color (location->string location))
+                (prefix-color prefix))
+        (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
+                (program-name) (program-name)
+                (prefix-color prefix)))))
 
 (define (print-unbound-variable-error port key args default-printer)
   ;; Print unbound variable errors more nicely, and in the right language.
@@ -317,11 +394,18 @@ VARIABLE and return it, or #f if none was found."
 (define* (display-hint message #:optional (port (current-error-port)))
   "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
 PORT."
-  (format port (G_ "hint: ~a~%")
-          ;; XXX: We should arrange so that the initial indent is wider.
-          (parameterize ((%text-width (max 15
-                                           (- (terminal-columns) 5))))
-            (texi->plain-text message))))
+  (define colorize
+    (if (color-output? port)
+        (lambda (str)
+          (colorize-string str %hint-color))
+        identity))
+
+  (display (colorize (G_ "hint: ")) port)
+  (display
+   ;; XXX: We should arrange so that the initial indent is wider.
+   (parameterize ((%text-width (max 15 (- (terminal-columns) 5))))
+     (texi->plain-text message))
+   port))
 
 (define* (report-unbound-variable-error args #:key frame)
   "Return the given unbound-variable error, where ARGS is the list of 'throw'
@@ -356,21 +440,15 @@ ARGS is the list of arguments received by the 'throw' handler."
          (apply throw args)))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
-       (format (current-error-port) (G_ "~a: error: ~a~%")
-               (location->string loc) message)))
+       (report-error loc (G_ "~a~%") message)))
     (('unbound-variable _ ...)
      (report-unbound-variable-error args #:frame frame))
     (('srfi-34 obj)
      (if (message-condition? obj)
-         (if (error-location? obj)
-             (format (current-error-port)
-                     (G_ "~a: error: ~a~%")
-                     (location->string (error-location obj))
-                     (gettext (condition-message obj)
-                              %gettext-domain))
-             (report-error (G_ "~a~%")
-                           (gettext (condition-message obj)
-                                    %gettext-domain)))
+         (report-error (and (error-location? obj)
+                            (error-location obj))
+                       (G_ "~a~%")
+                       (gettext (condition-message obj) %gettext-domain))
          (report-error (G_ "exception thrown: ~s~%") obj))
      (when (fix-hint? obj)
        (display-hint (condition-fix-hint obj))))
@@ -394,8 +472,7 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
        (warning (G_ "failed to load '~a': ~a~%") file (strerror err))))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
-       (format (current-error-port) (G_ "~a: warning: ~a~%")
-               (location->string loc) message)))
+       (warning loc (G_ "~a~%") message)))
     (('srfi-34 obj)
      (if (message-condition? obj)
          (warning (G_ "failed to load '~a': ~a~%")
@@ -727,17 +804,14 @@ directories:~{ ~a~}~%")
                     (cons (invoke-error-program c)
                           (invoke-error-arguments c))))
             ((and (error-location? c) (message-condition? c))
-             (format (current-error-port)
-                     (G_ "~a: error: ~a~%")
-                     (location->string (error-location c))
-                     (gettext (condition-message c) %gettext-domain))
+             (report-error (error-location c) (G_ "~a~%")
+                           (gettext (condition-message c) %gettext-domain))
              (when (fix-hint? c)
                (display-hint (condition-fix-hint c)))
              (exit 1))
             ((and (message-condition? c) (fix-hint? c))
-             (format (current-error-port) "~a: error: ~a~%"
-                     (program-name)
-                     (gettext (condition-message c) %gettext-domain))
+             (report-error (G_ "~a~%")
+                           (gettext (condition-message c) %gettext-domain))
              (display-hint (condition-fix-hint c))
              (exit 1))
             ((message-condition? c)
@@ -1329,8 +1403,14 @@ score, the more relevant OBJ is to REGEXPS."
   ;; Metrics used to compute the "relevance score" of a package against a set
   ;; of regexps.
   `((,package-name . 4)
-    (,package-synopsis-string . 3)
-    (,package-description-string . 2)
+
+    ;; Match regexps on the raw Texinfo since formatting it is quite expensive
+    ;; and doesn't have much of an effect on search results.
+    (,(lambda (package)
+        (and=> (package-synopsis package) P_)) . 3)
+    (,(lambda (package)
+        (and=> (package-description package) P_)) . 2)
+
     (,(lambda (type)
         (match (and=> (package-location type) location-file)
           ((? string? file) (basename file ".scm"))
@@ -1484,7 +1564,7 @@ DURATION-RELATION with the current time."
 (define (display-generation profile number)
   "Display a one-line summary of generation NUMBER of PROFILE."
   (unless (zero? number)
-    (let ((header (format #f (G_ "Generation ~a\t~a") number
+    (let ((header (format #f (highlight (G_ "Generation ~a\t~a")) number
                           (date->string
                            (time-utc->date
                             (generation-time profile number))
@@ -1696,55 +1776,5 @@ and signal handling has already been set up."
 (define (guix-main arg0 . args)
   (initialize-guix)
   (apply run-guix args))
-
-(define color-table
-  `((CLEAR       .   "0")
-    (RESET       .   "0")
-    (BOLD        .   "1")
-    (DARK        .   "2")
-    (UNDERLINE   .   "4")
-    (UNDERSCORE  .   "4")
-    (BLINK       .   "5")
-    (REVERSE     .   "6")
-    (CONCEALED   .   "8")
-    (BLACK       .  "30")
-    (RED         .  "31")
-    (GREEN       .  "32")
-    (YELLOW      .  "33")
-    (BLUE        .  "34")
-    (MAGENTA     .  "35")
-    (CYAN        .  "36")
-    (WHITE       .  "37")
-    (ON-BLACK    .  "40")
-    (ON-RED      .  "41")
-    (ON-GREEN    .  "42")
-    (ON-YELLOW   .  "43")
-    (ON-BLUE     .  "44")
-    (ON-MAGENTA  .  "45")
-    (ON-CYAN     .  "46")
-    (ON-WHITE    .  "47")))
-
-(define (color . lst)
-  "Return a string containing the ANSI escape sequence for producing the
-requested set of attributes in LST.  Unknown attributes are ignored."
-  (let ((color-list
-         (remove not
-                 (map (lambda (color) (assq-ref color-table color))
-                      lst))))
-    (if (null? color-list)
-        ""
-        (string-append
-         (string #\esc #\[)
-         (string-join color-list ";" 'infix)
-         "m"))))
-
-(define (colorize-string str . color-list)
-  "Return a copy of STR colorized using ANSI escape sequences according to the
-attributes STR.  At the end of the returned string, the color attributes will
-be reset such that subsequent output will not have any colors in effect."
-  (string-append
-   (apply color color-list)
-   str
-   (color 'RESET)))
 
 ;;; ui.scm ends here

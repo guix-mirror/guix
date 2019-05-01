@@ -1,0 +1,57 @@
+From 48b52117235928cfd7ef1ec5c3f2cff5d7b03862 Mon Sep 17 00:00:00 2001
+From: Jordan Hand <jordanhand22@gmail.com>
+Date: Wed, 10 Apr 2019 09:46:32 -0700
+Subject: [PATCH,v2] fdt: Fix mkimage list to try every header type
+Origin: https://patchwork.ozlabs.org/patch/1083495/
+
+Image type is not supplied to `mkimage -l`. For this reason, we cannot
+use imagetool_verify_print_header_by_type. Instead, this patch uses
+imagetool_verify_print_header to look through all header types to find
+one where image validation succeeds.
+
+This patch fixes failures in test/image/test-imagetools.sh
+
+Signed-off-by: Jordan Hand <jorhand@microsoft.com>
+Tested-by: Alex Kiernan <alex.kiernan@gmail.com>
+Tested-by: Vagrant Cascadian <vagrant@debian.org>
+---
+ tools/mkimage.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/tools/mkimage.c b/tools/mkimage.c
+index 2899adff81..76c3406d37 100644
+--- a/tools/mkimage.c
++++ b/tools/mkimage.c
+@@ -403,14 +403,21 @@ int main(int argc, char **argv)
+ 			exit (EXIT_FAILURE);
+ 		}
+ 
+-		/*
+-		 * scan through mkimage registry for all supported image types
+-		 * and verify the input image file header for match
+-		 * Print the image information for matched image type
+-		 * Returns the error code if not matched
+-		 */
+-		retval = imagetool_verify_print_header_by_type(ptr, &sbuf,
+-				tparams, &params);
++		if (params.fflag) {
++			/*
++			 * Verifies the header format based on the expected header for
++			 * image type in tparams
++			 */
++			retval = imagetool_verify_print_header_by_type(ptr, &sbuf,
++					tparams, &params);
++		} else {
++			/**
++			 * When listing the image, we are not given the image type. Simply check all
++			 * image types to find one that matches our header
++			 */
++			retval = imagetool_verify_print_header(ptr, &sbuf,
++					tparams, &params);
++		}
+ 
+ 		(void) munmap((void *)ptr, sbuf.st_size);
+ 		(void) close (ifd);
+-- 
+2.20.1
+

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -42,9 +42,9 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -456,14 +456,14 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
 (define-public wireguard
   (package
     (name "wireguard")
-    (version "0.0.20190227")
+    (version "0.0.20190406")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.zx2c4.com/WireGuard/snapshot/"
                                   "WireGuard-" version ".tar.xz"))
               (sha256
                (base32
-                "0ybzycpjjidyiz88kkh67abvp3y30f34252dwpgf3ncj4vyjdnzw"))))
+                "0ns1s31mfkj7nmapsnx126rj7xlydv7jv8infx5fg58byynz61ig"))))
     (build-system gnu-build-system)
     (outputs '("out" ; The WireGuard userspace tools
                "kernel-patch")) ; A patch to build Linux with WireGuard support
@@ -522,23 +522,23 @@ WireGuard support.")
 (define-public xl2tpd
   (package
     (name "xl2tpd")
-    (version "1.3.13")
+    (version "1.3.14")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/xelerance/xl2tpd")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nzkmhi9arwd4smhr07l0sssx46w48z0cblv7xcz25wg4hw86mcd"))
-              (file-name (string-append "xl2tpd-" version "-checkout"))))
+                "1c2ahxz2zmmxwmk951d2qhijgz67zhwa1hn0r59fgz0y14w22myi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "DESTDIR=" %output)
                           "CC=gcc")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))
-       #:tests? #f)) ;; no tests provided
+                  (delete 'configure))  ; no configure script
+       #:tests? #f))                    ; no tests provided
     (inputs `(("libpcap" ,libpcap)))
     (home-page "https://www.xelerance.com/software/xl2tpd/")
     (synopsis "Layer 2 Tunnelling Protocol Daemon (RFC 2661)")

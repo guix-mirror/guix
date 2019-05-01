@@ -6,14 +6,15 @@
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -431,7 +433,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -440,7 +442,7 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ay4x1b6h5xfax1cqry2fklcmqi6a16klgmci4gkhga7as66lnnn"))))
+                "1nfyigfkl10n9r82p1qxhpr09jn2kwalh9n5r209bcaj8dxspph8"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -567,7 +569,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public physfs
   (package
     (name "physfs")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -576,7 +578,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1wgj2zqpnfbnyyi1i7bq5pshcc9n5cvwlpzp8im67nb8662ryyxp"))))
+                "0qzqz4r88gvd8m7sh2z5hvqcr0jfr4wb2f77c19xycyn0rigfk9h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1072,16 +1074,16 @@ of use.")
 (define-public openmw
   (package
     (name "openmw")
-    (version "0.44.0")
+    (version "0.45.0")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append "https://github.com/OpenMW/openmw/archive/"
-                       name "-" version ".tar.gz"))
+                       "openmw-" version ".tar.gz"))
        (sha256
         (base32
-         "03fgm2f2r7y0aqlgp038pdlnllgvm3jimrp968p4nhz1sffvjzcy"))))
+         "0r0wgvv1faan8z8lbply8lks4hcnppifjrcz04l5zvq6yiqzjg5n"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1329,3 +1331,106 @@ that parenthetically inclined game developers need to make 2D (and eventually
 @item REPL-driven development model
 @end enumerate\n")
     (license license:gpl3+)))
+
+(define-public bennu-game-development
+  (package
+    (name "bennu-game-development")
+    (version "348")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "http://svn.code.sf.net/p/bennugd/code")
+                    (revision (string->number version))))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0wpzsbh4zi3931493dnyl5ffmh1b7fj2sx3mzrq304z9zs4d6lqq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "3rdparty") #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configure-to-use-openssl
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "core")
+             (delete-file "configure")
+             (substitute* "configure.in"
+               (("i\\*86\\)")
+                "*)
+                COMMON_CFLAGS=\"$COMMON_CFLAGS -DUSE_OPENSSL\"
+                COMMON_LDFLAGS=\"$COMMON_LDFLAGS\"
+                LIBSSL=\"crypto\"
+                USE_OPENSSL=yes
+                ;;
+
+            i*86)"))
+               #t)))))
+    (inputs `(("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)))
+    (synopsis "Programming language to create games")
+    (description "Bennu Game Development, also known as bennudg, is a
+programming language tailored at game development.  It is the successor of
+Fenix.")
+    (home-page "https://sourceforge.net/projects/bennugd/")
+    (license license:zlib)))
+
+(define-public bennu-game-development-modules
+  (package
+    (inherit bennu-game-development)
+    (name "bennu-game-development-modules")
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-conflicting-definitions
+           (lambda _
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "core/include/fmath.h"
+                 (("extern fixed fmul\\( int x, int y \\);") "")
+                 (("extern fixed fdiv\\( int x, int y \\);") "")))
+             (chdir "modules"))))))
+    (inputs `(("zlib" ,zlib)
+              ("libpng" ,libpng)
+              ("openssl" ,openssl)
+              ("sdl-mixer" ,sdl-mixer)
+              ("bennu-game-development" ,bennu-game-development)))
+    (synopsis "Modules for the Bennu Game Development programming language")
+    (description "This package contains a collection of modules for the Bennu
+Game Development programming language, from CD handling through SDL to
+joystick support.")))
+
+(define-public plib
+  (package
+    (name "plib")
+    (version "1.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://plib.sourceforge.net/dist/"
+                                  "plib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cha71mflpa10vh2l7ipyqk67dq2y0k5xbafwdks03fwdyzj4ns8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mesa" ,mesa)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://plib.sourceforge.net/")
+    (synopsis "Suite of portable game libraries")
+    (description "PLIB is a set of libraries that will permit programmers to
+write games and other realtime interactive applications that are 100% portable
+across a wide range of hardware and operating systems.  PLIB includes sound
+effects, music, a complete 3D engine, font rendering, a simple Windowing
+library, a game scripting language, a GUI, networking, 3D math library and a
+collection of handy utility functions.  All are 100% portable across nearly
+all modern computing platforms.  Each library component is fairly independent
+of the others")
+    (license license:lgpl2.0+)))

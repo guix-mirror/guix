@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,11 +26,10 @@
 
 ;; Test the (guix zlib) module.
 
-(unless (zlib-available?)
-  (exit 77))
-
 (test-begin "zlib")
 
+(unless (zlib-available?)
+  (test-skip 1))
 (test-assert "compression/decompression pipe"
   (let ((data (random-bytevector (+ (random 10000)
                                     (* 20 1024)))))

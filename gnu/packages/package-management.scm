@@ -50,7 +50,6 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -59,6 +58,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -78,6 +78,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -109,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.16.0")
-        (commit "2637cfd7a4894ef2a2a7da3bb46d8815c43d7e75")
-        (revision 10))
+        (commit "0c329bf4b0c00abdc9a7d9c818d36d4d60b3005d")
+        (revision 14))
     (package
       (name "guix")
 
@@ -126,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1m734gm45x9czqspsagdfxfgw5wiiinyq1s6zc9gfv7d3b2w472k"))
+                  "1403vrazx46w9hcvqjyxa4ipwvqv0432f6rsn4981w1n3p1j4mf6"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -136,9 +137,6 @@
                             (string-append "--with-bash-completion-dir="
                                            (assoc-ref %outputs "out")
                                            "/etc/bash_completion.d")
-                            (string-append "--with-libgcrypt-prefix="
-                                           (assoc-ref %build-inputs
-                                                      "libgcrypt"))
 
                             ;; Set 'DOT_USER_PROGRAM' to the empty string so
                             ;; we don't keep a reference to Graphviz, whose
@@ -409,10 +407,10 @@ generated file."
   (make-parameter #f))
 
 (define-public current-guix
-  (let* ((repository-root (canonicalize-path
-                           (string-append (current-source-directory)
-                                          "/../..")))
-         (select? (delay (or (git-predicate repository-root)
+  (let* ((repository-root (delay (canonicalize-path
+                                  (string-append (current-source-directory)
+                                                 "/../.."))))
+         (select? (delay (or (git-predicate (force repository-root))
                              source-file?))))
     (lambda ()
       "Return a package representing Guix built from the current source tree.
@@ -422,7 +420,7 @@ out) and returning a package that uses that as its 'source'."
           (package
             (inherit guix)
             (version (string-append (package-version guix) "+"))
-            (source (local-file repository-root "guix-current"
+            (source (local-file (force repository-root) "guix-current"
                                 #:recursive? #t
                                 #:select? (force select?))))))))
 
@@ -548,13 +546,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "113")
+    (version "114")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "10wjri6vsqxf2nb7jjhsq38qlpf407b4qrdczrk696aa1v71i44w"))))
+                "07sma4izcqxdv0zi1s5fnsybvkc47c3vbpm372sg83q8l7rhizzp"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1002,14 +1000,14 @@ for packaging and deployment of cross-compiled Windows applications.")
     (description
      "@code{libostree} is both a shared library and suite of command line
 tools that combines a \"git-like\" model for committing and downloading
-bootable filesystem trees, along with a layer for deploying them and managing
-the bootloader configuration.")
+bootable file system trees, along with a layer for deploying them and managing
+the boot loader configuration.")
     (license license:lgpl2.0+)))
 
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.2.3")
+   (version "1.2.4")
    (source
     (origin
      (method url-fetch)
@@ -1017,8 +1015,12 @@ the bootloader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "0i0dn3w3545lvmjlzqj3j70lk8yrq64r9frp1rk6a161gwq20ixv"))))
-   (build-system gnu-build-system)
+       "1qf3ys84fzv11z6f6li59rxjdjbyrv7cyi9539k73r9i9pckjr8v"))))
+
+   ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
+   ;; find the TLS backend in glib-networking.
+   (build-system glib-or-gtk-build-system)
+
    (arguments
     '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
       #:configure-flags (list

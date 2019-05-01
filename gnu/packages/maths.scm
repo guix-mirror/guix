@@ -7,7 +7,7 @@
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -606,8 +606,8 @@ problems in numerical linear algebra.")
 routines on parallel distributed memory machines.  ScaLAPACK solves dense and
 banded linear systems, least squares problems, eigenvalue problems, and
 singular value problems.")
-    (license (license:bsd-style "file://LICENSE"
-                                "See LICENSE in the distribution."))))
+    (license (license:non-copyleft "file://LICENSE"
+                                   "See LICENSE in the distribution."))))
 
 (define-public gnuplot
   (package
@@ -650,13 +650,13 @@ plotting engine by third-party applications like Octave.")
     (version "2.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/OkoSanto/GCTP/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OkoSanto/GCTP.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0l9aqnqynh9laicn5dxf3rsb1n14xiks79wbyqccirzmjqd1c1x4"))))
+        (base32 "11wqmd443b4nksdbzp1msdws3av948nmwq1xz80w6hka3ss2aigd"))))
     (native-inputs
      `(("fortran" ,gfortran)))
     (build-system gnu-build-system)
@@ -887,121 +887,130 @@ extremely large and complex data collections.")
 
 (define-public hdf-java
   (package
-   (name "hdf-java")
-   (version "3.3.2")
-   (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
-            "http://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
-            version "/src/CMake-hdfjava-" version ".tar.gz"))
-      (sha256
-       (base32 "0m1gp2aspcblqzmpqbdpfp6giskws85ds6p5gz8sx7asyp7wznpr"))
-      (modules '((guix build utils)))
-      (snippet ; Make sure we don't use the bundled sources and binaries.
-       `(begin
-          (for-each delete-file
-                    (list "SZip.tar.gz" "ZLib.tar.gz" "JPEG8d.tar.gz"
-                          "HDF4.tar.gz" "HDF5.tar.gz"))
-          (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))
-          #t))))
-   (build-system gnu-build-system)
-   (native-inputs
-    `(("jdk" ,icedtea "jdk")
-      ("automake" ,automake) ; For up to date 'config.guess' and 'config.sub'.
-      ;; For tests:
-      ("hamcrest-core" ,java-hamcrest-core)
-      ("junit" ,java-junit)
-      ("slf4j-simple" ,java-slf4j-simple)))
-   (inputs
-    `(("hdf4" ,hdf4)
-      ("hdf5" ,hdf5)
-      ("zlib" ,zlib)
-      ("libjpeg" ,libjpeg)
-      ("slf4j-api" ,java-slf4j-api)))
-   (arguments
-    `(#:configure-flags
-      (list (string-append "--target=" ,(or (%current-target-system) (%current-system)))
-            (string-append "--with-jdk=" (assoc-ref %build-inputs "jdk") "/include,"
-                           (assoc-ref %build-inputs "jdk") "/lib" )
-            (string-append "--with-hdf4=" (assoc-ref %build-inputs "hdf4") "/lib")
-            (string-append "--with-hdf5=" (assoc-ref %build-inputs "hdf5") "/lib"))
+    (name "hdf-java")
+    (version "3.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.hdfgroup.org/ftp/HDF5/releases/HDF-JAVA/hdfjni-"
+             version "/src/CMake-hdfjava-" version ".tar.gz"))
+       (sha256
+        (base32 "0m1gp2aspcblqzmpqbdpfp6giskws85ds6p5gz8sx7asyp7wznpr"))
+       (modules '((guix build utils)))
+       (snippet     ; Make sure we don't use the bundled sources and binaries.
+        `(begin
+           (for-each delete-file
+                     (list "SZip.tar.gz" "ZLib.tar.gz" "JPEG8d.tar.gz"
+                           "HDF4.tar.gz" "HDF5.tar.gz"))
+           (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))
+           #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("jdk" ,icedtea "jdk")
+       ("automake" ,automake) ; For up to date 'config.guess' and 'config.sub'.
+       ;; For tests:
+       ("hamcrest-core" ,java-hamcrest-core)
+       ("junit" ,java-junit)
+       ("slf4j-simple" ,java-slf4j-simple)))
+    (inputs
+     `(("hdf4" ,hdf4)
+       ("hdf5" ,hdf5)
+       ("zlib" ,zlib)
+       ("libjpeg" ,libjpeg)
+       ("slf4j-api" ,java-slf4j-api)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--target=" ,(or (%current-target-system) (%current-system)))
+             (string-append "--with-jdk=" (assoc-ref %build-inputs "jdk") "/include,"
+                            (assoc-ref %build-inputs "jdk") "/lib" )
+             (string-append "--with-hdf4=" (assoc-ref %build-inputs "hdf4") "/lib")
+             (string-append "--with-hdf5=" (assoc-ref %build-inputs "hdf5") "/lib"))
 
-      #:make-flags
-      (list (string-append "HDFLIB=" (assoc-ref %build-inputs "hdf4") "/lib")
-            (string-append "HDF5LIB=" (assoc-ref %build-inputs "hdf5") "/lib")
-            (string-append "ZLIB=" (assoc-ref %build-inputs "zlib") "/lib/libz.so")
-            (string-append "JPEGLIB="
-                           (assoc-ref %build-inputs "libjpeg") "/lib/libjpeg.so")
-            "LLEXT=so")
+       #:make-flags
+       (list (string-append "HDFLIB=" (assoc-ref %build-inputs "hdf4") "/lib")
+             (string-append "HDF5LIB=" (assoc-ref %build-inputs "hdf5") "/lib")
+             (string-append "ZLIB=" (assoc-ref %build-inputs "zlib") "/lib/libz.so")
+             (string-append "JPEGLIB="
+                            (assoc-ref %build-inputs "libjpeg") "/lib/libjpeg.so")
+             "LLEXT=so")
 
-      #:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'chdir-to-source
-          (lambda _ (chdir ,(string-append "hdfjava-" version))))
-        (add-before 'configure 'patch-build
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (substitute* "configure"
-              (("COPT=\"") "COPT=\"-O2 ") ; CFLAGS is ignored in Makefiles
-              (("/bin/cat") (which "cat")))
-            ;; Set classpath for compilation
-            (substitute* '("hdf/hdf5lib/Makefile.in"
-                           "hdf/hdf5lib/exceptions/Makefile.in"
-                           "hdf/hdflib/Makefile.in")
-              (("\\$\\(TOP\\)/lib/slf4j-api-1\\.7\\.5\\.jar")
-               (string-append (assoc-ref inputs "slf4j-api")
-                              "/share/java/slf4j-api.jar")))
-            ;; Replace outdated config.sub and config.guess:
-            (with-directory-excursion "config"
-              (for-each (lambda (file)
-                          (copy-file
-                           (string-append (assoc-ref inputs "automake")
-                                          "/share/automake-1.15/" file) file))
-                        '("config.sub" "config.guess")))
-            (mkdir-p (string-append (assoc-ref outputs "out")))
-            ;; Set classpath for tests
-            (let* ((build-dir (getcwd))
-                   (lib (string-append build-dir "/lib"))
-                   (jhdf (string-append lib "/jhdf.jar"))
-                   (jhdf5 (string-append lib "/jhdf5.jar"))
-                   (testjars
-                    (map (lambda (i)
-                           (string-append (assoc-ref inputs i)
-                                          "/share/java/" i ".jar"))
-                         '("junit" "hamcrest-core" "slf4j-api" "slf4j-simple")))
-                   (class-path
-                    (string-join `("." ,build-dir ,jhdf ,jhdf5 ,@testjars) ":")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir-to-source
+           (lambda _ (chdir ,(string-append "hdfjava-" version)) #t))
+         (add-before 'configure 'patch-build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("COPT=\"") "COPT=\"-O2 ") ; CFLAGS is ignored in Makefiles
+               (("/bin/cat") (which "cat")))
+             ;; Set classpath for compilation
+             (substitute* '("hdf/hdf5lib/Makefile.in"
+                            "hdf/hdf5lib/exceptions/Makefile.in"
+                            "hdf/hdflib/Makefile.in")
+               (("\\$\\(TOP\\)/lib/slf4j-api-1\\.7\\.5\\.jar")
+                (string-append (assoc-ref inputs "slf4j-api")
+                               "/share/java/slf4j-api.jar")))
+             ;; Replace outdated config.sub and config.guess:
+             (with-directory-excursion "config"
+               (for-each (lambda (file)
+                           (install-file
+                            (string-append (assoc-ref inputs "automake")
+                                           "/share/automake-"
+                                           ,(version-major+minor (package-version automake))
+                                           "/" file) "."))
+                         '("config.sub" "config.guess")))
 
-              (substitute* '("test/hdf5lib/Makefile.in"
-                             "test/hdf5lib/junit.sh.in"
-                             "examples/runExample.sh.in")
-                (("/usr/bin/test")
-                 (string-append (assoc-ref inputs "coreutils")
-                                "/bin/test"))
-                (("/usr/bin/uname")
-                 (string-append (assoc-ref inputs "coreutils")
-                                "/bin/uname"))
-                (("CLASSPATH=[^\n]*")
-                 (string-append "CLASSPATH=" class-path)))
-              (setenv "CLASSPATH" class-path))
-            #t))
-        (add-before 'check 'build-examples
-          (lambda _
-            (zero? (apply system* `("javac"
-                                    ,@(find-files "examples" ".*\\.java")))))))
+             ;; Fix embedded version number
+             (let ((hdf5version (list ,@(string-split (package-version hdf5) #\.))))
+               (substitute* "hdf/hdf5lib/H5.java"
+                 (("1, 8, 19")
+                  (string-join hdf5version ", "))))
 
-      #:parallel-build? #f
+             (mkdir-p (string-append (assoc-ref outputs "out")))
+             ;; Set classpath for tests
+             (let* ((build-dir (getcwd))
+                    (lib (string-append build-dir "/lib"))
+                    (jhdf (string-append lib "/jhdf.jar"))
+                    (jhdf5 (string-append lib "/jhdf5.jar"))
+                    (testjars
+                     (map (lambda (i)
+                            (string-append (assoc-ref inputs i)
+                                           "/share/java/" i ".jar"))
+                          '("junit" "hamcrest-core" "slf4j-api" "slf4j-simple")))
+                    (class-path
+                     (string-join `("." ,build-dir ,jhdf ,jhdf5 ,@testjars) ":")))
 
-      #:parallel-tests? #f ))
-   (home-page "https://support.hdfgroup.org/products/java")
-   (synopsis "Java interface for the HDF4 and HDF5 libraries")
-   (description "Java HDF Interface (JHI) and Java HDF5 Interface (JHI5) use
+               (substitute* '("test/hdf5lib/Makefile.in"
+                              "test/hdf5lib/junit.sh.in"
+                              "examples/runExample.sh.in")
+                 (("/usr/bin/test")
+                  (string-append (assoc-ref inputs "coreutils")
+                                 "/bin/test"))
+                 (("/usr/bin/uname")
+                  (string-append (assoc-ref inputs "coreutils")
+                                 "/bin/uname"))
+                 (("CLASSPATH=[^\n]*")
+                  (string-append "CLASSPATH=" class-path)))
+               (setenv "CLASSPATH" class-path))
+             #t))
+         (add-before 'check 'build-examples
+           (lambda _
+             (apply invoke `("javac"
+                             ,@(find-files "examples" ".*\\.java"))))))
+
+       #:parallel-build? #f
+
+       #:parallel-tests? #f ))
+    (home-page "https://support.hdfgroup.org/products/java")
+    (synopsis "Java interface for the HDF4 and HDF5 libraries")
+    (description "Java HDF Interface (JHI) and Java HDF5 Interface (JHI5) use
 the Java Native Interface to wrap the HDF4 and HDF5 libraries, which are
 implemented in C.")
 
-   ;; BSD-style license:
-   (license (license:x11-style
-             "https://support.hdfgroup.org/ftp/HDF5/hdf-java\
+    ;; BSD-style license:
+    (license (license:x11-style
+              "https://support.hdfgroup.org/ftp/HDF5/hdf-java\
 /current/src/unpacked/COPYING"))))
 
 (define-public hdf-eos2
@@ -1344,6 +1353,38 @@ large-scale nonlinear optimization.  It provides C++, C, and Fortran
 interfaces.")
     (license license:epl1.0)))
 
+(define-public clp
+  (package
+    (name "clp")
+    (version "1.17.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.coin-or.org/download/source/"
+                                  "Clp/Clp-" version ".tgz"))
+              (sha256
+               (base32
+                "1wdg820g3iikf9344ijwsc8sy6c0m6im42bzzizm6rlmkvnmxhk9"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(begin
+                  (delete-file-recursively "ThirdParty")
+                  #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openblas" ,openblas)))
+    (home-page "https://www.coin-or.org")
+    (synopsis "Linear programming solver")
+    (description
+     "CLP is a high quality linear programming solver.  Its main strengths are
+its dual and primal Simplex algorithms.  It also has a barrier algorithm for
+linear and quadratic objectives.  There are limited facilities for nonlinear
+and quadratic objectives using the Simplex algorithm.")
+    (license license:epl1.0)))
+
 (define-public ceres
   (package
     (name "ceres-solver")
@@ -1514,15 +1555,14 @@ script files.")
     (version "0.17.2")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://github.com/tpaviot/oce/archive/OCE-"
-               version
-               ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/tpaviot/oce.git")
+              (commit (string-append "OCE-" version))))
+        (file-name (git-file-name name version))
         (patches (search-patches "opencascade-oce-glibc-2.26.patch"))
         (sha256
-          (base32
-            "0vpmnb0k5y2f7lpmwx9pg9yfq24zjvnsak5alzacncfm1hv9b6cd"))))
+          (base32 "0rg5wzkvfmzfl6v2amyryb8dnjad0nn9kyr607wy2gch6rciah69"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -2166,14 +2206,14 @@ sparse system of linear equations A x = b using Guassian elimination.")
 (define-public r-quadprog
   (package
     (name "r-quadprog")
-    (version "1.5-5")
+    (version "1.5-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quadprog" version))
        (sha256
         (base32
-         "0jg3r6abmhp8r9vkbhpx9ldjfw6vyl1m4c5vwlyjhk1mi03656fr"))))
+         "1fnwaz70dhiq4av8apc4wr3yrrpwc2i6lksf8pfi6jw8vzzyahql"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -2187,12 +2227,12 @@ programming problems.")
 (define-public r-pracma
   (package
     (name "r-pracma")
-    (version "2.2.2")
+    (version "2.2.5")
     (source (origin
       (method url-fetch)
       (uri (cran-uri "pracma" version))
       (sha256
-        (base32 "18zhni05gwnxbphl6bmjjxmsgg5wwnnkwlb4g971cqyw3dsd83ki"))))
+        (base32 "0isd3s0i4mzmva8lkh0j76hwjy1w50q7d1n9lhxsnnkgalx3xs1g"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/pracma/")
     (synopsis "Practical numerical math functions")
@@ -2756,12 +2796,12 @@ to BMP, JPEG or PNG image formats.")
              ;; of Debian's Maxima package.
              ;; If Maxima can successfully run this, the binary to be installed
              ;; should be fine.
-             (zero?
-              (system
-               (string-append "./maxima-local "
-                              "--lisp=gcl "
-                              "--batch-string=\"run_testsuite();\" "
-                              "| grep -q \"No unexpected errors found\"")))))
+             (invoke "sh" "-c"
+                     (string-append
+                      "./maxima-local "
+                      "--lisp=gcl "
+                      "--batch-string=\"run_testsuite();\" "
+                      "| grep -q \"No unexpected errors found\""))))
          ;; Make sure the doc and emacs files are found in the
          ;; standard location.  Also configure maxima to find gnuplot
          ;; without having it on the PATH.
@@ -2809,7 +2849,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "19.01.3")
+    (version "19.03.1")
     (source
      (origin
        (method git-fetch)
@@ -2819,7 +2859,7 @@ point numbers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1vwahx3zxkn3qlv4z0fm7v8wh0wspvs026alrh7ff7s0c2dcy95x"))))
+         "1qkf4jg86xnn3wk3782ffmfz12axb92dkjagcz3ffzw2wi1rclml"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -2911,13 +2951,13 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
       (version (string-append upstream-version "-" revision))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/beltoforion/muparser/archive/v"
-                             upstream-version ".tar.gz"))
-         (file-name (string-append name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/beltoforion/muparser.git")
+               (commit (string-append "v" upstream-version))))
+         (file-name (git-file-name name version))
          (sha256
-          (base32
-           "0277qsi5l23jsck1vhn383bmvc2n9l4a1dl5r9bf7hvjv9ayyrh6"))))
+          (base32 "0f0g4995xngf1pp3zr4p6ai2f8v6f8bxwa0k8ayjjiv1l8h44m24"))))
       (build-system gnu-build-system)
       (arguments
        `(#:configure-flags '("--enable-samples=no")
@@ -3047,13 +3087,13 @@ underway to allow BLIS to select the right optimized kernels at run time:
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; This is a home-made 'configure' script.
                       (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* "./configure" "-p" out
-                                        "-d" "opt"
-                                        "--disable-static"
-                                        "--enable-shared"
-                                        "--enable-threading=openmp"
+                        (invoke "./configure" "-p" out
+                                "-d" "opt"
+                                "--disable-static"
+                                "--enable-shared"
+                                "--enable-threading=openmp"
 
-                                        ,implementation)))))
+                                ,implementation))))
                   (add-before 'check 'show-test-output
                     (lambda _
                       ;; By default "make check" is silent.  Make it verbose.
@@ -3105,13 +3145,13 @@ access to BLIS implementations via traditional BLAS routine calls.")
     (version "0.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/JuliaLang/openlibm/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaLang/openlibm.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0a5fpm8nra5ldhjk0cqd2rx1qh32wiarkxmcqcm5xl8z7l4kjm6l"))))
+        (base32 "08wfchmmr5200fvmn1kwq9byc1fhsq46hn0y5k8scdl74771c7gh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3144,13 +3184,13 @@ environments.")
     (version "0.5.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/JuliaLang/openspecfun/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaLang/openspecfun.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1rs1bv8jq751fv9vq79890wqf9xlbjc7lvz3ighzyfczbyjcf18m"))))
+        (base32 "0pfw6l3ch7isz403llx7inxlvavqh01jh1hb9dpidi86sjjx9kfh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no "check" target
@@ -3260,7 +3300,6 @@ packages.")
        #:substitutable? #f
 
        #:modules ((srfi srfi-26)
-                  (srfi srfi-1)
                   (guix build gnu-build-system)
                   (guix build utils))
        #:configure-flags
@@ -3293,11 +3332,11 @@ packages.")
              (let ((doc (string-append (assoc-ref outputs "doc")
                                        "/share/doc/atlas")))
                (mkdir-p doc)
-               (fold (lambda (file previous)
-                       (and previous (zero? (system* "cp" file doc))))
-                     #t (find-files "../ATLAS/doc" ".*")))))
+               (for-each (cut install-file <> doc)
+                         (find-files "../ATLAS/doc" ".*"))
+               #t)))
          (add-after 'check 'check-pt
-           (lambda _ (zero? (system* "make" "ptcheck"))))
+           (lambda _ (invoke "make" "ptcheck")))
          ;; Fix files required to run configure.
          (add-before 'configure 'fix-/bin/sh
            (lambda _
@@ -3332,9 +3371,9 @@ packages.")
                (chdir "../build")
                (format #t "build directory: ~s~%" (getcwd))
                (format #t "configure flags: ~s~%" flags)
-               (zero? (apply system* bash
-                             (string-append srcdir "/configure")
-                             flags))))))))
+               (apply invoke bash
+                      (string-append srcdir "/configure")
+                      flags)))))))
     (synopsis "Automatically Tuned Linear Algebra Software")
     (description
      "ATLAS is an automatically tuned linear algebra software library
@@ -3357,7 +3396,7 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.4")
+    (version "0.9.9.5")
     (source
      (origin
        (method url-fetch)
@@ -3365,7 +3404,7 @@ Failure to do so will result in a library with poor performance.")
                            version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "17vxbqzy4pxciq5i39bgpxz54f7ifqqmcqwwq7m6xfgikwqqqawp"))))
+         "1vmg7hb4xvsa77zpbwiw6lqc7pyaj56dihx6xriny5b9rrh4iqsg"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -3641,31 +3680,32 @@ set.")
 (define-public hypre
   (package
     (name "hypre")
-    (version "2.14.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/LLNL/hypre/archive/"
-                                  "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0v515i73bvaz378h5465b1dy9v2gf924zy2q94cpq4qqarawvkqh"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove use of __DATE__ and __TIME__ for reproducibility;
-                  ;; substitute the tarball creation time.
-                  (substitute* "src/utilities/HYPRE_utilities.h"
-                    (("Date Compiled: .*$")
-                     "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
-                  #t))))
+    (version "2.15.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/LLNL/hypre.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lvh4ybqkriyqfg2zmic6mrg1981qv1i9vry1fdgsabn81hb71g4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove use of __DATE__ and __TIME__ for reproducibility;
+           ;; substitute the release date.
+           (substitute* "src/utilities/HYPRE_utilities.h"
+             (("Date Compiled: .*$")
+              "Date Compiled: Oct 19 2018 15:23:00 +0000\"\n"))
+           #t))))
     (build-system gnu-build-system)
-    (outputs '("out"                    ;6.1 MiB of headers and libraries
-               "doc"))                  ;4.8 MiB of documentation
+    (outputs '("out"                    ; 6.1 MiB of headers and libraries
+               "doc"))                  ; 4.8 MiB of documentation
     (native-inputs
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
-       ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
+       ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
        ("texlive" ,(texlive-union (list texlive-generic-xypic
                                         texlive-fonts-xypic
                                         texlive-latex-hyperref
@@ -3711,16 +3751,14 @@ set.")
            (lambda _
              (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/hypre/lib"))
              (setenv "PATH" (string-append "." ":" (getenv "PATH")))
-             (and (system* "make" "check" "CHECKRUN=")
-                  (fold (lambda (filename result)
-                          (and result
-                               (let ((size (stat:size (stat filename))))
-                                 (when (not (zero? size))
-                                   (format #t "~a size ~d; error indication~%"
-                                           filename size))
-                                 (zero? size))))
-                        #t
-                        (find-files "test" ".*\\.err$")))))
+             (invoke "make" "check" "CHECKRUN=")
+             (for-each (lambda (filename)
+                         (let ((size (stat:size (stat filename))))
+                           (when (positive? size)
+                             (error (format #f "~a size ~d; error indication~%"
+                                            filename size)))))
+                       (find-files "test" ".*\\.err$"))
+             #t))
          (add-after 'install 'install-docs
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Custom install because docs/Makefile doesn't honor ${docdir}.
@@ -3729,7 +3767,7 @@ set.")
                (with-directory-excursion "docs"
                  (for-each (lambda (base)
                              (install-file (string-append base ".pdf") docdir)
-                             (copy-recursively base docdir)) ;html docs
+                             (copy-recursively base docdir)) ; html docs
                            '("HYPRE_usr_manual"
                              "HYPRE_ref_manual")))
                #t))))))
@@ -3904,10 +3942,10 @@ Longest Commons Subsequence of a set of strings.")
                                 (assoc-ref outputs "out"))
                         (chmod wrapper #o555))))
          (replace 'configure
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out")))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "./configure"
+                     (string-append "--prefix="
+                                    (assoc-ref outputs "out"))))))))
     (inputs `(("scm" ,scm)))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
@@ -3943,8 +3981,7 @@ as equations, scalars, vectors, and matrices.")
              #t))
          (add-before 'configure 'bootstrap
            (lambda _
-             (zero?
-              (system* "python" "scripts/mk_make.py"))))
+             (invoke "python" "scripts/mk_make.py")))
          ;; work around gnu-build-system's setting --enable-fast-install
          ;; (z3's `configure' is a wrapper around the above python file,
          ;; which fails when passed --enable-fast-install)
@@ -3959,12 +3996,12 @@ as equations, scalars, vectors, and matrices.")
          (add-before 'check 'make-test-z3
            (lambda _
              ;; Build the test suite executable.
-             (zero? (system* "make" "test-z3" "-j"
-                             (number->string (parallel-job-count))))))
+             (invoke "make" "test-z3" "-j"
+                     (number->string (parallel-job-count)))))
          (replace 'check
            (lambda _
              ;; Run all the tests that don't require arguments.
-             (zero? (system* "./test-z3" "/a")))))))
+             (invoke "./test-z3" "/a"))))))
     (native-inputs
      `(("which" ,which)
        ("python" ,python-wrapper)))
@@ -4820,3 +4857,54 @@ implemented as callable objects, and bases of finite element spaces.")
 built on top of DUNE, the Distributed and Unified Numerics Environment.")
     ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
     (license (list license:lgpl3+ license:gpl2))))
+
+(define-public mlucas
+  (package
+    (name "mlucas")
+    (version "18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://mersenneforum.org/mayer/src/C/mlucas_v" version ".txz"))
+       (sha256
+        (base32
+         "1ax12qj9lyvnx4vs3gx7l8r3wx5gjbsdswp5f00ik9z0wz7xf297"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python2" ,python-2)))
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "src")
+             (call-with-output-file "Makefile"
+               (lambda (port)
+                 (format port "CC = gcc
+CFLAGS = -O3 ~a -DUSE_THREADS
+LDLIBS = -lm -lpthread -lrt
+Mlucas: $(addsuffix .o,$(basename $(wildcard *.c)))
+"
+                         ,(let ((system (or (%current-target-system)
+                                            (%current-system))))
+                            (cond
+                             ((string-prefix? "x86_64" system) "-DUSE_SSE2")
+                             (else ""))))))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "Mlucas" bin)
+               (install-file "primenet.py" bin))
+             #t)))))
+    (home-page "https://www.mersenne.org")
+    (synopsis "Great Internet Mersenne Prime Search (GIMPS) distributed computing client")
+    (description "Mlucas performs Lucas-Lehmer primality testing of Mersenne
+numbers in search of a world-record prime.  You may use it to test any
+suitable number as you wish, but it is preferable that you do so in a
+coordinated fashion, as part of the Great Internet Mersenne Prime
+Search (GIMPS).  Mlucas also includes a simple Python script for assignment
+management via the GIMPS project's Primenet server.")
+    (license license:gpl2+)))

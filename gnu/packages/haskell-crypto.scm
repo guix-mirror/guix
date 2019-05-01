@@ -733,3 +733,46 @@ It also includes support for detached signatures, and thorough
 documentation on the design and implementation, including usage
 guidelines.")
     (license license:expat)))
+
+(define-public ghc-tls
+  (package
+    (name "ghc-tls")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "tls/tls-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y083724mym28n6xfaz7pcc7zqxdhjpaxpbvzxfbs25qq2px3smv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-asn1-types" ,ghc-asn1-types)
+       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
+       ("ghc-x509" ,ghc-x509)
+       ("ghc-x509-store" ,ghc-x509-store)
+       ("ghc-x509-validation" ,ghc-x509-validation)
+       ("ghc-async" ,ghc-async)
+       ("ghc-network" ,ghc-network)
+       ("ghc-hourglass" ,ghc-hourglass)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/vincenthz/hs-tls")
+    (synopsis
+     "TLS/SSL protocol native implementation (Server and Client)")
+    (description
+     "Native Haskell TLS and SSL protocol implementation for server and client.
+This provides a high-level implementation of a sensitive security protocol,
+eliminating a common set of security issues through the use of the advanced
+type system, high level constructions and common Haskell features.  Currently
+implement the SSL3.0, TLS1.0, TLS1.1 and TLS1.2 protocol, and support RSA and
+Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
+extensions.")
+    (license license:bsd-3)))
+

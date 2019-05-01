@@ -2,10 +2,10 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,10 +23,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages screen)
-  #:use-module (srfi srfi-1)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
@@ -153,23 +153,27 @@ window manager as well as the Tmux terminal multiplexer.")
 (define-public reptyr
   (package
     (name "reptyr")
-    (version "0.6.2")
+    (version "0.7.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/nelhage/reptyr/archive"
-                           "/reptyr-" version ".tar.gz"))
-       ;; XXX: To be removed on next reptyr release.
-       (patches (search-patches "reptyr-fix-gcc-7.patch"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nelhage/reptyr.git")
+             (commit (string-append "reptyr-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "07pfl0rkgm8m3f3jy8r9l2yvnhf8lgllpsk3mh57mhzdxq8fagf7"))))
+        (base32 "1hnijfz1ab34j2h2cxc3f43rmbclyihgn9x9wxa7jqqgb2xm71hj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+     '(#:tests? #f                      ; no tests
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "BASHCOMPDIR=" (assoc-ref %outputs "out")
+                            "/etc/bash_completion.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/nelhage/reptyr")
     (synopsis "Tool for reparenting a running program to a new terminal")
     (description
@@ -177,7 +181,6 @@ window manager as well as the Tmux terminal multiplexer.")
 it to a new terminal.  Started a long-running process over @code{ssh}, but have
 to leave and don't want to interrupt it?  Just start a @code{screen}, use
 reptyr to grab it, and then kill the @code{ssh} session and head on home.")
-    ;; Reptyr currently does not support mips or aarch64.
-    (supported-systems (fold delete %supported-systems
-                             '("mips64el-linux" "aarch64-linux")))
+    ;; Reptyr currently does not support mips.
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     (license expat)))

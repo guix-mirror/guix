@@ -380,9 +380,9 @@ connections from and to iOS devices by connecting to a socket provided by a
     (synopsis "Protocol library and tools to communicate with Apple devices")
     (description "libimobiledevice is a software library that talks the
 protocols to support Apple devices.  It allows other software to easily access
-the device's filesystem, retrieve information about the device and it's
+the device's file system, retrieve information about the device and its
 internals, backup/restore the device, manage installed applications, retrieve
-addressbook/calendars/notes and bookmarks and (using libgpod) synchronize
+address books, calendars, notes, and bookmarks, and (using libgpod) synchronize
 music and video to the device.")
     (license license:lgpl2.1+)))
 

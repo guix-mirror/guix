@@ -48,14 +48,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20190322")
+    (version "20190422")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "12q0ys0dp019wykx7jcqbrilz8798hgb66k97aj2s2m7xdpw41ym"))))
+       (base32 "0xdl5fnh1vpjp3zpmqsrbbgjixazlhl4d9awk42nz4snzynysjxl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -136,7 +136,7 @@ and they are executed on lists of files, hosts, users or other items.")
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
-      (list "--enable-pam"
+      (list "--enable-pam" "--sysconfdir=/etc/slurm"
             (string-append "--with-freeipmi=" (assoc-ref %build-inputs "freeipmi"))
             (string-append "--with-hwloc=" (assoc-ref %build-inputs "hwloc"))
             (string-append "--with-json=" (assoc-ref %build-inputs "json-c"))

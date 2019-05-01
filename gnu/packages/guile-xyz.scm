@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
@@ -898,33 +898,30 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (license license:gpl3+)))
 
 (define-public guile-email
-  (let ((commit "fa52eac55e5946db89621a6c583d2aa357864dee")
-        (revision "1"))
-    (package
-      (name "guile-email")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.systemreboot.net/guile-email")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1037mbz7qd9bzaqp8ysyhnl9ipd97fmj3b9jr8qfzx9179vvsj63"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)))
-      (inputs
-       `(("guile" ,guile-2.2)))
-      (home-page "https://git.systemreboot.net/guile-email")
-      (synopsis "Guile email parser")
-      (description "This package provides an email parser written in pure
+  (package
+    (name "guile-email")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://git.systemreboot.net/guile-email/snapshot/guile-email-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "0p2v8q2kkz8m6vf2rsjvz3dj1mvnx7dxakjf72dwkndbgk3rp79f"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://git.systemreboot.net/guile-email")
+    (synopsis "Guile email parser")
+    (description "This package provides an email parser written in pure
 Guile.")
-      (license license:agpl3+))))
+    (license license:agpl3+)))
 
 (define-public guile-debbugs-next
   (let ((commit "75a331d561c8b6f8efcf16216dab961c17759efe")
@@ -951,40 +948,37 @@ Guile.")
        `(("guile" ,guile-2.2)
          ("guile-email" ,guile-email))))))
 
-;; There has not been any release yet.
 (define-public guile-newt
-  (let ((commit "80c1e9e71945f833386d1632b52573e59325804f")
-        (revision "4"))
-    (package
-      (name "guile-newt")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/mothacehe/guile-newt")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags
-         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("newt" ,newt)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (synopsis "Guile bindings to Newt")
-      (description
-       "This package provides bindings for Newt, a programming library for
+  (package
+    (name "guile-newt")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/mothacehe/guile-newt")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("newt" ,newt)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Guile bindings to Newt")
+    (description
+     "This package provides bindings for Newt, a programming library for
 color text mode, widget based user interfaces.  The bindings are written in pure
 Scheme by using Guile’s foreign function interface.")
-      (home-page "https://gitlab.com/mothacehe/guile-newt")
-      (license license:gpl3+))))
+    (home-page "https://gitlab.com/mothacehe/guile-newt")
+    (license license:gpl3+)))
 
 (define-public guile-mastodon
   (package
@@ -1015,42 +1009,39 @@ Scheme by using Guile’s foreign function interface.")
 microblogging service.")
     (license license:gpl3+)))
 
-;; There has not been any release yet.
 (define-public guile-parted
-  (let ((commit "ea3f1a1f6844775fc59d3078d2a09c62ffb341b8")
-        (revision "0"))
-    (package
-      (name "guile-parted")
-      (version (string-append "0-" revision "." (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/mothacehe/guile-parted")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1q7425gpjlwi2wvhzq7kw046yyx7v6j6jyzkd1cr861iz34mjwiq"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags
-         '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("parted" ,parted)))
-      (propagated-inputs
-       `(("guile-bytestructures" ,guile-bytestructures)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (synopsis "Guile bindings to GNU Parted")
-      (description
-       "This package provides bindings for GNU Parted library, a C library
-allowing disk partition tables creation and manipulation. The bindings are
+  (package
+    (name "guile-parted")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/mothacehe/guile-parted")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q7425gpjlwi2wvhzq7kw046yyx7v6j6jyzkd1cr861iz34mjwiq"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       '("GUILE_AUTO_COMPILE=0"))) ;to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("parted" ,parted)))
+    (propagated-inputs
+     `(("guile-bytestructures" ,guile-bytestructures)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Guile bindings to GNU Parted")
+    (description
+     "This package provides bindings for GNU Parted library, a C library
+allowing disk partition tables creation and manipulation.  The bindings are
 written in pure Scheme by using Guile's foreign function interface.")
-      (home-page "https://gitlab.com/mothacehe/guile-parted")
-      (license license:gpl3+))))
+    (home-page "https://gitlab.com/mothacehe/guile-parted")
+    (license license:gpl3+)))
 
 (define-public guile-xosd
   (package

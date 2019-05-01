@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -23,20 +23,22 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages))
 
 (define-public mtools
   (package
     (name "mtools")
     (version "4.0.23")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/mtools/mtools-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "1qwfxzr964fasxlzhllahk8mzh7c82s808wvly95dsqsflkdp27i"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mtools/mtools-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1qwfxzr964fasxlzhllahk8mzh7c82s808wvly95dsqsflkdp27i"))
+              (patches
+               (search-patches "mtools-mformat-uninitialized.patch"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/mtools/")
     (synopsis "Access MS-DOS disks without mounting")

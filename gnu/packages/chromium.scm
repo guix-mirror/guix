@@ -40,7 +40,6 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -51,6 +50,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages node)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -80,11 +80,9 @@
     "chrome/third_party/mozilla_security_manager" ;MPL-1.1/GPL2+/LGPL2.1+
     "courgette/third_party/bsdiff" ;BSD-2, BSD protection license
     "courgette/third_party/divsufsort" ;Expat
-    "net/third_party/http2" ;BSD-3
     "net/third_party/mozilla_security_manager" ;MPL-1.1/GPL2+/LGPL2.1+
     "net/third_party/nss" ;MPL-2.0
     "net/third_party/quic" ;BSD-3
-    "net/third_party/spdy" ;BSD-3
     "net/third_party/uri_template" ;ASL2.0
     "third_party/abseil-cpp" ;ASL2.0
     "third_party/adobe/flash/flapper_version.h" ;no license, trivial
@@ -95,9 +93,6 @@
     "third_party/angle/src/third_party/compiler" ;BSD-2
     "third_party/angle/src/third_party/libXNVCtrl" ;Expat
     "third_party/angle/src/third_party/trace_event" ;BSD-3
-    "third_party/angle/third_party/glslang" ;BSD-3
-    "third_party/angle/third_party/spirv-headers" ;Expat
-    "third_party/angle/third_party/spirv-tools" ;Expat
     "third_party/angle/third_party/vulkan-headers" ;ASL2.0
     "third_party/angle/third_party/vulkan-loader" ;ASL2.0
     "third_party/angle/third_party/vulkan-tools" ;ASL2.0
@@ -125,9 +120,12 @@
     "third_party/crashpad/crashpad/third_party/zlib/zlib_crashpad.h" ;Zlib
     "third_party/crc32c" ;BSD-3
     "third_party/cros_system_api" ;BSD-3
+    "third_party/dav1d" ;BSD-2
     "third_party/dom_distiller_js" ;BSD-3
+    "third_party/emoji-segmenter" ;ASL2.0
     "third_party/fips181" ;BSD-3
     "third_party/flatbuffers" ;ASL2.0
+    "third_party/glslang" ;BSD-3, Expat, ASL2.0
     "third_party/google_input_tools" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library" ;ASL2.0
     "third_party/google_input_tools/third_party/closure_library/third_party/closure" ;Expat
@@ -206,6 +204,7 @@
     "third_party/yasm/run_yasm.py" ;BSD-2 or BSD-3
     "third_party/zlib/google" ;BSD-3
     "url/third_party/mozilla" ;BSD-3, MPL1.1/GPL2+/LGPL2.1+
+    "v8/src/third_party/siphash" ;Public domain
     "v8/src/third_party/utf8-decoder" ;Expat
     "v8/src/third_party/valgrind" ;BSD-4
     "v8/third_party/inspector_protocol" ;BSD-3
@@ -224,8 +223,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "72.0.3626.121")
-(define %ungoogled-revision "a80839c418de8843dfcd6c13a557f12d26a0a17a")
+(define %chromium-version "74.0.3729.131")
+(define %ungoogled-revision "9e33022f3ac7de2a12e3c7a7923799c9bbbf8194")
+(define %debian-revision "debian/74.0.3729.108-1")
 (define package-revision "0")
 
 (define %package-version (string-append %chromium-version "-"
@@ -233,29 +233,43 @@ from forcing GEXP-PROMISE."
                                         (string-take %ungoogled-revision 7)))
 
 ;; This is a "computed" origin that does the following:
-;; 1) Runs the Ungoogled scripts on a pristine Chromium tarball.
-;; 2) Prunes all third_party folders that are not explicitly preserved.
-;; 3) Adjusts "GN" build files such that system libraries are preferred.
+;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
+;; *) Applies Debians Chromium patches, for their unbundling and GCC work.
+;; *) Prunes all third_party directories that are not explicitly preserved.
+;; *) Adjusts "GN" build files such that system libraries are preferred.
 (define ungoogled-chromium-source
-  (let* ((chromium-source
-          (origin
-            (method url-fetch)
-            (uri (string-append "https://commondatastorage.googleapis.com"
-                                "/chromium-browser-official/chromium-"
-                                %chromium-version ".tar.xz"))
-            (sha256
-             (base32
-              "07xwmlvmzfga61nrimqmzl7s29jb4kc94nkzwwlb7sh6nr55a7jc"))))
-         (ungoogled-source
-          (origin
-            (method git-fetch)
-            (uri (git-reference (url "https://github.com/Eloston/ungoogled-chromium")
-                                (commit %ungoogled-revision)))
-            (file-name (git-file-name "ungoogled-chromium"
-                                      (string-take %ungoogled-revision 7)))
-            (sha256
-             (base32
-              "0rgirbxbgjdm3s2kzgj101rjq0clr7x2a7b37kfx2q629z4qlrpc")))))
+  (let ((chromium-source
+         (origin
+           (method url-fetch)
+           (uri (string-append "https://commondatastorage.googleapis.com"
+                               "/chromium-browser-official/chromium-"
+                               %chromium-version ".tar.xz"))
+           (sha256
+            (base32
+             "11m9mlzrqzmz7rhl0ff7lry2s4yjrdkfi36qfv48m1cg5y2cfy6i"))))
+        (ungoogled-source
+         (origin
+           (method git-fetch)
+           (uri (git-reference (url "https://github.com/Eloston/ungoogled-chromium")
+                               (commit %ungoogled-revision)))
+           (file-name (git-file-name "ungoogled-chromium"
+                                     (string-take %ungoogled-revision 7)))
+           (sha256
+            (base32
+             "08whx582p3a2nivkj7kwin09a8acybr00z6344smb9xjlxy9rkp4"))))
+        (debian-source
+         (origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://salsa.debian.org/chromium-team/chromium.git")
+                 (commit %debian-revision)))
+           (file-name (git-file-name "debian-chromium-packaging"
+                                     (if (string-prefix? "debian/" %debian-revision)
+                                         (cadr (string-split %debian-revision #\/))
+                                         (string-take %debian-revision 7))))
+           (sha256
+            (base32
+             "1bn0c86sxkkxgdz0i88y0zh4zr39l6379r2rhgk3b3qbvwz25s3j")))))
 
     (origin
       (method computed-origin-method)
@@ -265,7 +279,10 @@ from forcing GEXP-PROMISE."
        (delay
          (with-imported-modules '((guix build utils))
            #~(begin
-               (use-modules (guix build utils))
+               (use-modules (guix build utils)
+                            (ice-9 rdelim)
+                            (srfi srfi-1)
+                            (srfi srfi-26))
                (let ((chromium-dir    (string-append "chromium-" #$%chromium-version))
                      (preserved-files (list #$@%preserved-third-party-files)))
 
@@ -281,41 +298,62 @@ from forcing GEXP-PROMISE."
 
                  (with-directory-excursion "/tmp/ungoogled"
 
-                   ;; Create a custom "bundle" that inherits from linux_rooted
-                   ;; and adds an additional patch.
-                   (format #t "Creating Guix config bundle...~%")
-                   (force-output)
-                   (mkdir-p "config_bundles/guix")
-                   (call-with-output-file "config_bundles/guix/bundlemeta.ini"
-                     (lambda (port)
-                       (format port
-                               "[bundle]
-display_name = GNU Guix
-depends = linux_rooted\n")))
-                   (call-with-output-file "config_bundles/guix/patch_order.list"
-                     (lambda (port)
-                       (format port "debian_buster/system/openjpeg.patch\n")))
-
                    (format #t "Unpacking chromium tarball...~%")
                    (force-output)
                    (invoke "tar" "xf" #+chromium-source)
 
                    (format #t "Ungooglifying...~%")
                    (force-output)
-                   (invoke "python3" "run_buildkit_cli.py" "prune"
-                           "-b" "config_bundles/guix" chromium-dir)
-                   (invoke "python3" "run_buildkit_cli.py" "patches" "apply"
-                           "-b" "config_bundles/guix" chromium-dir)
-                   (invoke "python3" "run_buildkit_cli.py" "domains" "apply"
-                           "-b" "config_bundles/linux_rooted"
+                   (invoke "python3" "utils/prune_binaries.py" chromium-dir
+                           "pruning.list")
+                   (invoke "python3" "utils/patches.py" "apply"
+                           chromium-dir "patches")
+                   (invoke "python3" "utils/domain_substitution.py" "apply" "-r"
+                           "domain_regex.list" "-f" "domain_substitution.list"
                            "-c" "/tmp/domainscache.tar.gz" chromium-dir)
 
                    (with-directory-excursion chromium-dir
+
+                     (format #t "applying Debian patches...~%")
+                     (force-output)
+                     (let* ((debian  #+debian-source)
+                            (patches (string-append debian "/debian/patches"))
+                            (series  (string-append patches "/series"))
+                            (grep-q (lambda (query file)
+                                      (with-input-from-file file
+                                        (lambda ()
+                                          (let loop ((line (read-line))
+                                                     (match #f))
+                                            (if (or match (eof-object? line))
+                                                (if match #t #f)
+                                                (loop (read-line)
+                                                      (string-contains line query)))))))))
+                       (with-input-from-file series
+                         (lambda ()
+                           (let loop ((line (read-line)))
+                             (unless (eof-object? line)
+                               (when (and (> (string-length line) 1)
+                                          ;; Skip the Debian-specific ones.
+                                          (not (string-prefix? "debianization/" line))
+                                          (not (string-prefix? "gcc6/" line))
+                                          ;; And those that conflict with Ungoogled.
+                                          (not (any (cute string-suffix? <> line)
+                                                    '("widevine-buildflag.patch"
+                                                      "signin.patch"
+                                                      "third-party-cookies.patch")))
+                                          ;; Ungoogled includes a subset of the Debian
+                                          ;; patches.  Exclude those already present.
+                                          (not (grep-q line "../patches/series")))
+                                 (invoke "patch" "--force" "-p1" "--input"
+                                         (string-append patches "/" line)
+                                         "--no-backup-if-mismatch"))
+                               (loop (read-line)))))))
+
                      (format #t "Pruning third party files...~%")
                      (force-output)
                      (apply invoke "python"
-                             "build/linux/unbundle/remove_bundled_libraries.py"
-                             "--do-remove" preserved-files)
+                            "build/linux/unbundle/remove_bundled_libraries.py"
+                            "--do-remove" preserved-files)
 
                      (format #t "Replacing GN files...~%")
                      (force-output)
@@ -421,13 +459,19 @@ depends = linux_rooted\n")))
              "use_system_lcms2=true"
              "use_system_libdrm=true"
              "use_system_libjpeg=true"
+             "use_system_libopenjpeg2=true"
              "use_system_libpng=true"
              "use_system_zlib=true"
              "use_gnome_keyring=false"  ;deprecated by libsecret
              "use_openh264=true"
              "use_pulseaudio=true"
              "link_pulseaudio=true"
-             "use_vaapi=true"
+
+             ;; VA-API acceleration is currently only supported on x86_64-linux.
+             ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                                (%current-system)))
+                   '("use_vaapi=true")
+                   '())
 
              ;; Don't arbitrarily restrict formats supported by system ffmpeg.
              "proprietary_codecs=true"
@@ -502,11 +546,12 @@ depends = linux_rooted\n")))
              (substitute* "third_party/webrtc/rtc_base/strings/json.h"
                (("#include \"third_party/jsoncpp/") "#include \"json/"))
 
-             (substitute* "media/base/decode_capabilities.cc"
-               (("third_party/libvpx/source/libvpx/") ""))
-
-             (substitute* "ui/gfx/skia_util.h"
+             (substitute* '("ui/gfx/skia_util.h"
+                            "components/viz/common/resources/resource_format_utils.h")
                (("third_party/vulkan/include/") ""))
+
+             (substitute* "third_party/skia/include/gpu/vk/GrVkVulkan.h"
+               (("\\.\\./\\.\\./include/third_party/vulkan/") ""))
 
              ;; Building chromedriver embeds some files using the ZIP
              ;; format which doesn't support timestamps before

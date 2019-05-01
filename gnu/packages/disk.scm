@@ -46,11 +46,11 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -808,9 +808,9 @@ LVM D-Bus API).")
        ("json-glib" ,json-glib)
        ("libblkid" ,util-linux)))
     (home-page "https://rmlint.rtfd.org")
-    (synopsis "Remove duplicates and other lint from the filesystem")
+    (synopsis "Remove duplicates and other lint from the file system")
     (description "@command{rmlint} finds space waste and other broken things
-on your filesystem and offers to remove it.  @command{rmlint} can find:
+on your file system and offers to remove it.  @command{rmlint} can find:
 
 @itemize
 @item duplicate files and duplicate directories,

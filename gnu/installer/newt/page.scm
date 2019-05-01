@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module (gnu installer utils)
   #:use-module (gnu installer newt utils)
   #:use-module (guix i18n)
+  #:use-module (ice-9 i18n)
   #:use-module (ice-9 match)
   #:use-module (ice-9 receive)
   #:use-module (srfi srfi-1)
@@ -29,6 +31,7 @@
             draw-connecting-page
             run-input-page
             run-error-page
+            run-confirmation-page
             run-listbox-selection-page
             run-scale-page
             run-checkbox-tree-page
@@ -72,17 +75,20 @@ this page to TITLE."
                          #:key
                          (allow-empty-input? #f)
                          (default-text #f)
-                         (input-field-width 40))
+                         (input-field-width 40)
+                         (input-flags 0))
   "Run a page to prompt user for an input. The given TEXT will be displayed
 above the input field. The page title is set to TITLE. Unless
 allow-empty-input? is set to #t, an error page will be displayed if the user
-enters an empty input."
+enters an empty input.  INPUT-FLAGS is a bitwise-or'd set of flags for the
+input box, such as FLAG-PASSWORD."
   (let* ((text-box
           (make-reflowed-textbox -1 -1 text
                                  input-field-width
                                  #:flags FLAG-BORDER))
          (grid (make-grid 1 3))
-         (input-entry (make-entry -1 -1 20))
+         (input-entry (make-entry -1 -1 20
+                                  #:flags input-flags))
          (ok-button (make-button -1 -1 (G_ "OK")))
          (form (make-form)))
 
@@ -141,6 +147,42 @@ of the page is set to TITLE."
     (newt-set-color COLORSET-ROOT "white" "blue")
     (destroy-form-and-pop form)))
 
+(define* (run-confirmation-page text title
+                                #:key (exit-button-procedure (const #f)))
+  "Run a page to inform the user of an error. The page contains the given TEXT
+to explain the error and an \"OK\" button to acknowledge the error. The title
+of the page is set to TITLE."
+  (let* ((text-box
+          (make-reflowed-textbox -1 -1 text 40
+                                 #:flags FLAG-BORDER))
+         (ok-button (make-button -1 -1 (G_ "Continue")))
+         (exit-button (make-button -1 -1 (G_ "Exit")))
+         (grid (vertically-stacked-grid
+                GRID-ELEMENT-COMPONENT text-box
+                GRID-ELEMENT-SUBGRID
+                (horizontal-stacked-grid
+                 GRID-ELEMENT-COMPONENT ok-button
+                 GRID-ELEMENT-COMPONENT exit-button)))
+         (form (make-form)))
+
+    (add-form-to-grid grid form #t)
+    (make-wrapped-grid-window grid title)
+
+    (receive (exit-reason argument)
+        (run-form form)
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          (case exit-reason
+            ((exit-component)
+             (cond
+              ((components=? argument ok-button)
+               #t)
+              ((components=? argument exit-button)
+               (exit-button-procedure))))))
+        (lambda ()
+          (destroy-form-and-pop form))))))
+
 (define* (run-listbox-selection-page #:key
                                      info-text
                                      title
@@ -185,7 +227,7 @@ be selected (using the <SPACE> key). It that case, a list containing the
 selected items will be returned.
 
 If SORT-LISTBOX-ITEMS? is set to #t, the listbox items are sorted using
-'string<=' procedure (after being converted to text).
+'string-locale<?' procedure (after being converted to text).
 
 If ALLOW-DELETE? is #t, the form will return if the <DELETE> key is pressed,
 otherwise nothing will happen.
@@ -211,7 +253,7 @@ ITEM was inserted into LISTBOX."
          items))
 
   (define (sort-listbox-items listbox-items)
-    "Return LISTBOX-ITEMS sorted using the 'string<=' procedure on the text
+    "Return LISTBOX-ITEMS sorted using the 'string-locale<?' procedure on the text
 corresponding to each item in the list."
     (let* ((items (map (lambda (item)
                          (cons item (listbox-item->text item)))
@@ -220,7 +262,7 @@ corresponding to each item in the list."
             (sort items (lambda (a b)
                           (let ((text-a (cdr a))
                                 (text-b (cdr b)))
-                            (string<= text-a text-b))))))
+                            (string-locale<? text-a text-b))))))
       (map car sorted-items)))
 
   ;; Store the last selected listbox item's key.
@@ -395,10 +437,14 @@ error is raised if the MAX-SCALE-UPDATE limit is reached."
       (lambda ()
         (destroy-form-and-pop form)))))
 
+(define %none-selected
+  (circular-list #f))
+
 (define* (run-checkbox-tree-page #:key
                                  info-text
                                  title
                                  items
+                                 (selection %none-selected)
                                  item->text
                                  (info-textbox-width 50)
                                  (checkbox-tree-height 10)
@@ -411,7 +457,8 @@ a checkbox list. The page contains vertically stacked from the top to the
 bottom, an informative text set to INFO-TEXT, the checkbox list and two
 buttons, 'Ok' and 'Exit'. The page title's is set to TITLE. ITEMS are
 converted to text using ITEM->TEXT before being displayed in the checkbox
-list.
+list.  SELECTION is a list of Booleans of the same length as ITEMS that
+specifies which items are initially checked.
 
 INFO-TEXTBOX-WIDTH is the width of the textbox where INFO-TEXT will be
 displayed. CHECKBOX-TREE-HEIGHT is the height of the checkbox list.
@@ -423,12 +470,15 @@ pressed.
 This procedure returns the list of checked items in the checkbox list among
 ITEMS when 'Ok' is pressed."
   (define (fill-checkbox-tree checkbox-tree items)
-    (map
-     (lambda (item)
-       (let* ((item-text (item->text item))
-              (key (add-entry-to-checkboxtree checkbox-tree item-text 0)))
-         (cons key item)))
-     items))
+    (map (lambda (item selected?)
+           (let* ((item-text (item->text item))
+                  (key (add-entry-to-checkboxtree checkbox-tree item-text
+                                                  (if selected?
+                                                      FLAG-SELECTED
+                                                      0))))
+             (cons key item)))
+         items
+         selection))
 
   (let* ((checkbox-tree
           (make-checkboxtree -1 -1

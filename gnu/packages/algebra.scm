@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -27,6 +27,7 @@
 (define-module (gnu packages algebra)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
@@ -56,6 +58,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -245,10 +248,10 @@ precision.")
    (license license:gpl3+)
    (home-page "http://cmh.gforge.inria.fr/")))
 
-(define-public giac-xcas
+(define-public giac
   (package
-    (name "giac-xcas")
-    (version "1.5.0-43")
+    (name "giac")
+    (version "1.5.0-49")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -260,9 +263,8 @@ precision.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "1j58cvpiddzxswfdh4ixyj1xsva7qwk8xjls29nqvryyykdfm4dp"))))
+                "0f4pkand9vmqfayw18jm5qxbhcwi1405qfd7ibzh9lwzz6amkm3l"))))
     (build-system gnu-build-system)
-    (outputs '("out" "doc"))            ;77MiB of documentation
     (arguments
      `(#:modules ((ice-9 ftw)
                   (guix build utils)
@@ -281,36 +283,36 @@ precision.")
              (substitute* "check/Makefile.in"
                (("chk_fhan11") ""))
              #t))
-         (add-after 'install 'install-doc
-           ;; Setting --docdir to "doc" output isn't sufficient as
-           ;; documentation and examples are scattered throughout the source.
+         (add-after 'install 'fix-doc
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc"))
-                    (docdir (string-append doc
-                                           "/share/doc/"
-                                           (string-append ,name "-" ,version))))
-               ;; For some reason, the install process moves
-               ;; "share/giac/examples" instead of "share/giac/doc" to
-               ;; "$(docdir)".  Clean up the mess and start over.
-               (delete-file-recursively (string-append doc "/share"))
-               (mkdir-p docdir)
-               (with-directory-excursion out
-                 (for-each (lambda (f)
-                             (unless (member f '("." ".."))
-                               (copy-recursively (string-append "share/giac/" f)
-                                                 (string-append docdir "/" f))))
-                           (scandir "share/giac"))
-                 (delete-file-recursively "share/giac")))
-             #t)))))
+             (let ((out (assoc-ref outputs "out")))
+               ;; Most French documentation has a non-commercial
+               ;; license, so we need to remove it.
+               (with-directory-excursion (string-append out "/share/giac/doc/fr")
+                 (for-each delete-file-recursively
+                           '("cascas" "casexo" "casgeo" "casrouge" "cassim"
+                             "castor")))
+               ;; Remove duplicate documentation in
+               ;; "%out/share/doc/giac/", where Xcas does not expect
+               ;; to find it.
+               (delete-file-recursively (string-append out "/share/doc/giac"))
+               #t)))
+         (add-after 'install 'remove-unnecessary-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file (string-append out "/bin/xcasnew"))
+               #t))))))
     (inputs
+     ;;; TODO: Add libnauty.
      `(("fltk" ,fltk)
+       ("glpk" ,glpk)
        ("gmp" ,gmp)
        ("gsl" ,gsl)
        ("lapack" ,lapack)
        ("libao" ,ao)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
+       ("libsamplerate" ,libsamplerate)
        ("libx11" ,libx11)
        ("libxinerama" ,libxinerama)
        ("libxft" ,libxft)
@@ -321,9 +323,12 @@ precision.")
        ("ntl" ,ntl)
        ("perl" ,perl)
        ("pari-gp" ,pari-gp)
-       ("tcsh" ,tcsh)
+       ("tcsh" ,tcsh)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("readline" ,readline)
        ("texlive" ,texlive-tiny)))
-    (native-inputs `(("readline" ,readline)))
     (home-page "https://www-fourier.ujf-grenoble.fr/~parisse/giac.html")
     (synopsis "Computer algebra system")
     (description
@@ -331,6 +336,9 @@ precision.")
 maple, mupad and the TI89.  It is available as a standalone program (graphic
 or text interfaces) or as a C++ library.")
     (license license:gpl3+)))
+
+(define-public giac-xcas
+  (deprecated-package "giac-xcas" giac))
 
 (define-public flint
   (package
@@ -498,7 +506,7 @@ matrices, and polynomials over the integers and over finite fields.")
 (define-public singular
   (package
    (name "singular")
-   (version "4.1.1p3")
+   (version "4.1.2p1")
    (source
     (origin
       (method url-fetch)
@@ -512,7 +520,7 @@ matrices, and polynomials over the integers and over finite fields.")
                         #\.) "-")
                       "/singular-" version ".tar.gz"))
              (sha256 (base32
-                      "1qqj9bm9pkzm0iyycpvm8x6s79wws3nq60lz25h8x1q61h3426sm"))))
+                      "0kvd55353fiqyq1msmi0kka66n5h0aqs7m3km60r01b1w2f8085m"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("doxygen" ,doxygen)
@@ -856,6 +864,32 @@ features, and more.")
     ;; Most of the code is MPLv2, with a few files under LGPLv2.1+ or BSD-3.
     ;; See 'COPYING.README' for details.
     (license license:mpl2.0)))
+
+(define-public eigen-for-tensorflow
+  (let ((changeset "fd6845384b86")
+        (revision "1"))
+    (package (inherit eigen)
+      (name "eigen-for-tensorflow")
+      (version (string-append "3.3.5-" revision "." changeset))
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference
+                      (url "https://bitbucket.org/eigen/eigen")
+                      (changeset changeset)))
+                (sha256
+                 (base32
+                  "12cwgah63wqwb66xji048hcxc1z5zjg8a7701zlia5zbilnnk1n5"))
+                (file-name (string-append name "-" version "-checkout"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; There are 3 test failures in the "unsupported" directory,
+                 ;; but maintainers say it's a known issue and it's unsupported
+                 ;; anyway, so just skip them.
+                 '(begin
+                    (substitute* "unsupported/CMakeLists.txt"
+                      (("add_subdirectory\\(test.*")
+                       "# Do not build the tests for unsupported features.\n"))
+                    #t)))))))
 
 (define-public xtensor
   (package

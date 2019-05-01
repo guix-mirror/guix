@@ -2,4 +2,18 @@
 # Create the build system.
 
 set -e -x
+
+# Generate stubs for translations.
+langs=`find po/doc -type f -name '*.po' \
+        | sed -e 's,guix-manual\.,,' \
+        | xargs -n 1 -I{} basename {} .po`
+for lang in ${langs}; do
+    if [ ! -e "doc/guix.${lang}.texi" ]; then
+	echo "@setfilename guix.${lang}.info" > "doc/guix.${lang}.texi"
+	echo "@include version-${lang}.texi" >> "doc/guix.${lang}.texi"
+	# Ensure .po file is newer.
+	touch "po/doc/guix-manual.${lang}.po"
+    fi
+done
+
 exec autoreconf -vfi

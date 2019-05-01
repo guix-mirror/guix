@@ -173,7 +173,8 @@ Show what and how will/would be built."
                  "Your Guix installation is ~a days old.\n"
                  (seconds->days age))
              (seconds->days age)))
-  (when (or (not age) (>= age old))
+  (when (and (or (not age) (>= age old))
+             (not (getenv "GUIX_UNINSTALLED")))
     (warning (G_ "Consider running 'guix pull' followed by
 '~a' to get up-to-date packages and security updates.\n")
              suggested-command)
@@ -200,16 +201,12 @@ available."
     (when (< ratio threshold)
       (warning (G_ "only ~,1f% of free space available on ~a~%")
                (* ratio 100) (%store-prefix))
-      (if profile
-          (display-hint (format #f (G_ "Consider deleting old profile
+      (display-hint (format #f (G_ "Consider deleting old profile
 generations and collecting garbage, along these lines:
 
 @example
-guix package -p ~s --delete-generations=1m
-guix gc
+guix gc --delete-generations=1m
 @end example\n")
-                                profile))
-          (display-hint (G_ "Consider running @command{guix gc} to free
-space."))))))
+                            profile)))))
 
 ;;; scripts.scm ends here

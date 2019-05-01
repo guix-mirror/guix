@@ -510,13 +510,30 @@ FILE-SYSTEM."
     (cons* sink user-unmount
            (map file-system-shepherd-service file-systems))))
 
+(define (file-system-fstab-entries file-systems)
+  "Return the subset of @var{file-systems} that should have an entry in
+@file{/etc/fstab}."
+  ;; /etc/fstab is about telling fsck(8), mount(8), and umount(8) about
+  ;; relevant file systems they'll have to deal with.  That excludes "pseudo"
+  ;; file systems.
+  ;;
+  ;; In particular, things like GIO (part of GLib) use it to determine the set
+  ;; of mounts, which is then used by graphical file managers and desktop
+  ;; environments to display "volume" icons.  Thus, we really need to exclude
+  ;; those pseudo file systems from the list.
+  (remove (lambda (file-system)
+            (or (member (file-system-type file-system)
+                        %pseudo-file-system-types)
+                (memq 'bind-mount (file-system-flags file-system))))
+          file-systems))
+
 (define file-system-service-type
   (service-type (name 'file-systems)
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           file-system-shepherd-services)
                        (service-extension fstab-service-type
-                                          identity)
+                                          file-system-fstab-entries)
 
                        ;; Have 'user-processes' depend on 'file-systems'.
                        (service-extension user-processes-service-type
@@ -719,7 +736,8 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                                  #$@files))))
       (respawn? #f)))))
 
-(define (console-keymap-service . files)
+(define-deprecated (console-keymap-service #:rest files)
+  #f
   "Return a service to load console keymaps from @var{files}."
   (service console-keymap-service-type files))
 
@@ -1515,19 +1533,9 @@ GID."
 (define (hydra-key-authorization keys guix)
   "Return a gexp with code to register KEYS, a list of files containing 'guix
 archive' public keys, with GUIX."
-  (define aaa
-    ;; XXX: Terrible hack to work around <https://bugs.gnu.org/15602>: this
-    ;; forces (guix config) and (guix utils) to be loaded upfront, so that
-    ;; their run-time symbols are defined.
-    (scheme-file "aaa.scm"
-                 #~(define-module (guix aaa)
-                     #:use-module (guix config)
-                     #:use-module (guix memoization))))
-
   (define default-acl
     (with-extensions (list guile-gcrypt)
       (with-imported-modules `(((guix config) => ,(make-config.scm))
-                               ((guix aaa) => ,aaa)
                                ,@(source-module-closure '((guix pki))
                                                         #:select? not-config?))
         (computed-file "acl"

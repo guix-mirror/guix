@@ -9,7 +9,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -85,6 +85,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xorg))
 
@@ -554,43 +555,65 @@ multipole-accelerated algorithm.")
 (define-public fritzing
   (package
     (name "fritzing")
-    (version "0.9.2b")
+    (version "0.9.3b")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/fritzing/"
-                                  "fritzing-app/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fritzing/fritzing-app.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "15rwjp4xdj9w1z9f709rz9p0k2mi9k9idma9hvzkj5j8p04mg7yd"))))
+                "0hpyc550xfhr6gmnc85nq60w00rm0ljm0y744dp0z88ikl04f4s3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (and (zero? (system* "tar"
-                                  "-xvf" (assoc-ref inputs "fritzing-parts-db")
-                                  "-C" "parts"))
-                  (zero? (system* "qmake"
-                                  (string-append "PREFIX="
-                                                 (assoc-ref outputs "out"))
-                                  "phoenix.pro"))))))))
+             (copy-recursively (assoc-ref inputs "fritzing-parts-db")
+                               "parts")
+             ;; Make compatible with libgit2 > 0.24
+             (substitute* "src/version/partschecker.cpp"
+               (("error = git_remote_connect\\(remote, GIT_DIRECTION_FETCH, &callbacks\\)")
+                "error = git_remote_connect(remote, GIT_DIRECTION_FETCH, &callbacks, NULL, NULL)"))
+
+             ;; Use system libgit2 and boost.
+             (substitute* "phoenix.pro"
+               (("^LIBGIT2INCLUDE =.*")
+                (string-append "LIBGIT2INCLUDE="
+                               (assoc-ref inputs "libgit2") "/include\n"))
+               (("^    LIBGIT2LIB =.*")
+                (string-append "    LIBGIT2LIB="
+                               (assoc-ref inputs "libgit2") "/lib\n")))
+             ;; This file checks for old versions of Boost, insisting on
+             ;; having us download the boost sources and placing them in the
+             ;; build directory.
+             (substitute* "pri/utils.pri"
+               (("error\\(") "message("))
+
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "QMAKE_LFLAGS_RPATH=-Wl,-rpath," out "/lib")
+                       (string-append "PREFIX=" out)
+                       "phoenix.pro")))))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtserialport" ,qtserialport)
        ("qtsvg" ,qtsvg)
+       ("libgit2" ,libgit2)
        ("boost" ,boost)
        ("zlib" ,zlib)
        ("fritzing-parts-db"
         ,(origin
-           (method url-fetch)
-           (uri (string-append "https://github.com/fritzing/"
-                               "fritzing-parts/archive/" version ".tar.gz"))
-           (file-name (string-append "fritzing-parts-" version ".tar.gz"))
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/fritzing/fritzing-parts.git")
+                 (commit version)))
+           (file-name (git-file-name "fritzing-parts" version))
            (sha256
             (base32
-             "0jqr8yjg7177f3pk1fcns584r0qavwpr280nggsi2ff3pwk5wpsz"))))))
+             "1d2v8k7p176j0lczx4vx9n9gbg3vw09n2c4b6w0wj5wqmifywhc1"))))))
     (home-page "http://fritzing.org")
     (synopsis "Electronic circuit design")
     (description
@@ -1916,15 +1939,15 @@ simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
 (define-public librepcb
   (package
     (name "librepcb")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://download.librepcb.org/releases/0.1.0/librepcb-"
-                           version "-source.zip"))
+       (uri (string-append "https://download.librepcb.org/releases/"
+                           version "/librepcb-" version "-source.zip"))
        (sha256
         (base32
-         "0affvwwgs1j2wx6bb3zfa2jbfxpckklr8cka2nkswca0p82wd3dv"))))
+         "08lm95kr5gqyqyy4hcii0micqa6ryhbv0harvdndmpvi4ix1ggi8"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -1985,3 +2008,57 @@ editors.")
 slicing software to x3g files for standalone 3D printing on common 3D
 printers.")
     (license license:gpl2+)))
+
+(define-public gnucap
+  (package
+    (name "gnucap")
+    (version "20171003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.savannah.gnu.org/cgit/gnucap.git/snapshot/gnucap-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "16m09xa685qhj5fqq3bcgakrwnb74xhf5f7rpqkkf9fg8plzbb1g"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("readline" ,readline)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Set correct rpath so that gnucap finds libgnucap.so.
+               (substitute* (list "apps/configure" "lib/configure"
+                                  "main/configure" "modelgen/configure")
+                 (("LDFLAGS =")
+                  (string-append "LDFLAGS = -Wl,-rpath=" out "/lib")))
+               ;; gnucap uses a hand-written configure script that expects the
+               ;; --prefix argument to be the first argument passed to it.
+               (invoke "./configure" (string-append "--prefix=" out)))))
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (libpath "../lib/O:../apps/O"))
+               (with-directory-excursion "tests"
+                 ;; Make test return non-zero exit code when a test fails.
+                 (substitute* "test"
+                   (("/bin/sh") "/bin/sh -e")
+                   (("\\|\\| echo \"\\*\\*\\*\\* \\$ii fails \\*\\*\\*\\*\"") ""))
+                 ;; Fix expected plugin search path for test c_attach.1.gc
+                 (substitute* "==out/c_attach.1.gc.out"
+                   (("/usr/local/lib/gnucap")
+                    (string-append libpath ":" out "/lib/gnucap")))
+                 ;; Set library path so that gnucap can find libgnucap.so
+                 ;; while running the tests.
+                 (setenv "LD_LIBRARY_PATH" libpath)
+                 (invoke "./test" "../main/O/gnucap" "" "test-output" "==out"))))))))
+    (home-page "https://www.gnu.org/software/gnucap/")
+    (synopsis "Mixed analog and digital circuit simulator")
+    (description "GNUcap is a circuit analysis package.  It offers a general
+purpose circuit simulator and can perform DC and transient analyses, fourier
+analysis and AC analysis.  The engine is designed to do true mixed-mode
+simulation.")
+    (license license:gpl3+)))

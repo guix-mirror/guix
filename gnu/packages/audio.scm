@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -547,14 +547,14 @@ plugins are provided.")
 (define-public calf
   (package
     (name "calf")
-    (version "0.90.1")
+    (version "0.90.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://calf-studio-gear.org/files/calf-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0znwx5gidr5n503gya9n8gagr8cfym6cwlbiv2r6iksji7jc4fpb"))))
+                "0bn4j1klw2yfxz8clbmasaydifq25rdfsv0n6iisxrzcj1lx7sgh"))))
     (build-system gnu-build-system)
     (inputs
      `(("fluidsynth" ,fluidsynth)
@@ -713,7 +713,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.12.0")
+    (version "6.12.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -722,7 +722,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pv4s54cayvavdp6y30n3r1l5x83x9whyyd2v24y0dh224v3hbxi"))))
+                "01krxcf0alw9k7p5sv0s707600an4sl7lhw3bymbwgqrj0v2p9z2"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -943,7 +943,7 @@ gain controls.  There is also a global bypass switch and gain control.
 The 2nd order resonant filters are implemented using a Mitra-Regalia style
 lattice filter, which is stable even while parameters are being changed.
 
-All switches and controls are internally smoothed, so they can be used 'live'
+All switches and controls are internally smoothed, so they can be used @code{live}
 without any clicks or zipper noises.  This makes this plugin suitable for use
 in systems that allow automation of plugin control ports, such as Ardour, or
 for stage use.")
@@ -1104,7 +1104,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1113,7 +1113,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1v2vji02fbrjgypwb4fw2r90hnfwfbfh3d24j8vjwlbqxhxp16s0"))))
+                "0rv0apxbj0cgm8f8sqf5xr6kdi4q58ph92ip6cg716ha0ca5lr8y"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1307,7 +1307,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.37.3")
+    (version "0.38.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1315,7 +1315,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "1wfm8wrwrnqpb4ihy75n7l9i6vml536jlq9pdx2pblbc4ba3paac"))))
+               "0bw7xnrx062nwb1bfj9x660h7069ncmz77szcs8icpqxrvhs7z80"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -2120,21 +2120,17 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.6")
+    (version "0.5.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0wlmbb9m7cf3wr7c2h2hji18592x2b119m7mx85wksjs6rjaq2mj"))))
+                "1g6a5j74p45yisl28bw4fcc9nr6b710ikk459p4mp6djh9gs8v95"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
-       ;; Disable xunique to prevent X hanging when starting qjackctl in
-       ;; tiling window managers such as StumpWM or i3
-       ;; (see https://github.com/rncbc/qjackctl/issues/13).
-       #:configure-flags '("--disable-xunique")))
+     '(#:tests? #f))                    ; no check target
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)
@@ -2320,7 +2316,7 @@ aimed at audio/musical applications.")
 (define-public rubberband
   (package
     (name "rubberband")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -2330,9 +2326,19 @@ aimed at audio/musical applications.")
               (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "05amrbrxx0da3w7m237q51799r8xgs4ffqabi2qv06hq8dpcj386"))))
+                "0462fmjnfqpv2qi0s6ny42drqarkr0xy9lw8frjmfgzyzl5n9294"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-jni-installation
+           ;; ‘make install’ unconditionally installs librubberband-jni.so,
+           ;; which is never built by ‘make all’.  Skip it.
+           (lambda _
+             (substitute* "Makefile.in"
+               ((".*cp -f \\$\\(JNI_TARGET\\).*") ""))
+             #t)))))
     (inputs
      `(("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
@@ -2685,18 +2691,16 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append
-         "http://www.surina.net/soundtouch/soundtouch-" version ".tar.gz"))
-       (patches (search-patches "soundtouch-CVE-2018-14044-14045.patch"
-                                "soundtouch-CVE-2018-1000223.patch"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/soundtouch/soundtouch.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "09cxr02mfyj2bg731bj0i9hh565x8l9p91aclxs8wpqv8b8zf96j"))))
+        (base32 "0p6jzgfgqw061702dmd2b6r4arz48ac3mmx2qkvvzf8s5jjzykdh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2865,14 +2869,14 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.5")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
                            "/qsynth-" version ".tar.gz"))
        (sha256
-        (base32 "08x7znvbwi9miavcarymi7dsv8njmxzwzma20dbmz8j2aswm53w5"))))
+        (base32 "0h4hhja8qbyzd6v24flw9wr4mwl03nplryx1gyrppn7sg13l1sx6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" phase
@@ -3379,14 +3383,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "19.2")
+    (version "19.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "1a6ls2hyvggss12idca22hq5vsq4jw2xkwrx22dx29i9926gdr6h"))))
+                "16j3fqyw361wdsr1076f0p3va2y7wdzq1lvr4ijz1ajmbxdlc723"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -3662,7 +3666,7 @@ surround).")
 (define-public libopenshot-audio
   (package
     (name "libopenshot-audio")
-    (version "0.1.7")
+    (version "0.1.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3671,7 +3675,7 @@ surround).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08a8wbi28kwrdz4h0rs1b9vsr28ldfi8g75q54rj676y1vwg3qys"))))
+                "1fvp6nmf30xzkmcznakh8dv5vn9d7nq051pqcqv638hsfppkmcrl"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -3697,7 +3701,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.03")
+    (version "19.04")
     (source
      (origin
        (method git-fetch)
@@ -3706,7 +3710,7 @@ library.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "0v5l67ixr5kd9jz5sza8xgzxamqnlgn3gs1q8gg6ir60g0jvzbd4"))))
+        (base32 "00lqf8bjcwm4k8yky9jmqghkxijcm2lxspb9zyl1270yqmj05kiw"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DFFMPEG=ON")))

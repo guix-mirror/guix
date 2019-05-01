@@ -215,7 +215,7 @@ results from compiling LIB."
 
 (define* (include-list\exclude-list include-list exclude-list
                                     #:key all-list)
-  "Given INCLUDE-LIST and EXCLUDE-LIST, replace all occurences of #:all by
+  "Given INCLUDE-LIST and EXCLUDE-LIST, replace all occurrences of #:all by
 slicing ALL-LIST into them and compute their list difference."
   (define (replace-#:all ls all-ls)
     (append-map (match-lambda

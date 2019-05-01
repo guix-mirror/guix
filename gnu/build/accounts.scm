@@ -483,9 +483,12 @@ new UIDs."
                                (real-name (if previous
                                               (password-entry-real-name previous)
                                               real-name))
-                               (shell (if previous
-                                          (password-entry-shell previous)
-                                          shell)))
+
+                               ;; Do not reuse the shell of PREVIOUS since (1)
+                               ;; that could lead to confusion, and (2) the
+                               ;; shell might have been GC'd.  See
+                               ;; <https://lists.gnu.org/archive/html/guix-devel/2019-04/msg00478.html>.
+                               (shell shell))
                               result)
                         allocation))))
           '()

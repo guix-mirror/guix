@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages image)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -103,7 +104,7 @@ header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
@@ -111,7 +112,7 @@ header.")
                            version ".tar.lz"))
        (sha256
         (base32
-         "0gx6iar3z07k9sdvpa6kchsz6fpk94xn5vcvbcigssl2dwqmlnkb"))))
+         "1c1894ixz3l8p1nmzkysgl9lz8vpqbfw1dd404kh6lvrpml7jzig"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
@@ -120,7 +121,8 @@ header.")
        ("wcslib" ,wcslib)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("lzip" ,lzip)))
+     `(("libtool" ,libtool)
+       ("lzip" ,lzip)))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/gnuastro/")
     (synopsis "Astronomy utilities")
@@ -131,7 +133,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.18.3")
+    (version "0.19.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/Stellarium/" name
@@ -139,7 +141,7 @@ programs for the manipulation and analysis of astronomical data.")
                                  "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1mm8rjcb8j56m3kfigpix5vxviw1616kvl9ws2s3s5gdyngljrc3"))))
+               "1mjjqcpgm5a1022x0mpqj3v6qkvpm9wqm1hqyg0mlypc5681va8a"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -161,13 +163,6 @@ programs for the manipulation and analysis of astronomical data.")
                                 (assoc-ref %build-inputs "qtserialport")
                                 "/include/qt5"))
        #:phases (modify-phases %standard-phases
-                  ;; Skip a test that assumes Stellarium is "installed":
-                  ;; https://bugs.gentoo.org/674472
-                  (add-after 'unpack 'patch-tests
-                    (lambda _
-                      (substitute* "src/tests/testEphemeris.cpp"
-                        (("ifndef Q_OS_WIN") "if 0"))
-                      #t))
                   (add-before 'check 'set-offscreen-display
                     (lambda _
                       ;; make Qt render "offscreen", required for tests

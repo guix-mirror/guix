@@ -134,9 +134,9 @@ reliability in mind.")
     (synopsis "Command-line File Transfer Protocol (FTP) client")
     (description
      "NcFTP Client (or just NcFTP) is a set of command-line programs to access
-File Transfer Protocol (FTP) servers.  This includes 'ncftp', an interactive
-FTP browser, as well as non-interactive commands such as 'ncftpput' and
-'ncftpget'.")
+File Transfer Protocol (FTP) servers.  This includes @code{ncftp}, an interactive
+FTP browser, as well as non-interactive commands such as @code{ncftpput} and
+@code{ncftpget}.")
     (license clarified-artistic)))
 
 
@@ -209,14 +209,14 @@ output.
 (define-public filezilla
   (package
     (name "filezilla")
-    (version "3.41.1")
+    (version "3.41.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.filezilla-project.org/client/"
                            "FileZilla_" version "_src.tar.bz2"))
        (sha256
-        (base32 "0mlv21054fk11rspbnig0q4gph1iqsqm4rpya3wl5is50p33vg5w"))))
+        (base32 "05zhvzvzkbns0cdxmlswvasfa6031y22dhfj9y5p85gi654f4fy2"))))
     (build-system gnu-build-system)
     (arguments
       ;; Don't let filezilla phone home to check for updates.

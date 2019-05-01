@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -38,7 +38,6 @@
             boost1.0
             bsd-2 bsd-3 bsd-4
             non-copyleft
-            bsd-style                             ;deprecated!
             cc0
             cc-by2.0 cc-by3.0 cc-by4.0
             cc-by-sa2.0 cc-by-sa3.0 cc-by-sa4.0
@@ -65,7 +64,7 @@
             imlib2
             ipa
             knuth
-            lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
+            lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+ llgpl
             lppl lppl1.0+ lppl1.1+ lppl1.2 lppl1.2+
             lppl1.3 lppl1.3+
             lppl1.3a lppl1.3a+
@@ -169,12 +168,6 @@ at URI, which may be a file:// URI pointing the package's tree."
             "This is a lax, non-copyleft free software license.  "
             "Check the URI for details.  "
             comment)))
-
-(define bsd-style
-  ;; This alias is kept for backward-compatibility.  Do not use it for new
-  ;; packages: it is ambiguous, as rightfully explained at
-  ;; <http://www.gnu.org/philosophy/words-to-avoid.html#BSD-style>.
-  non-copyleft)
 
 (define cc0
   (license "CC0"
@@ -416,6 +409,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "LGPL 3+"
            "https://www.gnu.org/licenses/lgpl.html"
            "https://www.gnu.org/licenses/license-list#LGPLv3"))
+
+(define llgpl
+  (license "LLGPL"
+           "https://opensource.franz.com/preamble.html"
+           "Lisp Lesser General Public License"))
 
 (define lppl
   (license "LPPL (any version)"

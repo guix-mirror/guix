@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,19 +31,70 @@
 (define (run-desktop-environments-cbt-page)
   "Run a page allowing the user to choose between various desktop
 environments."
-  (run-checkbox-tree-page
-   #:info-text (G_ "Please select the desktop(s) environment(s) you wish to \
-install. If you select multiple desktops environments, we will be able to \
-choose the one to use on the log-in screen with F1.")
-   #:title (G_ "Desktop environment")
-   #:items %desktop-environments
-   #:item->text desktop-environment-name
-   #:checkbox-tree-height 5
-   #:exit-button-callback-procedure
-   (lambda ()
-     (raise
-      (condition
-       (&installer-step-abort))))))
+  (let ((items (filter desktop-system-service? %system-services)))
+    (run-checkbox-tree-page
+     #:info-text (G_ "Please select the desktop(s) environment(s) you wish to \
+install. If you select multiple desktops environments, you will be able to \
+choose the one to use on the log-in screen.")
+     #:title (G_ "Desktop environment")
+     #:items items
+     #:selection (map system-service-recommended? items)
+     #:item->text system-service-name             ;no i18n for DE names
+     #:checkbox-tree-height 8
+     #:exit-button-callback-procedure
+     (lambda ()
+       (raise
+        (condition
+         (&installer-step-abort)))))))
+
+(define (run-networking-cbt-page)
+  "Run a page allowing the user to select networking services."
+  (let ((items (filter (lambda (service)
+                         (eq? 'networking (system-service-type service)))
+                       %system-services)))
+    (run-checkbox-tree-page
+     #:info-text (G_ "You can now select networking services to run on your \
+system.")
+     #:title (G_ "Network service")
+     #:items items
+     #:selection (map system-service-recommended? items)
+     #:item->text (compose G_ system-service-name)
+     #:checkbox-tree-height 5
+     #:exit-button-callback-procedure
+     (lambda ()
+       (raise
+        (condition
+         (&installer-step-abort)))))))
+
+(define (run-network-management-page)
+  "Run a page to select among several network management methods."
+  (let ((title (G_ "Network management")))
+    (run-listbox-selection-page
+     #:title title
+     #:info-text (G_ "Choose the method to manage network connections.
+
+We recommend NetworkManager or Connman for a WiFi-capable laptop; the DHCP \
+client may be enough for a server.")
+     #:info-textbox-width 70
+     #:listbox-items (filter (lambda (service)
+                               (eq? 'network-management
+                                    (system-service-type service)))
+                             %system-services)
+     #:listbox-item->text (compose G_ system-service-name)
+     #:sort-listbox-items? #f
+     #:button-text (G_ "Exit")
+     #:button-callback-procedure
+     (lambda _
+       (raise
+        (condition
+         (&installer-step-abort)))))))
 
 (define (run-services-page)
-  (run-desktop-environments-cbt-page))
+  (let ((desktop (run-desktop-environments-cbt-page)))
+    ;; When the user did not select any desktop services, and thus didn't get
+    ;; '%desktop-services', offer network management services.
+    (append desktop
+            (run-networking-cbt-page)
+            (if (null? desktop)
+                (list (run-network-management-page))
+                '()))))

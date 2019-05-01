@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -54,6 +54,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system go)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages audio)
@@ -81,6 +82,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gettext)
@@ -93,6 +95,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
@@ -446,6 +449,51 @@ background while you work.")
     (home-page "http://www.denemo.org")
     (license license:gpl3+)))
 
+(define-public dumb
+  (package
+    (name "dumb")
+    (version "2.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kode54/dumb.git")
+             (commit version)))
+       (sha256
+        (base32 "1cnq6rb14d4yllr0yi32p9jmcig8avs3f43bvdjrx4r1mpawspi6"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:configure-flags
+       (list "-DBUILD_SHARED_LIBS=ON"
+             "-DBUILD_EXAMPLES=OFF")))
+    (home-page "https://github.com/kode54/dumb")
+    (synopsis "Module audio renderer library")
+    (description
+     "DUMB is a tracker library with support for IT, XM, S3M and MOD files.  It
+targets maximum accuracy to the original formats, with low-pass resonant filters
+for the IT files, accurate timing and pitching, and three resampling quality
+settings (aliasing, linear interpolation and cubic interpolation).")
+    ;; The DUMB license is a bit peculiar.
+    ;; Clause 8 states that clauses 4, 5 and 6 are null and void, leaving only
+    ;; the first three clauses for genuine consideration.
+    ;; Clauses 1, 2 and 3 are analogous to clauses 1, 2 and 3 of the zlib
+    ;; license, a known free software license.
+    ;; Therefore, the DUMB license may be considered a free software license.
+    (license (license:fsf-free "file://LICENSE"))))
+
+(define-public dumb-allegro4
+  (package
+    (inherit dumb)
+    (name "dumb-allegro4")
+    (arguments
+     (substitute-keyword-arguments (package-arguments dumb)
+       ((#:configure-flags flags)
+        `(cons "-DBUILD_ALLEGRO4=ON" ,flags))))
+    (inputs
+     `(("allegro" ,allegro-4)))))
+
 (define-public hydrogen
   (package
     (name "hydrogen")
@@ -721,7 +769,16 @@ audio and video).")
     (arguments
      `(#:scons-flags (list (string-append "PREFIX=" %output))
        #:scons ,scons-python2
-       #:tests? #f)) ;no "check" target
+       #:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-removed-scons-syntax
+           (lambda _
+             (substitute* "SConstruct"
+               (("BoolOption") "BoolVariable")
+               (("PathOption") "PathVariable")
+               (("Options") "Variables"))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("jack" ,jack-1)
@@ -1307,7 +1364,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.6")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -1315,7 +1372,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1hcngk7mxfrqf8v3r759x3wd0p02nc3q83j8m3k58p408y3mx7nr"))))
+                "0i70wm430fvksi3g985farrkhgb7mwhi7j06dl66cdj1n12jzzk7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1341,7 +1398,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.6")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -1349,7 +1406,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0d0kskr9pzdckw7sz4djjkkkgz1fa83zrq5my6qlxn68wqdj6800"))))
+                "1361dqdasrc98q9hcjdwsjx6agfimwnay430887fryi3pslkyd81"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1376,7 +1433,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.6")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -1384,7 +1441,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "16a5xix9pn0gl3fr6bv6zl1l9vrzgvy1q7xd8yxzfr3vi5s8x4z9"))))
+                "1vgmcjccpgqqlmmwfg6m91nph81p2xaxydjx82n4l1yrr9lidn9h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1411,7 +1468,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.6")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri
@@ -1419,7 +1476,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0ddvlpjlg6zr9ckanqhisw0sgm8rxibvj1aj5dxzs9xb2wlwd8rr"))))
+                "1jd4bf6a1ipvg4yhb3xf3maqg68bx97ic9l57djmkirlrkh2a3wp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -1630,7 +1687,7 @@ mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
     (home-page "http://bristol.sourceforge.net/")
     (synopsis "Synthesizer emulator")
     (description
-     "Bristol is an emulation package for a number of different 'classic'
+     "Bristol is an emulation package for a number of different @code{classic}
 synthesizers including additive and subtractive and a few organs.  The
 application consists of the engine, which is called bristol, and its own GUI
 library called brighton that represents all the emulations.  There are
@@ -2002,7 +2059,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "3.0.3")
+    (version "3.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2010,7 +2067,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hfpiqdm337gl4ynkmmp2qss2m5z8mzqzjrbiyg6w1v4js7l9phi"))))
+                "0qwzg14h043rmyf9jqdylxhyfy4sl0vsr0gjql51wjhid0i34ivl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -2222,14 +2279,14 @@ computer's keyboard.")
 (define-public aj-snapshot
   (package
     (name "aj-snapshot")
-    (version "0.9.8")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/aj-snapshot/"
                                   "aj-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wilky1g2mb88v2z0520s7sw1dsn10iwanc8id5p6z1xsnhg7b6p"))))
+                "0z8wd5yvxdmw1h1rj6km9h01xd4xmp4d86gczlix7hsc7zrf0wil"))))
     (build-system gnu-build-system)
     (inputs
      `(("minixml" ,minixml)

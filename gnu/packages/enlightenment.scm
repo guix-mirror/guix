@@ -185,7 +185,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.3.2")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -193,7 +193,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "1kclxzadmk272s9spa7n704pcb1c611ixxrq88w5zk22va0i25xm"))
+                "0q1y7fadj42n23aspx9y8hm4w4xlc316wc3415wnf75ibsx08ngd"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               (snippet
@@ -204,11 +204,24 @@ removable devices or support for multimedia.")
                   #t))))
     (build-system meson-build-system)
     (arguments
-     '(#:phases
+     `(#:configure-flags '("-Dtests=true")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
-           (lambda _ (setenv "HOME" "/tmp") #t)))))
+           (lambda _ (setenv "HOME" "/tmp") #t))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion
+               (string-append "../" ,name "-" ,version "/tests")
+               (invoke "sh" "run_tests.sh" "--verbose"
+                       "-t" "../../build/src/bin/tytest"))))
+         (add-after 'install 'remove-test-binary
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This file is not meant to be installed.
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/bin/tytest"))
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)

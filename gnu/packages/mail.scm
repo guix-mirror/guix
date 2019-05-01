@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -95,6 +95,7 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -110,6 +111,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
@@ -675,27 +677,27 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/v" version "/mu-"
-                                  version ".tar.xz"))
+                                  "download/" (version-major+minor version) "/"
+                                  "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "04x5azl19gszw2h7argq666gf9xs4hy9q7w9cbqxvy08n56xqsln"))))
+                "0fh5bxvhjqv1p9z783lym8y1k3p4jcc3wg6wf7zl8s6w8krcfd7n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
        ("emacs" ,emacs-minimal)
-       ("tzdata" ,tzdata-for-tests)))   ;for mu/test/test-mu-query.c
+       ("tzdata" ,tzdata-for-tests)))   ; for mu/test/test-mu-query.c
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
        ("guile" ,guile-2.2)
        ("glib" ,glib)
-       ("gmime" ,gmime-2.6)))
+       ("gmime" ,gmime)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -917,51 +919,43 @@ ing, and tagging large collections of email messages.")
     (license gpl3+)))
 
 (define-public notmuch-addrlookup-c
-  ;; This commit includes a compatibility fix for notmuch-0.25, and is not
-  ;; currently part of any release.  Please update this package when
-  ;; notmuch-addrlookup-c-9 is released.
-  (let ((commit "88f156d04990a71c6ad6fc2757b537b44e3c4d00")
-        (revision "1"))          ;Guix package revision
-    (package
-      (name "notmuch-addrlookup-c")
-      (version (string-append "8-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/aperezdc/notmuch-addrlookup-c.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "0v0wzs7qzy4n1hbql8s10qrwgalcxdzbxf8pj6cii1pv2jwmkxbm"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:tests? #f ; no tests
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX="
-                                           (assoc-ref %outputs "out")))
-         #:phases (modify-phases %standard-phases
-                    (delete 'configure)
-                    ;; Remove vim code completion config, it's not needed to
-                    ;; build (or be patched).
-                    (add-before 'patch-source-shebangs 'delete-ycm-file
-                                (lambda _ (delete-file ".ycm_extra_conf.py")))
-                    (replace 'install
-                             (lambda* (#:key outputs #:allow-other-keys)
-                               (let ((bin (string-append
-                                           (assoc-ref outputs "out") "/bin")))
-                                 (install-file "notmuch-addrlookup" bin)))))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (inputs
-       `(("glib" ,glib)
-         ("notmuch" ,notmuch)))
-      (home-page "https://github.com/aperezdc/notmuch-addrlookup-c")
-      (synopsis "Address lookup tool for Notmuch")
-      (description "This is an address lookup tool using a Notmuch database,
+  (package
+    (name "notmuch-addrlookup-c")
+    (version (string-append "9"))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aperezdc/notmuch-addrlookup-c.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1j3zdx161i1x4w0nic14ix5i8hd501rb31daf8api0k8855sx4rc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  ;; Remove vim code completion config, it's not needed to
+                  ;; build (or be patched).
+                  (add-before 'patch-source-shebangs 'delete-ycm-file
+                    (lambda _ (delete-file ".ycm_extra_conf.py")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((bin (string-append
+                                  (assoc-ref outputs "out") "/bin")))
+                        (install-file "notmuch-addrlookup" bin)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("notmuch" ,notmuch)))
+    (home-page "https://github.com/aperezdc/notmuch-addrlookup-c")
+    (synopsis "Address lookup tool for Notmuch")
+    (description "This is an address lookup tool using a Notmuch database,
 useful for email address completion.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public python-notmuch
   (package
@@ -1154,7 +1148,7 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.3")
+    (version "1.8.4")
     (source
      (origin
        (method url-fetch)
@@ -1162,7 +1156,7 @@ which can add many functionalities to the base client.")
                            "/msmtp-" version ".tar.xz"))
        (sha256
         (base32
-         "1d4jdgrx4czp66nnwdsy938lzr4llhwyy0715pwg0j6h6gyyxciw"))))
+         "1xr926lyy44baqdgv9q0sw5z6ll2cb4lx2g4lgpgbqn8bglpzpg5"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1287,7 +1281,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.5")
+    (version "2.3.5.1")
     (source
      (origin
        (method url-fetch)
@@ -1295,7 +1289,8 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1zxa9banams9nmk99sf1rqahr11cdqxhwi7hyz3ddxqidpn15qdz"))))
+        (base32
+         "0gy3qzwbp6zsyn44pcfq8iiv9iy9q7z6py30h60alb1vkr3rv3yp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1388,7 +1383,7 @@ How it works:
 @item This password digest is used as a symmetric secret to decrypt a libsodium secretbox.
 @item Inside the secretbox is stored a Curve25519 private key.
 @item The Curve25519 private key is used to decrypt each individual message,
-using lidsodium sealed boxes.
+using libsodium sealed boxes.
 @item New mail is encrypted as it arrives using the Curve25519 public key.
 @end enumerate\n")
     (license agpl3)))
@@ -1501,6 +1496,28 @@ write simple, representation-independent mail handling code.")
     (description "Email::Address implements a regex-based RFC 2822 parser that
 locates email addresses in strings and returns a list of Email::Address
 objects found.  Alternatively you may construct objects manually.")
+    (license perl-license)))
+
+(define-public perl-email-address-xs
+  (package
+    (name "perl-email-address-xs")
+    (version "1.04")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://cpan/authors/id/P/PA/PALI/"
+                          "Email-Address-XS-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0gjrrl81z3sfwavgx5kwjd87gj44mlnbbqsm3dgdv1xllw26spwr"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Email-Address-XS")
+    (synopsis "Parse and format RFC 5322 email addresses and groups")
+    (description
+     "Email::Address::XS implements RFC 5322 parser and formatter of email
+addresses and groups.  Unlike Email::Address, this module does not use regular
+expressions for parsing but instead is implemented in XS and uses shared code
+from Dovecot IMAP server.")
     (license perl-license)))
 
 (define-public perl-email-date-format
@@ -2865,3 +2882,79 @@ replacement for the @code{urlview} program.")
     (description "This package provides a TNEF stream reader library and
 related tools to process winmail.dat files.")
     (license gpl2+)))
+
+(define-public public-inbox
+  (let ((commit "3cf66514aea9e958999973b9f104473b6d800fbe")
+        (revision "0"))
+    (package
+     (name "public-inbox")
+     (version (git-version "1.0.0" revision commit))
+     (source
+      (origin (method git-fetch)
+              (uri (git-reference
+                    (url "https://public-inbox.org")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1sxycwlm2n6p544gn9f0vf3xs6gz8vdswdhs2ha6fka8mgabvmdh"))
+              (file-name (git-file-name name version))))
+     (build-system perl-build-system)
+     (arguments
+      '(#:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'qualify-paths
+            (lambda _
+              ;; Use absolute paths for 'xapian-compact'.
+              (let ((xapian-compact (which "xapian-compact")))
+                (substitute* "script/public-inbox-compact"
+                  (("xapian-compact") xapian-compact)))
+              #t))
+          (add-before 'check 'pre-check
+            (lambda _
+              (substitute* "t/spawn.t"
+                (("\\['env'\\]") (string-append "['" (which "env") "']")))
+              #t))
+          (add-after 'install 'wrap-programs
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (for-each
+                 (lambda (prog)
+                   (wrap-program prog
+                     ;; Let those scripts find their perl modules.
+                     `("PERL5LIB" ":" prefix
+                       (,(string-append out "/lib/perl5/site_perl")
+                        ,(getenv "PERL5LIB")))
+                     ;; 'git' is invoked in various files of the PublicInbox
+                     ;; perl module.
+                     `("PATH" ":" prefix
+                       (,(string-append (assoc-ref inputs "git") "/bin")))))
+                 (find-files (string-append out "/bin"))))
+              #t)))))
+     (native-inputs
+      `(("git" ,git)
+        ("xapian" ,xapian)))
+     (inputs
+      `(("perl-danga-socket" ,perl-danga-socket)
+        ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+        ("perl-dbi" ,perl-dbi)
+        ("perl-email-address-xs" ,perl-email-address-xs)
+        ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
+        ("perl-email-mime" ,perl-email-mime)
+        ("perl-email-simple" ,perl-email-simple)
+        ("perl-filesys-notify-simple" ,perl-filesys-notify-simple)
+        ("perl-plack-middleware-deflater" ,perl-plack-middleware-deflater)
+        ("perl-plack-middleware-reverseproxy" ,perl-plack-middleware-reverseproxy)
+        ("perl-plack" ,perl-plack)
+        ("perl-search-xapian" ,perl-search-xapian)
+        ("perl-timedate" ,perl-timedate)
+        ("perl-uri-escape" ,perl-uri-escape)
+        ;; For testing.
+        ("perl-ipc-run" ,perl-ipc-run)
+        ("perl-xml-feed" ,perl-xml-feed)))
+     (home-page "https://public-inbox.org/README.html")
+     (synopsis "Archive mailing lists in git repositories")
+     (description
+      "public-inbox implements the sharing of an email inbox via git to
+complement or replace traditional mailing lists.  Readers may read via NNTP,
+Atom feeds or HTML archives.")
+     (license agpl3+))))

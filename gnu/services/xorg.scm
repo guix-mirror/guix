@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,8 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
+  #:use-module (gnu system keyboard)
+  #:use-module (gnu services base)
   #:use-module (gnu services dbus)
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
@@ -33,6 +36,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages display-managers)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gnustep)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages admin)
@@ -48,7 +52,16 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (xorg-configuration-file
+  #:export (xorg-configuration
+            xorg-configuration?
+            xorg-configuration-modules
+            xorg-configuration-fonts
+            xorg-configuration-drivers
+            xorg-configuration-resolutions
+            xorg-configuration-extra-config
+            xorg-configuration-server
+            xorg-configuration-server-arguments
+
             %default-xorg-modules
             %default-xorg-fonts
             xorg-wrapper
@@ -69,7 +82,8 @@
             slim-configuration-xauth
             slim-configuration-shepherd
             slim-configuration-auto-login-session
-            slim-configuration-startx
+            slim-configuration-xorg
+            slim-configuration-sessreg
 
             slim-service-type
             slim-service
@@ -79,9 +93,14 @@
             screen-locker-service-type
             screen-locker-service
 
+            localed-configuration
+            localed-configuration?
+            localed-service-type
+
             gdm-configuration
             gdm-service-type
-            gdm-service))
+            gdm-service
+            set-xorg-configuration))
 
 ;;; Commentary:
 ;;;
@@ -122,33 +141,38 @@
                      "/share/fonts/X11/misc")
         (file-append font-adobe75dpi "/share/fonts/X11/75dpi")))
 
-(define* (xorg-configuration-file #:key
-                                  (modules %default-xorg-modules)
-                                  (fonts %default-xorg-fonts)
-                                  (drivers '()) (resolutions '())
-                                  (extra-config '()))
-  "Return a configuration file for the Xorg server containing search paths for
-all the common drivers.
+(define %default-xorg-server-arguments
+  ;; Default command-line arguments for X.
+  '("-nolisten" "tcp"))
 
-@var{modules} must be a list of @dfn{module packages} loaded by the Xorg
-server---e.g., @code{xf86-video-vesa}, @code{xf86-input-keyboard}, and so on.
-@var{fonts} must be a list of font directories to add to the server's
-@dfn{font path}.
+;; Configuration of an Xorg server.
+(define-record-type* <xorg-configuration>
+  xorg-configuration make-xorg-configuration
+  xorg-configuration?
+  (modules          xorg-configuration-modules    ;list of packages
+                    (default %default-xorg-modules))
+  (fonts            xorg-configuration-fonts      ;list of packges
+                    (default %default-xorg-fonts))
+  (drivers          xorg-configuration-drivers    ;list of strings
+                    (default '()))
+  (resolutions      xorg-configuration-resolutions ;list of tuples
+                    (default '()))
+  (keyboard-layout  xorg-configuration-keyboard-layout ;#f | <keyboard-layout>
+                    (default #f))
+  (extra-config     xorg-configuration-extra-config ;list of strings
+                    (default '()))
+  (server           xorg-configuration-server     ;package
+                    (default xorg-server))
+  (server-arguments xorg-configuration-server-arguments ;list of strings
+                    (default %default-xorg-server-arguments)))
 
-@var{drivers} must be either the empty list, in which case Xorg chooses a
-graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{(\"modesetting\" \"vesa\")}.
-
-Likewise, when @var{resolutions} is the empty list, Xorg chooses an
-appropriate screen resolution; otherwise, it must be a list of
-resolutions---e.g., @code{((1024 768) (640 480))}.
-
-Last, @var{extra-config} is a list of strings or objects appended to the
-configuration file.  It is used to pass extra text to be
-added verbatim to the configuration file."
+(define (xorg-configuration->file config)
+  "Compute an Xorg configuration file corresponding to CONFIG, an
+<xorg-configuration> record."
   (define all-modules
     ;; 'xorg-server' provides 'fbdevhw.so' etc.
-    (append modules (list xorg-server)))
+    (append (xorg-configuration-modules config)
+            (list xorg-server)))
 
   (define build
     #~(begin
@@ -159,7 +183,7 @@ added verbatim to the configuration file."
         (call-with-output-file #$output
           (lambda (port)
             (define drivers
-              '#$drivers)
+              '#$(xorg-configuration-drivers config))
 
             (define (device-section driver)
               (string-append "
@@ -183,6 +207,31 @@ Section \"Screen\"
   EndSubSection
 EndSection"))
 
+            (define (input-class-section layout variant model options)
+              (string-append "
+Section \"InputClass\"
+  Identifier \"evdev keyboard catchall\"
+  MatchIsKeyboard \"on\"
+  Option \"XkbLayout\" " (object->string layout)
+  (if variant
+      (string-append "  Option \"XkbVariant\" \""
+                     variant "\"")
+      "")
+  (if model
+      (string-append "  Option \"XkbModel\" \""
+                     model "\"")
+      "")
+  (match options
+    (()
+     "")
+    (_
+     (string-append "  Option \"XkbOptions\" \""
+                    (string-join options ",") "\""))) "
+
+  MatchDevicePath \"/dev/input/event*\"
+  Driver \"evdev\"
+EndSection\n"))
+
             (define (expand modules)
               ;; Append to MODULES the relevant /lib/xorg/modules
               ;; sub-directories.
@@ -201,7 +250,7 @@ EndSection"))
             (display "Section \"Files\"\n" port)
             (for-each (lambda (font)
                         (format port "  FontPath \"~a\"~%" font))
-                      '#$fonts)
+                      '#$(xorg-configuration-fonts config))
             (for-each (lambda (module)
                         (format port
                                 "  ModulePath \"~a\"~%"
@@ -221,18 +270,31 @@ EndSection\n" port)
                      port)
             (newline port)
             (display (string-join
-                      (map (cut screen-section <> '#$resolutions)
+                      (map (cut screen-section <>
+                                '#$(xorg-configuration-resolutions config))
                            drivers)
                       "\n")
                      port)
             (newline port)
 
+            (let ((layout  #$(and=> (xorg-configuration-keyboard-layout config)
+                                    keyboard-layout-name))
+                  (variant #$(and=> (xorg-configuration-keyboard-layout config)
+                                    keyboard-layout-variant))
+                  (model   #$(and=> (xorg-configuration-keyboard-layout config)
+                                    keyboard-layout-model))
+                  (options '#$(and=> (xorg-configuration-keyboard-layout config)
+                                     keyboard-layout-options)))
+              (when layout
+                (display (input-class-section layout variant model options)
+                         port)
+                (newline port)))
+
             (for-each (lambda (config)
                         (display config port))
-                      '#$extra-config)))))
+                      '#$(xorg-configuration-extra-config config))))))
 
   (computed-file "xserver.conf" build))
-
 
 (define (xorg-configuration-directory modules)
   "Return a directory that contains the @code{.conf} files for X.org that
@@ -260,61 +322,43 @@ in @var{modules}."
                                  files)
                        #t))))
 
-(define* (xorg-wrapper #:key
-                       (guile (canonical-package guile-2.0))
-                       (modules %default-xorg-modules)
-                       (configuration-file (xorg-configuration-file
-                                            #:modules modules))
-                       (xorg-server xorg-server))
-  "Return a derivation that builds a @var{guile} script to start the X server
-from @var{xorg-server}.  @var{configuration-file} is the server configuration
-file or a derivation that builds it; when omitted, the result of
-@code{xorg-configuration-file} is used.  The resulting script should be used
-in place of @code{/usr/bin/X}."
+(define* (xorg-wrapper #:optional (config (xorg-configuration)))
+  "Return a derivation that builds a script to start the X server with the
+given @var{config}.  The resulting script should be used in place of
+@code{/usr/bin/X}."
   (define exp
     ;; Write a small wrapper around the X server.
     #~(begin
         (setenv "XORG_DRI_DRIVER_PATH" (string-append #$mesa "/lib/dri"))
         (setenv "XKB_BINDIR" (string-append #$xkbcomp "/bin"))
 
-        (let ((X (string-append #$xorg-server "/bin/X")))
+        (let ((X (string-append #$(xorg-configuration-server config) "/bin/X")))
           (apply execl X X
                  "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
-                 "-config" #$configuration-file
-                 "-configdir" #$(xorg-configuration-directory modules)
+                 "-config" #$(xorg-configuration->file config)
+                 "-configdir" #$(xorg-configuration-directory
+                                 (xorg-configuration-modules config))
                  (cdr (command-line))))))
 
   (program-file "X-wrapper" exp))
 
-(define* (xorg-start-command #:key
-                             (guile (canonical-package guile-2.0))
-                             (modules %default-xorg-modules)
-                             (fonts %default-xorg-fonts)
-                             (configuration-file
-                              (xorg-configuration-file #:modules modules
-                                                       #:fonts fonts))
-                             (xorg-server xorg-server)
-                             (xserver-arguments '("-nolisten" "tcp")))
-  "Return a @code{startx} script in which @var{modules}, a list of X module
-packages, and @var{fonts}, a list of X font directories, are available.  See
-@code{xorg-wrapper} for more details on the arguments.  The result should be
-used in place of @code{startx}."
+(define* (xorg-start-command #:optional (config (xorg-configuration)))
+  "Return a @code{startx} script in which the modules, fonts, etc. specified
+in @var{config}, are available.  The result should be used in place of
+@code{startx}."
   (define X
-    (xorg-wrapper #:guile guile
-                  #:configuration-file configuration-file
-                  #:modules modules
-                  #:xorg-server xorg-server))
+    (xorg-wrapper config))
+
   (define exp
     ;; Write a small wrapper around the X server.
     #~(apply execl #$X #$X ;; Second #$X is for argv[0].
-             "-logverbose" "-verbose" "-terminate" #$@xserver-arguments
+             "-logverbose" "-verbose" "-terminate"
+             #$@(xorg-configuration-server-arguments config)
               (cdr (command-line))))
 
   (program-file "startx" exp))
 
-(define* (xinitrc #:key
-                  (guile (canonical-package guile-2.0))
-                  fallback-session)
+(define* (xinitrc #:key fallback-session)
   "Return a system-wide xinitrc script that starts the specified X session,
 which should be passed to this script as the first argument.  If not, the
 @var{fallback-session} will be used or, if @var{fallback-session} is false, a
@@ -442,8 +486,8 @@ desktop session from the system or user profile will be used."
             (default shepherd))
   (auto-login-session slim-configuration-auto-login-session
                       (default #f))
-  (startx slim-configuration-startx
-          (default (xorg-start-command)))
+  (xorg-configuration slim-configuration-xorg
+                      (default (xorg-configuration)))
   (sessreg slim-configuration-sessreg
            (default sessreg)))
 
@@ -458,9 +502,8 @@ desktop session from the system or user profile will be used."
   (define slim.cfg
     (let ((xinitrc (xinitrc #:fallback-session
                             (slim-configuration-auto-login-session config)))
-          (slim    (slim-configuration-slim config))
           (xauth   (slim-configuration-xauth config))
-          (startx  (slim-configuration-startx config))
+          (startx  (xorg-start-command (slim-configuration-xorg config)))
           (shepherd   (slim-configuration-shepherd config))
           (theme-name (slim-configuration-theme-name config))
           (sessreg (slim-configuration-sessreg config)))
@@ -503,7 +546,9 @@ reboot_cmd " shepherd "/sbin/reboot\n"
               (false-if-exception (delete-file "/var/run/slim.lock"))
 
               (fork+exec-command
-               (list (string-append #$slim "/bin/slim") "-nodaemon")
+               (list (string-append #$(slim-configuration-slim config)
+                                    "/bin/slim")
+                     "-nodaemon")
                #:environment-variables
                (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
                      #$@(if theme
@@ -567,8 +612,7 @@ theme."
             (auto-login? auto-login?) (default-user default-user)
             (theme theme) (theme-name theme-name)
             (xauth xauth) (shepherd shepherd)
-            (auto-login-session auto-login-session)
-            (startx startx))))
+            (auto-login-session auto-login-session))))
 
 
 ;;;
@@ -617,6 +661,88 @@ makes the good ol' XlockMore usable."
                           (file-append package "/bin/" program)
                           allow-empty-passwords?)))
 
+
+;;;
+;;; Locale service.
+;;;
+
+(define-record-type* <localed-configuration>
+  localed-configuration make-localed-configuration
+  localed-configuration?
+  (localed         localed-configuration-localed
+                   (default localed))
+  (keyboard-layout localed-configuration-keyboard-layout
+                   (default #f)))
+
+(define (localed-dbus-service config)
+  "Return the 'localed' D-Bus service for @var{config}, a
+@code{<localed-configuration>} record."
+  (define keyboard-layout
+    (localed-configuration-keyboard-layout config))
+
+  ;; The primary purpose of 'localed' is to tell GDM what the "current" Xorg
+  ;; keyboard layout is.  If 'localed' is missing, or if it's unable to
+  ;; determine the current XKB layout, then GDM forcefully installs its
+  ;; default XKB config (US English).  Here we communicate the configured
+  ;; layout through environment variables.
+
+  (if keyboard-layout
+      (let* ((layout  (keyboard-layout-name keyboard-layout))
+             (variant (keyboard-layout-variant keyboard-layout))
+             (model   (keyboard-layout-model keyboard-layout))
+             (options (keyboard-layout-options keyboard-layout)))
+        (list (wrapped-dbus-service
+               (localed-configuration-localed config)
+               "libexec/localed/localed"
+               `(("GUIX_XKB_LAYOUT" ,layout)
+                 ,@(if variant
+                       `(("GUIX_XKB_VARIANT" ,variant))
+                       '())
+                 ,@(if model
+                       `(("GUIX_XKB_MODEL" ,model))
+                       '())
+                 ,@(if (null? options)
+                       '()
+                       `(("GUIX_XKB_OPTIONS"
+                          ,(string-join options ","))))))))
+      '()))
+
+(define localed-service-type
+  (let ((package (lambda (config)
+                   ;; Don't bother if the user didn't specify any keyboard
+                   ;; layout.
+                   (if (localed-configuration-keyboard-layout config)
+                       (list (localed-configuration-localed config))
+                       '()))))
+    (service-type (name 'localed)
+                  (extensions
+                   (list (service-extension dbus-root-service-type
+                                            localed-dbus-service)
+                         (service-extension udev-service-type package)
+                         (service-extension polkit-service-type package)
+
+                         ;; Add 'localectl' to the profile.
+                         (service-extension profile-service-type package)))
+
+                  ;; This service can be extended, typically by the X login
+                  ;; manager, to communicate the chosen Xorg keyboard layout.
+                  (compose (lambda (extensions)
+                             (find keyboard-layout? extensions)))
+                  (extend (lambda (config keyboard-layout)
+                            (localed-configuration
+                             (inherit config)
+                             (keyboard-layout keyboard-layout))))
+                  (description
+                   "Run the locale daemon, @command{localed}, which can be used
+to control the system locale and keyboard mapping from user programs such as
+the GNOME desktop environment.")
+                  (default-value (localed-configuration)))))
+
+
+;;;
+;;; GNOME Desktop Manager.
+;;;
+
 (define %gdm-accounts
   (list (user-group (name "gdm") (system? #t))
         (user-account
@@ -647,8 +773,8 @@ makes the good ol' XlockMore usable."
   (default-user gdm-configuration-default-user (default #f))
   (gnome-shell-assets gdm-configuration-gnome-shell-assets
                       (default (list adwaita-icon-theme font-cantarell)))
-  (x-server gdm-configuration-x-server
-            (default (xorg-wrapper)))
+  (xorg-configuration gdm-configuration-xorg
+                      (default (xorg-configuration)))
   (x-session gdm-configuration-x-session
              (default (xinitrc))))
 
@@ -720,7 +846,8 @@ makes the good ol' XlockMore usable."
                             #$(gdm-configuration-dbus-daemon config))
                            (string-append
                             "GDM_X_SERVER="
-                            #$(gdm-configuration-x-server config))
+                            #$(xorg-wrapper
+                               (gdm-configuration-xorg config)))
                            (string-append
                             "GDM_X_SESSION="
                             #$(gdm-configuration-x-session config))
@@ -750,15 +877,31 @@ makes the good ol' XlockMore usable."
                                           gdm-configuration-gnome-shell-assets)
                        (service-extension dbus-root-service-type
                                           (compose list
-                                                   gdm-configuration-gdm))))
+                                                   gdm-configuration-gdm))
+                       (service-extension localed-service-type
+                                          (compose
+                                           xorg-configuration-keyboard-layout
+                                           gdm-configuration-xorg))))
+
+                ;; For convenience, this service can be extended with an
+                ;; <xorg-configuration> record.  Take the first one that
+                ;; comes.
+                (compose (lambda (extensions)
+                           (match extensions
+                             (() #f)
+                             ((config . _) config))))
+                (extend (lambda (config xorg-configuration)
+                          (if xorg-configuration
+                              (gdm-configuration
+                               (inherit config)
+                               (xorg-configuration xorg-configuration))
+                              config)))
+
                 (default-value (gdm-configuration))
                 (description
                  "Run the GNOME Desktop Manager (GDM), a program that allows
 you to log in in a graphical session, whether or not you use GNOME.")))
 
-;; This service isn't working yet; it gets as far as starting to run the
-;; greeter from gnome-shell but doesn't get any further.  It is here because
-;; it doesn't hurt anyone and perhaps it inspires someone to fix it :)
 (define-deprecated (gdm-service #:key (gdm gdm)
                                 (allow-empty-passwords? #t)
                                 (x-server (xorg-wrapper)))
@@ -785,7 +928,16 @@ password."
   (service gdm-service-type
            (gdm-configuration
             (gdm gdm)
-            (allow-empty-passwords? allow-empty-passwords?)
-            (x-server x-server))))
+            (allow-empty-passwords? allow-empty-passwords?))))
+
+(define* (set-xorg-configuration config
+                                 #:optional
+                                 (login-manager-service-type
+                                  gdm-service-type))
+  "Tell the log-in manager (of type @var{login-manager-service-type}) to use
+@var{config}, an <xorg-configuration> record."
+  (simple-service 'set-xorg-configuration
+                  login-manager-service-type
+                  config))
 
 ;;; xorg.scm ends here

@@ -28,6 +28,7 @@
 /configure
 /doc/*.1
 /doc/.dirstamp
+/doc/contributing.*.texi
 /doc/guix.*.aux
 /doc/guix.*.cp
 /doc/guix.*.cps
@@ -43,6 +44,7 @@
 /doc/guix.*.tp
 /doc/guix.*.vr
 /doc/guix.*.vrs
+/doc/guix.*.texi
 /doc/guix.aux
 /doc/guix.cp
 /doc/guix.cps

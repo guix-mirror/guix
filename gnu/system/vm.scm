@@ -58,6 +58,7 @@
   #:use-module (gnu bootloader grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
+  #:use-module (gnu system linux-container)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
@@ -93,6 +94,12 @@
 (define %linux-vm-file-systems
   ;; File systems mounted for 'derivation-in-linux-vm'.  These are shared with
   ;; the host over 9p.
+  ;;
+  ;; The 9p documentation says that cache=loose is "intended for exclusive,
+  ;; read-only mounts", without additional details.  It's much faster than the
+  ;; default cache=none, especially when copying and registering store items.
+  ;; Thus, use cache=loose, except for /xchg where we want to ensure
+  ;; consistency.
   (list (file-system
           (mount-point (%store-prefix))
           (device "store")
@@ -101,18 +108,12 @@
           (flags '(read-only))
           (options "trans=virtio,cache=loose")
           (check? #f))
-
-        ;; The 9p documentation says that cache=loose is "intended for
-        ;; exclusive, read-only mounts", without additional details.  In
-        ;; practice it seems to work well for these, and it's much faster than
-        ;; the default cache=none, especially when copying and registering
-        ;; store items.
         (file-system
           (mount-point "/xchg")
           (device "xchg")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio,cache=loose")
+          (options "trans=virtio")
           (check? #f))
         (file-system
           (mount-point "/tmp")
@@ -320,7 +321,10 @@ INPUTS is a list of inputs (as for packages)."
 
    #:make-disk-image? #f
    #:single-file-output? #t
-   #:references-graphs inputs))
+   #:references-graphs inputs
+
+   ;; Xorriso seems to be quite memory-hungry, so increase the VM's RAM size.
+   #:memory-size 512))
 
 (define* (qemu-image #:key
                      (name "qemu-image")
@@ -473,9 +477,9 @@ should set REGISTER-CLOSURES? to #f."
          (local-file (search-path %load-path
                                   "guix/store/schema.sql"))))
 
-  (mlet %store-monad ((os-drv (operating-system-derivation os #:container? #t))
-                      (name -> (string-append name ".tar.gz"))
-                      (graph -> "system-graph"))
+  (let ((os    (containerized-operating-system os '()))
+        (name  (string-append name ".tar.gz"))
+        (graph "system-graph"))
     (define build
       (with-extensions (cons guile-json           ;for (guix docker)
                              gcrypt-sqlite3&co)   ;for (guix store database)
@@ -505,7 +509,7 @@ should set REGISTER-CLOSURES? to #f."
                      (initialize (root-partition-initializer
                                   #:closures '(#$graph)
                                   #:register-closures? #$register-closures?
-                                  #:system-directory #$os-drv
+                                  #:system-directory #$os
                                   ;; De-duplication would fail due to
                                   ;; cross-device link errors, so don't do it.
                                   #:deduplicate? #f))
@@ -523,18 +527,15 @@ should set REGISTER-CLOSURES? to #f."
                              (call-with-input-file
                                  (string-append "/xchg/" #$graph)
                                read-reference-graph)))
-                 #$os-drv
+                 #$os
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)
-                 #:transformations `((,root-directory -> "")))
-
-                ;; Make sure the tarball is fully written before rebooting.
-                (sync))))))
+                 #:transformations `((,root-directory -> ""))))))))
     (expression->derivation-in-linux-vm
      name build
      #:make-disk-image? #f
      #:single-file-output? #t
-     #:references-graphs `((,graph ,os-drv)))))
+     #:references-graphs `((,graph ,os)))))
 
 
 ;;;
@@ -616,7 +617,7 @@ to USB sticks meant to be read-only."
     ;; Volume name of the root file system.
     (normalize-label "Guix_image"))
 
-  (define root-uuid
+  (define (root-uuid os)
     ;; UUID of the root file system, computed in a deterministic fashion.
     ;; This is what we use to locate the root file system so it has to be
     ;; different from the user's own file system UUIDs.
@@ -646,17 +647,26 @@ to USB sticks meant to be read-only."
                                  (bootloader grub-mkrescue-bootloader))
                                (operating-system-bootloader os)))
 
-               ;; Force our own root file system.
+               ;; Force our own root file system.  (We need a "/" file system
+               ;; to call 'root-uuid'.)
                (file-systems (cons (file-system
                                      (mount-point "/")
-                                     (device root-uuid)
+                                     (device "/dev/placeholder")
+                                     (type file-system-type))
+                                   file-systems-to-keep))))
+         (uuid (root-uuid os))
+         (os (operating-system
+               (inherit os)
+               (file-systems (cons (file-system
+                                     (mount-point "/")
+                                     (device uuid)
                                      (type file-system-type))
                                    file-systems-to-keep))))
         (bootcfg (operating-system-bootcfg os)))
     (if (string=? "iso9660" file-system-type)
         (iso9660-image #:name name
                        #:file-system-label root-label
-                       #:file-system-uuid root-uuid
+                       #:file-system-uuid uuid
                        #:os os
                        #:register-closures? #t
                        #:bootcfg-drv bootcfg
@@ -673,7 +683,7 @@ to USB sticks meant to be read-only."
                     #:disk-image-format "raw"
                     #:file-system-type file-system-type
                     #:file-system-label root-label
-                    #:file-system-uuid root-uuid
+                    #:file-system-uuid uuid
                     #:copy-inputs? #t
                     #:register-closures? #t
                     #:inputs `(("system" ,os)
@@ -790,6 +800,7 @@ environment with the store shared with the host.  MAPPINGS is a list of
     ;; force the traditional i386/BIOS method.
     ;; See <https://bugs.gnu.org/28768>.
     (bootloader (bootloader-configuration
+                  (inherit (operating-system-bootloader os))
                   (bootloader grub-bootloader)
                   (target "/dev/vda")))
 

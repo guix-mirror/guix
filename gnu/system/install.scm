@@ -27,6 +27,7 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module ((guix packages) #:select (package-version))
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu installer)
   #:use-module (gnu services dbus)
@@ -73,19 +74,94 @@
 ;;; Code:
 
 
-(define (log-to-info)
+;;;
+;;; Documentation service.
+;;;
+
+(define %installation-node-names
+  ;; Translated name of the "System Installation" node of the manual.  Ideally
+  ;; we'd extract it from the 'guix-manual' gettext domain, but that one is
+  ;; usually not available at run time, hence this hack.
+  '(("de" . "Systeminstallation")
+    ("en" . "System Installation")
+    ("es" . "Instalación del sistema")
+    ("fr" . "Installation du système")))
+
+(define (log-to-info tty user)
   "Return a script that spawns the Info reader on the right section of the
 manual."
   (program-file "log-to-info"
-                #~(begin
+                #~(let* ((tty      (open-file #$(string-append "/dev/" tty)
+                                              "r0+"))
+                         (locale   (cadr (command-line)))
+                         (language (string-take locale
+                                                (string-index locale #\_)))
+                         (infodir  "/run/current-system/profile/share/info")
+                         (per-lang (string-append infodir "/guix." language
+                                                  ".info.gz"))
+                         (file     (if (file-exists? per-lang)
+                                       per-lang
+                                       (string-append infodir "/guix.info")))
+                         (node     (or (assoc-ref '#$%installation-node-names
+                                                  language)
+                                       "System Installation")))
+                    (redirect-port tty (current-output-port))
+                    (redirect-port tty (current-error-port))
+                    (redirect-port tty (current-input-port))
+
+                    (let ((pw (getpwnam #$user)))
+                      (setgid (passwd:gid pw))
+                      (setuid (passwd:uid pw)))
+
                     ;; 'gunzip' is needed to decompress the doc.
                     (setenv "PATH" (string-append #$gzip "/bin"))
 
-                    (execl (string-append #$info-reader "/bin/info") "info"
-                           "-d" "/run/current-system/profile/share/info"
-                           "-f" (string-append #$guix "/share/info/guix.info")
-                           "-n" "System Installation"))))
+                    ;; Change this process' locale so that command-line
+                    ;; arguments to 'info' are properly encoded.
+                    (catch #t
+                      (lambda ()
+                        (setlocale LC_ALL locale)
+                        (setenv "LC_ALL" locale))
+                      (lambda _
+                        ;; Sometimes LOCALE itself is not available.  In that
+                        ;; case pick the one UTF-8 locale that's known to work
+                        ;; instead of failing.
+                        (setlocale LC_ALL "en_US.utf8")
+                        (setenv "LC_ALL" "en_US.utf8")))
 
+                    (execl #$(file-append info-reader "/bin/info")
+                           "info" "-d" infodir "-f" file "-n" node))))
+
+(define (documentation-shepherd-service tty)
+  (list (shepherd-service
+         (provision (list (symbol-append 'term- (string->symbol tty))))
+         (requirement '(user-processes host-name udev virtual-terminal))
+         (start #~(lambda* (#:optional (locale "en_US.utf8"))
+                    (fork+exec-command
+                     (list #$(log-to-info tty "documentation") locale)
+                     #:environment-variables
+                     `("GUIX_LOCPATH=/run/current-system/locale"
+                       "TERM=linux"))))
+         (stop #~(make-kill-destructor)))))
+
+(define %documentation-users
+  ;; User account for the Info viewer.
+  (list (user-account (name "documentation")
+                      (system? #t)
+                      (group "nogroup")
+                      (home-directory "/var/empty"))))
+
+(define documentation-service-type
+  ;; Documentation viewer service.
+  (service-type (name 'documentation)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          documentation-shepherd-service)
+                       (service-extension account-service-type
+                                          (const %documentation-users))))
+                (description "Run the Info reader on a tty.")))
+
+
 (define %backing-directory
   ;; Sub-directory used as the backing store for copy-on-write.
   "/tmp/guix-inst")
@@ -212,13 +288,11 @@ the user's target storage device rather than on the RAM disk."
 (define %installation-services
   ;; List of services of the installation system.
   (let ((motd (plain-file "motd" "
-\x1b[1;37mWelcome to the installation of the Guix System Distribution!\x1b[0m
+\x1b[1;37mWelcome to the installation of GNU Guix!\x1b[0m
 
-\x1b[2mThere is NO WARRANTY, to the extent permitted by law.  In particular, you may
-LOSE ALL YOUR DATA as a side effect of the installation process.  Furthermore,
-it is 'beta' software, so it may contain bugs.
-
-You have been warned.  Thanks for being so brave.\x1b[0m
+\x1b[2m\
+Using this shell, you can carry out the installation process \"manually.\"
+Access documentation at any time by pressing Alt-F2.\x1b[0m
 ")))
     (define (normal-tty tty)
       (mingetty-service (mingetty-configuration (tty tty)
@@ -241,10 +315,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
           ;; Documentation.  The manual is in UTF-8, but
           ;; 'console-font-service' sets up Unicode support and loads a font
           ;; with all the useful glyphs like em dash and quotation marks.
-          (mingetty-service (mingetty-configuration
-                             (tty "tty2")
-                             (auto-login "guest")
-                             (login-program (log-to-info))))
+          (service documentation-service-type "tty2")
 
           ;; Documentation add-on.
           %configuration-template-service
@@ -273,12 +344,18 @@ You have been warned.  Thanks for being so brave.\x1b[0m
           ;; since it takes the installation directory as an argument.
           (cow-store-service)
 
-          ;; Install Unicode support and a suitable font.  Use a font that
-          ;; doesn't have more than 256 glyphs so that we can use colors with
-          ;; varying brightness levels (see note in setfont(8)).
+          ;; Install Unicode support and a suitable font.
           (service console-font-service-type
-                   (map (lambda (tty)
-                          (cons tty "lat9u-16"))
+                   (map (match-lambda
+                          ("tty2"
+                           ;; Use a font that contains characters such as
+                           ;; curly quotes as found in the manual.
+                           '("tty2" . "LatGrkCyr-8x16"))
+                          (tty
+                           ;; Use a font that doesn't have more than 256
+                           ;; glyphs so that we can use colors with varying
+                           ;; brightness levels (see note in setfont(8)).
+                           `(,tty . "lat9u-16")))
                         '("tty1" "tty2" "tty3" "tty4" "tty5" "tty6")))
 
           ;; To facilitate copy/paste.
@@ -348,6 +425,15 @@ You have been warned.  Thanks for being so brave.\x1b[0m
     (bootloader (bootloader-configuration
                  (bootloader grub-bootloader)
                  (target "/dev/sda")))
+    (label (string-append "GNU Guix installation "
+                          (package-version guix)))
+
+    ;; XXX: The AMD Radeon driver is reportedly broken, which makes kmscon
+    ;; non-functional:
+    ;; <https://lists.gnu.org/archive/html/guix-devel/2019-03/msg00441.html>.
+    ;; Thus, blacklist it.
+    (kernel-arguments '("quiet" "modprobe.blacklist=radeon"))
+
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.
@@ -379,8 +465,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                   (group "users")
                   (supplementary-groups '("wheel")) ; allow use of sudo
                   (password "")
-                  (comment "Guest of GNU")
-                  (home-directory "/home/guest"))))
+                  (comment "Guest of GNU"))))
 
     (issue %issue)
     (services %installation-services)

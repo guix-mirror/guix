@@ -181,14 +181,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
+              (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wmciqml9yplnx1s4ynn00giqyk06rbrcsgvpjj2df47sawk2jp8"))))
+                "1ys2w83vm62spr8bx38sccfdpy9fqmj7wfywm5k8ihsy2k61da2i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -211,8 +211,68 @@ the execution of system services, replacing similar functionality found in
 typical init systems.  It provides dependency-handling through a convenient
 interface and is based on GNU Guile.")
     (license license:gpl3+)
-    (home-page "https://www.gnu.org/software/shepherd/")
-    (properties '((ftp-server . "alpha.gnu.org")))))
+    (home-page "https://www.gnu.org/software/shepherd/")))
+
+(define-public cloud-utils
+  (package
+    (name "cloud-utils")
+    (version "0.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://launchpad.net/cloud-utils/trunk/"
+             version "/+download/cloud-utils-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07fl3dlqwdzw4xx7mcxhpkks6dnmaxha80zgs9f6wmibgzni8z0r"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BINDIR=" out "/bin")
+               (string-append "MANDIR=" out "/share/man/man1")
+               (string-append "DOCDIR=" out "/share/doc")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((growpart (string-append (assoc-ref outputs "out")
+                                            "/bin/growpart")))
+               (wrap-program growpart
+                 `("PATH" ":" prefix (,(dirname (which "sfdisk"))
+                                      ,(dirname (which "readlink"))))))
+             #t)))))
+    (inputs
+     `(("python" ,python)
+       ("util-linux" ,util-linux))) ; contains sfdisk for growpart
+    (home-page "https://launchpad.net/cloud-utils")
+    (synopsis "Set of utilities for cloud computing environments")
+    (description
+     "This package contains a set of utilities for cloud computing
+environments:
+
+@itemize @bullet
+@item @command{cloud-localds} Create a disk for cloud-init to utilize nocloud
+@item @command{cloud-publish-image} Wrapper for cloud image publishing
+@item @command{cloud-publish-tarball} Wrapper for publishing cloud tarballs
+@item @command{cloud-publish-ubuntu} Import a Ubuntu cloud image
+@item @command{ec2metadata} Query and display @acronym{EC2,Amazon Elastic
+  Compute Cloud} metadata
+@item @command{growpart} Grow a partition to fill the device
+@item @command{mount-image-callback} Mount a file and run a command
+@item @command{resize-part-image} Resize a partition image to a new size
+@item @command{ubuntu-cloudimg-query} Get the latest Ubuntu
+  @acronym{AMI,Amazon Machine Image}
+@item @command{ubuntu-ec2-run} Run a @acronym{EC2,Amazon Elastic Compute
+  Cloud} instance using Ubuntu
+@item @command{vcs-run} Obtain a repository, and run a command
+@item @command{write-mime-multipart} Handle multipart
+  @acronym{MIME,Multipurpose Internet Mail Extensions} messages
+@end itemize")
+    (license license:gpl3)))
 
 (define-public daemontools
   (package
@@ -475,8 +535,8 @@ login, passwd, su, groupadd, and useradd.")
     (synopsis "Getty for the text console")
     (description
      "Small console getty that is started on the Linux text console,
-asks for a login name and then transfers over to 'login'.  It is extended to
-allow automatic login and starting any app.")
+asks for a login name and then transfers over to @code{login}.  It is extended
+to allow automatic login and starting any app.")
     (license license:gpl2+)))
 
 (define-public net-base
@@ -1140,7 +1200,8 @@ the client stations.  It implements key negotiation with a WPA Authenticator
 and it controls the roaming and IEEE 802.11 authentication/association of the
 WLAN driver.
 
-This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
+This package provides the @code{wpa_supplicant} daemon and the @code{wpa_cli}
+command.")
 
     ;; In practice, this is linked against Readline, which makes it GPLv3+.
     (license license:bsd-3)
@@ -1286,7 +1347,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20190215")
+    (version "20190405")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1294,7 +1355,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1iy2zwi8aicq0b5a0phfacvk1f9z1d89cx43adcf0qh82gb9m4wg"))))
+                "0hv6r65l8vk3f6i3by7i47vc1917qm47838bpq80lfn22784y53y"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1598,13 +1659,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.9")
+    (version "2.7.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "19vyf60zfmnv7frwm96bzqzvia69dysy9apk8bl84vr03ib9vrbf"))))
+        (base32 "15721d0bxymghxnlnknq43lszlxg3ybbcp2p5v424hhw6wg2v944"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -1735,18 +1796,18 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.5.1")
+    (version "22.5.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/wting/autojump/archive/"
-                           "release-v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wting/autojump.git")
+             (commit (string-append "release-v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17z9j9936x0nizwrzf664bngh60x5qbvrrf1s5qdzd0f2gdanpvn"))))
+        (base32 "1rgpsh70manr2dydna9da4x7p8ahii7dgdgwir5fka340n1wrcws"))))
     (build-system gnu-build-system)
-    (native-inputs                      ;for tests
+    (native-inputs                      ; for tests
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
     (inputs
@@ -1754,6 +1815,11 @@ limits.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           ;; ‘install.py’ modifies files before installing them.
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (delete 'configure)
          (delete 'build)
          (replace 'check
@@ -2076,7 +2142,7 @@ a new command using the matched rule, and runs it.")
     (home-page "https://www.gentoo.com/di/")
     (synopsis "Advanced df like disk information utility")
     (description
-     "'di' is a disk information utility, displaying everything that your
+     "@code{di} is a disk information utility, displaying everything that your
 @code{df} command does and more.  It features the ability to display your disk
 usage in whatever format you prefer.  It is designed to be highly portable and
 produce uniform output across heterogeneous networks.")
@@ -2699,7 +2765,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.32-1")
+      (version "3.0.33-1")
       (source
        (origin
          (method git-fetch)
@@ -2708,7 +2774,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "171xdip2alkp3g0k0sanaavvdcz6d0wlldj9lgj11xsdbhaaknnv"))))
+          (base32 "19bfdid4zp39irsdq3m6yyqf2336c30da35qgslrzcr2vh815g8c"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)
@@ -2918,7 +2984,8 @@ Logitech Unifying Receiver.")
 (define-public lynis
   (package
     (name "lynis")
-    (version "2.7.2")
+    ;; Also update the ‘lynis-sdk’ input to the commit matching this release.
+    (version "2.7.4")
     (source
      (origin
        (method git-fetch)
@@ -2927,7 +2994,7 @@ Logitech Unifying Receiver.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dbbfk47dpxx7zpb98n4w3ls3z5di57qnr2nsgxjvp49gk9j3f6k"))
+        (base32 "1jjk5hcxmp4f4ppsljiq95l2ln6b03azydap3b35lsvxkjybv88k"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2944,11 +3011,10 @@ Logitech Unifying Receiver.")
            (method git-fetch)
            (uri (git-reference
                  (url "https://github.com/CISOfy/lynis-sdk")
-                 (commit "3310aef4f2b3dd97d166c96ad0253c89c4ad390d")))
+                 (commit "90f301e21c204792cf372f1cf05890a562f2e31b")))
            (file-name (git-file-name "lynis-sdk" version))
            (sha256
-            (base32
-             "0sqsrm5wal742yrwps8bqb8a8lxd93n4b93n3kkm1b30nbs25g7y"))))))
+            (base32 "1d0smr1fxrvbc3hl8lzy33im9ahzr0hgs3kk09r8g8xccjkcm52l"))))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -548,7 +548,7 @@ Resources file.")
     (synopsis "Xorg font aliases")
     (description
      "This package provides some common aliases for Xorg fonts.
-For example: '6x10', '9x15bold', etc.")
+For example: @code{6x10}, @code{9x15bold}, etc.")
     (license license:x11)))
 
 
@@ -1600,8 +1600,8 @@ input from UTF-8 into the locale's encoding.")
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of scalable font files for X server")
     (description
-     "MkFontScale creates the 'fonts.scale' and 'fonts.dir' index files used
-by the legacy X11 font system.")
+     "MkFontScale creates the @code{fonts.scale} and @code{fonts.dir} index
+files used by the legacy X11 font system.")
     (license license:x11)))
 
 
@@ -2220,7 +2220,7 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
     (synopsis "Default Xorg cursors")
     (description
      "This package provides a default set of cursor themes for the Xorg
-X server: 'handhelds', 'redglass' and 'whiteglass'.")
+X server: @code{handhelds}, @code{redglass} and @code{whiteglass}.")
     (license license:x11)))
 
 
@@ -2927,8 +2927,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "33ee0c3b21ea279e08d0863fcb2e874f0974b00e")
-        (revision "12"))
+  (let ((commit "6afed33b2d673d88674f0c76efe500ae414e8e1b")
+        (revision "13"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -2941,7 +2941,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "1ryjaj52nd2fbrjf1id5fr5vndzvv287rggbj3lzhbwzxv52r0gj"))
+           "1s3fqlqzmql7s15m7qy21vai93n6q9f0ccpv0p353rwfx16mmf35"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
@@ -3876,7 +3876,7 @@ extension to the X11 protocol.  It includes:
      "xkeyboard-config provides a database for X Keyboard (XKB) Extension.
 There are five components that define a complete keyboard mapping:
 symbols, geometry, keycodes, compat, and types; these five components
-can be combined together using the 'rules' component of this database.")
+can be combined together using the @code{rules} component of this database.")
     (license license:x11)))
 
 
@@ -4758,7 +4758,7 @@ protocol and arbitrary X extension protocol.")
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of X font files in a directory")
     (description
-     "MkFontDir creates the 'fonts.dir' files needed by the legacy X
+     "MkFontDir creates the @code{fonts.dir} files needed by the legacy X
 server core font system.  The current implementation is a simple wrapper
 script around the mkfontscale program.")
     (license license:x11)))
@@ -5683,7 +5683,7 @@ The XCB util-wm module provides the following libraries:
     (description
      "The xinit program is used to start the X Window System server and a
 first client program on systems that are not using a display manager such as
-xdm.  This package also provides the 'startx' command, which provides a
+xdm.  This package also provides the @code{startx} command, which provides a
 user-friendly mechanism to start the X server.")
     (license license:x11)))
 
@@ -5973,18 +5973,17 @@ Conventions Manual) and some of the @dfn{EWMH}
 (define-public xcompmgr
   (package
     (name "xcompmgr")
-    (version "1.1.7")
+    (version "1.1.8")
     (source
      (origin
-       ;; there's no current tarball
+       ;; There's no current tarball.
        (method git-fetch)
        (uri (git-reference
              (url "https://anongit.freedesktop.org/git/xorg/app/xcompmgr.git")
-             (commit (string-append name "-" version))))
+             (commit (string-append "xcompmgr-" version))))
        (sha256
-        (base32
-         "04swkrm3gk689wrjc418bd3n25w8r20kg1xfbn5j8d7mx1r5gf16"))
-       (file-name (string-append name "-" version))))
+        (base32 "11i7vyk3pynw8q8aczpy56qncm84y0cmhlvyja3sj8dgy60g03q2"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -6014,7 +6013,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.5")
+    (version "2.5.1")
     (source
      (origin
        (method url-fetch)
@@ -6022,7 +6021,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0q6c7ijgpp2wk6jlh0pzqki1w60i36wyl2zfwkg0gpdh40ypab3x"))))
+         "14l3bs7mlkd2lphjhnbw5dr95pg7x1k61s9wk35dra4li2xjy1lm"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
@@ -6360,7 +6359,7 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.190")
+    (version "1.191")
     (source
      (origin
        (method git-fetch)
@@ -6368,7 +6367,7 @@ output.")
              (url "https://salsa.debian.org/installer-team/console-setup.git")
              (commit version)))
        (sha256
-        (base32 "0qklm9ww1wap2bs7hp31xkfjyhdrirg2mk4hiv7h6fiqckzmdwvd"))
+        (base32 "0wplhjadk530fqxhfnizil32rcvkcl5m2r18yskspcib53r4pmim"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

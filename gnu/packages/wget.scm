@@ -93,6 +93,13 @@ in downloaded documents to relative links.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
+         (add-before 'install 'use-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((wget (assoc-ref inputs "wget")))
+               (substitute* "wgetpaste"
+                 (("(LC_ALL=C) wget" _ prefix)
+                  (format "~a ~a/bin/wget" prefix wget)))
+               #t)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -100,7 +107,9 @@ in downloaded documents to relative links.")
                     (zsh (string-append out "/share/zsh/site-functions")))
                (install-file "wgetpaste" bin)
                (install-file "_wgetpaste" zsh)))))
-       #:tests? #f)) ; no test target
+       #:tests? #f))                    ; no test target
+    (inputs
+     `(("wget" ,wget)))
     (home-page "http://wgetpaste.zlin.dk/")
     (synopsis "Script that automates pasting to a number of pastebin services")
     (description

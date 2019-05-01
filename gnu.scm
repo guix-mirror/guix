@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Joshua S. Grant <jgrant@parenthetical.io>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -45,6 +45,7 @@
         (gnu system file-systems)
         (gnu bootloader)
         (gnu bootloader grub)
+        (gnu system keyboard)
         (gnu system pam)
         (gnu system shadow)                       ; 'user-account'
         (gnu system linux-initrd)

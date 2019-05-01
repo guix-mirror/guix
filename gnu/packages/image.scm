@@ -87,6 +87,7 @@
   (package
    (name "libpng")
    (version "1.6.36")
+   (replacement libpng-1.6.37)
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -111,6 +112,25 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
+
+;; This graft exists to fix CVE-2018-14048, CVE-2018-14550, and CVE-2019-7317.
+(define-public libpng-1.6.37
+  (package
+    (inherit libpng)
+    (version "1.6.37")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
+                                        version "/libpng-" version ".tar.xz")
+                         (string-append
+                          "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                          "/libpng16/libpng-" version ".tar.xz")
+                         (string-append
+                          "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
+                          "/libpng16/libpng-" version ".tar.xz")))
+              (sha256
+               (base32
+                "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))))
 
 ;; libpng-apng should be updated when the APNG patch is released:
 ;; <https://bugs.gnu.org/27556>
@@ -197,29 +217,6 @@ APNG patch provides APNG support to libpng.")
        (sha256
         (base32
          "1izw9ybm27llk8531w6h4jp4rk2rxy2s9vil16nwik5dp0amyqxl"))))))
-
-(define-public r-png
-  (package
-    (name "r-png")
-    (version "0.1-7")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "png" version))
-              (sha256
-               (base32
-                "0g2mcp55lvvpx4kd3mn225mpbxqcq73wy5qx8b4lyf04iybgysg2"))))
-    (build-system r-build-system)
-    (inputs
-     `(("libpng" ,libpng)
-       ("zlib" ,zlib)))
-    (home-page "http://www.rforge.net/png/")
-    (synopsis "Read and write PNG images")
-    (description
-     "This package provides an easy and simple way to read, write and display
-bitmap images stored in the PNG format.  It can read and write both files and
-in-memory raw vectors.")
-    ;; Any of these GPL versions.
-    (license (list license:gpl2 license:gpl3))))
 
 (define-public pngcrush
   (package
@@ -568,7 +565,7 @@ arithmetic ops.")
     (arguments '(#:configure-flags '("--disable-static")))
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
-      "JBIG2 is designed for lossy or lossless encoding of 'bilevel' (1-bit
+      "JBIG2 is designed for lossy or lossless encoding of @code{bilevel} (1-bit
 monochrome) images at moderately high resolution, and in particular scanned
 paper documents.  In this domain it is very efficient, offering compression
 ratios on the order of 100:1.
@@ -584,6 +581,7 @@ work.")
   (package
     (name "openjpeg")
     (version "2.3.0")
+    (replacement openjpeg-2.3.1)
     (source
       (origin
         (method url-fetch)
@@ -616,6 +614,20 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
+
+(define-public openjpeg-2.3.1
+  (package
+    (inherit openjpeg)
+    (version "2.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uclouvain/openjpeg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "openjpeg" version))
+              (sha256
+               (base32
+                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
@@ -1161,13 +1173,13 @@ the programmer.")
     (version "1.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/myint/perceptualdiff/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0zl6xmp971fffg7fzcz2fbgxg5x2w7l8qa65c008i4kbkc9016ps"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/myint/perceptualdiff.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yys55f9i9g3wjjg0j2m0p0k21zwnid8520a8lrr30khm4k5gibp"))))
     (build-system cmake-build-system)
     (inputs `(("freeimage" ,freeimage)))
     (arguments
@@ -1500,15 +1512,14 @@ in-memory raw vectors.")
 (define-public gifsicle
   (package
    (name "gifsicle")
-   (version "1.91")
+   (version "1.92")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.lcdf.org/gifsicle/gifsicle-"
+       (uri (string-append "https://www.lcdf.org/gifsicle/gifsicle-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "00586z1yz86qcblgmf16yly39n4lkjrscl52hvfxqk14m81fckha"))))
+        (base32 "0rffpzxcak19k6cngpxn73khvm3z1gswrqs90ycdzzb53p05ddas"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -1523,9 +1534,9 @@ in-memory raw vectors.")
               (("/bin/rm")
                (which "rm")))
             #t)))))
-   (native-inputs `(("perl" ,perl))) ; Only for tests.
+   (native-inputs `(("perl" ,perl)))    ; only for tests
    (inputs `(("libx11" ,libx11)))
-   (home-page "http://www.lcdf.org/gifsicle/")
+   (home-page "https://www.lcdf.org/gifsicle/")
    (synopsis "Edit GIF images and animations")
    (description "Gifsicle is a command-line GIF image manipulation tool that:
 
