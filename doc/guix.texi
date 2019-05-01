@@ -17,7 +17,7 @@
 @set BASE-URL https://ftp.gnu.org/gnu/guix
 
 @c The official substitute server used by default.
-@set SUBSTITUTE-SERVER ci.guix.info
+@set SUBSTITUTE-SERVER ci.guix.gnu.org
 @set SUBSTITUTE-URL https://@value{SUBSTITUTE-SERVER}
 
 @copying

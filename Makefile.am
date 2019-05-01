@@ -487,6 +487,7 @@ check-system: $(GOBJECTS)
 dist_pkgdata_DATA =				\
   etc/substitutes/hydra.gnu.org.pub		\
   etc/substitutes/berlin.guixsd.org.pub		\
+  etc/substitutes/ci.guix.gnu.org.pub		\
   etc/substitutes/ci.guix.info.pub
 
 # Bash completion file.
