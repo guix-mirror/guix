@@ -8012,14 +8012,14 @@ back to file after modifications.")
 (define-public r-fs
   (package
     (name "r-fs")
-    (version "1.2.7")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fs" version))
        (sha256
         (base32
-         "03aq2ill03ladsa4438nrz213ks2mqhxsrb9fjsp62bhk36v8k1a"))))
+         "1p6y0ar5kidwv0f5vzhj7yaw5802rpqwdma2ij3vrvjf9f7l9z1s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
