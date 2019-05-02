@@ -555,14 +555,14 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20190317")
+   (version "20190413")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
                   version "/fontforge-" version ".tar.gz"))
-            (sha256 (base32
-                     "1ddqbpc32cgbccdnv0lfw0qhj59hcqzb7616ph5lkvm91pnas4dp"))))
+            (sha256
+             (base32 "05v640mnk4fy4jzmxb6c4n4qm800x7hy4sl5gcdgzmm3md2s0qk7"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
