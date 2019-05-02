@@ -1050,8 +1050,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 
 (define-public rust
   (let ((base-rust
-         (rust-bootstrapped-package rust-1.33 "1.34.0"
-           "0n8z1wngkxab1rvixqg6w8b727hzpnm9wp9h8iy3mpbrzp7mmj3s")))
+         (rust-bootstrapped-package rust-1.33 "1.34.1"
+           "19s09k7y5j6g3y4d2rk6kg9pvq6ml94c49w6b72dmq8p9lk8bixh")))
     (package
       (inherit base-rust)
       (source
