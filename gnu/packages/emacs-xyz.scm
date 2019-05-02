@@ -970,14 +970,14 @@ regexp-like arguments to @code{skip-chars-forward} and
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.1")
+    (version "5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "149ddczyx6x10zn4mn8g0rll1rwf4yciv8x6j0qdnlbwszblx2x6"))
+                "0cvpfdkagkpi8g02w8f7wzrpdk2ihas0mn5m9fr882xjdfshl21z"))
               (modules '((guix build utils)))
               (snippet
                '(begin
