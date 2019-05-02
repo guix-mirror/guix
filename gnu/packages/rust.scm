@@ -597,6 +597,24 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("prefix = \"[^\"]*\"")
                     (string-append "prefix = \"" (assoc-ref outputs "cargo") "\"")))
                  (invoke "./x.py" "install" "cargo")))
+             (add-after 'install 'delete-install-logs
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (define (delete-manifest-file out-path file)
+                   (delete-file (string-append out-path "/lib/rustlib/" file)))
+
+                 (let ((out (assoc-ref outputs "out"))
+                       (cargo-out (assoc-ref outputs "cargo")))
+                   (for-each
+                     (lambda (file) (delete-manifest-file out file))
+                     '("install.log"
+                       "manifest-rust-docs"
+                       "manifest-rust-std-x86_64-unknown-linux-gnu"
+                       "manifest-rustc"))
+                   (for-each
+                     (lambda (file) (delete-manifest-file cargo-out file))
+                     '("install.log"
+                       "manifest-cargo"))
+                   #t)))
              (add-after 'install 'wrap-rustc
                (lambda* (#:key inputs outputs #:allow-other-keys)
                  (let ((out (assoc-ref outputs "out"))
