@@ -728,7 +728,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.24.7")
+   (version "3.24.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -736,18 +736,9 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "080m925dyhiidlhsxqzx040l4iha2gg38pzbfpnsnjyzl92124jj"))
+              "16f71bbkhwhndcsrpyhjia3b77cb5ksf5c45lyfgws4pkgg64sb6"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
-                                     "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                ;; Version 3.24.2 was released with a typo that broke the build.
-                ;; See upstream commit 2905fc861acda3d134a198e56ef2f6c962ad3061
-                ;; at <https://gitlab.gnome.org/GNOME/gtk/tree/gtk-3-24>
-                (substitute* "docs/tools/shooter.c"
-                  (("gdk_screen_get_dfeault") "gdk_screen_get_default"))
-                #t))))
+                                     "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
