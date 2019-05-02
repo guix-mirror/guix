@@ -15878,13 +15878,13 @@ failed.
 Defaults to @samp{#f}.
 @end deftypevr
 
-@deftypevr {@code{dovecot-configuration} parameter} boolean auth-verbose-passwords?
+@deftypevr {@code{dovecot-configuration} parameter} string auth-verbose-passwords
 In case of password mismatches, log the attempted password.  Valid
 values are no, plain and sha1.  sha1 can be useful for detecting brute
 force password attempts vs.  user simply trying the same password over
 and over again.  You can also truncate the value to n chars by appending
 ":n" (e.g.@: sha1:6).
-Defaults to @samp{#f}.
+Defaults to @samp{"no"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean auth-debug?
