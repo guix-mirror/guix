@@ -54,7 +54,7 @@ ERR=$'[ \033[31;1mFAIL\033[0m ] '
 INF="[ INFO ] "
 
 DEBUG=0
-GNU_URL="https://alpha.gnu.org/gnu/guix/"
+GNU_URL="https://ftp.gnu.org/gnu/guix/"
 OPENPGP_SIGNING_KEY_ID="3CE464558A84FDC69DB40CFB090B11993D9AEBB5"
 
 # This script needs to know where root's home directory is.  However, we

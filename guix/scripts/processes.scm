@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,9 +103,16 @@ processes."
   (let ((directory (string-append "/proc/"
                                   (number->string (process-id process))
                                   "/fd")))
-    (map (lambda (fd)
-           (readlink (string-append directory "/" fd)))
-         (or (scandir directory string->number) '()))))
+    (filter-map (lambda (fd)
+                  ;; There's a TOCTTOU race here, hence the 'catch'.
+                  (catch 'system-error
+                    (lambda ()
+                      (readlink (string-append directory "/" fd)))
+                    (lambda args
+                      (if (= ENOENT (system-error-errno args))
+                          #f
+                          (apply throw args)))))
+                (or (scandir directory string->number) '()))))
 
 ;; Daemon session.
 (define-record-type <daemon-session>
@@ -151,15 +158,22 @@ active sessions, and the master 'guix-daemon' process."
                      (= pid (process-parent-id process))))
               processes))
 
-    (values (map (lambda (process)
-                   (match (process-command process)
-                     ((argv0 (= string->number client) _ ...)
-                      (let ((files (process-open-files process)))
-                        (daemon-session process
-                                        (lookup-process client)
-                                        (lookup-children (process-id process))
-                                        (filter lock-file? files))))))
-                 children)
+    (define (child-process->session process)
+      (match (process-command process)
+        ((argv0 (= string->number client) _ ...)
+         (let ((files  (process-open-files process))
+               (client (lookup-process client)))
+           ;; After a client has died, there's a window during which its
+           ;; corresponding 'guix-daemon' process is still alive, in which
+           ;; case 'lookup-process' returns #f.  In that case ignore the
+           ;; session.
+           (and client
+                (daemon-session process client
+                                (lookup-children
+                                 (process-id process))
+                                (filter lock-file? files)))))))
+
+    (values (filter-map child-process->session children)
             master)))
 
 (define (daemon-session->recutils session port)

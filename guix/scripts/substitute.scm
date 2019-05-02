@@ -1061,7 +1061,7 @@ found."
     (#f
      ;; This can only happen when this script is not invoked by the
      ;; daemon.
-     '("http://ci.guix.info"))))
+     '("http://ci.guix.gnu.org"))))
 
 (define substitute-urls
   ;; List of substitute URLs.

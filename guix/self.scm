@@ -588,6 +588,8 @@ load path."
                   ("share/guix/berlin.guixsd.org.pub"
                    ,(file-append* source
                                   "/etc/substitutes/berlin.guixsd.org.pub"))
+                  ("share/guix/ci.guix.gnu.org.pub"  ;alias
+                   ,(file-append* source "/etc/substitutes/berlin.guixsd.org.pub"))
                   ("share/guix/ci.guix.info.pub"  ;alias
                    ,(file-append* source "/etc/substitutes/berlin.guixsd.org.pub")))))
 

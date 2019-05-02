@@ -84,6 +84,7 @@
             udisks-service
             udisks-service-type
 
+            colord-service-type
             colord-service
 
             geoclue-application
@@ -93,6 +94,9 @@
             geoclue-service
             geoclue-service-type
 
+            bluetooth-service-type
+            bluetooth-configuration
+            bluetooth-configuration?
             bluetooth-service
 
             elogind-configuration
@@ -452,7 +456,9 @@ site} for more information."
                                `(("bluetooth"
                                   ,(bluetooth-directory config)))))
           (service-extension shepherd-root-service-type
-                             (compose list bluetooth-shepherd-service))))))
+                             (compose list bluetooth-shepherd-service))))
+   (description "Run the @command{bluetoothd} daemon, which manages all the
+Bluetooth devices and provides a number of D-Bus interfaces.")))
 
 (define* (bluetooth-service #:key (bluez bluez) (auto-enable? #f))
   "Return a service that runs the @command{bluetoothd} daemon, which manages
@@ -506,7 +512,11 @@ Users need to be in the @code{lp} group to access the D-Bus service.
                        (service-extension udev-service-type list)
 
                        ;; It provides polkit "actions".
-                       (service-extension polkit-service-type list)))))
+                       (service-extension polkit-service-type list)))
+                (description
+                 "Run @command{colord}, a system service with a D-Bus
+interface to manage the color profiles of input and output devices such as
+screens and scanners.")))
 
 (define* (colord-service #:key (colord colord))
   "Return a service that runs @command{colord}, a system service with a D-Bus

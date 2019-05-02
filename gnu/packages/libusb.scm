@@ -314,6 +314,11 @@ wrapper for accessing libusb-1.0.")
                (base32
                 "00pnh9zf3iwdji2faccns7vagbmbrwbj9a8zp9s53a6rqaa9czis"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Tests fail randomly when run in parallel because several of them write
+     ;; and read to/from the same file--e.g., "4.plist" is accessed by
+     ;; 'large.test' and 'largecmp.test'.
+     '(#:parallel-tests? #f))
     (inputs
      `(("python" ,python)))
     (native-inputs
