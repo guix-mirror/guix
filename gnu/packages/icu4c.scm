@@ -23,6 +23,7 @@
 (define-module (gnu packages icu4c)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -32,7 +33,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "63.1")
+   (version "64.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -42,8 +43,10 @@
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
             (sha256
-             (base32 "17fbk0lm2clsxbmjzvyp245ayx0n4chji3ky1f3fbz2ljjv91i05"))))
+             (base32 "0v0xsf14xwlj125y9fd8lrhsaych4d8liv8gr746zng6g225szb2"))))
    (build-system gnu-build-system)
+   (native-inputs
+    `(("python" ,python)))
    (inputs
     `(("perl" ,perl)))
    (arguments
