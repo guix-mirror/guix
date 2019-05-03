@@ -11319,3 +11319,40 @@ technology that allows you to embed data about a file, known as metadata,
 into the file itself.  The XMP Toolkit for Java is based on the C++ XMPCore
 library and the API is similar.")
     (license license:bsd-3)))
+
+(define-public java-metadata-extractor
+  (package
+    (name "java-metadata-extractor")
+    (version "2.11.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/drewnoakes/metadata-extractor")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06yrq0swrl1r40yjbk5kqzjxr04jlkq9lfi711jvfgjf5kp2qinj"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "metadata-extractor.jar"
+       #:source-dir "Source"
+       #:test-dir "Tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test-dir
+           (lambda _
+             (substitute* "build.xml"
+               (("/java\">") "\">"))
+             #t)))))
+    (propagated-inputs
+     `(("java-xmp" ,java-xmp)))
+    (native-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))
+    (home-page "https://github.com/drewnoakes/metadata-extractor")
+    (synopsis "Extract metadata from image and video files")
+    (description "Metadata-extractor is a straightforward Java library for
+reading metadata from image files.  It is able to read metadata in Exif,
+IPTC, XMP, ICC and more formats.")
+    (license license:asl2.0)))
