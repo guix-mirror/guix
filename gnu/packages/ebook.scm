@@ -42,6 +42,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
@@ -113,6 +114,7 @@
        ("fontconfig" ,fontconfig)
        ("glib" ,glib)
        ("icu4c" ,icu4c)
+       ("js-mathjax" ,js-mathjax)
        ("libmtp" ,libmtp)
        ("libpng" ,libpng)
        ("libusb" ,libusb)
@@ -181,6 +183,10 @@
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
               #t)))
+         (add-after 'build 'build-extra
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "python2" "setup.py" "mathjax""--system-mathjax" "--path-to-mathjax"
+                     (string-append (assoc-ref inputs "js-mathjax") "/share/javascript/mathjax"))))
          (add-after 'install 'install-font-liberation
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (for-each (lambda (file)
