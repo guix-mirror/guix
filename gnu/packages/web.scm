@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
@@ -6528,6 +6528,36 @@ container.")))
 provides a very convenient API for extracting and manipulating data, using the
 best of DOM, CSS, and jQuery-like methods.")
     (license license:expat)))
+
+(define-public java-signpost-core
+  (package
+    (name "java-signpost-core")
+    (version "1.2.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mttkay/signpost")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1l04yj2znch3hpyw90c4g4jan453w7d88l84bgl0c72i2kbb8z7h"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "signpost-core.jar"
+       #:source-dir "signpost-core/src/main/java"
+       #:test-dir "signpost-core/src/test"
+       ;; Tests all fail with InstantiationException from mockito
+       #:tests? #f))
+    (propagated-inputs
+     `(("java-commons-codec" ,java-commons-codec)))
+    (home-page "https://github.com/mttkay/signpost")
+    (synopsis "Lightweight client-side OAuth library for Java")
+    (description "Signpost is the easy and intuitive solution for signing
+HTTP messages on the Java platform in conformance with the OAuth Core 1.0a
+standard.  Signpost follows a modular and flexible design, allowing you to
+combine it with different HTTP messaging layers.")
+    (license license:asl2.0)))
 
 (define-public tidyp
   (package
