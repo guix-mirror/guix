@@ -2364,6 +2364,38 @@ distribution and helper classes for building other parts of the
 distribution.")
     (license license:gpl2))) ;gpl2 only, with classpath exception
 
+(define-public java-openjfx-base
+  (package (inherit java-openjfx-build)
+    (name "java-openjfx-base")
+    (arguments
+     `(#:jar-name "java-openjfx-base.jar"
+       #:source-dir "modules/base/src/main/java:modules/base/src/main/java8:modules/base/src/main/version-info"
+       #:test-dir "modules/base/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-empty-file
+           (lambda _
+             (with-directory-excursion "modules/base/src/test/java"
+               ;; These files are completely commented, but junit expects them to
+               ;; contain a class, so tests fail.
+               (delete-file
+                 "com/sun/javafx/property/adapter/PropertyDescriptorTest.java")
+               (delete-file
+                 "com/sun/javafx/property/adapter/ReadOnlyPropertyDescriptorTest.java")
+               (delete-file "javafx/beans/property/PropertiesTest.java")
+               (delete-file
+                 "javafx/beans/property/adapter/ReadOnlyJavaBeanPropertyBuilder_General_Test.java")
+               ;; This one fails
+               (delete-file "com/sun/javafx/runtime/VersionInfoTest.java"))
+             #t)))))
+    (propagated-inputs
+     `(("java-openjfx-build" ,java-openjfx-build)))
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains base classes for the OpenJFX
+distribution.")))
+
 (define-public javacc-4
   (package
     (name "javacc")
