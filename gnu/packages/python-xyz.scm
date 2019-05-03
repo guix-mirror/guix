@@ -5559,6 +5559,39 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
               (strip-python2-variant python-beautifulsoup4)))
     (arguments `(#:python ,python-2))))
 
+(define-public python-soupsieve
+  (package
+    (name "python-soupsieve")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "soupsieve" version))
+       (sha256
+        (base32
+         "1jnzkiwmjl6yvqckc9mf689g87b6yz07sv868hap2aa5arggy3mj"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    ;;XXX: 2 tests fail currently despite claming they were to be
+    ;;skipped. Also, beautifulsoup4 may depend on this in the future, so we
+    ;;don't want to create a circular dependency.
+    (home-page "https://github.com/facelessuser/soupsieve")
+    (synopsis "CSS selector library")
+    (description
+     "Soup Sieve is a CSS selector library designed to be used with Beautiful
+Soup 4.  It aims to provide selecting, matching, and filtering using modern
+CSS selectors.  Soup Sieve currently provides selectors from the CSS level 1
+specifications up through the latest CSS level 4 drafts and beyond (though
+some are not yet implemented).")
+    (license license:expat)))
+
+(define-public python2-soupsieve
+  (let ((base (package-with-python2 python-soupsieve)))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-backports-functools-lru-cache" ,python2-backports-functools-lru-cache))))))
+
 (define-public python-netifaces
   (package
     (name "python-netifaces")
