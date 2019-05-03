@@ -58,9 +58,6 @@
               (base32
                "0vk9j3ybz5dwwbmqrdj1bjcsxy76pc8frmfvflkdzwfkvkqcp8mm"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags (list "--enable-gcc-hardening"
-                               "--enable-linker-hardening")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python-2)))           ; for tests
