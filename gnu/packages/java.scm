@@ -11275,3 +11275,47 @@ and allows to build a Java object model for JSON text using API classes
     (description "JSON Processing (JSON-P) is a Java API to process (e.g.
 parse, generate, transform and query) JSON messages.  This package contains
 a reference implementation of that API.")))
+
+(define-public java-xmp
+  (package
+    (name "java-xmp")
+    (version "5.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.macromedia.com/pub/developer"
+                                  "/xmp/sdk/XMPCoreJava-" version ".zip"))
+              (sha256
+               (base32
+                "14nai2mmsg7l5ya2y5mx4w4lr1az3sk2fjz6hiy4zdrsavgvl1g7"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:build-target "build"
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "XMPCore")
+             #t))
+         (add-before 'build 'fix-timestamp
+           (lambda _
+             (substitute* "build.xml"
+               (("\\$\\{BuildDate\\}") "1970 Jan 01 00:00:00-GMT"))
+             #t))
+         (replace 'install
+           (install-jars "."))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively
+               "docs"
+               (string-append (assoc-ref outputs "out") "/share/doc/java-xmp"))
+             #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://www.adobe.com/devnet/xmp.html")
+    (synopsis "Extensible Metadat Platform (XMP) support in Java")
+    (description "Adobe's Extensible Metadata Platform (XMP) is a labeling
+technology that allows you to embed data about a file, known as metadata,
+into the file itself.  The XMP Toolkit for Java is based on the C++ XMPCore
+library and the API is similar.")
+    (license license:bsd-3)))
