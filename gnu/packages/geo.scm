@@ -6,7 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
-;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
@@ -27,6 +27,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages geo)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -1037,3 +1038,38 @@ persisted.
 @end itemize
 ")
     (license license:expat)))
+
+(define-public java-jmapviewer
+  (package
+    (name "java-jmapviewer")
+    (version "2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://svn.openstreetmap.org/applications/"
+                                  "viewer/jmapviewer/releases/" version
+                                  "/JMapViewer-" version "-Source.zip"))
+              (sha256
+               (base32
+                "08hbqsbs859v4m5d90560fdifavd1apnpz9v9iry1v31dsvy5707"))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:build-target "pack"
+       #:tests? #f; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'clean
+           (lambda* _
+             (invoke "ant" "clean")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((dir (string-append (assoc-ref outputs "out") "/share/java/")))
+               (mkdir-p dir)
+               (copy-file "JMapViewer.jar" (string-append dir "JMapViewer.jar"))))))))
+    (home-page "https://wiki.openstreetmap.org/wiki/JMapViewer")
+    (synopsis "OSM map integration in Java")
+    (description "JMapViewer is a Java component which allows to easily
+integrate an OSM map view into your Java application.  It is maintained as
+an independent project by the JOSM team.")
+    (license license:gpl2)))
