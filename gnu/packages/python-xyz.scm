@@ -13061,13 +13061,15 @@ window memory map manager.")
 (define-public python-regex
   (package
     (name "python-regex")
-    (version "2017.06.07")
+    (version "2019.04.14")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "regex" version))
               (sha256
                (base32
-                "06r6b7yigikbj3a72whl85r2b64pj1r0ypmw9yalmkm0wnxq8mz4"))))
+                "1a6hhfs6l6snr1z654ay6wzbmwdkmv282fzfkd5hk2d1n73y8v6m"))))
+    ;; TODO: Fix and enable regex_test.py tests that complain about the
+    ;; test.support module not existing.
     (build-system python-build-system)
     (home-page "https://bitbucket.org/mrabarnett/mrab-regex")
     (synopsis "Alternative regular expression module")
