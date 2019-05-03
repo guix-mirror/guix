@@ -132,6 +132,7 @@
        ("python2-dnspython" ,python2-dnspython)
        ("python2-dukpy" ,python2-dukpy)
        ("python2-feedparser" ,python2-feedparser)
+       ("python2-html2text" ,python2-html2text)
        ("python2-html5-parser" ,python2-html5-parser)
        ("python2-html5lib" ,python2-html5lib)
        ("python2-lxml" ,python2-lxml)
