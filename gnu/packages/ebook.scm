@@ -186,7 +186,8 @@
          (add-after 'build 'build-extra
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "python2" "setup.py" "mathjax""--system-mathjax" "--path-to-mathjax"
-                     (string-append (assoc-ref inputs "js-mathjax") "/share/javascript/mathjax"))))
+                     (string-append (assoc-ref inputs "js-mathjax") "/share/javascript/mathjax"))
+             (invoke "python2" "setup.py" "rapydscript")))
          (add-after 'install 'install-font-liberation
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (for-each (lambda (file)
