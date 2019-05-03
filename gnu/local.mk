@@ -690,6 +690,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/boost-fix-icu-build.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
+  %D%/packages/patches/calibre-remove-test-bs4.patch		\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\
   %D%/packages/patches/casync-renameat2-declaration.patch	\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
