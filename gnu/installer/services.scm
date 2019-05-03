@@ -130,11 +130,13 @@
     (if (null? snippets)
         `(,@(if (null? packages)
                 '()
-                `((packages (list ,@packages))))
+                `((packages (append (list ,@packages)
+                                    %base-packages))))
           (services ,base))
         `(,@(if (null? packages)
                 '()
-                `((packages (list ,@packages))))
+                `((packages (append (list ,@packages)
+                                    %base-packages))))
           (services (append (list ,@snippets
 
                                   ,@(if desktop?
