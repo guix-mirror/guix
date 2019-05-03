@@ -11260,3 +11260,18 @@ and allows to build a Java object model for JSON text using API classes
     ;; either gpl2 only with classpath exception, or epl2.0.
     (license (list license:gpl2
                    license:epl2.0))))
+
+(define-public java-jsonp-impl
+  (package
+    (inherit java-jsonp-api)
+    (name "java-jsonp-impl")
+    (arguments
+     `(#:jar-name "jsonp-impl.jar"
+       #:tests? #f
+       #:source-dir "impl/src/main/java"
+       #:test-dir "impl/src/test"))
+    (propagated-inputs
+     `(("java-jsonp-api" ,java-jsonp-api)))
+    (description "JSON Processing (JSON-P) is a Java API to process (e.g.
+parse, generate, transform and query) JSON messages.  This package contains
+a reference implementation of that API.")))
