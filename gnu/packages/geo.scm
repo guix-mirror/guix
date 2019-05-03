@@ -38,6 +38,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -56,6 +57,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -1073,3 +1075,141 @@ persisted.
 integrate an OSM map view into your Java application.  It is maintained as
 an independent project by the JOSM team.")
     (license license:gpl2)))
+
+(define-public josm
+  (package
+    (name "josm")
+    (version "15492")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                     (url "https://josm.openstreetmap.de/svn/trunk")
+                     (revision (string->number version))
+                     (recursive? #f)))
+              (sha256
+               (base32
+                "12xkwcv77as30a61w1c8a0i2b0kiiks71d487gbdfv7azlj4vqia"))
+              (file-name (string-append name "-" version "-checkout"))
+              (modules '((guix build utils)))
+            (snippet
+             '(begin
+		(for-each delete-file (find-files "." ".*.jar$"))
+                #t))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("javacc" ,javacc)))
+    (inputs
+     `(("java-commons-jcs" ,java-commons-jcs)
+       ("java-commons-compress" ,java-commons-compress)
+       ("java-jmapviewer" ,java-jmapviewer)
+       ("java-jsonp-api" ,java-jsonp-api)
+       ("java-jsonp-impl" ,java-jsonp-impl); runtime dependency
+       ("java-metadata-extractor" ,java-metadata-extractor)
+       ("java-openjfx-media" ,java-openjfx-media)
+       ("java-signpost-core" ,java-signpost-core)
+       ("java-svg-salamander" ,java-svg-salamander)))
+    (arguments
+     `(#:tests? #f
+       #:jar-name "josm.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'rm-build.xml
+           (lambda* _
+             (delete-file "build.xml")
+             #t))
+         (add-before 'build 'fix-revision
+           (lambda* _
+             (with-output-to-file "REVISION.XML"
+               (lambda _
+                 (display
+                   (string-append "<info><entry><commit revision=\"" ,version "\">"
+                                  "<date>1970-01-01 00:00:00 +0000</date>"
+                                  "</commit></entry></info>"))))
+             #t))
+         (add-before 'build 'fix-classpath
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CLASSPATH"
+                     (string-join
+                       (filter
+                         (lambda (s)
+                           (let ((source (assoc-ref inputs "source")))
+                             (not (equal? (substring s 0 (string-length source)) source))))
+                         (string-split (getenv "CLASSPATH") #\:))
+                       ":"))
+             #t))
+         (add-before 'build 'generate-parser
+           (lambda* _
+             (let* ((dir "src/org/openstreetmap/josm/gui/mappaint/mapcss")
+                    (out (string-append dir "/parsergen"))
+                    (file (string-append dir "/MapCSSParser.jj")))
+               (mkdir-p "src/org/openstreetmap/josm/gui/mappaint/mapcss/parsergen")
+               (invoke "javacc" "-DEBUG_PARSER=false"
+                       "-DEBUG_TOKEN_MANAGER=false" "-JDK_VERSION=1.8"
+                       "-GRAMMAR_ENCODING=UTF-8"
+                       (string-append "-OUTPUT_DIRECTORY=" out)
+                       file))
+             #t))
+         (add-after 'build 'generate-epsg
+           (lambda _
+             (system* "javac" "scripts/BuildProjectionDefinitions.java"
+                      "-cp" "build/classes")
+             (mkdir-p "data/projection")
+             (with-output-to-file "data/projection/custom-epsg"
+               (lambda _ (display "")))
+             (invoke "java" "-cp" "build/classes:scripts:."
+                     "BuildProjectionDefinitions" ".")
+             #t))
+         (add-after 'generate-epsg 'copy-data
+           (lambda _
+             (mkdir-p "build/classes")
+             (rename-file "data" "build/classes/data")
+             #t))
+         (add-before 'install 'regenerate-jar
+           (lambda _
+             ;; We need to regenerate the jar file to add data.
+             (delete-file "build/jar/josm.jar")
+             (invoke "jar" "-cf" "build/jar/josm.jar" "-C"
+                     "build/classes" ".")
+             #t))
+         (add-before 'build 'copy-styles
+           (lambda _
+             (mkdir-p "build/classes")
+             (rename-file "styles" "build/classes/styles")
+             #t))
+         (add-before 'build 'copy-images
+           (lambda _
+             (mkdir-p "build/classes")
+             (rename-file "images" "build/classes/images")
+             #t))
+         (add-before 'build 'copy-revision
+           (lambda _
+             (mkdir-p "build/classes")
+             (with-output-to-file "build/classes/REVISION"
+               (lambda _
+                 (display
+                   (string-append "Revision: " ,version "\n"
+                                  "Is-Local-Build: true\n"
+                                  "Build-Date: 1970-01-01 00:00:00 +0000\n"))))
+             #t))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "/josm")
+                 (lambda _
+                   (display
+                     (string-append "#!/bin/sh\n"
+                                    (assoc-ref inputs "jdk") "/bin/java"
+                                    " -cp " out "/share/java/josm.jar:"
+                                    (getenv "CLASSPATH")
+                                    " org.openstreetmap.josm.gui.MainApplication"))))
+               (chmod (string-append bin "/josm") #o755))
+             #t)))))
+    (home-page "https://josm.openstreetmap.de")
+    (synopsis "OSM editor")
+    (description "JOSM is an extensible editor for OpenStreetMap (OSM).  It
+supports loading GPX tracks, background imagery and OSM data from local
+sources as well as from online sources and allows to edit the OSM data (nodes,
+ways, and relations) and their metadata tags.")
+    (license license:gpl2+)))
