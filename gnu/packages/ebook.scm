@@ -117,7 +117,6 @@
        ("libmtp" ,libmtp)
        ("libpng" ,libpng)
        ("libusb" ,libusb)
-       ("libxrender" ,libxrender)
        ("openssl" ,openssl)
        ("optipng" ,optipng)
        ("podofo" ,podofo)
