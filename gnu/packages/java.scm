@@ -5109,6 +5109,38 @@ expressions to graphs of objects of all kinds: JavaBeans, Maps, Servlet
 contexts, DOM etc, including mixtures thereof.")
     (license license:asl2.0)))
 
+(define-public java-commons-pool
+  (package
+    (name "java-commons-pool")
+    (version "2.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/pool/source/"
+                                  "commons-pool2-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1fi1hgqmq01bs6azbj3sfswxzadp2r8sjjfiq6ryilz1m50kvrv6"))))
+    (arguments
+     `(#:jar-name "common-pool.jar"
+       #:source-dir "src/main/java"
+       #:test-exclude
+       (list "**/PerformanceTest.java")))
+    (build-system ant-build-system)
+    (inputs
+     `(("java-cglib" ,java-cglib)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-asm" ,java-asm)
+       ("java-objenesis" ,java-objenesis)))
+    (home-page "https://commons.apache.org/proper/commons-pool/")
+    (synopsis "Object-pooling API in Java")
+    (description "The commons-pool package provides an object-pooling API
+and a number of object pool implementations.  This package defines a
+handful of pooling interfaces and some base classes that may be useful when
+creating new pool implementations.")
+    (license license:asl2.0)))
+
 (define-public java-jsr250
   (package
     (name "java-jsr250")
