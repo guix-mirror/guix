@@ -756,35 +756,33 @@ Emacs.")
 (define-public ocaml-menhir
   (package
     (name "ocaml-menhir")
-    (version "20161115")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://gallium.inria.fr/~fpottier/menhir/"
-                    "menhir-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1j8nmcj2gq6hyyi16z27amiahplgrnk4ppchpm0v4qy80kwkf47k"))))
-    (build-system gnu-build-system)
+    (version "20181113")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.inria.fr/fpottier/menhir.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1iqdf64ayq4s3d9jkwhs3s8wqc2s48b292hp0kcjsskfhcvwg0kr"))))
+    (build-system ocaml-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)))
     (arguments
-     `(#:parallel-build? #f ; Parallel build causes failure
+     `(#:make-flags `("USE_OCAMLFIND=true"
+                      ,(string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f ; No check target
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PREFIX" out))
-             #t)))))
-    (home-page "http://gallium.inria.fr/~fpottier/menhir")
+         (delete 'configure))))
+    (home-page "http://gallium.inria.fr/~fpottier/menhir/")
     (synopsis "Parser generator")
     (description "Menhir is a parser generator.  It turns high-level grammar
 specifications, decorated with semantic actions expressed in the OCaml
-programming language into parsers, again expressed in OCaml. It is based on
+programming language into parsers, again expressed in OCaml.  It is based on
 Knuth’s LR(1) parser construction technique.")
     ;; The file src/standard.mly and all files listed in src/mnehirLib.mlpack
     ;; that have an *.ml or *.mli extension are GPL licensed. All other files
