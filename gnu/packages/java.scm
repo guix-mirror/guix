@@ -2413,6 +2413,21 @@ modern, efficient, and fully featured toolkit for developing rich client
 applications.  This package contains graphics-related classes for the
 OpenJFX distribution.")))
 
+(define-public java-openjfx-media
+  (package (inherit java-openjfx-build)
+    (name "java-openjfx-media")
+    (propagated-inputs
+     `(("java-openjxf-graphics" ,java-openjfx-graphics)))
+    (arguments
+     `(#:jar-name "java-openjfx-media.jar"
+       #:source-dir "modules/media/src/main/java"
+       #:tests? #f)); no tests
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains media-related classes for the
+OpenJFX distribution.")))
+
 (define-public javacc-4
   (package
     (name "javacc")
