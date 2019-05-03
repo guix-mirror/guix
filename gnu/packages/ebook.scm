@@ -147,9 +147,6 @@
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
        ("python2-regex" ,python2-regex)
-       ;; python2-unrardll is needed for decompressing RAR files.
-       ;; A program called 'pdf2html' is needed for reading PDF books
-       ;; in the web interface.
        ("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2
