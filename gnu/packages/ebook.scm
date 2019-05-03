@@ -78,7 +78,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.35.0")
+    (version "3.41.3")
     (source
       (origin
         (method url-fetch)
@@ -87,20 +87,16 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1gd15wjz4fhcra6d44xiy3hwbyk0miwb66a1pq5yldyy0hlb271z"))
+          "167hhv4wimkjnyfgqkyqmaiixhicbxacy6190gps98jyj4csi8ra"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
         (snippet
           '(begin
-            (delete-file-recursively "src/calibre/ebooks/markdown")
             (delete-file "src/odf/thumbnail.py")
             (delete-file-recursively "resources/fonts/liberation")
-            (substitute* (find-files "." "\\.py")
-              (("calibre\\.ebooks\\.markdown") "markdown"))
             #t))
-        (patches (search-patches "calibre-use-packaged-feedparser.patch"
-                                 "calibre-no-updates-dialog.patch"))))
+        (patches (search-patches "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -129,7 +125,7 @@
        ("python2-apsw" ,python2-apsw)
        ("python2-chardet" ,python2-chardet)
        ("python2-cssselect" ,python2-cssselect)
-       ("python2-cssutils" ,python2-cssutils)
+       ("python2-css-parser" ,python2-css-parser)
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
        ("python2-dnspython" ,python2-dnspython)
