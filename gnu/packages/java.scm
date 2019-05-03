@@ -2320,6 +2320,50 @@ new Date();"))
      `(("java-junit" ,java-junit)
        ,@(package-inputs ant/java8)))))
 
+(define-public java-openjfx-build
+  (package
+    (name "java-openjfx-build")
+    ;; This is a java-8 version
+    (version "8.202")
+    (source (origin
+              (method hg-fetch)
+              (uri (hg-reference
+                     (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
+                     (changeset (string-append
+                                  (string-join (string-split version #\.) "u")
+                                  "-ga"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-openjfx.jar"
+       #:source-dir "buildSrc/src/main/java"
+       #:test-dir "buildSrc/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-jsl-parser
+           (lambda _
+             (invoke "antlr3" "-o"
+                     "buildSrc/src/main/java/com/sun/scenario/effect/compiler"
+                     "buildSrc/src/main/antlr/JSL.g"))))))
+    (inputs
+     `(("antlr3" ,antlr3)
+       ("java-stringtemplate" ,java-stringtemplate)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "https://openjfx.io")
+    (synopsis "Graphical application toolkit in Java")
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains base classes for the OpenJFX
+distribution and helper classes for building other parts of the
+distribution.")
+    (license license:gpl2))) ;gpl2 only, with classpath exception
+
 (define-public javacc-4
   (package
     (name "javacc")
