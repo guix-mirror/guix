@@ -299,6 +299,28 @@ other HTTP libraries.")
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
 
+(define-public python-html2text
+  (package
+    (name "python-html2text")
+    (version "2018.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "html2text" version))
+       (sha256
+        (base32
+         "1m6d7ciq30adc3d1n8g6r46072n7q8kdy039pqvnnmp763xi8xb2"))))
+    (build-system python-build-system)
+    (home-page "https://pypi.org/project/html2text/")
+    (synopsis "Convert HTML into plain text")
+    (description "html2text takes HTML and converts it into plain ASCII text
+which is also valid markdown.  html2text was originally written by Aaron
+Swartz.")
+    (license license:gpl3+)))
+
+(define-public python2-html2text
+  (package-with-python2 python-html2text))
+
 (define-public python-mechanicalsoup
   (package
     (name "python-mechanicalsoup")
