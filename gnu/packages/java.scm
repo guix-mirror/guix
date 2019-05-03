@@ -2394,7 +2394,27 @@ debugging, etc.")
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (replace 'install (install-jars "target")))))
+         (replace 'install (install-jars "target"))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share/java"))
+                    (bin (string-append out "/bin"))
+                    (javacc (string-append bin "/javacc")))
+               (mkdir-p bin)
+               (with-output-to-file javacc
+                 (lambda _
+                   (display
+                     (string-append "#!/bin/sh\n"
+                                    (assoc-ref inputs "jdk") "/bin/java"
+                                    " -cp " dir "/javacc.jar" " `basename $0`" " $*"))))
+               (chmod javacc #o755)
+               ;; symlink to different names to affect the first argument and
+               ;; change the behavior of the jar file.
+               (symlink javacc (string-append bin "/jjdoc"))
+               (symlink javacc (string-append bin "/jjtree"))
+               #t))))))
+
     (native-inputs
      `(("javacc" ,javacc-4)))))
 
