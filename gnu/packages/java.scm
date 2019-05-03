@@ -5172,6 +5172,52 @@ very large.  This package provides a way to share a poole of connections to
 reduce that load.")
     (license license:asl2.0)))
 
+(define-public java-commons-jcs
+  (package
+    (name "java-commons-jcs")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/jcs/source/"
+                                  "commons-jcs-dist-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0syhq2npjbrl0azqfjm0gvash1qd5qjy4qmysxcrqjsk0nf9fa1q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-jcs.jar"
+       #:source-dir "commons-jcs-core/src/main/java"
+       #:test-dir "commons-jcs-core/src/test"
+       #:tests? #f; requires hsqldb
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'prepare
+           (lambda _
+             (with-directory-excursion
+               "commons-jcs-core/src/main/java/org/apache/commons/jcs"
+               (substitute*
+                 "auxiliary/disk/jdbc/dsfactory/SharedPoolDataSourceFactory.java"
+                 (("commons.dbcp") "commons.dbcp2")
+                 ((".*\\.setMaxActive.*") ""))
+               ;;; Remove dependency on velocity-tools
+               (delete-file "admin/servlet/JCSAdminServlet.java"))
+             #t)))))
+    (propagated-inputs
+     `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-httpclient" ,java-commons-httpclient)
+       ("java-commons-dbcp" ,java-commons-dbcp)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://commons.apache.org/proper/commons-jcs/")
+    (synopsis "Distributed caching system in Java")
+    (description "JCS is a distributed caching system written in Java.  It
+is intended to speed up applications by providing a means to manage cached
+data of various dynamic natures.  Like any caching system, JCS is most useful
+for high read, low put applications.  Latency times drop sharply and
+bottlenecks move away from the database in an effectively cached system.")
+    (license license:asl2.0)))
+
 (define-public java-jsr250
   (package
     (name "java-jsr250")
