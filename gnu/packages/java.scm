@@ -11531,3 +11531,33 @@ It's in particular targeted for making it easy to integrate SVG into Java
 games and making it much easier for artists to design 2D game content - from
 rich interactive menus to charts and graphcs to complex animations.")
     (license license:bsd-2)))
+
+(define-public java-jboss-transaction-api-spec
+  (package
+    (name "java-jboss-transaction-api-spec")
+    (version "1.2+1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jboss/jboss-transaction-api_spec")
+                     (commit "jboss-transaction-api_1.2_spec-1.1.1.Final")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xbfq5hvb86izflydxrqqv3k26c1ba2m0ap6m97shqrsdi9by4wy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "java-jboss-transaction-api_spec.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-cdi-api" ,java-cdi-api)
+       ("java-jboss-interceptors-api-spec" ,java-jboss-interceptors-api-spec)))
+    (home-page "https://github.com/jboss/jboss-transaction-api_spec")
+    (synopsis "Generic transaction management API in Java")
+    (description "Java-jboss-transaction-api-spec implements the Transactions
+API.  A transaction is a unit of work containing one or more operations
+involving one or more shared resources having ACID (Atomicity, Consistency,
+Isolation and Durability) properties.")
+    ;; either gpl2 only with classpath exception or cddl.
+    (license (list license:gpl2 license:cddl1.0))))
