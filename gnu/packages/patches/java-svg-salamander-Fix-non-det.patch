@@ -1,0 +1,86 @@
+From c812efa9fcbfb49a571cc73af83c8da5cb951bcf Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Thu, 2 May 2019 19:05:33 +0200
+Subject: [PATCH] Fix non determinism and installation
+
+---
+ svg-core/build.xml                | 22 ----------------------
+ svg-core/nbproject/build-impl.xml |  1 -
+ 2 files changed, 23 deletions(-)
+
+diff --git a/svg-core/build.xml b/svg-core/build.xml
+index cc72eb7..0f9c3e6 100755
+--- a/svg-core/build.xml
++++ b/svg-core/build.xml
+@@ -102,7 +102,6 @@
+         <jar destfile="${maven-javadoc-jar}" update="false">
+             <manifest>
+                 <attribute name="Version" value="${version}"/>
+-                <attribute name="Date" value="${TODAY}"/>
+             </manifest>
+ 
+             <fileset dir="dist/javadoc">
+@@ -112,7 +111,6 @@
+         <jar destfile="${maven-sources-jar}" update="false">
+             <manifest>
+                 <attribute name="Version" value="${version}"/>
+-                <attribute name="Date" value="${TODAY}"/>
+             </manifest>
+ 
+             <fileset dir="src/main/java">
+@@ -126,7 +124,6 @@
+             <manifest>
+                 <attribute name="Main-Class" value="com.kitfox.svg.app.SVGPlayer"/>
+                 <attribute name="Version" value="${version}"/>
+-                <attribute name="Date" value="${TODAY}"/>
+             </manifest>
+ 
+             <fileset dir="build/classes">
+@@ -203,7 +200,6 @@
+             <manifest>
+                 <attribute name="Main-Class" value="com.kitfox.svg.app.SVGPlayer"/>
+                 <attribute name="Version" value="${version}"/>
+-                <attribute name="Date" value="${TODAY}"/>
+             </manifest>
+ 
+             <fileset dir="build/classes">
+@@ -213,24 +209,6 @@
+             </fileset>
+         </jar>
+ 
+-        <delete file="${key.location}"/>
+-        <genkey alias="${key.user}" storepass="${key.password}" keystore="${key.location}" validity="1000" verbose="true">
+-            <dname>
+-                <param name="CN" value="Mark McKay, mark@kitfox.com"/>
+-                <param name="OU" value="kitfox.com"/>
+-                <param name="O"  value="kitfox"/>
+-                <param name="L"  value="Toronto"/>
+-                <param name="S"  value="Ontario"/>
+-                <param name="C"  value="CA"/>
+-            </dname>
+-        </genkey>
+-
+-        <copy file="${dist.jar}" toFile="${project.www.jar}"/>
+-        <signjar jar="${project.www.jar}"
+-                 alias="${key.user}"
+-                 storepass="${key.password}"
+-                 keystore="${key.location}"/>
+-
+         <delete file="${project.tiny.jar}"/>
+         <jar destfile="${project.tiny.jar}" update="true">
+             <manifest>
+diff --git a/svg-core/nbproject/build-impl.xml b/svg-core/nbproject/build-impl.xml
+index b448d8a..37725ad 100755
+--- a/svg-core/nbproject/build-impl.xml
++++ b/svg-core/nbproject/build-impl.xml
+@@ -1045,7 +1045,6 @@ is divided into following sections:
+         </manifest>
+     </target>
+     <target depends="init,-init-macrodef-copylibs,compile,-pre-pre-jar,-pre-jar,-do-jar-create-manifest,-do-jar-copy-manifest,-do-jar-set-mainclass,-do-jar-set-profile,-do-jar-set-splashscreen" if="do.mkdist" name="-do-jar-copylibs">
+-        <j2seproject3:copylibs manifest="${tmp.manifest.file}"/>
+         <echo level="info">To run this application from the command line without Ant, try:</echo>
+         <property location="${dist.jar}" name="dist.jar.resolved"/>
+         <echo level="info">java -jar "${dist.jar.resolved}"</echo>
+-- 
+2.21.0
+

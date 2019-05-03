@@ -11484,3 +11484,50 @@ library and the API is similar.")
 reading metadata from image files.  It is able to read metadata in Exif,
 IPTC, XMP, ICC and more formats.")
     (license license:asl2.0)))
+
+(define-public java-svg-salamander
+  (package
+    (name "java-svg-salamander")
+    (version "1.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/blackears/svgSalamander")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1zv3kjdkf6iqf02x6ln76254y634j2ji448y706a65lsbfjmmicf"))
+              (modules '((guix build utils)))
+              (snippet
+                `(for-each delete-file (find-files "." ".*.jar")))
+              (patches
+                (search-patches "java-svg-salamander-Fix-non-det.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "svg-core")
+             #t))
+         (add-before 'build 'copy-jars
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file (car (find-files (assoc-ref inputs "javacc") "\\.jar$"))
+                        "../libraries/javacc.jar")
+             (copy-file (car (find-files (assoc-ref inputs "ant") "ant\\.jar$"))
+                        "../libraries/ant.jar")
+             #t))
+         (replace 'install
+           (install-jars "dist")))))
+    (native-inputs
+     `(("javacc" ,javacc)))
+    (home-page "https://github.com/blackears/svgSalamander")
+    (synopsis "SVG engine for Java")
+    (description "SVG Salamander is an SVG engine for Java that's designed
+to be small, fast, and allow programmers to use it with a minimum of fuss.
+It's in particular targeted for making it easy to integrate SVG into Java
+games and making it much easier for artists to design 2D game content - from
+rich interactive menus to charts and graphcs to complex animations.")
+    (license license:bsd-2)))
