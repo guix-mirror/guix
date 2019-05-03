@@ -19389,6 +19389,180 @@ Additional arguments to pass to the @command{varnishd} process.
 @end table
 @end deftp
 
+@subsubheading Patchwork
+@cindex Patchwork
+Patchwork is a patch tracking system.  It can collect patches sent to a
+mailing list, and display them in a web interface.
+
+@defvr {Scheme Variable} patchwork-service-type
+Service type for Patchwork.
+@end defvr
+
+The following example is an example of a minimal service for Patchwork, for
+the @code{patchwork.example.com} domain.
+
+@example
+(service patchwork-service-type
+         (patchwork-configuration
+          (domain "patchwork.example.com")
+          (settings-module
+           (patchwork-settings-module
+            (allowed-hosts (list domain))
+            (default-from-email "patchwork@@patchwork.example.com")))
+          (getmail-retriever-config
+           (getmail-retriever-configuration
+            (type "SimpleIMAPSSLRetriever")
+            (server "imap.example.com")
+            (port 993)
+            (username "patchwork")
+            (password-command
+             (list (file-append coreutils "/bin/cat")
+                   "/etc/getmail-patchwork-imap-password"))
+            (extra-parameters
+            '((mailboxes . ("Patches"))))))))
+
+@end example
+
+There are three records for configuring the Patchwork service.  The
+@code{<patchwork-configuration>} relates to the configuration for Patchwork
+within the HTTPD service.
+
+The @code{settings-module} field within the @code{<patchwork-configuration>}
+record can be populated with the @code{<patchwork-settings-module>} record,
+which describes a settings module that is generated within the Guix store.
+
+For the @code{database-configuration} field within the
+@code{<patchwork-settings-module>}, the
+@code{<patchwork-database-configuration>} must be used.
+
+@deftp {Data Type} patchwork-configuration
+Data type representing the Patchwork service configuration.  This type has the
+following parameters:
+
+@table @asis
+@item @code{patchwork} (default: @code{patchwork})
+The Patchwork package to use.
+
+@item @code{domain}
+The domain to use for Patchwork, this is used in the HTTPD service virtual
+host.
+
+@item @code{settings-module}
+The settings module to use for Patchwork. As a Django application, Patchwork
+is configured with a Python module containing the settings. This can either be
+an instance of the @code{<patchwork-settings-module>} record, any other record
+that represents the settings in the store, or a directory outside of the
+store.
+
+@item @code{static-path}  (default: @code{"/static/"})
+The path under which the HTTPD service should serve the static files.
+
+@item @code{getmail-retriever-config}
+The getmail-retriever-configuration record value to use with
+Patchwork. Getmail will be configured with this value, the messages will be
+delivered to Patchwork.
+
+@end table
+@end deftp
+
+@deftp {Data Type} patchwork-settings-module
+Data type representing a settings module for Patchwork.  Some of these
+settings relate directly to Patchwork, but others relate to Django, the web
+framework used by Patchwork, or the Django Rest Framework library.  This type
+has the following parameters:
+
+@table @asis
+@item @code{database-configuration} (default: @code{(patchwork-database-configuration)})
+The database connection settings used for Patchwork.  See the
+@code{<patchwork-database-configuration>} record type for more information.
+
+@item @code{secret-key-file} (default: @code{"/etc/patchwork/django-secret-key"})
+Patchwork, as a Django web application uses a secret key for cryptographically
+signing values.  This file should contain a unique unpredictable value.
+
+If this file does not exist, it will be created and populated with a random
+value by the patchwork-setup shepherd service.
+
+This setting relates to Django.
+
+@item @code{allowed-hosts}
+A list of valid hosts for this Patchwork service. This should at least include
+the domain specified in the @code{<patchwork-configuration>} record.
+
+This is a Django setting.
+
+@item @code{default-from-email}
+The email address from which Patchwork should send email by default.
+
+This is a Patchwork setting.
+
+@item @code{static-url} (default: @code{#f})
+The URL to use when serving static assets. It can be part of a URL, or a full
+URL, but must end in a @code{/}.
+
+If the default value is used, the @code{static-path} value from the
+@code{<patchwork-configuration>} record will be used.
+
+This is a Django setting.
+
+@item @code{admins} (default: @code{'()})
+Email addresses to send the details of errors that occur.  Each value should
+be a list containing two elements, the name and then the email address.
+
+This is a Django setting.
+
+@item @code{debug?} (default: @code{#f})
+Whether to run Patchwork in debug mode.  If set to @code{#t}, detailed error
+messages will be shown.
+
+This is a Django setting.
+
+@item @code{enable-rest-api?} (default: @code{#t})
+Whether to enable the Patchwork REST API.
+
+This is a Patchwork setting.
+
+@item @code{enable-xmlrpc?} (default: @code{#t})
+Whether to enable the XML RPC API.
+
+This is a Patchwork setting.
+
+@item @code{force-https-links?} (default: @code{#t})
+Whether to use HTTPS links on Patchwork pages.
+
+This is a Patchwork setting.
+
+@item @code{extra-settings} (default: @code{""})
+Extra code to place at the end of the Patchwork settings module.
+
+@end table
+@end deftp
+
+@deftp {Data Type} patchwork-database-configuration
+Data type representing the database configuration for Patchwork.
+
+@table @asis
+@item @code{engine} (default: @code{"django.db.backends.postgresql_psycopg2"})
+The database engine to use.
+
+@item @code{name} (default: @code{"patchwork"})
+The name of the database to use.
+
+@item @code{user} (default: @code{"httpd"})
+The user to connect to the database as.
+
+@item @code{password} (default: @code{""})
+The password to use when connecting to the database.
+
+@item @code{host} (default: @code{""})
+The host to make the database connection to.
+
+@item @code{port} (default: @code{""})
+The port on which to connect to the database.
+
+@end table
+@end deftp
+
 @subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap
