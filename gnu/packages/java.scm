@@ -5141,6 +5141,37 @@ handful of pooling interfaces and some base classes that may be useful when
 creating new pool implementations.")
     (license license:asl2.0)))
 
+(define-public java-commons-dbcp
+  (package
+    (name "java-commons-dbcp")
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/dbcp/source/"
+                                  "commons-dbcp2-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0axbvcbnf2l70fc3ybrlp3siw2w4ka9mia2pnx4py8gz54cpw3rc"))))
+    (arguments
+     `(#:source-dir "src/main/java"
+       #:jar-name "java-commons-dbcp.jar"
+       #:tests? #f)); requires apache-geronimo
+    (inputs
+     `(("java-commons-pool" ,java-commons-pool)
+       ("java-commons-logging" ,java-commons-logging-minimal)
+       ("java-jboss-transaction-api-spec" ,java-jboss-transaction-api-spec)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (build-system ant-build-system)
+    (home-page "https://commons.apache.org/proper/commons-dbcp/")
+    (synopsis "Database Connection Pool for Java")
+    (description "Commons-dbcp allows you to share a pool of database
+connections between users.  Creating a new connection for each user can be
+time consuming and even unfeasible when the number of simultaneous users is
+very large.  This package provides a way to share a poole of connections to
+reduce that load.")
+    (license license:asl2.0)))
+
 (define-public java-jsr250
   (package
     (name "java-jsr250")
