@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017, 2018, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -11230,3 +11230,33 @@ the application using Java to Lisp integration APIs.")
                    license:bsd-3
                    ;; jfli is released under CPL 1.0
                    license:cpl1.0))))
+
+(define-public java-jsonp-api
+  (package
+    (name "java-jsonp-api")
+    (version "1.1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse-ee4j/jsonp")
+                     (commit (string-append version "-RELEASE"))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nxq16lrx7i87hgyj5rzcwilvr67h0i299gygfn8f5vs4n7n59vy"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jsonp-api.jar"
+       #:tests? #f
+       #:source-dir "api/src/main/java"
+       #:test-dir "api/src/test"))
+    (home-page "https://eclipse-ee4j.github.io/jsonp/")
+    (synopsis "JSON Processing in Java")
+    (description "JSON Processing (JSON-P) is a Java API to process (e.g.
+parse, generate, transform and query) JSON messages.  It produces and
+consumes JSON text in a streaming fashion (similar to StAX API for XML)
+and allows to build a Java object model for JSON text using API classes
+(similar to DOM API for XML).")
+    ;; either gpl2 only with classpath exception, or epl2.0.
+    (license (list license:gpl2
+                   license:epl2.0))))
