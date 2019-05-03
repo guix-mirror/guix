@@ -49,6 +49,7 @@
                   #:title (G_ "Partition scheme")
                   #:listbox-items items
                   #:listbox-item->text cdr
+                  #:sort-listbox-items? #f       ;keep the 'root' option first
                   #:button-text (G_ "Exit")
                   #:button-callback-procedure button-exit-action)))
     (car result)))
