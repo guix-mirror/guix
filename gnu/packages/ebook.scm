@@ -102,9 +102,6 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qtbase" ,qtbase) ; for qmake
-       ;; xdg-utils is supposed to be used for desktop integration, but it
-       ;; also creates lots of messages
-       ;; mkdir: cannot create directory '/homeless-shelter': Permission denied
        ("python2-flake8" ,python2-flake8)
        ("xdg-utils" ,xdg-utils)))
     ;; Beautifulsoup3 is bundled but obsolete and not packaged, so just leave it bundled.
@@ -174,15 +171,24 @@
                 "href=\"favicon.ico\""))
              #t))
          (add-before 'build 'configure
-          (lambda* (#:key inputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((podofo (assoc-ref inputs "podofo"))
-                  (pyqt (assoc-ref inputs "python2-pyqt")))
+                  (pyqt (assoc-ref inputs "python2-pyqt"))
+                  (out (assoc-ref outputs "out")))
               (substitute* "setup/build_environment.py"
                 (("sys.prefix") (string-append "'" pyqt "'")))
               (substitute* "src/calibre/ebooks/pdf/pdftohtml.py"
                 (("PDFTOHTML = 'pdftohtml'")
                  (string-append "PDFTOHTML = \"" (assoc-ref inputs "poppler")
-                  "/bin/pdftohtml\"")))
+                                "/bin/pdftohtml\"")))
+
+              ;; Calibre thinks we are installing desktop files into a home
+              ;; directory, but here we butcher the script in to installing
+              ;; to calibres /share directory.
+              (setenv "XDG_DATA_HOME" (string-append out "/share"))
+              (substitute* "src/calibre/linux.py"
+                (("'~/.local/share'") "''"))
+
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
               ;; This informs the tests we are a continuous integration
@@ -204,12 +210,6 @@
                                             "/share/fonts/truetype")))
                (delete-file-recursively font-dest)
                (symlink font-src font-dest))
-             #t))
-         (add-after 'unbundle-font-liberation 'install-mimetypes
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "resources/calibre-mimetypes.xml"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/mime/packages"))
              #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")
