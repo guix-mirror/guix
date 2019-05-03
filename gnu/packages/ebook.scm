@@ -203,8 +203,10 @@
               #t)))
          (add-after 'build 'build-extra
            (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "python2" "setup.py" "mathjax""--system-mathjax" "--path-to-mathjax"
-                     (string-append (assoc-ref inputs "js-mathjax") "/share/javascript/mathjax"))
+             (invoke "python2" "setup.py" "mathjax""--system-mathjax"
+                     "--path-to-mathjax" (string-append
+                                          (assoc-ref inputs "js-mathjax")
+                                          "/share/javascript/mathjax"))
              (invoke "python2" "setup.py" "rapydscript")))
          (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
