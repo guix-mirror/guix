@@ -1,0 +1,29 @@
+From a92e26359bd07743ab105819ed0b619e27e14017 Mon Sep 17 00:00:00 2001
+From: Brendan Tildesley <mail@brendan.scot>
+Date: Sat, 27 Apr 2019 03:30:53 +1000
+Subject: [PATCH] Disable test_sqlite.
+
+---
+ src/calibre/test_build.py | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/src/calibre/test_build.py b/src/calibre/test_build.py
+index 07bdffd3e5..740588c95b 100644
+--- a/src/calibre/test_build.py
++++ b/src/calibre/test_build.py
+@@ -162,12 +162,6 @@ class BuildTest(unittest.TestCase):
+             au(x, 'strftime')
+             self.assertEqual(unicode_type(time.strftime(fmt.replace('%e', '%#d'), t)), x)
+ 
+-    def test_sqlite(self):
+-        import sqlite3
+-        conn = sqlite3.connect(':memory:')
+-        from calibre.library.sqlite import load_c_extensions
+-        self.assertTrue(load_c_extensions(conn, True), 'Failed to load sqlite extension')
+-
+     def test_apsw(self):
+         import apsw
+         conn = apsw.Connection(':memory:')
+-- 
+2.21.0
+
