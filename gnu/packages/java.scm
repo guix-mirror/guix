@@ -2396,6 +2396,23 @@ modern, efficient, and fully featured toolkit for developing rich client
 applications.  This package contains base classes for the OpenJFX
 distribution.")))
 
+(define-public java-openjfx-graphics
+  (package (inherit java-openjfx-build)
+    (name "java-openjfx-graphics")
+    (arguments
+     `(#:jar-name "java-openjfx-graphics.jar"
+       #:source-dir "modules/graphics/src/main/java"
+       #:tests? #f; require X
+       #:test-dir "modules/graphics/src/test"))
+    (propagated-inputs
+     `(("java-openjfx-base" ,java-openjfx-base)
+       ("java-swt" ,java-swt)))
+    (description "OpenJFX is a client application platform for desktop,
+mobile and embedded systems built on Java.  Its goal is to produce a
+modern, efficient, and fully featured toolkit for developing rich client
+applications.  This package contains graphics-related classes for the
+OpenJFX distribution.")))
+
 (define-public javacc-4
   (package
     (name "javacc")
