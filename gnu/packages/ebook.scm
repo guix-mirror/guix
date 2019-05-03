@@ -185,6 +185,9 @@
                   "/bin/pdftohtml\"")))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
+              ;; This informs the tests we are a continuous integration
+              ;; environment and thus have no networking.
+              (setenv "CI" "true")
               #t)))
          (add-after 'build 'build-extra
            (lambda* (#:key inputs #:allow-other-keys)
