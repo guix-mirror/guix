@@ -206,6 +206,12 @@
              (invoke "python2" "setup.py" "mathjax""--system-mathjax" "--path-to-mathjax"
                      (string-append (assoc-ref inputs "js-mathjax") "/share/javascript/mathjax"))
              (invoke "python2" "setup.py" "rapydscript")))
+         (add-after 'install 'install-man-pages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively
+              "man-pages"
+              (string-append (assoc-ref outputs "out") "/share/man"))
+             #t))
          ;; The font TTF files are used in some miscellaneous tests, so we
          ;; unbundle them here to avoid patching the tests.
          (add-after 'install 'unbundle-font-liberation
