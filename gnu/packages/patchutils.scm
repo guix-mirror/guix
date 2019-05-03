@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages django)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
@@ -300,3 +303,167 @@ directories, and has support for many popular version control systems.
 Meld helps you review code changes and understand patches.  It might even help
 you to figure out what is going on in that merge you keep avoiding.")
     (license gpl2)))
+
+(define-public patchwork
+  (package
+    (name "patchwork")
+    (version "2.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/getpatchwork/patchwork.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06ng5pv6744w98zkyfm0ldkmpdgnsql3gbbbh6awq61sr2ndr3qw"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; TODO: Tests require a running database
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-after 'unpack 'replace-wsgi.py
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (delete-file "patchwork/wsgi.py")
+             (call-with-output-file "patchwork/wsgi.py"
+               (lambda (port)
+                 ;; Embed the PYTHONPATH containing the dependencies, as well
+                 ;; as the python modules in this package in the wsgi.py file,
+                 ;; as this will ensure they are available at runtime.
+                 (define pythonpath
+                   (string-append (getenv "PYTHONPATH")
+                                  ":"
+                                  (site-packages inputs outputs)))
+                 (display
+                  (string-append "
+import os, sys
+
+sys.path.extend('" pythonpath "'.split(':'))
+
+from django.core.wsgi import get_wsgi_application
+
+# By default, assume that patchwork is running as a Guix service, which
+# provides the settings as the 'guix.patchwork.settings' Python module.
+#
+# When using httpd, it's hard to set environment variables, so rely on the
+# default set here.
+os.environ['DJANGO_SETTINGS_MODULE'] = os.getenv(
+  'DJANGO_SETTINGS_MODULE',
+  'guix.patchwork.settings' # default
+)
+
+application = get_wsgi_application()\n") port)))))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "DJANGO_SETTINGS_MODULE" "patchwork.settings.dev")
+               (invoke "python" "-Wonce" "./manage.py" "test" "--noinput"))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (out-site-packages (site-packages inputs outputs)))
+               (for-each (lambda (directory)
+                           (copy-recursively
+                            directory
+                            (string-append out-site-packages directory)))
+                         '(;; Contains the python code
+                           "patchwork"
+                           ;; Contains the templates for the generated HTML
+                           "templates"))
+               (delete-file-recursively
+                (string-append out-site-packages "patchwork/tests"))
+
+               ;; Install patchwork related tools
+               (for-each (lambda (file)
+                           (install-file file (string-append out "/bin")))
+                         (list
+                          (string-append out-site-packages
+                                         "patchwork/bin/pwclient")
+                          (string-append out-site-packages
+                                         "patchwork/bin/parsemail.sh")
+                          (string-append out-site-packages
+                                         "patchwork/bin/parsemail-batch.sh")))
+
+               ;; Delete the symlink to pwclient, and replace it with the
+               ;; actual file, as this can cause issues when serving the file
+               ;; from a webserver.
+               (let ((template-pwclient (string-append
+                                         out-site-packages
+                                         "patchwork/templates/patchwork/pwclient")))
+                 (delete-file template-pwclient)
+                 (copy-file (string-append out-site-packages
+                                           "patchwork/bin/pwclient")
+                            template-pwclient))
+
+               ;; Collect the static assets, this includes JavaScript, CSS and
+               ;; fonts. This is a standard Django process when running a
+               ;; Django application for regular use, and includes assets for
+               ;; dependencies like the admin site from Django.
+               ;;
+               ;; The intent here is that you can serve files from this
+               ;; directory through a webserver, which is recommended when
+               ;; running Django applications.
+               (let ((static-root
+                      (string-append out "/share/patchwork/htdocs")))
+                 (mkdir-p static-root)
+                 (copy-file "patchwork/settings/production.example.py"
+                            "patchwork/settings/assets.py")
+                 (setenv "DJANGO_SECRET_KEY" "dummyvalue")
+                 (setenv "DJANGO_SETTINGS_MODULE" "patchwork.settings.assets")
+                 (setenv "STATIC_ROOT" static-root)
+                 (invoke "./manage.py" "collectstatic" "--no-input"))
+
+               ;; The lib directory includes example configuration files that
+               ;; may be useful when deploying patchwork.
+               (copy-recursively "lib"
+                                 (string-append
+                                  out "/share/doc/" ,name "-" ,version)))
+             #t))
+         ;; The hasher script is used from the post-receive.hook
+         (add-after 'install 'install-hasher
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-site-packages (site-packages inputs outputs))
+                    (out-hasher.py (string-append out-site-packages
+                                                  "/patchwork/hasher.py")))
+               (chmod out-hasher.py #o555)
+               (symlink out-hasher.py (string-append out "/bin/hasher")))
+             #t))
+         ;; Create a patchwork specific version of Django's command line admin
+         ;; utility.
+         (add-after 'install 'install-patchwork-admin
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (call-with-output-file (string-append out "/bin/patchwork-admin")
+                 (lambda (port)
+                   (simple-format port "#!~A
+import os, sys
+
+if __name__ == \"__main__\":
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)" (which "python"))))
+               (chmod (string-append out "/bin/patchwork-admin") #o555))
+             #t)))))
+    (inputs
+     `(("python-wrapper" ,python-wrapper)))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ;; TODO: Make this configurable
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-mysqlclient" ,python-mysqlclient)
+       ("python-django-filter" ,python-django-filter)
+       ("python-djangorestframework" ,python-djangorestframework)
+       ("python-django-debug-toolbar" ,python-django-debug-toolbar)))
+    (synopsis "Web based patch tracking system")
+    (description
+     "Patchwork is a patch tracking system.  It takes in emails containing
+patches, and displays the patches along with comments and state information.
+Users can login allowing them to change the state of patches.")
+    (home-page "http://jk.ozlabs.org/projects/patchwork/")
+    (license gpl2+)))
