@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +81,14 @@
                                        (not (memq 'user namespaces)))
                                   accounts
                                   '())
+
+                            ;; Tell the process what timezone we're in.  This
+                            ;; makes sure that, for instance, its syslog
+                            ;; messages have the correct timestamp.
+                            ,(file-system-mapping
+                              (source "/etc/localtime")
+                              (target source))
+
                             ,%store-mapping)))    ;XXX: coarse-grain
             (map file-system-mapping->bind-mount
                  (filter (lambda (mapping)
