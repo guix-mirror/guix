@@ -5008,3 +5008,38 @@ consume input unless the signal stream is being read), and process the input in
 a single pass.  They automatically detect the character encoding of the input
 stream, and convert everything to UTF-8.")
     (license license:bsd-3)))
+
+(define-public ocaml-tyxml
+  (package
+    (name "ocaml-tyxml")
+    (version "4.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocsigen/tyxml.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0wv19xipkj8l2sks1h53105ywbjwk7q93fb7b8al4a2g9wr109c0"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-re" ,ocaml-re)
+       ("ocaml-seq" ,ocaml-seq)
+       ("ocaml-uutf" ,ocaml-uutf)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+       ("ocaml-markup" ,ocaml-markup)))
+    (native-inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)))
+    (arguments `(#:jbuild? #t))
+    (home-page "https://github.com/ocsigen/tyxml/")
+    (synopsis "TyXML is a library for building correct HTML and SVG documents")
+    (description "TyXML provides a set of convenient combinators that uses the
+OCaml type system to ensure the validity of the generated documents.  TyXML can
+be used with any representation of HTML and SVG: the textual one, provided
+directly by this package, or DOM trees (@code{js_of_ocaml-tyxml}) virtual DOM
+(@code{virtual-dom}) and reactive or replicated trees (@code{eliom}).  You can
+also create your own representation and use it to instantiate a new set of
+combinators.")
+    (license license:lgpl2.1)))
