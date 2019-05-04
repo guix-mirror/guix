@@ -233,14 +233,14 @@ inside Coq.")
 (define-public coq-gappa
   (package
     (name "coq-gappa")
-    (version "1.3.2")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36397/gappa-"
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/37918/gappa-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19kg2zldaqs4smy7bv9hp650sqg46xbx1ss7jnyagpxdscwn9apd"))))
+                "1wdg07dk4lbq7dr80ywzna0lclwgi8bddzc6yfx19z1zn9yljzxh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -255,7 +255,8 @@ inside Coq.")
     (arguments
      `(#:configure-flags
        (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
+                            "/lib/coq/user-contrib/Gappa")
+             "CXXFLAGS=-std=c++11")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-remake
