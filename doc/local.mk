@@ -122,6 +122,10 @@ dist_infoimage_DATA =				\
   %D%/images/installer-partitions.png		\
   %D%/images/installer-resume.png
 
+# Ask for warnings about cross-referenced manuals that are not listed in
+# htmlxref.cnf.
+AM_MAKEINFOHTMLFLAGS = --set-customization-variable CHECK_HTMLXREF=true
+
 # Try hard to obtain an image size and aspect that's reasonable for inclusion
 # in an Info or PDF document.
 DOT_OPTIONS =					\
