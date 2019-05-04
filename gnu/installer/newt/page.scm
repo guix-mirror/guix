@@ -576,7 +576,12 @@ ITEMS when 'Ok' is pressed."
                          '())))))
          (form (make-form)))
 
-    (set-textbox-text file-textbox file-text)
+    (set-textbox-text file-textbox
+                      (receive (_w _h text)
+                          (reflow-text file-text
+                                       file-textbox-width
+                                       0 0)
+                        text))
     (add-form-to-grid grid form #t)
     (make-wrapped-grid-window grid title)
 
