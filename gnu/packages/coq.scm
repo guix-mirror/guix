@@ -42,7 +42,7 @@
 (define-public coq
   (package
     (name "coq")
-    (version "8.8.2")
+    (version "8.9.0")
     (source
      (origin
        (method git-fetch)
@@ -51,7 +51,7 @@
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03v8b57mz3ivsijwxy51avzwiyhla5ijaf98a5a2q29yabdq8dkp"))))
+        (base32 "01ad7az6f95w16xya7979lk32agy22lf4bqgqf5qpnarpkpxhbw8"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -62,6 +62,8 @@
        ("python" ,python-2)
        ("camlp5" ,camlp5)
        ("ocaml-num" ,ocaml-num)))
+    (native-inputs
+     `(("ocaml-ounit" ,ocaml-ounit)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -450,7 +452,7 @@ Coq proof assistant.")
   ;; Latest commit on that branch, where work on supporting coq 8.6 and
   ;; more recent versions of coq happen.
   (let ((branch "coq86-devel")
-        (commit "d0d73557979796b3d4be7aac72135581c33f26f7"))
+        (commit "fa6ef30664511ffa659cbcf3c962715cbee03572"))
     (package
       (name "coq-autosubst")
       (version (git-version "1" branch commit))
@@ -461,7 +463,7 @@ Coq proof assistant.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "1852xb5cwkjw3dlc0lp2sakwa40bjzw37qmwz4bn3vqazg1hnh6r"))))
+                 (base32 "1cl0bp96bk6lplbl7n5c703vd3gvbs5mvf2qrf8q333kkqd7jqq4"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f
@@ -495,16 +497,16 @@ uses Ltac to synthesize the substitution operation.")
 (define-public coq-equations
   (package
     (name "coq-equations")
-    (version "1.1")
+    (version "1.2-beta2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations.git")
-                    (commit (string-append "v" version "-8.8"))))
+                    (commit (string-append "v" version "-8.9"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "129rxsdsf88vjcw0xhm74yax1hmnk6f8n9ksg0hcyyjq1ijddiwa"))))
+                "0y2zwv7jxs1crprj5qvg46h0v9wyfn99ln40yskq91y9h1lj5h3j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
