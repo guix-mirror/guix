@@ -352,8 +352,11 @@ data types.")
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
        ((#:make-flags _)
-        ;; Strip tests exclusions that have to do with Python 2 only.
-        `(list (format #f "TESTOPTS=-j~d" (parallel-job-count))))
+        `(list (string-append
+                (format #f "TESTOPTS=-j~d" (parallel-job-count))
+                ;; Exclude the following test, which fails as of 3.7.3 (see:
+                ;; https://bugs.python.org/issue35998).
+                " --exclude test_asyncio")))
        ((#:phases phases)
        `(modify-phases ,phases
           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
