@@ -185,7 +185,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1mpah6kwqid1kxsj4rwqsniivqbrx231j65v51yncx6s0dch0dch"))))
+               "0vrkvdlmihdg62a4c6h5kx27khc33xmb95l50zgnwnavvpwyyw5l"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
