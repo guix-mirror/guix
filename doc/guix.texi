@@ -5242,8 +5242,7 @@ Return the @code{<derivation>} object of @var{package} cross-built from
 
 @var{target} must be a valid GNU triplet denoting the target hardware
 and operating system, such as @code{"mips64el-linux-gnu"}
-(@pxref{Configuration Names, GNU configuration triplets,, configure, GNU
-Configure and Build System}).
+(@pxref{Specifying Target Triplets,,, autoconf, Autoconf}).
 @end deffn
 
 @cindex package transformations
@@ -8100,7 +8099,7 @@ also be offloaded to a remote machine of the right architecture.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+as @code{"mips64el-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @anchor{build-check}
