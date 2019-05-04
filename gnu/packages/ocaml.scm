@@ -5043,3 +5043,33 @@ directly by this package, or DOM trees (@code{js_of_ocaml-tyxml}) virtual DOM
 also create your own representation and use it to instantiate a new set of
 combinators.")
     (license license:lgpl2.1)))
+
+(define-public ocaml-bisect-ppx
+  (package
+    (name "ocaml-bisect-ppx")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aantron/bisect_ppx.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vp3qvrkz7q25nbmvd40vhsnz2k9aqh17bnd21i3q8q0xlr5hdag"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+       ("ocaml-ounit" ,ocaml-ounit)))
+    (home-page "https://github.com/aantron/bisect_ppx")
+    (synopsis "Code coverage for OCaml")
+    (description "Bisect_ppx helps you test thoroughly.  It is a small
+preprocessor that inserts instrumentation at places in your code, such as
+if-then-else and match expressions.  After you run tests, Bisect_ppx gives a
+nice HTML report showing which places were visited and which were missed.
+
+Usage is simple - add package bisect_ppx when building tests, run your tests,
+then run the Bisect_ppx report tool on the generated visitation files.")
+    (license license:mpl2.0)))
