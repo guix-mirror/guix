@@ -243,7 +243,7 @@ ElasticSearch server")
 (define-public leveldb
   (package
     (name "leveldb")
-    (version "1.21")
+    (version "1.22")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -252,7 +252,7 @@ ElasticSearch server")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00v0w6883z7a6204894j59nd5v6dazn3c8hvh3sbczv4wiabppw2"))))
+                "0qrnhiyq7r4wa1a4wi82zgns35smj94mcjsc7kfs1k6ia9ys79z7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
