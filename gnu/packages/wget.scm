@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,7 +106,8 @@ in downloaded documents to relative links.")
                     (bin (string-append out "/bin"))
                     (zsh (string-append out "/share/zsh/site-functions")))
                (install-file "wgetpaste" bin)
-               (install-file "_wgetpaste" zsh)))))
+               (install-file "_wgetpaste" zsh)
+               #t))))
        #:tests? #f))                    ; no test target
     (inputs
      `(("wget" ,wget)))
