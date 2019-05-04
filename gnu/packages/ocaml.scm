@@ -5073,3 +5073,43 @@ nice HTML report showing which places were visited and which were missed.
 Usage is simple - add package bisect_ppx when building tests, run your tests,
 then run the Bisect_ppx report tool on the generated visitation files.")
     (license license:mpl2.0)))
+
+(define-public ocaml-odoc
+  (package
+    (name "ocaml-odoc")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/odoc")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0br11cw6wa0mwafja4xdb45d2f8908l6nzdq5mw5lbfq2jnp68km"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-markup" ,ocaml-markup)
+       ("ocaml-sexplib" ,ocaml-sexplib)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-uutf" ,ocaml-uutf)))
+    (native-inputs
+     `(("ocaml-astring" ,ocaml-astring)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-fpath" ,ocaml-fpath)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-tyxml" ,ocaml-tyxml)
+       ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)))
+    (home-page "https://github.com/ocaml/odoc")
+    (synopsis "OCaml documentation generator")
+    (description "Odoc is a documentation generator for OCaml.  It reads
+@emph{doc comments}, delimited with @code{(** ... *)}, and outputs
+@acronym{HTML}.
+
+Text inside doc comments is marked up in ocamldoc syntax.  Odoc's main
+advantage over ocamldoc is an accurate cross-referencer, which handles the
+complexity of the OCaml module system.")
+    (license license:isc)))
