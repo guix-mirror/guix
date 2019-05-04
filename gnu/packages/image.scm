@@ -101,6 +101,8 @@
              (base32
               "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags '("--disable-static")))
 
    ;; libpng.la says "-lz", so propagate it.
    (propagated-inputs `(("zlib" ,zlib)))
