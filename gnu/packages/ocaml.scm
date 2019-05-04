@@ -4966,3 +4966,45 @@ the full Core is not available, such as in Javascript.")
                license:asl2.0
                ;; MLton and sjs
                license:expat))))
+
+(define-public ocaml-markup
+  (package
+    (name "ocaml-markup")
+    (version "0.8.0")
+    (home-page "https://github.com/aantron/markup.ml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0aif4abvfmi9xc1pvw5n5rbm6rzkkpsxyvdn0lanr33rjpvkwdlm"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-uchar" ,ocaml-uchar)
+       ("ocaml-uutf" ,ocaml-uutf)
+       ("ocaml-lwt" ,ocaml-lwt)))
+    (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
+    (synopsis "Error-recovering functional HTML5 and XML parsers and writers")
+    (description "Markup.ml provides an HTML parser and an XML parser.  The
+parsers are wrapped in a simple interface: they are functions that transform
+byte streams to parsing signal streams.  Streams can be manipulated in various
+ways, such as processing by fold, filter, and map, assembly into DOM tree
+structures, or serialization back to HTML or XML.
+
+Both parsers are based on their respective standards.  The HTML parser, in
+particular, is based on the state machines defined in HTML5.
+
+The parsers are error-recovering by default, and accept fragments.  This makes
+it very easy to get a best-effort parse of some input.  The parsers can,
+however, be easily configured to be strict, and to accept only full documents.
+
+Apart from this, the parsers are streaming (do not build up a document in
+memory), non-blocking (can be used with threading libraries), lazy (do not
+consume input unless the signal stream is being read), and process the input in
+a single pass.  They automatically detect the character encoding of the input
+stream, and convert everything to UTF-8.")
+    (license license:bsd-3)))
