@@ -128,9 +128,9 @@ package definition."
 (define %cran-url "https://cran.r-project.org/web/packages/")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
-;; The latest Bioconductor release is 3.8.  Bioconductor packages should be
+;; The latest Bioconductor release is 3.9.  Bioconductor packages should be
 ;; updated together.
-(define %bioconductor-version "3.8")
+(define %bioconductor-version "3.9")
 
 (define %bioconductor-packages-list-url
   (string-append "https://bioconductor.org/packages/"
