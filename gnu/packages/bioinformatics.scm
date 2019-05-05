@@ -6944,19 +6944,19 @@ ungapped alignment formats.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.16.1")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "0qzydz87rld2nhwzbfgrw5jfgh8maa9y54mjx9c4285m11qj2shq"))))
+         "1063vdf4g2i5xyabwvzkqfxd2j8s4zs6z4zxf8lx2ccjddhkn37a"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
-       ("r-batchjobs" ,r-batchjobs)
+       ("r-batchtools" ,r-batchtools)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
        ("r-deseq2" ,r-deseq2)
@@ -6972,6 +6972,7 @@ ungapped alignment formats.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-shortread" ,r-shortread)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-yaml" ,r-yaml)
        ("r-variantannotation" ,r-variantannotation)))
     (home-page "https://github.com/tgirke/systemPipeR")
     (synopsis "Next generation sequencing workflow and reporting environment")
