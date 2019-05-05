@@ -2000,14 +2000,14 @@ and regression inferences from RNA-sequencing data.")
 (define-public r-ebseq
   (package
     (name "r-ebseq")
-    (version "1.22.1")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "EBSeq" version))
        (sha256
         (base32
-         "1gzbk1hbwdan0j131ah88yryfvsiq0wqjnb09qbr4qaczpgvbad0"))))
+         "13rf85gffqn86r5gqibla3gqrnnag2zinrfawpcsgn3fk7hl3v83"))))
     (properties `((upstream-name . "EBSeq")))
     (build-system r-build-system)
     (propagated-inputs
