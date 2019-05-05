@@ -6043,7 +6043,7 @@ pasting into and from @code{tmux} paste buffers.")
 (define-public emacs-evil-nerd-commenter
   (package
     (name "emacs-evil-nerd-commenter")
-    (version "3.3.6")
+    (version "3.3.7")
     (source
      (origin
        (method git-fetch)
@@ -6053,7 +6053,7 @@ pasting into and from @code{tmux} paste buffers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0074i9lvfs5hkbf63g1xh3n7dbmkax30bppkx2cd394c7zlsvzzk"))))
+         "1r8shfdddys9vqvrxf7s6z83ydqx9xhqs9sa7klbsajryqcp50b7"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-evil" ,emacs-evil)))
     (home-page "https://github.com/redguardtoo/evil-nerd-commenter")
