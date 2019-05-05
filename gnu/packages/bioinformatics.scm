@@ -7535,13 +7535,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-xvector
   (package
     (name "r-xvector")
-    (version "0.22.0")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "XVector" version))
               (sha256
                (base32
-                "01fph1ydd6g0rl5mcw54spx22glq2kqv7wyw8bqw0plmabzcwwdm"))))
+                "12y09pwy86h1za6cmaxs960r7fs0vjzhl0li8jn59vqq9liza1ap"))))
     (properties
      `((upstream-name . "XVector")))
     (build-system r-build-system)
