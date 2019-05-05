@@ -2362,18 +2362,19 @@ files, including IDAT.")
 (define-public r-siggenes
   (package
     (name "r-siggenes")
-    (version "1.56.0")
+    (version "1.58.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "siggenes" version))
        (sha256
         (base32
-         "0cjlb5r04x15xkhk00i3wvpx21kj0k29pn0mj3whwqk31zznnk1b"))))
+         "178jmmdxsv3rd71a9w5yrvg5aplak40hb42vna15g1d55c2yv1ib"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
-       ("r-multtest" ,r-multtest)))
+       ("r-multtest" ,r-multtest)
+       ("r-scrime" ,r-scrime)))
     (home-page "https://bioconductor.org/packages/siggenes/")
     (synopsis
      "Multiple testing using SAM and Efron's empirical Bayes approaches")
