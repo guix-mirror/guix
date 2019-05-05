@@ -96,7 +96,8 @@
           '(begin
             (delete-file "src/odf/thumbnail.py")
             #t))
-        (patches (search-patches "calibre-no-updates-dialog.patch"))))
+        (patches (search-patches "calibre-no-updates-dialog.patch"
+                                 "calibre-remove-test-unrar.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
