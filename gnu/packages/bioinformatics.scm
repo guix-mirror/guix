@@ -8314,14 +8314,14 @@ of other R packages who wish to make use of HTSlib.")
 (define-public r-bamsignals
   (package
     (name "r-bamsignals")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bamsignals" version))
        (sha256
         (base32
-         "19irfx1y1izf903vq59wxsdbf88g143zy9l89gxqawh7jfxds8w8"))))
+         "15q1q51dwl9qxfkf10yppw4m194ba03nq9plsrbj8fqj00v4729i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
