@@ -6790,17 +6790,19 @@ databases.  Packages produced are intended to be used with AnnotationDbi.")
 (define-public r-rbgl
   (package
     (name "r-rbgl")
-    (version "1.58.2")
+    (version "1.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RBGL" version))
        (sha256
         (base32
-         "0vhnh47pswnp27c0zqcbnnsayfmq3cxcgrs9g860555ldqfl4cyl"))))
+         "06brn9hl6lybx6hdfp1sycwj6wn1bjfi8xyhpy0v122v1z8d5mbz"))))
     (properties `((upstream-name . "RBGL")))
     (build-system r-build-system)
-    (propagated-inputs `(("r-graph" ,r-graph)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-graph" ,r-graph)))
     (home-page "https://www.bioconductor.org/packages/RBGL")
     (synopsis "Interface to the Boost graph library")
     (description
