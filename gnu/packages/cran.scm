@@ -14150,3 +14150,40 @@ the functions can also be applied to other types of categorical data.")
 linear and generalized linear mixed-effects models in a Bayesian setting.  It
 extends the lme4 package.")
     (license license:gpl2+)))
+
+(define-public r-batchtools
+  (package
+    (name "r-batchtools")
+    (version "0.9.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "batchtools" version))
+       (sha256
+        (base32
+         "02mj21ypcjv5fs7ajf63p6bq0cyvihdl55hlpqx6kmsfjin1cr0v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)
+       ("r-base64url" ,r-base64url)
+       ("r-brew" ,r-brew)
+       ("r-checkmate" ,r-checkmate)
+       ("r-data-table" ,r-data-table)
+       ("r-digest" ,r-digest)
+       ("r-fs" ,r-fs)
+       ("r-progress" ,r-progress)
+       ("r-r6" ,r-r6)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-stringi" ,r-stringi)
+       ("r-withr" ,r-withr)))
+    (home-page "https://github.com/mllg/batchtools")
+    (synopsis "Tools for computation on batch systems")
+    (description
+     "As a successor of the packages BatchJobs and BatchExperiments, this
+package provides a parallel implementation of the Map function for high
+performance computing systems managed by various schedulers.  A multicore and
+socket mode allow the parallelization on a local machines, and multiple
+machines can be hooked up via SSH to create a makeshift cluster.  Moreover,
+the package provides an abstraction mechanism to define large-scale computer
+experiments in a well-organized and reproducible way.")
+    (license license:lgpl3)))
