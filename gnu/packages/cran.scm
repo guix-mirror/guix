@@ -14187,3 +14187,27 @@ machines can be hooked up via SSH to create a makeshift cluster.  Moreover,
 the package provides an abstraction mechanism to define large-scale computer
 experiments in a well-organized and reproducible way.")
     (license license:lgpl3)))
+
+(define-public r-clue
+  (package
+    (name "r-clue")
+    (version "0.3-57")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "clue" version))
+       (sha256
+        (base32
+         "05rdcahawxlxci3fjxihjvvh33wqpxw50sx015165ab4nh3rsdkf"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-cluster" ,r-cluster)))
+    (home-page "https://cran.r-project.org/web/packages/clue/")
+    (synopsis "Tools for analyzing cluster ensembles")
+    (description "Cluster ensembles are collections of individual solutions to
+a given clustering problem which are useful or necessary to consider in a wide
+range of applications.  This R package provides an extensible computational
+environment for creating and analyzing cluster ensembles, with basic data
+structures for representing partitions and hierarchies, and facilities for
+computing on them, including methods for measuring proximity and obtaining
+consensus and secondary clusterings.")
+    (license license:gpl2)))
