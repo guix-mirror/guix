@@ -9775,22 +9775,24 @@ provide added flexibility for data combination and manipulation.")
 (define-public r-complexheatmap
   (package
     (name "r-complexheatmap")
-    (version "1.20.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ComplexHeatmap" version))
        (sha256
         (base32
-         "0s01dzcfj1lmpqfpsbqw7r4858krfzy499lz4cwx4fq3mbyvy2aj"))))
+         "1imnb72r10csl2h12sckic7hcsb8v2z0y3dyw1ax2fpykmsmq776"))))
     (properties
      `((upstream-name . "ComplexHeatmap")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-circlize" ,r-circlize)
+       ("r-clue" ,r-clue)
        ("r-colorspace" ,r-colorspace)
        ("r-getoptlong" ,r-getoptlong)
        ("r-globaloptions" ,r-globaloptions)
+       ("r-png" ,r-png)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
     (home-page
      "https://github.com/jokergoo/ComplexHeatmap")
