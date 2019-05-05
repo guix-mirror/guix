@@ -1,0 +1,13 @@
+diff --git a/libsanitizer/asan/asan_linux.cc b/libsanitizer/asan/asan_linux.cc
+index d92d0596b7c..7926536a0c3 100644
+--- a/libsanitizer/asan/asan_linux.cc
++++ b/libsanitizer/asan/asan_linux.cc
+@@ -30,7 +30,7 @@
+ #include <sys/types.h>
+ #include <dlfcn.h>
+ #include <fcntl.h>
+-#include <limits.h>
++#include <linux/limits.h>
+ #include <pthread.h>
+ #include <stdio.h>
+ #include <unistd.h>

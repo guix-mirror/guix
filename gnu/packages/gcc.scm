@@ -531,6 +531,7 @@ It also includes runtime support libraries for these languages.")))
              (base32
               "1817nc2bqdc251k0lpc51cimna7v68xjrnvqzvc50q3ax4s6i9kr"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
+                                     "gcc-9-asan-fix-limits-include.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
