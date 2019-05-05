@@ -6840,14 +6840,14 @@ Enrichment Analysis} (GSEA).")
 (define-public r-category
   (package
     (name "r-category")
-    (version "2.48.1")
+    (version "2.50.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Category" version))
        (sha256
         (base32
-         "18rsxlwa1l06i635cnznb9b2zssqcgb71pihky29gl2gwp7a654b"))))
+         "1n36xfnwn2np5f0lix9abvv9w6jb25jqz3xzvqzklz9s1af4k6x4"))))
     (properties `((upstream-name . "Category")))
     (build-system r-build-system)
     (propagated-inputs
