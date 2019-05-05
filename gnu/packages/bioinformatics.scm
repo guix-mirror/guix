@@ -10388,13 +10388,13 @@ assays such as Hi-C.")
 (define-public r-hitc
   (package
     (name "r-hitc")
-    (version "1.26.0")
+    (version "1.28.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "HiTC" version))
               (sha256
                (base32
-                "11f96k1707g6milpjgnrjf3b5r42hsrxhb5d8znkcr3y3mrskdbj"))))
+                "059a1xxv2kb0bb32flymg2s8ylhavnv3j8l4125rfidagcgxgzjq"))))
     (properties `((upstream-name . "HiTC")))
     (build-system r-build-system)
     (propagated-inputs
