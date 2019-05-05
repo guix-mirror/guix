@@ -51,9 +51,11 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
                                       #:initial-value real-name))
          (entry-home-directory (make-entry -1 -1 entry-width
                                            #:initial-value home-directory))
+         (password-visible-cb
+          (make-checkbox -1 -1 (G_ "Hide") #\x "x "))
          (entry-password (make-entry -1 -1 entry-width
                                      #:flags FLAG-PASSWORD))
-         (entry-grid (make-grid 2 5))
+         (entry-grid (make-grid 3 5))
          (button-grid (make-grid 1 1))
          (ok-button (make-button -1 -1 (G_ "OK")))
          (grid (make-grid 1 2))
@@ -71,6 +73,12 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
     (set-entry-grid-field 0 3 label-password)
     (set-entry-grid-field 1 3 entry-password)
 
+    (set-grid-field entry-grid
+                    2 3
+                    GRID-ELEMENT-COMPONENT
+                    password-visible-cb
+                    #:pad-left 1)
+
     (set-grid-field button-grid 0 0 GRID-ELEMENT-COMPONENT ok-button)
 
     (add-component-callback
@@ -83,11 +91,19 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
          (set-entry-text entry-real-name
                          (string-titlecase (entry-value entry-name))))))
 
+    (add-component-callback
+     password-visible-cb
+     (lambda (component)
+       (set-entry-flags entry-password
+                        FLAG-PASSWORD
+                        FLAG-ROLE-TOGGLE)))
+
     (add-components-to-form form
                             label-name label-real-name
                             label-home-directory label-password
                             entry-name entry-real-name
                             entry-home-directory entry-password
+                            password-visible-cb
                             ok-button)
 
     (make-wrapped-grid-window (vertically-stacked-grid
@@ -136,7 +152,7 @@ a thunk, if the confirmation doesn't match PASSWORD, and return its result."
     (run-input-page (G_ "Please confirm the password.")
                     (G_ "Password confirmation required")
                     #:allow-empty-input? #t
-                    #:input-flags FLAG-PASSWORD))
+                    #:input-hide-checkbox? #t))
 
   (if (string=? password confirmation)
       password
@@ -153,7 +169,7 @@ a thunk, if the confirmation doesn't match PASSWORD, and return its result."
     (run-input-page (G_ "Please choose a password for the system \
 administrator (\"root\").")
                     (G_ "System administrator password")
-                    #:input-flags FLAG-PASSWORD))
+                    #:input-hide-checkbox? #t))
 
   (confirm-password password run-root-password-page))
 

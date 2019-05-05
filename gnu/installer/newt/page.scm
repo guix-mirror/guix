@@ -75,6 +75,7 @@ this page to TITLE."
                          #:key
                          (allow-empty-input? #f)
                          (default-text #f)
+                         (input-hide-checkbox? #f)
                          (input-field-width 40)
                          (input-flags 0))
   "Run a page to prompt user for an input. The given TEXT will be displayed
@@ -86,22 +87,37 @@ input box, such as FLAG-PASSWORD."
           (make-reflowed-textbox -1 -1 text
                                  input-field-width
                                  #:flags FLAG-BORDER))
-         (grid (make-grid 1 3))
+         (input-visible-cb
+          (make-checkbox -1 -1 (G_ "Hide") #\x "x "))
+         (input-flags* (if input-hide-checkbox?
+                           (logior FLAG-PASSWORD input-flags)
+                           input-flags))
          (input-entry (make-entry -1 -1 20
-                                  #:flags input-flags))
+                                  #:flags input-flags*))
          (ok-button (make-button -1 -1 (G_ "OK")))
+         (grid (vertically-stacked-grid
+                GRID-ELEMENT-COMPONENT text-box
+                GRID-ELEMENT-SUBGRID
+                (apply
+                 horizontal-stacked-grid
+                 GRID-ELEMENT-COMPONENT input-entry
+                 `(,@(if input-hide-checkbox?
+                         (list GRID-ELEMENT-COMPONENT input-visible-cb)
+                         '())))
+                GRID-ELEMENT-COMPONENT ok-button))
          (form (make-form)))
+
+    (add-component-callback
+     input-visible-cb
+     (lambda (component)
+       (set-entry-flags input-entry
+                        FLAG-PASSWORD
+                        FLAG-ROLE-TOGGLE)))
 
     (when default-text
       (set-entry-text input-entry default-text))
 
-    (set-grid-field grid 0 0 GRID-ELEMENT-COMPONENT text-box)
-    (set-grid-field grid 0 1 GRID-ELEMENT-COMPONENT input-entry
-                    #:pad-top 1)
-    (set-grid-field grid 0 2 GRID-ELEMENT-COMPONENT ok-button
-                    #:pad-top 1)
-
-    (add-components-to-form form text-box input-entry ok-button)
+    (add-form-to-grid grid form #t)
     (make-wrapped-grid-window grid title)
     (let ((error-page (lambda ()
                         (run-error-page (G_ "Please enter a non empty input.")
