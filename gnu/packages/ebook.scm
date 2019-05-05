@@ -79,7 +79,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.41.3")
+    (version "3.42.0")
     (source
       (origin
         (method url-fetch)
@@ -88,7 +88,7 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "167hhv4wimkjnyfgqkyqmaiixhicbxacy6190gps98jyj4csi8ra"))
+          "0ymdhws3cb44p3fb24vln1wx6s7qnb8rr241jvm6qbj5rnp984dm"))
         ;; Unbundle python2-odfpy. 
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
