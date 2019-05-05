@@ -9241,14 +9241,14 @@ CDF file formats.")
 (define-public r-affy
   (package
     (name "r-affy")
-    (version "1.60.0")
+    (version "1.62.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affy" version))
        (sha256
         (base32
-         "0x8h4fk2igv7vykqfvf6v9whmx3344v5rf3gyfajd431xkjldz6k"))))
+         "05vz0vf3472s1ivfhc0gc8yz98y4rvvp7cf6kfbxhy1b23im1bgk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-affyio" ,r-affyio)
