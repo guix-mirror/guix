@@ -4010,14 +4010,14 @@ sites and alignments obtained from standard RNA-seq experiments.")
 (define-public r-xbseq
   (package
     (name "r-xbseq")
-    (version "1.14.1")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "XBSeq" version))
        (sha256
         (base32
-         "0na0jiqfy40bzl243gqc2214k4hibv6v4ndiqwq0c5f78cyr6lph"))))
+         "12l5qnkg6iahwyfmcsf18hys2i9cjn486sacvsqqfcjj3m88w1gy"))))
     (properties `((upstream-name . "XBSeq")))
     (build-system r-build-system)
     (propagated-inputs
