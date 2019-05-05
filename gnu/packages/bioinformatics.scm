@@ -9951,14 +9951,14 @@ effort and encourages consistency.")
 (define-public r-ggbio
   (package
     (name "r-ggbio")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggbio" version))
        (sha256
         (base32
-         "0wq49qqzkcn8s19xgaxf2s1j1a563d7pbhhvris6fhxfdjsz4934"))))
+         "10s6hnffnrrsx3896adqdc5g55fzd5y6qhnp1mq0c641nw833rwd"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
