@@ -2685,14 +2685,14 @@ kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
 (define-public r-triform
   (package
     (name "r-triform")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "triform" version))
        (sha256
         (base32
-         "12ca24pv1r5vbw3rq345jqg7x3prrbsxk6445zikpzfblwmw0b4s"))))
+         "0bsxkn386kfx4gg19p6smy5fi3k7xdw89r5hvfsks8hsdpdz3hya"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
