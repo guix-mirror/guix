@@ -3344,20 +3344,20 @@ distributions, modules and filter motifs.")
 (define-public r-motifstack
   (package
     (name "r-motifstack")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "motifStack" version))
        (sha256
         (base32
-         "1c4w39ilc4ca4wgi1b6iypadkbxvqjw7k2br0d7q03niw9qjkhxf"))))
+         "0qbv5pvn1g9xfn221vqjmp9vfxpkda1wxkn0kyn2nqyb80d4jf9f"))))
     (properties `((upstream-name . "motifStack")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ade4" ,r-ade4)
        ("r-biostrings" ,r-biostrings)
-       ("r-grimport" ,r-grimport)
+       ("r-grimport2" ,r-grimport2)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-motiv" ,r-motiv)
        ("r-scales" ,r-scales)
