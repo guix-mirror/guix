@@ -6653,14 +6653,14 @@ information as possible.")
 (define-public r-genefilter
   (package
     (name "r-genefilter")
-    (version "1.64.0")
+    (version "1.66.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "genefilter" version))
        (sha256
         (base32
-         "0p64s1n1627yafnp25wjr4b22p34lqw574fx2qg4s1m0lffh1z6i"))))
+         "1jq7lam4dnbvz55lx93kcl9afl8xfjd6xs374d35m21bkay418kj"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
