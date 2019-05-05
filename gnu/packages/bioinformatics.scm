@@ -10302,36 +10302,27 @@ with your data.")
 (define-public r-gwascat
   (package
     (name "r-gwascat")
-    (version "2.14.0")
+    (version "2.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gwascat" version))
        (sha256
         (base32
-         "1fnyjydhicq4ayrv0lqjv48h9bd72h40s6l82g1h2ng0icwz38g0"))))
+         "0akb36mrybmxbb1bc9kgxbnj3cdypfylj3yzrmhjwqxml03mg61i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
-       ("r-annotationhub" ,r-annotationhub)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
-       ("r-ggbio" ,r-ggbio)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-gqtlstats" ,r-gqtlstats)
-       ("r-graph" ,r-graph)
-       ("r-gviz" ,r-gviz)
        ("r-homo-sapiens" ,r-homo-sapiens)
        ("r-iranges" ,r-iranges)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
-       ("r-s4vectors" ,r-s4vectors)
-       ("r-snpstats" ,r-snpstats)
-       ("r-summarizedexperiment" ,r-summarizedexperiment)
-       ("r-variantannotation" ,r-variantannotation)))
+       ("r-s4vectors" ,r-s4vectors)))
     (home-page "https://bioconductor.org/packages/gwascat")
     (synopsis "Tools for data in the EMBL-EBI GWAS catalog")
     (description
