@@ -8988,13 +8988,13 @@ number detection tools.")
 (define-public r-methylkit
   (package
     (name "r-methylkit")
-    (version "1.8.1")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "methylKit" version))
               (sha256
                (base32
-                "1zcfwy7i10aqgnf7r0c41hakb5aai3s3n9y8pc6a98vimz51ly2z"))))
+                "1z687vpi5kwcqpnd6r74c5y72hcsbqlwg0bk95kksgpi81q710qj"))))
     (properties `((upstream-name . "methylKit")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9008,6 +9008,7 @@ number detection tools.")
        ("r-kernsmooth" ,r-kernsmooth)
        ("r-limma" ,r-limma)
        ("r-mclust" ,r-mclust)
+       ("r-mgcv" ,r-mgcv)
        ("r-qvalue" ,r-qvalue)
        ("r-r-utils" ,r-r-utils)
        ("r-rcpp" ,r-rcpp)
