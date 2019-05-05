@@ -5078,7 +5078,7 @@ If you want to mark a folder manually as a project just create an empty
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
-    (version "3.0.0")
+    (version "3.1.0")
     (source
      (origin
        (method git-fetch)
@@ -5087,7 +5087,7 @@ If you want to mark a folder manually as a project just create an empty
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01x4ww63lvn04c7f3ab5vx2s20xqisvv8213qwswz7vr9nxja5yi"))))
+        (base32 "1bzpl6lc7kq9bph4bfz1fn19207blrnhjr2g7yinhn0nnnjmxi8i"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
