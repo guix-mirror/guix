@@ -4267,14 +4267,14 @@ rapid adapter trimming, identification, and read merging.")
 (define-public r-progeny
   (package
     (name "r-progeny")
-    (version "1.4.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "progeny" version))
        (sha256
         (base32
-         "02z09rbzi305jrwzai8zayxi82563lxcaldp4r9pw564qkbl7pk7"))))
+         "03rm90vfb9ivxhapvs3h5yggfazf8bf5vh1krknvb3xyw27br9dw"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-biobase" ,r-biobase)))
     (home-page "https://github.com/saezlab/progeny")
