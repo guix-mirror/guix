@@ -8284,14 +8284,14 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.14.1")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "13fv78sk5g0gqfl3ks3rps3zc1k66a4lzxvgn36r7ix43yxk7hnr"))))
+         "178zbrm221rwhbjk7j2v9g5ra44k0xg7c5abhd810m3g7snma8k8"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     ;; Without this a temporary directory ends up in the Rhtslib.so binary,
