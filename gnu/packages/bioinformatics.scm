@@ -9805,14 +9805,14 @@ self-defined annotation graphics.")
 (define-public r-dirichletmultinomial
   (package
     (name "r-dirichletmultinomial")
-    (version "1.24.1")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DirichletMultinomial" version))
        (sha256
         (base32
-         "0vazfjzqy78p5g7dnv30lbqbj4bhq4zafd2wh6gdwy2il1fd78xa"))))
+         "0qirvhnbv4wd50ln4pqbk4dj6h2935ipf9p4sw1x62qqhwxidqk4"))))
     (properties
      `((upstream-name . "DirichletMultinomial")))
     (build-system r-build-system)
