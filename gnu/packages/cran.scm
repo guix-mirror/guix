@@ -8584,6 +8584,28 @@ This package provides an R interface.")
     ;; GPLv2+.
     (license (list license:gpl2+ license:asl2.0))))
 
+(define-public r-rcpphnsw
+  (package
+    (name "r-rcpphnsw")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppHNSW" version))
+       (sha256
+        (base32
+         "158a069n42pbnjrlmvqsr6bm2cfp9hxpnk3nhp3dwi9qjlq4r9bm"))))
+    (properties `((upstream-name . "RcppHNSW")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/RcppHNSW/")
+    (synopsis "Rcpp bindings for hnswlib, a library for approximate nearest neighbors")
+    (description
+     "Hnswlib is a C++ library for approximate nearest neighbors.  This
+package provides a minimal R interface by relying on the Rcpp package.")
+    ;; hnswlib is released under Version 2.0 of the Apache License.
+    (license (list license:gpl3 license:asl2.0))))
+
 (define-public r-ncdf4
   (package
     (name "r-ncdf4")
