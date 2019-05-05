@@ -1545,14 +1545,14 @@ defined categories which are over/under represented in RNA-seq data.")
 (define-public r-glimma
   (package
     (name "r-glimma")
-    (version "1.10.1")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Glimma" version))
        (sha256
         (base32
-         "1ihrww55sa7ipi1rpp0rmn081sbqdwdmm5mz30zfrjr1xxqcdbcv"))))
+         "11qg5khqspxldfgg6p3xsxys472ab8wwi2snwc6bdxczv1f2p56x"))))
     (properties `((upstream-name . "Glimma")))
     (build-system r-build-system)
     (propagated-inputs
