@@ -841,13 +841,13 @@ resulting in a complete gene expression profile for each cell.")
 (define-public r-biocgenerics
   (package
     (name "r-biocgenerics")
-    (version "0.28.0")
+    (version "0.30.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocGenerics" version))
               (sha256
                (base32
-                "0cvpsrhg7sn7lpqgxvqrsagv6j7xj5rafq5xdjfd8zc4gxrs5rb8"))))
+                "1n87686bg5nmpqdpzwv1h551dkbxp9wk6wbmzpkgm71qxnk2yv9f"))))
     (properties
      `((upstream-name . "BiocGenerics")))
     (build-system r-build-system)
