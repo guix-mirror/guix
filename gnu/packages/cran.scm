@@ -14129,3 +14129,24 @@ developed/implemented at the group \"Statistical Complexity Reduction In
 Molecular Epidemiology\" (SCRIME).  The main focus is on SNP data, but most of
 the functions can also be applied to other types of categorical data.")
     (license license:gpl2)))
+
+(define-public r-blme
+  (package
+    (name "r-blme")
+    (version "1.0-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "blme" version))
+       (sha256
+        (base32
+         "1ca2b0248k0fj3lczn9shfjplz1sl4ay4v6djldizp2ch2vwdgy2"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-lme4" ,r-lme4)))
+    (home-page "https://github.com/vdorie/blme")
+    (synopsis "Bayesian linear mixed-effects models")
+    (description
+     "This package provides tools for maximum a posteriori estimation for
+linear and generalized linear mixed-effects models in a Bayesian setting.  It
+extends the lme4 package.")
+    (license license:gpl2+)))
