@@ -8095,13 +8095,13 @@ reference point and sorted by a user defined feature.")
 (define-public r-genomation
   (package
     (name "r-genomation")
-    (version "1.14.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "genomation" version))
               (sha256
                (base32
-                "0g0v4alfpqlinqinjnyzl3mrjnpbdx9ri34mcaiqbvbvg8ic8wvg"))))
+                "06i711pwq9znd7plh0p25skxnnh5dyl61c33k9gma243wvlzmlkj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
