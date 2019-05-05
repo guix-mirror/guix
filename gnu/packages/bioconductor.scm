@@ -935,14 +935,14 @@ region sets and other genomic features.")
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
-    (version "1.60.0")
+    (version "1.62.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "geneplotter" version))
        (sha256
         (base32
-         "10khr0pznxf3m0f5gzck9ymljrwcv3vamfmpskd51yjh36lhllqz"))))
+         "0jlqs20mqr0wgmjgzkzaynp3cy1z3xjzpz7055c1qi42fhimmimb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
