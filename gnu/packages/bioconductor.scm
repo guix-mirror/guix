@@ -960,14 +960,14 @@ region sets and other genomic features.")
 (define-public r-qvalue
   (package
     (name "r-qvalue")
-    (version "2.14.1")
+    (version "2.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "qvalue" version))
        (sha256
         (base32
-         "0kxavzm1j2mk26qicmjm90nxx4w5h3dxighzks7wzihay3k8cysc"))))
+         "00mahhwb4n2s6nycwkdkjs2qgyyyi7hyrby3qr269krprr6q3lh5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
