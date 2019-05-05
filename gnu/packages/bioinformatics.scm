@@ -10342,13 +10342,13 @@ EMBL-EBI GWAS catalog.")
 (define-public r-sushi
   (package
     (name "r-sushi")
-    (version "1.20.0")
+    (version "1.22.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Sushi" version))
               (sha256
                (base32
-                "0dv5di0hgbvk9cxnqhyf18mdjl50k6bk00a89r6zgp83rbxwr1r8"))))
+                "1hgh3jfcx0bh3fyvp85v7435hvsk3ah1hxx5117ss93v03iwjf1g"))))
     (properties `((upstream-name . "Sushi")))
     (build-system r-build-system)
     (propagated-inputs
