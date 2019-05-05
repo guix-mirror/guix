@@ -8437,14 +8437,14 @@ library implementing most of the pipeline's features.")
 (define-public r-mutationalpatterns
   (package
     (name "r-mutationalpatterns")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MutationalPatterns" version))
        (sha256
         (base32
-         "0w9lg1zs106h6rqvy8mhikq6q6q9syw6c1prcxr38ssh85rcih12"))))
+         "1k3r06xj1nim1s8as1i7fykfa6fbb4x456kslbzdvbf83ppx34z3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
