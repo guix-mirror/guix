@@ -24649,7 +24649,7 @@ example graph.
 @cindex virtual machine
 To run Guix in a virtual machine (VM), one can use the pre-built Guix VM image
 distributed at
-@url{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.x86_64-linux.xz}
+@url{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.x86_64-linux.xz}.
 This image is a compressed image in QCOW format.  You will first need to
 decompress with @command{xz -d}, and then you can pass it to an emulator such
 as QEMU (see below for details).
