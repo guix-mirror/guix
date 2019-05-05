@@ -1779,21 +1779,20 @@ possible, parallelization is achieved using the BiocParallel framework.")
 (define-public r-destiny
   (package
     (name "r-destiny")
-    (version "2.12.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "destiny" version))
        (sha256
         (base32
-         "1iay17mrhsfmpwl920rh1nip5b6ybva4h6bna0yld04paq5yva67"))))
+         "1bpa114fgrknn6415g4d1jrvb924nkwi18jzfqribpvcf1vlgrf3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
-       ("r-fnn" ,r-fnn)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-ggthemes" ,r-ggthemes)
-       ("r-hmisc" ,r-hmisc)
        ("r-igraph" ,r-igraph)
        ("r-matrix" ,r-matrix)
        ("r-proxy" ,r-proxy)
