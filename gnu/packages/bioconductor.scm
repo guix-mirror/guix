@@ -3829,14 +3829,14 @@ provided.")
 (define-public r-gcrma
   (package
     (name "r-gcrma")
-    (version "2.54.0")
+    (version "2.56.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gcrma" version))
        (sha256
         (base32
-         "1v5fi98gdmj002ryq0rgsg2l4x3m3w5pz4h3bx4v8lk15azafgim"))))
+         "1wazr3f4hwzpd0cjs2nlnzifr2g1r8a692pxap9xnmrw66zq94s4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-affy" ,r-affy)
