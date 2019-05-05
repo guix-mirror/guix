@@ -7369,13 +7369,13 @@ S4Vectors package itself.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.16.0")
+    (version "2.18.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "0ljppsk611xi72gc8mbdx1311b63b1ijd401jz5xmxk5frla1nc1"))))
+                "0g06y6xlm2q7p7g7phfc8qj14pqpgbb0mkyjzkfgsrwjmzvpwy6m"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
