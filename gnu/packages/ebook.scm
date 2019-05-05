@@ -95,13 +95,11 @@
         (snippet
           '(begin
             (delete-file "src/odf/thumbnail.py")
-            (delete-file-recursively "resources/fonts/liberation")
             #t))
         (patches (search-patches "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("font-liberation" ,font-liberation)
        ("qtbase" ,qtbase) ; for qmake
        ;; xdg-utils is supposed to be used for desktop integration, but it
        ;; also creates lots of messages
@@ -112,6 +110,7 @@
     (inputs
      `(("chmlib" ,chmlib)
        ("fontconfig" ,fontconfig)
+       ("font-liberation" ,font-liberation)
        ("glib" ,glib)
        ("icu4c" ,icu4c)
        ("js-mathjax" ,js-mathjax)
@@ -190,17 +189,18 @@
              (invoke "python2" "setup.py" "mathjax""--system-mathjax" "--path-to-mathjax"
                      (string-append (assoc-ref inputs "js-mathjax") "/share/javascript/mathjax"))
              (invoke "python2" "setup.py" "rapydscript")))
-         (add-after 'install 'install-font-liberation
+         ;; The font TTF files are used in some miscellaneous tests, so we
+         ;; unbundle them here to avoid patching the tests.
+         (add-after 'install 'unbundle-font-liberation
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (for-each (lambda (file)
-                         (install-file file (string-append
-                                             (assoc-ref outputs "out")
-                                             "/share/calibre/fonts/liberation")))
-                       (find-files (string-append
-                                    (assoc-ref inputs "font-liberation")
-                                    "/share/fonts/truetype")))
+             (let ((font-dest (string-append (assoc-ref outputs "out")
+                                             "/share/calibre/fonts/liberation"))
+                   (font-src (string-append (assoc-ref inputs "font-liberation")
+                                            "/share/fonts/truetype")))
+               (delete-file-recursively font-dest)
+               (symlink font-src font-dest))
              #t))
-         (add-after 'install-font-liberation 'install-mimetypes
+         (add-after 'unbundle-font-liberation 'install-mimetypes
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "resources/calibre-mimetypes.xml"
                            (string-append (assoc-ref outputs "out")
