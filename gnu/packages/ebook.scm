@@ -89,13 +89,13 @@
         (sha256
          (base32
           "167hhv4wimkjnyfgqkyqmaiixhicbxacy6190gps98jyj4csi8ra"))
-        ;; Remove non-free or doubtful code, see
+        ;; Unbundle python2-odfpy. 
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
         (snippet
           '(begin
-            (delete-file "src/odf/thumbnail.py")
-            #t))
+             (delete-file-recursively "src/odf")
+             #t))
         (patches (search-patches "calibre-no-updates-dialog.patch"
                                  "calibre-remove-test-bs4.patch" ; TODO: fix test.
                                  "calibre-remove-test-sqlite.patch" ; TODO: fix test.
@@ -141,6 +141,7 @@
        ;; python2-msgpack is needed for the network content server to work.
        ("python2-msgpack" ,python2-msgpack)
        ("python2-netifaces" ,python2-netifaces)
+       ("python2-odfpy" ,python2-odfpy)
        ("python2-pillow" ,python2-pillow)
        ("python2-psutil" ,python2-psutil)
        ("python2-pygments" ,python2-pygments)
