@@ -7733,13 +7733,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "1.34.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "02paq7klabdkaf1b8pmmbpmyqsj3yncnfsz62rgka6r4dpsilwk9"))))
+                "1nv5idyjk75mvl4np5sig0xa6qygm1ivj33k041ffyj19q8jf7ij"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -7763,6 +7763,7 @@ biological sequences or sets of sequences.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-rhtslib" ,r-rhtslib)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
     (home-page "https://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
