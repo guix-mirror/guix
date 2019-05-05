@@ -722,7 +722,7 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.8.3")
+    (version "1.9.1")
     (source
      (origin
        (method git-fetch)
@@ -730,7 +730,7 @@ decompression of some loosely related file formats used by Microsoft.")
                            (commit (string-append "v" version))))
        (sha256
         (base32
-         "0lq00yi7alr9aip6dw0flykzi8yv7z43aay177n86spn9qms7s3g"))
+         "1l1caxrik1hqs40vj3bpv1pikw6b74cfazv5c0v6g48zpcbmshl0"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs `(("valgrind" ,valgrind)))    ;for tests
