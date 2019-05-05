@@ -7777,13 +7777,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.8.0")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "0cl5anqkjwvqx19snjhz0zj8cp8ibckiifl28h821h50g62nvb2f"))))
+                "0l907ggxndn3f29zvsd5pppmp4c31rb22r6zkhvgph7xdxahyy6z"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -7792,6 +7792,7 @@ tab-delimited (tabix) files.")
        ("r-biocparallel" ,r-biocparallel)
        ("r-s4vectors" ,r-s4vectors)
        ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
        ("r-matrixstats" ,r-matrixstats)))
     (home-page "https://bioconductor.org/packages/DelayedArray")
     (synopsis "Delayed operations on array-like objects")
