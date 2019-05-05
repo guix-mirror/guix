@@ -9164,14 +9164,14 @@ proteomics packages.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.16.2")
+    (version "2.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "19fn58zl59kd0hsjjc6y975y9187nfls0028a4k3v0s9wfg5b3vn"))
+         "0g5r6yk4gyz0xdwlmrcij4zv7apdgsgygr043095l33hard6nsl5"))
        (modules '((guix build utils)))
        (snippet
         '(begin
