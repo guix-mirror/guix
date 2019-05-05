@@ -2854,17 +2854,18 @@ phenotype of interest.")
 (define-public r-fgsea
   (package
     (name "r-fgsea")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "fgsea" version))
        (sha256
         (base32
-         "0cxxvlmg340l5l5fz4abbwppiri0ibg4navvq5k3wg511mz8ma2q"))))
+         "07mvv1i690q80fm8sxgdqxchamn76409vn91ppgcck2xpi6b8q6c"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biocparallel" ,r-biocparallel)
+     `(("r-bh" ,r-bh)
+       ("r-biocparallel" ,r-biocparallel)
        ("r-data-table" ,r-data-table)
        ("r-fastmatch" ,r-fastmatch)
        ("r-ggplot2" ,r-ggplot2)
