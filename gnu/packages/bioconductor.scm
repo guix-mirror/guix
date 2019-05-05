@@ -989,14 +989,14 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
 (define-public r-diffbind
   (package
     (name "r-diffbind")
-    (version "2.10.0")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DiffBind" version))
        (sha256
         (base32
-         "0j8pal40lr1gv8sss96hhkj7l1qn9sy4q4l2kqd4rfwl7qrcnfw5"))))
+         "1ialb1j2xa21a8dzss76qky83rg8y6jwdwi0mhy8b088zvxavich"))))
     (properties `((upstream-name . "DiffBind")))
     (build-system r-build-system)
     (inputs
@@ -1018,11 +1018,11 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
        ("r-locfit" ,r-locfit)
        ("r-rcolorbrewer" , r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
+       ("r-rhtslib" ,r-rhtslib)
        ("r-rsamtools" ,r-rsamtools)
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
-       ("r-systempiper" ,r-systempiper)
-       ("r-zlibbioc" ,r-zlibbioc)))
+       ("r-systempiper" ,r-systempiper)))
     (home-page "http://bioconductor.org/packages/DiffBind")
     (synopsis "Differential binding analysis of ChIP-Seq peak data")
     (description
