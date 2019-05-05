@@ -3115,14 +3115,14 @@ Affymetrix arrays.")
 (define-public r-a4preproc
   (package
     (name "r-a4preproc")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Preproc" version))
        (sha256
         (base32
-         "1dd3fqcc7nr2zbi46k0mnqkh42mfxk894ixfpqg7i9np2523p5gp"))))
+         "13sj4zriq1mian2xcjwkbmmpdjh3h6dgjslar2hc8nmd34cb9xjr"))))
     (properties `((upstream-name . "a4Preproc")))
     (build-system r-build-system)
     (propagated-inputs
