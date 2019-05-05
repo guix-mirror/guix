@@ -1742,6 +1742,38 @@ to search for all neighbors within a given distance.  Parallelization is
 achieved for all methods using the BiocParallel framework.")
     (license license:gpl3)))
 
+(define-public r-biocsingular
+  (package
+    (name "r-biocsingular")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocSingular" version))
+       (sha256
+        (base32
+         "129z6bkdhm5wlvrjiwrr8yl2jj9chh4i6dm6firlj4c4ql3jp4f5"))))
+    (properties `((upstream-name . "BiocSingular")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-irlba" ,r-irlba)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rsvd" ,r-rsvd)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/LTLA/BiocSingular")
+    (synopsis "Singular value decomposition for Bioconductor packages")
+    (description
+     "This package implements exact and approximate methods for singular value
+decomposition and principal components analysis, in a framework that allows
+them to be easily switched within Bioconductor packages or workflows.  Where
+possible, parallelization is achieved using the BiocParallel framework.")
+    (license license:gpl3)))
+
 (define-public r-destiny
   (package
     (name "r-destiny")
