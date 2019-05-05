@@ -8018,13 +8018,13 @@ dependencies between GO terms can be implemented and applied.")
 (define-public r-bsgenome
   (package
     (name "r-bsgenome")
-    (version "1.50.0")
+    (version "1.52.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BSgenome" version))
               (sha256
                (base32
-                "07z4zxx0khrc86qqvc7vxww8df9fh6pyks9ajxkc9gdqr5nn79j7"))))
+                "0zwx42s73hc1vhn0v82i67mcixdwwc6n6q5h5vpnhpxlm4qwgqzp"))))
     (properties
      `((upstream-name . "BSgenome")))
     (build-system r-build-system)
