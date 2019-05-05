@@ -4303,3 +4303,33 @@ expression\".")
 method} (ARRm) for the normalization of methylation data from the Illumina
 Infinium HumanMethylation 450k assay.")
     (license license:artistic2.0)))
+
+(define-public r-biocfilecache
+  (package
+    (name "r-biocfilecache")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiocFileCache" version))
+       (sha256
+        (base32
+         "1mi8p8hvrdxim8lqsid2cb7284imyjf9rlzsrdlzdjac7dp9bpdb"))))
+    (properties `((upstream-name . "BiocFileCache")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-dbi" ,r-dbi)
+       ("r-dbplyr" ,r-dbplyr)
+       ("r-dplyr" ,r-dplyr)
+       ("r-httr" ,r-httr)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://bioconductor.org/packages/BiocFileCache/")
+    (synopsis "Manage files across sessions")
+    (description
+     "This package creates a persistent on-disk cache of files that the user
+can add, update, and retrieve.  It is useful for managing resources (such as
+custom Txdb objects) that are costly or difficult to create, web resources,
+and data files used across sessions.")
+    (license license:artistic2.0)))
