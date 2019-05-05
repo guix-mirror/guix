@@ -519,6 +519,20 @@ It also includes runtime support libraries for these languages.")))
               (patches (search-patches "gcc-8-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))))
 
+(define-public gcc-9
+  (package
+   (inherit gcc-8)
+   (version "9.1.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/gcc/gcc-"
+                                version "/gcc-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1817nc2bqdc251k0lpc51cimna7v68xjrnvqzvc50q3ax4s6i9kr"))
+            (patches (search-patches "gcc-9-strmov-store-file-names.patch"
+                                     "gcc-5.0-libvtv-runpath.patch"))))))
+
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition
 ;;       accordingly.
