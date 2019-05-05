@@ -14232,3 +14232,35 @@ consensus and secondary clusterings.")
 in an OpenMP parallel environment.  In addition, there is a generator for one
 dimensional low-discrepancy sequence.")
     (license license:expat)))
+
+(define-public r-dqrng
+  (package
+    (name "r-dqrng")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dqrng" version))
+       (sha256
+        (base32
+         "07fgs08w0afgz36lh90g5gi7rc93j2c0cqc9wvakch05f178wis4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)
+       ("r-sitmo" ,r-sitmo)))
+    (home-page "https://www.daqana.org/dqrng")
+    (synopsis "Fast pseudo random number generators")
+    (description
+     "Several fast random number generators are provided as C++ header-only
+libraries: the PCG family as well as Xoroshiro128+ and Xoshiro256+.
+Additionally, fast functions for generating random numbers according to a
+uniform, normal and exponential distribution are included.  The latter two use
+the Ziggurat algorithm originally proposed by Marsaglia and Tsang.  These
+functions are exported to R and as a C++ interface and are enabled for use
+with the default 64 bit generator from the PCG family, Xoroshiro128+ and
+Xoshiro256+ as well as the 64 bit version of the 20 rounds Threefry
+engine (Salmon et al., 2011) as provided by the package @code{sitmo}.")
+    ;; This package includes code under CC0 and Apache 2.0 or Expat, but as a
+    ;; whole is distributed under the terms of the AGPL 3.
+    (license license:agpl3)))
