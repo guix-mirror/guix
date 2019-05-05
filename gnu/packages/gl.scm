@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -278,7 +278,7 @@ also known as DXTn or DXTC) for Mesa.")
        '(,@(match (%current-system)
              ((or "armhf-linux" "aarch64-linux")
               ;; TODO: Fix svga driver for aarch64 and armhf.
-              '("-Dgallium-drivers=etnaviv,freedreno,imx,nouveau,pl111,r300,r600,swrast,tegra,v3d,vc4,virgl"))
+              '("-Dgallium-drivers=etnaviv,freedreno,nouveau,r300,r600,swrast,tegra,v3d,vc4,virgl"))
              (_
               '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
