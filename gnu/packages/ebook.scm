@@ -95,6 +95,11 @@
         (snippet
           '(begin
              (delete-file-recursively "src/odf")
+             (delete-file "resources/viewer.js")
+             (delete-file "resources/viewer.html")
+             (delete-file "resources/mozilla-ca-certs.pem")
+             (delete-file "resources/calibre-portable.bat")
+             (delete-file "resources/calibre-portable.sh")
              #t))
         (patches (search-patches "calibre-no-updates-dialog.patch"
                                  "calibre-remove-test-bs4.patch" ; TODO: fix test.
