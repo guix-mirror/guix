@@ -6760,14 +6760,14 @@ exploration of the results.")
 (define-public r-annotationforge
   (package
     (name "r-annotationforge")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationForge" version))
        (sha256
         (base32
-         "13yvhf3yskmvhs8szs6rkw93h81h5xqa3h19h91pp6nprhc8s3ll"))))
+         "0m4w8n2711wr28znv646cfc7m5jqlr8friz334zdyjmhg7m2xkb7"))))
     (properties
      `((upstream-name . "AnnotationForge")))
     (build-system r-build-system)
