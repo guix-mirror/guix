@@ -8344,13 +8344,13 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.8.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "RCAS" version))
               (sha256
                (base32
-                "0ss5hcg2m7gjji6dd23zxa5bd5a7knwcnada4qs5q2l4clgk39ad"))))
+                "1h4vf5gzilqbdrd8m9l3zc2m4sca8cir8366a7njgd558k7ld5kl"))))
     (properties `((upstream-name . "RCAS")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8381,7 +8381,8 @@ paired-end data.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-s4vectors" ,r-s4vectors)
-       ("r-topgo" ,r-topgo)))
+       ("r-topgo" ,r-topgo)
+       ("pandoc" ,ghc-pandoc)))
     (synopsis "RNA-centric annotation system")
     (description
      "RCAS aims to be a standalone RNA-centric annotation system that provides
