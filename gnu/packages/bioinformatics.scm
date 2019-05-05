@@ -10543,14 +10543,14 @@ matrices.")
 (define-public r-singlecellexperiment
   (package
     (name "r-singlecellexperiment")
-    (version "1.4.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "SingleCellExperiment" version))
        (sha256
         (base32
-         "12139kk9cqgzpm6f3cwdsq31gj5lxamz2q939dy9fa0fa54gdaq4"))))
+         "0m3yjnv1njb4gyzcjfk7a0lz2vgggp2wjz382gqrb0qhhwcgfkj5"))))
     (properties
      `((upstream-name . "SingleCellExperiment")))
     (build-system r-build-system)
