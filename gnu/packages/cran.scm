@@ -14108,3 +14108,24 @@ batch correction, and data correction.")
      "This is a package for pretty-printing R code without changing the user's
 formatting intent.")
     (license license:gpl3)))
+
+(define-public r-scrime
+  (package
+    (name "r-scrime")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "scrime" version))
+       (sha256
+        (base32
+         "0y2mh9fsffjf3i15bafpasa17z99c1s75r8g6h4hgcwfgpjx75sx"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/scrime/")
+    (synopsis "Analysis of high-dimensional categorical data such as SNP data")
+    (description
+     "This package provides tools for the analysis of high-dimensional data
+developed/implemented at the group \"Statistical Complexity Reduction In
+Molecular Epidemiology\" (SCRIME).  The main focus is on SNP data, but most of
+the functions can also be applied to other types of categorical data.")
+    (license license:gpl2)))
