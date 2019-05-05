@@ -2422,14 +2422,14 @@ studies.")
 (define-public r-minfi
   (package
     (name "r-minfi")
-    (version "1.28.4")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "minfi" version))
        (sha256
         (base32
-         "1sjwwqb0syngvj75saaky9y06hbxsawhhcmfvavzkhicxipafv7r"))))
+         "0qir0zd0qa97fzm33v10nyrsjp8nmzhn7mn20dnlpsg7rwlf60pd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beanplot" ,r-beanplot)
