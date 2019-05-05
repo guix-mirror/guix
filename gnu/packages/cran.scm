@@ -4427,6 +4427,33 @@ files.")
 environment within Shiny.")
     (license license:expat)))
 
+(define-public r-base64url
+  (package
+    (name "r-base64url")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "base64url" version))
+       (sha256
+        (base32
+         "0n1c2b68vza1dh7sk38v6biiwm72c4jpl79kpdg1bsb0hq9qy18x"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)))
+    (home-page "https://github.com/mllg/base64url")
+    (synopsis "Fast and URL-safe base64 encoder and decoder")
+    (description
+     "This package provides a URL-safe base64 encoder and decoder.  In
+contrast to RFC3548, the 62nd character (@code{+}) is replaced with @code{-},
+the 63rd character (@code{/}) is replaced with @code{_}.  Furthermore, the
+encoder does not fill the string with trailing @code{=}.  The resulting
+encoded strings comply to the regular expression pattern @code{[A-Za-z0-9_-]}
+and thus are safe to use in URLs or for file names.  The package also comes
+with a simple base32 encoder/decoder suited for case insensitive file
+systems.")
+    (license license:gpl3)))
+
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
