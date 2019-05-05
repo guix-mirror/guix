@@ -14211,3 +14211,24 @@ structures for representing partitions and hierarchies, and facilities for
 computing on them, including methods for measuring proximity and obtaining
 consensus and secondary clusterings.")
     (license license:gpl2)))
+
+(define-public r-sitmo
+  (package
+    (name "r-sitmo")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sitmo" version))
+       (sha256
+        (base32
+         "0apdhwy3kxs39agsbvx5vn3xsgb22bf3jrwmr2cmqk9kmxbx740c"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/coatless/sitmo/")
+    (synopsis "Parallel pseudo random number generator header files")
+    (description
+     "This package provides two high quality and fast PPRNGs that may be used
+in an OpenMP parallel environment.  In addition, there is a generator for one
+dimensional low-discrepancy sequence.")
+    (license license:expat)))
