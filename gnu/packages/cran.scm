@@ -9624,6 +9624,37 @@ handling.")
 PostScript pictures in R plots.")
     (license license:gpl2+)))
 
+(define-public r-grimport2
+  (package
+    (name "r-grimport2")
+    (version "0.1-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "grImport2" version))
+       (sha256
+        (base32
+         "1hwx287pp936f0wbcicplwmhz96ip00wq09dp7bvz80lqcmr8nyx"))))
+    (properties `((upstream-name . "grImport2")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-jpeg" ,r-jpeg)
+       ("r-png" ,r-png)
+       ("r-xml" ,r-xml)))
+    (home-page "https://cran.r-project.org/web/packages/grImport2/")
+    (synopsis "Import SVG graphics")
+    (description
+     "This package provides functions for importing external vector images and
+drawing them as part of R plots.  This package is different from the
+@code{grImport} package because, where that package imports PostScript format
+images, this package imports SVG format images.  Furthermore, this package
+imports a specific subset of SVG, so external images must be preprocessed
+using a package like @code{rsvg} to produce SVG that this package can import.
+SVG features that are not supported by R graphics, such as gradient fills, can
+be imported and then exported via the @code{gridSVG} package.")
+    (license license:gpl2+)))
+
 (define-public r-kohonen
   (package
     (name "r-kohonen")
