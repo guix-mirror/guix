@@ -3406,14 +3406,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.6.4")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "1rblvqar11fib6ip2hq0756vqi6qmncf90jw6i5p5lrgzmaxy8hn"))))
+         "03f130vcd6hd3fv2pg60id0ddd6qkwsyx73gm907xaayf42ar2pj"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3421,6 +3421,7 @@ position-specific scores within R and Bioconductor.")
        ("r-biostrings" ,r-biostrings)
        ("r-bsgenome" ,r-bsgenome)
        ("r-chippeakanno" ,r-chippeakanno)
+       ("r-edger" ,r-edger)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicranges" ,r-genomicranges)
