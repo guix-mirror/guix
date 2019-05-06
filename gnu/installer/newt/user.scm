@@ -34,7 +34,7 @@
   "Run a form to enter the user name, home directory, and password.  Use NAME,
 REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
   (define (pad-label label)
-    (string-pad-right label 20))
+    (string-pad-right label 25))
 
   (let* ((label-name
           (make-label -1 -1 (pad-label (G_ "Name"))))
@@ -44,7 +44,7 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
           (make-label -1 -1 (pad-label (G_ "Home directory"))))
          (label-password
           (make-label -1 -1 (pad-label (G_ "Password"))))
-         (entry-width 30)
+         (entry-width 35)
          (entry-name (make-entry -1 -1 entry-width
                                  #:initial-value name))
          (entry-real-name (make-entry -1 -1 entry-width
