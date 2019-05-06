@@ -734,6 +734,7 @@ by pressing the Exit button.~%~%")))
                     #:title (G_ "Partitioning method")
                     #:listbox-items items
                     #:listbox-item->text cdr
+                    #:sort-listbox-items? #f
                     #:button-text (G_ "Exit")
                     #:button-callback-procedure button-exit-action))
            (method (car result)))
