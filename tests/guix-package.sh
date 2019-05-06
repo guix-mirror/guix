@@ -398,3 +398,28 @@ else
     grep "manifest.scm:[1-3]:.*wonderful-package.*: unbound variable" \
 	 "$module_dir/stderr"
 fi
+
+# Verify that package outputs are included in search results.
+rm -rf "$module_dir"
+mkdir "$module_dir"
+cat > "$module_dir/foo.scm"<<EOF
+(define-module (foo)
+  #:use-module (guix packages)
+  #:use-module (guix build-system trivial))
+
+(define-public dummy-package
+  (package
+    (name "dummy-package")
+    (version "dummy-version")
+    (outputs '("out" "dummy-output"))
+    (source #f)
+    ;; Without a real build system, the "guix pacakge -s" command will fail.
+    (build-system trivial-build-system)
+    (synopsis "dummy-synopsis")
+    (description "dummy-description")
+    (home-page "https://dummy-home-page")
+    (license #f)))
+EOF
+guix package -L "$module_dir" -s dummy-output > /tmp/out
+test "`guix package -L "$module_dir" -s dummy-output | grep ^name:`" = "name: dummy-package"
+rm -rf "$module_dir"
