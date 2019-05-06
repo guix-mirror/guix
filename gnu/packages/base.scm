@@ -1009,6 +1009,35 @@ with the Linux kernel.")
                   (("/bin/pwd") "pwd"))
                 #t))))))))
 
+(define (make-gcc-libc base-gcc libc)
+  "Return a GCC that targets LIBC."
+  (package (inherit base-gcc)
+           (name (string-append (package-name base-gcc) "-"
+                                (package-name libc) "-"
+                                (package-version libc)))
+           (arguments
+            (substitute-keyword-arguments
+             (ensure-keyword-arguments (package-arguments base-gcc)
+                                       '(#:implicit-inputs? #f))
+             ((#:make-flags flags)
+              `(let ((libc (assoc-ref %build-inputs "libc")))
+                 ;; FLAGS_FOR_TARGET are needed for the target libraries to receive
+                 ;; the -Bxxx for the startfiles.
+                 (cons (string-append "FLAGS_FOR_TARGET=-B" libc "/lib")
+                       ,flags)))))
+           (native-inputs
+            `(("libc" ,libc)
+              ("libc:static" ,libc "static")
+              ,@(append (package-inputs base-gcc)
+                        (fold alist-delete (%final-inputs) '("libc" "libc:static")))))
+           (inputs '())))
+
+(define-public gcc-glibc-2.27
+  (make-gcc-libc gcc glibc-2.27))
+
+(define-public gcc-glibc-2.26
+  (make-gcc-libc gcc glibc-2.26))
+
 (define-public (make-glibc-locales glibc)
   (package
     (inherit glibc)
