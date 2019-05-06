@@ -861,6 +861,7 @@ term.js Javascript terminal emulator library.")
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
+         ("python2-futures" ,python2-futures)
           ,@(package-propagated-inputs terminado))))))
 
 (define-public python-wsgi-intercept
