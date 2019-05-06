@@ -174,8 +174,7 @@ unpacking."
              (when (file-is-directory? top-level-file)
                (copy-recursively top-level-file dest #:keep-mtime? #t)))
             (_
-             (copy-recursively "." dest #:keep-mtime? #t)))
-          #t))
+             (copy-recursively "." dest #:keep-mtime? #t)))))
       (delete-file-recursively scratch-dir)))
 
   (when (string-null? import-path)
@@ -185,10 +184,9 @@ unpacking."
   (let ((dest (string-append (getenv "GOPATH") "/src/" unpack-path)))
     (mkdir-p dest)
     (if (file-is-directory? source)
-        (begin
-          (copy-recursively source dest #:keep-mtime? #t)
-          #t)
-        (unpack-maybe-strip source dest))))
+        (copy-recursively source dest #:keep-mtime? #t)
+        (unpack-maybe-strip source dest)))
+  #t)
 
 (define (go-package? name)
   (string-prefix? "go-" name))
