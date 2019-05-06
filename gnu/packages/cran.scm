@@ -13262,14 +13262,14 @@ yeast.")
 (define-public r-gridgraphics
   (package
     (name "r-gridgraphics")
-    (version "0.3-0")
+    (version "0.4-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gridGraphics" version))
        (sha256
         (base32
-         "1p94flvq5h3x817pl1m0aj3sim87x6zdbpv9xrgdnqw3rxfzwgqs"))))
+         "1dwws704jw2yhcdihyynh06jq0a2bnq9gy3z41yqr2i8vmxkwlfi"))))
     (properties `((upstream-name . "gridGraphics")))
     (build-system r-build-system)
     (home-page "https://github.com/pmur002/gridgraphics")
