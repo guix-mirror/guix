@@ -130,7 +130,7 @@ MATE applications.")
      "MATE Power Manager is a MATE session daemon that acts as a policy agent on
 top of UPower.  It listens to system events and responds with user-configurable
 actions.")
-    (license license:gpl3+)))
+    (license license:gpl2+)))
 
 (define-public mate-icon-theme
   (package
