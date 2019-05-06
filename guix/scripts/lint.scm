@@ -84,6 +84,12 @@
             check-formatting
             run-checkers
 
+            lint-warning
+            lint-warning?
+            lint-warning-package
+            lint-warning-message
+            lint-warning-location
+
             %checkers
             lint-checker
             lint-checker?
@@ -93,42 +99,48 @@
 
 
 ;;;
-;;; Helpers
+;;; Warnings
 ;;;
-(define* (emit-warning package message #:optional field)
+
+(define-record-type* <lint-warning>
+  lint-warning make-lint-warning
+  lint-warning?
+  (package  lint-warning-package)
+  (message  lint-warning-message)
+  (location lint-warning-location
+            (default #f)))
+
+(define (package-file package)
+  (location-file
+   (package-location package)))
+
+(define* (make-warning package message
+                       #:key field location)
+  (make-lint-warning
+   package
+   message
+   (or location
+       (package-field-location package field)
+       (package-location package))))
+
+(define (emit-warnings warnings)
   ;; Emit a warning about PACKAGE, printing the location of FIELD if it is
   ;; given, the location of PACKAGE otherwise, the full name of PACKAGE and the
   ;; provided MESSAGE.
-  (let ((loc (or (package-field-location package field)
-                 (package-location package))))
-    (format (guix-warning-port) "~a: ~a@~a: ~a~%"
-            (location->string loc)
-            (package-name package) (package-version package)
-            message)))
-
-(define (call-with-accumulated-warnings thunk)
-  "Call THUNK, accumulating any warnings in the current state, using the state
-monad."
-  (let ((port (open-output-string)))
-    (mlet %state-monad ((state      (current-state))
-                        (result ->  (parameterize ((guix-warning-port port))
-                                      (thunk)))
-                        (warning -> (get-output-string port)))
-      (mbegin %state-monad
-        (munless (string=? "" warning)
-          (set-current-state (cons warning state)))
-        (return result)))))
-
-(define-syntax-rule (with-accumulated-warnings exp ...)
-  "Evaluate EXP and accumulate warnings in the state monad."
-  (call-with-accumulated-warnings
-   (lambda ()
-     exp ...)))
+  (for-each
+   (match-lambda
+     (($ <lint-warning> package message loc)
+      (format (guix-warning-port) "~a: ~a@~a: ~a~%"
+              (location->string loc)
+              (package-name package) (package-version package)
+              message)))
+   warnings))
 
 
 ;;;
 ;;; Checkers
 ;;;
+
 (define-record-type* <lint-checker>
   lint-checker make-lint-checker
   lint-checker?
@@ -163,10 +175,12 @@ monad."
 (define (check-description-style package)
   ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
   (define (check-not-empty description)
-    (when (string-null? description)
-      (emit-warning package
-                    (G_ "description should not be empty")
-                    'description)))
+    (if (string-null? description)
+        (list
+         (make-warning package
+                       (G_ "description should not be empty")
+                       #:field 'description))
+        '()))
 
   (define (check-texinfo-markup description)
     "Check that DESCRIPTION can be parsed as a Texinfo fragment.  If the
@@ -174,39 +188,44 @@ markup is valid return a plain-text version of DESCRIPTION, otherwise #f."
     (catch #t
       (lambda () (texi->plain-text description))
       (lambda (keys . args)
-        (emit-warning package
+        (make-warning package
                       (G_ "Texinfo markup in description is invalid")
-                      'description)
-        #f)))
+                      #:field 'description))))
 
   (define (check-trademarks description)
     "Check that DESCRIPTION does not contain '™' or '®' characters.  See
 http://www.gnu.org/prep/standards/html_node/Trademarks.html."
     (match (string-index description (char-set #\™ #\®))
       ((and (? number?) index)
-       (emit-warning package
-                     (format #f (G_ "description should not contain ~
+       (list
+        (make-warning package
+                      (format #f (G_ "description should not contain ~
 trademark sign '~a' at ~d")
-                             (string-ref description index) index)
-                     'description))
-      (else #t)))
+                              (string-ref description index) index)
+                      #:field 'description)))
+      (else '())))
 
   (define (check-quotes description)
     "Check whether DESCRIPTION contains single quotes and suggest @code."
-    (when (regexp-exec %quoted-identifier-rx description)
-      (emit-warning package
-
-                    ;; TRANSLATORS: '@code' is Texinfo markup and must be kept
-                    ;; as is.
-                    (G_ "use @code or similar ornament instead of quotes")
-                    'description)))
+    (if (regexp-exec %quoted-identifier-rx description)
+        (list
+         (make-warning package
+                       ;; TRANSLATORS: '@code' is Texinfo markup and must be kept
+                       ;; as is.
+                       (G_ "use @code or similar ornament instead of quotes")
+                       #:field 'description))
+        '()))
 
   (define (check-proper-start description)
-    (unless (or (properly-starts-sentence? description)
-                (string-prefix-ci? (package-name package) description))
-      (emit-warning package
-                    (G_ "description should start with an upper-case letter or digit")
-                    'description)))
+    (if (or (string-null? description)
+            (properly-starts-sentence? description)
+            (string-prefix-ci? (package-name package) description))
+        '()
+        (list
+         (make-warning
+          package
+          (G_ "description should start with an upper-case letter or digit")
+          #:field 'description))))
 
   (define (check-end-of-sentence-space description)
     "Check that an end-of-sentence period is followed by two spaces."
@@ -219,28 +238,33 @@ trademark sign '~a' at ~d")
                                    (string-suffix-ci? s (match:prefix m)))
                                  '("i.e" "e.g" "a.k.a" "resp"))
                            r (cons (match:start m) r)))))))
-      (unless (null? infractions)
-        (emit-warning package
-                      (format #f (G_ "sentences in description should be followed ~
+      (if (null? infractions)
+          '()
+          (list
+           (make-warning package
+                         (format #f (G_ "sentences in description should be followed ~
 by two spaces; possible infraction~p at ~{~a~^, ~}")
-                              (length infractions)
-                              infractions)
-                      'description))))
+                                 (length infractions)
+                                 infractions)
+                         #:field 'description)))))
 
   (let ((description (package-description package)))
     (if (string? description)
-        (begin
-          (check-not-empty description)
-          (check-quotes description)
-          (check-trademarks description)
-          ;; Use raw description for this because Texinfo rendering
-          ;; automatically fixes end of sentence space.
-          (check-end-of-sentence-space description)
-          (and=> (check-texinfo-markup description)
-                 check-proper-start))
-        (emit-warning package
-                      (format #f (G_ "invalid description: ~s") description)
-                      'description))))
+        (append
+         (check-not-empty description)
+         (check-quotes description)
+         (check-trademarks description)
+         ;; Use raw description for this because Texinfo rendering
+         ;; automatically fixes end of sentence space.
+         (check-end-of-sentence-space description)
+         (match (check-texinfo-markup description)
+           ((and warning (? lint-warning?)) (list warning))
+           (plain-description
+            (check-proper-start plain-description))))
+        (list
+         (make-warning package
+                       (format #f (G_ "invalid description: ~s") description)
+                       #:field 'description)))))
 
 (define (package-input-intersection inputs-to-check input-names)
   "Return the intersection between INPUTS-TO-CHECK, the list of input tuples
@@ -281,13 +305,13 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "python-pytest-cov" "python2-pytest-cov"
             "python-setuptools-scm" "python2-setuptools-scm"
             "python-sphinx" "python2-sphinx")))
-    (for-each (lambda (input)
-                (emit-warning
-                 package
-                 (format #f (G_ "'~a' should probably be a native input")
-                         input)
-                 'inputs-to-check))
-              (package-input-intersection inputs input-names))))
+    (map (lambda (input)
+           (make-warning
+            package
+            (format #f (G_ "'~a' should probably be a native input")
+                    input)
+            #:field 'inputs))
+         (package-input-intersection inputs input-names))))
 
 (define (check-inputs-should-not-be-an-input-at-all package)
   ;; Emit a warning if some inputs of PACKAGE are likely to should not be
@@ -296,14 +320,15 @@ of a package, and INPUT-NAMES, a list of package specifications such as
                        "python2-setuptools"
                        "python-pip"
                        "python2-pip")))
-    (for-each (lambda (input)
-                (emit-warning
-                 package
-                 (format #f
-                         (G_ "'~a' should probably not be an input at all")
-                         input)))
-              (package-input-intersection (package-direct-inputs package)
-                                          input-names))))
+    (map (lambda (input)
+           (make-warning
+            package
+            (format #f
+                    (G_ "'~a' should probably not be an input at all")
+                    input)
+            #:field 'inputs))
+         (package-input-intersection (package-direct-inputs package)
+                                     input-names))))
 
 (define (package-name-regexp package)
   "Return a regexp that matches PACKAGE's name as a word at the beginning of a
@@ -314,66 +339,71 @@ line."
 
 (define (check-synopsis-style package)
   ;; Emit a warning if stylistic issues are found in the synopsis of PACKAGE.
-  (define (check-not-empty synopsis)
-    (when (string-null? synopsis)
-      (emit-warning package
-                    (G_ "synopsis should not be empty")
-                    'synopsis)))
-
   (define (check-final-period synopsis)
     ;; Synopsis should not end with a period, except for some special cases.
-    (when (and (string-suffix? "." synopsis)
-               (not (string-suffix? "etc." synopsis)))
-      (emit-warning package
-                    (G_ "no period allowed at the end of the synopsis")
-                    'synopsis)))
+    (if (and (string-suffix? "." synopsis)
+             (not (string-suffix? "etc." synopsis)))
+        (list
+         (make-warning package
+                       (G_ "no period allowed at the end of the synopsis")
+                       #:field 'synopsis))
+        '()))
 
   (define check-start-article
     ;; Skip this check for GNU packages, as suggested by Karl Berry's reply to
     ;; <http://lists.gnu.org/archive/html/bug-womb/2014-11/msg00000.html>.
     (if (false-if-exception (gnu-package? package))
-        (const #t)
+        (const '())
         (lambda (synopsis)
-          (when (or (string-prefix-ci? "A " synopsis)
-                    (string-prefix-ci? "An " synopsis))
-            (emit-warning package
-                          (G_ "no article allowed at the beginning of \
+          (if (or (string-prefix-ci? "A " synopsis)
+                  (string-prefix-ci? "An " synopsis))
+              (list
+               (make-warning package
+                             (G_ "no article allowed at the beginning of \
 the synopsis")
-                          'synopsis)))))
+                             #:field 'synopsis))
+              '()))))
 
   (define (check-synopsis-length synopsis)
-    (when (>= (string-length synopsis) 80)
-      (emit-warning package
-                    (G_ "synopsis should be less than 80 characters long")
-                    'synopsis)))
+    (if (>= (string-length synopsis) 80)
+        (list
+         (make-warning package
+                       (G_ "synopsis should be less than 80 characters long")
+                       #:field 'synopsis))
+        '()))
 
   (define (check-proper-start synopsis)
-    (unless (properly-starts-sentence? synopsis)
-      (emit-warning package
-                    (G_ "synopsis should start with an upper-case letter or digit")
-                    'synopsis)))
+    (if (properly-starts-sentence? synopsis)
+        '()
+        (list
+         (make-warning package
+                       (G_ "synopsis should start with an upper-case letter or digit")
+                       #:field 'synopsis))))
 
   (define (check-start-with-package-name synopsis)
-    (when (and (regexp-exec (package-name-regexp package) synopsis)
+    (if (and (regexp-exec (package-name-regexp package) synopsis)
                (not (starts-with-abbreviation? synopsis)))
-      (emit-warning package
-                    (G_ "synopsis should not start with the package name")
-                    'synopsis)))
+        (list
+         (make-warning package
+                       (G_ "synopsis should not start with the package name")
+                       #:field 'synopsis))
+        '()))
 
   (define (check-texinfo-markup synopsis)
     "Check that SYNOPSIS can be parsed as a Texinfo fragment.  If the
 markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
     (catch #t
-      (lambda () (texi->plain-text synopsis))
+      (lambda ()
+        (texi->plain-text synopsis)
+        '())
       (lambda (keys . args)
-        (emit-warning package
-                      (G_ "Texinfo markup in synopsis is invalid")
-                      'synopsis)
-        #f)))
+        (list
+         (make-warning package
+                       (G_ "Texinfo markup in synopsis is invalid")
+                       #:field 'synopsis)))))
 
   (define checks
-    (list check-not-empty
-          check-proper-start
+    (list check-proper-start
           check-final-period
           check-start-article
           check-start-with-package-name
@@ -381,13 +411,20 @@ markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
           check-texinfo-markup))
 
   (match (package-synopsis package)
+    (""
+     (list
+      (make-warning package
+                    (G_ "synopsis should not be empty")
+                    #:field 'synopsis)))
     ((? string? synopsis)
-     (for-each (lambda (proc)
-                 (proc synopsis))
-               checks))
+     (append-map
+      (lambda (proc)
+        (proc synopsis))
+      checks))
     (invalid
-     (emit-warning package (format #f (G_ "invalid synopsis: ~s") invalid)
-                   'synopsis))))
+     (list
+      (make-warning package (format #f (G_ "invalid synopsis: ~s") invalid)
+                    #:field 'synopsis)))))
 
 (define* (probe-uri uri #:key timeout)
   "Probe URI, a URI object, and return two values: a symbol denoting the
@@ -489,8 +526,8 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
                        'tls-certificate-error args))))
 
 (define (validate-uri uri package field)
-  "Return #t if the given URI can be reached, otherwise return #f and emit a
-warning for PACKAGE mentionning the FIELD."
+  "Return #t if the given URI can be reached, otherwise return a warning for
+PACKAGE mentionning the FIELD."
   (let-values (((status argument)
                 (probe-uri uri #:timeout 3)))     ;wait at most 3 seconds
     (case status
@@ -502,71 +539,66 @@ warning for PACKAGE mentionning the FIELD."
                  ;; with a small HTML page upon failure.  Attempt to detect
                  ;; such malicious behavior.
                  (or (> length 1000)
-                     (begin
-                       (emit-warning package
-                                     (format #f
-                                             (G_ "URI ~a returned \
+                     (make-warning package
+                                   (format #f
+                                           (G_ "URI ~a returned \
 suspiciously small file (~a bytes)")
-                                             (uri->string uri)
-                                             length))
-                       #f)))
+                                           (uri->string uri)
+                                           length)
+                                   #:field field)))
                 (_ #t)))
              ((= 301 (response-code argument))
               (if (response-location argument)
-                  (begin
-                    (emit-warning package
-                                  (format #f (G_ "permanent redirect from ~a to ~a")
-                                          (uri->string uri)
-                                          (uri->string
-                                           (response-location argument))))
-                    #t)
-                  (begin
-                    (emit-warning package
-                                  (format #f (G_ "invalid permanent redirect \
+                  (make-warning package
+                                (format #f (G_ "permanent redirect from ~a to ~a")
+                                        (uri->string uri)
+                                        (uri->string
+                                         (response-location argument)))
+                                #:field field)
+                  (make-warning package
+                                (format #f (G_ "invalid permanent redirect \
 from ~a")
-                                          (uri->string uri)))
-                    #f)))
+                                        (uri->string uri))
+                                #:field field)))
              (else
-              (emit-warning package
+              (make-warning package
                             (format #f
                                     (G_ "URI ~a not reachable: ~a (~s)")
                                     (uri->string uri)
                                     (response-code argument)
                                     (response-reason-phrase argument))
-                            field)
-              #f)))
+                            #:field field))))
       ((ftp-response)
        (match argument
          (('ok) #t)
          (('error port command code message)
-          (emit-warning package
+          (make-warning package
                         (format #f
                                 (G_ "URI ~a not reachable: ~a (~s)")
                                 (uri->string uri)
-                                code (string-trim-both message)))
-          #f)))
+                                code (string-trim-both message))
+                        #:field field))))
       ((getaddrinfo-error)
-       (emit-warning package
+       (make-warning package
                      (format #f
                              (G_ "URI ~a domain not found: ~a")
                              (uri->string uri)
                              (gai-strerror (car argument)))
-                     field)
-       #f)
+                     #:field field))
       ((system-error)
-       (emit-warning package
+       (make-warning package
                      (format #f
                              (G_ "URI ~a unreachable: ~a")
                              (uri->string uri)
                              (strerror
                               (system-error-errno
                                (cons status argument))))
-                     field)
-       #f)
+                     #:field field))
       ((tls-certificate-error)
-       (emit-warning package
+       (make-warning package
                      (format #f (G_ "TLS certificate error: ~a")
-                             (tls-certificate-error-string argument))))
+                             (tls-certificate-error-string argument))
+                     #:field field))
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
        #f)
@@ -581,17 +613,23 @@ from ~a")
   (let ((uri (and=> (package-home-page package) string->uri)))
     (cond
      ((uri? uri)
-      (validate-uri uri package 'home-page))
+      (match (validate-uri uri package 'home-page)
+        ((and (? lint-warning? warning) warning)
+         (list warning))
+        (_ '())))
      ((not (package-home-page package))
-      (unless (or (string-contains (package-name package) "bootstrap")
-                  (string=? (package-name package) "ld-wrapper"))
-        (emit-warning package
-                      (G_ "invalid value for home page")
-                      'home-page)))
+      (if (or (string-contains (package-name package) "bootstrap")
+              (string=? (package-name package) "ld-wrapper"))
+          '()
+          (list
+           (make-warning package
+                         (G_ "invalid value for home page")
+                         #:field 'home-page))))
      (else
-      (emit-warning package (format #f (G_ "invalid home page URL: ~s")
-                                    (package-home-page package))
-                    'home-page)))))
+      (list
+       (make-warning package (format #f (G_ "invalid home page URL: ~s")
+                                     (package-home-page package))
+                     #:field 'home-page))))))
 
 (define %distro-directory
   (mlambda ()
@@ -601,42 +639,47 @@ from ~a")
   "Emit a warning if the patches requires by PACKAGE are badly named or if the
 patch could not be found."
   (guard (c ((message-condition? c)     ;raised by 'search-patch'
-             (emit-warning package (condition-message c)
-                           'patch-file-names)))
+             (list
+              (make-warning package (condition-message c)
+                            #:field 'patch-file-names))))
     (define patches
       (or (and=> (package-source package) origin-patches)
           '()))
 
-    (unless (every (match-lambda        ;patch starts with package name?
-                     ((? string? patch)
-                      (and=> (string-contains (basename patch)
-                                              (package-name package))
-                             zero?))
-                     (_  #f))     ;must be an <origin> or something like that.
-                   patches)
-      (emit-warning
-       package
-       (G_ "file names of patches should start with the package name")
-       'patch-file-names))
-
-    ;; Check whether we're reaching tar's maximum file name length.
-    (let ((prefix (string-length (%distro-directory)))
-          (margin (string-length "guix-0.13.0-10-123456789/"))
-          (max    99))
-      (for-each (match-lambda
+    (append
+     (if (every (match-lambda        ;patch starts with package name?
                   ((? string? patch)
-                   (when (> (+ margin (if (string-prefix? (%distro-directory)
-                                                          patch)
-                                          (- (string-length patch) prefix)
-                                          (string-length patch)))
-                            max)
-                     (emit-warning
-                      package
-                      (format #f (G_ "~a: file name is too long")
-                              (basename patch))
-                      'patch-file-names)))
-                  (_ #f))
-                patches))))
+                   (and=> (string-contains (basename patch)
+                                           (package-name package))
+                          zero?))
+                  (_  #f))     ;must be an <origin> or something like that.
+                patches)
+         '()
+         (list
+          (make-warning
+           package
+           (G_ "file names of patches should start with the package name")
+           #:field 'patch-file-names)))
+
+     ;; Check whether we're reaching tar's maximum file name length.
+     (let ((prefix (string-length (%distro-directory)))
+           (margin (string-length "guix-0.13.0-10-123456789/"))
+           (max    99))
+       (filter-map (match-lambda
+                     ((? string? patch)
+                      (if (> (+ margin (if (string-prefix? (%distro-directory)
+                                                           patch)
+                                           (- (string-length patch) prefix)
+                                           (string-length patch)))
+                             max)
+                          (make-warning
+                           package
+                           (format #f (G_ "~a: file name is too long")
+                                   (basename patch))
+                           #:field 'patch-file-names)
+                          #f))
+                     (_ #f))
+                   patches)))))
 
 (define (escape-quotes str)
   "Replace any quote character in STR by an escaped quote character."
@@ -663,32 +706,35 @@ descriptions maintained upstream."
                            (package-name package)))
                (official-gnu-packages*))
     (#f                                   ;not a GNU package, so nothing to do
-     #t)
+     '())
     (descriptor                                   ;a genuine GNU package
-     (let ((upstream   (gnu-package-doc-summary descriptor))
-           (downstream (package-synopsis package))
-           (loc        (or (package-field-location package 'synopsis)
-                           (package-location package))))
-       (when (and upstream
-                  (or (not (string? downstream))
-                      (not (string=? upstream downstream))))
-         (format (guix-warning-port)
-                 (G_ "~a: ~a: proposed synopsis: ~s~%")
-                 (location->string loc) (package-full-name package)
-                 upstream)))
+     (append
+      (let ((upstream   (gnu-package-doc-summary descriptor))
+            (downstream (package-synopsis package)))
+        (if (and upstream
+                 (or (not (string? downstream))
+                     (not (string=? upstream downstream))))
+            (list
+             (make-warning package
+                           (format #f (G_ "proposed synopsis: ~s~%")
+                                   upstream)
+                           #:field 'synopsis))
+            '()))
 
-     (let ((upstream   (gnu-package-doc-description descriptor))
-           (downstream (package-description package))
-           (loc        (or (package-field-location package 'description)
-                           (package-location package))))
-       (when (and upstream
-                  (or (not (string? downstream))
-                      (not (string=? (fill-paragraph upstream 100)
-                                     (fill-paragraph downstream 100)))))
-         (format (guix-warning-port)
-                 (G_ "~a: ~a: proposed description:~%     \"~a\"~%")
-                 (location->string loc) (package-full-name package)
-                 (fill-paragraph (escape-quotes upstream) 77 7)))))))
+      (let ((upstream   (gnu-package-doc-description descriptor))
+            (downstream (package-description package)))
+        (if (and upstream
+                 (or (not (string? downstream))
+                     (not (string=? (fill-paragraph upstream 100)
+                                    (fill-paragraph downstream 100)))))
+            (list
+             (make-warning
+              package
+              (format #f
+                      (G_ "proposed description:~%     \"~a\"~%")
+                      (fill-paragraph (escape-quotes upstream) 77 7))
+              #:field 'description))
+            '()))))))
 
 (define (origin-uris origin)
   "Return the list of URIs (strings) for ORIGIN."
@@ -701,38 +747,35 @@ descriptions maintained upstream."
 (define (check-source package)
   "Emit a warning if PACKAGE has an invalid 'source' field, or if that
 'source' is not reachable."
-  (define (try-uris uris)
-    (run-with-state
-        (anym %state-monad
-              (lambda (uri)
-                (with-accumulated-warnings
-                 (validate-uri uri package 'source)))
-              (append-map (cut maybe-expand-mirrors <> %mirrors)
-                          uris))
-      '()))
+  (define (warnings-for-uris uris)
+    (filter lint-warning?
+            (map
+             (lambda (uri)
+               (validate-uri uri package 'source))
+             (append-map (cut maybe-expand-mirrors <> %mirrors)
+                         uris))))
 
   (let ((origin (package-source package)))
-    (when (and origin
-               (eqv? (origin-method origin) url-fetch))
-      (let ((uris (map string->uri (origin-uris origin))))
+    (if (and origin
+             (eqv? (origin-method origin) url-fetch))
+        (let* ((uris (map string->uri (origin-uris origin)))
+               (warnings (warnings-for-uris uris)))
 
-        ;; Just make sure that at least one of the URIs is valid.
-        (call-with-values
-            (lambda () (try-uris uris))
-          (lambda (success? warnings)
-            ;; When everything fails, report all of WARNINGS, otherwise don't
-            ;; report anything.
-            ;;
-            ;; XXX: Ideally we'd still allow warnings to be raised if *some*
-            ;; URIs are unreachable, but distinguish that from the error case
-            ;; where *all* the URIs are unreachable.
-            (unless success?
-              (emit-warning package
-                            (G_ "all the source URIs are unreachable:")
-                            'source)
-              (for-each (lambda (warning)
-                          (display warning (guix-warning-port)))
-                        (reverse warnings)))))))))
+          ;; Just make sure that at least one of the URIs is valid.
+          (if (eq? (length uris) (length warnings))
+              ;; When everything fails, report all of WARNINGS, otherwise don't
+              ;; report anything.
+              ;;
+              ;; XXX: Ideally we'd still allow warnings to be raised if *some*
+              ;; URIs are unreachable, but distinguish that from the error case
+              ;; where *all* the URIs are unreachable.
+              (cons*
+               (make-warning package
+                             (G_ "all the source URIs are unreachable:")
+                             #:field 'source)
+               warnings)
+              '()))
+        '())))
 
 (define (check-source-file-name package)
   "Emit a warning if PACKAGE's origin has no meaningful file name."
@@ -748,27 +791,32 @@ descriptions maintained upstream."
            (not (string-match (string-append "^v?" version) file-name)))))
 
   (let ((origin (package-source package)))
-    (unless (or (not origin) (origin-file-name-valid? origin))
-      (emit-warning package
-                    (G_ "the source file name should contain the package name")
-                    'source))))
+    (if (or (not origin) (origin-file-name-valid? origin))
+        '()
+        (list
+         (make-warning package
+                       (G_ "the source file name should contain the package name")
+                       #:field 'source)))))
 
 (define (check-source-unstable-tarball package)
   "Emit a warning if PACKAGE's source is an autogenerated tarball."
   (define (check-source-uri uri)
-    (when (and (string=? (uri-host (string->uri uri)) "github.com")
-               (match (split-and-decode-uri-path
-                                   (uri-path (string->uri uri)))
-                      ((_ _ "archive" _ ...) #t)
-                      (_ #f)))
-      (emit-warning package
-                    (G_ "the source URI should not be an autogenerated tarball")
-                    'source)))
+    (if (and (string=? (uri-host (string->uri uri)) "github.com")
+             (match (split-and-decode-uri-path
+                     (uri-path (string->uri uri)))
+               ((_ _ "archive" _ ...) #t)
+               (_ #f)))
+        (make-warning package
+                      (G_ "the source URI should not be an autogenerated tarball")
+                      #:field 'source)
+        #f))
+
   (let ((origin (package-source package)))
-    (when (and (origin? origin)
-               (eqv? (origin-method origin) url-fetch))
-      (let ((uris (origin-uris origin)))
-        (for-each check-source-uri uris)))))
+    (if (and (origin? origin)
+             (eqv? (origin-method origin) url-fetch))
+        (filter-map check-source-uri
+                    (origin-uris origin))
+        '())))
 
 (define (check-mirror-url package)
   "Check whether PACKAGE uses source URLs that should be 'mirror://'."
@@ -776,24 +824,25 @@ descriptions maintained upstream."
     (let loop ((mirrors %mirrors))
       (match mirrors
         (()
-         #t)
+         #f)
         (((mirror-id mirror-urls ...) rest ...)
          (match (find (cut string-prefix? <> uri) mirror-urls)
            (#f
             (loop rest))
            (prefix
-            (emit-warning package
+            (make-warning package
                           (format #f (G_ "URL should be \
 'mirror://~a/~a'")
                                   mirror-id
                                   (string-drop uri (string-length prefix)))
-                          'source)))))))
+                          #:field 'source)))))))
 
   (let ((origin (package-source package)))
-    (when (and (origin? origin)
-               (eqv? (origin-method origin) url-fetch))
-      (let ((uris (origin-uris origin)))
-        (for-each check-mirror-uri uris)))))
+    (if (and (origin? origin)
+             (eqv? (origin-method origin) url-fetch))
+        (let ((uris (origin-uris origin)))
+          (filter-map check-mirror-uri uris))
+        '())))
 
 (define* (check-github-url package #:key (timeout 3))
   "Check whether PACKAGE uses source URLs that redirect to GitHub."
@@ -817,18 +866,20 @@ descriptions maintained upstream."
      (else #f)))
 
   (let ((origin (package-source package)))
-    (when (and (origin? origin)
-               (eqv? (origin-method origin) url-fetch))
-      (for-each
-       (lambda (uri)
-         (and=> (follow-redirects-to-github uri)
-                (lambda (github-uri)
-                  (unless (string=? github-uri uri)
-                    (emit-warning
-                     package
-                     (format #f (G_ "URL should be '~a'") github-uri)
-                     'source)))))
-       (origin-uris origin)))))
+    (if (and (origin? origin)
+             (eqv? (origin-method origin) url-fetch))
+        (filter-map
+         (lambda (uri)
+           (and=> (follow-redirects-to-github uri)
+                  (lambda (github-uri)
+                    (if (string=? github-uri uri)
+                        #f
+                        (make-warning
+                         package
+                         (format #f (G_ "URL should be '~a'") github-uri)
+                         #:field 'source)))))
+         (origin-uris origin))
+        '())))
 
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
@@ -836,12 +887,12 @@ descriptions maintained upstream."
     (catch #t
       (lambda ()
         (guard (c ((store-protocol-error? c)
-                   (emit-warning package
+                   (make-warning package
                                  (format #f (G_ "failed to create ~a derivation: ~a")
                                          system
                                          (store-protocol-error-message c))))
                   ((message-condition? c)
-                   (emit-warning package
+                   (make-warning package
                                  (format #f (G_ "failed to create ~a derivation: ~a")
                                          system
                                          (condition-message c)))))
@@ -858,21 +909,23 @@ descriptions maintained upstream."
                  (package-derivation store replacement system
                                      #:graft? #f)))))))
       (lambda args
-        (emit-warning package
+        (make-warning package
                       (format #f (G_ "failed to create ~a derivation: ~s")
                               system args)))))
 
-  (for-each try (package-supported-systems package)))
+  (filter lint-warning?
+          (map try (package-supported-systems package))))
 
 (define (check-license package)
   "Warn about type errors of the 'license' field of PACKAGE."
   (match (package-license package)
     ((or (? license?)
          ((? license?) ...))
-     #t)
+     '())
     (x
-     (emit-warning package (G_ "invalid license field")
-                   'license))))
+     (list
+      (make-warning package (G_ "invalid license field")
+                    #:field 'license)))))
 
 (define (call-with-networking-fail-safe message error-value proc)
   "Call PROC catching any network-related errors.  Upon a networking error,
@@ -932,7 +985,7 @@ the NIST server non-fatal."
   (let ((package (or (package-replacement package) package)))
     (match (package-vulnerabilities package)
       (()
-       #t)
+       '())
       ((vulnerabilities ...)
        (let* ((patched    (package-patched-vulnerabilities package))
               (known-safe (or (assq-ref (package-properties package)
@@ -943,11 +996,14 @@ the NIST server non-fatal."
                                      (or (member id patched)
                                          (member id known-safe))))
                                  vulnerabilities)))
-         (unless (null? unpatched)
-           (emit-warning package
-                         (format #f (G_ "probably vulnerable to ~a")
-                                 (string-join (map vulnerability-id unpatched)
-                                              ", ")))))))))
+         (if (null? unpatched)
+             '()
+             (list
+              (make-warning
+               package
+               (format #f (G_ "probably vulnerable to ~a")
+                       (string-join (map vulnerability-id unpatched)
+                                    ", "))))))))))
 
 (define (check-for-updates package)
   "Check if there is an update available for PACKAGE."
@@ -957,12 +1013,15 @@ the NIST server non-fatal."
           #f
           (package-latest-release* package (force %updaters)))
     ((? upstream-source? source)
-     (when (version>? (upstream-source-version source)
-                      (package-version package))
-       (emit-warning package
-                     (format #f (G_ "can be upgraded to ~a")
-                             (upstream-source-version source)))))
-    (#f #f))) ; cannot find newer upstream release
+     (if (version>? (upstream-source-version source)
+                    (package-version package))
+         (list
+          (make-warning package
+                        (format #f (G_ "can be upgraded to ~a")
+                                (upstream-source-version source))
+                        #:field 'version))
+         '()))
+    (#f '()))) ; cannot find newer upstream release
 
 
 ;;;
@@ -974,18 +1033,26 @@ the NIST server non-fatal."
   (match (string-index line #\tab)
     (#f #t)
     (index
-     (emit-warning package
+     (make-warning package
                    (format #f (G_ "tabulation on line ~a, column ~a")
-                           line-number index)))))
+                           line-number index)
+                   #:location
+                   (location (package-file package)
+                             line-number
+                             index)))))
 
 (define (report-trailing-white-space package line line-number)
   "Warn about trailing white space in LINE."
   (unless (or (string=? line (string-trim-right line))
               (string=? line (string #\page)))
-    (emit-warning package
+    (make-warning package
                   (format #f
                           (G_ "trailing white space on line ~a")
-                          line-number))))
+                          line-number)
+                  #:location
+                  (location (package-file package)
+                            line-number
+                            0))))
 
 (define (report-long-line package line line-number)
   "Emit a warning if LINE is too long."
@@ -993,9 +1060,13 @@ the NIST server non-fatal."
   ;; make it hard to fit within that limit and we want to avoid making too
   ;; much noise.
   (when (> (string-length line) 90)
-    (emit-warning package
+    (make-warning package
                   (format #f (G_ "line ~a is way too long (~a characters)")
-                          line-number (string-length line)))))
+                          line-number (string-length line))
+                  #:location
+                  (location (package-file package)
+                            line-number
+                            0))))
 
 (define %hanging-paren-rx
   (make-regexp "^[[:blank:]]*[()]+[[:blank:]]*$"))
@@ -1003,11 +1074,15 @@ the NIST server non-fatal."
 (define (report-lone-parentheses package line line-number)
   "Emit a warning if LINE contains hanging parentheses."
   (when (regexp-exec %hanging-paren-rx line)
-    (emit-warning package
+    (make-warning package
                   (format #f
-                          (G_ "line ~a: parentheses feel lonely, \
+                          (G_ "parentheses feel lonely, \
 move to the previous or next line")
-                          line-number))))
+                          line-number)
+                  #:location
+                  (location (package-file package)
+                            line-number
+                            0))))
 
 (define %formatting-reporters
   ;; List of procedures that report formatting issues.  These are not separate
@@ -1040,31 +1115,40 @@ them for PACKAGE."
   (call-with-input-file file
     (lambda (port)
       (let loop ((line-number 1)
-                 (last-line #f))
+                 (last-line #f)
+                 (warnings '()))
         (let ((line (read-line port)))
-          (or (eof-object? line)
-              (and last-line (> line-number last-line))
+          (if (or (eof-object? line)
+                  (and last-line (> line-number last-line)))
+              warnings
               (if (and (= line-number starting-line)
                        (not last-line))
                   (loop (+ 1 line-number)
-                        (+ 1 (sexp-last-line port)))
-                  (begin
-                    (unless (< line-number starting-line)
-                      (for-each (lambda (report)
-                                  (report package line line-number))
-                                reporters))
-                    (loop (+ 1 line-number) last-line)))))))))
+                        (+ 1 (sexp-last-line port))
+                        warnings)
+                  (loop (+ 1 line-number)
+                        last-line
+                        (append
+                         warnings
+                         (if (< line-number starting-line)
+                             '()
+                             (filter
+                              lint-warning?
+                              (map (lambda (report)
+                                     (report package line line-number))
+                                   reporters))))))))))))
 
 (define (check-formatting package)
   "Check the formatting of the source code of PACKAGE."
   (let ((location (package-location package)))
-    (when location
-      (and=> (search-path %load-path (location-file location))
-             (lambda (file)
-               ;; Report issues starting from the line before the 'package'
-               ;; form, which usually contains the 'define' form.
-               (report-formatting-issues package file
-                                         (- (location-line location) 1)))))))
+    (if location
+        (and=> (search-path %load-path (location-file location))
+               (lambda (file)
+                 ;; Report issues starting from the line before the 'package'
+                 ;; form, which usually contains the 'define' form.
+                 (report-formatting-issues package file
+                                           (- (location-line location) 1))))
+        '())))
 
 
 ;;;
@@ -1155,7 +1239,8 @@ or a list thereof")
                           (package-name package) (package-version package)
                           (lint-checker-name checker))
                   (force-output (current-error-port)))
-                ((lint-checker-check checker) package))
+                (emit-warnings
+                 ((lint-checker-check checker) package)))
               checkers)
     (when tty?
       (format (current-error-port) "\x1b[K")

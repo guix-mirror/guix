@@ -44,7 +44,12 @@
   #:use-module (web server http)
   #:use-module (web response)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 getopt-long)
+  #:use-module (ice-9 pretty-print)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64))
 
 ;; Test the linter.
@@ -60,781 +65,696 @@
 (define %long-string
   (make-string 2000 #\a))
 
+(define (string-match-or-error pattern str)
+  (or (string-match pattern str)
+      (error str "did not match" pattern)))
+
+(define single-lint-warning-message
+  (match-lambda
+    (((and (? lint-warning?) warning))
+     (lint-warning-message warning))))
+
 
 (test-begin "lint")
 
-(define (call-with-warnings thunk)
-  (let ((port (open-output-string)))
-    (parameterize ((guix-warning-port port))
-      (thunk))
-    (get-output-string port)))
+(test-equal "description: not a string"
+  "invalid description: foobar"
+  (single-lint-warning-message
+   (check-description-style
+    (dummy-package "x" (description 'foobar)))))
 
-(define-syntax-rule (with-warnings body ...)
-  (call-with-warnings (lambda () body ...)))
+(test-equal "description: not empty"
+  "description should not be empty"
+  (single-lint-warning-message
+   (check-description-style
+    (dummy-package "x" (description "")))))
 
-(test-assert "description: not a string"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (description 'foobar))))
-                        (check-description-style pkg)))
-                    "invalid description")))
+(test-equal "description: invalid Texinfo markup"
+  "Texinfo markup in description is invalid"
+  (single-lint-warning-message
+   (check-description-style
+    (dummy-package "x" (description "f{oo}b@r")))))
 
-(test-assert "description: not empty"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (description ""))))
-                        (check-description-style pkg)))
-                    "description should not be empty")))
+(test-equal "description: does not start with an upper-case letter"
+  "description should start with an upper-case letter or digit"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (description "bad description."))))
+     (check-description-style pkg))))
 
-(test-assert "description: valid Texinfo markup"
-  (->bool
-   (string-contains
-    (with-warnings
-      (check-description-style (dummy-package "x" (description "f{oo}b@r"))))
-    "Texinfo markup in description is invalid")))
+(test-equal "description: may start with a digit"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (description "2-component library."))))
+    (check-description-style pkg)))
 
-(test-assert "description: does not start with an upper-case letter"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (description "bad description."))))
-                        (check-description-style pkg)))
-                    "description should start with an upper-case letter")))
+(test-equal "description: may start with lower-case package name"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (description "x is a dummy package."))))
+    (check-description-style pkg)))
 
-(test-assert "description: may start with a digit"
-  (string-null?
-   (with-warnings
-     (let ((pkg (dummy-package "x"
-                  (description "2-component library."))))
-       (check-description-style pkg)))))
+(test-equal "description: two spaces after end of sentence"
+  "sentences in description should be followed by two spaces; possible infraction at 3"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (description "Bad. Quite bad."))))
+     (check-description-style pkg))))
 
-(test-assert "description: may start with lower-case package name"
-  (string-null?
-   (with-warnings
-     (let ((pkg (dummy-package "x"
-                  (description "x is a dummy package."))))
-       (check-description-style pkg)))))
+(test-equal "description: end-of-sentence detection with abbreviations"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (description
+                             "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
+    (check-description-style pkg)))
 
-(test-assert "description: two spaces after end of sentence"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (description "Bad. Quite bad."))))
-                        (check-description-style pkg)))
-                    "sentences in description should be followed by two spaces")))
+(test-equal "description: may not contain trademark signs: ™"
+  "description should not contain trademark sign '™' at 20"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (description "Does The Right Thing™"))))
+     (check-description-style pkg))))
 
-(test-assert "description: end-of-sentence detection with abbreviations"
-  (string-null?
-   (with-warnings
-     (let ((pkg (dummy-package "x"
-                  (description
-                   "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
-       (check-description-style pkg)))))
+(test-equal "description: may not contain trademark signs: ®"
+  "description should not contain trademark sign '®' at 17"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (description "Works with Format®"))))
+     (check-description-style pkg))))
 
-(test-assert "description: may not contain trademark signs"
-  (and (->bool
-        (string-contains (with-warnings
-                           (let ((pkg (dummy-package "x"
-                                        (description "Does The Right Thing™"))))
-                             (check-description-style pkg)))
-                         "should not contain trademark sign"))
-       (->bool
-        (string-contains (with-warnings
-                           (let ((pkg (dummy-package "x"
-                                        (description "Works with Format®"))))
-                             (check-description-style pkg)))
-                         "should not contain trademark sign"))))
+(test-equal "description: suggest ornament instead of quotes"
+  "use @code or similar ornament instead of quotes"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (description "This is a 'quoted' thing."))))
+     (check-description-style pkg))))
 
-(test-assert "description: suggest ornament instead of quotes"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (description "This is a 'quoted' thing."))))
-                        (check-description-style pkg)))
-                    "use @code")))
+(test-equal "synopsis: not a string"
+  "invalid synopsis: #f"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis #f))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: not a string"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis #f))))
-                        (check-synopsis-style pkg)))
-                    "invalid synopsis")))
+(test-equal "synopsis: not empty"
+  "synopsis should not be empty"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis ""))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: not empty"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis ""))))
-                        (check-synopsis-style pkg)))
-                    "synopsis should not be empty")))
+(test-equal "synopsis: valid Texinfo markup"
+  "Texinfo markup in synopsis is invalid"
+  (single-lint-warning-message
+   (check-synopsis-style
+    (dummy-package "x" (synopsis "Bad $@ texinfo")))))
 
-(test-assert "synopsis: valid Texinfo markup"
-  (->bool
-   (string-contains
-    (with-warnings
-      (check-synopsis-style (dummy-package "x" (synopsis "Bad $@ texinfo"))))
-    "Texinfo markup in synopsis is invalid")))
+(test-equal "synopsis: does not start with an upper-case letter"
+  "synopsis should start with an upper-case letter or digit"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis "bad synopsis"))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: does not start with an upper-case letter"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis "bad synopsis."))))
-                        (check-synopsis-style pkg)))
-                    "synopsis should start with an upper-case letter")))
+(test-equal "synopsis: may start with a digit"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (synopsis "5-dimensional frobnicator"))))
+    (check-synopsis-style pkg)))
 
-(test-assert "synopsis: may start with a digit"
-  (string-null?
-   (with-warnings
-     (let ((pkg (dummy-package "x"
-                  (synopsis "5-dimensional frobnicator"))))
-       (check-synopsis-style pkg)))))
+(test-equal "synopsis: ends with a period"
+  "no period allowed at the end of the synopsis"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis "Bad synopsis."))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: ends with a period"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis "Bad synopsis."))))
-                        (check-synopsis-style pkg)))
-                    "no period allowed at the end of the synopsis")))
+(test-equal "synopsis: ends with 'etc.'"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (synopsis "Foo, bar, etc."))))
+    (check-synopsis-style pkg)))
 
-(test-assert "synopsis: ends with 'etc.'"
-  (string-null? (with-warnings
-                  (let ((pkg (dummy-package "x"
-                               (synopsis "Foo, bar, etc."))))
-                    (check-synopsis-style pkg)))))
+(test-equal "synopsis: starts with 'A'"
+  "no article allowed at the beginning of the synopsis"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis "A bad synopŝis"))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: starts with 'A'"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis "A bad synopŝis"))))
-                        (check-synopsis-style pkg)))
-                    "no article allowed at the beginning of the synopsis")))
+(test-equal "synopsis: starts with 'An'"
+  "no article allowed at the beginning of the synopsis"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis "An awful synopsis"))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: starts with 'An'"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis "An awful synopsis"))))
-                        (check-synopsis-style pkg)))
-                    "no article allowed at the beginning of the synopsis")))
+(test-equal "synopsis: starts with 'a'"
+  '("no article allowed at the beginning of the synopsis"
+    "synopsis should start with an upper-case letter or digit")
+  (sort
+   (map
+    lint-warning-message
+    (let ((pkg (dummy-package "x"
+                              (synopsis "a bad synopsis"))))
+      (check-synopsis-style pkg)))
+   string<?))
 
-(test-assert "synopsis: starts with 'a'"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis "a bad synopsis"))))
-                        (check-synopsis-style pkg)))
-                    "no article allowed at the beginning of the synopsis")))
+(test-equal "synopsis: starts with 'an'"
+  '("no article allowed at the beginning of the synopsis"
+    "synopsis should start with an upper-case letter or digit")
+  (sort
+   (map
+    lint-warning-message
+    (let ((pkg (dummy-package "x"
+                              (synopsis "an awful synopsis"))))
+      (check-synopsis-style pkg)))
+   string<?))
 
-(test-assert "synopsis: starts with 'an'"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis "an awful synopsis"))))
-                        (check-synopsis-style pkg)))
-                    "no article allowed at the beginning of the synopsis")))
+(test-equal "synopsis: too long"
+  "synopsis should be less than 80 characters long"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (synopsis (make-string 80 #\X)))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: too long"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (synopsis (make-string 80 #\x)))))
-                        (check-synopsis-style pkg)))
-                    "synopsis should be less than 80 characters long")))
+(test-equal "synopsis: start with package name"
+  "synopsis should not start with the package name"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (name "Foo")
+                             (synopsis "Foo, a nice package"))))
+     (check-synopsis-style pkg))))
 
-(test-assert "synopsis: start with package name"
-  (->bool
-   (string-contains (with-warnings
-                      (let ((pkg (dummy-package "x"
-                                   (name "foo")
-                                   (synopsis "foo, a nice package"))))
-                        (check-synopsis-style pkg)))
-                    "synopsis should not start with the package name")))
+(test-equal "synopsis: start with package name prefix"
+  '()
+  (let ((pkg (dummy-package "arb"
+                            (synopsis "Arbitrary precision"))))
+    (check-synopsis-style pkg)))
 
-(test-assert "synopsis: start with package name prefix"
-  (string-null?
-   (with-warnings
-     (let ((pkg (dummy-package "arb"
-                  (synopsis "Arbitrary precision"))))
-       (check-synopsis-style pkg)))))
+(test-equal "synopsis: start with abbreviation"
+  '()
+  (let ((pkg (dummy-package "uucp"
+                            ;; Same problem with "APL interpreter", etc.
+                            (synopsis "UUCP implementation")
+                            (description "Imagine this is Taylor UUCP."))))
+    (check-synopsis-style pkg)))
 
-(test-assert "synopsis: start with abbreviation"
-  (string-null?
-   (with-warnings
-     (let ((pkg (dummy-package "uucp"
-                  ;; Same problem with "APL interpreter", etc.
-                  (synopsis "UUCP implementation")
-                  (description "Imagine this is Taylor UUCP."))))
-       (check-synopsis-style pkg)))))
+(test-equal "inputs: pkg-config is probably a native input"
+  "'pkg-config' should probably be a native input"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (inputs `(("pkg-config" ,pkg-config))))))
+     (check-inputs-should-be-native pkg))))
 
-(test-assert "inputs: pkg-config is probably a native input"
-  (->bool
-   (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (inputs `(("pkg-config" ,pkg-config))))))
-         (check-inputs-should-be-native pkg)))
-         "'pkg-config' should probably be a native input")))
+(test-equal "inputs: glib:bin is probably a native input"
+  "'glib:bin' should probably be a native input"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (inputs `(("glib" ,glib "bin"))))))
+     (check-inputs-should-be-native pkg))))
 
-(test-assert "inputs: glib:bin is probably a native input"
-  (->bool
-    (string-contains
-      (with-warnings
-        (let ((pkg (dummy-package "x"
-                     (inputs `(("glib" ,glib "bin"))))))
-          (check-inputs-should-be-native pkg)))
-          "'glib:bin' should probably be a native input")))
-
-(test-assert
+(test-equal
     "inputs: python-setuptools should not be an input at all (input)"
-  (->bool
-   (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (inputs `(("python-setuptools" ,python-setuptools))))))
-         (check-inputs-should-not-be-an-input-at-all pkg)))
-         "'python-setuptools' should probably not be an input at all")))
+  "'python-setuptools' should probably not be an input at all"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (inputs `(("python-setuptools"
+                                        ,python-setuptools))))))
+     (check-inputs-should-not-be-an-input-at-all pkg))))
 
-(test-assert
+(test-equal
     "inputs: python-setuptools should not be an input at all (native-input)"
-  (->bool
-   (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (native-inputs
-                     `(("python-setuptools" ,python-setuptools))))))
-         (check-inputs-should-not-be-an-input-at-all pkg)))
-         "'python-setuptools' should probably not be an input at all")))
+  "'python-setuptools' should probably not be an input at all"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (native-inputs
+                              `(("python-setuptools"
+                                 ,python-setuptools))))))
+     (check-inputs-should-not-be-an-input-at-all pkg))))
 
-(test-assert
+(test-equal
     "inputs: python-setuptools should not be an input at all (propagated-input)"
-  (->bool
-   (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (propagated-inputs
-                     `(("python-setuptools" ,python-setuptools))))))
-         (check-inputs-should-not-be-an-input-at-all pkg)))
-         "'python-setuptools' should probably not be an input at all")))
+  "'python-setuptools' should probably not be an input at all"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (propagated-inputs
+                              `(("python-setuptools" ,python-setuptools))))))
+     (check-inputs-should-not-be-an-input-at-all pkg))))
 
-(test-assert "patches: file names"
-  (->bool
-   (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (source
-                     (dummy-origin
-                       (patches (list "/path/to/y.patch")))))))
-         (check-patch-file-names pkg)))
-     "file names of patches should start with the package name")))
+(test-equal "patches: file names"
+  "file names of patches should start with the package name"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (source
+                              (dummy-origin
+                               (patches (list "/path/to/y.patch")))))))
+     (check-patch-file-names pkg))))
 
-(test-assert "patches: file name too long"
-  (->bool
-   (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (source
-                     (dummy-origin
-                      (patches (list (string-append "x-"
-                                                    (make-string 100 #\a)
-                                                    ".patch"))))))))
-         (check-patch-file-names pkg)))
-     "file name is too long")))
+(test-equal "patches: file name too long"
+  (string-append "x-"
+                 (make-string 100 #\a)
+                 ".patch: file name is too long")
+  (single-lint-warning-message
+   (let ((pkg (dummy-package
+               "x"
+               (source
+                (dummy-origin
+                 (patches (list (string-append "x-"
+                                               (make-string 100 #\a)
+                                               ".patch"))))))))
+     (check-patch-file-names pkg))))
 
-(test-assert "patches: not found"
-  (->bool
-   (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (source
-                     (dummy-origin
-                       (patches
-                        (list (search-patch "this-patch-does-not-exist!"))))))))
-         (check-patch-file-names pkg)))
-     "patch not found")))
+(test-equal "patches: not found"
+  "this-patch-does-not-exist!: patch not found"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package
+               "x"
+               (source
+                (dummy-origin
+                 (patches
+                  (list (search-patch "this-patch-does-not-exist!"))))))))
+     (check-patch-file-names pkg))))
 
-(test-assert "derivation: invalid arguments"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (dummy-package "x"
-                   (arguments
-                    '(#:imported-modules (invalid-module))))))
-        (check-derivation pkg)))
-    "failed to create")))
+(test-equal "derivation: invalid arguments"
+  "failed to create x86_64-linux derivation: (wrong-type-arg \"map\" \"Wrong type argument: ~S\" (invalid-module) ())"
+  (match (let ((pkg (dummy-package "x"
+                                   (arguments
+                                    '(#:imported-modules (invalid-module))))))
+           (check-derivation pkg))
+    (((and (? lint-warning?) first-warning) others ...)
+     (lint-warning-message first-warning))))
 
-(test-assert "license: invalid license"
-  (string-contains
-   (with-warnings
-     (check-license (dummy-package "x" (license #f))))
-   "invalid license"))
+(test-equal "license: invalid license"
+  "invalid license field"
+  (single-lint-warning-message
+   (check-license (dummy-package "x" (license #f)))))
 
-(test-assert "home-page: wrong home-page"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (package
-                   (inherit (dummy-package "x"))
-                   (home-page #f))))
-        (check-home-page pkg)))
-    "invalid")))
+(test-equal "home-page: wrong home-page"
+  "invalid value for home page"
+  (let ((pkg (package
+               (inherit (dummy-package "x"))
+               (home-page #f))))
+    (single-lint-warning-message
+     (check-home-page pkg))))
 
-(test-assert "home-page: invalid URI"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (package
-                   (inherit (dummy-package "x"))
-                   (home-page "foobar"))))
-        (check-home-page pkg)))
-    "invalid home page URL")))
+(test-equal "home-page: invalid URI"
+  "invalid home page URL: \"foobar\""
+  (let ((pkg (package
+               (inherit (dummy-package "x"))
+               (home-page "foobar"))))
+    (single-lint-warning-message
+     (check-home-page pkg))))
 
-(test-assert "home-page: host not found"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (package
-                   (inherit (dummy-package "x"))
-                   (home-page "http://does-not-exist"))))
-        (check-home-page pkg)))
-    "domain not found")))
+(test-equal "home-page: host not found"
+  "URI http://does-not-exist domain not found: Name or service not known"
+  (let ((pkg (package
+               (inherit (dummy-package "x"))
+               (home-page "http://does-not-exist"))))
+    (single-lint-warning-message
+     (check-home-page pkg))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "home-page: Connection refused"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (package
-                   (inherit (dummy-package "x"))
-                   (home-page (%local-url)))))
-        (check-home-page pkg)))
-    "Connection refused")))
+(test-equal "home-page: Connection refused"
+  "URI http://localhost:9999/foo/bar unreachable: Connection refused"
+  (let ((pkg (package
+               (inherit (dummy-package "x"))
+               (home-page (%local-url)))))
+    (single-lint-warning-message
+     (check-home-page pkg))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 200"
-  ""
-  (with-warnings
-   (with-http-server 200 %long-string
-     (let ((pkg (package
-                  (inherit (dummy-package "x"))
-                  (home-page (%local-url)))))
+  '()
+  (with-http-server 200 %long-string
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (home-page (%local-url)))))
+      (check-home-page pkg))))
+
+(test-skip (if (http-server-can-listen?) 0 1))
+(test-equal "home-page: 200 but short length"
+  "URI http://localhost:9999/foo/bar returned suspiciously small file (18 bytes)"
+  (with-http-server 200 "This is too small."
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (home-page (%local-url)))))
+
+      (single-lint-warning-message
        (check-home-page pkg)))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "home-page: 200 but short length"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 200 "This is too small."
-        (let ((pkg (package
-                     (inherit (dummy-package "x"))
-                     (home-page (%local-url)))))
-          (check-home-page pkg))))
-    "suspiciously small")))
+(test-equal "home-page: 404"
+  "URI http://localhost:9999/foo/bar not reachable: 404 (\"Such is life\")"
+  (with-http-server 404 %long-string
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (home-page (%local-url)))))
+      (single-lint-warning-message
+       (check-home-page pkg)))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "home-page: 404"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 404 %long-string
-        (let ((pkg (package
-                     (inherit (dummy-package "x"))
-                     (home-page (%local-url)))))
-          (check-home-page pkg))))
-    "not reachable: 404")))
+(test-equal "home-page: 301, invalid"
+  "invalid permanent redirect from http://localhost:9999/foo/bar"
+  (with-http-server 301 %long-string
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (home-page (%local-url)))))
+      (single-lint-warning-message
+       (check-home-page pkg)))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "home-page: 301, invalid"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 301 %long-string
-        (let ((pkg (package
-                     (inherit (dummy-package "x"))
-                     (home-page (%local-url)))))
-          (check-home-page pkg))))
-    "invalid permanent redirect")))
+(test-equal "home-page: 301 -> 200"
+  "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
+  (with-http-server 200 %long-string
+    (let ((initial-url (%local-url)))
+      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+        (with-http-server (301 `((location
+                                  . ,(string->uri initial-url))))
+            ""
+          (let ((pkg (package
+                       (inherit (dummy-package "x"))
+                       (home-page (%local-url)))))
+            (single-lint-warning-message
+             (check-home-page pkg))))))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "home-page: 301 -> 200"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 200 %long-string
-        (let ((initial-url (%local-url)))
-          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-            (with-http-server (301 `((location
-                                      . ,(string->uri initial-url))))
-                ""
-              (let ((pkg (package
-                           (inherit (dummy-package "x"))
-                           (home-page (%local-url)))))
-                (check-home-page pkg)))))))
-    "permanent redirect")))
+(test-equal "home-page: 301 -> 404"
+  "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
+  (with-http-server 404 "booh!"
+    (let ((initial-url (%local-url)))
+      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+        (with-http-server (301 `((location
+                                  . ,(string->uri initial-url))))
+            ""
+          (let ((pkg (package
+                       (inherit (dummy-package "x"))
+                       (home-page (%local-url)))))
+            (single-lint-warning-message
+             (check-home-page pkg))))))))
 
-(test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "home-page: 301 -> 404"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 404 "booh!"
-        (let ((initial-url (%local-url)))
-          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-            (with-http-server (301 `((location
-                                      . ,(string->uri initial-url))))
-                ""
-              (let ((pkg (package
-                           (inherit (dummy-package "x"))
-                           (home-page (%local-url)))))
-                (check-home-page pkg)))))))
-    "not reachable: 404")))
 
-(test-assert "source-file-name"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (dummy-package "x"
-                   (version "3.2.1")
-                   (source
-                    (origin
-                      (method url-fetch)
-                      (uri "http://www.example.com/3.2.1.tar.gz")
-                      (sha256 %null-sha256))))))
-        (check-source-file-name pkg)))
-    "file name should contain the package name")))
+(test-equal "source-file-name"
+  "the source file name should contain the package name"
+  (let ((pkg (dummy-package "x"
+                            (version "3.2.1")
+                            (source
+                             (origin
+                               (method url-fetch)
+                               (uri "http://www.example.com/3.2.1.tar.gz")
+                               (sha256 %null-sha256))))))
+    (single-lint-warning-message
+     (check-source-file-name pkg))))
 
-(test-assert "source-file-name: v prefix"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (dummy-package "x"
-                   (version "3.2.1")
-                   (source
-                    (origin
-                      (method url-fetch)
-                      (uri "http://www.example.com/v3.2.1.tar.gz")
-                      (sha256 %null-sha256))))))
-        (check-source-file-name pkg)))
-    "file name should contain the package name")))
+(test-equal "source-file-name: v prefix"
+  "the source file name should contain the package name"
+  (let ((pkg (dummy-package "x"
+                            (version "3.2.1")
+                            (source
+                             (origin
+                               (method url-fetch)
+                               (uri "http://www.example.com/v3.2.1.tar.gz")
+                               (sha256 %null-sha256))))))
+    (single-lint-warning-message
+     (check-source-file-name pkg))))
 
-(test-assert "source-file-name: bad checkout"
-  (->bool
-   (string-contains
-    (with-warnings
-      (let ((pkg (dummy-package "x"
-                   (version "3.2.1")
-                   (source
-                    (origin
-                      (method git-fetch)
-                      (uri (git-reference
-                            (url "http://www.example.com/x.git")
-                            (commit "0")))
-                      (sha256 %null-sha256))))))
-        (check-source-file-name pkg)))
-    "file name should contain the package name")))
+(test-equal "source-file-name: bad checkout"
+  "the source file name should contain the package name"
+  (let ((pkg (dummy-package "x"
+                            (version "3.2.1")
+                            (source
+                             (origin
+                               (method git-fetch)
+                               (uri (git-reference
+                                     (url "http://www.example.com/x.git")
+                                     (commit "0")))
+                               (sha256 %null-sha256))))))
+    (single-lint-warning-message
+     (check-source-file-name pkg))))
 
-(test-assert "source-file-name: good checkout"
-  (not
-   (->bool
-    (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (version "3.2.1")
-                    (source
-                     (origin
-                       (method git-fetch)
-                       (uri (git-reference
-                             (url "http://git.example.com/x.git")
-                             (commit "0")))
-                       (file-name (string-append "x-" version))
-                       (sha256 %null-sha256))))))
-         (check-source-file-name pkg)))
-     "file name should contain the package name"))))
+(test-equal "source-file-name: good checkout"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (version "3.2.1")
+                            (source
+                             (origin
+                               (method git-fetch)
+                               (uri (git-reference
+                                     (url "http://git.example.com/x.git")
+                                     (commit "0")))
+                               (file-name (string-append "x-" version))
+                               (sha256 %null-sha256))))))
+    (check-source-file-name pkg)))
 
-(test-assert "source-file-name: valid"
-  (not
-   (->bool
-    (string-contains
-     (with-warnings
-       (let ((pkg (dummy-package "x"
-                    (version "3.2.1")
-                    (source
-                     (origin
-                       (method url-fetch)
-                       (uri "http://www.example.com/x-3.2.1.tar.gz")
-                       (sha256 %null-sha256))))))
-         (check-source-file-name pkg)))
-     "file name should contain the package name"))))
+(test-equal "source-file-name: valid"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (version "3.2.1")
+                            (source
+                             (origin
+                               (method url-fetch)
+                               (uri "http://www.example.com/x-3.2.1.tar.gz")
+                               (sha256 %null-sha256))))))
+    (check-source-file-name pkg)))
 
-(test-assert "source-unstable-tarball"
-  (string-contains
-   (with-warnings
-     (let ((pkg (dummy-package "x"
-                  (source
-                    (origin
-                      (method url-fetch)
-                      (uri "https://github.com/example/example/archive/v0.0.tar.gz")
-                      (sha256 %null-sha256))))))
-       (check-source-unstable-tarball pkg)))
-   "source URI should not be an autogenerated tarball"))
+(test-equal "source-unstable-tarball"
+  "the source URI should not be an autogenerated tarball"
+  (let ((pkg (dummy-package "x"
+                            (source
+                             (origin
+                               (method url-fetch)
+                               (uri "https://github.com/example/example/archive/v0.0.tar.gz")
+                               (sha256 %null-sha256))))))
+    (single-lint-warning-message
+     (check-source-unstable-tarball pkg))))
 
-(test-assert "source-unstable-tarball: source #f"
-  (not
-    (->bool
-     (string-contains
-      (with-warnings
-        (let ((pkg (dummy-package "x"
-                     (source #f))))
-          (check-source-unstable-tarball pkg)))
-      "source URI should not be an autogenerated tarball"))))
+(test-equal "source-unstable-tarball: source #f"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (source #f))))
+    (check-source-unstable-tarball pkg)))
 
-(test-assert "source-unstable-tarball: valid"
-  (not
-    (->bool
-     (string-contains
-      (with-warnings
-        (let ((pkg (dummy-package "x"
-                     (source
-                       (origin
-                         (method url-fetch)
-                         (uri "https://github.com/example/example/releases/download/x-0.0/x-0.0.tar.gz")
-                         (sha256 %null-sha256))))))
-          (check-source-unstable-tarball pkg)))
-      "source URI should not be an autogenerated tarball"))))
+(test-equal "source-unstable-tarball: valid"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (source
+                             (origin
+                               (method url-fetch)
+                               (uri "https://github.com/example/example/releases/download/x-0.0/x-0.0.tar.gz")
+                               (sha256 %null-sha256))))))
+    (check-source-unstable-tarball pkg)))
 
-(test-assert "source-unstable-tarball: package named archive"
-  (not
-    (->bool
-     (string-contains
-      (with-warnings
-        (let ((pkg (dummy-package "x"
-                     (source
-                       (origin
-                         (method url-fetch)
-                         (uri "https://github.com/example/archive/releases/download/x-0.0/x-0.0.tar.gz")
-                         (sha256 %null-sha256))))))
-          (check-source-unstable-tarball pkg)))
-      "source URI should not be an autogenerated tarball"))))
+(test-equal "source-unstable-tarball: package named archive"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (source
+                             (origin
+                               (method url-fetch)
+                               (uri "https://github.com/example/archive/releases/download/x-0.0/x-0.0.tar.gz")
+                               (sha256 %null-sha256))))))
+    (check-source-unstable-tarball pkg)))
 
-(test-assert "source-unstable-tarball: not-github"
-  (not
-    (->bool
-     (string-contains
-      (with-warnings
-        (let ((pkg (dummy-package "x"
-                     (source
-                       (origin
-                         (method url-fetch)
-                         (uri "https://bitbucket.org/archive/example/download/x-0.0.tar.gz")
-                         (sha256 %null-sha256))))))
-          (check-source-unstable-tarball pkg)))
-      "source URI should not be an autogenerated tarball"))))
+(test-equal "source-unstable-tarball: not-github"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (source
+                             (origin
+                               (method url-fetch)
+                               (uri "https://bitbucket.org/archive/example/download/x-0.0.tar.gz")
+                               (sha256 %null-sha256))))))
+    (check-source-unstable-tarball pkg)))
 
-(test-assert "source-unstable-tarball: git-fetch"
-  (not
-    (->bool
-     (string-contains
-      (with-warnings
-        (let ((pkg (dummy-package "x"
-                     (source
-                       (origin
-                         (method git-fetch)
-                         (uri (git-reference
-                                (url "https://github.com/archive/example.git")
-                                (commit "0")))
-                         (sha256 %null-sha256))))))
-          (check-source-unstable-tarball pkg)))
-      "source URI should not be an autogenerated tarball"))))
+(test-equal "source-unstable-tarball: git-fetch"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (source
+                             (origin
+                               (method git-fetch)
+                               (uri (git-reference
+                                     (url "https://github.com/archive/example.git")
+                                     (commit "0")))
+                               (sha256 %null-sha256))))))
+    (check-source-unstable-tarball pkg)))
 
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 200"
-  ""
-  (with-warnings
-   (with-http-server 200 %long-string
-     (let ((pkg (package
-                  (inherit (dummy-package "x"))
-                  (source (origin
-                            (method url-fetch)
-                            (uri (%local-url))
-                            (sha256 %null-sha256))))))
-       (check-source pkg)))))
+  '()
+  (with-http-server 200 %long-string
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (source (origin
+                           (method url-fetch)
+                           (uri (%local-url))
+                           (sha256 %null-sha256))))))
+      (check-source pkg))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "source: 200 but short length"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 200 "This is too small."
-        (let ((pkg (package
-                     (inherit (dummy-package "x"))
-                     (source (origin
-                               (method url-fetch)
-                               (uri (%local-url))
-                               (sha256 %null-sha256))))))
-          (check-source pkg))))
-    "suspiciously small")))
+(test-equal "source: 200 but short length"
+  "URI http://localhost:9999/foo/bar returned suspiciously small file (18 bytes)"
+  (with-http-server 200 "This is too small."
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (source (origin
+                           (method url-fetch)
+                           (uri (%local-url))
+                           (sha256 %null-sha256))))))
+      (match (check-source pkg)
+        ((first-warning ; All source URIs are unreachable
+          (and (? lint-warning?) second-warning))
+         (lint-warning-message second-warning))))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "source: 404"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 404 %long-string
-        (let ((pkg (package
-                     (inherit (dummy-package "x"))
-                     (source (origin
-                               (method url-fetch)
-                               (uri (%local-url))
-                               (sha256 %null-sha256))))))
-          (check-source pkg))))
-    "not reachable: 404")))
+(test-equal "source: 404"
+  "URI http://localhost:9999/foo/bar not reachable: 404 (\"Such is life\")"
+  (with-http-server 404 %long-string
+    (let ((pkg (package
+                 (inherit (dummy-package "x"))
+                 (source (origin
+                           (method url-fetch)
+                           (uri (%local-url))
+                           (sha256 %null-sha256))))))
+      (match (check-source pkg)
+        ((first-warning ; All source URIs are unreachable
+          (and (? lint-warning?) second-warning))
+         (lint-warning-message second-warning))))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 301 -> 200"
-  ""
-  (with-warnings
-    (with-http-server 200 %long-string
-      (let ((initial-url (%local-url)))
-        (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-          (with-http-server (301 `((location . ,(string->uri initial-url))))
-              ""
-            (let ((pkg (package
-                         (inherit (dummy-package "x"))
-                         (source (origin
-                                   (method url-fetch)
-                                   (uri (%local-url))
-                                   (sha256 %null-sha256))))))
-              (check-source pkg))))))))
+  "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
+  (with-http-server 200 %long-string
+    (let ((initial-url (%local-url)))
+      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+        (with-http-server (301 `((location . ,(string->uri initial-url))))
+            ""
+          (let ((pkg (package
+                       (inherit (dummy-package "x"))
+                       (source (origin
+                                 (method url-fetch)
+                                 (uri (%local-url))
+                                 (sha256 %null-sha256))))))
+            (match (check-source pkg)
+              ((first-warning ; All source URIs are unreachable
+                (and (? lint-warning?) second-warning))
+               (lint-warning-message second-warning)))))))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
-(test-assert "source: 301 -> 404"
-  (->bool
-   (string-contains
-    (with-warnings
-      (with-http-server 404 "booh!"
-        (let ((initial-url (%local-url)))
-          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-            (with-http-server (301 `((location . ,(string->uri initial-url))))
-                ""
-              (let ((pkg (package
-                           (inherit (dummy-package "x"))
-                           (source (origin
-                                     (method url-fetch)
-                                     (uri (%local-url))
-                                     (sha256 %null-sha256))))))
-                (check-source pkg)))))))
-    "not reachable: 404")))
+(test-equal "source: 301 -> 404"
+  "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
+  (with-http-server 404 "booh!"
+    (let ((initial-url (%local-url)))
+      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+        (with-http-server (301 `((location . ,(string->uri initial-url))))
+            ""
+          (let ((pkg (package
+                       (inherit (dummy-package "x"))
+                       (source (origin
+                                 (method url-fetch)
+                                 (uri (%local-url))
+                                 (sha256 %null-sha256))))))
+            (match (check-source pkg)
+              ((first-warning ; The first warning says that all URI's are
+                              ; unreachable
+                (and (? lint-warning?) second-warning))
+               (lint-warning-message second-warning)))))))))
 
-(test-assert "mirror-url"
-  (string-null?
-   (with-warnings
-     (let ((source (origin
-                     (method url-fetch)
-                     (uri "http://example.org/foo/bar.tar.gz")
-                     (sha256 %null-sha256))))
-       (check-mirror-url (dummy-package "x" (source source)))))))
+(test-equal "mirror-url"
+  '()
+  (let ((source (origin
+                  (method url-fetch)
+                  (uri "http://example.org/foo/bar.tar.gz")
+                  (sha256 %null-sha256))))
+    (check-mirror-url (dummy-package "x" (source source)))))
 
-(test-assert "mirror-url: one suggestion"
-  (string-contains
-   (with-warnings
-     (let ((source (origin
-                     (method url-fetch)
-                     (uri "http://ftp.gnu.org/pub/gnu/foo/foo.tar.gz")
-                     (sha256 %null-sha256))))
-       (check-mirror-url (dummy-package "x" (source source)))))
-   "mirror://gnu/foo/foo.tar.gz"))
+(test-equal "mirror-url: one suggestion"
+  "URL should be 'mirror://gnu/foo/foo.tar.gz'"
+  (let ((source (origin
+                  (method url-fetch)
+                  (uri "http://ftp.gnu.org/pub/gnu/foo/foo.tar.gz")
+                  (sha256 %null-sha256))))
+    (single-lint-warning-message
+     (check-mirror-url (dummy-package "x" (source source))))))
 
-(test-assert "github-url"
-  (string-null?
-   (with-warnings
-     (with-http-server 200 %long-string
-       (check-github-url
-        (dummy-package "x" (source
-                            (origin
-                              (method url-fetch)
-                              (uri (%local-url))
-                              (sha256 %null-sha256)))))))))
+(test-equal "github-url"
+  '()
+  (with-http-server 200 %long-string
+    (check-github-url
+     (dummy-package "x" (source
+                         (origin
+                           (method url-fetch)
+                           (uri (%local-url))
+                           (sha256 %null-sha256)))))))
 
 (let ((github-url "https://github.com/foo/bar/bar-1.0.tar.gz"))
-  (test-assert "github-url: one suggestion"
-    (string-contains
-     (with-warnings
-       (with-http-server (301 `((location . ,(string->uri github-url)))) ""
-         (let ((initial-uri (%local-url)))
-           (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-             (with-http-server (302 `((location . ,(string->uri initial-uri)))) ""
-               (check-github-url
-                (dummy-package "x" (source
-                                    (origin
-                                      (method url-fetch)
-                                      (uri (%local-url))
-                                      (sha256 %null-sha256))))))))))
-     github-url))
-  (test-assert "github-url: already the correct github url"
-    (string-null?
-     (with-warnings
-       (check-github-url
-        (dummy-package "x" (source
-                            (origin
-                              (method url-fetch)
-                              (uri github-url)
-                              (sha256 %null-sha256)))))))))
+  (test-equal "github-url: one suggestion"
+    (string-append
+     "URL should be '" github-url "'")
+    (with-http-server (301 `((location . ,(string->uri github-url)))) ""
+      (let ((initial-uri (%local-url)))
+        (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+          (with-http-server (302 `((location . ,(string->uri initial-uri)))) ""
+            (single-lint-warning-message
+             (check-github-url
+              (dummy-package "x" (source
+                                  (origin
+                                    (method url-fetch)
+                                    (uri (%local-url))
+                                    (sha256 %null-sha256)))))))))))
+  (test-equal "github-url: already the correct github url"
+    '()
+    (check-github-url
+     (dummy-package "x" (source
+                         (origin
+                           (method url-fetch)
+                           (uri github-url)
+                           (sha256 %null-sha256)))))))
 
-(test-assert "cve"
+(test-equal "cve"
+  '()
   (mock ((guix scripts lint) package-vulnerabilities (const '()))
-        (string-null?
-         (with-warnings (check-vulnerabilities (dummy-package "x"))))))
+        (check-vulnerabilities (dummy-package "x"))))
 
-(test-assert "cve: one vulnerability"
+(test-equal "cve: one vulnerability"
+  "probably vulnerable to CVE-2015-1234"
   (mock ((guix scripts lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
                               (list (cons (package-name package)
                                           (package-version package)))))))
-        (string-contains
-         (with-warnings
-           (check-vulnerabilities (dummy-package "pi" (version "3.14"))))
-         "vulnerable to CVE-2015-1234")))
+        (single-lint-warning-message
+         (check-vulnerabilities (dummy-package "pi" (version "3.14"))))))
 
-(test-assert "cve: one patched vulnerability"
+(test-equal "cve: one patched vulnerability"
+  '()
   (mock ((guix scripts lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
                               (list (cons (package-name package)
                                           (package-version package)))))))
-        (string-null?
-         (with-warnings
-           (check-vulnerabilities
-            (dummy-package "pi"
-                           (version "3.14")
-                           (source
-                            (dummy-origin
-                             (patches
-                              (list "/a/b/pi-CVE-2015-1234.patch"))))))))))
+        (check-vulnerabilities
+         (dummy-package "pi"
+                        (version "3.14")
+                        (source
+                         (dummy-origin
+                          (patches
+                           (list "/a/b/pi-CVE-2015-1234.patch"))))))))
 
-(test-assert "cve: known safe from vulnerability"
+(test-equal "cve: known safe from vulnerability"
+  '()
   (mock ((guix scripts lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
                               (list (cons (package-name package)
                                           (package-version package)))))))
-        (string-null?
-         (with-warnings
-           (check-vulnerabilities
-            (dummy-package "pi"
-                           (version "3.14")
-                           (properties `((lint-hidden-cve . ("CVE-2015-1234"))))))))))
+        (check-vulnerabilities
+         (dummy-package "pi"
+                        (version "3.14")
+                        (properties `((lint-hidden-cve . ("CVE-2015-1234"))))))))
 
-(test-assert "cve: vulnerability fixed in replacement version"
+(test-equal "cve: vulnerability fixed in replacement version"
+  '()
   (mock ((guix scripts lint) package-vulnerabilities
          (lambda (package)
            (match (package-version package)
@@ -845,71 +765,60 @@
                                              (package-version package))))))
              ("1"
               '()))))
-        (and (not (string-null?
-                   (with-warnings
-                     (check-vulnerabilities
-                      (dummy-package "foo" (version "0"))))))
-             (string-null?
-              (with-warnings
-                (check-vulnerabilities
-                 (dummy-package
-                  "foo" (version "0")
-                  (replacement (dummy-package "foo" (version "1"))))))))))
+        (check-vulnerabilities
+         (dummy-package
+          "foo" (version "0")
+          (replacement (dummy-package "foo" (version "1")))))))
 
-(test-assert "cve: patched vulnerability in replacement"
+(test-equal "cve: patched vulnerability in replacement"
+  '()
   (mock ((guix scripts lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
                               (list (cons (package-name package)
                                           (package-version package)))))))
-        (string-null?
-         (with-warnings
-           (check-vulnerabilities
-            (dummy-package
-             "pi" (version "3.14") (source (dummy-origin))
-             (replacement (dummy-package
-                           "pi" (version "3.14")
-                           (source
-                            (dummy-origin
-                             (patches
-                              (list "/a/b/pi-CVE-2015-1234.patch"))))))))))))
+        (check-vulnerabilities
+         (dummy-package
+          "pi" (version "3.14") (source (dummy-origin))
+          (replacement (dummy-package
+                        "pi" (version "3.14")
+                        (source
+                         (dummy-origin
+                          (patches
+                           (list "/a/b/pi-CVE-2015-1234.patch"))))))))))
 
-(test-assert "formatting: lonely parentheses"
-  (string-contains
-   (with-warnings
-     (check-formatting
-      (
-       dummy-package "ugly as hell!"
-      )
-      ))
-   "lonely"))
+(test-equal "formatting: lonely parentheses"
+  "parentheses feel lonely, move to the previous or next line"
+  (single-lint-warning-message
+   (check-formatting
+    (dummy-package "ugly as hell!"
+                   )
+    )))
 
 (test-assert "formatting: tabulation"
-  (string-contains
-   (with-warnings
-     (check-formatting (dummy-package "leave the tab here:	")))
-   "tabulation"))
+  (string-match-or-error
+   "tabulation on line [0-9]+, column [0-9]+"
+   (single-lint-warning-message
+    (check-formatting (dummy-package "leave the tab here:	")))))
 
 (test-assert "formatting: trailing white space"
-  (string-contains
-   (with-warnings
-     ;; Leave the trailing white space on the next line!
-     (check-formatting (dummy-package "x")))            
-   "trailing white space"))
+  (string-match-or-error
+   "trailing white space .*"
+   ;; Leave the trailing white space on the next line!
+   (single-lint-warning-message
+    (check-formatting (dummy-package "x")))))            
 
 (test-assert "formatting: long line"
-  (string-contains
-   (with-warnings
-     (check-formatting
-      (dummy-package "x"                          ;here is a stupid comment just to make a long line
-                     )))
-   "too long"))
+  (string-match-or-error
+   "line [0-9]+ is way too long \\([0-9]+ characters\\)"
+   (single-lint-warning-message (check-formatting
+           (dummy-package "x"))                                     ;here is a stupid comment just to make a long line
+     )))
 
-(test-assert "formatting: alright"
-  (string-null?
-   (with-warnings
-     (check-formatting (dummy-package "x")))))
+(test-equal "formatting: alright"
+  '()
+  (check-formatting (dummy-package "x")))
 
 (test-end "lint")
 
