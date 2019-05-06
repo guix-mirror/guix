@@ -528,7 +528,13 @@ from forcing GEXP-PROMISE."
                           "-p1" "--input" #+makeicecat-patch)
                   (patch-shebang "makeicecat")
                   (substitute* "makeicecat"
-                    (("^FFMAJOR=.*")
+                    (("^FFMAJOR=(.*)" all ffmajor)
+                     (unless (string=? #$major-version
+                                       (string-trim-both ffmajor))
+                       ;; The makeicecat script cannot be expected to work
+                       ;; properly on a different version of Firefox, even if
+                       ;; no errors occur during execution.
+                       (error "makeicecat major version mismatch"))
                      (string-append "FFMAJOR=" #$major-version "\n"))
                     (("^FFMINOR=.*")
                      (string-append "FFMINOR=" #$minor-version "\n"))
