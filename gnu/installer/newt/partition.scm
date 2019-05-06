@@ -49,6 +49,7 @@
                   #:title (G_ "Partition scheme")
                   #:listbox-items items
                   #:listbox-item->text cdr
+                  #:listbox-height 4
                   #:sort-listbox-items? #f       ;keep the 'root' option first
                   #:button-text (G_ "Exit")
                   #:button-callback-procedure button-exit-action)))
@@ -78,6 +79,7 @@ DEVICES list."
                   #:title (G_ "Disk")
                   #:listbox-items (device-items)
                   #:listbox-item->text cdr
+                  #:listbox-height 10
                   #:button-text (G_ "Exit")
                   #:button-callback-procedure button-exit-action))
          (device (car result)))
@@ -732,6 +734,7 @@ by pressing the Exit button.~%~%")))
            (result (run-listbox-selection-page
                     #:info-text (G_ "Please select a partitioning method.")
                     #:title (G_ "Partitioning method")
+                    #:listbox-height (+ (length items) 2)
                     #:listbox-items items
                     #:listbox-item->text cdr
                     #:sort-listbox-items? #f
