@@ -179,7 +179,7 @@ unpacking."
       (delete-file-recursively scratch-dir)))
 
   (when (string-null? import-path)
-    ((display "WARNING: The Go import path is unset.\n")))
+    (display "WARNING: The Go import path is unset.\n"))
   (when (string-null? unpack-path)
     (set! unpack-path import-path))
   (let ((dest (string-append (getenv "GOPATH") "/src/" unpack-path)))
