@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (gnu installer newt page)
   #:use-module (guix i18n)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (newt)
@@ -58,25 +60,28 @@ connection is pending."
     service))
 
 (define (run-ethernet-page)
-  (let ((services (ethernet-services)))
-    (if (null? services)
-        (begin
-          (run-error-page
-           (G_ "No ethernet service available, please try again.")
-           (G_ "No service"))
-          (raise
-           (condition
-            (&installer-step-abort))))
-        (run-listbox-selection-page
-         #:info-text (G_ "Please select an ethernet network.")
-         #:title (G_ "Ethernet connection")
-         #:listbox-items services
-         #:listbox-item->text ethernet-service->text
-         #:listbox-height (min (+ (length services) 2) 10)
-         #:button-text (G_ "Exit")
-         #:button-callback-procedure
-         (lambda _
-           (raise
-            (condition
-             (&installer-step-abort))))
-         #:listbox-callback-procedure connect-ethernet-service))))
+  (match (ethernet-services)
+    (()
+     (run-error-page
+      (G_ "No ethernet service available, please try again.")
+      (G_ "No service"))
+     (raise
+      (condition
+       (&installer-step-abort))))
+    ((service)
+     ;; Only one service is available so return it directly.
+     service)
+    ((services ...)
+     (run-listbox-selection-page
+      #:info-text (G_ "Please select an ethernet network.")
+      #:title (G_ "Ethernet connection")
+      #:listbox-items services
+      #:listbox-item->text ethernet-service->text
+      #:listbox-height (min (+ (length services) 2) 10)
+      #:button-text (G_ "Exit")
+      #:button-callback-procedure
+      (lambda _
+        (raise
+         (condition
+          (&installer-step-abort))))
+      #:listbox-callback-procedure connect-ethernet-service))))
