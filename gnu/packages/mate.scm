@@ -100,8 +100,7 @@ MATE applications.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -126,10 +125,10 @@ MATE applications.")
        ("libcanberra" ,libcanberra)
        ("upower" ,upower)))
     (home-page "https://mate-desktop.org/")
-    (synopsis "A Power Manager for MATE")
+    (synopsis "Power manager for MATE")
     (description
      "MATE Power Manager is a MATE session daemon that acts as a policy agent on
-top of UPower. It listens to system events and responds with user-configurable
+top of UPower.  It listens to system events and responds with user-configurable
 actions.")
     (license license:gpl3+)))
 
