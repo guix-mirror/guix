@@ -5838,7 +5838,8 @@ devices using the GNOME desktop.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libc   (assoc-ref inputs "libc"))
                    (tzdata (assoc-ref inputs "tzdata"))
-                   (libgnomekbd (assoc-ref inputs "libgnomekbd")))
+                   (libgnomekbd (assoc-ref inputs "libgnomekbd"))
+                   (nm-applet   (assoc-ref inputs "network-manager-applet")))
                (substitute* "panels/datetime/tz.h"
                  (("/usr/share/zoneinfo/zone.tab")
                   (string-append tzdata "/share/zoneinfo/zone.tab")))
@@ -5849,6 +5850,12 @@ devices using the GNOME desktop.")
                  (("\"gkbd-keyboard-display")
                   (string-append "\"" libgnomekbd
                                  "/bin/gkbd-keyboard-display")))
+               (substitute* '("panels/network/net-device-wifi.c"
+                              "panels/network/net-device.c"
+                              "panels/network/connection-editor/net-connection-editor.c")
+                 (("\"nm-connection-editor")
+                  (string-append "\"" nm-applet
+                                 "/bin/nm-connection-editor")))
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
