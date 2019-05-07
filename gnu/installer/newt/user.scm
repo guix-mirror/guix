@@ -19,6 +19,7 @@
 
 (define-module (gnu installer newt user)
   #:use-module (gnu installer user)
+  #:use-module ((gnu installer steps) #:select (&installer-step-abort))
   #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt utils)
   #:use-module (guix i18n)
@@ -27,6 +28,8 @@
   #:use-module (ice-9 receive)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (run-user-page))
 
 (define* (run-user-add-page #:key (name "") (real-name "")
@@ -247,7 +250,11 @@ administrator (\"root\").")
                   (run-error-page (G_ "Please create at least one user.")
                                   (G_ "No user"))
                   (run users))
-                (reverse users)))))
+                (reverse users))
+               ((components=? argument exit-button)
+                (raise
+                 (condition
+                  (&installer-step-abort)))))))
           (lambda ()
             (destroy-form-and-pop form))))))
 
