@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +56,10 @@
 (test-equal "uuid, FAT32, format preserved"
   "1234-ABCD"
   (uuid->string (uuid "1234-abcd" 'fat32)))
+
+(test-equal "uuid, FAT32, leading zeros preserved"
+  "00CA-050E"                                    ;<https://bugs.gnu.org/35582>
+  (uuid->string (uuid "00CA-050E" 'fat32)))
 
 (test-assert "uuid, dynamic value"
   (let* ((good "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
