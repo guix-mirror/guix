@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -218,7 +218,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
 (define-public grammalecte
   (package
     (name "grammalecte")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -226,7 +226,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
                            "Grammalecte-fr-v" version ".zip"))
        (sha256
         (base32
-         "0p005mqgmckkbif3syv3d90rr1zsm5n5vvac5b29nn8g4v8jjpfs"))))
+         "16azrl8gb6wd7kjjrb495fjs5vkz9al2f6wx1yvjhdbsinxds0cc"))))
     (build-system python-build-system)
     (home-page "https://grammalecte.net")
     (synopsis  "French spelling and grammar checker")
