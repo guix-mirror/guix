@@ -4401,7 +4401,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4411,7 +4411,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rcp9i0fisdm4h6799ffr696l1vl661fnwb2dij268nlwwmkr90g"))))
+                "059kxrpxx580mm6p0z2a421nxngszyh4yqqhbgvn04b6a7dbsa2w"))))
     (inputs `(("bash" ,bash)
               ("dbus" ,dbus)
               ("ethtool" ,ethtool)
@@ -4445,6 +4445,8 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_FLIB" (string-append out "/share/tlp/func.d"))
                (setenv "TLP_ULIB" (string-append out "/lib/udev"))
                (setenv "TLP_CONF" "/etc/tlp")
+               (setenv "TLP_ELOD"
+                       (string-append out "/lib/elogind/system-sleep"))
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man"))
@@ -4454,7 +4456,9 @@ interface in sysfs, which can be accomplished with the included udev rules.")
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
-             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))
+             (substitute* "Makefile"
+               (("\\[ -f \\$\\(_CONF\\) \\]") "#")
+               (("install -d -m 755 \\$\\(_VAR\\)") "#"))
              #t))
          (replace 'install
            (lambda _
