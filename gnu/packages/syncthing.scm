@@ -112,7 +112,6 @@
 
     (arguments
      `(#:import-path "github.com/syncthing/syncthing"
-       #:unpack-path "github.com/syncthing"
        ;; We don't need to install the source code for end-user applications.
        #:install-source? #f
        #:phases
