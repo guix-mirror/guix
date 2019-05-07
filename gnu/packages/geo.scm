@@ -713,14 +713,9 @@ delivered to any client.")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/omniscale/imposm3/cmd/imposm"
-       #:unpack-path "github.com/omniscale"
+       #:unpack-path "github.com/omniscale/imposm3"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'rename-import
-           (lambda _
-             (rename-file (string-append "src/github.com/omniscale/imposm3-" ,version)
-                          "src/github.com/omniscale/imposm3")
-             #t))
          (add-before 'build 'set-version
            (lambda _
              (substitute* "src/github.com/omniscale/imposm3/version.go"
