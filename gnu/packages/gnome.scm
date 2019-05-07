@@ -5837,13 +5837,18 @@ devices using the GNOME desktop.")
          (add-before 'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libc   (assoc-ref inputs "libc"))
-                   (tzdata (assoc-ref inputs "tzdata")))
+                   (tzdata (assoc-ref inputs "tzdata"))
+                   (libgnomekbd (assoc-ref inputs "libgnomekbd")))
                (substitute* "panels/datetime/tz.h"
                  (("/usr/share/zoneinfo/zone.tab")
                   (string-append tzdata "/share/zoneinfo/zone.tab")))
                (substitute* "panels/datetime/test-endianess.c"
                  (("/usr/share/locale")
                   (string-append libc "/share/locale")))
+               (substitute* "panels/region/cc-region-panel.c"
+                 (("\"gkbd-keyboard-display")
+                  (string-append "\"" libgnomekbd
+                                 "/bin/gkbd-keyboard-display")))
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
@@ -5867,6 +5872,7 @@ devices using the GNOME desktop.")
        ("grilo" ,grilo)
        ("ibus" ,ibus)
        ("libcanberra" ,libcanberra)
+       ("libgnomekbd" ,libgnomekbd)
        ("libgudev" ,libgudev)
        ("libgtop" ,libgtop)
        ("libpwquality" ,libpwquality)
