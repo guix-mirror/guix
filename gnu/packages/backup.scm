@@ -887,16 +887,13 @@ is like a time machine for your data. ")
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"
-       #:unpack-path "github.com/restic"
       ;; We don't need to install the source code for end-user applications.
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion (string-append
-                                        "src/github.com/restic/restic-"
-                                        ,version)
+             (with-directory-excursion "src/github.com/restic/restic"
                ;; Disable 'restic self-update'.  It makes little sense in Guix.
                (substitute* "build.go" (("selfupdate") ""))
                (setenv "HOME" (getcwd)) ; for $HOME/.cache/go-build
@@ -904,9 +901,7 @@ is like a time machine for your data. ")
 
          (replace 'check
            (lambda _
-             (with-directory-excursion (string-append
-                                        "src/github.com/restic/restic-"
-                                        ,version)
+             (with-directory-excursion "src/github.com/restic/restic"
                ;; Disable FUSE tests.
                (setenv "RESTIC_TEST_FUSE" "0")
                (invoke "go" "run" "build.go" "--test"))))
@@ -914,8 +909,7 @@ is like a time machine for your data. ")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (src (string-append "src/github.com/restic/restic-"
-                                       ,version)))
+                   (src "src/github.com/restic/restic"))
                (install-file (string-append src "/restic")
                              (string-append out "/bin"))
                #t)))
@@ -925,8 +919,7 @@ is like a time machine for your data. ")
              (let* ((out (assoc-ref outputs "out"))
                     (man "/share/man")
                     (man-section (string-append man "/man"))
-                    (src (string-append "src/github.com/restic/restic-"
-                                        ,version "/doc/man/")))
+                    (src "src/github.com/restic/restic/doc/man/"))
                ;; Install all the man pages to "out".
                (for-each
                  (lambda (file)
