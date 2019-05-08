@@ -824,6 +824,7 @@ slabtop, and skill.")
       (sha256
        (base32 "0iiy0q7fzikavmdsjsb0sl9kp3gfh701qwyjjccvqh0qz4jlcqw8"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -835,7 +836,19 @@ slabtop, and skill.")
              ;; Don't let autogen.sh run configure with bogus options & CFLAGS.
              (substitute* "autogen.sh"
                (("^\\./configure.*") ""))
-             #t)))))
+             #t))
+         (add-after 'install 'separate-python-output
+           ;; Separating one Python script shaves more than 106 MiB from :out.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out        (assoc-ref outputs "out"))
+                   (out:python (assoc-ref outputs "python")))
+               (for-each (lambda (file)
+                           (let ((old (string-append out "/" file))
+                                 (new (string-append out:python "/" file)))
+                             (mkdir-p (dirname new))
+                             (rename-file old new)))
+                         (list "bin/lsusb.py"))
+               #t))))))
     (inputs
      `(("eudev" ,eudev)
        ("libusb" ,libusb)
