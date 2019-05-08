@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0xrlw95yp2p66rlvp2a2czf92m3hb3l8v3p39cwnaiw928y5i5m7"))
+                "0x2203xa4fxadj7ra7l2ac285j3gi1qgghpkssl4hkcq0kjmxqrk"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
