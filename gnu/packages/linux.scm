@@ -837,8 +837,9 @@ slabtop, and skill.")
                (("^\\./configure.*") ""))
              #t)))))
     (inputs
-     `(("libusb" ,libusb)
-       ("eudev" ,eudev)))
+     `(("eudev" ,eudev)
+       ("libusb" ,libusb)
+       ("python" ,python)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
