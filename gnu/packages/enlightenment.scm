@@ -203,7 +203,10 @@ removable devices or support for multimedia.")
                   #t))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dtests=true")
+     `(#:configure-flags (list "-Dtests=true"
+                               (string-append "-Dedje-cc="
+                                              (assoc-ref %build-inputs "efl")
+                                              "/bin/edje_cc"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-home-directory
@@ -286,6 +289,7 @@ Libraries with some extra bells and whistles.")
        (modify-phases %standard-phases
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "HOME" "/tmp")
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (utils     (assoc-ref inputs "util-linux"))
