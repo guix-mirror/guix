@@ -815,21 +815,35 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "010")
+    (version "012")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://kernel.org/linux/utils/usb/usbutils/"
                           "usbutils-" version ".tar.xz"))
       (sha256
-       (base32
-        "06aag4jfgsfjxk563xsp9ik9nadihmasrr37a1gb0vwqni5kdiv1"))))
+       (base32 "0iiy0q7fzikavmdsjsb0sl9kp3gfh701qwyjjccvqh0qz4jlcqw8"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'patch-bootstrap-scripts
+           (lambda _
+             (substitute* "usbhid-dump/bootstrap"
+               (("/bin/bash") (which "bash")))
+
+             ;; Don't let autogen.sh run configure with bogus options & CFLAGS.
+             (substitute* "autogen.sh"
+               (("^\\./configure.*") ""))
+             #t)))))
     (inputs
      `(("libusb" ,libusb)
        ("eudev" ,eudev)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
     (synopsis
      "Tools for working with USB devices, such as lsusb")
