@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
@@ -65,18 +65,17 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.21.1")
+    (version "1.22.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://download.enlightenment.org/rel/libs/efl/efl-"
                     version ".tar.xz"))
-              (patches (search-patches "efl-mesa-compat.patch"))
               (sha256
                (base32
-                "0a5907h896pvpix7a6idc2fspzy6d78xrzf84k8y9fyvnd14nxs4"))))
-    (outputs '("out"       ; 49 MB
-               "include")) ; 17 MB
+                "1l0wdgzxqm2y919277b1p9d37xzg808zwxxaw0nn44arh8gqk68n"))))
+    (outputs '("out"       ; 53 MB
+               "include")) ; 21 MB
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -91,6 +90,7 @@
        ("libjpeg" ,libjpeg)
        ("libraw" ,libraw)
        ("librsvg" ,librsvg)
+       ("libsndfile" ,libsndfile)
        ("libspectre" ,libspectre)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
@@ -113,6 +113,7 @@
        ("openjpeg" ,openjpeg-1)
        ("poppler" ,poppler)
        ("printproto" ,printproto)
+       ("pulseaudio" ,pulseaudio)
        ("wayland-protocols" ,wayland-protocols)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
@@ -131,11 +132,9 @@
        ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
        ("libinput" ,libinput-minimal) ; elput.pc
        ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
-       ("libsndfile" ,libsndfile) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("libxkbcommon" ,libxkbcommon) ; ecore-wl2.pc, elementary.pc, elput.pc
        ("mesa" ,mesa) ; ecore-drm2.pc
        ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
-       ("pulseaudio" ,pulseaudio) ; ecore-audio.pc, ecore-audio-cxx.pc
        ("util-linux" ,util-linux) ; mount: eeze.pc
        ("wayland" ,wayland) ; ecore-wl2.pc, elementary.pc
        ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
