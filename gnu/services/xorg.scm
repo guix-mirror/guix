@@ -774,14 +774,38 @@ the GNOME desktop environment.")
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define dbus-daemon-wrapper
-  (program-file "gdm-dbus-wrapper"
-                #~(begin
-                    (setenv "XDG_CONFIG_DIRS"
-                            "/run/current-system/profile/etc/xdg")
-                    (setenv "XDG_DATA_DIRS"
-                            "/run/current-system/profile/share")
-                    (apply execl (string-append #$dbus "/bin/dbus-daemon")
-                           (program-arguments)))))
+  (program-file
+   "gdm-dbus-wrapper"
+   #~(begin
+       (use-modules (srfi srfi-26))
+
+       (define system-profile
+         "/run/current-system/profile")
+
+       (define user-profile
+         (and=> (getpw (getuid))
+                (lambda (pw)
+                  (string-append (passwd:dir pw) "/.guix-profile"))))
+
+       ;; If we are able to find the user's profile, we can add it to
+       ;; the search paths set below.  We need to do this so that D-Bus
+       ;; can start services installed by the user.  This allows
+       ;; applications that require session D-Bus services (e.g,
+       ;; 'evolution') to work even if those services are only available
+       ;; in the user's profile.  See <https://bugs.gnu.org/35267>.
+       (define profiles
+         (if user-profile
+             (list user-profile system-profile)
+             (list system-profile)))
+
+       (setenv "XDG_CONFIG_DIRS"
+               (string-join (map (cut string-append <> "/etc/xdg") profiles)
+                            ":"))
+       (setenv "XDG_DATA_DIRS"
+               (string-join (map (cut string-append <> "/share") profiles)
+                            ":"))
+       (apply execl (string-append #$dbus "/bin/dbus-daemon")
+              (program-arguments)))))
 
 (define-record-type* <gdm-configuration>
   gdm-configuration make-gdm-configuration
