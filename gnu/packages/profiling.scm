@@ -184,7 +184,7 @@ memory-efficient event trace data format plus support library.")
     (inputs `(("gfortran" ,gfortran)))
     (native-inputs `(("gawk" ,gawk)     ; for tests
                      ("which" ,which)))
-    (home-page "http://www.vi-hps.org/projects/score-p")
+    (home-page "https://www.vi-hps.org/projects/score-p")
     (synopsis "OpenMP runtime performance measurement instrumenter")
     (description "OPARI2 is a source-to-source instrumentation tool for OpenMP
 and hybrid codes.  It surrounds OpenMP directives and runtime library calls
