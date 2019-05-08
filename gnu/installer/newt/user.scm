@@ -198,7 +198,7 @@ administrator (\"root\").")
                      (list GRID-ELEMENT-COMPONENT del-button)))))
            (ok-button (make-button -1 -1 (G_ "OK")))
            (exit-button (make-button -1 -1 (G_ "Exit")))
-           (title "User creation")
+           (title (G_ "User creation"))
            (grid
             (vertically-stacked-grid
              GRID-ELEMENT-COMPONENT info-textbox
