@@ -5040,7 +5040,7 @@ interface to this kernel feature.")
 (define-public mbpfan
   (package
     (name "mbpfan")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -5049,8 +5049,7 @@ interface to this kernel feature.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1gysq778rkl6dvvj9a1swxcl15wvz0bng5bn4nwq118cl8p8pask"))))
+        (base32 "0aijyxrqh01x0s80yr4cgxgd001iiqqph65pxvby7f0wz8lnxnqj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; tests ask to be run as root
