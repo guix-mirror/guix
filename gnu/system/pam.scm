@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -207,40 +207,47 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
         (env  (pam-entry ; to honor /etc/environment.
                (control "required")
                (module "pam_env.so"))))
-    (lambda* (name #:key allow-empty-passwords? (allow-root? #f) motd)
+    (lambda* (name #:key allow-empty-passwords? (allow-root? #f) motd
+                   login-uid?)
       "Return a standard Unix-style PAM service for NAME.  When
 ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When ALLOW-ROOT? is
 true, allow root to run the command without authentication.  When MOTD is
-true, it should be a file-like object used as the message-of-the-day."
+true, it should be a file-like object used as the message-of-the-day.
+When LOGIN-UID? is true, require the 'pam_loginuid' module; that module sets
+/proc/self/loginuid, which the libc 'getlogin' function relies on."
       ;; See <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-example.html>.
-      (let ((name* name))
-        (pam-service
-         (name name*)
-         (account (list unix))
-         (auth (append (if allow-root?
-                           (list (pam-entry
-                                  (control "sufficient")
-                                  (module "pam_rootok.so")))
-                           '())
-                       (list (if allow-empty-passwords?
-                                 (pam-entry
-                                  (control "required")
-                                  (module "pam_unix.so")
-                                  (arguments '("nullok")))
-                                 unix))))
-         (password (list (pam-entry
-                          (control "required")
-                          (module "pam_unix.so")
-                          ;; Store SHA-512 encrypted passwords in /etc/shadow.
-                          (arguments '("sha512" "shadow")))))
-         (session (if motd
-                      (list env unix
-                            (pam-entry
-                             (control "optional")
-                             (module "pam_motd.so")
-                             (arguments
-                              (list #~(string-append "motd=" #$motd)))))
-                      (list env unix))))))))
+      (pam-service
+       (name name)
+       (account (list unix))
+       (auth (append (if allow-root?
+                         (list (pam-entry
+                                (control "sufficient")
+                                (module "pam_rootok.so")))
+                         '())
+                     (list (if allow-empty-passwords?
+                               (pam-entry
+                                (control "required")
+                                (module "pam_unix.so")
+                                (arguments '("nullok")))
+                               unix))))
+       (password (list (pam-entry
+                        (control "required")
+                        (module "pam_unix.so")
+                        ;; Store SHA-512 encrypted passwords in /etc/shadow.
+                        (arguments '("sha512" "shadow")))))
+       (session `(,@(if motd
+                        (list (pam-entry
+                               (control "optional")
+                               (module "pam_motd.so")
+                               (arguments
+                                (list #~(string-append "motd=" #$motd)))))
+                        '())
+                  ,@(if login-uid?
+                        (list (pam-entry       ;to fill in /proc/self/loginuid
+                               (control "required")
+                               (module "pam_loginuid.so")))
+                        '())
+                  ,env ,unix))))))
 
 (define (rootok-pam-service command)
   "Return a PAM service for COMMAND such that 'root' does not need to
