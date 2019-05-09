@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -59,7 +59,7 @@ is_available () {
     type "$1" > /dev/null
 }
 
-if is_available chroot && is_available unshare; then
+if is_available chroot && is_available unshare && unshare -r true; then
     # Verify we can use what we built.
     unshare -r chroot . /opt/gnu/bin/guile --version
     cd -

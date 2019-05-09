@@ -65,8 +65,15 @@ export relocatable_option
 tarball="`guix pack $relocatable_option -S /Bin=bin sed`"
 (cd "$test_directory"; tar xvf "$tarball")
 
-# Run that relocatable 'sed' in a user namespace where we "erase" the store by
-# mounting an empty file system on top of it.  That way, we exercise the
-# wrapper code that creates the user namespace and bind-mounts the store.
-unshare -mrf sh -c 'mount -t tmpfs none "$STORE_PARENT"; echo "$STORE_PARENT"/*; "$test_directory/Bin/sed" --version > "$test_directory/output"'
+if unshare -r true		# Are user namespaces supported?
+then
+    # Run that relocatable 'sed' in a user namespace where we "erase" the store by
+    # mounting an empty file system on top of it.  That way, we exercise the
+    # wrapper code that creates the user namespace and bind-mounts the store.
+    unshare -mrf sh -c 'mount -t tmpfs none "$STORE_PARENT"; echo "$STORE_PARENT"/*; "$test_directory/Bin/sed" --version > "$test_directory/output"'
+else
+    # Run the relocatable 'sed' in the current namespaces.  This is a weak
+    # test because we're going to access store items from the host store.
+    "$test_directory/Bin/sed" --version > "$test_directory/output"
+fi
 grep 'GNU sed' "$test_directory/output"
