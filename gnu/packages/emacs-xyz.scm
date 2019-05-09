@@ -11793,15 +11793,14 @@ modes of SLIME.")
 (define-public emacs-sml-mode
   (package
     (name "emacs-sml-mode")
-    (version "6.8")
+    (version "6.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://elpa.gnu.org/packages/sml-mode-"
                            version ".el"))
        (sha256
-        (base32
-         "105fcrz5qp95f2n3fdm3awr6z58sbrjihjss6qnrg4lz2ggbc328"))))
+        (base32 "1bdg9ywpvj85hxqah9w1raxlcrhkyx67nw22jwd1bd5j0fhmgqij"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/sml-mode.html")
     (synopsis "Major mode for editing (Standard) ML")
