@@ -4409,14 +4409,14 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.16")
+    (version "1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1gfaw1kf7cxf5ibr61n6dxjihi49gmysn4cvawx1pqvy52ljpk0p"))))
+                "047sf00x71xbmi8bqrhfbmr9bk89l2gbykkqsfpw4wz6yfjscs6y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests included
