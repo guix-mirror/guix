@@ -212,16 +212,16 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.80")
+    (version "1.82")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/AlDanial/cloc/releases/download/v" version
-             "/cloc-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/AlDanial/cloc.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0rqxnaskg5b736asyzfda1113zvpkajyqjf49vl9wgzf1r9m6bq8"))))
+        (base32 "0fsz07z0slfg58512fmnlj8pnxkc360bgf7fclg60v9clvcjbjsw"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)
