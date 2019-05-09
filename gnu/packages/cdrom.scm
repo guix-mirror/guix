@@ -925,7 +925,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
 (define-public cdemu-client
   (package
     (name "cdemu-client")
-    (version "3.2.0")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -933,7 +933,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1zwz987pb2pakfk9kz8a6xa9hq1ip48cn4ryl9z85dik8k2sizm9"))))
+                "1d8m24qvv62xcwafw5zs4yf39vs64kxl4idqcngd8yyjhrb2ykg5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
