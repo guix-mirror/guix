@@ -559,6 +559,33 @@ between the CDemu userspace daemon and linux kernel.")
 
 
 ;;;
+;;; Linux kernel modules.
+;;;
+
+(define-public vhba-module
+  (package
+    (name "vhba-module")
+    (version "20190410")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1513hq130raxp9z5grj54cwfjfxj05apipxg425j0zicii59a60c"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; TODO: No tests?
+     `(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Kernel module that emulates SCSI devices")
+    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
+between the CDemu userspace daemon and linux kernel.")
+    (license license:gpl2+)))
+
+
+;;;
 ;;; Pluggable authentication modules (PAM).
 ;;;
 
