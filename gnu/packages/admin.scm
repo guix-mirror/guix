@@ -1277,6 +1277,72 @@ command.")
                         #t))))))
     (synopsis "Graphical user interface for WPA supplicant")))
 
+(define-public hostapd
+  (package
+    (name "hostapd")
+    (version "2.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://w1.fi/releases/hostapd-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1c74rrazkhy4lr7pwgwa2igzca7h9l4brrs7672kiv7fwqmm57wj"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This is mostly copied from 'wpa-supplicant' above.
+             (chdir "hostapd")
+             (copy-file "defconfig" ".config")
+             (let ((port (open-file ".config" "al")))
+               (display "
+      CONFIG_LIBNL32=y
+      CONFIG_IEEE80211R=y
+      CONFIG_IEEE80211N=y
+      CONFIG_IEEE80211AC=y\n" port)
+               (close-port port))
+             #t))
+         (add-after 'install 'install-man-pages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (man  (string-append out "/share/man"))
+                    (man1 (string-append man "/man1"))
+                    (man8 (string-append man "/man8")))
+               (define (copy-man-page target)
+                 (lambda (file)
+                   (install-file file target)))
+
+               (for-each (copy-man-page man1)
+                         (find-files "." "\\.1"))
+               (for-each (copy-man-page man8)
+                         (find-files "." "\\.8"))
+               #t))))
+
+      #:make-flags (list "CC=gcc"
+                         (string-append "BINDIR=" (assoc-ref %outputs "out")
+                                        "/sbin")
+                         (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                                        "/lib"))
+      #:tests? #f))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+
+    ;; There's an optional dependency on SQLite.
+    (inputs `(("openssl" ,openssl)
+              ("libnl" ,libnl)))
+    (home-page "https://w1.fi/hostapd/")
+    (synopsis "Daemon for Wi-Fi access points and authentication servers")
+    (description
+     "hostapd is a user-space daemon for WiFi access points and authentication
+servers.  It implements IEEE 802.11 access point management, IEEE
+802.1X/WPA/WPA2/EAP Authenticators, RADIUS client, EAP server, and RADIUS
+authentication server.")
+
+    ;; Same license as wpa_supplicant.
+    (license license:bsd-3)))
+
 (define-public wakelan
   (package
     (name "wakelan")
