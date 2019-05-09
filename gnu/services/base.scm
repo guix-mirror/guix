@@ -830,6 +830,7 @@ Return a service that sets up Unicode support in @var{tty} and loads
   "Return the list of PAM service needed for CONF."
   ;; Let 'login' be known to PAM.
   (list (unix-pam-service "login"
+                          #:login-uid? #t
                           #:allow-empty-passwords?
                           (login-configuration-allow-empty-passwords? config)
                           #:motd

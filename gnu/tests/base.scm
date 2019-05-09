@@ -307,6 +307,18 @@ info --version")
               (wait-for-file "/root/logged-in" marionette
                              #:read 'get-string-all)))
 
+          (test-equal "getlogin on tty1"
+            "\"root\""
+            (begin
+              ;; Assume we logged in in the previous test and type.
+              (marionette-type "guile -c '(write (getlogin))' > /root/login-id\n"
+                               marionette)
+
+              ;; It can take a while before the shell commands are executed.
+              (marionette-eval '(use-modules (rnrs io ports)) marionette)
+              (wait-for-file "/root/login-id" marionette
+                             #:read 'get-string-all)))
+
           ;; There should be one utmpx entry for the user logged in on tty1.
           (test-equal "utmpx entry"
             '(("root" "tty1" #f))

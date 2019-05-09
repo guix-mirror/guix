@@ -182,6 +182,7 @@
   "Return a list of <pam-services> for lshd with CONFIG."
   (list (unix-pam-service
          "lshd"
+         #:login-uid? #t
          #:allow-empty-passwords?
          (lsh-configuration-allow-empty-passwords? config))))
 
@@ -506,6 +507,7 @@ of user-name/file-like tuples."
   "Return a list of <pam-services> for sshd with CONFIG."
   (list (unix-pam-service
          "sshd"
+         #:login-uid? #t
          #:allow-empty-passwords?
          (openssh-configuration-allow-empty-passwords? config))))
 

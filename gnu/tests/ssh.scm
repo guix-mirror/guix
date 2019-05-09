@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -31,7 +31,8 @@
   #:export (%test-openssh
             %test-dropbear))
 
-(define* (run-ssh-test name ssh-service pid-file #:key (sftp? #f))
+(define* (run-ssh-test name ssh-service pid-file
+                       #:key (sftp? #f) (test-getlogin? #t))
   "Run a test of an OS running SSH-SERVICE, which writes its PID to PID-FILE.
 SSH-SERVICE must be configured to listen on port 22 and to allow for root and
 empty-password logins.
@@ -54,10 +55,12 @@ When SFTP? is true, run an SFTP server test."
             (use-modules (gnu build marionette)
                          (srfi srfi-26)
                          (srfi srfi-64)
+                         (ice-9 textual-ports)
                          (ice-9 match)
                          (ssh session)
                          (ssh auth)
                          (ssh channel)
+                         (ssh popen)
                          (ssh sftp))
 
             (define marionette
@@ -147,6 +150,20 @@ root with an empty password."
                    (and (zero? (channel-get-exit-status channel))
                         (wait-for-file "/root/witness" marionette))))))
 
+            ;; Check whether the 'getlogin' procedure returns the right thing.
+            (unless #$test-getlogin?
+              (test-skip 1))
+            (test-equal "getlogin"
+              '(0 "root")
+              (call-with-connected-session/auth
+               (lambda (session)
+                 (let* ((pipe   (open-remote-input-pipe
+                                 session
+                                 "guile -c '(display (getlogin))'"))
+                        (output (get-string-all pipe))
+                        (status (channel-get-exit-status pipe)))
+                   (list status output)))))
+
             ;; Connect to the guest over SFTP.  Make sure we can write and
             ;; read a file there.
             (unless #$sftp?
@@ -217,4 +234,9 @@ root with an empty password."
                                  (dropbear-configuration
                                   (root-login? #t)
                                   (allow-empty-passwords? #t)))
-                        "/var/run/dropbear.pid"))))
+                        "/var/run/dropbear.pid"
+
+                        ;; XXX: Our Dropbear is not built with PAM support.
+                        ;; Even when it is, it seems to ignore the PAM
+                        ;; 'session' requirements.
+                        #:test-getlogin? #f))))

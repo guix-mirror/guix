@@ -501,6 +501,7 @@ desktop session from the system or user profile will be used."
   "Return a PAM service for @command{slim}."
   (list (unix-pam-service
          "slim"
+         #:login-uid? #t
          #:allow-empty-passwords?
          (slim-configuration-allow-empty-passwords? config))))
 
@@ -830,7 +831,8 @@ the GNOME desktop environment.")
   "Return a PAM service for @command{gdm}."
   (list
    (pam-service
-    (inherit (unix-pam-service "gdm-autologin"))
+    (inherit (unix-pam-service "gdm-autologin"
+                               #:login-uid? #t))
     (auth (list (pam-entry
                  (control "[success=ok default=1]")
                  (module (file-append (gdm-configuration-gdm config)
@@ -844,6 +846,7 @@ the GNOME desktop environment.")
                  (control "required")
                  (module "pam_permit.so")))))
    (unix-pam-service "gdm-password"
+                     #:login-uid? #t
                      #:allow-empty-passwords?
                      (gdm-configuration-allow-empty-passwords? config))))
 
