@@ -1514,8 +1514,8 @@ Linux-based operating systems.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.kernel.org/pub/linux/utils/net/"
-                           "bridge-utils/bridge-utils-" version ".tar.xz"))
+       (uri (string-append "mirror://kernel.org/linux/utils/net/bridge-utils/"
+                           "bridge-utils-" version ".tar.xz"))
        (sha256
         (base32 "1j16kr44csyr4yqxly26l1yw2bh4nkiasgwvask2i2gvsnsyyryc"))))
     (build-system gnu-build-system)
@@ -2987,10 +2987,8 @@ also contains the libsysfs library.")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append
-         "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/cpufrequtils-"
-         version ".tar.gz"))
+       (uri (string-append "mirror://kernel.org/linux/utils/kernel/cpufreq/"
+                           "cpufrequtils-" version ".tar.gz"))
        (sha256
         (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
        (patches (search-patches "cpufrequtils-fix-aclocal.patch"))))
@@ -3269,8 +3267,8 @@ applications.")
     (version "1.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.kernel.org/pub/linux/bluetooth/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
+                                  version ".tar.xz"))
               (sha256
                (base32
                 "02ckd2z51z0h85qgv7x8vv8ybp5czm9if1z78411j53gaz7j4476"))))
