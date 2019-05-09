@@ -3141,15 +3141,15 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.8")
+    (version "0.99.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.freedesktop.org/upower/upower/"
-                                  "uploads/9125ab7ee96fdc4ecc68cfefb50c1cab/"
+                                  "uploads/c438511024b9bc5a904f8775cfc8e4c4/"
                                   "upower-" version ".tar.xz"))
               (sha256
                (base32
-                "00lzr0vyxz5lvmgya48gdb2cdgmfdim4b34jlfdyqakk1i9sl8xv"))
+                "17d2bclv5fgma2y3g8bsn9pdvspn1zrzismzdnzfivc0f2wm28k4"))
               (patches (search-patches "upower-builddir.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
