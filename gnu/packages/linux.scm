@@ -443,15 +443,15 @@ It has been modified to remove all non-free binary blobs.")
 (define-public vhba-module
   (package
     (name "vhba-module")
-    (version "20170610")
+    (version "20190410")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.sourceforge.net/cdemu/vhba-module-"
+                    "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1v6r0bgx0a65vlh36b1l2965xybngbpga6rp54k4z74xk0zwjw3r"))))
+                "1513hq130raxp9z5grj54cwfjfxj05apipxg425j0zicii59a60c"))))
     (build-system linux-module-build-system)
     (arguments
      ;; TODO: No tests?
