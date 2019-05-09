@@ -60,14 +60,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.8.3")
+    (version "2.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1b641kcgjvyc41pj67dn4p0zvwlj1vx3l6nf7qdcc7kf6v5a2cjr"))))
+                "1hgnfcgbllmws8cs6zaxklq8b69i05zynxi87f3zxw9lfms54kdn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -117,8 +117,9 @@ a flexible and convenient way.")
                        (string-append "--with-bzip2=" bzip2 "/bin/gzip")
                        (string-append "--with-xz=" xz "/bin/xz")
                        (string-append "--with-col=" util "/bin/col")
-                       ;; Default value is "/usr/lib/tmpfiles.d" (not
-                       ;; prefix-sensitive).
+                       ;; The default systemd directories ignore --prefix.
+                       (string-append "--with-systemdsystemunitdir="
+                                      %output "/lib/systemd/system")
                        (string-append "--with-systemdtmpfilesdir="
                                       %output "/lib/tmpfiles.d"))
                  (map (lambda (prog)
