@@ -1042,6 +1042,11 @@ bit bucket."
       (with-error-to-port (%make-void-port "w")
         (lambda () exp ...)))))
 
+(define (create-btrfs-file-system partition)
+  "Create an btrfs file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "mkfs.btrfs" "-f" partition)))
+
 (define (create-ext4-file-system partition)
   "Create an ext4 file-system for PARTITION file-name."
   (with-null-output-ports
@@ -1106,6 +1111,10 @@ NEED-FORMATING? field set to #t."
          (luks-format-and-open user-partition))
 
        (case fs-type
+         ((btrfs)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-btrfs-file-system file-name)))
          ((ext4)
           (and need-formatting?
                (not (eq? type 'extended))
