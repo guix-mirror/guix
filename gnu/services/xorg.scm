@@ -549,8 +549,14 @@ reboot_cmd " shepherd "/sbin/reboot\n"
 
     (list (shepherd-service
            (documentation "Xorg display server")
-           (provision (list (symbol-append 'xorg-server-
-                                           (string->symbol vt))))
+           (provision (append
+                       ;; For compatibility, also provide 'xorg-server'.
+                       (if (string=? vt "vt7")
+                           '(xorg-server)
+                           '())
+
+                       (list (symbol-append 'xorg-server-
+                                            (string->symbol vt)))))
            (requirement '(user-processes host-name udev))
            (start
             #~(lambda ()
