@@ -17,7 +17,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
-# Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 #
@@ -526,6 +526,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/messaging.scm			\
   %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
+  %D%/services/nix.scm				\
   %D%/services/nfs.scm			\
   %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
