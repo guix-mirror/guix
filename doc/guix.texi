@@ -63,6 +63,7 @@ Copyright @copyright{} 2018 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
+Copyright @copyright{} 2019 Diego Nicola Barbato@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -25279,7 +25280,7 @@ These are the names that may be passed to @command{herd start},
 shepherd, The GNU Shepherd Manual}).  @xref{Slots of services, the
 @code{provides} slot,, shepherd, The GNU Shepherd Manual}, for details.
 
-@item @code{requirements} (default: @code{'()})
+@item @code{requirement} (default: @code{'()})
 List of symbols denoting the Shepherd services this one depends on.
 
 @cindex one-shot services, for the Shepherd
