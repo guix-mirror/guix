@@ -2195,3 +2195,42 @@ serializing continuations or delimited continuations.")
        "This package allows you to compile a Guile Python file to any target
 from @code{tree-il}.")
       (license license:lgpl2.0+))))
+
+(define-public guile-file-names
+  (package
+    (name "guile-file-names")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://brandon.invergo.net/software/download/"
+                                  "guile-file-names/guile-file-names-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "01ba6jdypj9cwc5rgiw384dgz12iz6ab4dsd3ai5gfklprm2a50b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'build-with-guile-2.2
+           (lambda _
+             (substitute* "configure"
+               (("guile-2.0") "guile-2.2"))
+             (substitute* "file-names/Makefile.in"
+               (("guilemoddir = \\$\\(GUILE_SITE\\)")
+                "guilemoddir = $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+             #t)))))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/brandoninvergo/guile-file-names")
+    (synopsis "Manipulate file names")
+    (description
+     "The @code{(file-names)} module provides tools for manipulating file
+names.  The module was built on the idea that doing anything more than a
+non-trivial modification of a file name string is a pain (making sure all
+slashes are present and accounted for, resolving @code{.} and @code{..}, etc).
+Inevitably, you have to break the string up into chunks and operate on that
+list of components.  This module takes care of that for you.")
+    (license license:lgpl3+)))
