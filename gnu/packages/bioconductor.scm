@@ -4369,3 +4369,26 @@ number states are realizations of Multinomial random variables; counts are
 modeled as Poisson random processes; and continuous measures are modeled by
 Gaussian distributions.")
     (license license:gpl2+)))
+
+(define-public r-rbowtie
+  (package
+    (name "r-rbowtie")
+    (version "1.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rbowtie" version))
+       (sha256
+        (base32
+         "1p8gbd2zn677lq8d009p2cplg1jm2jhn81lppipj638i9ynjh44f"))))
+    (properties `((upstream-name . "Rbowtie")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://bioconductor.org/packages/Rbowtie/")
+    (synopsis "R bowtie wrapper")
+    (description
+     "This package provides an R wrapper around the popular bowtie short read
+aligner and around SpliceMap, a de novo splice junction discovery and
+alignment tool.")
+    (license license:artistic2.0)))
