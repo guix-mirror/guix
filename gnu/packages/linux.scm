@@ -562,6 +562,53 @@ between the CDemu userspace daemon and linux kernel.")
 ;;; Linux kernel modules.
 ;;;
 
+(define-public acpi-call-linux-module
+  (package
+    (name "acpi-call-linux-module")
+    (version "3.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/teleshoes/acpi_call.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04mbv4lasm3vv1j4ndxhnz4hvp5wg8f5fc9q6qxv0nhvwjynmsl3"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-for-linux-4.12
+           (lambda _
+             (substitute* "acpi_call.c"
+               (("asm/uaccess\\.h")
+                "linux/uaccess.h"))
+             #t))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (for-each (lambda (file)
+                           (let ((target (string-append doc "/" file)))
+                             (mkdir-p (dirname target))
+                             (copy-recursively file target)))
+                         (list "README.md" "examples"))
+               #t))))))
+    (home-page "https://github.com/teleshoes/acpi_call")
+    (synopsis "Linux kernel module to perform ACPI method calls")
+    (description
+     "This simple Linux kernel module allows calls from user space to any
+@acronym{ACPI, Advanced Configuration and Power Interface} method provided by
+your computer's firmware, by writing to @file{/proc/acpi/call}.  You can pass
+any number of parameters of types @code{ACPI_INTEGER},  @code{ACPI_STRING},
+and @code{ACPI_BUFFER}.
+
+It grants direct and undocumented access to your hardware that may cause damage
+and should be used with caution, especially on untested models.")
+    (license license:gpl3+)))           ; see README.md (no licence headers)
+
 (define-public vhba-module
   (package
     (name "vhba-module")
