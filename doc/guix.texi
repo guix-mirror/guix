@@ -24587,6 +24587,11 @@ When this option is omitted, @command{guix system} computes an estimate
 of the image size as a function of the size of the system declared in
 @var{file}.
 
+@item --network
+@itemx -N
+For the @code{container} action, allow containers to access the host network,
+that is, do not create a network namespace.
+
 @item --root=@var{file}
 @itemx -r @var{file}
 Make @var{file} a symlink to the result, and register it as a garbage

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
             containerized-operating-system
             container-script))
 
-(define (container-essential-services os)
+(define* (container-essential-services os #:key shared-network?)
   "Return a list of essential services corresponding to OS, a
 non-containerized OS.  This procedure essentially strips essential services
 from OS that are needed on the bare metal and not in a container."
@@ -51,9 +52,20 @@ from OS that are needed on the bare metal and not in a container."
                  (let ((locale (operating-system-locale-directory os)))
                    (with-monad %store-monad
                      (return `(("locale" ,locale))))))
-        base))
+        ;; If network is to be shared with the host, remove network
+        ;; configuration files from etc-service.
+        (if shared-network?
+            (modify-services base
+              (etc-service-type
+               files => (remove
+                         (match-lambda
+                           ((filename _)
+                            (member filename
+                                    (map basename %network-configuration-files))))
+                         files)))
+            base)))
 
-(define (containerized-operating-system os mappings)
+(define* (containerized-operating-system os mappings #:key shared-network?)
   "Return an operating system based on OS for use in a Linux container
 environment.  MAPPINGS is a list of <file-system-mapping> to realize in the
 containerized OS."
@@ -76,27 +88,53 @@ containerized OS."
   (define useless-services
     ;; Services that make no sense in a container.  Those that attempt to
     ;; access /dev/tty[0-9] in particular cannot work in a container.
-    (list console-font-service-type
-          mingetty-service-type
-          agetty-service-type))
+    (append (list console-font-service-type
+                  mingetty-service-type
+                  agetty-service-type)
+            ;; Remove nscd service if network is shared with the host.
+            (if shared-network?
+                (list nscd-service-type)
+                (list))))
+
+  (define shared-network-file-mappings
+    ;; Files to map if network is to be shared with the host
+    (append %network-file-mappings
+            (let ((nscd-run-directory "/var/run/nscd"))
+              (if (file-exists? nscd-run-directory)
+                  (list (file-system-mapping
+                         (source nscd-run-directory)
+                         (target nscd-run-directory)))
+                  (list)))))
+
+  ;; (write shared-network-file-mappings)
+  ;; (newline)
 
   (operating-system
     (inherit os)
     (swap-devices '()) ; disable swap
-    (essential-services (container-essential-services os))
+    (essential-services (container-essential-services
+                         os #:shared-network? shared-network?))
     (services (remove (lambda (service)
                         (memq (service-kind service)
                               useless-services))
                       (operating-system-user-services os)))
-    (file-systems (append (map mapping->fs (cons %store-mapping mappings))
+    (file-systems (append (map mapping->fs
+                               (cons %store-mapping
+                                     (append mappings
+                                             (if shared-network?
+                                                 shared-network-file-mappings
+                                                 (list)))))
                           %container-file-systems
                           user-file-systems))))
 
-(define* (container-script os #:key (mappings '()))
+(define* (container-script os #:key (mappings '()) shared-network?)
   "Return a derivation of a script that runs OS as a Linux container.
 MAPPINGS is a list of <file-system> objects that specify the files/directories
 that will be shared with the host system."
-  (let* ((os           (containerized-operating-system os mappings))
+  (let* ((os           (containerized-operating-system
+                        os
+                        mappings
+                        #:shared-network? shared-network?))
          (file-systems (filter file-system-needed-for-boot?
                                (operating-system-file-systems os)))
          (specs        (map file-system->spec file-systems)))
@@ -121,6 +159,9 @@ that will be shared with the host system."
               ;; users and groups, which is sufficient for most cases.
               ;;
               ;; See: http://www.freedesktop.org/software/systemd/man/systemd-nspawn.html#--private-users=
-              #:host-uids 65536))))
+              #:host-uids 65536
+              #:namespaces (if #$shared-network?
+                               (delq 'net %namespaces)
+                               %namespaces)))))
 
     (gexp->script "run-container" script)))
