@@ -14264,3 +14264,29 @@ engine (Salmon et al., 2011) as provided by the package @code{sitmo}.")
     ;; This package includes code under CC0 and Apache 2.0 or Expat, but as a
     ;; whole is distributed under the terms of the AGPL 3.
     (license license:agpl3)))
+
+(define-public r-dalex
+  (package
+    (name "r-dalex")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DALEX" version))
+       (sha256
+        (base32
+         "13l435l88r6wqaypxbf8jszc8wv5la1c3ahcxif2jcqlj4b1dks6"))))
+    (properties `((upstream-name . "DALEX")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://pbiecek.github.io/DALEX/")
+    (synopsis "Descriptive machine learning explanations")
+    (description
+     "Machine Learning models are widely used and have various applications in
+classification or regression.  Models created with boosting, bagging, stacking
+or similar techniques are often used due to their high performance, but such
+black-box models usually lack interpretability.  The DALEX package contains
+various explainers that help to understand the link between input variables
+and model output.")
+    ;; Any version of the GPL
+    (license license:gpl3+)))
