@@ -14314,3 +14314,25 @@ and model output.")
 web-based tool for analyzing gene sets and returns any enrichment of common
 annotated biological functions.")
     (license license:gpl2+)))
+
+(define-public r-plot3d
+  (package
+    (name "r-plot3d")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "plot3D" version))
+       (sha256
+        (base32
+         "0chn70fqwyca8lbnjnpbcj08ni0dfbax2gjmzhk2c4w72c04mzpn"))))
+    (properties `((upstream-name . "plot3D")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-misc3d" ,r-misc3d)))
+    (home-page "https://cran.r-project.org/web/packages/plot3D")
+    (synopsis "Plot multi-dimensional data")
+    (description
+     "This package provides functions for viewing 2D and 3D data, including
+perspective plots, slice plots, surface plots, scatter plots, etc.  It
+includes data sets from oceanography.")
+    (license license:gpl3+)))
