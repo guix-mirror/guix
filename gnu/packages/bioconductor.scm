@@ -4392,3 +4392,44 @@ Gaussian distributions.")
 aligner and around SpliceMap, a de novo splice junction discovery and
 alignment tool.")
     (license license:artistic2.0)))
+
+(define-public r-sgseq
+  (package
+    (name "r-sgseq")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "SGSeq" version))
+       (sha256
+        (base32
+         "09c0hv74pl310wahyyp4x50g6sz30bvrg24p2j9h7glla5dh2z4s"))))
+    (properties `((upstream-name . "SGSeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-igraph" ,r-igraph)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-runit" ,r-runit)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/SGSeq/")
+    (synopsis "Splice event prediction and quantification from RNA-seq data")
+    (description
+     "SGSeq is a package for analyzing splice events from RNA-seq data.  Input
+data are RNA-seq reads mapped to a reference genome in BAM format.  Genes are
+represented as a splice graph, which can be obtained from existing annotation
+or predicted from the mapped sequence reads.  Splice events are identified
+from the graph and are quantified locally using structurally compatible reads
+at the start or end of each splice variant.  The software includes functions
+for splice event prediction, quantification, visualization and
+interpretation.")
+    (license license:artistic2.0)))
