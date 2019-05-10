@@ -4339,3 +4339,33 @@ can add, update, and retrieve.  It is useful for managing resources (such as
 custom Txdb objects) that are costly or difficult to create, web resources,
 and data files used across sessions.")
     (license license:artistic2.0)))
+
+(define-public r-iclusterplus
+  (package
+    (name "r-iclusterplus")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "iClusterPlus" version))
+       (sha256
+        (base32
+         "14x43jjhbp4zwb4dv9rwrm5l5p7h76bc1zkdbiikqip9bzph0viq"))))
+    (properties `((upstream-name . "iClusterPlus")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://bioconductor.org/packages/iClusterPlus/")
+    (synopsis "Integrative clustering of multi-type genomic data")
+    (description
+     "iClusterPlus is developed for integrative clustering analysis of
+multi-type genomic data and is an enhanced version of iCluster proposed and
+developed by Shen, Olshen and Ladanyi (2009).  Multi-type genomic data arise
+from the experiments where biological samples (e.g. tumor samples) are
+analyzed by multiple techniques, for instance, @dfn{array comparative genomic
+hybridization} (aCGH), gene expression microarray, RNA-seq and DNA-seq, and so
+on.  In the iClusterPlus model, binary observations such as somatic mutation
+are modeled as Binomial processes; categorical observations such as copy
+number states are realizations of Multinomial random variables; counts are
+modeled as Poisson random processes; and continuous measures are modeled by
+Gaussian distributions.")
+    (license license:gpl2+)))
