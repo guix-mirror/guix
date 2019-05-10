@@ -65,10 +65,13 @@ from OS that are needed on the bare metal and not in a container."
                          files)))
             base)))
 
-(define* (containerized-operating-system os mappings #:key shared-network?)
+(define* (containerized-operating-system os mappings
+                                         #:key
+                                         shared-network?
+                                         (extra-file-systems '()))
   "Return an operating system based on OS for use in a Linux container
 environment.  MAPPINGS is a list of <file-system-mapping> to realize in the
-containerized OS."
+containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
   (define user-file-systems
     (remove (lambda (fs)
               (let ((target (file-system-mount-point fs))
@@ -96,19 +99,6 @@ containerized OS."
                 (list nscd-service-type)
                 (list))))
 
-  (define shared-network-file-mappings
-    ;; Files to map if network is to be shared with the host
-    (append %network-file-mappings
-            (let ((nscd-run-directory "/var/run/nscd"))
-              (if (file-exists? nscd-run-directory)
-                  (list (file-system-mapping
-                         (source nscd-run-directory)
-                         (target nscd-run-directory)))
-                  (list)))))
-
-  ;; (write shared-network-file-mappings)
-  ;; (newline)
-
   (operating-system
     (inherit os)
     (swap-devices '()) ; disable swap
@@ -118,23 +108,32 @@ containerized OS."
                         (memq (service-kind service)
                               useless-services))
                       (operating-system-user-services os)))
-    (file-systems (append (map mapping->fs
-                               (cons %store-mapping
-                                     (append mappings
-                                             (if shared-network?
-                                                 shared-network-file-mappings
-                                                 (list)))))
-                          %container-file-systems
+    (file-systems (append (map mapping->fs mappings)
+                          extra-file-systems
                           user-file-systems))))
 
 (define* (container-script os #:key (mappings '()) shared-network?)
   "Return a derivation of a script that runs OS as a Linux container.
 MAPPINGS is a list of <file-system> objects that specify the files/directories
 that will be shared with the host system."
+  (define network-mappings
+    ;; Files to map if network is to be shared with the host
+    (append %network-file-mappings
+            (let ((nscd-run-directory "/var/run/nscd"))
+              (if (file-exists? nscd-run-directory)
+                  (list (file-system-mapping
+                         (source nscd-run-directory)
+                         (target nscd-run-directory)))
+                  '()))))
+
   (let* ((os           (containerized-operating-system
                         os
-                        mappings
-                        #:shared-network? shared-network?))
+                        (cons %store-mapping
+                              (if shared-network?
+                                  (append network-mappings mappings)
+                                  mappings))
+                        #:shared-network? shared-network?
+                        #:extra-file-systems %container-file-systems))
          (file-systems (filter file-system-needed-for-boot?
                                (operating-system-file-systems os)))
          (specs        (map file-system->spec file-systems)))
