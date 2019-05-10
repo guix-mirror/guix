@@ -46,7 +46,7 @@ from OS that are needed on the bare metal and not in a container."
                     (list (service-kind %linux-bare-metal-service)
                           firmware-service-type
                           system-service-type)))
-            (operating-system-essential-services os)))
+            (operating-system-default-essential-services os)))
 
   (cons (service system-service-type
                  (let ((locale (operating-system-locale-directory os)))
@@ -103,14 +103,22 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
     (inherit os)
     (swap-devices '()) ; disable swap
     (essential-services (container-essential-services
-                         os #:shared-network? shared-network?))
+                         this-operating-system
+                         #:shared-network? shared-network?))
     (services (remove (lambda (service)
                         (memq (service-kind service)
                               useless-services))
                       (operating-system-user-services os)))
     (file-systems (append (map mapping->fs mappings)
                           extra-file-systems
-                          user-file-systems))))
+                          user-file-systems
+
+                          ;; Provide a dummy root file system so we can create
+                          ;; a 'boot-parameters' file.
+                          (list (file-system
+                                  (mount-point "/")
+                                  (device "nothing")
+                                  (type "dummy")))))))
 
 (define* (container-script os #:key (mappings '()) shared-network?)
   "Return a derivation of a script that runs OS as a Linux container.
@@ -126,6 +134,11 @@ that will be shared with the host system."
                          (target nscd-run-directory)))
                   '()))))
 
+  (define (mountable-file-system? file-system)
+    ;; Return #t if FILE-SYSTEM should be mounted in the container.
+    (and (not (string=? "/" (file-system-mount-point file-system)))
+         (file-system-needed-for-boot? file-system)))
+
   (let* ((os           (containerized-operating-system
                         os
                         (cons %store-mapping
@@ -134,7 +147,7 @@ that will be shared with the host system."
                                   mappings))
                         #:shared-network? shared-network?
                         #:extra-file-systems %container-file-systems))
-         (file-systems (filter file-system-needed-for-boot?
+         (file-systems (filter mountable-file-system?
                                (operating-system-file-systems os)))
          (specs        (map file-system->spec file-systems)))
 
