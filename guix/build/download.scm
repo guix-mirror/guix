@@ -380,6 +380,20 @@ ETIMEDOUT error is raised."
               (apply throw args)
               (loop (cdr addresses))))))))
 
+(define (setup-http-tunnel port uri)
+  "Establish over PORT an HTTP tunnel to the destination server of URI."
+  (define target
+    (string-append (uri-host uri) ":"
+                   (number->string
+                    (or (uri-port uri)
+                        (match (uri-scheme uri)
+                          ('http 80)
+                          ('https 443))))))
+  (format port "CONNECT ~a HTTP/1.1\r\n" target)
+  (format port "Host: ~a\r\n\r\n" target)
+  (force-output port)
+  (read-response port))
+
 (define* (open-connection-for-uri uri
                                   #:key
                                   timeout
@@ -393,27 +407,29 @@ VERIFY-CERTIFICATE? is true, verify HTTPS server certificates."
   (define https?
     (eq? 'https (uri-scheme uri)))
 
+  (define https-proxy (let ((proxy (getenv "https_proxy")))
+                        (and (not (equal? proxy ""))
+                             proxy)))
+
   (let-syntax ((with-https-proxy
                 (syntax-rules ()
                   ((_ exp)
                    ;; For HTTPS URIs, honor 'https_proxy', not 'http_proxy'.
-                   ;; FIXME: Proxying is not supported for https.
                    (let ((thunk (lambda () exp)))
                      (if (and https?
                               (module-variable
                                (resolve-interface '(web client))
                                'current-http-proxy))
-                         (parameterize ((current-http-proxy #f))
-                           (when (and=> (getenv "https_proxy")
-                                        (negate string-null?))
-                             (format (current-error-port)
-                                     "warning: 'https_proxy' is ignored~%"))
+                         (parameterize ((current-http-proxy https-proxy))
                            (thunk))
                          (thunk)))))))
     (with-https-proxy
      (let ((s (open-socket-for-uri uri #:timeout timeout)))
        ;; Buffer input and output on this port.
        (setvbuf s 'block %http-receive-buffer-size)
+
+       (when (and https? https-proxy)
+         (setup-http-tunnel s uri))
 
        (if https?
            (tls-wrap s (uri-host uri)
