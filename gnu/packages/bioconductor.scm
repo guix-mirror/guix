@@ -4507,3 +4507,44 @@ short genomic reads.  It covers a complete workflow starting from raw sequence
 reads, over creation of alignments and quality control plots, to the
 quantification of genomic regions of interest.")
     (license license:gpl2)))
+
+(define-public r-rqc
+  (package
+    (name "r-rqc")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rqc" version))
+       (sha256
+        (base32
+         "09kyn5nc2fqfdm3q07h0x2jyh24vsq5sxxm63ir1lvv250lmal4g"))))
+    (properties `((upstream-name . "Rqc")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocstyle" ,r-biocstyle)
+       ("r-biostrings" ,r-biostrings)
+       ("r-biovizbase" ,r-biovizbase)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfiles" ,r-genomicfiles)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-knitr" ,r-knitr)
+       ("r-markdown" ,r-markdown)
+       ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-shortread" ,r-shortread)))
+    (home-page "https://github.com/labbcb/Rqc")
+    (synopsis "Quality control tool for high-throughput sequencing data")
+    (description
+     "Rqc is an optimized tool designed for quality control and assessment of
+high-throughput sequencing data.  It performs parallel processing of entire
+files and produces a report which contains a set of high-resolution
+graphics.")
+    (license license:gpl2+)))
