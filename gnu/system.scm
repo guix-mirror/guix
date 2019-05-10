@@ -109,6 +109,7 @@
             operating-system-boot-script
 
             system-linux-image-file-name
+            operating-system-with-gc-roots
 
             boot-parameters
             boot-parameters?
@@ -518,6 +519,17 @@ bookkeeping."
   (instantiate-missing-services
    (append (operating-system-user-services os)
            (operating-system-essential-services os))))
+
+(define (operating-system-with-gc-roots os roots)
+  "Return a variant of OS where ROOTS are registered as GC roots."
+  (operating-system
+    (inherit os)
+
+    ;; We use this procedure for the installation OS, which already defines GC
+    ;; roots.  Add ROOTS to those.
+    (services (cons (simple-service 'extra-root
+                                    gc-root-service-type roots)
+                    (operating-system-user-services os)))))
 
 
 ;;;
