@@ -72,6 +72,7 @@
             operating-system-bootloader
             operating-system-services
             operating-system-essential-services
+            operating-system-default-essential-services
             operating-system-user-services
             operating-system-packages
             operating-system-host-name
@@ -213,7 +214,8 @@
 
   (essential-services operating-system-essential-services ; list of services
                       (thunked)
-                      (default (essential-services this-operating-system)))
+                      (default (operating-system-default-essential-services
+                                this-operating-system)))
   (services operating-system-user-services        ; list of services
             (default %base-services))
 
@@ -463,7 +465,7 @@ value of the SYSTEM-SERVICE-TYPE service."
                 ("initrd" ,initrd)
                 ("locale" ,locale))))))   ;used by libc
 
-(define* (essential-services os)
+(define (operating-system-default-essential-services os)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
 bookkeeping."
