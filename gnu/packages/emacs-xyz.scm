@@ -1329,7 +1329,7 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "12.1.0")
+    (version "12.1.2")
     (source
      (origin
        (method url-fetch)
@@ -1339,7 +1339,7 @@ as a library for other Emacs packages.")
              ".tar"))
        (sha256
         (base32
-         "0iy5x61xqkxaph2hq64sg50l1c6yp6qhzppwadayxkdz00b46sas"))))
+         "1yibg2anpmyr2a27wm4xqjsvsi9km2jzb56bf7cwyj8dnjfsd11n"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
