@@ -774,7 +774,8 @@ incompatible with HDF5.")
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("perl" ,perl)))                 ;part of the test machinery needs Perl
     (outputs '("out"       ; core library
                "fortran")) ; fortran interface
     (arguments
