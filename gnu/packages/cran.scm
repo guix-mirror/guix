@@ -14365,3 +14365,38 @@ used, such as GLM, time series, PCA families, clustering and survival
 analysis.  The package offers a single plotting interface for these analysis
 results and plots in a unified style using the @code{ggplot2} package.")
     (license license:gpl2)))
+
+(define-public r-refmanager
+  (package
+    (name "r-refmanager")
+    (version "1.2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RefManageR" version))
+       (sha256
+        (base32
+         "1hfxa1qacfryk36mpaqdhdgws5jwxiyy489ikd3wa18bp1wz8dkp"))))
+    (properties `((upstream-name . "RefManageR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bibtex" ,r-bibtex)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-lubridate" ,r-lubridate)
+       ("r-plyr" ,r-plyr)
+       ("r-stringr" ,r-stringr)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/ropensci/RefManageR/")
+    (synopsis "Straightforward BibTeX and BibLaTeX bibliography management")
+    (description
+     "This package provides tools for importing and working with bibliographic
+references.  It greatly enhances the @code{bibentry} class by providing a
+class @code{BibEntry} which stores BibTeX and BibLaTeX references, supports
+UTF-8 encoding, and can be easily searched by any field, by date ranges, and
+by various formats for name lists (author by last names, translator by full
+names, etc.).  Entries can be updated, combined, sorted, printed in a number
+of styles, and exported.  BibTeX and BibLaTeX @code{.bib} files can be read
+into R and converted to @code{BibEntry} objects.")
+    ;; Any of these licenses may be picked.
+    (license (list license:gpl2 license:gpl3 license:bsd-3))))
