@@ -65,8 +65,8 @@ containerized OS."
                     (string=? target "/")
                     (and (string? source)
                          (string-prefix? "/dev/" source))
-                    (string-prefix? "/dev" target)
-                    (string-prefix? "/sys" target))))
+                    (string-prefix? "/dev/" target)
+                    (string-prefix? "/sys/" target))))
             (operating-system-file-systems os)))
 
   (define (mapping->fs fs)
