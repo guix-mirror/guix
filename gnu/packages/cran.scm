@@ -14290,3 +14290,27 @@ various explainers that help to understand the link between input variables
 and model output.")
     ;; Any version of the GPL
     (license license:gpl3+)))
+
+(define-public r-enrichr
+  (package
+    (name "r-enrichr")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "enrichR" version))
+       (sha256
+        (base32
+         "0lfdr45sdyqhvgz8q4qdbk12mpv86d6id665kq6aaslgr8jggfmn"))))
+    (properties `((upstream-name . "enrichR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-rjson" ,r-rjson)))
+    (home-page "https://cran.r-project.org/web/packages/enrichR/")
+    (synopsis "R Interface to Enrichr database for analyzing gene sets")
+    (description
+     "This package provides an R interface to all Enrichr databases, a
+web-based tool for analyzing gene sets and returns any enrichment of common
+annotated biological functions.")
+    (license license:gpl2+)))
