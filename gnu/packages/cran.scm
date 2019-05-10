@@ -14431,3 +14431,33 @@ into R and converted to @code{BibEntry} objects.")
 BibTeX or BibLaTeX file to create and insert formatted Markdown citations into
 the current document.")
     (license license:expat)))
+
+(define-public r-xgboost
+  (package
+    (name "r-xgboost")
+    (version "0.82.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xgboost" version))
+       (sha256
+        (base32
+         "0plhx63wcm4syslzmjfv6bdgaqn96fnav048hrj0vxk4dzgfp8sq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
+       ("r-stringi" ,r-stringi)))
+    (home-page "https://github.com/dmlc/xgboost")
+    (synopsis "Extreme gradient boosting")
+    (description
+     "This package provides an R interface to Extreme Gradient Boosting, which
+is an efficient implementation of the gradient boosting framework from Chen
+and Guestrin (2016).  The package includes efficient linear model solver and
+tree learning algorithms.  The package can automatically do parallel
+computation on a single machine.  It supports various objective functions,
+including regression, classification and ranking.  The package is made to be
+extensible, so that users are also allowed to define their own objectives
+easily.")
+    (license license:asl2.0)))
