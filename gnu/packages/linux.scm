@@ -3770,6 +3770,68 @@ other @code{hwmon} driver that enables temperature reading and fan control
 from userspace.")
     (license license:gpl3+)))
 
+(define-public tpacpi-bat
+  (package
+    (name "tpacpi-bat")
+    (version "3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/teleshoes/tpacpi-bat.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wbaz34z99gqx721alh5vmpxpj2yxg3x9m8jqyivfi1wfpwc2nd5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-inputs
+           (lambda _
+             (substitute* "tpacpi-bat"
+               (("cat ")
+                (format "~a " (which "cat")))
+               ;; tpacpi-bat modprobes the acpi_call kernel module if it's not
+               ;; loaded.  That's the administrator's prerogative; disable it.
+               (("system \"(modprobe .*)\"" _ match)
+                (format "die \"Please run ‘~a’ first.\\n\"" match)))
+             #t))
+         (delete 'configure)            ; nothing to configure
+         (delete 'build)                ; nothing to build
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "tpacpi-bat" bin)
+
+               ;; There's no man page.  Install other forms of documentation.
+               (for-each (lambda (file)
+                           (let ((target (string-append doc "/" file)))
+                             (mkdir-p (dirname target))
+                             (copy-recursively file target)))
+                         (list "battery_asl" "examples" "README.md"))
+               #t))))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "https://github.com/teleshoes/tpacpi-bat")
+    (synopsis "ThinkPad battery charge controller")
+    (description
+     "Tpacpi-bat is a command-line interface to control battery charging on
+@uref{https://github.com/teleshoes/tpacpi-bat/wiki/Supported-Hardware, Lenovo
+ThinkPad models released after 2011}, starting with the xx20 series.  It can
+query and set the thresholds at which one or both batteries will start and stop
+charging, inhibit charging batteries for a set period of time, or force them to
+discharge when they otherwise would not.
+
+This tool merely exposes ACPI calls provided by the @code{acpi_call} Linux
+kernel module provided by the @code{acpi-call-linux-module} package, which must
+be installed and loaded separately.  Only the original vendor firmware is
+supported.")
+    (license license:gpl3+)))
+
 (define-public ntfs-3g
   (package
     (name "ntfs-3g")
