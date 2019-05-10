@@ -4462,3 +4462,48 @@ aligner by Kim et al. (2015).  The package contains wrapper functions to
 create a genome index and to perform the read alignment to the generated
 index.")
     (license license:gpl3)))
+
+(define-public r-quasr
+  (package
+    (name "r-quasr")
+    (version "1.24.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "QuasR" version))
+       (sha256
+        (base32
+         "02mdg3mq99gsqq181j3sfh9pid5l7dqjl68rk4fpc1rvm128y743"))))
+    (properties `((upstream-name . "QuasR")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicfiles" ,r-genomicfiles)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rbowtie" ,r-rbowtie)
+       ("r-rhisat2" ,r-rhisat2)
+       ("r-rhtslib" ,r-rhtslib)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shortread" ,r-shortread)))
+    (home-page "https://bioconductor.org/packages/QuasR/")
+    (synopsis "Quantify and annotate short reads in R")
+    (description
+     "This package provides a framework for the quantification and analysis of
+short genomic reads.  It covers a complete workflow starting from raw sequence
+reads, over creation of alignments and quality control plots, to the
+quantification of genomic regions of interest.")
+    (license license:gpl2)))
