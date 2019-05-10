@@ -14336,3 +14336,32 @@ annotated biological functions.")
 perspective plots, slice plots, surface plots, scatter plots, etc.  It
 includes data sets from oceanography.")
     (license license:gpl3+)))
+
+(define-public r-ggfortify
+  (package
+    (name "r-ggfortify")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggfortify" version))
+       (sha256
+        (base32
+         "1clyha9f9ygma64xbgi78lxsp1203f2ashqhhdpm71nr6w91bm88"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/sinhrks/ggfortify")
+    (synopsis "Data visualization tools for statistical analysis results")
+    (description
+     "This package provides unified plotting tools for statistics commonly
+used, such as GLM, time series, PCA families, clustering and survival
+analysis.  The package offers a single plotting interface for these analysis
+results and plots in a unified style using the @code{ggplot2} package.")
+    (license license:gpl2)))
