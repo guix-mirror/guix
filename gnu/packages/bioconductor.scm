@@ -24,6 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
@@ -4433,3 +4434,31 @@ at the start or end of each splice variant.  The software includes functions
 for splice event prediction, quantification, visualization and
 interpretation.")
     (license license:artistic2.0)))
+
+(define-public r-rhisat2
+  (package
+    (name "r-rhisat2")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rhisat2" version))
+       (sha256
+        (base32
+         "1d1gwl8l2z8kzfvkp1s8vfrh6jbq9ha25dplpf9g62qqa8a46hga"))))
+    (properties `((upstream-name . "Rhisat2")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (propagated-inputs
+     `(("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-sgseq" ,r-sgseq)))
+    (home-page "https://github.com/fmicompbio/Rhisat2")
+    (synopsis "R Wrapper for HISAT2 sequence aligner")
+    (description
+     "This package provides an R interface to the HISAT2 spliced short-read
+aligner by Kim et al. (2015).  The package contains wrapper functions to
+create a genome index and to perform the read alignment to the generated
+index.")
+    (license license:gpl3)))
