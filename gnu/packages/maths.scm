@@ -781,7 +781,17 @@ incompatible with HDF5.")
      `(;; Some of the users, notably Flann, need the C++ interface.
        #:configure-flags '("--enable-cxx"
                            "--enable-fortran"
-                           "--enable-fortran2003")
+                           "--enable-fortran2003"
+
+                           ;; Build a thread-safe library.  Unfortunately,
+                           ;; 'configure' invites you to either turn off C++,
+                           ;; Fortran, and the high-level interface (HL), or
+                           ;; to pass '--enable-unsupported'.  Debian
+                           ;; packagers chose to pass '--enable-unsupported'
+                           ;; and we follow their lead here.
+                           "--enable-threadsafe"
+                           "--with-pthread"
+                           "--enable-unsupported")
        ;; Use -fPIC to allow the R bindings to link with the static libraries
        #:make-flags (list "CFLAGS=-fPIC"
                           "CXXFLAGS=-fPIC")
@@ -1093,7 +1103,9 @@ Swath).")
     (arguments
      (substitute-keyword-arguments (package-arguments hdf5)
        ((#:configure-flags flags)
-        ``("--enable-parallel" ,@(delete "--enable-cxx" ,flags)))
+        ``("--enable-parallel"
+           ,@(delete "--enable-cxx"
+                     (delete "--enable-threadsafe" ,flags))))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'build 'mpi-setup
