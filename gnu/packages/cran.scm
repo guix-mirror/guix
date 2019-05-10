@@ -14400,3 +14400,34 @@ of styles, and exported.  BibTeX and BibLaTeX @code{.bib} files can be read
 into R and converted to @code{BibEntry} objects.")
     ;; Any of these licenses may be picked.
     (license (list license:gpl2 license:gpl3 license:bsd-3))))
+
+(define-public r-citr
+  (package
+    (name "r-citr")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "citr" version))
+       (sha256
+        (base32
+         "0pik6s6xk5768s3kkppw2192dj455py53gsn6k2b7xgg96ircy0g"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-bibtex" ,r-bibtex)
+       ("r-curl" ,r-curl)
+       ("r-httr" ,r-httr)
+       ("r-miniui" ,r-miniui)
+       ("r-refmanager" ,r-refmanager)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/crsh/citr")
+    (synopsis "RStudio add-in to insert Markdown citations")
+    (description
+     "This package provides functions and an RStudio add-in that search a
+BibTeX or BibLaTeX file to create and insert formatted Markdown citations into
+the current document.")
+    (license license:expat)))
