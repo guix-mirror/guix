@@ -15510,3 +15510,26 @@ numbers within that region will be incremented/decremented (unlike in Vim).
 
 It is a fork of https://github.com/cofi/evil-numbers, which is unmaintained.")
       (license license:gpl3+))))
+
+(define-public emacs-rotate-text
+  (package
+    (name "emacs-rotate-text")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nschum/rotate-text.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1cgxv4aibkvv6lnssynn0438a615fz3zq8hg9sb0lhfgsr99pxln"))))
+    (build-system emacs-build-system)
+    (home-page "http://nschum.de/src/emacs/rotate-text/")
+    (synopsis "Cycle through words, symbols and patterns in Emacs")
+    (description "@code{rotate-text} allows you rotate to commonly
+interchanged text with a single keystroke.  For example, you can toggle
+between \"frame-width\" and \"frame-height\", between \"public\",
+\"protected\" and \"private\" and between \"variable1\", \"variable2\" through
+\"variableN\".")
+    (license license:gpl2+)))
