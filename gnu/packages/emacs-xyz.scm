@@ -45,6 +45,7 @@
 ;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
+;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15557,3 +15558,27 @@ between \"frame-width\" and \"frame-height\", between \"public\",
 \"protected\" and \"private\" and between \"variable1\", \"variable2\" through
 \"variableN\".")
     (license license:gpl2+)))
+
+(define-public emacs-ediprolog
+  (package
+    (name "emacs-ediprolog")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/ediprolog-"
+             version
+             ".el"))
+       (sha256
+        (base32
+         "039ffvp7c810mjyargmgw1i87g0z8qs8qicq826sd9aiz9hprfaz"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/ediprolog.html")
+    (synopsis "Emacs Does Interactive Prolog")
+    (description "This package provides a major mode that let the user
+interact with SWI-Prolog in all buffers.  For instance, one can consult Prolog
+programs and evaluate embedded queries.  This mode is focused on the command
+@code{ediprolog-dwim} (Do What I Mean) which is supposed to, depending on the
+context, carry out the appropriate action.")
+    (license license:gpl3+)))
