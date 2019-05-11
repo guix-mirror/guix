@@ -25312,6 +25312,10 @@ This is a list of @code{shepherd-action} objects (see below) defining
 herd @var{action} @var{service} [@var{arguments}@dots{}]
 @end example
 
+@item @code{auto-start?} (default: @code{#t})
+Whether this service should be started automatically by the Shepherd.  If it
+is @code{#f} the service has to be started manually with @code{herd start}.
+
 @item @code{documentation}
 A documentation string, as shown when running:
 
