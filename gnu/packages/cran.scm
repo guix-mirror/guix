@@ -14084,14 +14084,14 @@ batch correction, and data correction.")
 (define-public r-styler
   (package
     (name "r-styler")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "styler" version))
        (sha256
         (base32
-         "1z24mi88snbz1avjw9phq0lzmigddvycc56s83nxzr9w9z85mh05"))))
+         "1k660lpjvd64gnf6bndcb1cq3qxsvik928kcn6271zmkhja5rgyb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
