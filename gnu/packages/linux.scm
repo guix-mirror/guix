@@ -1073,7 +1073,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1081,7 +1081,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1pxf0zkmps03l3zzd0fr828xhkg6a8hxljmbxzc2cyj2ls9kmp1w"))))
+               "0jwr9g4yxg9gj6xx0sb2r6wrdl8amrjd19hilkrq4rirynp770s8"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -1093,14 +1093,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1kx45yhrxai3k595yyqs4wj0p2n5b0c9mf0k36ljjf1bj8lgb6zx"))))
+               "0fi11b7r8hg1bdjw74s8sqx8rc4qb310jaj9lsia9labvfyjrpsx"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1147,14 +1147,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "152r82i6f97gfilfgiax5prxkd4xlcipciv8ha8yrk452qbxyxvz"))))
+               "01zrg0h2jw9dlj9233vjsn916yf4f2s667yry6xsn8d57lq745qn"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.

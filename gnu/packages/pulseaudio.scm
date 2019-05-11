@@ -154,6 +154,11 @@ rates.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
        #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'fix-alsa-include
+                    (lambda _
+                      (substitute* '("configure" "src/modules/alsa/alsa-ucm.h")
+                        (("use-case\\.h") "alsa/use-case.h"))
+                      #t))
                  (add-before 'check 'pre-check
                    (lambda _
                      ;; 'tests/lock-autospawn-test.c' wants to create a file
