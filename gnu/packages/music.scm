@@ -2556,7 +2556,10 @@ event-based scripts for scrobbling, notifications, etc.")
                 "19w5k3bf4886gdycxjds9nkjvir0gwy2r5cqkz0lbls4ikk4y14f"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     '(#:use-setuptools? #f
+       #:configure-flags
+       (list "--root=/")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
@@ -2564,12 +2567,7 @@ event-based scripts for scrobbling, notifications, etc.")
                (("pyfpcalc")
                 (string-append
                  "pyfpcalc', '"
-                 (assoc-ref inputs "chromaprint") "/bin/fpcalc")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "python" "setup.py" "install"
-                     (string-append "--prefix=" (assoc-ref outputs "out"))
-                     "--root=/"))))))
+                 (assoc-ref inputs "chromaprint") "/bin/fpcalc"))))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
