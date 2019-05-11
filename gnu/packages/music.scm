@@ -2558,7 +2558,9 @@ event-based scripts for scrobbling, notifications, etc.")
     (arguments
      '(#:use-setuptools? #f
        #:configure-flags
-       (list "--root=/")
+       (list "--root=/"
+             ;; Don't phone home or show ‘Check for Update…’ in the Help menu.
+             "--disable-autoupdate")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
