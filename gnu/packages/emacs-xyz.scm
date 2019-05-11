@@ -13104,6 +13104,32 @@ recursive size is not obtained.  Once this mode is enabled, every new Dired
 buffer displays recursive dir sizes.")
     (license license:gpl3+)))
 
+(define-public emacs-dired-rsync
+  (package
+    (name "emacs-dired-rsync")
+    (version "0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/stsquad/dired-rsync.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jzbn0izxqgz719gb6fpr60zbcb6w1ama13ngpvrig82nlhs37fv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/stsquad/dired-rsync/")
+    (synopsis "Support for rsync from Emacs dired buffers")
+    (description "This package adds a single command @code{dired-rsync} which
+allows the user to copy marked files in a dired buffer via @code{rsync}.  This
+is useful, especially for large files, because the copy happens in the
+background and doesn’t lock up Emacs.  It is also more efficient than using
+tramps own encoding methods for moving data between systems.")
+    (license license:gpl3+)))
+
 (define-public emacs-pcre2el
   ;; Last release is very old so we get the latest commit.
   (let ((commit "0b5b2a2c173aab3fd14aac6cf5e90ad3bf58fa7d"))
