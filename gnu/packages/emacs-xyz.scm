@@ -7058,34 +7058,32 @@ abbreviation of the mode line displays (lighters) of minor modes.")
     (license license:gpl2+)))
 
 (define-public emacs-use-package
-  (let ((commit "da8c9e2840343906e732f9699e43d35a1f06481d")
-        (revision "1"))
-    (package
-     (name "emacs-use-package")
-     (version (git-version "2.3" revision commit))
-     (source (origin
+  (package
+    (name "emacs-use-package")
+    (version "2.4")
+    (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/jwiegley/use-package")
-                    (commit commit)))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jz38pbq1p9h85i6qcsh3sfzkd103y6mw3rg5zd14dxigp8ir3xz"))))
-     (build-system emacs-build-system)
-     (propagated-inputs
-      `(("emacs-diminish" ,emacs-diminish)))
-     (arguments
-      `(#:tests? #t
-        #:test-command '("emacs" "--batch"
-                         "-l" "use-package-tests.el"
-                         "-f" "ert-run-tests-batch-and-exit")))
-     (home-page "https://github.com/jwiegley/use-package")
-     (synopsis "Declaration for simplifying your .emacs")
-     (description "The use-package macro allows you to isolate package
+                "1b7mjjh0d6fmkkd9vyj64vca27xqhga0nvyrrcqxpqjn62zq046y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-diminish" ,emacs-diminish)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "use-package-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (home-page "https://github.com/jwiegley/use-package")
+    (synopsis "Declaration for simplifying your .emacs")
+    (description "The use-package macro allows you to isolate package
 configuration in your @file{.emacs} file in a way that is both
 performance-oriented and tidy.")
-     (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public emacs-strace-mode
   (let* ((commit "6a69b4b06db6797af56f33eda5cb28af94e59f11")
