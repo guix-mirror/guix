@@ -2206,14 +2206,14 @@ sparse system of linear equations A x = b using Guassian elimination.")
 (define-public r-quadprog
   (package
     (name "r-quadprog")
-    (version "1.5-6")
+    (version "1.5-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quadprog" version))
        (sha256
         (base32
-         "1fnwaz70dhiq4av8apc4wr3yrrpwc2i6lksf8pfi6jw8vzzyahql"))))
+         "0vg7i9p241bwvfdspjbydjrsvgipl6nsb8bjigp0hbbgvxbixx0s"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
