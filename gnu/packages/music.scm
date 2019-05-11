@@ -2567,7 +2567,8 @@ event-based scripts for scrobbling, notifications, etc.")
                (("pyfpcalc")
                 (string-append
                  "pyfpcalc', '"
-                 (assoc-ref inputs "chromaprint") "/bin/fpcalc"))))))))
+                 (assoc-ref inputs "chromaprint") "/bin/fpcalc")))
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
