@@ -2575,6 +2575,7 @@ event-based scripts for scrobbling, notifications, etc.")
      `(("gettext" ,gettext-minimal)))
     (inputs
      `(("chromaprint" ,chromaprint)
+       ("python-discid" ,python-discid)
        ("python-pyqt" ,python-pyqt)
        ("python-mutagen" ,python-mutagen)))
     (home-page "https://picard.musicbrainz.org/")
