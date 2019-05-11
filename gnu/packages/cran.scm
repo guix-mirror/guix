@@ -8187,14 +8187,14 @@ directories or URLs with their associated programs.")
 (define-public r-rcmdcheck
   (package
     (name "r-rcmdcheck")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rcmdcheck" version))
        (sha256
         (base32
-         "0ys1nd7690mhwzslyzg8fq1wxr28nz8g6av5iykkrshb8lkxg7ly"))))
+         "1d4kzgfqy72r6b7bn1j4znyksrycgypx1jjvpv9lrmvn37mpkdhs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
