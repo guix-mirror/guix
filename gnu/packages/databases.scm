@@ -800,6 +800,7 @@ as a drop-in replacement of MySQL.")
   (package
     (name "postgresql")
     (version "10.7")
+    (replacement postgresql-10.8)
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
@@ -841,6 +842,22 @@ types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
+
+;; This release fixes CVE-2019-10129 and CVE-2019-10130.  See
+;; <https://www.postgresql.org/about/news/1939/> for details.
+;; TODO: Remove this in the next rebuild cycle.
+(define-public postgresql-10.8
+  (package
+    (inherit postgresql)
+    (version "10.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0pfdmy4w95b49w9rkn8dwvzmi2brpqfvbxd04y0k0s0xvymc565i"))
+              (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))))
 
 (define-public postgresql-9.6
   (package
