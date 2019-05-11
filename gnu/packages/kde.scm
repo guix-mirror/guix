@@ -450,15 +450,14 @@ other special events for a geographical region.")
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "17.12.3")
+    (version "19.04.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/applications/" version
                             "/src/libkomparediff2-" version ".tar.xz"))
         (sha256
-         (base32
-          "0w6p8lvm2rn7y4qz0x3s87lwh1758xnyhwkkkng55n8v9rpjjw7l"))))
+         (base32 "1cyi7a5ss7jv87llk0k8c9g3h1qsp6j6nmdzh3xxcswr4p5skc9a"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
