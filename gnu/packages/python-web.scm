@@ -1867,14 +1867,14 @@ concurrent HTTP client library for python using @code{gevent}.")
 (define-public python-requests-oauthlib
   (package
     (name "python-requests-oauthlib")
-    (version "0.6.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "requests-oauthlib" version))
        (sha256
         (base32
-         "0ykff67sjcl227c23g0rxzfx34rr5bf21kwv0z3zmgk0lfmch7hn"))))
+         "0mrglgcvq7k48pf27s4gifdk0za8xmgpf55jy15yjj471qrk6rdx"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
