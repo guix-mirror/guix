@@ -1447,7 +1447,7 @@ with python-requests.")
        ("python-cryptography" ,python-cryptography)
        ("python-pyjwt" ,python-pyjwt)
        ("python-blinker" ,python-blinker)))
-    (home-page "https://github.com/idan/oauthlib")
+    (home-page "https://github.com/oauthlib/oauthlib")
     (synopsis "OAuth implementation for Python")
     (description
      "Oauthlib is a generic, spec-compliant, thorough implementation of the
