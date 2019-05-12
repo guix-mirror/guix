@@ -128,6 +128,26 @@ sources.")
 Apple help books.")
     (license license:bsd-2)))
 
+(define-public python-sphinxcontrib-devhelp
+  (package
+    (name "python-sphinxcontrib-devhelp")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-devhelp" version))
+              (sha256
+               (base32
+                "0d2a57kqxl72i55rns0ly1i044y2x234b9sdi89ajc3kjdvv0r3c"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
+    (home-page "https://github.com/sphinx-doc/sphinxcontrib-devhelp")
+    (synopsis "Sphinx extension for creating Devhelp documents")
+    (description
+     "@code{sphinxcontrib-devhelp} is a Sphinx extension which outputs
+@url{Devhelp,https://wiki.gnome.org/Apps/Devhelp} documents.")
+    (license license:bsd-2)))
+
 (define-public python-sphinxcontrib-newsfeed
   (package
     (name "python-sphinxcontrib-newsfeed")
