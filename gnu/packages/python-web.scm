@@ -1433,16 +1433,22 @@ with python-requests.")
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
-    (version "1.0.3")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "oauthlib" version))
               (sha256
                (base32
-                "1bfrj70vdjxjw74khbyh6f0dksv7p5rh2346jnlrffyacd3gwjzg"))))
+                "163jg4a8f7c5ki655grrr47kgljy12wri3qly7ijf64sk1fjrqqc"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
        ("python-mock" ,python-mock)))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
@@ -1453,15 +1459,10 @@ with python-requests.")
     (description
      "Oauthlib is a generic, spec-compliant, thorough implementation of the
 OAuth request-signing logic.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-oauthlib))))))
+    (license license:bsd-3)))
 
 (define-public python2-oauthlib
-  (let ((base (package-with-python2 (strip-python2-variant python-oauthlib))))
-    (package
-      (inherit base)
-      (native-inputs `(("python2-unittest2" ,python2-unittest2)
-                       ,@(package-native-inputs base))))))
+  (package-with-python2 python-oauthlib))
 
 (define-public python-rauth
   (package
