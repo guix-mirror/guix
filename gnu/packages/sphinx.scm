@@ -108,6 +108,26 @@ sources.")
                            ("python2-typing" ,python2-typing)
                        ,@(package-propagated-inputs base))))))
 
+(define-public python-sphinxcontrib-applehelp
+  (package
+    (name "python-sphinxcontrib-applehelp")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-applehelp" version))
+              (sha256
+               (base32
+                "15rqmgphj4wqf4m5wnzxgmwxx5jwfzb0j0nb94ql0x5wnar0mapd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
+    (home-page "https://github.com/sphinx-doc/sphinxcontrib-applehelp")
+    (synopsis "Sphinx extension for creating Apple help books")
+    (description
+     "@code{sphinxcontrib-applehelp} is a Sphinx extension which outputs
+Apple help books.")
+    (license license:bsd-2)))
+
 (define-public python-sphinxcontrib-newsfeed
   (package
     (name "python-sphinxcontrib-newsfeed")
