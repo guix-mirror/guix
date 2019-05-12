@@ -5655,8 +5655,8 @@ libxml2.")
                                 "(self, \"" name "\","
                                 "g_getenv (\"" name "\"));\n"))
                              propagate)))))
-            ;; Look for custom GDM conf in /run/current-system.
-            (substitute* '("common/gdm-settings-desktop-backend.c")
+            ;; Find the configuration file using an environment variable.
+            (substitute* '("common/gdm-settings.c")
               (("GDM_CUSTOM_CONF")
                (string-append "(g_getenv(\"GDM_CUSTOM_CONF\") != NULL"
                               " ? g_getenv(\"GDM_CUSTOM_CONF\")"
