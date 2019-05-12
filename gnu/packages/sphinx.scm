@@ -148,6 +148,26 @@ Apple help books.")
 @url{Devhelp,https://wiki.gnome.org/Apps/Devhelp} documents.")
     (license license:bsd-2)))
 
+(define-public python-sphinxcontrib-jsmath
+  (package
+    (name "python-sphinxcontrib-jsmath")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-jsmath" version))
+              (sha256
+               (base32
+                "1f64w19j33sp151jimibraw6qrbhd5gxy8hs3797w9478m55x4m9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
+    (home-page "https://github.com/sphinx-doc/sphinxcontrib-jsmath")
+    (synopsis "Sphinx extension to render math equations")
+    (description
+     "@code{sphinxcontrib-jsmath} is a Sphinx extension which renders display
+math in HTML via JavaScript.")
+    (license license:bsd-3)))
+
 (define-public python-sphinxcontrib-newsfeed
   (package
     (name "python-sphinxcontrib-newsfeed")
