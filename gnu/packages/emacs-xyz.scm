@@ -46,6 +46,7 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15588,3 +15589,30 @@ programs and evaluate embedded queries.  This mode is focused on the command
 @code{ediprolog-dwim} (Do What I Mean) which is supposed to, depending on the
 context, carry out the appropriate action.")
     (license license:gpl3+)))
+
+(define-public emacs-evil-cleverparens
+  (let ((commit "8c45879d49bfa6d4e414b6c1df700a4a51cbb869")
+        (revision "1"))
+    (package
+      (name "emacs-evil-cleverparens")
+      (version (git-version "2017-07-17" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/luxbock/evil-cleverparens.git")
+                      (commit commit)))
+                (sha256 (base32 "0lhnybpnk4n2yhlcnj9zxn0vi5hpjfaqfhvyfy7ckzz74g8v7iyw"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-paredit" ,emacs-paredit)
+         ("emacs-smartparens" ,emacs-smartparens)))
+      (home-page "https://github.com/luxbock/evil-cleverparens")
+      (synopsis "Emacs modal editing optimized for editing Lisp")
+      (description "@code{evil-cleverparens} remaps Evil keybindings to allow
+modal editing with screwing up the structure of Lisp code.  Alternatives for
+verb commands which would are normally destructive (such as deletion) are
+provided.  Those alternative commands are and bound by default to their
+corresponding Evil keys.")
+      (license license:expat))))
