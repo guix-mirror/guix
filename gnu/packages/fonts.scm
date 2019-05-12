@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1447,4 +1448,40 @@ formatting.")
     (description
      "Public Sans is a strong, neutral, sans-serif typeface for text or
 display based on Libre Franklin.")
+    (license license:silofl1.1)))
+
+(define-public font-hermit
+  (package
+    (name "font-hermit")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pcaro.es/d/otf-hermit-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "09rmy3sbf1j1hr8zidighjgqc8kp0wsra115y27vrnlf10ml6jy0"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           ;; the tarball provided does not contain a directory
+           (lambda* (#:key source #:allow-other-keys)
+             (mkdir "source")
+             (invoke "tar" "xvf" source "-C" "source")
+             (chdir "source")
+             #t)))))
+    (home-page "https://pcaro.es/p/hermit/")
+    (synopsis "Monospace font")
+    (description
+     "Hermit is a monospace font designed to be clear, pragmatic and very
+readable.  Its creation has been focused on programming.  Every glyph was
+carefully planned and calculated, according to defined principles and rules.
+For this reason, Hermit is coherent and regular.
+
+Symbols stand out from common text.  Dots and commas are easily seen, and
+operators are clear even when not surrounded by spaces.  Similar characters
+have been designed to be very distinguishable from each other.")
     (license license:silofl1.1)))
