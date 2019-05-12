@@ -153,6 +153,26 @@ commands into documents, helping you to keep your command examples up to date.")
 (define-public python2-sphinxcontrib-programoutput
   (package-with-python2 python-sphinxcontrib-programoutput))
 
+(define-public python-sphinxcontrib-serializinghtml
+  (package
+    (name "python-sphinxcontrib-serializinghtml")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-serializinghtml" version))
+              (sha256
+               (base32
+                "09sj3nwahwr4iymg86gczbh151cfczqhf2kclbblzh2jh0zv7vy0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
+    (home-page "https://github.com/sphinx-doc/sphinxcontrib-serializinghtml")
+    (synopsis "Sphinx extension to serialize HTML files")
+    (description
+     "@code{sphinxcontrib-serializinghtml} is a Sphinx extension which outputs
+\"serialized\" HTML files.")
+    (license license:bsd-2)))
+
 (define-public python-sphinxcontrib-svg2pdfconverter
   (package
     (name "python-sphinxcontrib-svg2pdfconverter")
