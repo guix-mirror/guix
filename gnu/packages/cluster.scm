@@ -24,7 +24,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls))
 

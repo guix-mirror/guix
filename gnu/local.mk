@@ -434,6 +434,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/smalltalk.scm			\
   %D%/packages/sml.scm				\
   %D%/packages/speech.scm			\
+  %D%/packages/sphinx.scm			\
   %D%/packages/spice.scm			\
   %D%/packages/sqlite.scm			\
   %D%/packages/squirrel.scm			\

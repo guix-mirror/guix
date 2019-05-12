@@ -125,6 +125,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sqlite)

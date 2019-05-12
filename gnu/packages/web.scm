@@ -74,6 +74,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
@@ -116,13 +117,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages valgrind)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages curl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control))
+  #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xml))
 
 (define-public httpd
   (package

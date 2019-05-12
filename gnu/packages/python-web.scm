@@ -62,6 +62,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
   #:use-module (gnu packages web)
