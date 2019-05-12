@@ -1235,6 +1235,11 @@ bootstrapping purposes.")
                        (string-append (assoc-ref inputs "freetype")
                                       "/lib"))
                #t))
+           (add-before 'build 'disable-os-version-check
+           ;; allow build on linux major version change
+           (lambda _
+             (setenv "DISABLE_HOTSPOT_OS_VERSION_CHECK" "ok")
+             #t))
            (add-before 'check 'fix-test-framework
              (lambda _
                ;; Fix PATH in test environment
