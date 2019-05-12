@@ -1443,8 +1443,9 @@ with python-requests.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-cryptography" ,python-cryptography)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
        ("python-pyjwt" ,python-pyjwt)
        ("python-blinker" ,python-blinker)))
     (home-page "https://github.com/oauthlib/oauthlib")
