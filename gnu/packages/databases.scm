@@ -1501,7 +1501,7 @@ columns, primary keys, unique constraints and relationships.")
        #:tests? #f))
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
-       ("mysql" ,mysql)))
+       ("mysql" ,mariadb)))
     (home-page "https://metacpan.org/release/DBD-mysql")
     (synopsis "DBI MySQL interface")
     (description "This package provides a MySQL driver for the Perl5
