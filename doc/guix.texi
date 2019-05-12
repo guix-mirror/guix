@@ -439,13 +439,13 @@ using the EABI hard-float application binary interface (ABI),
 and Linux-Libre kernel.
 
 @item aarch64-linux
-little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.  This is
-currently in an experimental stage, with limited support.
-@xref{Contributing}, for how to help!
+little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.
 
 @item mips64el-linux
 little-endian 64-bit MIPS processors, specifically the Loongson series,
-n32 ABI, and Linux-Libre kernel.
+n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully
+supported; in particular, the project's build farms no longer provide
+substitutes for this architecture.
 
 @end table
 
