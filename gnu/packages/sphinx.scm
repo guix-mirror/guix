@@ -233,6 +233,26 @@ commands into documents, helping you to keep your command examples up to date.")
 (define-public python2-sphinxcontrib-programoutput
   (package-with-python2 python-sphinxcontrib-programoutput))
 
+(define-public python-sphinxcontrib-qthelp
+  (package
+    (name "python-sphinxcontrib-qthelp")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-qthelp" version))
+              (sha256
+               (base32
+                "0vs09m6kf5vhiivpi5s5pks59iq0lqlsbkdycpqlysg53bhmqikr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
+    (home-page "https://github.com/sphinx-doc/sphinxcontrib-qthelp")
+    (synopsis "Sphinx extension to output QtHelp documents")
+    (description
+     "@code{sphinxcontrib-qthelp} is a Sphinx extension which outputs QtHelp
+documents.")
+    (license license:bsd-2)))
+
 (define-public python-sphinxcontrib-serializinghtml
   (package
     (name "python-sphinxcontrib-serializinghtml")
