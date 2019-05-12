@@ -482,7 +482,7 @@ system."
 
 (define* (system-docker-image os
                               #:key
-                              (name "guixsd-docker-image")
+                              (name "guix-docker-image")
                               (register-closures? (has-guix-service-type? os)))
   "Build a docker image.  OS is the desired <operating-system>.  NAME is the
 base name to use for the output file.  When REGISTER-CLOSURES? is true,
@@ -495,7 +495,19 @@ system."
          (local-file (search-path %load-path
                                   "guix/store/schema.sql"))))
 
-  (let ((os    (containerized-operating-system os '()))
+  (define boot-program
+    ;; Program that runs the boot script of OS, which in turn starts shepherd.
+    (program-file "boot-program"
+                  #~(let ((system (cadr (command-line))))
+                      (setenv "GUIX_NEW_SYSTEM" system)
+                      (execl #$(file-append guile-2.2 "/bin/guile")
+                             "guile" "--no-auto-compile"
+                             (string-append system "/boot")))))
+
+
+  (let ((os    (operating-system-with-gc-roots
+                (containerized-operating-system os '())
+                (list boot-program)))
         (name  (string-append name ".tar.gz"))
         (graph "system-graph"))
     (define build
@@ -546,9 +558,11 @@ system."
                                  (string-append "/xchg/" #$graph)
                                read-reference-graph)))
                  #$os
+                 #:entry-point '(#$boot-program #$os)
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)
                  #:transformations `((,root-directory -> ""))))))))
+
     (expression->derivation-in-linux-vm
      name build
      #:make-disk-image? #f

@@ -24500,20 +24500,26 @@ system configuration file.  You can then load the image and launch a
 Docker container using commands like the following:
 
 @example
-image_id="$(docker load < guix-system-docker-image.tar.gz)"
-docker run -e GUIX_NEW_SYSTEM=/var/guix/profiles/system \\
-    --entrypoint /var/guix/profiles/system/profile/bin/guile \\
-    $image_id /var/guix/profiles/system/boot
+image_id="`docker load < guix-system-docker-image.tar.gz`"
+container_id="`docker create $image_id`"
+docker start $container_id
 @end example
 
 This command starts a new Docker container from the specified image.  It
 will boot the Guix system in the usual manner, which means it will
 start any services you have defined in the operating system
-configuration.  Depending on what you run in the Docker container, it
+configuration.  You can get an interactive shell running in the container
+using @command{docker exec}:
+
+@example
+docker exec -ti $container_id /run/current-system/profile/bin/bash --login
+@end example
+
+Depending on what you run in the Docker container, it
 may be necessary to give the container additional permissions.  For
 example, if you intend to build software using Guix inside of the Docker
 container, you may need to pass the @option{--privileged} option to
-@code{docker run}.
+@code{docker create}.
 
 @item container
 Return a script to run the operating system declared in @var{file}
