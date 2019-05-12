@@ -148,6 +148,26 @@ Apple help books.")
 @url{Devhelp,https://wiki.gnome.org/Apps/Devhelp} documents.")
     (license license:bsd-2)))
 
+(define-public python-sphinxcontrib-htmlhelp
+  (package
+    (name "python-sphinxcontrib-htmlhelp")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-htmlhelp" version))
+              (sha256
+               (base32
+                "08l4x8a2l4xjqdd5rhvmfsqihmlgg4prdayj9b6pigaii6gzjw26"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
+    (home-page "https://github.com/sphinx-doc/sphinxcontrib-htmlhelp")
+    (synopsis "Sphinx exension for rendering HTML help files")
+    (description
+     "@code{sphinxcontrib-htmlhelp} is a Sphinx extension which renders
+HTML help files.")
+    (license license:bsd-2)))
+
 (define-public python-sphinxcontrib-jsmath
   (package
     (name "python-sphinxcontrib-jsmath")
