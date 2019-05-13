@@ -85,7 +85,7 @@ then false; else true; fi
 guix package -p "$profile" --delete-generations=0
 
 # Make sure multiple arguments to -i works.
-guix package --bootstrap -i guile gcc -p "$profile" -n
+guix package --bootstrap -i guile zile -p "$profile" -n
 
 # Make sure the `:' syntax works.
 guix package --bootstrap -i "glibc:debug" -p "$profile" -n
