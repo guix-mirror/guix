@@ -8568,8 +8568,8 @@ through them using @key{C-c C-SPC}.")
     (license license:gpl3+)))
 
 (define-public emacs-slack
-  (let ((commit "99a57501629a0329a9ca090c1ea1296462eda02d")
-        (revision "5"))
+  (let ((commit "10fbb81f567b44647ad125a48ecd72df106fb624")
+        (revision "6"))
     (package
       (name "emacs-slack")
       (version (git-version "0.0.2" revision commit))
@@ -8581,8 +8581,14 @@ through them using @key{C-c C-SPC}.")
                 (file-name (git-file-name name commit))
                 (sha256
                  (base32
-                  "0jw1diypfw8pmzkq0napgxmfc0gqka7zcccgnw359604lr30k2z2"))))
+                  "01ln9rbalgpxw6rbr4czhy6bd8wrrpyf0qgn2chcq3zmmrn4sy1z"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; HOME needs to exist for source compilation.
+           (add-before 'build 'set-HOME
+             (lambda _ (setenv "HOME" "/tmp") #t)))))
       (propagated-inputs
        `(("emacs-alert" ,emacs-alert)
          ("emacs-emojify" ,emacs-emojify)
