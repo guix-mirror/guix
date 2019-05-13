@@ -1032,12 +1032,6 @@ with the Linux kernel.")
                         (fold alist-delete (%final-inputs) '("libc" "libc:static")))))
            (inputs '())))
 
-(define-public gcc-glibc-2.27
-  (make-gcc-libc gcc glibc-2.27))
-
-(define-public gcc-glibc-2.26
-  (make-gcc-libc gcc glibc-2.26))
-
 (define-public (make-glibc-locales glibc)
   (package
     (inherit glibc)
