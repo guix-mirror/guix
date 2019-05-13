@@ -5540,6 +5540,41 @@ allows players to easily join servers dedicated to playing Doom
 online.")
     (license license:gpl2+)))
 
+(define-public chocolate-doom
+  (package
+    (name "chocolate-doom")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.chocolate-doom.org/downloads/"
+                                  version
+                                  "/chocolate-doom-"
+                                  version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1f6sw6qa9z0a70dsjh5cs45fkyyxw68s7vkqlykihz8cjcisdbkk"))))
+    (build-system gnu-build-system)
+    (inputs `(("sdl2-net" ,sdl2-net)
+              ("sdl2-mixer" , sdl2-mixer)
+              ("sdl2" ,sdl2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Doom source port preserving the look, feel, and bugs of vanilla
+Doom")
+    (description
+     "Chocolate Doom takes a different approach to other source ports.  Its
+aim is to accurately reproduce the experience of playing Vanilla Doom.  It is
+a conservative, historically accurate Doom source port, which is compatible
+with the thousands of mods and levels that were made before the Doom source
+code was released.  Rather than flashy new graphics, Chocolate Doom's main
+features are its accurate reproduction of the game as it was played in the
+1990s.  The project is developed around a carefully-considered philosophy that
+intentionally restricts which features may be added (and rejects any that
+affect gameplay).")
+    (home-page "https://www.chocolate-doom.org/wiki/index.php/Chocolate_Doom")
+    (license license:gpl2)))
+
 (define-public fortune-mod
   (package
     (name "fortune-mod")
