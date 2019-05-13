@@ -1066,6 +1066,7 @@ dispatches events from it.")))
          (simple-service 'network-manager-applet
                          profile-service-type
                          (list network-manager-applet))
+         (service modem-manager-service-type)
 
          ;; The D-Bus clique.
          (service avahi-service-type)
