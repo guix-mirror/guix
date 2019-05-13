@@ -39,6 +39,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu system locale)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (installer-program))
@@ -118,7 +119,7 @@ been performed at build time."
        (string-append #$file "/" #$name ".go")))
 
   (let* ((supported-locales #~(supported-locales->locales
-                               #$(local-file "installer/aux-files/SUPPORTED")))
+                               #+(glibc-supported-locales)))
          (iso-codes #~(string-append #$iso-codes "/share/iso-codes/json/"))
          (iso639-3 #~(string-append #$iso-codes "iso_639-3.json"))
          (iso639-5 #~(string-append #$iso-codes "iso_639-5.json"))

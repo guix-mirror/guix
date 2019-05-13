@@ -629,8 +629,7 @@ endif
 
 installerdir = $(guilemoduledir)/%D%/installer
 dist_installer_DATA =				\
-  %D%/installer/aux-files/logo.txt	        \
-  %D%/installer/aux-files/SUPPORTED
+  %D%/installer/aux-files/logo.txt
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
