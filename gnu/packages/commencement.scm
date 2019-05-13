@@ -54,7 +54,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 regex))
+  #:use-module (ice-9 regex)
+  #:export (make-gcc-toolchain))
 
 ;;; Commentary:
 ;;;
@@ -1014,55 +1015,65 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 ;;; GCC toolchain.
 ;;;
 
-(define (make-gcc-toolchain gcc)
-  "Return a complete toolchain for GCC."
-  (package
-    (name "gcc-toolchain")
-    (version (package-version gcc))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-                   (use-modules (ice-9 match)
-                                (srfi srfi-26)
-                                (guix build union))
+;; Using the following procedure, a gcc toolchain targeting glibc-2.27 can be
+;; instantiated like this:
+;;
+;; (define-public gcc-glibc-2.27-toolchain
+;;   (make-gcc-toolchain gcc glibc-2.27))
 
-                   (let ((out (assoc-ref %outputs "out")))
+(define* (make-gcc-toolchain gcc
+                            #:optional
+                            (libc #f))
+  "Return a complete toolchain for GCC. If LIBC is specified, target that libc."
+  (let ((gcc (if libc (make-gcc-libc gcc libc) gcc))
+        (libc (if libc libc glibc-final)))
+    (package
+      (name (string-append (package-name gcc) "-toolchain"))
+      (version (package-version gcc))
+      (source #f)
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build union))
+         #:builder (begin
+                     (use-modules (ice-9 match)
+                                  (srfi srfi-26)
+                                  (guix build union))
 
-                     (match %build-inputs
-                       (((names . directories) ...)
-                        (union-build out directories)))
+                     (let ((out (assoc-ref %outputs "out")))
 
-                     (union-build (assoc-ref %outputs "debug")
-                                  (list (assoc-ref %build-inputs
-                                                   "libc-debug")))
-                     (union-build (assoc-ref %outputs "static")
-                                  (list (assoc-ref %build-inputs
-                                                   "libc-static")))
-                     #t))))
+                       (match %build-inputs
+                         (((names . directories) ...)
+                          (union-build out directories)))
 
-    (native-search-paths (package-native-search-paths gcc))
-    (search-paths (package-search-paths gcc))
+                       (union-build (assoc-ref %outputs "debug")
+                                    (list (assoc-ref %build-inputs
+                                                     "libc-debug")))
+                       (union-build (assoc-ref %outputs "static")
+                                    (list (assoc-ref %build-inputs
+                                                     "libc-static")))
+                       #t))))
 
-    (license (package-license gcc))
-    (synopsis "Complete GCC tool chain for C/C++ development")
-    (description
-     "This package provides a complete GCC tool chain for C/C++ development to
-be installed in user profiles.  This includes GCC, as well as libc (headers
-and binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
-    (home-page "https://gcc.gnu.org/")
-    (outputs '("out" "debug" "static"))
+      (native-search-paths (package-native-search-paths gcc))
+      (search-paths (package-search-paths gcc))
 
-    ;; The main raison d'être of this "meta-package" is (1) to conveniently
-    ;; install everything that we need, and (2) to make sure ld-wrapper comes
-    ;; before Binutils' ld in the user's profile.
-    (inputs `(("gcc" ,gcc)
-              ("ld-wrapper" ,(car (assoc-ref %final-inputs "ld-wrapper")))
-              ("binutils" ,binutils-final)
-              ("libc" ,glibc-final)
-              ("libc-debug" ,glibc-final "debug")
-              ("libc-static" ,glibc-final "static")))))
+      (license (package-license gcc))
+      (synopsis "Complete GCC tool chain for C/C++ development")
+      (description
+       "This package provides a complete GCC tool chain for C/C++ development to
+be   installed in user profiles.  This includes GCC, as well as libc (headers
+an  d binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
+      (home-page "https://gcc.gnu.org/")
+      (outputs '("out" "debug" "static"))
+
+      ;; The main raison d'être of this "meta-package" is (1) to conveniently
+      ;; install everything that we need, and (2) to make sure ld-wrapper comes
+      ;; before Binutils' ld in the user's profile.
+      (inputs `(("gcc" ,gcc)
+                ("ld-wrapper" ,(car (assoc-ref %final-inputs "ld-wrapper")))
+                ("binutils" ,binutils-final)
+                ("libc" ,libc)
+                ("libc-debug" ,libc "debug")
+                ("libc-static" ,libc "static"))))))
 
 (define-public gcc-toolchain-4.8
   (make-gcc-toolchain gcc-4.8))
