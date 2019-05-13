@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -688,8 +689,8 @@ desktop installed to have a decent terminal emulator.")
     (license license:gpl2)))
 
 (define-public go-github.com-nsf-termbox-go
-  (let ((commit "4ed959e0540971545eddb8c75514973d670cf739")
-        (revision "0"))
+  (let ((commit "288510b9734e30e7966ec2f22b87c5f8e67345e3")
+        (revision "1"))
     (package
       (name "go-github.com-nsf-termbox-go")
       (version (git-version "0.0.0" revision commit))
@@ -701,7 +702,7 @@ desktop installed to have a decent terminal emulator.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1vx64i1mg660if3wwm81p4b7lzxfb3qbr39i7misdyld3fc486p9"))))
+                  "0hdyisfaf8yb55h3p03p4sbq19546mp9fy28f2kn659mycmhxqk4"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/nsf/termbox-go"))
