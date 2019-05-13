@@ -1042,9 +1042,9 @@ channels.")
     (version "0.26")
     (source (origin
              (method url-fetch)
-             (uri (list (string-append "http://www.exiv2.org/builds/exiv2-"
+             (uri (list (string-append "https://www.exiv2.org/builds/exiv2-"
                                        version "-trunk.tar.gz")
-                        (string-append "http://www.exiv2.org/exiv2-"
+                        (string-append "https://www.exiv2.org/exiv2-"
                                        version ".tar.gz")
                         (string-append "https://fossies.org/linux/misc/exiv2-"
                                        version ".tar.gz")))
@@ -1060,7 +1060,7 @@ channels.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("intltool" ,intltool)))
-    (home-page "http://www.exiv2.org/")
+    (home-page "https://www.exiv2.org/")
     (synopsis "Library and command-line utility to manage image metadata")
     (description
      "Exiv2 is a C++ library and a command line utility to manage image
