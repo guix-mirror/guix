@@ -1913,6 +1913,7 @@ new Date();"))
          "--with-lcms=system"
          "--with-libjpeg=system"
          "--with-libpng=system"
+         "--with-version-pre="
          ;; allow the build system to locate the system freetype
          ,(string-append "--with-freetype-include="
                          (assoc-ref %build-inputs "freetype") "/include")
