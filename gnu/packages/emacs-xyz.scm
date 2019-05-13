@@ -4074,23 +4074,29 @@ well as completely new features.")
     (license license:gpl3+)))
 
 (define-public emacs-highlight-symbol
-  (package
-    (name "emacs-highlight-symbol")
-    (version "1.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/nschum/highlight-symbol.el.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "09z13kv2g21kjjkkm3iyaz93sdjmdy2d563r8n7r7ng94acrn7f6"))))
-    (build-system emacs-build-system)
-    (home-page "https://nschum.de/src/emacs/highlight-symbol")
-    (synopsis "Automatic and manual symbol highlighting for Emacs")
-    (description
-     "Use @code{highlight-symbol} to toggle highlighting of the symbol at
+  ;; We prefer a more recent commit that provides an option to squelch
+  ;; echo-area alerts that can drown out useful information like eldoc
+  ;; messages.
+  (let ((commit "7a789c779648c55b16e43278e51be5898c121b3a")
+        (version "1.3")
+        (revision "1"))
+    (package
+      (name "emacs-highlight-symbol")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nschum/highlight-symbol.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19cgyk0sh8nsmf3jbi92i8qsdx4l4yilfq5jj9zfdbj9p5gvwx96"))))
+      (build-system emacs-build-system)
+      (home-page "https://nschum.de/src/emacs/highlight-symbol/")
+      (synopsis "Automatic and manual symbol highlighting for Emacs")
+      (description
+       "Use @code{highlight-symbol} to toggle highlighting of the symbol at
 point throughout the current buffer.  Use @code{highlight-symbol-mode} to keep
 the symbol at point highlighted.
 
@@ -4103,7 +4109,7 @@ bindings @code{M-p} and @code{M-p} for navigation.  When
 regardless of @code{highlight-symbol-idle-delay}.
 
 @code{highlight-symbol-query-replace} can be used to replace the symbol. ")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-hl-todo
   (package
