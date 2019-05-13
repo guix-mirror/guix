@@ -39,6 +39,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,6 +142,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -7131,3 +7133,31 @@ and bring the war to your enemy.")
                    license:bsd-2 license:bsd-3 license:cc-by3.0 license:cc0
                    license:expat license:fdl1.3+ license:public-domain
                    license:zlib))))
+
+(define-public harmonist
+  (package
+    (name "harmonist")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://git.tuxfamily.org/harmonist/harmonist.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "006vkhb84v78ssfwppc221n4za0y02ypg7ihrihin4vj4gllmzf7"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "git.tuxfamily.org/harmonist/harmonist"))
+    (inputs
+     `(("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+    (home-page "https://harmonist.tuxfamily.org/")
+    (synopsis "Stealth coffee-break roguelike game")
+    (description "Harmonist: Dayoriah Clan Infiltration is a stealth
+coffee-break roguelike game.  The game has a heavy focus on tactical
+positioning, light and noise mechanisms, making use of various terrain types
+and cones of view for monsters.  Aiming for a replayable streamlined experience,
+the game avoids complex inventory management and character building, relying
+on items and player adaptability for character progression.")
+    (license license:isc)))
