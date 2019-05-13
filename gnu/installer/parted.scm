@@ -259,6 +259,7 @@ inferior to MAX-SIZE, #f otherwise."
   (case fs-type
     ((ext4)  "ext4")
     ((btrfs) "btrfs")
+    ((fat16) "fat16")
     ((fat32) "fat32")
     ((swap)  "linux-swap")))
 
@@ -267,6 +268,7 @@ inferior to MAX-SIZE, #f otherwise."
   (case fs-type
     ((ext4)  "ext4")
     ((btrfs) "btrfs")
+    ((fat16) "fat")
     ((fat32) "vfat")))
 
 (define (partition-filesystem-user-type partition)
@@ -278,6 +280,7 @@ of <user-partition> record."
            (cond
             ((string=? name "ext4") 'ext4)
             ((string=? name "btrfs") 'btrfs)
+            ((string=? name "fat16") 'fat16)
             ((string=? name "fat32") 'fat32)
             ((or (string=? name "swsusp")
                  (string=? name "linux-swap(v0)")
@@ -1052,6 +1055,11 @@ bit bucket."
   (with-null-output-ports
    (invoke "mkfs.ext4" "-F" partition)))
 
+(define (create-fat16-file-system partition)
+  "Create a fat16 file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "mkfs.fat" "-F16" partition)))
+
 (define (create-fat32-file-system partition)
   "Create an ext4 file-system for PARTITION file-name."
   (with-null-output-ports
@@ -1119,6 +1127,10 @@ NEED-FORMATING? field set to #t."
           (and need-formatting?
                (not (eq? type 'extended))
                (create-ext4-file-system file-name)))
+         ((fat16)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-fat16-file-system file-name)))
          ((fat32)
           (and need-formatting?
                (not (eq? type 'extended))
