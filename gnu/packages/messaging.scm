@@ -594,8 +594,12 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
          (add-after 'unpack 'add-plugin-dirs
            (lambda _
              (substitute* "gajim/common/configpaths.py"
-               (("_paths\\['PLUGINS_USER'\\]")
-                "_paths['PLUGINS_USER'],os.getenv('GAJIM_PLUGIN_PATH')"))
+               (("_paths\\['PLUGINS_USER'\\]\\]")
+                "_paths['PLUGINS_USER']] + \
+([os.getenv('GAJIM_PLUGIN_PATH')] \
+if os.getenv('GAJIM_PLUGIN_PATH') \
+and Path(os.getenv('GAJIM_PLUGIN_PATH')).is_dir() \
+else [])"))
              #t))
          (replace 'check
            (lambda _
