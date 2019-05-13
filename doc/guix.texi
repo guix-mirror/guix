@@ -59,7 +59,7 @@ Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018 Gábor Boskovits@*
-Copyright @copyright{} 2018 Florian Pelz@*
+Copyright @copyright{} 2018, 2019 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
@@ -14621,13 +14621,14 @@ adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{gdm-service-type}}), screen lockers, a network management tool
-(@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
-management services, the @code{elogind} login and seat manager, the
-Polkit privilege service, the GeoClue location service, the
-AccountsService daemon that allows authorized users change system
-passwords, an NTP client (@pxref{Networking Services}), the Avahi
-daemon, and has the name service switch service configured to be able to
-use @code{nss-mdns} (@pxref{Name Service Switch, mDNS}).
+(@pxref{Networking Services, @code{network-manager-service-type}}) with modem
+support (@pxref{Networking Services, @code{modem-manager-service-type}}),
+energy and color management services, the @code{elogind} login and seat
+manager, the Polkit privilege service, the GeoClue location service, the
+AccountsService daemon that allows authorized users change system passwords,
+an NTP client (@pxref{Networking Services}), the Avahi daemon, and has the
+name service switch service configured to be able to use @code{nss-mdns}
+(@pxref{Name Service Switch, mDNS}).
 @end defvr
 
 The @var{%desktop-services} variable can be used as the @code{services}
