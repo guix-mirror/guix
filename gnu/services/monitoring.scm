@@ -141,7 +141,8 @@ prometheus.")
    (extensions
     (list (service-extension
            shepherd-root-service-type
-           (compose list prometheus-node-exporter-shepherd-service))))))
+           (compose list prometheus-node-exporter-shepherd-service))))
+   (default-value (prometheus-node-exporter-configuration))))
 
 
 ;;;
