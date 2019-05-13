@@ -4461,7 +4461,7 @@ show icons as well.")
 (define-public emacs-avy
   (package
     (name "emacs-avy")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -4470,7 +4470,7 @@ show icons as well.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rq9ab264565z83cly743nbhrd9m967apmnlhqr1gy8dm4hcy7nm"))))
+        (base32 "09qdni1s74i5pv8741szl5g4ynj8fxn0x65qmwa9rmfkbimnc0fs"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/avy")
     (synopsis "Tree-based completion for Emacs")
