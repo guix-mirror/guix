@@ -337,6 +337,8 @@ selected keymap."
                          (gnu services herd)
                          (guix i18n)
                          (guix build utils)
+                         ((system repl debug)
+                          #:select (terminal-width))
                          (ice-9 match))
 
             ;; Initialize gettext support so that installers can use
@@ -359,6 +361,11 @@ selected keymap."
             ;; Likewise for XKB keyboard layout names.
             (bindtextdomain "xkeyboard-config"
                             #+(file-append xkeyboard-config "/share/locale"))
+
+            ;; Initialize 'terminal-width' in (system repl debug)
+            ;; to a large-enough value to make backtrace more
+            ;; verbose.
+            (terminal-width 200)
 
             (let* ((current-installer newt-installer)
                    (steps (#$steps current-installer)))
