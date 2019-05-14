@@ -1455,7 +1455,7 @@ display based on Libre Franklin.")
     (name "font-hermit")
     (version "2.0")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/tarbomb)
               (uri (string-append "https://pcaro.es/d/otf-hermit-" version
                                   ".tar.gz"))
               (sha256
@@ -1463,16 +1463,7 @@ display based on Libre Franklin.")
                 "09rmy3sbf1j1hr8zidighjgqc8kp0wsra115y27vrnlf10ml6jy0"))))
     (build-system font-build-system)
     (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'unpack
-           ;; the tarball provided does not contain a directory
-           (lambda* (#:key source #:allow-other-keys)
-             (mkdir "source")
-             (invoke "tar" "xvf" source "-C" "source")
-             (chdir "source")
-             #t)))))
+     `(#:tests? #f))
     (home-page "https://pcaro.es/p/hermit/")
     (synopsis "Monospace font")
     (description
