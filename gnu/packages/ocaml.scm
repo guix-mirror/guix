@@ -1519,19 +1519,21 @@ library.")
 (define-public ocaml-sqlite3
   (package
     (name "ocaml-sqlite3")
-    (version "4.1.2")
+    (version "4.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mmottl/sqlite3-ocaml/releases/download/v"
-             version "/sqlite3-ocaml-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/mmottl/sqlite3-ocaml")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "14c1nir7c6bivajg0vyx853y7la7r5d25g1v5hjb2wfi73r15p1m"))))
-    (build-system ocaml-build-system)
+         "1536agm5fgcqysszhpd3kmw7lkc5n5ni7gmlyglrbvmnmrwf3av2"))))
+    (build-system dune-build-system)
     (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("sqlite" ,sqlite)))
