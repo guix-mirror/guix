@@ -64,11 +64,6 @@
               "doc"))                             ;1.2 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
-             ;; TODO XXX <https://bugs.gnu.org/34927>
-             ;; Curl doesn't actually use or refer to libssh2 because the build
-             ;; is not configured with '--with-libssh2'.  Remove this input when
-             ;; a mass rebuild is appropriate (e.g. core-updates).
-             ("libssh2" ,libssh2-1.8.0)
              ("openldap" ,openldap)
              ("mit-krb5" ,mit-krb5)
              ("nghttp2" ,nghttp2 "lib")
