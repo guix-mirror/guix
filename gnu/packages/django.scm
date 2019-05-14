@@ -749,13 +749,13 @@ support, and optional data-URI image and font embedding.")
 (define-public python-django-rq
   (package
     (name "python-django-rq")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-rq" version))
               (sha256
                (base32
-                "0xh6qa7i779vh58lwwv6yk0wx8bi38mvmpz79grnl2cl8531r928"))))
+                "1ips1ikv5qhgwb58ssn496vgqg9qv6jinwmwbrg9l3s75fskd1l5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
