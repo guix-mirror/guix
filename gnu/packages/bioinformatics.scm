@@ -57,6 +57,7 @@
   #:use-module (gnu packages bioconductor)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages cran)
@@ -14788,3 +14789,44 @@ cell barcodes for alignment.  The remaining commands, @code{group},
 duplicates using the UMIs and perform different levels of analysis depending
 on the needs of the user.")
     (license license:expat)))
+
+(define-public ataqv
+  (package
+    (name "ataqv")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ParkerLab/ataqv.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "031xr6jx1aprh26y5b1lv3gzrlmzg4alfl73vvshymx8cq8asrqi"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out"))
+             (string-append "BOOST_ROOT="
+                            (assoc-ref %build-inputs "boost"))
+             (string-append "HTSLIB_ROOT="
+                            (assoc-ref %build-inputs "htslib")))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("boost" ,boost)
+       ("htslib" ,htslib)
+       ("ncurses" ,ncurses)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("lcov" ,lcov)))
+    (home-page "https://github.com/ParkerLab/ataqv")
+    (synopsis "Toolkit for quality control and visualization of ATAC-seq data")
+    (description "This package provides a toolkit for measuring and comparing
+ATAC-seq results.  It was written to make it easier to spot differences that
+might be caused by ATAC-seq library prep or sequencing.  The main program,
+@code{ataqv}, examines aligned reads and reports some basic metrics.")
+    (license license:gpl3+)))
