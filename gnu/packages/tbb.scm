@@ -34,6 +34,7 @@
               (uri (git-reference
                     (url "https://github.com/01org/tbb")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1zbf06l659vq6s5wp3ln96ycwcd42caffan5vilqvqyxqvjljyic"))
