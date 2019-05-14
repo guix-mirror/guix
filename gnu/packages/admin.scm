@@ -24,6 +24,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -875,8 +876,10 @@ through the network interface controller.")
     (version "0.13.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://jnettop.kubs.info/dist/jnettop-"
-                                  version ".tar.gz"))
+              (uri
+               (string-append "https://web.archive.org/web/20161221100811/"
+                              "http://jnettop.kubs.info/dist/jnettop-"
+                              version ".tar.gz"))
               (sha256
                (base32
                 "1855np7c4b0bqzhf1l1dyzxb90fpnvrirdisajhci5am6als31z9"))))
@@ -887,7 +890,8 @@ through the network interface controller.")
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
        ("libpcap" ,libpcap)))
-    (home-page "http://jnettop.kubs.info/")
+    (home-page
+     "https://web.archive.org/web/20160703195221/http://jnettop.kubs.info/wiki/")
     (synopsis "Visualize network traffic by bandwidth use")
     (description
      "Jnettop is a traffic visualiser, which captures traffic going
