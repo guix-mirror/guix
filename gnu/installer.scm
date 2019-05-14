@@ -292,6 +292,7 @@ selected keymap."
                                cryptsetup
                                dosfstools ;mkfs.fat
                                e2fsprogs ;mkfs.ext4
+                               btrfs-progs
                                kbd ;chvt
                                guix ;guix system init call
                                util-linux ;mkwap
