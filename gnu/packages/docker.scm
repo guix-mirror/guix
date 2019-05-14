@@ -608,7 +608,7 @@ provisioning etc.")
 (define-public cqfd
   (package
     (name "cqfd")
-    (version "5.0.1")
+    (version "5.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -617,7 +617,7 @@ provisioning etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1z4v16lbpbwd5ykawizdclpryp2k006lbk2mv427a4b3nvcd9wik"))))
+                "1xhydz01f2rrnw7rmnaxh3f3q1ariq7j2ig0i0w1p3wn10l3q0nv"))))
     (build-system gnu-build-system)
     (arguments
      ;; The test suite requires a docker daemon and connectivity.
@@ -639,6 +639,6 @@ provisioning etc.")
     (home-page "https://github.com/savoirfairelinux/cqfd")
     (synopsis "Convenience wrapper for Docker")
     (description "cqfd is a Bash script that provides a quick and convenient
-way to run commands in the ecurrent directory, but within a Docker container
+way to run commands in the current directory, but within a Docker container
 defined in a per-project configuration file.")
     (license license:gpl3+)))
