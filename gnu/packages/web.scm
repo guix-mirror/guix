@@ -5214,55 +5214,6 @@ message stream (in a web server that is per connection).")
 inspired by Ruby's @code{fakeweb}.")
     (license license:expat)))
 
-(define-public python2-httpretty
-  (package
-    (name "python2-httpretty")
-    (version "0.8.14")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "httpretty" version))
-       (sha256
-        (base32
-         "0vlp5qkyw3pxwwsg7xmdcfh1csvypvaz4m6abida8s4xmjxpdhc3"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-sphinx-rtd-theme" ,python2-sphinx-rtd-theme)
-       ("python-sphinx" ,python2-sphinx)
-       ("python-coverage" ,python2-coverage)
-       ("python-tornado" ,python2-tornado)
-       ("python-urllib3" ,python2-urllib3)
-       ("python-sure" ,python2-sure)
-       ("python-steadymark" ,python2-steadymark)
-       ("python-requests" ,python2-requests)
-       ("python-rednose" ,python2-rednose)
-       ("python-nose-randomly" ,python2-nose-randomly)
-       ("python-misaka" ,python2-misaka)
-       ("python-pytest-httpbin" ,python2-pytest-httpbin)
-       ("python-nose" ,python2-nose)))
-    (arguments
-     `(#:tests? #f
-       ;; Requires mock>=1.3.0 which requires a more up-to-date
-       ;; python-pbr. After updating these trying to build the
-       ;; package leads to failures in python-flake8 and other
-       ;; packages. The cascade of updates and failures this
-       ;; leads to, seems to not be worth having the test run.
-       #:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-test-requirements
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Update requirements from dependecy==version
-             ;; to dependency>=version
-             (substitute* "development.txt"
-               (("==") ">="))
-             #t)))))
-    (home-page "http://github.com/gabrielfalcao/httpretty")
-    (synopsis "HTTP client mock for Python")
-    (description "@code{httpretty} is a helper for faking web requests,
-inspired by Ruby's @code{fakeweb}.")
-    (license license:expat)))
-
 (define-public jo
   (package
     (name "jo")
