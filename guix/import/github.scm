@@ -174,6 +174,29 @@ the package e.g. 'bedtools2'.  Return #f if there is no releases"
   (define (pre-release? x)
     (hash-ref x "prerelease"))
 
+  (define (release->version release)
+    (let ((tag (or (hash-ref release "tag_name") ;a "release"
+                   (hash-ref release "name")))   ;a tag
+          (name-length (string-length package-name)))
+      (cond
+       ;; some tags include the name of the package e.g. "fdupes-1.51"
+       ;; so remove these
+       ((and (< name-length (string-length tag))
+             (string=? (string-append package-name "-")
+                       (substring tag 0 (+ name-length 1))))
+        (substring tag (+ name-length 1)))
+       ;; some tags start with a "v" e.g. "v0.25.0"
+       ;; where some are just the version number
+       ((string-prefix? "v" tag)
+        (substring tag 1))
+       ;; Finally, reject tags that don't start with a digit:
+       ;; they may not represent a release.
+       ((and (not (string-null? tag))
+             (char-set-contains? char-set:digit
+                                 (string-ref tag 0)))
+        tag)
+       (else #f))))
+
   (let* ((json (fetch-releases-or-tags url)))
     (if (eq? json #f)
         (if (%github-token)
@@ -183,32 +206,10 @@ API when using a GitHub token")
 API. This may be fixed by using an access token and setting the environment
 variable GUIX_GITHUB_TOKEN, for instance one procured from
 https://github.com/settings/tokens"))
-        (any
-         (lambda (release)
-           (let ((tag (or (hash-ref release "tag_name") ;a "release"
-                          (hash-ref release "name")))   ;a tag
-                 (name-length (string-length package-name)))
-             (cond
-              ;; some tags include the name of the package e.g. "fdupes-1.51"
-              ;; so remove these
-              ((and (< name-length (string-length tag))
-                    (string=? (string-append package-name "-")
-                              (substring tag 0 (+ name-length 1))))
-               (substring tag (+ name-length 1)))
-              ;; some tags start with a "v" e.g. "v0.25.0"
-              ;; where some are just the version number
-              ((string-prefix? "v" tag)
-               (substring tag 1))
-              ;; Finally, reject tags that don't start with a digit:
-              ;; they may not represent a release.
-              ((and (not (string-null? tag))
-                    (char-set-contains? char-set:digit
-                                        (string-ref tag 0)))
-               tag)
-              (else #f))))
-         (match (remove pre-release? json)
-           (() json) ; keep everything
-           (releases releases))))))
+        (any release->version
+             (match (remove pre-release? json)
+               (() json) ; keep everything
+               (releases releases))))))
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."
