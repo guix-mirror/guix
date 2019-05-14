@@ -206,10 +206,13 @@ API when using a GitHub token")
 API. This may be fixed by using an access token and setting the environment
 variable GUIX_GITHUB_TOKEN, for instance one procured from
 https://github.com/settings/tokens"))
-        (any release->version
-             (match (remove pre-release? json)
-               (() json) ; keep everything
-               (releases releases))))))
+        (match (sort (filter-map release->version
+                                 (match (remove pre-release? json)
+                                   (() json) ; keep everything
+                                   (releases releases)))
+                     version>?)
+          ((latest-release . _) latest-release)
+          (() #f)))))
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."
