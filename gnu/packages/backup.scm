@@ -519,6 +519,7 @@ detection, and lossless compression.")
        (sha256
         (base32
          "0x95nhv4h34m8cxycbwc4xdz350saaxlgh727b23bgn4ci7gh3vx"))
+       (patches (search-patches "borg-fix-hard-link-preloading.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
