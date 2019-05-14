@@ -1972,11 +1972,20 @@ displays a table of current bandwidth usage by pairs of hosts.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1nj486bbg1adfg298zck96vgx57kchcypc1zdz1n7w540vyksxcr"))))
+                "1nj486bbg1adfg298zck96vgx57kchcypc1zdz1n7w540vyksxcr"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Don't insist on write access to /var.
+                  (substitute* "src/etc/Makefile.in"
+                    (("\\$\\(INSTALL\\)(.*)localstatedir" _ middle)
+                     (string-append "-$(INSTALL)" middle "localstatedir")))
+                  #t))))
     (inputs
      `(("openssl" ,openssl)
        ("libgcrypt" ,libgcrypt)))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--localstatedir=/var")))
     (home-page "https://dun.github.io/munge/")
     (synopsis "Cluster computing authentication service")
     (description
