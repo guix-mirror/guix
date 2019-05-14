@@ -897,7 +897,7 @@ invoking @command{notifymuch} from the post-new hook.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("python-docutils" ,python2-docutils)
-       ("python-sphinx" ,python2-sphinx)
+       ("sphinx" ,python-sphinx)
 
        ;; The following are required for tests only.
        ("which" ,which)

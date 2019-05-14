@@ -893,7 +893,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
    (native-inputs
     `(("doxygen" ,doxygen)
       ("python2-nose" ,python2-nose)
-      ("python2-sphinx" ,python2-sphinx)))
+      ("sphinx" ,python-sphinx)))
    (arguments
     `(#:test-target "check"
       #:phases
