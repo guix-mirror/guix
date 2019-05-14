@@ -120,7 +120,7 @@ Be careful, all data on the disk will be lost.")
   (run-listbox-selection-page
    #:info-text (G_ "Please select the file-system type for this partition.")
    #:title (G_ "File-system type")
-   #:listbox-items '(ext4 btrfs fat32 swap)
+   #:listbox-items '(ext4 btrfs fat16 fat32 swap)
    #:listbox-item->text user-fs-type-name
    #:sort-listbox-items? #f
    #:button-text (G_ "Exit")
