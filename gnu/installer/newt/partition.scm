@@ -751,11 +751,12 @@ by pressing the Exit button.~%~%")))
                                  (disk (mklabel device label)))
                             (disk-commit disk)
                             disk)))
+                (initial-partitions (disk-partitions disk))
                 (scheme (symbol-append method '- (run-scheme-page)))
                 (user-partitions (append
                                   (auto-partition disk #:scheme scheme)
                                   (create-special-user-partitions
-                                   (disk-partitions disk)))))
+                                   initial-partitions))))
            (run-disk-page (list disk) user-partitions
                           #:guided? #t)))
        ((eq? method 'manual)
