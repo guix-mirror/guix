@@ -3153,7 +3153,15 @@ without writing or generating any C!")
     `(#:build-flags (list "build" "--tests" "true")
       #:phases
       (modify-phases %standard-phases
-        (delete 'configure))))
+        (delete 'configure)
+        (add-before 'build 'fix-for-guix
+          (lambda _
+            (substitute* "src/ocb_stubblr.ml"
+              ;; Do not fail when opam is not present or initialized
+              (("error_msgf \"error running opam\"") "\"\"")
+              ;; Guix doesn't have cc, but it has gcc
+              (("\"cc\"") "\"gcc\""))
+            #t)))))
    (inputs
     `(("topkg" ,ocaml-topkg)
       ("opam" ,opam)))
