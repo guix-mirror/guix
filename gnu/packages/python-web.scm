@@ -1885,7 +1885,8 @@ concurrent HTTP client library for python using @code{gevent}.")
              (delete-file "tests/test_core.py")
              #t)))))
     (native-inputs
-     `(("python-requests-mock" ,python-requests-mock)
+     `(("python-pyjwt" ,python-pyjwt)
+       ("python-requests-mock" ,python-requests-mock)
        ("python-mock" ,python-mock)))
     (propagated-inputs
      `(("python-oauthlib" ,python-oauthlib)
