@@ -1061,7 +1061,7 @@ bit bucket."
    (invoke "mkfs.fat" "-F16" partition)))
 
 (define (create-fat32-file-system partition)
-  "Create an ext4 file-system for PARTITION file-name."
+  "Create a fat32 file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.fat" "-F32" partition)))
 
