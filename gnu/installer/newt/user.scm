@@ -57,7 +57,8 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
          (password-visible-cb
           (make-checkbox -1 -1 (G_ "Hide") #\x "x "))
          (entry-password (make-entry -1 -1 entry-width
-                                     #:flags FLAG-PASSWORD))
+                                     #:flags (logior FLAG-PASSWORD
+                                                     FLAG-SCROLL)))
          (entry-grid (make-grid 3 5))
          (button-grid (make-grid 1 1))
          (ok-button (make-button -1 -1 (G_ "OK")))

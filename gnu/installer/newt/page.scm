@@ -90,7 +90,8 @@ input box, such as FLAG-PASSWORD."
          (input-visible-cb
           (make-checkbox -1 -1 (G_ "Hide") #\x "x "))
          (input-flags* (if input-hide-checkbox?
-                           (logior FLAG-PASSWORD input-flags)
+                           (logior FLAG-PASSWORD FLAG-SCROLL
+                                   input-flags)
                            input-flags))
          (input-entry (make-entry -1 -1 20
                                   #:flags input-flags*))
