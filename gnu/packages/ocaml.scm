@@ -2170,29 +2170,21 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
 (define-public ocaml-base64
   (package
     (name "ocaml-base64")
-    (version "2.1.2")
+    (version "3.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mirage/ocaml-base64/"
-                                  "releases/download/v" version "/base64-"
-                                   version ".tbz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mirage/ocaml-base64")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                 "1p45sawchmrkr22gkmydjc4ary23pisp58zsnb7iq7d82nxs1lfq"))))
-    (build-system ocaml-build-system)
-    (arguments
-     `(#:build-flags (list "build" "--tests" "true")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+                 "1ilw3zj0w6cq7i4pvr8m2kv5l5f2y9aldmv72drlwwns013b1gwy"))))
+    (build-system dune-build-system)
     (native-inputs
-     `(("topkg" ,ocaml-topkg)
-       ("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)
-       ("rresult" ,ocaml-rresult)
-       ("bos" ,ocaml-bos)
-       ("alcotest" ,ocaml-alcotest)))
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-bos" ,ocaml-bos)
+       ("ocaml-rresult" ,ocaml-rresult)))
     (home-page "https://github.com/mirage/ocaml-base64")
     (synopsis "Base64 encoding for OCaml")
     (description "Base64 is a group of similar binary-to-text encoding schemes
@@ -2732,7 +2724,9 @@ Format module of the OCaml standard library.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lyqllmfsxmwlg7qidy92kvxi9n39lvachmydcyi81f8p07ykd2d"))))
+        (base32 "0lyqllmfsxmwlg7qidy92kvxi9n39lvachmydcyi81f8p07ykd2d"))
+       (patches
+         (search-patches "ocaml-piqilib-Update-base64.patch"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
