@@ -8430,14 +8430,14 @@ text sequences from strings.")
 (define-public perl-text-csv
   (package
     (name "perl-text-csv")
-    (version "1.99")
+    (version "2.00")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IS/ISHIGAKI/"
                            "Text-CSV-" version ".tar.gz"))
        (sha256
-        (base32 "1llccsl6sr11g9affh43m6q5r85qgnpi9n7idcs1vi9cn4ww0kp7"))))
+        (base32 "1hmjrc8h622nybdq8lpqi3hlrcjvb474s4a4b2cjs8h5b0cxkjwc"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV")
     (synopsis "Manipulate comma-separated values")
