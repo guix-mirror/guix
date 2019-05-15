@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 nee <nee.git@cock.li>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ng0 <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,7 +33,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/elixir-lang/elixir"
@@ -41,7 +41,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08lq5p82pnicd49gsj6r2zsbg35wrk6098nrrjb28fcrm5p6736y"))
+                "0ddqxw24zdqlg7glzk22m7qjal8f18divzp364a6gi1bv6rg16yg"))
 	      (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments
