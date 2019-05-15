@@ -1885,15 +1885,14 @@ indentation and newlines plus sub deparsing.")
 (define-public perl-data-page
   (package
     (name "perl-data-page")
-    (version "2.02")
+    (version "2.03")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Data-Page-" version ".tar.gz"))
        (sha256
-        (base32
-         "1hvi92c4h2angryc6pngw7gbm3ysc2jfmyxk2wh9ia4vdwpbs554"))))
+        (base32 "12rxrr2b11qjk0c437cisw2kfqkafw1awcng09cv6yhzglb55yif"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
