@@ -86,6 +86,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emulators)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
@@ -7161,3 +7162,122 @@ and cones of view for monsters.  Aiming for a replayable streamlined experience,
 the game avoids complex inventory management and character building, relying
 on items and player adaptability for character progression.")
     (license license:isc)))
+
+(define-public drascula
+  (package
+    (name "drascula")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                                  "Drascula_%20The%20Vampire%20Strikes%20Back/"
+                                  "drascula-" version ".zip"))
+              (sha256
+               (base32
+                "1pj29rpb754sn6a56f8brfv6f2m1p5qgaqik7d68pfi2bb5zccdp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share/drascula"))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           ;; Install data.
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip"))
+                 (doc (string-append out "/share/doc/" ,name "-" ,version)))
+             (for-each
+              (lambda (input)
+                (invoke unzip
+                        "-j"
+                        (assoc-ref %build-inputs input)
+                        "-x" "__MACOSX")
+                ;; Every input provides "readme.txt", and we want to
+                ;; preserve them all.  Therefore we rename them first.
+                (match input
+                  ("drascula-int"
+                   (rename-file "readme.txt" "readme-international.txt"))
+                  ("drascula-audio"
+                   (rename-file "readme.txt" "readme-audio.txt"))
+                  (_ #f))
+                ;; Install documentation.
+                (for-each (lambda (f) (install-file f doc))
+                          (find-files "." "\\.(txt|doc)$"))
+                ;; Install data.
+                (for-each (lambda (f) (install-file f share))
+                          (find-files "." "\\.(ogg|00[0-9])$")))
+              '("drascula-audio" "drascula-int" "source")))
+           ;; Create standalone executable.
+           (let* ((bin (string-append out "/bin"))
+                  (executable (string-append bin "/drascula"))
+                  (bash (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash")))
+             (mkdir-p bin)
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a~%" bash)
+                 (format #t
+                         "exec ~a/bin/scummvm --path=~a drascula~%"
+                         scummvm share)))
+             (chmod executable #o755))
+           ;; Create desktop file.  There is no dedicated icon for the
+           ;; game, so we borrow SCUMMVM's.
+           (let ((apps (string-append out "/share/applications")))
+             (mkdir-p apps)
+             (with-output-to-file (string-append apps "/drascula.desktop")
+               (lambda _
+                 (format #t
+                         "[Desktop Entry]~@
+                     Name=Drascula: The Vampire Strikes Back~@
+                     GenericName=Drascula~@
+                     Exec=~a/bin/drascula~@
+                     Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                     Categories=AdventureGame;Game;RolePlaying;~@
+                     Keywords=game;adventure;roleplaying;2D,fantasy;~@
+                     Comment=Classic 2D point and click adventure game~@
+                     Comment[de]=klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier~@
+                     Comment[fr]=Jeux classique d'aventure pointer-et-cliquer en 2D~@
+                     Comment[it]=Gioco classico di avventura punta e clicca 2D~@
+                     Type=Application~%"
+                         out scummvm))))
+           #t))))
+    (native-inputs
+     `(("bash" ,bash)
+       ("unzip" ,unzip)))
+    (inputs
+     `(("scummvm" ,scummvm)
+       ("drascula-int"
+        ,(let ((version "1.1"))
+           (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                                 "Drascula_%20The%20Vampire%20Strikes%20Back/"
+                                 "drascula-int-" version ".zip"))
+             (sha256
+              (base32
+               "12236i7blamal92p1i8dgp3nhp2yicics4whsl63v682bj999n14")))))
+       ("drascula-audio"
+        ,(let ((version "2.0"))
+           (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                                 "Drascula_%20The%20Vampire%20Strikes%20Back/"
+                                 "drascula-audio-" version ".zip"))
+             (sha256
+              (base32
+               "00g4izmsqzxb8ry1vhfx6jrygl58lvlij09nw01ds4zddsiznsky")))))))
+    (home-page "https://www.scummvm.org")
+    (synopsis "Classic 2D point and click adventure game")
+    (description "Drascula: The Vampire Strikes Back is a classic humorous 2D
+point and click adventure game.
+
+In Drascula you play the role of John Hacker, a British estate agent, that
+gets to meet a gorgeous blond girl who is kidnapped by the notorious vampire
+Count Drascula and embark on a fun yet dangerous quest to rescue her.
+Unfortunately, Hacker is not aware of Drascula's real ambitions: DOMINATING
+the World and demonstrating that he is even more evil than his brother Vlad.")
+    ;; Drascula uses a BSD-like license.
+    (license (license:non-copyleft "file:///readme.txt"))))
