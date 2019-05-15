@@ -382,6 +382,9 @@ info --version")
                                                     result)
                              marionette))
 
+          ;; FIXME: The 'invalidate' action can't reliably obtain the exit
+          ;; code of 'nscd' so skip this test.
+          (test-skip 1)
           (test-equal "nscd invalidate action, wrong table"
             '(#f)                                 ;one value, #f
             (marionette-eval '(with-shepherd-action 'nscd ('invalidate "xyz")
