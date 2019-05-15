@@ -15665,3 +15665,24 @@ processes may share the same data.")
     (description "A Sphinx extension to convert SVG images to PDF in case the builder does not support
 SVG images natively (e.g. LaTeX).")
     (license license:bsd-3)))
+
+(define-public python-pylzma
+  (package
+    (name "python-pylzma")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pylzma" version))
+        (sha256
+          (base32
+            "074anvhyjgsv2iby2ql1ixfvjgmhnvcwjbdz8gk70xzkzcm1fx5q"))))
+    (build-system python-build-system)
+    (home-page "http://www.joachim-bauch.de/projects/pylzma/")
+    (synopsis "Python bindings for the LZMA library by Igor Pavlov.")
+    (description "This package provides Python bindings for the LZMA library
+by Igor Pavlov.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pylzma
+  (package-with-python2 python-pylzma))
