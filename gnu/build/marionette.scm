@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -310,6 +310,8 @@ PREDICATE, whichever comes first.  Raise an error when TIMEOUT is exceeded."
     (#\? . "shift-slash")
     (#\[ . "bracket_left")
     (#\] . "bracket_right")
+    (#\{ . "shift-bracket_left")
+    (#\} . "shift-bracket_right")
     (#\( . "shift-9")
     (#\) . "shift-0")
     (#\/ . "slash")
