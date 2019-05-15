@@ -105,8 +105,7 @@
             mkpart
             rmpart
 
-            create-adjacent-partitions
-            auto-partition
+            auto-partition!
 
             &no-root-mount-point
             no-root-mount-point?
@@ -821,8 +820,8 @@ cause them to cross."
 ;; Auto partitionning.
 ;;
 
-(define* (create-adjacent-partitions disk partitions
-                                     #:key (last-partition-end 0))
+(define* (create-adjacent-partitions! disk partitions
+                                      #:key (last-partition-end 0))
   "Create the given PARTITIONS on DISK. LAST-PARTITION-END is the sector from
 which we want to start creating partitions. The START and END of each created
 partition are computed from its SIZE value and the position of the last
@@ -888,9 +887,9 @@ USER-PARTITIONS list and return the updated list."
           (need-formatting? #t)))
        user-partitions))
 
-(define* (auto-partition disk
-                         #:key
-                         (scheme 'entire-root))
+(define* (auto-partition! disk
+                          #:key
+                          (scheme 'entire-root))
   "Automatically create partitions on DISK. All the previous
 partitions (except the ESP on a GPT disk, if present) are wiped. SCHEME is the
 desired partitioning scheme. It can be 'entire-root or
@@ -1002,10 +1001,10 @@ swap partition, a root partition and a home partition."
                     (mount-point "/home")))))))
            (new-partitions* (force-user-partitions-formatting
                              new-partitions)))
-      (create-adjacent-partitions disk
-                                  new-partitions*
-                                  #:last-partition-end
-                                  (or end-esp-partition 0)))))
+      (create-adjacent-partitions! disk
+                                   new-partitions*
+                                   #:last-partition-end
+                                   (or end-esp-partition 0)))))
 
 
 ;;

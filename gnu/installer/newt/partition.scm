@@ -754,7 +754,7 @@ by pressing the Exit button.~%~%")))
                 (initial-partitions (disk-partitions disk))
                 (scheme (symbol-append method '- (run-scheme-page)))
                 (user-partitions (append
-                                  (auto-partition disk #:scheme scheme)
+                                  (auto-partition! disk #:scheme scheme)
                                   (create-special-user-partitions
                                    initial-partitions))))
            (run-disk-page (list disk) user-partitions
