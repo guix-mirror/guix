@@ -2217,7 +2217,7 @@ SNMP v3 using both IPv4 and IPv6.")
 (define-public ubridge
   (package
     (name "ubridge")
-    (version "0.9.14")
+    (version "0.9.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/GNS3/ubridge/archive/v"
@@ -2225,7 +2225,7 @@ SNMP v3 using both IPv4 and IPv6.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hivb8wqkk5047bdl2vbsbcvkmam1107hx1ahy4virq2bkqki1fj"))))
+                "0nmj37s7wvl7c36qbdv33rk9fyniwfk73qwb61ingni5siw67mr3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no tests
