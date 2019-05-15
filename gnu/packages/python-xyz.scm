@@ -10290,17 +10290,17 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
         (base32
-         "1za944msp0f8x36qa8l309jhv0kzlsdh7r9nj3z12y8npnsh45sp"))))
+         "0nsrjlb57njqppxmi8wjsb1dkad7qa7svx67jbkhixq66lz61c1b"))))
     (build-system python-build-system)
     (arguments
-     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.2 (see:
+     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.3 (see:
         ;; https://github.com/davidhalter/jedi/issues/1263)
        #:tests? #f
        #:phases
@@ -10326,7 +10326,11 @@ well.")
     (license license:expat)))
 
 (define-public python2-jedi
-  (package-with-python2 python-jedi))
+  (let ((base (package-with-python2 (strip-python2-variant python-jedi))))
+    (package
+      (inherit base)
+      (arguments (substitute-keyword-arguments (package-arguments base)
+                   ((#:tests? _) #t))))))
 
 (define-public ptpython
   (package
