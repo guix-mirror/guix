@@ -8824,15 +8824,14 @@ $object->TIEHASH are avoided.")
 (define-public perl-time-duration
   (package
     (name "perl-time-duration")
-    (version "1.20")
+    (version "1.21")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AV/AVIF/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Time-Duration-" version ".tar.gz"))
        (sha256
-        (base32
-         "1f5vkid4pl5iq3hal01hk1zjbbzrqpx4m1djawbp93l152shb0j5"))))
+        (base32 "1f59z2svfydxgd1gzrb5k3hl6d432kzmskk7jhv2dyb5hyx0wd7y"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
