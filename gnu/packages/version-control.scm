@@ -2194,7 +2194,7 @@ interrupted, published, and collaborated on while in progress.")
 (define-public git-lfs
   (package
     (name "git-lfs")
-    (version "2.7.1")
+    (version "2.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2203,7 +2203,7 @@ interrupted, published, and collaborated on while in progress.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10v38w8qfz0x8750kv31n8gg2dimvq4wz40m374pd1xaypfs9670"))))
+                "1nf40rbdz901vsahg5cm09pznpina6wimmxl0lmh8pn0mi51yzvc"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/git-lfs/git-lfs"))
