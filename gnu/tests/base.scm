@@ -311,7 +311,9 @@ info --version")
             "\"root\""
             (begin
               ;; Assume we logged in in the previous test and type.
-              (marionette-type "guile -c '(write (getlogin))' > /root/login-id\n"
+              (marionette-type "guile -c '(write (getlogin))' > /root/login-id.tmp\n"
+                               marionette)
+              (marionette-type "mv /root/login-id{.tmp,}\n"
                                marionette)
 
               ;; It can take a while before the shell commands are executed.
