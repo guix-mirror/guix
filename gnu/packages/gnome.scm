@@ -35,6 +35,7 @@
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5502,7 +5503,24 @@ to virtual private networks (VPNs) via OpenVPN.")
                (base32
                 "1js0i2kwfklahsn77qgxzdscy33drrlym3mrj1qhlw0zf8ri56ya"))))
     (build-system glib-or-gtk-build-system)
-    (arguments '(#:configure-flags '("--disable-migration")))
+    (arguments '(#:configure-flags '("--disable-migration")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'patch-source
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let ((mbpi (assoc-ref inputs
+                                              "mobile-broadband-provider-info"))
+                             (iso-codes (assoc-ref inputs "iso-codes")))
+                         (substitute* "src/libnma/nma-mobile-providers.c"
+                           (("(g_build_filename \\()dirs\\[i\\].*,\
+ (MOBILE_BROADBAND_PROVIDER_INFO.*)" all start end)
+                            (string-append start "\"" mbpi "/share\", " end)))
+                         (substitute* "src/libnma/nma-mobile-providers.c"
+                           (("(g_build_filename \\()dirs\\[i\\].*,\
+ (ISO_3166_COUNTRY_CODES.*)" all start end)
+                            (string-append start "\"" iso-codes
+                                           "/share\", " end)))
+                         #t))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)
@@ -5519,7 +5537,8 @@ to virtual private networks (VPNs) via OpenVPN.")
        ("libsecret" ,libsecret)
        ("libselinux" ,libselinux)
        ("jansson" ,jansson) ; for team support
-       ("modem-manager" ,modem-manager)))
+       ("modem-manager" ,modem-manager)
+       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)))
     (synopsis "Applet for managing network connections")
     (home-page "https://www.gnome.org/projects/NetworkManager/")
     (description
