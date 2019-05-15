@@ -1143,22 +1143,30 @@ Some ACTIONS support additional ARGS.\n"))
 ACTION must be one of the sub-commands that takes an operating system
 declaration as an argument (a file name.)  OPTS is the raw alist of options
 resulting from command-line parsing."
+  (define (ensure-operating-system file-or-exp obj)
+    (unless (operating-system? obj)
+      (leave (G_ "'~a' does not return an operating system~%")
+             file-or-exp))
+    obj)
+
   (let* ((file        (match args
                         (() #f)
                         ((x . _) x)))
          (expr        (assoc-ref opts 'expression))
          (system      (assoc-ref opts 'system))
-         (os          (cond
-                       ((and expr file)
-                        (leave
-                         (G_ "both file and expression cannot be specified~%")))
-                       (expr
-                        (read/eval expr))
-                       (file
-                        (load* file %user-module
-                                    #:on-error (assoc-ref opts 'on-error)))
-                       (else
-                        (leave (G_ "no configuration specified~%")))))
+         (os          (ensure-operating-system
+                       (or file expr)
+                       (cond
+                        ((and expr file)
+                         (leave
+                          (G_ "both file and expression cannot be specified~%")))
+                        (expr
+                         (read/eval expr))
+                        (file
+                         (load* file %user-module
+                                #:on-error (assoc-ref opts 'on-error)))
+                        (else
+                         (leave (G_ "no configuration specified~%"))))))
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))
