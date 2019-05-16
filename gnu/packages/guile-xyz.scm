@@ -2199,7 +2199,7 @@ from @code{tree-il}.")
 (define-public guile-file-names
   (package
     (name "guile-file-names")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://brandon.invergo.net/software/download/"
@@ -2207,16 +2207,14 @@ from @code{tree-il}.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01ba6jdypj9cwc5rgiw384dgz12iz6ab4dsd3ai5gfklprm2a50b"))))
+                "1kwx5hanl40960w2nhyga7ry4l6c3c57zdrihk4yajj87vn3pmi8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'build-with-guile-2.2
+         (add-after 'unpack 'fix-target-directory
            (lambda _
-             (substitute* "configure"
-               (("guile-2.0") "guile-2.2"))
-             (substitute* "file-names/Makefile.in"
+             (substitute* "src/Makefile.in"
                (("guilemoddir = \\$\\(GUILE_SITE\\)")
                 "guilemoddir = $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
              #t)))))
