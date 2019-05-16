@@ -96,10 +96,13 @@ root ALL=(ALL) ALL
            ;; sense in a VM.
            (remove (lambda (service)
                      (let ((type (service-kind service)))
-                       (memq type (list gdm-service-type
-                                        wpa-supplicant-service-type
-                                        cups-pk-helper-service-type
-                                        network-manager-service-type))))
+                       (or (memq type
+                                 (list gdm-service-type
+                                       wpa-supplicant-service-type
+                                       cups-pk-helper-service-type
+                                       network-manager-service-type))
+                           (eq? 'network-manager-applet
+                                (service-type-name type)))))
                    (modify-services %desktop-services
                      (login-service-type config =>
                                          (login-configuration
