@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
@@ -614,6 +614,7 @@ as the 'native-search-paths' field."
                  (package-outputs gcc)
                  (delete "lib" (package-outputs gcc))))
     (native-search-paths search-paths)
+    (properties (alist-delete 'hidden? (package-properties gcc)))
     (arguments
      (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
                                                 (guix build utils)
