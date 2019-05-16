@@ -4219,7 +4219,7 @@ to another like this:
 
 @example
 guix archive --export -r $(readlink -f ~/.guix-profile) | \
-  ssh the-machine guix-archive --import
+  ssh the-machine guix archive --import
 @end example
 
 @noindent
