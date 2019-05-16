@@ -8428,34 +8428,35 @@ document.")
 
 (define-public python-botocore
   (package
-   (name "python-botocore")
-   (version "1.8.43")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri "botocore" version))
-     (sha256
-      (base32
-       "12cqpbnz3vfv41mp9admvciw7bc7hz57sjpqs2bxaw9wnfmbw5lg"))))
-   (build-system python-build-system)
-   (arguments
-    ;; FIXME: Many tests are failing.
-    '(#:tests? #f))
-   (propagated-inputs
-    `(("python-dateutil" ,python-dateutil)
-      ("python-docutils" ,python-docutils)
-      ("python-jmespath" ,python-jmespath)))
-   (native-inputs
-    `(("python-mock" ,python-mock)
-      ("python-nose" ,python-nose)
-      ("behave" ,behave)
-      ("python-tox" ,python-tox)
-      ("python-wheel" ,python-wheel)))
-   (home-page "https://github.com/boto/botocore")
-   (synopsis "Low-level interface to AWS")
-   (description "Botocore is a Python library that provides a low-level
+    (name "python-botocore")
+    (version "1.12.149")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "botocore" version))
+       (sha256
+        (base32
+         "12597f74khp3ngwr282cb949w0gcqj20rkfc3x275dijavyy5cmf"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Many tests are failing.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-docutils" ,python-docutils)
+       ("python-jmespath" ,python-jmespath)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("behave" ,behave)
+       ("python-tox" ,python-tox)
+       ("python-urllib3" ,python-urllib3)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/boto/botocore")
+    (synopsis "Low-level interface to AWS")
+    (description "Botocore is a Python library that provides a low-level
 interface to the Amazon Web Services (AWS) API.")
-   (license license:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-botocore
   (package-with-python2 python-botocore))
