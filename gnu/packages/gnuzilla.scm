@@ -426,7 +426,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "60.6.2-guix1")
+(define %icecat-version "60.6.3-guix1")
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -448,7 +448,7 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0fvxqxg48c0xrffb720gxfjayz3xqam2xnsz5piri64dcjvxgcyd"))))
+              "0gl3a0kb404f7rjlr2qz2kdcsmfz9q99innhgl08rkv4ijb39gzf"))))
 
          (upstream-icecat-base-version "60.3.0") ; maybe older than base-version
          (upstream-icecat-gnu-version "1")
