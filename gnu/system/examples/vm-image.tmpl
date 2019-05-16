@@ -92,15 +92,16 @@ root ALL=(ALL) ALL
                  ;; Use the DHCP client service rather than NetworkManager.
                  (service dhcp-client-service-type))
 
-           ;; Remove GDM, NetworkManager, and wpa-supplicant, which don't make
-           ;; sense in a VM.
+           ;; Remove GDM, ModemManager, NetworkManager, and wpa-supplicant,
+           ;; which don't make sense in a VM.
            (remove (lambda (service)
                      (let ((type (service-kind service)))
                        (or (memq type
                                  (list gdm-service-type
                                        wpa-supplicant-service-type
                                        cups-pk-helper-service-type
-                                       network-manager-service-type))
+                                       network-manager-service-type
+                                       modem-manager-service-type))
                            (eq? 'network-manager-applet
                                 (service-type-name type)))))
                    (modify-services %desktop-services
