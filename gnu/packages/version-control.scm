@@ -1526,14 +1526,14 @@ reviewing large, complex patch files.")
 (define-public cssc
   (package
     (name "cssc")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/" name "/CSSC-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15191dh8hr46cvssmv4v52gymiiyk6ca9j1bfimlqakcqab6y51h"))))
+                "1vsisqq573xjr2qpn19iwmpqgl3mq03m790akpa4rvj60b4d1gni"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
