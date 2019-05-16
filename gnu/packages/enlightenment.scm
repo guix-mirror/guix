@@ -484,7 +484,7 @@ and in creating applications based on the Enlightenment Foundation Library suite
                                   "apps/ephoto/ephoto-" version ".tar.xz")))
         (sha256
          (base32
-          "04kli43sfsy6s660g13pjc0kjmgdcmq8m4qh02vvpcwv60mf9mgz"))))
+          "1q7v9abjp9jrs08xc7pqaac64yzax24dk1snjb9rciarzzh3mlzy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
