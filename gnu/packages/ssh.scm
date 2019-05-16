@@ -447,7 +447,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
              "https://github.com/MisterTea/EternalTCP/archive/et-v"
              version ".tar.gz"))
        (sha256
-        (base32 "1n2w2kqbshdmbb0gz4yizyw9gqfls6qm2dnwx1d9c2hz7hmi7521"))))
+        (base32 "0k34l33ns2i2fijvw6ypxjmjcih11ydi9ha84jr8vdx8ii7p8p11"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
