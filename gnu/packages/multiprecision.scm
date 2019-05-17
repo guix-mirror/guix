@@ -193,13 +193,13 @@ error.  Additionally, iRRAM uses the concept of multi-valued functions.")
   (package
     (name "qd")
     (version "2.3.22")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://crd.lbl.gov/~dhbailey/mpdist/qd-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0wpgdzjcbanwd0c9mk90n04nas0q5fwc5zkrlbxyn6yjd2n8k3i6"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://crd-legacy.lbl.gov/~dhbailey/mpdist/qd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1lq609rsp6zpg7zda75lyxzzk1fabzp4jn88j7xfk84mdgjgzh9h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -215,7 +215,7 @@ error.  Additionally, iRRAM uses the concept of multi-valued functions.")
                                   ;; expensive optimizations lets it pass.
                                   '("CXXFLAGS=-O3 -fno-expensive-optimizations")
                                   '("CXXFLAGS=-O3")))))
-    (home-page "http://crd-legacy.lbl.gov/~dhbailey/mpdist/")
+    (home-page "https://www.davidhbailey.com/dhbsoftware/")
     (synopsis "Double-double and quad-double library")
     (description "This package supports both a double-double
 datatype (approx. 32 decimal digits) and a quad-double datatype (approx. 64
