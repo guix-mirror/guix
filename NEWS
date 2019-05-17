@@ -12,6 +12,8 @@ Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 Please send Guix bug reports to bug-guix@gnu.org.
 
 * Changes in 1.0.1 (since 1.0.0)
+** Package management
+*** The ‘https_proxy’ environment variable is now honored
 ** Distribution
 *** ‘guix system docker-image’ now produces images with an entry point
 *** New ‘--network’ option for ‘guix system container’
