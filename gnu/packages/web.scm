@@ -4038,14 +4038,20 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
   (package
     (name "jq")
     (version "1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/stedolan/jq"
-                                  "/releases/download/jq-" version
-                                  "/jq-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1a76f46a652i2g333kfvrl6mp2w7whf6h1yly519izg4y967h9cn"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/stedolan/jq"
+                           "/releases/download/jq-" version
+                           "/jq-" version ".tar.gz"))
+       (sha256
+        (base32 "0wmapfskhzfwranf6515nzmm84r7kwljgfs7dg6bjgxakbicis2x"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled onigurama.
+           (delete-file-recursively "modules")
+           #t))))
     (inputs
      `(("oniguruma" ,oniguruma)))
     (native-inputs
