@@ -4882,13 +4882,12 @@ built on top of DUNE, the Distributed and Unified Numerics Environment.")
        (uri (string-append
              "https://mersenneforum.org/mayer/src/C/mlucas_v" version ".txz"))
        (sha256
-        (base32
-         "1ax12qj9lyvnx4vs3gx7l8r3wx5gjbsdswp5f00ik9z0wz7xf297"))))
+        (base32 "0h4xj6pyyac79ka5ibqjilfa3s9j3yxnzgpwc57b54kfh2bj3447"))))
     (build-system gnu-build-system)
     (inputs
      `(("python2" ,python-2)))
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
