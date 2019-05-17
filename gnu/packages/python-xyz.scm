@@ -59,6 +59,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
+;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3223,6 +3224,32 @@ interested parties to subscribe to events, or \"signals\".")
 Markdown input files, and more.  Pelican uses Jinja2 for templating
 and is very extensible.")
     (license license:agpl3+)))
+
+(define-public mallard-ducktype
+  (package
+    (name "mallard-ducktype")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       ;; git-reference because a proper source tarball is not available
+       ;; https://lists.gnu.org/archive/html/guix-devel/2019-05/msg00209.html
+       (uri (git-reference
+             (url "https://github.com/projectmallard/mallard-ducktype.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0crland0kmpsyjfmnflcw7gaqy5b87b6ah17cmr9d5z1kyazf54n"))))
+    (build-system python-build-system)
+    (home-page "http://projectmallard.org")
+    (synopsis "Convert Ducktype to Mallard documentation markup")
+    (description
+     "Ducktype is a lightweight syntax that can represent all the semantics
+of the Mallard XML documentation system.  Ducktype files can be converted to
+Mallard using the @command{ducktype} tool.  The yelp-tools package
+provides additional functionality on the produced Mallard documents.")
+    (license license:expat)))
 
 (define-public python-scikit-image
   (package
