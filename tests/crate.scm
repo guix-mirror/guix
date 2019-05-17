@@ -89,9 +89,9 @@
                      ('base32
                       (? string? hash)))))
          ('build-system 'cargo-build-system)
-         ('inputs
+         ('arguments
           ('quasiquote
-           (("rust-bar" ('unquote 'rust-bar) "src"))))
+           (('#:cargo-inputs (("rust-bar" ('unquote rust-bar)))))))
          ('home-page "http://example.com")
          ('synopsis "summary")
          ('description "summary")

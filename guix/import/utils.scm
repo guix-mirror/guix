@@ -52,6 +52,7 @@
             url-fetch
             guix-hash-url
 
+            package-names->package-inputs
             maybe-inputs
             maybe-native-inputs
             package->definition
@@ -236,6 +237,9 @@ into a proper sentence and by using two spaces between sentences."
                               cleaned 'pre ".  " 'post)))
 
 (define* (package-names->package-inputs names #:optional (output #f))
+  "Given a list of PACKAGE-NAMES, and an optional OUTPUT, tries to generate a
+quoted list of inputs, as suitable to use in an 'inputs' field of a package
+definition."
   (map (lambda (input)
          (cons* input (list 'unquote (string->symbol input))
                             (or (and output (list output))
