@@ -64,6 +64,7 @@ Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
 Copyright @copyright{} 2019 Diego Nicola Barbato@*
+Copyright @copyright{} 2019 Ivan Petkov@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -5814,10 +5815,21 @@ This variable is exported by @code{(guix build-system cargo)}.  It
 supports builds of packages using Cargo, the build tool of the
 @uref{https://www.rust-lang.org, Rust programming language}.
 
-In its @code{configure} phase, this build system replaces dependencies
-specified in the @file{Cargo.toml} file with inputs to the Guix package.
-The @code{install} phase installs the binaries, and it also installs the
-source code and @file{Cargo.toml} file.
+It adds @code{rustc} and @code{cargo} to the set of inputs.
+A different Rust package can be specified with the @code{#:rust} parameter.
+
+Regular cargo dependencies should be added to the package definition via the
+@code{#:cargo-inputs} parameter as a list of name and spec pairs, where the
+spec can be a package or a source definition.  Note that the spec must
+evaluate to a path to a gzipped tarball which includes a @code{Cargo.toml}
+file at its root, or it will be ignored.  Similarly, cargo dev-dependencies
+should be added to the package definition via the
+@code{#:cargo-development-inputs} parameter.
+
+In its @code{configure} phase, this build system will make any source inputs
+specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
+parameters available to cargo.  The @code{install} phase installs any crate
+the binaries if they are defined by the crate.
 @end defvr
 
 @cindex Clojure (programming language)
