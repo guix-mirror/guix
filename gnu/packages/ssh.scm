@@ -446,6 +446,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
        (uri (git-reference
              (url "https://github.com/MisterTea/EternalTCP.git")
              (commit (string-append "et-v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1m5caxckn2ihwp9s2pbyh5amxlpwr7yc54q8s0kb10fr52w2vfnm"))))
     (build-system cmake-build-system)
