@@ -120,7 +120,7 @@ to NAME and VERSION."
                                 #:inputs inputs
                                 #:system system
                                 #:modules imported-modules
-                                #:outputs (cons "src" outputs)
+                                #:outputs outputs
                                 #:guile-for-build guile-for-build))
 
 (define (package-cargo-inputs p)

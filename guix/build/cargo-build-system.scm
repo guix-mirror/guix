@@ -140,24 +140,6 @@ directory = '" port)
 (define (touch file-name)
   (call-with-output-file file-name (const #t)))
 
-(define* (install-source #:key inputs outputs #:allow-other-keys)
-  "Install the source for a given Cargo package."
-  (let* ((out (assoc-ref outputs "out"))
-         (src (assoc-ref inputs "source"))
-         (rsrc (string-append (assoc-ref outputs "src")
-                              "/share/rust-source")))
-    (mkdir-p rsrc)
-    ;; Rust doesn't have a stable ABI yet. Because of this
-    ;; Cargo doesn't have a search path for binaries yet.
-    ;; Until this changes we are working around this by
-    ;; vendoring the crates' sources by symlinking them
-    ;; to store paths.
-    (copy-recursively "." rsrc)
-    (touch (string-append rsrc "/.cargo-ok"))
-    (generate-checksums rsrc)
-    (install-file "Cargo.toml" rsrc)
-    #t))
-
 (define* (install #:key inputs outputs skip-build? #:allow-other-keys)
   "Install a given Cargo package."
   (let* ((out (assoc-ref outputs "out")))
@@ -179,7 +161,6 @@ directory = '" port)
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'bootstrap)
-    (add-before 'configure 'install-source install-source)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
