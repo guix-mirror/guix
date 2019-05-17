@@ -713,16 +713,20 @@ session, and it can create M3U playlists.")
   (package
     (name "ripit")
     (version "3.9.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.suwald.com/ripit/ripit-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0ap71x477jy9c4jiqazb3y45hxdxm3jbq24x05g3vjyqzigi4x1b"))))
+    (source
+     (origin
+       (method url-fetch)
+       ;; The original suwald.com domain has expired.
+       (uri (list
+             (string-append "https://web.archive.org/web/20160327050927/"
+                            "http://suwald.com/ripit/ripit-" version ".tar.gz")
+             (string-append "https://ponce.cc/slackware/sources/repo/ripit-"
+                            version ".tar.gz")))
+       (sha256
+        (base32 "0ap71x477jy9c4jiqazb3y45hxdxm3jbq24x05g3vjyqzigi4x1b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No test suite.
+     `(#:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -744,7 +748,8 @@ session, and it can create M3U playlists.")
        ("vorbis-tools" ,vorbis-tools)
        ("wavpack" ,wavpack)
        ("perl-cddb-get" ,perl-cddb-get)))
-    (home-page "http://www.suwald.com/ripit/about.php")
+    (home-page (string-append "https://web.archive.org/web/20170119092156/"
+                              "http://www.suwald.com/ripit/about.php"))
     (synopsis "Command-line program to extract audio CDs")
     (description "RipIT is used to extract audio from CDs.")
     (license gpl2)))
