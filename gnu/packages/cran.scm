@@ -3674,6 +3674,44 @@ right-hand side of an assignment into multiple values and assigns these values
 to variables on the left-hand side of the assignment.")
     (license license:expat)))
 
+(define-public r-vctrs
+  (package
+    (name "r-vctrs")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vctrs" version))
+       (sha256
+        (base32
+         "13w1r8zpalirpfaz5sykpn0mj4jmhxi2qkdcfq081ixlfjyzwa6c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-backports" ,r-backports)
+       ("r-digest" ,r-digest)
+       ("r-glue" ,r-glue)
+       ("r-rlang" ,r-rlang)
+       ("r-zeallot" ,r-zeallot)))
+    (home-page "https://github.com/r-lib/vctrs")
+    (synopsis "Vector helpers")
+    (description
+     "There are three main goals to the @code{vctrs} package:
+
+@enumerate
+@item To propose @code{vec_size()} and @code{vec_type()} as alternatives to
+  @code{length()} and @code{class()}.  These definitions are paired with a
+  framework for type-coercion and size-recycling.
+@item To define type- and size-stability as desirable function properties, use
+  them to analyse existing base function, and to propose better alternatives.
+  This work has been particularly motivated by thinking about the ideal
+  properties of @code{c()}, @code{ifelse()}, and @code{rbind()}.
+@item To provide a new @code{vctr} base class that makes it easy to create new
+  S3 vectors.  @code{vctrs} provides methods for many base generics in terms of
+  a few new @code{vctrs} generics, making implementation considerably simpler
+  and more robust.
+@end enumerate\n")
+    (license license:gpl3)))
+
 (define-public r-pillar
   (package
     (name "r-pillar")
