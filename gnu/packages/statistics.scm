@@ -4817,14 +4817,14 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.93-4")
+    (version "0.93-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "1q56y0iqp7qhavm4xnpzhs64q7l893y7yiq3b20fllpghka077pa"))))
+         "0mkzbsjl5nihyj7mzks14p6kr3spp44xvygjz4ran11gspdn9rdx"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
