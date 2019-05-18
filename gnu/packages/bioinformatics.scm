@@ -14867,3 +14867,34 @@ mutations from scRNA-Seq data.")
    (description "This is a C++ wrapper around the Tabix project which abstracts
 some of the details of opening and jumping in tabix-indexed files.")
    (license license:expat)))
+
+(define-public smithwaterman
+  ;; TODO: Upgrading smithwaterman breaks FreeBayes.
+  (let ((commit "203218b47d45ac56ef234716f1bd4c741b289be1"))
+    (package
+      (name "smithwaterman")
+      (version (string-append "0-1." (string-take commit 7)))
+      (source (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ekg/smithwaterman/")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0z9xsmsv452kgdfbbwydyc6nymg3fwyv8zswls8qjin3r4ia4415"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; There are no tests to run.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "smithwaterman" bin))
+               #t)))))
+      (home-page "https://github.com/ekg/smithwaterman")
+      (synopsis "Implementation of the Smith-Waterman algorithm")
+      (description "Implementation of the Smith-Waterman algorithm.")
+      ;; The licensing terms are unclear: https://github.com/ekg/smithwaterman/issues/9.
+      (license (list license:gpl2 license:expat)))))
