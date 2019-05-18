@@ -266,7 +266,8 @@ made available under the /xchg CIFS share."
                         bootcfg-drv
                         bootloader
                         (register-closures? (has-guix-service-type? os))
-                        (inputs '()))
+                        (inputs '())
+                        (grub-mkrescue-environment '()))
   "Return a bootable, stand-alone iso9660 image.
 
 INPUTS is a list of inputs (as for packages)."
@@ -313,7 +314,9 @@ INPUTS is a list of inputs (as for packages)."
                           inputs)))
 
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-             (make-iso9660-image #$(bootloader-package bootloader)
+             (make-iso9660-image #$xorriso
+                                 '#$grub-mkrescue-environment
+                                 #$(bootloader-package bootloader)
                                  #$bootcfg-drv
                                  #$os
                                  "/xchg/guixsd.iso"
@@ -704,7 +707,9 @@ to USB sticks meant to be read-only."
                        #:bootloader (bootloader-configuration-bootloader
                                      (operating-system-bootloader os))
                        #:inputs `(("system" ,os)
-                                  ("bootcfg" ,bootcfg)))
+                                  ("bootcfg" ,bootcfg))
+                       #:grub-mkrescue-environment
+                       '(("MKRESCUE_SED_MODE" . "mbr_hfs")))
         (qemu-image #:name name
                     #:os os
                     #:bootcfg-drv bootcfg

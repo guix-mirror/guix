@@ -162,8 +162,20 @@ libcdio.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0aq6lvlwlkxz56l5sbvgycr6j5c82ch2bv6zrnc2345ibfpafgx9"))))
+               "0aq6lvlwlkxz56l5sbvgycr6j5c82ch2bv6zrnc2345ibfpafgx9"))
+             (patches
+              (search-patches "xorriso-no-partition-table-in-inner-efi.patch"
+                              "xorriso-no-mbr-in-inner-efi.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-frontends
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin")))
+               (install-file "frontend/grub-mkrescue-sed.sh" out-bin)
+               #t))))))
     (inputs
      `(("acl" ,acl)
        ("readline" ,readline)
