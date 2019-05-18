@@ -4288,23 +4288,21 @@ exponentiation.")
 (define-public r-heatmaply
   (package
     (name "r-heatmaply")
-    (version "0.15.2")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "heatmaply" version))
        (sha256
         (base32
-         "0h8s5djzj4mrmaswlcaap6jbwxrkbzc43bbqik3qf8vrqz335w04"))))
+         "1qhxk48qh61qjxdlhl0qffdh3yh8iiwccid5ssngdv433q0cmyc1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-colorspace" ,r-colorspace)
        ("r-dendextend" ,r-dendextend)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-gplots" ,r-gplots)
        ("r-htmlwidgets" ,r-htmlwidgets)
-       ("r-knitr" ,r-knitr) ; needed for vignettes
        ("r-magrittr" ,r-magrittr)
        ("r-plotly" ,r-plotly)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
