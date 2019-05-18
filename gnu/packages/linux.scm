@@ -246,7 +246,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
           "/debian/patches/bugfix/arm/"
           "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-    (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
+    (file-name "linux-libre-arm-export-__sync_icache_dcache.patch")
     (sha256
      (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
 
