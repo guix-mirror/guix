@@ -14932,3 +14932,33 @@ combination generation algorithm which is (approximately) described in
 combinatorial configurations.\", G. Ehrlich - Journal of the ACM (JACM),
 1973. (Algorithm 7.)")
     (license license:expat)))
+
+(define-public fsom
+  (let ((commit "a6ef318fbd347c53189384aef7f670c0e6ce89a3"))
+    (package
+      (name "fsom")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ekg/fsom/")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0gw1lpvr812pywg9y546x0h1hhj261xwls41r6kqhddjlrcjc0pi"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; There are no tests to run.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "fsom" bin))
+               #t)))))
+      (home-page "https://github.com/ekg/fsom")
+      (synopsis "Manage SOM (Self-Organizing Maps) neural networks")
+      (description "A tiny C library for managing SOM (Self-Organizing Maps)
+neural networks.")
+      (license license:gpl3))))
