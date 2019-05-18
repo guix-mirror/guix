@@ -2201,14 +2201,14 @@ or source files in a key-value fashion.")
 (define-public r-batchjobs
   (package
     (name "r-batchjobs")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "BatchJobs" version))
        (sha256
         (base32
-         "035658marnw57p4f38g99rwmvmb6hpbq0fhlxp3qbw22zfnnkvs9"))))
+         "1zz4sspj596pijxlz321g0jy2rg9ki83j6fihbwisjwr66p2vk1m"))))
     (properties `((upstream-name . "BatchJobs")))
     (build-system r-build-system)
     (propagated-inputs
