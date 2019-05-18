@@ -14898,3 +14898,37 @@ some of the details of opening and jumping in tabix-indexed files.")
       (description "Implementation of the Smith-Waterman algorithm.")
       ;; The licensing terms are unclear: https://github.com/ekg/smithwaterman/issues/9.
       (license (list license:gpl2 license:expat)))))
+
+(define-public multichoose
+  (package
+    (name "multichoose")
+    (version "1.0.3")
+    (source (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/ekg/multichoose/")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32 "0ci5fqvmpamwgxvmyd79ygj6n3bnbl3vc7b6h1sxz58186sm3pfs"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; Tests require node.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               ;; TODO: There are Python modules for these programs too.
+               (install-file "multichoose" bin)
+               (install-file "multipermute" bin))
+             #t)))))
+    (home-page "https://github.com/ekg/multichoose")
+    (synopsis "Efficient loopless multiset combination generation algorithm")
+    (description "This library implements an efficient loopless multiset
+combination generation algorithm which is (approximately) described in
+\"Loopless algorithms for generating permutations, combinations, and other
+combinatorial configurations.\", G. Ehrlich - Journal of the ACM (JACM),
+1973. (Algorithm 7.)")
+    (license license:expat)))
