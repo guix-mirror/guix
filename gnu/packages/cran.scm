@@ -3653,6 +3653,27 @@ international text (Unicode).  Input, validate, normalize, encode, format, and
 display.")
     (license license:asl2.0)))
 
+(define-public r-zeallot
+  (package
+    (name "r-zeallot")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zeallot" version))
+       (sha256
+        (base32
+         "1sd1igcfnv27pa3bqxlbyxchi562h7grnjg1l7wxx3bwr49i57s3"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/nteetor/zeallot")
+    (synopsis "Multiple, unpacking, and destructuring assignment")
+    (description
+     "This package provides a @code{%<-%} operator to perform multiple,
+unpacking, and destructuring assignment in R.  The operator unpacks the
+right-hand side of an assignment into multiple values and assigns these values
+to variables on the left-hand side of the assignment.")
+    (license license:expat)))
+
 (define-public r-pillar
   (package
     (name "r-pillar")
