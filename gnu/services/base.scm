@@ -1824,7 +1824,8 @@ raise a deprecation warning if the 'compression-level' field was used."
                      #:environment-variables
                      (list (string-append "GUIX_LOCPATH="
                                           #$glibc-utf8-locales "/lib/locale")
-                           "LC_ALL=en_US.utf8")))
+                           "LC_ALL=en_US.utf8")
+                     #:log-file "/var/log/guix-publish.log"))
            (stop #~(make-kill-destructor))))))
 
 (define %guix-publish-accounts
