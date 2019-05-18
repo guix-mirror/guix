@@ -324,6 +324,7 @@ EXAMPLES =					\
   gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\
   gnu/system/examples/lightweight-desktop.tmpl	\
+  gnu/system/examples/docker-image.tmpl		\
   gnu/system/examples/vm-image.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
