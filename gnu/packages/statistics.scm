@@ -4443,13 +4443,13 @@ data at that region, and avoids over-plotting.")
 (define-public r-ggthemes
   (package
     (name "r-ggthemes")
-    (version "4.1.1")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggthemes" version))
               (sha256
                (base32
-                "092hks6bxi6al8nclgswnzfmx5wp6n3qf63aqiajca7dx8w8n0m2"))))
+                "0rrkzfggc1nlda1w1lbqdycx6nawxbkac1szhvkwrqlzh6agxcsv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
