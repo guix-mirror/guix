@@ -3715,21 +3715,22 @@ to variables on the left-hand side of the assignment.")
 (define-public r-pillar
   (package
     (name "r-pillar")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pillar" version))
        (sha256
         (base32
-         "1xnbb9sr5wn9dmp6m7cr4z7i6pmjvyabnfcx6x7i7mvdjmgvaf5k"))))
+         "1c8rwwh677vc92f4k6qj4mxl3acran1iqdv5dj6r1dyv7fvmcvfx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
        ("r-fansi" ,r-fansi)
        ("r-rlang" ,r-rlang)
-       ("r-utf8" ,r-utf8)))
+       ("r-utf8" ,r-utf8)
+       ("r-vctrs" ,r-vctrs)))
     (home-page "https://github.com/r-lib/pillar")
     (synopsis "Coloured formatting for columns")
     (description
