@@ -14868,6 +14868,24 @@ mutations from scRNA-Seq data.")
 some of the details of opening and jumping in tabix-indexed files.")
    (license license:expat)))
 
+(define tabixpp-freebayes
+  ;; This version works with FreeBayes while the released
+  ;; version doesn't. The released creates a variable with the name \"vcf\"
+  ;; somewhere, which is also the name of a namespace in vcflib.
+  (let ((commit "bbc63a49acc52212199f92e9e3b8fba0a593e3f7"))
+    (package
+      (inherit tabixpp)
+      (name "tabixpp-freebayes")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ekg/tabixpp/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "017qsmsc2kyiyzqr9nl8cc6pfldxf16dbn8flx5i59mbqr9ydi7g")))))))
+
 (define-public smithwaterman
   ;; TODO: Upgrading smithwaterman breaks FreeBayes.
   (let ((commit "203218b47d45ac56ef234716f1bd4c741b289be1"))
@@ -14995,3 +15013,91 @@ provides a FASTA reader and indexer that can be embedded into applications
 which would benefit from directly reading subsequences from FASTA files.  The
 library automatically handles index file generation and use.")
       (license (list license:expat license:gpl2)))))
+
+(define-public vcflib
+  (let ((commit "5ac091365fdc716cc47cc5410bb97ee5dc2a2c92")
+        (revision "1"))
+    (package
+      (name "vcflib")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vcflib/vcflib/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1gijvcz1lcdn5kvgzb671l6iby0379qk00nqmcrszgk67hfwx6kq"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("zlib" ,zlib)))
+      (native-inputs
+       `(("perl" ,perl)
+         ("python" ,python-2)
+         ;; Submodules.
+         ;; This package builds against the .o files so we need to extract the source.
+         ("tabixpp-src" ,(package-source tabixpp-freebayes))
+         ("smithwaterman-src" ,(package-source smithwaterman))
+         ("multichoose-src" ,(package-source multichoose))
+         ("fsom-src" ,(package-source fsom))
+         ("filevercmp-src" ,(package-source filevercmp))
+         ("fastahack-src" ,(package-source fastahack))
+         ("intervaltree-src"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ekg/intervaltree/")
+                   (commit "dbb4c513d1ad3baac516fc1484c995daf9b42838")))
+             (file-name "intervaltree-src-checkout")
+             (sha256
+              (base32 "1fy5qbj4bg8d2bjysvaa9wfnqn2rj2sk5yra2h4l5pzvy53f23fj"))))))
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'check)
+           (add-after 'unpack 'unpack-submodule-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unpack (lambda (source target)
+                               (with-directory-excursion target
+                                 (if (file-is-directory? (assoc-ref inputs source))
+                                     (copy-recursively (assoc-ref inputs source) ".")
+                                     (invoke "tar" "xvf"
+                                             (assoc-ref inputs source)
+                                             "--strip-components=1"))))))
+                 (and
+                  (unpack "intervaltree-src" "intervaltree")
+                  (unpack "fastahack-src" "fastahack")
+                  (unpack "filevercmp-src" "filevercmp")
+                  (unpack "fsom-src" "fsom")
+                  (unpack "multichoose-src" "multichoose")
+                  (unpack "smithwaterman-src" "smithwaterman")
+                  (unpack "tabixpp-src" "tabixpp")))))
+           (replace 'build
+             (lambda* (#:key inputs make-flags #:allow-other-keys)
+               (with-directory-excursion "tabixpp"
+                 (invoke "make"))
+               (invoke "make" "CC=gcc"
+                       (string-append "CFLAGS=\"" "-Itabixpp " "\"")
+                       "all")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                     (lib (string-append (assoc-ref outputs "out") "/lib")))
+                 (for-each (lambda (file)
+                             (install-file file bin))
+                           (find-files "bin" ".*"))
+                 ;; The header files in src/ do not interface libvcflib,
+                 ;; therefore they are left out.
+                 (install-file "libvcflib.a" lib))
+               #t)))))
+      (home-page "https://github.com/vcflib/vcflib/")
+      (synopsis "Library for parsing and manipulating VCF files")
+      (description "Vcflib provides methods to manipulate and interpret
+sequence variation as it can be described by VCF.  It is both an API for parsing
+and operating on records of genomic variation as it can be described by the VCF
+format, and a collection of command-line utilities for executing complex
+manipulations on VCF files.")
+      (license license:expat))))
