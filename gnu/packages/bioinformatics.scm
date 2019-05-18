@@ -14827,3 +14827,43 @@ trees by inserting random mutations.  The tbsp package implements an
 alternative method to detect significant, cell type specific sequence
 mutations from scRNA-Seq data.")
       (license license:expat))))
+
+(define-public tabixpp
+  (package
+   (name "tabixpp")
+   (version "1.0.0")
+   (source (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/ekg/tabixpp")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "08vx6nsipk971cyr8z53rnzwkvlld63kcn1fw0pwddynz91xfny8"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("htslib" ,htslib)
+      ("zlib" ,zlib)))
+   (arguments
+    `(#:tests? #f ; There are no tests to run.
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure) ; There is no configure phase.
+        ;; The build phase needs overriding the location of htslib.
+        (replace 'build
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((htslib-ref (assoc-ref inputs "htslib")))
+              (invoke "make"
+                      (string-append "HTS_LIB=" htslib-ref "/lib/libhts.a")
+                      "HTS_HEADERS="    ; No need to check for headers here.
+                      (string-append "LIBPATH=-L. -L" htslib-ref "/include")))))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+              (install-file "tabix++" bin))
+            #t)))))
+   (home-page "https://github.com/ekg/tabixpp")
+   (synopsis "C++ wrapper around tabix project")
+   (description "This is a C++ wrapper around the Tabix project which abstracts
+some of the details of opening and jumping in tabix-indexed files.")
+   (license license:expat)))
