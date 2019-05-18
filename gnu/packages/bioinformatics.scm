@@ -14962,3 +14962,36 @@ combinatorial configurations.\", G. Ehrlich - Journal of the ACM (JACM),
       (description "A tiny C library for managing SOM (Self-Organizing Maps)
 neural networks.")
       (license license:gpl3))))
+
+(define-public fastahack
+  (let ((commit "c68cebb4f2e5d5d2b70cf08fbdf1944e9ab2c2dd"))
+    (package
+      (name "fastahack")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ekg/fastahack/")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0hfdv67l9g611i2ck4l92pd6ygmsp9g1ph4zx1ni7qkpsikf0l19"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; Unclear how to run tests: https://github.com/ekg/fastahack/issues/15
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "fastahack" bin))
+               #t)))))
+      (home-page "https://github.com/ekg/fastahack")
+      (synopsis "Indexing and sequence extraction from FASTA files")
+      (description "Fastahack is a small application for indexing and
+extracting sequences and subsequences from FASTA files.  The included library
+provides a FASTA reader and indexer that can be embedded into applications
+which would benefit from directly reading subsequences from FASTA files.  The
+library automatically handles index file generation and use.")
+      (license (list license:expat license:gpl2)))))
