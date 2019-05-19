@@ -9661,14 +9661,14 @@ handling.")
 (define-public r-grimport
   (package
     (name "r-grimport")
-    (version "0.9-1.1")
+    (version "0.9-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "grImport" version))
        (sha256
         (base32
-         "19d05ygpiv47lfzhfih35pdfll0axbrgd6p86l59mmg2d0j0s8bd"))))
+         "0n3y6dzy8s0ifvyrgwbly6cl14lmgd54dyi74s5i984apszpsp16"))))
     (properties `((upstream-name . "grImport")))
     (build-system r-build-system)
     (inputs
