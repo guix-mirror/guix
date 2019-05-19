@@ -292,14 +292,14 @@ package is a port of the Python package @code{cssselect}.")
 (define-public r-reprex
   (package
     (name "r-reprex")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reprex" version))
        (sha256
         (base32
-         "1ws5gds453xgfili87r35rz1wn2i7jbqissq98csbiddpkgls8sx"))))
+         "0v7vxzs8alwz8y1cjicpimp5yimf1g9gb8x5wy3zhvrz6kk2lg10"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
