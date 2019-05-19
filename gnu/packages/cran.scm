@@ -1068,15 +1068,15 @@ embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
 (define-public r-amap
   (package
     (name "r-amap")
-    (version "0.8-16")
+    (version "0.8-17")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "amap" version))
               (sha256
                (base32
-                "1qnl2x98x64iaipkx5126rsddq2sx5ml43h75xyiyn30yvbmlxyk"))))
+                "1il94bkhl8192vawq4gr2gwyhqhid27jr2312rhvr72ssg8p713b"))))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "http://mulcyber.toulouse.inra.fr/projects/amap/")
     (synopsis "Another multidimensional analysis package")
