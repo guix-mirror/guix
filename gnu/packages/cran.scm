@@ -1561,21 +1561,19 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "091jznl549d44w1h8kk1vwddzhijkyh0wpgkykd494fnc8rzpw48"))))
+         "0mgsc9qkr5p6hss3wychdjvk263ay48yx543wawj72l7q7cgx1xl"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-fpc" ,r-fpc)
-       ("r-ggplot2" ,r-ggplot2)
+     `(("r-ggplot2" ,r-ggplot2)
        ("r-magrittr" ,r-magrittr)
-       ("r-viridis" ,r-viridis)
-       ("r-whisker" ,r-whisker)))
+       ("r-viridis" ,r-viridis)))
     (home-page "https://cran.r-project.org/web/packages/dendextend")
     (synopsis "Extending 'dendrogram' functionality in R")
     (description
