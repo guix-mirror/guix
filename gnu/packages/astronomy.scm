@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,11 +23,18 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages image)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages qt)
@@ -176,3 +184,53 @@ programs for the manipulation and analysis of astronomical data.")
 can be used to control telescopes over a serial port for tracking celestial
 objects.")
     (license license:gpl2+)))
+
+(define-public celestia
+  (let ((commit "9dbdf29c4ac3d20afb2d9a80d3dff241ecf81dce"))
+    (package
+      (name "celestia")
+      (version (git-version "1.6.1" "815" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/celestiaproject/celestia")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "00xibg87l1arzifakgj7s828x9pszcgx7x7ij88a561ig49ryh78"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("perl" ,perl)
+         ("libgit2" ,libgit2)
+         ("pkg-config" ,pkg-config)
+         ("libtool" ,libtool)
+         ("gettext" ,gettext-minimal)))
+      (inputs
+       `(("glu" ,glu)
+         ("glew" ,glew)
+         ("libtheora" ,libtheora)
+         ("libjpeg" ,libjpeg)
+         ("libpng" ,libpng)
+         ;; maybe required?
+         ("mesa" ,mesa)
+         ;; optional: fmtlib, Eigen3;
+         ("fmt" ,fmt)
+         ("eigen" ,eigen)
+         ;; glut: for glut interface
+         ("freeglut" ,freeglut)))
+      (propagated-inputs
+       `(("lua" ,lua)))
+      (arguments
+       `(#:configure-flags '("-DENABLE_GLUT=ON" "-DENABLE_QT=OFF")
+         #:tests? #f))                            ;no tests
+      (home-page "https://celestia.space/")
+      (synopsis "Real-time 3D visualization of space")
+      (description
+       "This simulation program lets you explore our universe in three
+dimensions.  Celestia simulates many different types of celestial objects.
+From planets and moons to star clusters and galaxies, you can visit every
+object in the expandable database and view it from any point in space and
+time.  The position and movement of solar system objects is calculated
+accurately in real time at any rate desired.")
+      (license license:gpl2+))))
