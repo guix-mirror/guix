@@ -1,0 +1,24 @@
+Fix build failure when USE_GSTREAMER_GL=off.  See
+<https://bugs.webkit.org/show_bug.cgi?id=196440>.
+
+This patch is taken from the upstream source repository:
+<https://git.webkit.org/?p=WebKit.git;a=commitdiff;h=e2dd6decbe25ea9498f1ba213808f34b232740c7>.
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+index 00a2af6489e..5cb5f7536ac 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+@@ -1000,11 +1000,13 @@ void MediaPlayerPrivateGStreamerBase::updateTextureMapperFlags()
+         break;
+     }
+ 
++#if USE(GSTREAMER_GL)
+     // When the imxvpudecoder is used, the texture sampling of the
+     // directviv-uploaded texture returns an RGB value, so there's no need to
+     // convert it.
+     if (m_videoDecoderPlatform != WebKitGstVideoDecoderPlatform::ImxVPU)
+         m_textureMapperFlags |= TEXTURE_MAPPER_COLOR_CONVERT_FLAG;
++#endif
+ }
+ #endif
+ 
