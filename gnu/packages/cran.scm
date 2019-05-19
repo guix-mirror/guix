@@ -5859,14 +5859,14 @@ intervals.")
 (define-public r-snakecase
   (package
     (name "r-snakecase")
-    (version "0.9.2")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "snakecase" version))
        (sha256
         (base32
-         "1g6xai53dl24ws0mwhqrkcv583ziaq505cv3z8v5dhjgy98kilyj"))))
+         "0325zkpyqa15lx7biq2cbimr2773332bp4jvcvnl00bjx41ia2fm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringi" ,r-stringi)
