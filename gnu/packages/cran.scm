@@ -1725,14 +1725,14 @@ quantities.")
 (define-public r-progress
   (package
     (name "r-progress")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "progress" version))
        (sha256
         (base32
-         "1rhwm0bdw30z3rvl0bn56xprjl3zrdy7150w4gl4bkvn2d6h9fav"))))
+         "0dgzb362641aqm8xd88iqa8jmpdm43xs0aba0d5kk6fvapnxi95l"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-crayon" ,r-crayon)
