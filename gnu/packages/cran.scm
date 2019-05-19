@@ -9929,14 +9929,14 @@ and manipulating sets of ontological terms.")
 (define-public r-bigrquery
   (package
     (name "r-bigrquery")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bigrquery" version))
        (sha256
         (base32
-         "0h2nzyn1w0padpl61l467j7vlkc2wair7sh6p26p94z4zfsnv0i1"))))
+         "1if39xkr231xmjq10fx2g7bgg4jgfd3wzx1p9g3pq4hbf2s6x0is"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
