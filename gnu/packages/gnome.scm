@@ -1108,10 +1108,12 @@ configuring CUPS.")
        (base32
         "017wgq9n00hx39n0hm784zn18hl721hbaijda868cm96bcqwxd4w"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(;; In Requires of libnotify.pc.
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
+     `(("gtk+" ,gtk+)
        ("libpng" ,libpng)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
