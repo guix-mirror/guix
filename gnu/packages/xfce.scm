@@ -192,8 +192,8 @@ to share commonly used Xfce widgets among the Xfce applications.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "exo/" (version-major+minor version) "/"
+                                  "exo-" version ".tar.bz2"))
               (sha256
                (base32
                 "1s23prcgall6r5dpn0qlrdq3zj13p95a5s0l2vflgrka8gb39x78"))))
