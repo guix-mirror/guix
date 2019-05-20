@@ -1037,13 +1037,14 @@ robust and compatible with many systems and operating systems.")
     (version "3.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/MyGUI/" name
-                       "/archive/MyGUI" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MyGUI/mygui")
+             (commit (string-append "MyGUI" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "13x7cydmj7gjmsg702sqjbfi53z265iv6j7binv3r6a7ibndfa0a"))))
+         "1wk7jmwm55rhlqqcyvqsxdmwvl70bysl9azh4kd9n57qlmgk3zmw"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; No test target
@@ -1051,7 +1052,11 @@ robust and compatible with many systems and operating systems.")
        (list "-DMYGUI_INSTALL_DOCS=TRUE"
              (string-append "-DOGRE_INCLUDE_DIR="
                             (assoc-ref %build-inputs "ogre")
-                            "/include/OGRE"))))
+                            "/include/OGRE")
+             ;; Demos and tools are Windows-specific:
+             ;; https://github.com/MyGUI/mygui/issues/24.
+             "-DMYGUI_BUILD_DEMOS=FALSE"
+             "-DMYGUI_BUILD_TOOLS=FALSE")))
     (native-inputs
      `(("boost" ,boost)
        ("doxygen" ,doxygen)
