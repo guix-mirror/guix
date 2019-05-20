@@ -224,8 +224,8 @@ development.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "garcon/" (version-major+minor version) "/"
+                                  "garcon-" version ".tar.bz2"))
               (sha256
                (base32
                 "0z64g6f2vwfjzqsrsn05nbcbs8l6y4cfdgxk4k2la3giixj0jzx8"))))
