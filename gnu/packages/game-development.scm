@@ -32,6 +32,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages game-development)
+  #:use-module (srfi srfi-1)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1075,6 +1076,29 @@ and 3D applications.  The main goals of mygui are: speed, flexibility and ease
 of use.")
     (home-page "http://mygui.info/")
     (license license:expat)))
+
+(define-public mygui-gl
+  ;; Closure size is reduced by some 800 MiB.
+  (package
+    (inherit mygui)
+    (name "mygui-gl")
+    (version "3.2.2")
+    (arguments
+     (substitute-keyword-arguments (package-arguments mygui)
+       ((#:configure-flags _)
+        `(cons* "-DMYGUI_RENDERSYSTEM=4" ; 3 is Ogre, 4 is OpenGL.
+                ;; We can't reuse the flags because of the mention to Ogre.
+                (list "-DMYGUI_INSTALL_DOCS=TRUE"
+                      ;; Demos and tools are Windows-specific:
+                      ;; https://github.com/MyGUI/mygui/issues/24.
+                      "-DMYGUI_BUILD_DEMOS=FALSE"
+                      "-DMYGUI_BUILD_TOOLS=FALSE")))))
+    (inputs
+     `(("mesa" ,mesa)
+       ("glu" ,glu)
+       ,@(fold alist-delete (package-inputs mygui)
+               '("ogre"))))
+    (synopsis "Fast, flexible and simple GUI (OpenGL backend)")))
 
 (define-public openmw
   (package
