@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: guix 1.0.1-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2019-05-10 20:54+0200\n"
-"PO-Revision-Date: 2019-05-11 15:32+0200\n"
+"PO-Revision-Date: 2019-05-16 15:43+0200\n"
 "Last-Translator: Miguel Ángel Arruga Vivas <rosen644835@gmail.com>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -4393,10 +4393,9 @@ msgstr "error: ~a: variable sin asignar"
 msgid "entering debugger; type ',bt' for a backtrace\n"
 msgstr "entrando en el depurador; teclee ',bt' para ver la pila de llamadas\n"
 
-# FUZZY
 #: guix/ui.scm:405
 msgid "hint: "
-msgstr "indicación: "
+msgstr "consejo: "
 
 #: guix/ui.scm:422
 msgid "Did you forget a @code{use-modules} form?"
@@ -4690,8 +4689,8 @@ msgstr[1] "~:[Se realizarían los siguientes injertos:~%~{   ~a~%~}~;~]"
 #, scheme-format
 msgid "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
-msgstr[0] "~:[Se construiría el siguiente procedimiento de extensión del perfil:~%~{   ~a~%~}~;~]"
-msgstr[1] "~:[Se construirían los siguientes procedimientos de extensión del perfil:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Se construiría la siguiente extensión del perfil:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[Se construirían los siguientes extensiones del perfil:~%~{   ~a~%~}~;~]"
 
 #: guix/ui.scm:1041
 #, scheme-format
@@ -4724,8 +4723,8 @@ msgstr[1] "~:[Se realizarán los siguientes injertos:~%~{   ~a~%~}~;~]"
 #, scheme-format
 msgid "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
-msgstr[0] "~:[Se construirá el siguiente procedimiento de extensión del perfil:~%~{   ~a~%~}~;~]"
-msgstr[1] "~:[Se construirán los siguientes procedimientos de extensión del perfil:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Se construirá la siguiente extensión del perfil:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[Se construirán las siguientes extensiones del perfil:~%~{   ~a~%~}~;~]"
 
 #: guix/ui.scm:1124
 #, scheme-format
@@ -4920,7 +4919,7 @@ msgstr[1] "injertando ~a paquetes en ~a..."
 #: guix/status.scm:484
 #, scheme-format
 msgid "running profile hook of type '~a'..."
-msgstr "ejecutando el procedimiento de extensión del perfil del tipo '~a'..."
+msgstr "ejecutando la extensión del perfil del tipo '~a'..."
 
 #: guix/status.scm:487
 #, scheme-format
@@ -5197,12 +5196,12 @@ msgstr "URLS"
 # FUZZY
 #: nix/nix-daemon/guix-daemon.cc:115
 msgid "use URLS as the default list of substitute providers"
-msgstr "usa URLS como la lista predeterminada de proveedoras de sustituciones"
+msgstr "usa URLS como lista predeterminada de proveedoras de sustituciones"
 
 # FUZZY
 #: nix/nix-daemon/guix-daemon.cc:117
 msgid "do not use the 'build hook'"
-msgstr "no usa el procedimiento de extensión de construcción"
+msgstr "no se usa el procedimiento de extensión de construcción (build-hook)"
 
 #: nix/nix-daemon/guix-daemon.cc:119
 msgid "cache build failures"

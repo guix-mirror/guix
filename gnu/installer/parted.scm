@@ -895,7 +895,10 @@ partitions (except the ESP on a GPT disk, if present) are wiped. SCHEME is the
 desired partitioning scheme. It can be 'entire-root or
 'entire-root-home. 'entire-root will create a swap partition and a root
 partition occupying all the remaining space. 'entire-root-home will create a
-swap partition, a root partition and a home partition."
+swap partition, a root partition and a home partition.
+
+Return the complete list of partitions on DISK, including the ESP when it
+exists."
   (let* ((device (disk-device disk))
          (disk-type (disk-disk-type disk))
          (has-extended? (disk-type-check-feature
@@ -1001,10 +1004,13 @@ swap partition, a root partition and a home partition."
                     (mount-point "/home")))))))
            (new-partitions* (force-user-partitions-formatting
                              new-partitions)))
-      (create-adjacent-partitions! disk
-                                   new-partitions*
-                                   #:last-partition-end
-                                   (or end-esp-partition 0)))))
+      (append (if esp-partition
+                  (list (partition->user-partition esp-partition))
+                  '())
+              (create-adjacent-partitions! disk
+                                           new-partitions*
+                                           #:last-partition-end
+                                           (or end-esp-partition 0))))))
 
 
 ;;

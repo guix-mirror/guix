@@ -117,7 +117,11 @@
                   (let ((minified (open-pipe* OPEN_READ "uglify-js" file)))
                     (call-with-output-file installed
                       (lambda (port)
-                        (dump-port minified port)))))
+                        (dump-port minified port)))
+
+                    (let ((exit (close-pipe minified)))
+                      (unless (zero? exit)
+                        (error "dear, uglify-js failed" exit)))))
                  (else
                   (install-file file (dirname installed))))))
             (find-files "."))

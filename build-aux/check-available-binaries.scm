@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,17 +24,37 @@
              (guix grafts)
              (guix packages)
              (guix derivations)
+             (gnu packages)
+             (gnu packages certs)
              (gnu packages emacs)
              (gnu packages make-bootstrap)
+             (gnu packages ssh)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 format))
+
+(define (packages-for-system system)
+  "Return the list of packages to check for SYSTEM."
+  (let ((base (list %bootstrap-tarballs emacs nss-certs openssh)))
+    ;; On Intel systems, make sure key packages proposed by the installer are
+    ;; available.
+    (if (member system '("x86_64-linux" "i686-linux"))
+        (append (map specification->package
+                     '("xfce" "gnome" "mate" "enlightenment"
+                       "openbox" "awesome" "i3-wm" "ratpoison"
+                       "network-manager-applet" "xlockmore"
+                       "linux-libre" "grub-hybrid" "xorg-server"
+                       "libreoffice"
+                       ;; FIXME: Add IceCat when Rust is available on i686.
+                       #;"icecat"))
+                base)
+        base)))
 
 (with-store store
   (parameterize ((%graft? #f))
     (let* ((native (append-map (lambda (system)
                                  (map (cut package-derivation store <> system)
-                                      (list %bootstrap-tarballs emacs)))
+                                      (packages-for-system system)))
                                %hydra-supported-systems))
            (cross  (map (cut package-cross-derivation store
                              %bootstrap-tarballs <>)
