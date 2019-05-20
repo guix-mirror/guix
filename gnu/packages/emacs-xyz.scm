@@ -8365,7 +8365,7 @@ key.  Optionally, a mouse pop-up can be added by binding
              version ".tar"))
        (sha256
         (base32
-         "03h725827m0ny5c4saq7sd9f10v13xgi9l14vjybqqhyk2aqkpd3"))))
+         "16hl2s22l3wc9drnwzw6hn7xrm49ml9lii0s6k218dgahdgsncmf"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-prop-menu" ,emacs-prop-menu)))
