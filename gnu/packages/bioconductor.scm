@@ -907,14 +907,14 @@ the Human Protein Atlas project.")
 (define-public r-regioner
   (package
     (name "r-regioner")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "regioneR" version))
        (sha256
         (base32
-         "14wiawp4zabyi2v884zzfgd90ggmnwrk2zda0r5lwvmhy79vmlw5"))))
+         "1b8ybx4wcxlqw9nvajawsf0lqaqn9v89rxcawg4g3dbzlfssfc5q"))))
     (properties `((upstream-name . "regioneR")))
     (build-system r-build-system)
     (propagated-inputs
