@@ -1126,7 +1126,7 @@ of use.")
      `(("bullet" ,bullet)
        ("ffmpeg" ,ffmpeg)
        ("libxt" ,libxt)
-       ("mygui" ,mygui)
+       ("mygui" ,mygui-gl)              ; OpenMW does not need Ogre.
        ("openal" ,openal)
        ("openscenegraph" ,openscenegraph)
        ("qtbase" ,qtbase)
