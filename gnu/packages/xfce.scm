@@ -600,7 +600,7 @@ like appearance, display, keyboard and mouse settings.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
+                                  "thunar/" (version-major+minor version) "/"
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
