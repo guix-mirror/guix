@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -1804,4 +1804,6 @@ shell scripts.  Example of how to use @code{yad} can be consulted at
     (description "@code{libdbusmenu} passes a menu structure across DBus so
 that a program can create a menu simply without worrying about how it is
 displayed on the other side of the bus.")
-    (license (list license:gpl3 license:lgpl2.1 license:lgpl3))))
+
+    ;; Dual-licensed under either LGPLv2.1 or LGPLv3.
+    (license (list license:lgpl2.1 license:lgpl3))))
