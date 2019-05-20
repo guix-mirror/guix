@@ -254,8 +254,8 @@ merging features essential for loading menus modified with menu editors.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "tumbler/" (version-major+minor version) "/"
+                                  "tumbler-" version ".tar.bz2"))
               (sha256
                (base32
                 "19mnwmcxdhqfqkd9433z8h2y8w49vlc7jw5p5h8j54wz7zhrgx0g"))))
