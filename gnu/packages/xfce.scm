@@ -188,7 +188,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
 (define-public exo
   (package
     (name "exo")
-    (version "0.12.4")
+    (version "0.12.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -196,7 +196,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bsh43m6dh83vj9qi1vs0425m2d5yfqjyihr7zjjqmyvdf0n1bxh"))))
+                "1s23prcgall6r5dpn0qlrdq3zj13p95a5s0l2vflgrka8gb39x78"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
