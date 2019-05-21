@@ -10089,8 +10089,17 @@ challenge}, it ignores signatures on those substitutes, which is
 innocuous since the command only gathers statistics and cannot install
 those substitutes.
 
-Among other things, it is possible to query specific system types and
-specific package sets.  The available options are listed below.
+The general syntax is:
+
+@example
+guix weather @var{options}@dots{} [@var{packages}@dots{}]
+@end example
+
+When @var{packages} is omitted, @command{guix weather} checks the availability
+of substitutes for @emph{all} the packages, or for those specified with
+@option{--manifest}; otherwise it only considers the specified packages.  It
+is also possible to query specific system types with @option{--system}.  The
+available options are listed below.
 
 @table @code
 @item --substitute-urls=@var{urls}

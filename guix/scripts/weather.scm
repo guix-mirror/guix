@@ -252,7 +252,7 @@ are queued~%")
 ;;;
 
 (define (show-help)
-  (display (G_ "Usage: guix weather [OPTIONS]
+  (display (G_ "Usage: guix weather [OPTIONS] [PACKAGES ...]
 Report the availability of substitutes.\n"))
   (display (G_ "
       --substitute-urls=URLS
@@ -469,6 +469,20 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
 ;;;
 
 (define (guix-weather . args)
+  (define (package-list opts)
+    ;; Return the package list specified by OPTS.
+    (let ((file (assoc-ref opts 'manifest))
+          (base (filter-map (match-lambda
+                              (('argument . spec)
+                               (specification->package spec))
+                              (_
+                               #f))
+                            opts)))
+      (if (and (not file) (null? base))
+          (all-packages)
+          (append base
+                  (if file (load-manifest file) '())))))
+
   (with-error-handling
     (parameterize ((current-terminal-columns (terminal-columns)))
       (let* ((opts     (parse-command-line args %options
@@ -481,10 +495,7 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                                           opts)
                          (() (list (%current-system)))
                          (systems systems)))
-             (packages (let ((file (assoc-ref opts 'manifest)))
-                         (if file
-                             (load-manifest file)
-                             (all-packages))))
+             (packages (package-list opts))
              (items    (with-store store
                          (parameterize ((%graft? #f))
                            (concatenate
