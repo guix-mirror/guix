@@ -827,6 +827,15 @@ allows for launching applications or shutting down the system.")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
              #t))
+         ;; add write permission to lxqt-rc.xml file which is stored as read-only in store
+         (add-after 'unpack 'patch-openbox-permission
+           (lambda _
+             (substitute* "startlxqt.in"
+               (("cp \"\\$LXQT_DEFAULT_OPENBOX_CONFIG\" \"\\$XDG_CONFIG_HOME/openbox\"")
+                 (string-append "cp \"$LXQT_DEFAULT_OPENBOX_CONFIG\" \"$XDG_CONFIG_HOME/openbox\"\n"
+                                "        # fix openbox permission issue\n"
+                                "        chmod u+w  \"$XDG_CONFIG_HOME/openbox\"/*")))
+             #t))
          (add-after 'unpack 'patch-translations-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("lxqt-config-session/CMakeLists.txt"
