@@ -13623,11 +13623,11 @@ Directory to look for faces.
 @item @code{default-path} (default "/run/current-system/profile/bin")
 Default PATH to use.
 
-@item @code{minimum-uid} (default 1000)
-Minimum UID to display in SDDM.
+@item @code{minimum-uid} (default: 1000)
+Minimum UID displayed in SDDM and allowed for log-in.
 
-@item @code{maximum-uid} (default 2000)
-Maximum UID to display in SDDM
+@item @code{maximum-uid} (default: 2000)
+Maximum UID to display in SDDM.
 
 @item @code{remember-last-user?} (default #t)
 Remember last user.
