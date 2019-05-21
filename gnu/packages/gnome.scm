@@ -1108,6 +1108,8 @@ configuring CUPS.")
        (base32
         "017wgq9n00hx39n0hm784zn18hl721hbaijda868cm96bcqwxd4w"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (propagated-inputs
      `(;; In Requires of libnotify.pc.
        ("gdk-pixbuf" ,gdk-pixbuf)
