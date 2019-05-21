@@ -112,6 +112,8 @@
 textual output of programs into multiple languages.  It provides translators
 with the means to create message catalogs, and a runtime library to load
 translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
+    (properties `((upstream-name . "gettext")
+                  (cpe-name . "gettext")))
     (license gpl3+)))                             ;some files are under GPLv2+
 
 ;; Use that name to avoid clashes with Guile's 'gettext' procedure.
