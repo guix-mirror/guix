@@ -368,7 +368,7 @@ driven and does not detract you from your daily work.")
 (define-public next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -377,7 +377,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "19s6dbn47xy30dwfdd2p8fxz6z63rp5h7sm0barb69r7mvgnqvc1"))
+         "1bif1k738knhifxhkn0d2x1m521zkx40pri44vyjqncp9r95hkbk"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
