@@ -724,6 +724,10 @@ please email '~a'~%")
                       (alist-cons 'profile-name arg result))
                      (_
                       (leave (G_ "~a: unsupported profile name~%") arg)))))
+         (option '(#\r "root") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'gc-root arg result)))
+
          (option '(#\v "verbosity") #t #f
                  (lambda (opt name arg result)
                    (let ((level (string->number* arg)))
@@ -768,6 +772,9 @@ Create a bundle of PACKAGE.\n"))
   (display (G_ "
       --profile-name=NAME
                          populate /var/guix/profiles/.../NAME"))
+  (display (G_ "
+  -r, --root=FILE        make FILE a symlink to the result, and register it
+                         as a garbage collector root"))
   (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (G_ "
@@ -882,7 +889,8 @@ Create a bundle of PACKAGE.\n"))
                                  (leave (G_ "~a: unknown pack format~%")
                                         pack-format))))
                  (localstatedir? (assoc-ref opts 'localstatedir?))
-                 (profile-name   (assoc-ref opts 'profile-name)))
+                 (profile-name   (assoc-ref opts 'profile-name))
+                 (gc-root        (assoc-ref opts 'gc-root)))
             (run-with-store store
               (mlet* %store-monad ((profile (profile-derivation
                                              manifest
@@ -919,6 +927,11 @@ Create a bundle of PACKAGE.\n"))
                                        #:dry-run? dry-run?)
                   (munless dry-run?
                     (built-derivations (list drv))
+                    (mwhen gc-root
+                      (register-root* (match (derivation->output-paths drv)
+                                        (((names . items) ...)
+                                         items))
+                                      gc-root))
                     (return (format #t "~a~%"
                                     (derivation->output-path drv))))))
               #:system (assoc-ref opts 'system))))))))

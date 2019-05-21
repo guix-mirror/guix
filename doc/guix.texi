@@ -4927,6 +4927,12 @@ is an infinity of channel URLs and commit IDs that can lead to the same pack.
 Recording such ``silent'' metadata in the output thus potentially breaks the
 source-to-binary bitwise reproducibility property.
 
+@item --root=@var{file}
+@itemx -r @var{file}
+@cindex garbage collector root, for packs
+Make @var{file} a symlink to the resulting pack, and register it as a garbage
+collector root.
+
 @item --localstatedir
 @itemx --profile-name=@var{name}
 Include the ``local state directory'', @file{/var/guix}, in the resulting
