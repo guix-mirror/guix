@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -848,7 +848,8 @@ as the 'native-search-paths' field."
                              (let ((out (assoc-ref outputs "out")))
                                (invoke "make"
                                        "doc-install-html"
-                                       "doc-install-man")))))))))
+                                       "doc-install-man")))))))
+    (properties (alist-delete 'hidden? (package-properties gcc)))))
 
 (define-public libstdc++-doc-4.9
   (make-libstdc++-doc gcc-4.9))
