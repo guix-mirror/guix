@@ -142,6 +142,37 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
     (native-inputs `(("emacs" ,emacs-minimal))) ; for Emacs tools
     (synopsis "Tools and documentation for translation")))
 
+(define-public libtextstyle
+  (package
+    (name "libtextstyle")
+    (version "0.20.1")
+    (source (origin
+              (inherit (package-source gnu-gettext))
+              (uri (string-append "mirror://gnu/gettext/gettext-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0p3zwkk27wm2m2ccfqm57nj7vqkmfpn7ja1nf65zmhz8qqs5chb6"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      (chdir "libtextstyle")
+                      #t)))))
+    ;; libtextstyle bundles libxml2, glib (a small subset thereof), and
+    ;; libcroco, but it purposefully prevents users from using an external
+    ;; copy, to reduce the startup time of programs using libtextstyle.
+    (home-page "https://www.gnu.org/software/gettext/")
+    (synopsis "Text styling library")
+    (description
+     "GNU libtextstyle is a C library that provides an easy way to add styling
+to programs that produce output to a console or terminal emulator window.  It
+allows applications to emit text annotated with styling information, such as
+color, font attributes (weight, posture), or underlining.")
+    (license gpl3+)))
+
 (define-public po4a
   (package
     (name "po4a")
