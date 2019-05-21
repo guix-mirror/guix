@@ -14036,6 +14036,51 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 @code{f} strings.")
     (license license:expat)))
 
+(define-public python-typed-ast
+  (package
+    (name "python-typed-ast")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "typed-ast" version))
+       (sha256
+        (base32
+         "1m7pr6qpana3cvqwiw7mlvrgvmw27ch5mx1592572xhlki8g85ak"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH"))))
+             (invoke "pytest")
+             #t)))))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python/typed_ast")
+    (synopsis "Fork of Python @code{ast} modules with type comment support")
+    (description "This package provides a parser similar to the standard
+@code{ast} library.  Unlike @code{ast}, the parsers in @code{typed_ast}
+include PEP 484 type comments and are independent of the version of Python
+under which they are run.  The @code{typed_ast} parsers produce the standard
+Python AST (plus type comments), and are both fast and correct, as they are
+based on the CPython 2.7 and 3.7 parsers.")
+    ;; See the file "LICENSE" for the details.
+    (license (list license:psfl
+                   license:asl2.0
+                   license:expat))))    ;ast27/Parser/spark.py
+
 (define-public python-typing
   (package
     (name "python-typing")
