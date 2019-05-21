@@ -109,7 +109,10 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
                         (memq (service-kind service)
                               useless-services))
                       (operating-system-user-services os)))
-    (file-systems (append (map mapping->fs mappings)
+    (file-systems (append (map mapping->fs
+                               (if shared-network?
+                                   (append %network-file-mappings mappings)
+                                   mappings))
                           extra-file-systems
                           user-file-systems
 
@@ -124,32 +127,33 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
   "Return a derivation of a script that runs OS as a Linux container.
 MAPPINGS is a list of <file-system> objects that specify the files/directories
 that will be shared with the host system."
-  (define network-mappings
-    ;; Files to map if network is to be shared with the host
-    (append %network-file-mappings
-            (let ((nscd-run-directory "/var/run/nscd"))
-              (if (file-exists? nscd-run-directory)
-                  (list (file-system-mapping
-                         (source nscd-run-directory)
-                         (target nscd-run-directory)))
-                  '()))))
+  (define nscd-run-directory "/var/run/nscd")
+
+  (define nscd-mapping
+    (file-system-mapping
+     (source nscd-run-directory)
+     (target nscd-run-directory)))
 
   (define (mountable-file-system? file-system)
     ;; Return #t if FILE-SYSTEM should be mounted in the container.
     (and (not (string=? "/" (file-system-mount-point file-system)))
          (file-system-needed-for-boot? file-system)))
 
-  (let* ((os           (containerized-operating-system
-                        os
-                        (cons %store-mapping
-                              (if shared-network?
-                                  (append network-mappings mappings)
-                                  mappings))
-                        #:shared-network? shared-network?
-                        #:extra-file-systems %container-file-systems))
-         (file-systems (filter mountable-file-system?
-                               (operating-system-file-systems os)))
-         (specs        (map file-system->spec file-systems)))
+  (define (os-file-system-specs os)
+    (map file-system->spec
+         (filter mountable-file-system?
+                 (operating-system-file-systems os))))
+
+  (let* ((os (containerized-operating-system
+              os (cons %store-mapping mappings)
+              #:shared-network? shared-network?
+              #:extra-file-systems %container-file-systems))
+         (nscd-os (containerized-operating-system
+                   os (cons* nscd-mapping %store-mapping mappings)
+                   #:shared-network? shared-network?
+                   #:extra-file-systems %container-file-systems))
+         (specs (os-file-system-specs os))
+         (nscd-specs (os-file-system-specs nscd-os)))
 
     (define script
       (with-imported-modules (source-module-closure
@@ -160,7 +164,12 @@ that will be shared with the host system."
                          (gnu system file-systems) ;spec->file-system
                          (guix build utils))
 
-            (call-with-container (map spec->file-system '#$specs)
+            (call-with-container
+                (map spec->file-system
+                     (if (and #$shared-network?
+                              (file-exists? #$nscd-run-directory))
+                         '#$nscd-specs
+                         '#$specs))
               (lambda ()
                 (setenv "HOME" "/root")
                 (setenv "TMPDIR" "/tmp")
