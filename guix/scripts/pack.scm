@@ -891,6 +891,9 @@ Create a bundle of PACKAGE.\n"))
                  (localstatedir? (assoc-ref opts 'localstatedir?))
                  (profile-name   (assoc-ref opts 'profile-name))
                  (gc-root        (assoc-ref opts 'gc-root)))
+            (when (null? (manifest-entries manifest))
+              (warning (G_ "no packages specified; building an empty pack~%")))
+
             (run-with-store store
               (mlet* %store-monad ((profile (profile-derivation
                                              manifest
