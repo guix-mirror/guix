@@ -851,11 +851,11 @@ as the 'native-search-paths' field."
                                        "doc-install-man")))))))
     (properties (alist-delete 'hidden? (package-properties gcc)))))
 
-(define-public libstdc++-doc-4.9
-  (make-libstdc++-doc gcc-4.9))
-
 (define-public libstdc++-doc-5
   (make-libstdc++-doc gcc-5))
+
+(define-public libstdc++-doc-9
+  (make-libstdc++-doc gcc-9))
 
 (define-public isl
   (package
