@@ -12143,30 +12143,29 @@ autosuggestions with:
     (license license:gpl3+)))
 
 (define-public emacs-desktop-environment
-  (let ((commit "a9eba14f2b5b8070f78dca839ca8259736e346a6"))
-    (package
-      (name "emacs-desktop-environment")
-      (version (git-version "0.2.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.petton.fr/DamienCassou/desktop-environment")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0x73x5hy7w55jrzy3xvqhk90rrsznmxjqvsvwhh21qznv5w269xz"))))
-      (build-system emacs-build-system)
-      (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
-      (synopsis "Control your GNU/Linux desktop environment from Emacs")
-      (description
-       "This package helps you control your GNU/Linux desktop from Emacs.
+  (package
+    (name "emacs-desktop-environment")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.petton.fr/DamienCassou/desktop-environment")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0n5sa94dwhnkfp3x42pggsbr5db38m85hl8ddb3qs7yfdi9bjm52"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
+    (synopsis "Control your GNU/Linux desktop environment from Emacs")
+    (description
+     "This package helps you control your GNU/Linux desktop from Emacs.
 With @code{desktop-environment}, you can control the brightness and volume as
 well as take screenshots and lock your screen.  The package depends on the
 availability of shell commands to do the hard work for us.  These commands can
 be changed by customizing the appropriate variables.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-org-caldav
   (package
