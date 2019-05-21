@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
+;;; Copyright © 2019 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -285,6 +286,7 @@ or false to signal an error."
         ((string=? system "i686-gnu") "/lib/ld.so.1")
         ((string=? system "aarch64-linux") "/lib/ld-linux-aarch64.so.1")
         ((string=? system "powerpc-linux") "/lib/ld.so.1")
+        ((string=? system "powerpc64-linux") "/lib/ld64.so.1")
         ((string=? system "powerpc64le-linux") "/lib/ld64.so.2")
         ((string=? system "alpha-linux") "/lib/ld-linux.so.2")
         ((string=? system "s390x-linux") "/lib/ld64.so.1")
