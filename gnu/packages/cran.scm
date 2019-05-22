@@ -11089,7 +11089,7 @@ using @code{S3}.")
     (build-system r-build-system)
     (propagated-inputs `(("r-mass" ,r-mass)))
     (home-page "https://cran.r-project.org/web/packages/capushe/index.html")
-    (synopsis "Calibrating penalities using slope heuristics")
+    (synopsis "Calibrating penalties using slope heuristics")
     (description
      "This package provides tools for the calibration of penalized criteria
 for model selection.  The calibration methods available are based on the slope
