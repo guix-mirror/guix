@@ -5605,7 +5605,7 @@ technologies.")
        ("hamcrest" ,java-hamcrest-all)))
     (home-page "https://www.eclipse.org/jetty/")
     (synopsis "Helper classes for jetty tests")
-    (description "This packages contains helper classes for testing the Jetty
+    (description "This package contains helper classes for testing the Jetty
 Web Server.")
     ;; This program is licensed under both epl and asl.
     (license (list license:epl1.0 license:asl2.0))))
