@@ -863,7 +863,7 @@ symmetric-key block cipher.")))
      `(#:import-path "golang.org/x/crypto/twofish"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Twofish in Go")
-    (description "This packages provides a Go implementation of the Twofish
+    (description "This package provides a Go implementation of the Twofish
 symmetric-key block cipher.")))
 
 (define-public go-golang-org-x-crypto-xtea
