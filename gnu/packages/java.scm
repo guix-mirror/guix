@@ -7731,7 +7731,7 @@ it manages project dependencies, gives diffs jars, and much more.")
     (home-page "https://ops4j1.jira.com/wiki/spaces/ops4j/pages/12060312/Tinybundles")
     (synopsis "Java APIs to create OSGi related artifacts")
     (description "Tinybundles is all about creating OSGi related artifacts like
-Bundles, Fragments and Deployment Packages with Java Api.  It is very convinient
+Bundles, Fragments and Deployment Packages with Java Api.  It is very convenient
 to create such artifacts on-the-fly inside Tests (like in Pax Exam).  On the
 other hand, this library can be a foundation of real end user tools that need
 to create those artifacts.")
