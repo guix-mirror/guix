@@ -12480,7 +12480,7 @@ the GIF result.")
     (home-page "https://github.com/atykhonov/google-translate")
     (synopsis "Emacs interface to Google Translate")
     (description
-     "This packages provides an Emacs interface to the Google Translate
+     "This package provides an Emacs interface to the Google Translate
 on-line service.")
     (license license:gpl3+)))
 
