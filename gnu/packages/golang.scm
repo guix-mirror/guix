@@ -1087,7 +1087,7 @@ request-scoped values across API boundaries and between processes.")
        `(#:import-path "golang.org/x/net/internal/iana"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Go support for assigned numbers (IANA)")
-      (description "This packages provides @code{iana}, which provides protocol
+      (description "This package provides @code{iana}, which provides protocol
 number resources managed by the Internet Assigned Numbers Authority (IANA).")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
