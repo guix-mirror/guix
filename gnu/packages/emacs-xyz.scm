@@ -5736,7 +5736,7 @@ contains the following improvements over it:
 @item Use ASDF to loads contribs on demand.
 @end enumerate
 
-SLY tracks SLIME's bugfixes and all its familar features (debugger, inspector,
+SLY tracks SLIME's bugfixes and all its familiar features (debugger, inspector,
 xref, etc...) are still available, but with better integration.")
       (license license:gpl3+))))
 
