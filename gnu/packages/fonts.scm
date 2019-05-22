@@ -1020,13 +1020,13 @@ vector graphics.")
     (home-page "https://github.com/sunaku/tamzen-font")
     (synopsis "Monospaced bitmap font for console and X11")
     (description
-     "Tamzen is a fork of the @code{Tamsyn} font.  It is programatically forked
+     "Tamzen is a fork of the @code{Tamsyn} font.  It is programmatically forked
 from @code{Tamsyn} version 1.11, backporting glyphs from older versions while
 deleting deliberately empty glyphs (which are marked as unimplemented) to
 allow secondary/fallback fonts to provide real glyphs at those codepoints.
 
 The @code{TamzenForPowerline} fonts provide additional @code{Powerline} symbols,
-which are programatically injected with @code{bitmap-font-patcher} and
+which are programmatically injected with @code{bitmap-font-patcher} and
 later hand-tweaked with the gbdfed(1) editor:
 
 @enumerate
