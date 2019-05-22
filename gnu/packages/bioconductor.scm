@@ -2819,7 +2819,7 @@ sets of GO terms, gene products and gene clusters.")
     (synopsis "Analysis of translational activity")
     (description
      "Genome wide studies of translational control is emerging as a tool to
-study verious biological conditions.  The output from such analysis is both
+study various biological conditions.  The output from such analysis is both
 the mRNA level (e.g. cytosolic mRNA level) and the levl of mRNA actively
 involved in translation (the actively translating mRNA level) for each mRNA.
 The standard analysis of such data strives towards identifying differential
