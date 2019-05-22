@@ -1139,7 +1139,7 @@ IP-level socket options for the Internet Protocol version 6.")
        `(#:import-path "golang.org/x/net/proxy"
          #:unpack-path "golang.org/x/net/"))
       (synopsis "Go support for network proxies")
-      (description "This packages provides @code{proxy}, which provides support
+      (description "This package provides @code{proxy}, which provides support
 for a variety of protocols to proxy network data.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
