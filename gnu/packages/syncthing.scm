@@ -756,7 +756,7 @@ hashes.")
     (arguments
      `(#:import-path "github.com/pkg/errors"))
     (synopsis "Go error handling primitives")
-    (description "This packages provides @code{error}, which offers simple
+    (description "This package provides @code{error}, which offers simple
 error handling primitives in Go.")
     (home-page "https://github.com/pkg/errors")
     (license bsd-2)))
