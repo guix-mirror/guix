@@ -1116,7 +1116,7 @@ Swath).")
              (lambda _
                ;; OpenMPI's mpirun will exit with non-zero status if it
                ;; detects an "abnormal termination", i.e. any process not
-               ;; calling MPI_Finalize().  Since the test is explicitely
+               ;; calling MPI_Finalize().  Since the test is explicitly
                ;; avoiding MPI_Finalize so as not to have at_exit and thus
                ;; H5C_flush_cache from being called, mpirun will always
                ;; complain, so turn this test off.
