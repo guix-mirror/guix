@@ -11948,7 +11948,7 @@ It provides auto-completion for HTTP methods and headers in
        `(("emacs-dash" ,emacs-dash)))
       (home-page "https://github.com/nicferrier/emacs-noflet")
       (synopsis "Locally override functions")
-      (description "@code{emacs-noflet} let's you locally override functions,
+      (description "@code{emacs-noflet} lets you locally override functions,
 in the manner of @command{flet}, but with access to the original function
 through the symbol: @command{this-fn}.")
       (license license:gpl3+))))
