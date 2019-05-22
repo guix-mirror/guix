@@ -830,7 +830,7 @@ derivation function.")))
      `(#:import-path "golang.org/x/crypto/tea"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Tiny Encryption Algorithm (TEA) in Go")
-    (description "This packages a Go implementation of the Tiny Encryption
+    (description "This package provides a Go implementation of the Tiny Encryption
 Algorithm (TEA) block cipher.")))
 
 (define-public go-golang-org-x-crypto-salsa20
