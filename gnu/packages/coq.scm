@@ -25,6 +25,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages perl)
@@ -535,3 +536,59 @@ compiles everything down to eliminators for inductive types, equality
 and accessibility, providing a definitional extension to the Coq
 kernel.")
     (license license:lgpl2.1)))
+
+(define-public coq-stdpp
+  (package
+    (name "coq-stdpp")
+    (version "1.2.0")
+    (synopsis "Alternative Coq standard library std++")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.mpi-sws.org/iris/stdpp.git")
+                    (commit (string-append "coq-stdpp-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "11m7kqxsbxygk41v2wsi3npdzwin9fcnzc1gn0gq0rd57wnqk83i"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("coq" ,coq)))
+    (arguments
+     `(#:tests? #f ;; the tests are being run automaticlly as part of `make all`
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
+             (invoke "make"
+                     (string-append "COQLIB=" (assoc-ref outputs "out")
+                                    "/lib/coq/")
+                     "install"))))))
+    (description "This project contains an extended \"Standard Library\" for
+Coq called coq-std++.  The key features are:
+@itemize
+@item Great number of definitions and lemmas for common data structures such
+as lists, finite maps, finite sets, and finite multisets.
+
+@item Type classes for common notations (like ∅, ∪, and Haskell-style monad
+notations) so that these can be overloaded for different data structures.
+
+@item It uses type classes to keep track of common properties of types, like
+it having decidable equality or being countable or finite.
+
+@item Most data structures are represented in canonical ways so that Leibniz
+equality can be used as much as possible (for example, for maps we have m1 =
+m2 iff ∀ i, m1 !! i = m2 !! i).  On top of that, the library provides setoid
+instances for most types and operations.
+
+@item Various tactics for common tasks, like an ssreflect inspired done tactic
+for finishing trivial goals, a simple breadth-first solver naive_solver, an
+equality simplifier simplify_eq, a solver solve_proper for proving
+compatibility of functions with respect to relations, and a solver set_solver
+for goals involving set operations.
+
+@item The library is dependency- and axiom-free.
+@end itemize")
+    (home-page "https://gitlab.mpi-sws.org/iris/stdpp")
+    (license license:bsd-3)))
