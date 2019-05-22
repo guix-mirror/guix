@@ -7745,7 +7745,7 @@ automatically detect a wide range of file encodings.")
     (synopsis "Command-line interface description language for Python")
     (description "This library allows the user to define a command-line
 interface from a program's help message rather than specifying it
-programatically with command-line parsers like @code{getopt} and
+programmatically with command-line parsers like @code{getopt} and
 @code{argparse}.")
     (license license:expat)))
 
