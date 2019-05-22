@@ -550,7 +550,7 @@ reporting and test statistics output.")
     (home-page "https://batterseapower.github.io/test-framework/")
     (synopsis "QuickCheck2 support for test-framework")
     (description
-     "This packages provides QuickCheck2 support for the test-framework
+     "This package provides QuickCheck2 support for the test-framework
 package.")
     (license license:bsd-3)))
 
