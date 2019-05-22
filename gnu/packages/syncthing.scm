@@ -335,7 +335,7 @@ structs in the Go programming language.")
       (arguments
         `(#:import-path "github.com/gobwas/glob"))
       (synopsis "Go globbing library")
-      (description "This packages provides a Go implementation of globs.")
+      (description "This package provides a Go implementation of globs.")
       (home-page "https://github.com/gobwas/glob")
       (license expat))))
 
