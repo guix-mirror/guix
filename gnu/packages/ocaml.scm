@@ -4613,7 +4613,7 @@ to denote the expected output.")
     (properties `((upstream-name . "ppx_js_style")))
     (home-page "https://github.com/janestreet/ppx_js_style")
     (synopsis "Code style checker for Jane Street Packages")
-    (description "This packages is a no-op ppx rewriter.  It is used as a
+    (description "This package is a no-op ppx rewriter.  It is used as a
 @code{lint} tool to enforce some coding conventions across all Jane Street
 packages.")
     (license license:asl2.0)))
