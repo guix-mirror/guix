@@ -1453,7 +1453,7 @@ parsing of genetic sequencing data from ribosome profiling experiments.")
     (home-page "https://bioconductor.org/packages/InteractionSet")
     (synopsis "Base classes for storing genomic interaction data")
     (description
-     "This packages provides the @code{GInteractions},
+     "This package provides the @code{GInteractions},
 @code{InteractionSet} and @code{ContactMatrix} objects and associated methods
 for storing and manipulating genomic interaction data from Hi-C and ChIA-PET
 experiments.")
