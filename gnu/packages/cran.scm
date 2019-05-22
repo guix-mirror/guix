@@ -339,7 +339,7 @@ such as copy/paste from an R session.")
     (synopsis "Call R from R")
     (description
      "It is sometimes useful to perform a computation in a separate R process,
-without affecting the current R process at all.  This packages does exactly
+without affecting the current R process at all.  This package does exactly
 that.")
     (license license:expat)))
 
