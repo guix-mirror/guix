@@ -1512,7 +1512,7 @@ with the HTTP protocol definition.")
       (home-page "https://github.com/google/cadvisor")
       (synopsis "Analyze resource usage of running containers")
       (description "The package provides @code{cadvisor}, which provides
-information about the resource usage and preformance characteristics of running
+information about the resource usage and performance characteristics of running
 containers.")
       (license license:asl2.0))))
 
