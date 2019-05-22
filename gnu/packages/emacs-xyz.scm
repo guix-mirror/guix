@@ -2646,7 +2646,7 @@ completing keywords and smart indentation.")
     (description
      "The Emacs RSpec mode provides keybindings for Ruby source files, e.g. to
 verify the spec associated with the current buffer, or entire project, as well
-as moving between the spec files, and coresponding code files.
+as moving between the spec files, and corresponding code files.
 
 Also included are keybindings for spec files and Dired buffers, as well as
 snippets for yasnippet.")
