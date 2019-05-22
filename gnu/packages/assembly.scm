@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
+;;; Copyright © 2019 Andy Tai <atai@atai.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,11 +25,20 @@
 (define-module (gnu packages assembly)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
@@ -202,3 +212,36 @@ assembler, a C compiler and a linker.  The assembler uses Intel syntax
     (home-page "https://github.com/jbruchon/dev86")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
+
+(define-public libjit
+  (let ((commit "554c9f5c750daa6e13a6a5cd416873c81c7b8226"))
+    (package
+      (name "libjit")
+      (version "0.1.4")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/r/libjit.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0p6wklslkkp3s4aisj3w5a53bagqn5fy4m6088ppd4fcfxgqkrcd"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("bison" ,bison)
+         ("flex" ,flex)
+         ("help2man" ,help2man)
+         ("gettext" ,gettext-minimal)
+         ("libtool" ,libtool)
+         ("makeinfo" ,texinfo)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://www.gnu.org/software/libjit/")
+      (synopsis "Just-In-Time compilation library")
+      (description
+       "GNU libjit is a library that provides generic Just-In-Time compiler
+functionality independent of any particular bytecode, language, or
+runtime")
+      (license license:lgpl2.1+))))
