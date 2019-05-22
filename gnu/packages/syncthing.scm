@@ -462,7 +462,7 @@ database/sql package.")
      `(#:import-path "github.com/oschwald/geoip2-golang"
        #:tests? #f)) ; Requires some unpackaged software and test data
     (synopsis "MaxMind GeoIP2 reader")
-    (description "This packages provides a library for reading MaxMind
+    (description "This package provides a library for reading MaxMind
 GeoLite2 and GeoIP2 databases in Go.")
     (home-page "https://github.com/oschwald/geoip2-golang")
     (license isc)))
