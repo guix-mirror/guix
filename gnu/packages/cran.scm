@@ -3328,7 +3328,7 @@ normalizations, minimum variance matching, and so on.")
     (propagated-inputs `(("r-r-utils" ,r-r-utils)))
     (home-page "http://www.rforge.net/SDMTools/")
     (synopsis "Species distribution modelling tools")
-    (description "This packages provides a set of tools for post processing
+    (description "This package provides a set of tools for post processing
 the outcomes of species distribution modeling exercises.  It includes novel
 methods for comparing models and tracking changes in distributions through
 time.  It further includes methods for visualizing outcomes, selecting
