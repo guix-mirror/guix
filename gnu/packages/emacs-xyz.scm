@@ -8941,7 +8941,7 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
     (home-page "https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes")
     (synopsis "Groovy related modes for Emacs")
     (description
-     "This package provides @code{groovy-mode} for syntax highlighing in
+     "This package provides @code{groovy-mode} for syntax highlighting in
 Groovy source files, REPL integration with run-groovy and Grails project
 navigation with the grails mode.")
     (license license:gpl3+)))
