@@ -7714,9 +7714,9 @@ pressed simultaneously or a single key quickly pressed twice.")
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
     (home-page "https://github.com/timcharper/evil-surround")
-    (synopsis "Easily modify surrounding parantheses and quotes")
+    (synopsis "Easily modify surrounding parentheses and quotes")
     (description "@code{emacs-evil-surround} allows easy deletion, change and
-addition of surrounding pairs, such as parantheses and quotes, in evil mode.")
+addition of surrounding pairs, such as parentheses and quotes, in evil mode.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-commentary
