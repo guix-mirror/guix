@@ -1113,7 +1113,7 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
        `(#:import-path "golang.org/x/net/ipv6"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Go IPv6 support")
-      (description "This packages provides @code{ipv6}, which implements
+      (description "This package provides @code{ipv6}, which implements
 IP-level socket options for the Internet Protocol version 6.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
