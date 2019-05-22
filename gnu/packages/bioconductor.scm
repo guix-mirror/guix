@@ -1221,7 +1221,7 @@ enrichedGO (addGeneIDs).")
     (home-page "http://bioconductor.org/packages/marray")
     (synopsis "Exploratory analysis for two-color spotted microarray data")
     (description "This package contains class definitions for two-color spotted
-microarray data.  It also includes fuctions for data input, diagnostic plots,
+microarray data.  It also includes functions for data input, diagnostic plots,
 normalization and quality checking.")
     (license license:lgpl2.0+)))
 
