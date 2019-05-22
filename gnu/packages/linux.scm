@@ -481,14 +481,6 @@ It has been modified to remove all non-free binary blobs.")
                        ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
                      %default-extra-linux-options)))
 
-(define-public linux-libre-arm-generic
-  (make-linux-libre %linux-libre-version
-                    %linux-libre-hash
-                    '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
-                    #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"))
-
 (define-public linux-libre-arm-veyron
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
@@ -496,6 +488,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config-veyron
                     #:extra-version "arm-veyron"))
+
+(define-public linux-libre-arm-generic
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-5.1-patches
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre %linux-libre-4.19-version
