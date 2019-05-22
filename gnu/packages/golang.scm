@@ -984,7 +984,7 @@ socket options for the Internet Protocol version 4.")
        `(#:import-path "golang.org/x/net/bpf"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Berkeley Packet Filters (BPF) in Go")
-      (description "This packages provides a Go implementation of the Berkeley
+      (description "This package provides a Go implementation of the Berkeley
 Packet Filter (BPF) virtual machine.")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
