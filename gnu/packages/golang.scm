@@ -742,7 +742,7 @@ per-goroutine.")
     (synopsis "Go implementation of docopt")
     (description
      "This library allows the user to define a command-line interface from a
-program's help message rather than specifying it programatically with
+program's help message rather than specifying it programmatically with
 command-line parsers.")
     (home-page "https://github.com/tj/docopt")
     (license license:expat)))
