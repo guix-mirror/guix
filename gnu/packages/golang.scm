@@ -1010,7 +1010,7 @@ Packet Filter (BPF) virtual machine.")
        `(#:import-path "golang.org/x/net/context"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Golang Context type")
-      (description "This packages provides @code{context}, which defines the
+      (description "This package provides @code{context}, which defines the
 Context type, which carries deadlines, cancelation signals, and other
 request-scoped values across API boundaries and between processes.")
       (home-page "https://go.googlesource.com/net/")
