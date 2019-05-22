@@ -2759,7 +2759,7 @@ is designed to have a low barrier to entry.")
     (home-page "https://github.com/benjolitz/trollius-redis")
     (synopsis "Port of asyncio-redis to trollius")
     (description "@code{trollius-redis} is a Redis client for Python
-  trollius.  It is an asynchronious IO (PEP 3156) implementation of the
+  trollius.  It is an asynchronous IO (PEP 3156) implementation of the
   Redis protocol.")
     (license license:bsd-2)))
 
