@@ -9743,7 +9743,7 @@ data attributes including sample sizes, experimental designs, assay platforms,
 and other types of heterogeneity.  The gage package provides functions for
 basic GAGE analysis, result processing and presentation.  In addition, it
 provides demo microarray data and commonly used gene set data based on KEGG
-pathways and GO terms.  These funtions and data are also useful for gene set
+pathways and GO terms.  These functions and data are also useful for gene set
 analysis using other methods.")
     (license license:gpl2+)))
 
