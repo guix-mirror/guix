@@ -14442,7 +14442,7 @@ the standard @code{Dockerfile} file format.")
        ("emacs-spinner" ,emacs-spinner)))
     (home-page "https://github.com/emacs-lsp/lsp-mode")
     (synopsis "Emacs client and library for the Language Server Protocol")
-    (description "@code{LSP-mode} is a client and library implmentation for
+    (description "@code{LSP-mode} is a client and library implementation for
 the Language Server Protocol.  This mode aims to provide an IDE-like
 experience by providing optional integration with other popular Emacs packages
 like @code{company}, @code{flycheck}, and @code{projectile}.")
