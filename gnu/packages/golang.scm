@@ -841,7 +841,7 @@ Algorithm (TEA) block cipher.")))
      `(#:import-path "golang.org/x/crypto/salsa20"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Salsa20 in Go")
-    (description "This packages provides a Go implementation of the Salsa20
+    (description "This package provides a Go implementation of the Salsa20
 stream cipher.")))
 
 (define-public go-golang-org-x-crypto-cast5
