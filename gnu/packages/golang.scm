@@ -1775,11 +1775,11 @@ SysVinit, and more.")
                #t)))))
       (home-page
        "https://github.com/docker/distribution")
-      (synopsis "This package is Docker toolset to pack, ship, store, and
+      (synopsis "This package is a Docker toolset to pack, ship, store, and
 deliver content")
-      (description "Docker Distribution is Docker toolset to pack, ship,
-store, and deliver content.  It's containe Docker Registry 2.0 and libraries
-to interacting with distribution components.")
+      (description "Docker Distribution is a Docker toolset to pack, ship,
+store, and deliver content.  It contains Docker Registry 2.0 and libraries
+to interact with distribution components.")
       (license license:asl2.0))))
 
 (define-public go-github-com-docker-go-connections
