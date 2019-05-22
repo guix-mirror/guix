@@ -4833,7 +4833,7 @@ can be efficiently implemented directly in the R language.")
     (home-page "http://robustbase.r-forge.r-project.org/")
     (synopsis "Basic robust statistics")
     (description
-     "This packages allows to analyze data with robust methods such as
+     "This package allows to analyze data with robust methods such as
 regression methodology including model selections and multivariate statistics.")
     (license license:gpl2+)))
 
