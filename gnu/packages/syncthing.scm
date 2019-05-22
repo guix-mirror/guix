@@ -781,7 +781,7 @@ error handling primitives in Go.")
       (arguments
        '(#:import-path "github.com/petermattis/goid"))
       (synopsis "Identify the running goroutine")
-      (description "This package offers a method of programatically retrieving
+      (description "This package offers a method of programmatically retrieving
 the current goroutine's ID.")
       (home-page "https://github.com/petermattis/goid")
       (license asl2.0))))
