@@ -1804,7 +1804,7 @@ to interacting with distribution components.")
       (home-page "https://github.com/docker/go-connections")
       (synopsis "Networking library for Go")
       (description
-       "This packages provides a library to work with network connections in
+       "This package provides a library to work with network connections in
 the Go language.  In particular it provides tools to deal with network address
 translation (NAT), proxies, sockets, and transport layer security (TLS).")
       (license license:asl2.0))))
