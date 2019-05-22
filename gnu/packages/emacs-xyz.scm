@@ -5760,7 +5760,7 @@ xref, etc...) are still available, but with better integration.")
       (synopsis "Major mode for lua")
       (description
        "This Emacs package provides a mode for @uref{https://www.lua.org/,
-Lua programing language}.")
+Lua programming language}.")
       (license license:gpl2+))))
 
 (define-public emacs-ebuild-mode
