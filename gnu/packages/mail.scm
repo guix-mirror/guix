@@ -1079,7 +1079,7 @@ MailCore 2.")
     (arguments
      `(#:tests? #f))
     (synopsis "Portrait image compressor")
-    (description "This packages takes your 48x48x1 portrait image and
+    (description "This package takes your 48x48x1 portrait image and
 compresses it.")
     (home-page "http://www.cs.indiana.edu/pub/faces/")
     (license (x11-style "file://README"))))
