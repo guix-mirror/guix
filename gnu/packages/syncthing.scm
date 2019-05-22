@@ -435,7 +435,7 @@ address of the default LAN gateway.")
        ;; Postgres instance.
        #:tests? #f))
     (synopsis "Golang Postgres driver for Go's database/sql")
-    (description "This packages provides a pure Go Postgres driver for Go's
+    (description "This package provides a pure Go Postgres driver for Go's
 database/sql package.")
     (home-page "https://github.com/lib/pq")
     (license expat)))
