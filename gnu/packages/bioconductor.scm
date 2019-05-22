@@ -4178,7 +4178,7 @@ visualization of exonic read coverage.")
     (home-page "https://bioconductor.org/packages/widgetTools/")
     (synopsis "Tools for creating interactive tcltk widgets")
     (description
-     "This packages contains tools to support the construction of tcltk
+     "This package contains tools to support the construction of tcltk
 widgets in R.")
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
