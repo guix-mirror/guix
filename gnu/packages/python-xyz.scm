@@ -3063,7 +3063,7 @@ Language (TOML) configuration files.")
      "https://github.com/palantir/python-jsonrpc-server")
     (synopsis "JSON RPC 2.0 server library")
     (description
-     "This packages provides a JSON RPC 2.0 server library for Python.")
+     "This package provides a JSON RPC 2.0 server library for Python.")
     (license license:expat)))
 
 (define-public python-pydocstyle
