@@ -852,7 +852,7 @@ stream cipher.")))
      `(#:import-path "golang.org/x/crypto/cast5"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Cast5 in Go")
-    (description "This packages provides a Go implementation of the Cast5
+    (description "This package provides a Go implementation of the Cast5
 symmetric-key block cipher.")))
 
 (define-public go-golang-org-x-crypto-twofish
