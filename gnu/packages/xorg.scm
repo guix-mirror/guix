@@ -6331,7 +6331,7 @@ window name or id, forcing toggle, increase or decrease opacity.")
        ("automake" ,automake)))
     (synopsis "Resize fonts in the BDF format")
     (description
-     "This packages provides @command{bdfresize}, a command to magnify or
+     "This package provides @command{bdfresize}, a command to magnify or
 reduce fonts in the Glyph Bitmap Distribution Format (BDF).  It produces BDF
 output.")
     (home-page "https://tracker.debian.org/pkg/bdfresize")
