@@ -2827,7 +2827,7 @@ translational between two or more sample classes - i.e.  differences in
 actively translated mRNA levels that are independent of underlying differences
 in cytosolic mRNA levels.  This package allows for such analysis using partial
 variances and the random variance model.  As 10s of thousands of mRNAs are
-analyzed in parallell the library performs a number of tests to assure that
+analyzed in parallel the library performs a number of tests to assure that
 the data set is suitable for such analysis.")
     (license license:gpl3)))
 
