@@ -9464,7 +9464,7 @@ diagnostics for controlling type-1 errors are also provided.")
     (home-page "https://cran.r-project.org/web/packages/flare")
     (synopsis "Family of Lasso regression implementations")
     (description
-     "This packages provides implementations of a family of Lasso variants
+     "This package provides implementations of a family of Lasso variants
 including Dantzig Selector, LAD Lasso, SQRT Lasso, Lq Lasso for estimating
 high dimensional sparse linear models.")
     (license license:gpl2)))
