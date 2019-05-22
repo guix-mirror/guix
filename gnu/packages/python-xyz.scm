@@ -6831,7 +6831,7 @@ and MAC network addresses.")
     (native-inputs `(("python-nose"       ,python-nose)))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
-    (description "This packages provides a library to extract data from
+    (description "This package provides a library to extract data from
 spreadsheets using Microsoft Excel proprietary file formats @samp{.xls} and
 @samp{.xlsx} (versions 2.0 onwards).  It has support for Excel dates and is
 Unicode-aware.  It is not intended as an end-user tool.")
