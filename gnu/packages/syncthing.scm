@@ -192,7 +192,7 @@ Protocol.")
       (arguments
        `(#:import-path "github.com/AudriusButkevicius/go-nat-pmp"))
       (synopsis "Port mapping and discovery of external IP address")
-      (description "This packages provides a Go client for the NAT-PMP internet
+      (description "This package provides a Go client for the NAT-PMP internet
 protocol for port mapping and discovering the external IP address of a
 firewall.")
       (home-page "https://github.com/AudriusButkevicius/go-nat-pmp")
