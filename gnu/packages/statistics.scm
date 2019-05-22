@@ -5411,7 +5411,7 @@ first and second order derivatives.")
     (home-page "http://azzalini.stat.unipd.it/SN")
     (synopsis "The skew-normal and skew-t distributions")
     (description
-     "This packages provides functionalities to build and manipulate
+     "This package provides functionalities to build and manipulate
 probability distributions of the skew-normal family and some related
 ones, notably the skew-t family, and provides related statistical
 methods for data fitting and diagnostics, in the univariate and the
