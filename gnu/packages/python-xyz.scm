@@ -5874,7 +5874,7 @@ more advanced mathematics.")
     (home-page "https://github.com/mdickinson/bigfloat")
     (synopsis "Arbitrary precision floating-point arithmetic for Python")
     (description
-     "This packages provides a Python interface to the MPFR library for
+     "This package provides a Python interface to the MPFR library for
 multiprecision arithmetic.")
     (license license:lgpl3+)))
 
