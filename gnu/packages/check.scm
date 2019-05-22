@@ -447,7 +447,7 @@ test) much simpler.")
      `(("go-github.com-smartystreets-gunit" ,go-github.com-smartystreets-gunit)))
     (synopsis "Assertions for testing with Go")
     (description
-     "The @code{assertions} package provides convinient assertion functions
+     "The @code{assertions} package provides convenient assertion functions
 for writing tests in Go.")
     (home-page "https://github.com/smartystreets/assertions")
     (license license:expat)))
