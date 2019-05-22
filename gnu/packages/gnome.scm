@@ -2594,7 +2594,7 @@ indicators etc).")
     (home-page "https://www.gnome.org")
     (synopsis "Python bindings to librsvg")
     (description
-     "This packages provides Python bindings to librsvg, the SVG rendering
+     "This package provides Python bindings to librsvg, the SVG rendering
 library.")
 
     ;; This is the license of the rsvg bindings.  The license of each module
