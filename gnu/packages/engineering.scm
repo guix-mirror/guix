@@ -779,7 +779,7 @@ language.")
                "-DKICAD_SCRIPTING=ON"
                "-DKICAD_SCRIPTING_MODULES=ON"
                "-DKICAD_SCRIPTING_WXPYTHON=ON"
-               ;; Has to be set explicitely, as we don't have the wxPython
+               ;; Has to be set explicitly, as we don't have the wxPython
                ;; headers in the wxwidgets store item, but in wxPython.
                (string-append "-DCMAKE_CXX_FLAGS=-I"
                               (assoc-ref %build-inputs "wxpython")
