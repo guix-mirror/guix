@@ -1011,7 +1011,7 @@ Packet Filter (BPF) virtual machine.")
          #:unpack-path "golang.org/x/net"))
       (synopsis "Golang Context type")
       (description "This package provides @code{context}, which defines the
-Context type, which carries deadlines, cancelation signals, and other
+Context type, which carries deadlines, cancellation signals, and other
 request-scoped values across API boundaries and between processes.")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
