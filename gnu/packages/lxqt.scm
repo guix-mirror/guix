@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -559,7 +560,6 @@ of other programs.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("kguiaddons" ,kguiaddons)
-       ("kwindowsystem" ,kwindowsystem)
        ("libdbusmenu-qt" ,libdbusmenu-qt)
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
@@ -582,6 +582,10 @@ of other programs.")
      `(("pkg-config" ,pkg-config)
        ("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
+    (propagated-inputs
+     ;; Propagating KWINDOWSYSTEM so that the list of opened applications
+     ;; shows up in lxqt-panel's taskbar plugin.
+     `(("kwindowsystem" ,kwindowsystem)))
     (arguments
      '(#:tests? #f                      ; no tests
        #:phases
