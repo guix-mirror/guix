@@ -14783,7 +14783,7 @@ proximity within a reference genome.")
     (description "This package provides tools for dealing with @dfn{Unique
 Molecular Identifiers} (UMIs) and @dfn{Random Molecular Tags} (RMTs) in
 genetic sequences.  There are six tools: the @code{extract} and
-@code{whitelist} commands are used to prepare a fastq containg UMIs @code{+/-}
+@code{whitelist} commands are used to prepare a fastq containing UMIs @code{+/-}
 cell barcodes for alignment.  The remaining commands, @code{group},
 @code{dedup}, and @{count}/@code{count_tab}, are used to identify PCR
 duplicates using the UMIs and perform different levels of analysis depending
