@@ -17364,7 +17364,7 @@ Maximum size in bytes that a user can send in one text chat message.
 Maximum size in bytes that a user can send in one image message.
 
 @item @code{cert-required?} (default: @code{#f})
-If it is set to @code{#t} clients that use weak password authentification
+If it is set to @code{#t} clients that use weak password authentication
 will not be accepted. Users must have completed the certificate wizard to join.
 
 @item @code{remember-channel?} (default: @code{#f})
