@@ -46,6 +46,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -1463,3 +1464,62 @@ collection of handy utility functions.  All are 100% portable across nearly
 all modern computing platforms.  Each library component is fairly independent
 of the others")
     (license license:lgpl2.0+)))
+
+(define-public ioquake3
+  ;; We follow master since it seems that there won't be releases after 1.3.6.
+  (let ((commit "95b9cab4d644fa3bf757cfff821cc4f7d76e38b0"))
+    (package
+      (name "ioquake3")
+      (version (git-version "1.3.6" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ioquake/ioq3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1vflk028z9gccg5yfi5451y1k5wxjdh3qbhjf4x6r7w2pzlxh16z"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("sdl2" ,sdl2)
+         ("libjpeg" ,libjpeg)
+         ("openal" ,openal)
+         ("curl" ,curl)
+         ("opusfile" ,opusfile)
+         ("opus" ,opus)
+         ("libvorbis" ,libvorbis)
+         ("freetype" ,freetype)
+         ("libogg" ,libogg)))
+      (native-inputs
+       `(("which" ,which)               ; Else SDL_version.h won't be found.
+         ("pkg-config" ,pkg-config)))
+      (arguments
+       '(#:tests? #f                    ; No tests.
+         #:make-flags '("CC=gcc"
+                        "USE_INTERNAL_LIBS=0"
+                        "USE_FREETYPE=1"
+                        "USE_RENDERER_DLOPEN=0"
+                        "USE_OPENAL_DLOPEN=0"
+                        "USE_CURL_DLOPEN=0")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "copyfiles" "CC=gcc"
+                        "USE_INTERNAL_LIBS=0"
+                       (string-append "COPYDIR="
+                                      (assoc-ref outputs "out")
+                                      "/bin")))))))
+      (home-page "https://ioquake3.org/")
+      (synopsis "FPS game engine based on Quake 3")
+      (description "ioquake3 is a free software first person shooter engine
+based on the Quake 3: Arena and Quake 3: Team Arena source code.  Compared to
+the original, ioquake3 has been cleaned up, bugs have been fixed and features
+added.  The permanent goal is to create the open source Quake 3 distribution
+upon which people base their games, ports to new platforms, and other
+projects.")
+      (supported-systems '("x86_64-linux" "i686-linux"))
+      (license license:gpl2))))
