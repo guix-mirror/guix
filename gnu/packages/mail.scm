@@ -846,14 +846,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.28.3")
+    (version "0.28.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v0ff6qqwj42p3n6qw30czzqi52nvgf3dn05vd7a03g39a5js8af"))))
+                "1jjnhs4xs4gksvg0a9qn68rxrj41im5bh58snka2pkj20nxwmcds"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -895,8 +895,8 @@ invoking @command{notifymuch} from the post-new hook.")
      `(("bash-completion" ,bash-completion)
        ("emacs" ,emacs-no-x) ; Minimal lacks libxml, needed for some tests.
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
-       ("python-docutils" ,python2-docutils)
+       ("python" ,python)
+       ("python-docutils" ,python-docutils)
        ("sphinx" ,python-sphinx)
 
        ;; The following are required for tests only.
