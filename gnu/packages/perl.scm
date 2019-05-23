@@ -1795,7 +1795,7 @@ they are copies of each other.")
     (home-page "https://metacpan.org/release/Data-Uniqid")
     (synopsis "Perl extension for generating unique identifiers")
     (description "@code{Data::Uniqid} provides three simple routines for
-generating unique ids.  These ids are coded with a Base62 systen to make them
+generating unique ids.  These ids are coded with a Base62 system to make them
 short and handy (e.g. to use it as part of a URL).")
     (license (package-license perl))))
 
