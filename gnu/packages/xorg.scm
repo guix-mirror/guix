@@ -1724,7 +1724,7 @@ of user actions in the X Window System.")
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RenderProto protocol headers")
     (description
-     "Rendering Extension defines a protcol for a digital image composition
+     "Rendering Extension defines a protocol for a digital image composition
 as the foundation of a new rendering model within the X Window System.")
     (license license:x11)
     (properties `((superseded . ,xorgproto)))))
