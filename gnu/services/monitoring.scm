@@ -102,7 +102,7 @@
   (service-type
    (name 'darkstat)
    (description
-    "Run @command{darkstat} to serve network traffic statictics reports over
+    "Run @command{darkstat} to serve network traffic statistics reports over
 HTTP.")
    (extensions
     (list (service-extension account-service-type
