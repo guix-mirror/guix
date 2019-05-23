@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
@@ -174,30 +174,47 @@
       (any (compose (negate zero?) cdr waitpid)
            pids))))
 
-(test-assert "compressed-port, decompressed-port, non-file"
-  (let ((data (call-with-input-file (search-path %load-path "guix.scm")
-                get-bytevector-all)))
-    (let*-values (((compressed pids1)
-                   (compressed-port 'xz (open-bytevector-input-port data)))
-                  ((decompressed pids2)
-                   (decompressed-port 'xz compressed)))
-      (and (every (compose zero? cdr waitpid)
-                  (append pids1 pids2))
-           (equal? (get-bytevector-all decompressed) data)))))
+(define (test-compression/decompression method run?)
+  "Test METHOD, a symbol such as 'gzip.  Call RUN? to determine whether to
+skip these tests."
+  (unless (run?) (test-skip 1))
+  (test-assert (format #f "compressed-port, decompressed-port, non-file [~a]"
+                       method)
+    (let ((data (call-with-input-file (search-path %load-path "guix.scm")
+                  get-bytevector-all)))
+      (let*-values (((compressed pids1)
+                     (compressed-port method (open-bytevector-input-port data)))
+                    ((decompressed pids2)
+                     (decompressed-port method compressed)))
+        (and (every (compose zero? cdr waitpid)
+                    (pk 'pids method (append pids1 pids2)))
+             (let ((result (get-bytevector-all decompressed)))
+               (pk 'len method
+                   (if (bytevector? result)
+                       (bytevector-length result)
+                       result)
+                   (bytevector-length data))
+               (equal? result data))))))
 
-(false-if-exception (delete-file temp-file))
-(test-assert "compressed-output-port + decompressed-port"
-  (let* ((file (search-path %load-path "guix/derivations.scm"))
-         (data (call-with-input-file file get-bytevector-all))
-         (port (open-file temp-file "w0b")))
-    (call-with-compressed-output-port 'xz port
-      (lambda (compressed)
-        (put-bytevector compressed data)))
-    (close-port port)
+  (false-if-exception (delete-file temp-file))
+  (unless (run?) (test-skip 1))
+  (test-assert (format #f "compressed-output-port + decompressed-port [~a]"
+                       method)
+    (let* ((file (search-path %load-path "guix/derivations.scm"))
+           (data (call-with-input-file file get-bytevector-all))
+           (port (open-file temp-file "w0b")))
+      (call-with-compressed-output-port method port
+        (lambda (compressed)
+          (put-bytevector compressed data)))
+      (close-port port)
 
-    (bytevector=? data
-                  (call-with-decompressed-port 'xz (open-file temp-file "r0b")
-                    get-bytevector-all))))
+      (bytevector=? data
+                    (call-with-decompressed-port method (open-file temp-file "r0b")
+                      get-bytevector-all)))))
+
+(for-each test-compression/decompression
+          '(gzip xz lzip)
+          (list (const #t) (const #t)))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"
