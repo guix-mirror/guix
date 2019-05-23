@@ -2495,7 +2495,7 @@ provide all features that libinput supports it does little beyond.")
     (synopsis "Joystick input driver for X server")
     (description
      "xf86-input-joystick is a joystick input driver for the Xorg X server.
-It is used to cotrol the pointer with a joystick device.")
+It is used to control the pointer with a joystick device.")
     (license license:x11)))
 
 
