@@ -11783,80 +11783,19 @@ The following file formats are supported:
 @end enumerate\n")
     (license license:bsd-3)))
 
-(define spdlog-for-salmon
-  (package
-    (name "spdlog")
-    (version "0.14.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/COMBINE-lab/spdlog.git")
-                    (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "13730429gwlabi432ilpnja3sfvy0nn2719vnhhmii34xcdyc57q"))))
-    (build-system cmake-build-system)
-    (home-page "https://github.com/COMBINE-lab/spdlog")
-    (synopsis "Very fast C++ logging library")
-    (description "Spdlog is a very fast header-only C++ logging library with
-performance as its primary goal.")
-    (license license:expat)))
-
-;; This is a modified variant of bwa for use with Salmon. It installs a
-;; library to avoid having to build this as part of Salmon.
-(define bwa-for-salmon
-  (package (inherit bwa)
-    (name "bwa")
-    (version "0.7.12.5")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/COMBINE-lab/bwa.git")
-                    (commit (string-append "v" version))))
-              (file-name (string-append "bwa-for-salmon-" version "-checkout"))
-              (sha256
-               (base32
-                "1z2qa64y0c5hky10510x137mnzlhz6k8qf27csw4w9j6qihq95gb"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f ;no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (lib (string-append out "/lib"))
-                    (doc (string-append out "/share/doc/bwa"))
-                    (man (string-append out "/share/man/man1"))
-                    (inc (string-append out "/include/bwa")))
-               (install-file "bwa" bin)
-               (install-file "README.md" doc)
-               (install-file "bwa.1" man)
-               (install-file "libbwa.a" lib)
-               (mkdir-p lib)
-               (mkdir-p inc)
-               (for-each (lambda (file)
-                           (install-file file inc))
-                         (find-files "." "\\.h$")))
-             #t))
-         ;; no "configure" script
-         (delete 'configure))))))
-
 (define-public salmon
   (package
     (name "salmon")
-    (version "0.9.1")
+    (version "0.13.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/COMBINE-lab/salmon.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zi1ff4i7y2ykk0vdzysgwzzzv166vg2x77pj1mf4baclavxj87a"))
+                "1i2z4aivicmiixdz9bxalp7vmfzi3k92fxa63iqa8kgvfw5a4aq5"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -11890,7 +11829,7 @@ performance as its primary goal.")
          (add-after 'unpack 'do-not-look-for-boost
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               (("find_package\\(Boost 1\\.53\\.0") "#"))
+               (("find_package\\(Boost 1\\.59\\.0") "#"))
              #t))
          (add-after 'unpack 'do-not-phone-home
            (lambda _
@@ -11904,66 +11843,51 @@ performance as its primary goal.")
                    (rapmap (assoc-ref inputs "rapmap")))
                (mkdir-p src)
                (mkdir-p include)
-               (for-each (lambda (file)
-                           (install-file file src))
-                         (find-files (string-append rapmap "/src") "\\.(c|cpp)"))
+               (copy-recursively (string-append rapmap "/src") src)
                (copy-recursively (string-append rapmap "/include") include)
                (for-each delete-file '("external/install/include/rapmap/xxhash.h"
                                        "external/install/include/rapmap/FastxParser.hpp"
                                        "external/install/include/rapmap/concurrentqueue.h"
                                        "external/install/include/rapmap/FastxParserThreadUtils.hpp"
                                        "external/install/src/rapmap/FastxParser.cpp"
-                                       "external/install/src/rapmap/xxhash.c")))
+                                       "external/install/src/rapmap/xxhash.c"))
+               (delete-file-recursively "external/install/include/rapmap/spdlog"))
              #t))
          (add-after 'unpack 'use-system-libraries
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "src/CMakeLists.txt"
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/include/jellyfish-2.2..")
-                (string-append (assoc-ref inputs "jellyfish")
-                               "/include/jellyfish-" ,(package-version jellyfish)))
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libjellyfish-2.0.a")
-                (string-append (assoc-ref inputs "jellyfish")
-                               "/lib/libjellyfish-2.0.a"))
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort.a")
-                (string-append (assoc-ref inputs "libdivsufsort")
-                               "/lib/libdivsufsort.so"))
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libstaden-read.a")
-                (string-append (assoc-ref inputs "libstadenio-for-salmon")
-                               "/lib/libstaden-read.a"))
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libbwa.a")
-                (string-append (assoc-ref inputs "bwa") "/lib/libbwa.a"))
-               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort64.a")
-                (string-append (assoc-ref inputs "libdivsufsort")
-                               "/lib/libdivsufsort64.so")))
              (substitute* "CMakeLists.txt"
                ;; Don't prefer static libs
                (("SET\\(CMAKE_FIND_LIBRARY_SUFFIXES.*") "")
                (("set\\(TBB_LIBRARIES") "message(")
-               (("find_package\\(Jellyfish.*") "")
-               (("ExternalProject_Add\\(libcereal") "message(")
-               (("ExternalProject_Add\\(libbwa") "message(")
-               (("ExternalProject_Add\\(libjellyfish") "message(")
-               (("ExternalProject_Add\\(libgff") "message(")
-               (("ExternalProject_Add\\(libtbb") "message(")
-               (("ExternalProject_Add\\(libspdlog") "message(")
-               (("ExternalProject_Add\\(libdivsufsort") "message(")
-               (("ExternalProject_Add\\(libstadenio") "message(")
-               (("ExternalProject_Add_Step\\(") "message("))
+               ;; Don't download anything
+               (("DOWNLOAD_COMMAND") "DOWNLOAD_COMMAND echo")
+               (("externalproject_add\\(libcereal") "message(")
+               (("externalproject_add\\(libgff") "message(")
+               (("externalproject_add\\(libtbb") "message(")
+               (("externalproject_add\\(libdivsufsort") "message(")
+               (("externalproject_add\\(libstadenio") "message(")
+               (("externalproject_add_step\\(") "message("))
+             (substitute* "src/CMakeLists.txt"
+               (("add_dependencies") "#")
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libstaden-read.a")
+                (string-append (assoc-ref inputs "libstadenio-for-salmon")
+                               "/lib/libstaden-read.so"))
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort.a")
+                (string-append (assoc-ref inputs "libdivsufsort")
+                               "/lib/libdivsufsort.so"))
+               (("\\$\\{GAT_SOURCE_DIR\\}/external/install/lib/libdivsufsort64.a")
+                (string-append (assoc-ref inputs "libdivsufsort")
+                               "/lib/libdivsufsort64.so"))
+               (("lib/libdivsufsort.a") "/lib/libdivsufsort.so"))
 
              ;; Ensure that all headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (getenv "CPLUS_INCLUDE_PATH")
                                     ":"
-                                    (assoc-ref inputs "bwa")
-                                    "/include/bwa"
-                                    ":"
                                     (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "bwa")
-                                    "/include/bwa"
-                                    ":"
-                                    (assoc-ref inputs "eigen")
+                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t))
          ;; CMAKE_INSTALL_PREFIX does not exist when the tests are
@@ -11976,7 +11900,6 @@ performance as its primary goal.")
              #t)))))
     (inputs
      `(("boost" ,boost)
-       ("bwa" ,bwa-for-salmon)
        ("bzip2" ,bzip2)
        ("cereal" ,cereal)
        ("eigen" ,eigen)
@@ -11988,16 +11911,16 @@ performance as its primary goal.")
                     (file-name (string-append "rapmap-salmon-v" version "-checkout"))
                     (sha256
                      (base32
-                      "1yc12yqsz6f0r8sg1qnk57xg34aqwc9jbqq6gd5ys28xw3plj98p"))))
+                      "1biplxf0csc7a8h1wf219b0vmjkvw6wk2zylhdklb577kgmihdms"))))
        ("jemalloc" ,jemalloc)
-       ("jellyfish" ,jellyfish)
        ("libgff" ,libgff)
        ("tbb" ,tbb)
        ("libdivsufsort" ,libdivsufsort)
        ("libstadenio-for-salmon" ,libstadenio-for-salmon)
-       ("spdlog-for-salmon" ,spdlog-for-salmon)
        ("xz" ,xz)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/COMBINE-lab/salmon")
     (synopsis "Quantification from RNA-seq reads using lightweight alignments")
     (description "Salmon is a program to produce highly-accurate,
