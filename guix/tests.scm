@@ -33,6 +33,7 @@
   #:use-module (web uri)
   #:export (open-connection-for-tests
             with-external-store
+            %seed
             random-text
             random-bytevector
             file=?
