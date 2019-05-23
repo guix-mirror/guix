@@ -651,7 +651,7 @@ of other programs.")
              #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "The LXQt PolicyKit agent")
-    (description "lxqt-policykit is the polkit authentification agent of
+    (description "lxqt-policykit is the polkit authentication agent of
 LXQt.")
     (license license:lgpl2.1+)))
 
