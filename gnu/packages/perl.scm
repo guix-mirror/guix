@@ -161,7 +161,7 @@
 text manipulation and now used for a wide range of tasks including system
 administration, web development, network programming, GUI development, and
 more.")
-    (home-page "http://www.perl.org/")
+    (home-page "https://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
 (define-public perl-algorithm-c3
