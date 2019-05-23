@@ -8458,7 +8458,7 @@ can combine fields into a CSV string and parse a CSV string into fields.")
         (base32 "1gcy1bxym6f7qsxivkl3c5p94r1bjhf9csy1x38a1gk8mx744kma"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV_XS")
-    (synopsis "Rountines for manipulating CSV files")
+    (synopsis "Routines for manipulating CSV files")
     (description "@code{Text::CSV_XS} provides facilities for the composition
 and decomposition of comma-separated values.  An instance of the
 @code{Text::CSV_XS} class will combine fields into a CSV string and parse a
