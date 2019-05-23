@@ -237,6 +237,11 @@ empty list when the FIELD cannot be found."
         "translations"
         "utils"))
 
+;; The field for system dependencies is often abused to specify non-package
+;; dependencies (such as c++11).  This list is used to ignore them.
+(define invalid-packages
+  (list "c++11"))
+
 (define cran-guix-name (cut guix-name "r-" <>))
 
 (define (needs-fortran? tarball)
@@ -310,7 +315,8 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                       (if (needs-zlib? tarball) '("zlib") '())
                       (map string-downcase (listify meta "SystemRequirements"))))
          (propagate  (filter (lambda (name)
-                               (not (member name default-r-packages)))
+                               (not (member name (append default-r-packages
+                                                         invalid-packages))))
                              (lset-union equal?
                                          (listify meta "Imports")
                                          (listify meta "LinkingTo")
