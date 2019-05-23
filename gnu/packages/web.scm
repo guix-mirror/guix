@@ -6384,7 +6384,7 @@ serves files from a local directory.
 @item @command{nghttpx}, a fast, multi-threaded HTTP/2 reverse proxy that can be
 deployed in front of existing web servers that don't support HTTP/2.
 Both @command{nghttpd} and @command{nghttpx} can fall back to HTTP/1.1 for
-backwards compatibilty with clients that don't speak HTTP/2.
+backwards compatibility with clients that don't speak HTTP/2.
 @item @command{h2load} for benchmarking (only!) your own HTTP/2 servers.
 @item HTTP/2 uses a header compression method called @dfn{HPACK}.
 nghttp2 provides a HPACK encoder and decoder as part of its public API.
