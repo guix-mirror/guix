@@ -5286,7 +5286,7 @@ command-line arguments or read from stdin.")
     (synopsis "Command-line interface to archive.org")
     (description "@code{ia} is a command-line tool for using
 @url{archive.org} from the command-line.  It also emplements the
-internetarchive python module for programatic access to archive.org.")
+internetarchive python module for programmatic access to archive.org.")
     (properties
      `((python2-variant . ,(delay python2-internetarchive))))
     (license license:agpl3+)))
