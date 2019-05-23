@@ -993,7 +993,7 @@ python-pypdf2 instead.")
     (home-page "https://pythonhosted.org/pdftools.pdfposter/")
     (synopsis "Scale and tile PDF images/pages to print on multiple pages")
     (description "@command{pdfposter} can be used to create a large poster by
-building it from multple pages and/or printing it on large media.  It expects
+building it from multiple pages and/or printing it on large media.  It expects
 as input a PDF file, normally printing on a single page.  The output is again
 a PDF file, maybe containing multiple pages together building the poster.  The
 input page will be scaled to obtain the desired size.
