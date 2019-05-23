@@ -4862,7 +4862,7 @@ cluster without needing to write any wrapper code yourself.")
     (synopsis "Manage Procfile-based applications")
     (description
       "A Procfile is a file which describes how to run an application
-consisting of serveral processes. honcho starts all listed processes.
+consisting of several processes. honcho starts all listed processes.
 The output of all running processes is collected by honcho and
 displayed.")
     (license license:expat)))
