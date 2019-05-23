@@ -24132,7 +24132,7 @@ The bootloader theme object describing the theme to use.  If no theme
 is provided, some bootloaders might use a default theme, that's true
 for GRUB.
 
-@item @code{terminal-outputs} (default: @code{'gfxterm})
+@item @code{terminal-outputs} (default: @code{'(gfxterm)})
 The output terminals used for the bootloader boot menu, as a list of
 symbols.  GRUB accepts the values: @code{console}, @code{serial},
 @code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text},
