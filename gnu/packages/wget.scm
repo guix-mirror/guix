@@ -96,6 +96,14 @@ in downloaded documents to relative links.")
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
+         (add-after 'unpack 'remove-dead-paste-site
+           ;; This phase is adaped from the following patch:
+           ;; https://gitweb.gentoo.org/repo/gentoo.git/tree/app-text/wgetpaste/files/wgetpaste-remove-dead.patch
+           (lambda _
+             (substitute* "wgetpaste"
+               ((" poundpython\"") "\"")
+               (("-poundpython") "-dpaste"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
