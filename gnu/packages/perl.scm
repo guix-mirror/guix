@@ -6242,7 +6242,7 @@ installing configuration files or for finding any piece of settings.")
     (description
      "@code{MooX::HandlesVia} is an extension of Moo's @code{handles}
 attribute functionality.  It provides a means of proxying functionality from
-an external class to the given atttribute.")
+an external class to the given attribute.")
     (license perl-license)))
 
 (define-public perl-moox-late
