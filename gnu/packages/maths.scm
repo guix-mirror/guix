@@ -2182,7 +2182,7 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
     (synopsis "Multifrontal sparse direct solver")
     (description
      "MUMPS (MUltifrontal Massively Parallel sparse direct Solver) solves a
-sparse system of linear equations A x = b using Guassian elimination.")
+sparse system of linear equations A x = b using Gaussian elimination.")
     (license license:cecill-c)))
 
 (define-public mumps-metis
