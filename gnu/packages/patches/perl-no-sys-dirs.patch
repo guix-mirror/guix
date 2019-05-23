@@ -112,20 +112,29 @@ Only in perl-5.20.0/: Configure.orig
 diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/ext/Errno/Errno_pm.PL perl-5.20.0/ext/Errno/Errno_pm.PL
 --- perl-5.20.0-orig/ext/Errno/Errno_pm.PL	2014-05-26 15:34:20.000000000 +0200
 +++ perl-5.20.0/ext/Errno/Errno_pm.PL	2014-06-25 10:31:24.317970047 +0200
-@@ -126,11 +126,7 @@
+@@ -114,7 +114,7 @@ sub get_files {
+     # When cross-compiling we may store a path for gcc's "sysroot" option:
+     my $sysroot = $Config{sysroot} || '';
+     my $linux_errno_h;
+-    if ($^O eq 'linux') {
++    if (0) {
+ 	# Some Linuxes have weird errno.hs which generate
+ 	# no #file or #line directives
+ 	($linux_errno_h) = grep { -e $_ } map { "$_/errno.h" }
+@@ -134,13 +134,6 @@ sub get_files {
  	if ($dep =~ /(\S+errno\.h)/) {
  	     $file{$1} = 1;
  	}
 -    } elsif ($^O eq 'linux' &&
 -	      $Config{gccversion} ne '' && 
--	      $Config{gccversion} !~ /intel/i
+-	      $Config{gccversion} !~ /intel/i &&
 -	      # might be using, say, Intel's icc
+-	      $linux_errno_h
 -	     ) {
-+    } elsif (0) {
-     # When cross-compiling we may store a path for gcc's "sysroot" option:
-     my $sysroot = $Config{sysroot} || '';
- 	# Some Linuxes have weird errno.hs which generate
-Only in perl-5.20.0/ext/Errno: Errno_pm.PL.orig
+-	$file{$linux_errno_h} = 1;
+     } elsif ($^O eq 'haiku') {
+ 	# hidden in a special place
+ 	$file{'/boot/develop/headers/posix/errno.h'} = 1;
 diff -ru -x '*~' -x '*.rej' perl-5.20.0-orig/hints/freebsd.sh perl-5.20.0/hints/freebsd.sh
 --- perl-5.20.0-orig/hints/freebsd.sh	2014-01-31 22:55:51.000000000 +0100
 +++ perl-5.20.0/hints/freebsd.sh	2014-06-25 10:25:53.263964680 +0200
