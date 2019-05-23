@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module ((guix store) #:select (%store-prefix store-path-package-name))
   #:use-module ((guix search-paths) #:select (string-tokenize*))
+  #:use-module ((guix lzlib) #:select (lzlib-available?))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64)
@@ -214,7 +215,7 @@ skip these tests."
 
 (for-each test-compression/decompression
           '(gzip xz lzip)
-          (list (const #t) (const #t)))
+          (list (const #t) (const #t) lzlib-available?))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"

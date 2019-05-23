@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -169,6 +169,17 @@ buffered data is lost."
               (close-port out)
               (loop in (cons child pids)))))))))
 
+(define (lzip-port proc port . args)
+  "Return the lzip port produced by calling PROC (a symbol) on PORT and ARGS.
+Raise an error if lzlib support is missing."
+  (let* ((lzlib       (false-if-exception (resolve-interface '(guix lzlib))))
+         (supported?  (and lzlib
+                           ((module-ref lzlib 'lzlib-available?)))))
+    (if supported?
+        (let ((make-port (module-ref lzlib proc)))
+          (values (make-port port) '()))
+        (error "lzip compression not supported" lzlib))))
+
 (define (decompressed-port compression input)
   "Return an input port where INPUT is decompressed according to COMPRESSION,
 a symbol such as 'xz."
@@ -177,17 +188,21 @@ a symbol such as 'xz."
     ('bzip2        (filtered-port `(,%bzip2 "-dc") input))
     ('xz           (filtered-port `(,%xz "-dc") input))
     ('gzip         (filtered-port `(,%gzip "-dc") input))
-    (else          (error "unsupported compression scheme" compression))))
+    ('lzip         (values (lzip-port 'make-lzip-input-port input)
+                           '()))
+    (_             (error "unsupported compression scheme" compression))))
 
 (define (compressed-port compression input)
-  "Return an input port where INPUT is decompressed according to COMPRESSION,
+  "Return an input port where INPUT is compressed according to COMPRESSION,
 a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-c") input))
     ('xz           (filtered-port `(,%xz "-c") input))
     ('gzip         (filtered-port `(,%gzip "-c") input))
-    (else          (error "unsupported compression scheme" compression))))
+    ('lzip         (values (lzip-port 'make-lzip-input-port/compressed input)
+                           '()))
+    (_             (error "unsupported compression scheme" compression))))
 
 (define (call-with-decompressed-port compression port proc)
   "Call PROC with a wrapper around PORT, a file port, that decompresses data
@@ -244,7 +259,9 @@ program--e.g., '(\"--fast\")."
     ('bzip2        (filtered-output-port `(,%bzip2 "-c" ,@options) output))
     ('xz           (filtered-output-port `(,%xz "-c" ,@options) output))
     ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
-    (else          (error "unsupported compression scheme" compression))))
+    ('lzip         (values (lzip-port 'make-lzip-output-port output)
+                           '()))
+    (_             (error "unsupported compression scheme" compression))))
 
 (define* (call-with-compressed-output-port compression port proc
                                            #:key (options '()))
