@@ -12956,14 +12956,14 @@ requirements is not met.")
 (define-public python-pysocks
   (package
     (name "python-pysocks")
-    (version "1.6.8")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PySocks" version))
        (sha256
         (base32
-         "0wn6xafwy9c1gamwljw3fyvih5w19qy9xp39zmv8c90ai5ajrr9z"))))
+         "0z4p31bpqm893cf87qqgb30k7nwd8kqfjwwjm5cvxb6zbyj1w0yr"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (home-page "https://github.com/Anorov/PySocks")
