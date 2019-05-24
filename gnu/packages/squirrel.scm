@@ -20,36 +20,36 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages cmake)
   #:use-module (guix build-system cmake)
-  #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build utils)
   #:use-module (guix packages)
   #:use-module (guix utils))
 
 (define-public squirrel
-  (let ((commit "51137b84e66c4d526809fd8a59f4ba1d38138c76"))
-    (package
-      (name "squirrel")
-      (version "3.1")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/albertodemichelis/squirrel.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "0vbiv1q3qcy2vj8y0b9a2ckswl9ld398n3jnxijvwddrjgya5zav"))))
-      (build-system cmake-build-system)
-      (arguments
-       '(#:tests? #f)) ; no tests
-      (native-inputs
-       `(("cmake" ,cmake)))
-      (home-page "https://squirrel-lang.org/")
-      (synopsis "High level imperative, object-oriented programming language")
-      (description
-       "Squirrel is a high level imperative, object-oriented programming
+  (package
+    (name "squirrel")
+    (version "3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/squirrel/squirrel3/"
+                                  "squirrel " version " stable/squirrel_"
+                                  (string-join (string-split version #\.) "_")
+                                  "_stable.tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jyh1523zrrnh9swanfrda0s14mvwc9431dh07g0nx74hbxsfia8"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (native-inputs
+     `(("cmake" ,cmake)))
+    (home-page "https://squirrel-lang.org/")
+    (synopsis "High level imperative, object-oriented programming language")
+    (description
+     "Squirrel is a high level imperative, object-oriented programming
 language, designed to be a light-weight scripting language that fits in the
 size, memory bandwidth, and real-time requirements of applications like video
 games.")
-      (license license:expat))))
+    (license license:expat)))
