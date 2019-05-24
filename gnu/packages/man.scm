@@ -60,14 +60,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.8.3")
+    (version "2.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1b641kcgjvyc41pj67dn4p0zvwlj1vx3l6nf7qdcc7kf6v5a2cjr"))))
+                "1hgnfcgbllmws8cs6zaxklq8b69i05zynxi87f3zxw9lfms54kdn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -117,8 +117,9 @@ a flexible and convenient way.")
                        (string-append "--with-bzip2=" bzip2 "/bin/gzip")
                        (string-append "--with-xz=" xz "/bin/xz")
                        (string-append "--with-col=" util "/bin/col")
-                       ;; Default value is "/usr/lib/tmpfiles.d" (not
-                       ;; prefix-sensitive).
+                       ;; The default systemd directories ignore --prefix.
+                       (string-append "--with-systemdsystemunitdir="
+                                      %output "/lib/systemd/system")
                        (string-append "--with-systemdtmpfilesdir="
                                       %output "/lib/tmpfiles.d"))
                  (map (lambda (prog)
@@ -161,7 +162,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "5.00")
+    (version "5.01")
     (source
      (origin
        (method url-fetch)
@@ -171,7 +172,7 @@ the traditional flat-text whatis databases.")
               (string-append "mirror://kernel.org/linux/docs/man-pages/Archive/"
                              "man-pages-" version ".tar.xz")))
        (sha256
-        (base32 "006rcqhs4ay9q8wip2kbgk3065gwvfbzrqgv2dsydwvcnwv50bss"))))
+        (base32 "09xn8d8xxwgms6h1bvjlgn3mxz51vxf3ra0ry9f5dqi29qry3z3x"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -226,14 +227,14 @@ automatically.")
 (define-public help2man/latest
   (package
     (inherit help2man)
-    (version "1.47.8")
+    (version "1.47.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/help2man/help2man-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1p5830h88cx0zn0snwaj0vpph81xicpsirfwlxmcgjrlmn0nm3sj"))))))
+                "1yywli520246aba12vpgj7bhr1r13swad3xm49a0cygqcgywnwgk"))))))
 
 (define-public scdoc
   (package

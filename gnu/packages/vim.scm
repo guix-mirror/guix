@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -729,16 +730,17 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/neovim/neovim/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neovim/neovim")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "03mwfhr9rq86p8lypbdfyl7c7xyn6nzv2ipd8jc33bxzvs5i0hd6"))))
+         "113lrr9gwimvvzlkwlishm4cjqcf30xq9jfxn7vh41ckgnbiwf3w"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)

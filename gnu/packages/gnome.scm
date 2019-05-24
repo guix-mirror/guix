@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
-;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -35,6 +35,7 @@
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1107,10 +1108,14 @@ configuring CUPS.")
        (base32
         "017wgq9n00hx39n0hm784zn18hl721hbaijda868cm96bcqwxd4w"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
+    (propagated-inputs
+     `(;; In Requires of libnotify.pc.
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
+     `(("gtk+" ,gtk+)
        ("libpng" ,libpng)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
@@ -1281,7 +1286,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.45")
+    (version "1.14.46")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1289,7 +1294,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yk91ccf7z9b8d8ac6vip3gc5c0pkwgabqy6l0pj0kf43l7jrg2w"))))
+                "0bddmlzg719sjhlbzqlhb7chwk93qc7g68m2r9r8xz112jdradpa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -2589,7 +2594,7 @@ indicators etc).")
     (home-page "https://www.gnome.org")
     (synopsis "Python bindings to librsvg")
     (description
-     "This packages provides Python bindings to librsvg, the SVG rendering
+     "This package provides Python bindings to librsvg, the SVG rendering
 library.")
 
     ;; This is the license of the rsvg bindings.  The license of each module
@@ -2671,7 +2676,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.66.1")
+    (version "2.66.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2679,7 +2684,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zs3bhspwg7fggxd7x1rrggpkcf2j9ch6dhncq9syh252z0vcb2a"))))
+                "0amfw1yvy1kjrg41rfh2vvrw5gkwnyckqbw1fab50hm6xc1acbmx"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3141,15 +3146,15 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.8")
+    (version "0.99.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.freedesktop.org/upower/upower/"
-                                  "uploads/9125ab7ee96fdc4ecc68cfefb50c1cab/"
+                                  "uploads/c438511024b9bc5a904f8775cfc8e4c4/"
                                   "upower-" version ".tar.xz"))
               (sha256
                (base32
-                "00lzr0vyxz5lvmgya48gdb2cdgmfdim4b34jlfdyqakk1i9sl8xv"))
+                "17d2bclv5fgma2y3g8bsn9pdvspn1zrzismzdnzfivc0f2wm28k4"))
               (patches (search-patches "upower-builddir.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -4630,6 +4635,14 @@ classes for commonly used data structures.")
                (base32
                 "1qbcwq89g4r67k1dj4laqj441pj4195c8hzhxn8vc6mmg8adg6kx"))))
     (build-system meson-build-system)
+    (arguments
+     ;; On 32-bit platforms, the test fails with a rounding error:
+     ;; <https://bugzilla.gnome.org/show_bug.cgi?id=775249>.  Just skip it for
+     ;; now.
+     (if (and (not (%current-target-system))
+              (member (%current-system) '("i686-linux" "armhf-linux")))
+         '(#:tests? #f)
+         '()))
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
@@ -5491,7 +5504,24 @@ to virtual private networks (VPNs) via OpenVPN.")
                (base32
                 "1js0i2kwfklahsn77qgxzdscy33drrlym3mrj1qhlw0zf8ri56ya"))))
     (build-system glib-or-gtk-build-system)
-    (arguments '(#:configure-flags '("--disable-migration")))
+    (arguments '(#:configure-flags '("--disable-migration")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'unpack 'patch-source
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let ((mbpi (assoc-ref inputs
+                                              "mobile-broadband-provider-info"))
+                             (iso-codes (assoc-ref inputs "iso-codes")))
+                         (substitute* "src/libnma/nma-mobile-providers.c"
+                           (("(g_build_filename \\()dirs\\[i\\].*,\
+ (MOBILE_BROADBAND_PROVIDER_INFO.*)" all start end)
+                            (string-append start "\"" mbpi "/share\", " end)))
+                         (substitute* "src/libnma/nma-mobile-providers.c"
+                           (("(g_build_filename \\()dirs\\[i\\].*,\
+ (ISO_3166_COUNTRY_CODES.*)" all start end)
+                            (string-append start "\"" iso-codes
+                                           "/share\", " end)))
+                         #t))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("gobject-introspection" ,gobject-introspection)
@@ -5508,7 +5538,8 @@ to virtual private networks (VPNs) via OpenVPN.")
        ("libsecret" ,libsecret)
        ("libselinux" ,libselinux)
        ("jansson" ,jansson) ; for team support
-       ("modem-manager" ,modem-manager)))
+       ("modem-manager" ,modem-manager)
+       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)))
     (synopsis "Applet for managing network connections")
     (home-page "https://www.gnome.org/projects/NetworkManager/")
     (description
@@ -5644,8 +5675,8 @@ libxml2.")
                                 "(self, \"" name "\","
                                 "g_getenv (\"" name "\"));\n"))
                              propagate)))))
-            ;; Look for custom GDM conf in /run/current-system.
-            (substitute* '("common/gdm-settings-desktop-backend.c")
+            ;; Find the configuration file using an environment variable.
+            (substitute* '("common/gdm-settings.c")
               (("GDM_CUSTOM_CONF")
                (string-append "(g_getenv(\"GDM_CUSTOM_CONF\") != NULL"
                               " ? g_getenv(\"GDM_CUSTOM_CONF\")"
@@ -5826,13 +5857,25 @@ devices using the GNOME desktop.")
          (add-before 'configure 'patch-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((libc   (assoc-ref inputs "libc"))
-                   (tzdata (assoc-ref inputs "tzdata")))
+                   (tzdata (assoc-ref inputs "tzdata"))
+                   (libgnomekbd (assoc-ref inputs "libgnomekbd"))
+                   (nm-applet   (assoc-ref inputs "network-manager-applet")))
                (substitute* "panels/datetime/tz.h"
                  (("/usr/share/zoneinfo/zone.tab")
                   (string-append tzdata "/share/zoneinfo/zone.tab")))
                (substitute* "panels/datetime/test-endianess.c"
                  (("/usr/share/locale")
                   (string-append libc "/share/locale")))
+               (substitute* "panels/region/cc-region-panel.c"
+                 (("\"gkbd-keyboard-display")
+                  (string-append "\"" libgnomekbd
+                                 "/bin/gkbd-keyboard-display")))
+               (substitute* '("panels/network/net-device-wifi.c"
+                              "panels/network/net-device.c"
+                              "panels/network/connection-editor/net-connection-editor.c")
+                 (("\"nm-connection-editor")
+                  (string-append "\"" nm-applet
+                                 "/bin/nm-connection-editor")))
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
@@ -5856,6 +5899,7 @@ devices using the GNOME desktop.")
        ("grilo" ,grilo)
        ("ibus" ,ibus)
        ("libcanberra" ,libcanberra)
+       ("libgnomekbd" ,libgnomekbd)
        ("libgudev" ,libgudev)
        ("libgtop" ,libgtop)
        ("libpwquality" ,libpwquality)
@@ -6753,51 +6797,41 @@ fit the GNOME desktop.")
 existing databases over the internet.")
     (license license:gpl3+)))
 
-(define-public gnome-tweak-tool
+(define-public gnome-tweaks
   (package
-    (name "gnome-tweak-tool")
-    (version "3.26.4")
+    (name "gnome-tweaks")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
+              (uri (string-append "mirror://gnome/sources/gnome-tweaks/"
                                   (version-major+minor version) "/"
-                                  "gnome-tweak-tool-" version ".tar.xz"))
-              (patches (list
-                        (search-patch "gnome-tweak-tool-search-paths.patch")))
+                                  "gnome-tweaks-" version ".tar.xz"))
+              (patches
+               (list (search-patch "gnome-tweaks-search-paths.patch")))
               (sha256
                (base32
-                "1pq5a0kzh1sz7s7ax5c7p6212k9d51nk5bfvjfyqn99cs928187x"))))
-    (build-system glib-or-gtk-build-system)
+                "1p5xydr0haz4389h6dvvbna6i1mipdzvmlfksnv0jqfvfs9sy6fp"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--localstatedir=/tmp"
-                           "--sysconfdir=/tmp")
+     `(#:glib-or-gtk? #t
+       #:configure-flags '("-Dlocalstatedir=/tmp"
+                           "-Dsysconfdir=/tmp")
        #:imported-modules ((guix build python-build-system)
-                           ,@%glib-or-gtk-build-system-modules)
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace 'build
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (invoke "meson" "build"
-                                      "--prefix" (assoc-ref outputs "out"))))
-                  (replace 'check
-                    (lambda _ (invoke "ninja" "-C" "build" "test")))
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (invoke "ninja" "-C" "build" "install")))
-                  (add-after 'install 'wrap-program
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out               (assoc-ref outputs "out"))
-                            (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
-                        (wrap-program (string-append out "/bin/gnome-tweak-tool")
-                          `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-                      #t))
-                  (add-after 'install 'wrap
-                    (@@ (guix build python-build-system) wrap)))))
+                           ,@%meson-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (@@ (guix build python-build-system) wrap))
+         (add-after 'wrap 'wrap-gi-typelib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/gnome-tweaks")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t)))))
     (native-inputs
      `(("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
        ("intltool" ,intltool)
-       ("meson" ,meson-for-build)
-       ("ninja" ,ninja)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gnome-desktop" ,gnome-desktop)
@@ -6810,13 +6844,17 @@ existing databases over the internet.")
        ("python" ,python)
        ("python-pygobject" ,python-pygobject)))
     (synopsis "Customize advanced GNOME 3 options")
-    (home-page "https://wiki.gnome.org/action/show/Apps/GnomeTweakTool")
+    (home-page "https://wiki.gnome.org/Apps/Tweaks")
     (description
-     "GNOME Tweak Tool allows adjusting advanced configuration settings in
+     "GNOME Tweaks allows adjusting advanced configuration settings in
 GNOME 3.  This includes things like the fonts used in user interface elements,
 alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
+
+;; This package has been renamed by upstream.
+(define-public gnome-tweak-tool
+  (deprecated-package "gnome-tweak-tool" gnome-tweaks))
 
 (define-public gnome-shell-extensions
   (package

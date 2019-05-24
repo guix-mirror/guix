@@ -190,7 +190,9 @@ fe80::1%lo0 apps.facebook.com\n")
                  ;; interfaces are typically down at this point.  Thus we perform
                  ;; our own interface discovery here.
                  (define valid?
-                   (negate loopback-network-interface?))
+                   (lambda (interface)
+                     (and (arp-network-interface? interface)
+                          (not (loopback-network-interface? interface)))))
                  (define ifaces
                    (filter valid? (all-network-interface-names)))
 

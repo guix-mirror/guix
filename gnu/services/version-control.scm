@@ -157,7 +157,7 @@
           (service-extension activation-service-type
                              git-daemon-activation)))
    (description
-    "Expose Git respositories over the insecure @code{git://} TCP-based
+    "Expose Git repositories over the insecure @code{git://} TCP-based
 protocol.")
    (default-value (git-daemon-configuration))))
 

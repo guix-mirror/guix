@@ -28,11 +28,12 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
-;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libunwind)
@@ -116,6 +118,7 @@
   #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system linux-module)
@@ -414,10 +417,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.0.10")
-(define %linux-libre-hash "1lcwpxz5ival8nmnh19x4b1bn19bifhi3mlarx85d783jg47jc3h")
+(define %linux-libre-version "5.1.4")
+(define %linux-libre-hash "02pzad29w2apcqsk4r4fq93539z3by8kvk1f59lb8xnl0gvhdi5v")
 
-(define %linux-libre-5.0-patches
+(define %linux-libre-5.1-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
@@ -425,33 +428,11 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-5.0-patches
+                    #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config))
 
-(define-public vhba-module
-  (package
-    (name "vhba-module")
-    (version "20170610")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://downloads.sourceforge.net/cdemu/vhba-module-"
-                    version ".tar.bz2"))
-              (sha256
-               (base32
-                "1v6r0bgx0a65vlh36b1l2965xybngbpga6rp54k4z74xk0zwjw3r"))))
-    (build-system linux-module-build-system)
-    (arguments
-     ;; TODO: No tests?
-     `(#:tests? #f))
-    (home-page "https://cdemu.sourceforge.io/")
-    (synopsis "Kernel module that emulates SCSI devices")
-    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
-between the CDemu userspace daemon and linux kernel.")
-    (license license:gpl2+)))
-
-(define %linux-libre-4.19-version "4.19.37")
-(define %linux-libre-4.19-hash "0cyw7sgvw0767pvnl2sg6j91az9x80m5pbpqmd1srzl06w2sff2j")
+(define %linux-libre-4.19-version "4.19.45")
+(define %linux-libre-4.19-hash "1wiy8vzpzzml4k76nv3ycjx7ky55x7dqx3mgpjqbh73mj2gcr5bx")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -464,8 +445,8 @@ between the CDemu userspace daemon and linux kernel.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.114")
-(define %linux-libre-4.14-hash "0hc6vk8wh6dlr8lbfd269n3drgbw2swfhlgqs9kl13104jrxqqv4")
+(define %linux-libre-4.14-version "4.14.121")
+(define %linux-libre-4.14-hash "1g7gyjmp056pasf9m34dqs8pa15my6hqasdd551jw8mgkbhsfnxg")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -474,14 +455,14 @@ between the CDemu userspace daemon and linux kernel.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.171"
-                    "10975y9q2yycc85synwmrqqfhq89f3fn66jxq7p2myv1n9m22fx5"
+  (make-linux-libre "4.9.178"
+                    "1ridlkymf382qnkc6hi07pkghrrxfv2avx55snjnkfcpdccvsmrb"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.179"
-                    "025jl50sgi3bxj8hxlihqyfshmfphrg6z3cfi043qwkc8sbdy3af"
+  (make-linux-libre "4.4.180"
+                    "157kfs4slii86q9yrspvqdynpiv6rff80hrrn569v6h4nkc4b7ag"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config
                     #:extra-options
@@ -495,7 +476,7 @@ between the CDemu userspace daemon and linux kernel.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.0-patches
+                    #:patches %linux-libre-5.1-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -503,7 +484,7 @@ between the CDemu userspace daemon and linux kernel.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.0-patches
+                    #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config-veyron
                     #:extra-version "arm-veyron"))
 
@@ -526,7 +507,7 @@ between the CDemu userspace daemon and linux kernel.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.0-patches
+                    #:patches %linux-libre-5.1-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -544,6 +525,102 @@ between the CDemu userspace daemon and linux kernel.")
                     '("armhf-linux")
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
+
+(define-public vhba-module
+  (package
+    (name "vhba-module")
+    (version "20190410")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1513hq130raxp9z5grj54cwfjfxj05apipxg425j0zicii59a60c"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; TODO: No tests?
+     `(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Kernel module that emulates SCSI devices")
+    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
+between the CDemu userspace daemon and linux kernel.")
+    (license license:gpl2+)))
+
+
+;;;
+;;; Linux kernel modules.
+;;;
+
+(define-public acpi-call-linux-module
+  (package
+    (name "acpi-call-linux-module")
+    (version "3.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/teleshoes/acpi_call.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04mbv4lasm3vv1j4ndxhnz4hvp5wg8f5fc9q6qxv0nhvwjynmsl3"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-for-linux-4.12
+           (lambda _
+             (substitute* "acpi_call.c"
+               (("asm/uaccess\\.h")
+                "linux/uaccess.h"))
+             #t))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (for-each (lambda (file)
+                           (let ((target (string-append doc "/" file)))
+                             (mkdir-p (dirname target))
+                             (copy-recursively file target)))
+                         (list "README.md" "examples"))
+               #t))))))
+    (home-page "https://github.com/teleshoes/acpi_call")
+    (synopsis "Linux kernel module to perform ACPI method calls")
+    (description
+     "This simple Linux kernel module allows calls from user space to any
+@acronym{ACPI, Advanced Configuration and Power Interface} method provided by
+your computer's firmware, by writing to @file{/proc/acpi/call}.  You can pass
+any number of parameters of types @code{ACPI_INTEGER},  @code{ACPI_STRING},
+and @code{ACPI_BUFFER}.
+
+It grants direct and undocumented access to your hardware that may cause damage
+and should be used with caution, especially on untested models.")
+    (license license:gpl3+)))           ; see README.md (no licence headers)
+
+(define-public vhba-module
+  (package
+    (name "vhba-module")
+    (version "20190410")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1513hq130raxp9z5grj54cwfjfxj05apipxg425j0zicii59a60c"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; TODO: No tests?
+     `(#:tests? #f))
+    (home-page "https://cdemu.sourceforge.io/")
+    (synopsis "Kernel module that emulates SCSI devices")
+    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
+between the CDemu userspace daemon and linux kernel.")
+    (license license:gpl2+)))
 
 
 ;;;
@@ -803,21 +880,49 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "010")
+    (version "012")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://kernel.org/linux/utils/usb/usbutils/"
                           "usbutils-" version ".tar.xz"))
       (sha256
-       (base32
-        "06aag4jfgsfjxk563xsp9ik9nadihmasrr37a1gb0vwqni5kdiv1"))))
+       (base32 "0iiy0q7fzikavmdsjsb0sl9kp3gfh701qwyjjccvqh0qz4jlcqw8"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'patch-bootstrap-scripts
+           (lambda _
+             (substitute* "usbhid-dump/bootstrap"
+               (("/bin/bash") (which "bash")))
+
+             ;; Don't let autogen.sh run configure with bogus options & CFLAGS.
+             (substitute* "autogen.sh"
+               (("^\\./configure.*") ""))
+             #t))
+         (add-after 'install 'separate-python-output
+           ;; Separating one Python script shaves more than 106 MiB from :out.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out        (assoc-ref outputs "out"))
+                   (out:python (assoc-ref outputs "python")))
+               (for-each (lambda (file)
+                           (let ((old (string-append out "/" file))
+                                 (new (string-append out:python "/" file)))
+                             (mkdir-p (dirname new))
+                             (rename-file old new)))
+                         (list "bin/lsusb.py"))
+               #t))))))
     (inputs
-     `(("libusb" ,libusb)
-       ("eudev" ,eudev)))
+     `(("eudev" ,eudev)
+       ("libusb" ,libusb)
+       ("python" ,python)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
     (synopsis
      "Tools for working with USB devices, such as lsusb")
@@ -1008,7 +1113,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.0")
+    (version "5.1")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -1016,7 +1121,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "1nj7wvsdmhpp53yffj1pnrkjn96mxrbcraa6h03wc7dqn9zdfyiv"))))
+               "12wsga1v3rab24gr0mpfip7j7gwr90m8f9h6fviqxa3xgnwl38zm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1064,7 +1169,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1072,7 +1177,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1pxf0zkmps03l3zzd0fr828xhkg6a8hxljmbxzc2cyj2ls9kmp1w"))))
+               "0jwr9g4yxg9gj6xx0sb2r6wrdl8amrjd19hilkrq4rirynp770s8"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -1084,14 +1189,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1kx45yhrxai3k595yyqs4wj0p2n5b0c9mf0k36ljjf1bj8lgb6zx"))))
+               "0fi11b7r8hg1bdjw74s8sqx8rc4qb310jaj9lsia9labvfyjrpsx"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1138,14 +1243,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "152r82i6f97gfilfgiax5prxkd4xlcipciv8ha8yrk452qbxyxvz"))))
+               "01zrg0h2jw9dlj9233vjsn916yf4f2s667yry6xsn8d57lq745qn"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
@@ -1296,7 +1401,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.0.0")
+    (version "5.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1304,7 +1409,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1fi03lb8dqr8hq633gcqsf6228vsvysxms075j1yyl4nlc17616z"))))
+                "1kvvrz5mlpjxqcm7vl6i8w6l1cb2amp6p5xyq006pgzafc49hnnw"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.
@@ -1474,8 +1579,8 @@ Linux-based operating systems.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.kernel.org/pub/linux/utils/net/"
-                           "bridge-utils/bridge-utils-" version ".tar.xz"))
+       (uri (string-append "mirror://kernel.org/linux/utils/net/bridge-utils/"
+                           "bridge-utils-" version ".tar.xz"))
        (sha256
         (base32 "1j16kr44csyr4yqxly26l1yw2bh4nkiasgwvask2i2gvsnsyyryc"))))
     (build-system gnu-build-system)
@@ -2152,7 +2257,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2.7")
+    (version "3.2.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url "https://github.com/gentoo/eudev")
@@ -2160,7 +2265,7 @@ from the module-init-tools project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1la7x7v7yqb84wnc7w0kj53sa0an0m9xp6wn01ypi8drh02wjjy2"))
+                "1g95yzzx4qxm5qhhylbi930lrq4gsbz207n72018nkvswj6gmpjw"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -2947,10 +3052,8 @@ also contains the libsysfs library.")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append
-         "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/cpufrequtils-"
-         version ".tar.gz"))
+       (uri (string-append "mirror://kernel.org/linux/utils/kernel/cpufreq/"
+                           "cpufrequtils-" version ".tar.gz"))
        (sha256
         (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
        (patches (search-patches "cpufrequtils-fix-aclocal.patch"))))
@@ -3226,14 +3329,14 @@ applications.")
 (define-public sbc
   (package
     (name "sbc")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.kernel.org/pub/linux/bluetooth/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "02ckd2z51z0h85qgv7x8vv8ybp5czm9if1z78411j53gaz7j4476"))))
+                "1jal98pnrjkzxlkiqy0ykh4qmgnydz9bmsp1jn581p5kddpg92si"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))
@@ -3412,7 +3515,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.20.2")
+    (version "5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3420,7 +3523,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0z0fm3j4ajzsf445381ra8r3zzciyyvfh8vvbjmbyarg2rz8n3w9"))))
+                "0dgh56pamav8wb9nmabjwdlpcazvqc9pgzwablxn77mqh0qrhkaq"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3656,6 +3759,68 @@ checks them against configured limits and switches to appropriate (also
 pre-configured) fan level.  It requires a working @code{thinkpad_acpi} or any
 other @code{hwmon} driver that enables temperature reading and fan control
 from userspace.")
+    (license license:gpl3+)))
+
+(define-public tpacpi-bat
+  (package
+    (name "tpacpi-bat")
+    (version "3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/teleshoes/tpacpi-bat.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wbaz34z99gqx721alh5vmpxpj2yxg3x9m8jqyivfi1wfpwc2nd5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-inputs
+           (lambda _
+             (substitute* "tpacpi-bat"
+               (("cat ")
+                (format "~a " (which "cat")))
+               ;; tpacpi-bat modprobes the acpi_call kernel module if it's not
+               ;; loaded.  That's the administrator's prerogative; disable it.
+               (("system \"(modprobe .*)\"" _ match)
+                (format "die \"Please run ‘~a’ first.\\n\"" match)))
+             #t))
+         (delete 'configure)            ; nothing to configure
+         (delete 'build)                ; nothing to build
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "tpacpi-bat" bin)
+
+               ;; There's no man page.  Install other forms of documentation.
+               (for-each (lambda (file)
+                           (let ((target (string-append doc "/" file)))
+                             (mkdir-p (dirname target))
+                             (copy-recursively file target)))
+                         (list "battery_asl" "examples" "README.md"))
+               #t))))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "https://github.com/teleshoes/tpacpi-bat")
+    (synopsis "ThinkPad battery charge controller")
+    (description
+     "Tpacpi-bat is a command-line interface to control battery charging on
+@uref{https://github.com/teleshoes/tpacpi-bat/wiki/Supported-Hardware, Lenovo
+ThinkPad models released after 2011}, starting with the xx20 series.  It can
+query and set the thresholds at which one or both batteries will start and stop
+charging, inhibit charging batteries for a set period of time, or force them to
+discharge when they otherwise would not.
+
+This tool merely exposes ACPI calls provided by the @code{acpi_call} Linux
+kernel module provided by the @code{acpi-call-linux-module} package, which must
+be installed and loaded separately.  Only the original vendor firmware is
+supported.")
     (license license:gpl3+)))
 
 (define-public ntfs-3g
@@ -4401,7 +4566,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4411,7 +4576,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rcp9i0fisdm4h6799ffr696l1vl661fnwb2dij268nlwwmkr90g"))))
+                "059kxrpxx580mm6p0z2a421nxngszyh4yqqhbgvn04b6a7dbsa2w"))))
     (inputs `(("bash" ,bash)
               ("dbus" ,dbus)
               ("ethtool" ,ethtool)
@@ -4445,6 +4610,8 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                (setenv "TLP_FLIB" (string-append out "/share/tlp/func.d"))
                (setenv "TLP_ULIB" (string-append out "/lib/udev"))
                (setenv "TLP_CONF" "/etc/tlp")
+               (setenv "TLP_ELOD"
+                       (string-append out "/lib/elogind/system-sleep"))
                (setenv "TLP_SHCPL"
                        (string-append out "/share/bash-completion/completions"))
                (setenv "TLP_MAN" (string-append out "/share/man"))
@@ -4454,7 +4621,9 @@ interface in sysfs, which can be accomplished with the included udev rules.")
          (add-before 'install 'fix-installation
            (lambda _
              ;; Stop the Makefile from trying to create system directories.
-             (substitute* "Makefile" (("\\[ -f \\$\\(_CONF\\) \\]") "#"))
+             (substitute* "Makefile"
+               (("\\[ -f \\$\\(_CONF\\) \\]") "#")
+               (("install -d -m 755 \\$\\(_VAR\\)") "#"))
              #t))
          (replace 'install
            (lambda _
@@ -4611,15 +4780,16 @@ userspace queueing component and the logging subsystem.")
   (package
     (name "proot")
     (version "5.1.0")
-    (home-page "https://github.com/proot-me/PRoot")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "11h30i83vdhc3khlj6hrh3a21sbmmz8nhfv09vkf6b9bcs1biz2h"))
-              (patches (search-patches "proot-test-fhs.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/proot-me/PRoot.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0azsqis99gxldmbcg43girch85ysg4hwzf0h1b44bmapnsm89fbz"))
+       (patches (search-patches "proot-test-fhs.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("-C" "src")
@@ -4696,6 +4866,7 @@ userspace queueing component and the logging subsystem.")
                      ;; For 'mcookie', used by some of the tests.
                      ("util-linux" ,util-linux)))
     (inputs `(("talloc" ,talloc)))
+    (home-page "https://github.com/proot-me/PRoot")
     (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
     (description
      "PRoot is a user-space implementation of @code{chroot}, @code{mount --bind},
@@ -5036,7 +5207,7 @@ interface to this kernel feature.")
 (define-public mbpfan
   (package
     (name "mbpfan")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -5045,8 +5216,7 @@ interface to this kernel feature.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1gysq778rkl6dvvj9a1swxcl15wvz0bng5bn4nwq118cl8p8pask"))))
+        (base32 "0aijyxrqh01x0s80yr4cgxgd001iiqqph65pxvby7f0wz8lnxnqj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; tests ask to be run as root
@@ -5187,6 +5357,33 @@ infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log,
 nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or
 management tools in userspace.")
     (license license:gpl2)))
+
+(define-public go-netlink
+  (package
+    (name "go-netlink")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vishvananda/netlink.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hpzghf1a4cwawzhkiwdzin80h6hd09fskl77d5ppgc084yvj8x0"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/vishvananda/netlink"))
+    (native-inputs
+     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)
+       ("go-netns" ,go-netns)))
+    (home-page "https://github.com/vishvananda/netlink")
+    (synopsis "Simple netlink library for Go")
+    (description "The netlink package provides a simple netlink library for
+Go.  Netlink is the interface a user-space program in Linux uses to
+communicate with the kernel.  It can be used to add and remove interfaces, set
+IP addresses and routes, and configure IPsec.")
+    (license license:asl2.0)))
 
 (define-public xfsprogs
   (package

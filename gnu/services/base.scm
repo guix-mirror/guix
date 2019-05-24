@@ -830,6 +830,7 @@ Return a service that sets up Unicode support in @var{tty} and loads
   "Return the list of PAM service needed for CONF."
   ;; Let 'login' be known to PAM.
   (list (unix-pam-service "login"
+                          #:login-uid? #t
                           #:allow-empty-passwords?
                           (login-configuration-allow-empty-passwords? config)
                           #:motd
@@ -1293,8 +1294,8 @@ the tty to run, among other things."
                (lambda args
                  ;; There's a race with the SIGCHLD handler, which could
                  ;; call 'waitpid' before 'close-pipe' above does.  If we
-                 ;; get ECHILD, that means we lost the race, but that's
-                 ;; fine.
+                 ;; get ECHILD, that means we lost the race; in that case, we
+                 ;; cannot tell what the exit code was (FIXME).
                  (or (= ECHILD (system-error-errno args))
                      (apply throw args)))))
             (line

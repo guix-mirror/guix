@@ -85,7 +85,8 @@
   '(("de" . "Systeminstallation")
     ("en" . "System Installation")
     ("es" . "Instalación del sistema")
-    ("fr" . "Installation du système")))
+    ("fr" . "Installation du système")
+    ("ru" . "Установка системы")))
 
 (define (log-to-info tty user)
   "Return a script that spawns the Info reader on the right section of the

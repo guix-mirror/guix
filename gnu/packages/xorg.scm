@@ -1724,7 +1724,7 @@ of user actions in the X Window System.")
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RenderProto protocol headers")
     (description
-     "Rendering Extension defines a protcol for a digital image composition
+     "Rendering Extension defines a protocol for a digital image composition
 as the foundation of a new rendering model within the X Window System.")
     (license license:x11)
     (properties `((superseded . ,xorgproto)))))
@@ -2507,7 +2507,7 @@ provide all features that libinput supports it does little beyond.")
     (synopsis "Joystick input driver for X server")
     (description
      "xf86-input-joystick is a joystick input driver for the Xorg X server.
-It is used to cotrol the pointer with a joystick device.")
+It is used to control the pointer with a joystick device.")
     (license license:x11)))
 
 
@@ -3500,14 +3500,7 @@ X server.")
           (base32
            "1s6p7yxmi12q4y05va53rljwyzd6ry492r1pgi7wwq6cznivhgly"))
         (patches
-         (list (origin
-                 (method url-fetch)
-                 (uri "https://cgit.freedesktop.org/xorg/driver/\
-xf86-video-voodoo/patch/?id=9172ae566a0e85313fc80ab62b4455393eefe593")
-                 (sha256
-                  (base32
-                   "0rndmxf5b8j3hjnhrwrnzsq5024fli134fj1mprhkcrvax2zq8db"))
-                 (file-name "xf86-video-voodoo-pcitag.patch"))))))
+         (search-patches "xf86-video-voodoo-pcitag.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
@@ -6350,7 +6343,7 @@ window name or id, forcing toggle, increase or decrease opacity.")
        ("automake" ,automake)))
     (synopsis "Resize fonts in the BDF format")
     (description
-     "This packages provides @command{bdfresize}, a command to magnify or
+     "This package provides @command{bdfresize}, a command to magnify or
 reduce fonts in the Glyph Bitmap Distribution Format (BDF).  It produces BDF
 output.")
     (home-page "https://tracker.debian.org/pkg/bdfresize")

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
               ;; The URI does not appear to be easily guessable.  For
               ;; example, you cannot download version "9100g" simply
               ;; by replacing "9100h" in the URI.
-              (uri "http://tcpdiag.dl.osdn.jp/anthy/37536/anthy-9100h.tar.gz")
+              (uri "http://dl.osdn.jp/anthy/37536/anthy-9100h.tar.gz")
               (sha256
                (base32
                 "0ism4zibcsa5nl77wwi12vdsfjys3waxcphn1p5s7d0qy1sz0mnj"))))

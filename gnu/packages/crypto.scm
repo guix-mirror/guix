@@ -426,7 +426,7 @@ user's graphical desktop.")
      `(("openssl" ,openssl)))
     (home-page "https://www.tarsnap.com/scrypt.html")
     (synopsis "Memory-hard encryption tool based on scrypt")
-    (description "This packages provides a simple password-based encryption
+    (description "This package provides a simple password-based encryption
 utility as a demonstration of the @code{scrypt} key derivation function.
 @code{Scrypt} is designed to be far more resistant against hardware brute-force
 attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")

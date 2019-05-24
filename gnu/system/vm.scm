@@ -64,6 +64,7 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu system)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu system uuid)
 
   #:use-module (srfi srfi-1)
@@ -249,6 +250,12 @@ made available under the /xchg CIFS share."
                       #:guile-for-build guile-for-build
                       #:references-graphs references-graphs)))
 
+(define (has-guix-service-type? os)
+  "Return true if OS contains a service of the type GUIX-SERVICE-TYPE."
+  (not (not (find (lambda (service)
+                     (eq? (service-kind service) guix-service-type))
+                   (operating-system-services os)))))
+
 (define* (iso9660-image #:key
                         (name "iso9660-image")
                         file-system-label
@@ -258,8 +265,9 @@ made available under the /xchg CIFS share."
                         os
                         bootcfg-drv
                         bootloader
-                        register-closures?
-                        (inputs '()))
+                        (register-closures? (has-guix-service-type? os))
+                        (inputs '())
+                        (grub-mkrescue-environment '()))
   "Return a bootable, stand-alone iso9660 image.
 
 INPUTS is a list of inputs (as for packages)."
@@ -283,6 +291,11 @@ INPUTS is a list of inputs (as for packages)."
 
            (sql-schema #$schema)
 
+           ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
+           (setenv "GUIX_LOCPATH"
+                   #+(file-append glibc-utf8-locales "/lib/locale"))
+           (setlocale LC_ALL "en_US.utf8")
+
            (let ((inputs
                   '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
                              (map canonical-package
@@ -301,7 +314,9 @@ INPUTS is a list of inputs (as for packages)."
                           inputs)))
 
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-             (make-iso9660-image #$(bootloader-package bootloader)
+             (make-iso9660-image #$xorriso
+                                 '#$grub-mkrescue-environment
+                                 #$(bootloader-package bootloader)
                                  #$bootcfg-drv
                                  #$os
                                  "/xchg/guixsd.iso"
@@ -338,7 +353,7 @@ INPUTS is a list of inputs (as for packages)."
                      os
                      bootcfg-drv
                      bootloader
-                     (register-closures? #t)
+                     (register-closures? (has-guix-service-type? os))
                      (inputs '())
                      copy-inputs?)
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
@@ -354,7 +369,9 @@ file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
-the image."
+the image.  By default, REGISTER-CLOSURES? is set to true only if a service of
+type GUIX-SERVICE-TYPE is present in the services definition of the operating
+system."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -378,6 +395,11 @@ the image."
                         (ice-9 binary-ports))
 
            (sql-schema #$schema)
+
+           ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
+           (setenv "GUIX_LOCPATH"
+                   #+(file-append glibc-utf8-locales "/lib/locale"))
+           (setlocale LC_ALL "en_US.utf8")
 
            (let ((inputs
                   '#$(append (list qemu parted e2fsprogs dosfstools)
@@ -463,21 +485,32 @@ the image."
 
 (define* (system-docker-image os
                               #:key
-                              (name "guixsd-docker-image")
-                              register-closures?)
+                              (name "guix-docker-image")
+                              (register-closures? (has-guix-service-type? os)))
   "Build a docker image.  OS is the desired <operating-system>.  NAME is the
-base name to use for the output file.  When REGISTER-CLOSURES? is not #f,
-register the closure of OS with Guix in the resulting Docker image.  This only
-makes sense when you want to build a Guix System Docker image that has Guix
-installed inside of it.  If you don't need Guix (e.g., your Docker
-image just contains a web server that is started by the Shepherd), then you
-should set REGISTER-CLOSURES? to #f."
+base name to use for the output file.  When REGISTER-CLOSURES? is true,
+register the closure of OS with Guix in the resulting Docker image.  By
+default, REGISTER-CLOSURES? is set to true only if a service of type
+GUIX-SERVICE-TYPE is present in the services definition of the operating
+system."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
                                   "guix/store/schema.sql"))))
 
-  (let ((os    (containerized-operating-system os '()))
+  (define boot-program
+    ;; Program that runs the boot script of OS, which in turn starts shepherd.
+    (program-file "boot-program"
+                  #~(let ((system (cadr (command-line))))
+                      (setenv "GUIX_NEW_SYSTEM" system)
+                      (execl #$(file-append guile-2.2 "/bin/guile")
+                             "guile" "--no-auto-compile"
+                             (string-append system "/boot")))))
+
+
+  (let ((os    (operating-system-with-gc-roots
+                (containerized-operating-system os '())
+                (list boot-program)))
         (name  (string-append name ".tar.gz"))
         (graph "system-graph"))
     (define build
@@ -528,9 +561,11 @@ should set REGISTER-CLOSURES? to #f."
                                  (string-append "/xchg/" #$graph)
                                read-reference-graph)))
                  #$os
+                 #:entry-point '(#$boot-program #$os)
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)
                  #:transformations `((,root-directory -> ""))))))))
+
     (expression->derivation-in-linux-vm
      name build
      #:make-disk-image? #f
@@ -668,12 +703,13 @@ to USB sticks meant to be read-only."
                        #:file-system-label root-label
                        #:file-system-uuid uuid
                        #:os os
-                       #:register-closures? #t
                        #:bootcfg-drv bootcfg
                        #:bootloader (bootloader-configuration-bootloader
                                      (operating-system-bootloader os))
                        #:inputs `(("system" ,os)
-                                  ("bootcfg" ,bootcfg)))
+                                  ("bootcfg" ,bootcfg))
+                       #:grub-mkrescue-environment
+                       '(("MKRESCUE_SED_MODE" . "mbr_hfs")))
         (qemu-image #:name name
                     #:os os
                     #:bootcfg-drv bootcfg
@@ -685,7 +721,6 @@ to USB sticks meant to be read-only."
                     #:file-system-label root-label
                     #:file-system-uuid uuid
                     #:copy-inputs? #t
-                    #:register-closures? #t
                     #:inputs `(("system" ,os)
                                ("bootcfg" ,bootcfg))))))
 

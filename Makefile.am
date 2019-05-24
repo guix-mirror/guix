@@ -78,6 +78,7 @@ MODULES =					\
   guix/modules.scm				\
   guix/download.scm				\
   guix/discovery.scm				\
+  guix/bzr-download.scm            		\
   guix/git-download.scm				\
   guix/hg-download.scm				\
   guix/swh.scm					\
@@ -103,6 +104,7 @@ MODULES =					\
   guix/cve.scm					\
   guix/workers.scm				\
   guix/zlib.scm					\
+  guix/lzlib.scm				\
   guix/build-system.scm				\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
@@ -159,6 +161,7 @@ MODULES =					\
   guix/build/font-build-system.scm		\
   guix/build/go-build-system.scm		\
   guix/build/asdf-build-system.scm		\
+  guix/build/bzr.scm				\
   guix/build/git.scm				\
   guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\
@@ -296,12 +299,12 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/5.0-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-arm-veyron.conf       \
+  gnu/packages/aux-files/linux-libre/5.1-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-i686.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-arm-veyron.conf       \
   gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.19-x86_64.conf	\
@@ -321,6 +324,7 @@ EXAMPLES =					\
   gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\
   gnu/system/examples/lightweight-desktop.tmpl	\
+  gnu/system/examples/docker-image.tmpl		\
   gnu/system/examples/vm-image.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
@@ -404,6 +408,7 @@ SCM_TESTS =					\
   tests/cve.scm					\
   tests/workers.scm				\
   tests/zlib.scm				\
+  tests/lzlib.scm				\
   tests/file-systems.scm			\
   tests/uuid.scm				\
   tests/system.scm				\
@@ -487,6 +492,7 @@ check-system: $(GOBJECTS)
 dist_pkgdata_DATA =				\
   etc/substitutes/hydra.gnu.org.pub		\
   etc/substitutes/berlin.guixsd.org.pub		\
+  etc/substitutes/ci.guix.gnu.org.pub		\
   etc/substitutes/ci.guix.info.pub
 
 # Bash completion file.
@@ -627,7 +633,7 @@ guix-binary.%.tar.xz:
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
-dist-hook: $(distdir)/ChangeLog gen-AUTHORS gen-tarball-version
+dist-hook: gen-ChangeLog gen-AUTHORS gen-tarball-version
 dist-hook: assert-no-store-file-names
 dist-hook: doc-po-update
 
@@ -641,12 +647,12 @@ $(top_srcdir)/.version:
 gen-tarball-version:
 	echo $(VERSION) > "$(distdir)/.tarball-version"
 
-gen-ChangeLog $(distdir)/ChangeLog:
+gen-ChangeLog:
 	$(AM_V_GEN)if test -d .git; then		\
 	  $(top_srcdir)/build-aux/gitlog-to-changelog	\
-	    > $(distdir)/cl-t;				\
+	    > $(distdir)/ChangeLog.tmp;			\
 	  rm -f $(distdir)/ChangeLog;			\
-	  mv $(distdir)/cl-t $(distdir)/ChangeLog;	\
+	  mv $(distdir)/ChangeLog.tmp $(distdir)/ChangeLog;	\
 	fi
 
 gen-AUTHORS:
@@ -714,7 +720,6 @@ system_flags = $(foreach system,$(1),-s $(system))
 # issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
 release: dist
 	cd po; git checkout .
-	cd doc; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
 	  exit 1 ;						\
@@ -791,13 +796,13 @@ update-NEWS: $(GOBJECTS)
 	  $(top_srcdir)/NEWS "$(GUIX_MAINTENANCE_DIRECTORY)/data"
 
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
-assert-no-store-file-names: $(distdir)/ChangeLog
+assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
 		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
 	     --exclude=guix-prettify.el						\
-	     --exclude=ChangeLog						\
+	     --exclude=ChangeLog*						\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\

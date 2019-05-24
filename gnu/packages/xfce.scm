@@ -188,15 +188,15 @@ to share commonly used Xfce widgets among the Xfce applications.")
 (define-public exo
   (package
     (name "exo")
-    (version "0.12.4")
+    (version "0.12.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "exo/" (version-major+minor version) "/"
+                                  "exo-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bsh43m6dh83vj9qi1vs0425m2d5yfqjyihr7zjjqmyvdf0n1bxh"))))
+                "1s23prcgall6r5dpn0qlrdq3zj13p95a5s0l2vflgrka8gb39x78"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -224,8 +224,8 @@ development.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "garcon/" (version-major+minor version) "/"
+                                  "garcon-" version ".tar.bz2"))
               (sha256
                (base32
                 "0z64g6f2vwfjzqsrsn05nbcbs8l6y4cfdgxk4k2la3giixj0jzx8"))))
@@ -250,15 +250,15 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "tumbler/" (version-major+minor version) "/"
+                                  "tumbler-" version ".tar.bz2"))
               (sha256
                (base32
-                "0h3x325dbz0lnb7b3zzbfrva3v0rn99v03zj9cza7ysr2nyy28nh"))))
+                "19mnwmcxdhqfqkd9433z8h2y8w49vlc7jw5p5h8j54wz7zhrgx0g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -596,15 +596,15 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.4")
+    (version "1.8.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
+                                  "thunar/" (version-major+minor version) "/"
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "1c4kg8w77nwi75b4ashy2m1y39icv951h63qsr1gdj6yipd53gy2"))))
+                "0apg70dwkh8q89ybzhj4q2gp4yxiybwxfzpbvx0nj0rxis1gprf0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

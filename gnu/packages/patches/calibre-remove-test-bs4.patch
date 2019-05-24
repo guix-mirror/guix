@@ -1,0 +1,34 @@
+In my efforts to fix all Calibre tests, this test would always complain about
+backports.functools_lru_cache not existing even after I packaged and added
+python2-soupsieve as an input and confirmed it was in the
+PYTHONPATH. Currently Calibre does not actually use it for anything other than
+testing it's there, so I assume they will start using it in future Calibre
+versions.
+
+From 2738dd42caebe55326c76922a12ba8740bdb22e7 Mon Sep 17 00:00:00 2001
+From: Brendan Tildesley <mail@brendan.scot>
+Date: Sat, 27 Apr 2019 00:42:39 +1000
+Subject: [PATCH] Remove test_bs4
+
+---
+ src/calibre/test_build.py | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/calibre/test_build.py b/src/calibre/test_build.py
+index 73f1172e8c..07bdffd3e5 100644
+--- a/src/calibre/test_build.py
++++ b/src/calibre/test_build.py
+@@ -73,10 +73,6 @@ class BuildTest(unittest.TestCase):
+         from html5_parser import parse
+         parse('<p>xxx')
+ 
+-    def test_bs4(self):
+-        import soupsieve, bs4
+-        del soupsieve, bs4
+-
+     def test_zeroconf(self):
+         if ispy3:
+             import zeroconf as z, ifaddr
+-- 
+2.21.0
+

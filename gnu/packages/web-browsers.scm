@@ -368,7 +368,7 @@ driven and does not detract you from your daily work.")
 (define-public next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -377,7 +377,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0a066f56hnb9znbwnv1blm31j0ysv05n4wzlkli0zgw087c9047x"))
+         "1bif1k738knhifxhkn0d2x1m521zkx40pri44vyjqncp9r95hkbk"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -455,6 +455,10 @@ features for productive professionals.")
        ;; Lisp libraries:
        ("trivial-features" ,sbcl-trivial-features)
        ("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("log4cl" ,sbcl-log4cl)
+       ("find-port" ,sbcl-find-port)
        ("cl-strings" ,sbcl-cl-strings)
        ("cl-string-match" ,sbcl-cl-string-match)
        ("puri" ,sbcl-puri)

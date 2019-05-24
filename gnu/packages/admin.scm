@@ -24,6 +24,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,6 +90,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
@@ -181,14 +183,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ys2w83vm62spr8bx38sccfdpy9fqmj7wfywm5k8ihsy2k61da2i"))))
+                "1xn6mb5bh8bpfgdrh09ja31jk0ln7bmxbbf0vjcqxkkixs2wl6sk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -875,8 +877,10 @@ through the network interface controller.")
     (version "0.13.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://jnettop.kubs.info/dist/jnettop-"
-                                  version ".tar.gz"))
+              (uri
+               (string-append "https://web.archive.org/web/20161221100811/"
+                              "http://jnettop.kubs.info/dist/jnettop-"
+                              version ".tar.gz"))
               (sha256
                (base32
                 "1855np7c4b0bqzhf1l1dyzxb90fpnvrirdisajhci5am6als31z9"))))
@@ -887,7 +891,8 @@ through the network interface controller.")
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
        ("libpcap" ,libpcap)))
-    (home-page "http://jnettop.kubs.info/")
+    (home-page
+     "https://web.archive.org/web/20160703195221/http://jnettop.kubs.info/wiki/")
     (synopsis "Visualize network traffic by bandwidth use")
     (description
      "Jnettop is a traffic visualiser, which captures traffic going
@@ -1130,16 +1135,23 @@ commands and their arguments.")
 (define-public wpa-supplicant-minimal
   (package
     (name "wpa-supplicant-minimal")
-    (version "2.7")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://w1.fi/releases/wpa_supplicant-"
-                    version
-                    ".tar.gz"))
+                    version ".tar.gz"))
               (sha256
                (base32
-                "0x1hqyahq44jyla8jl6791nnwrgicrhidadikrnqxsm2nw36pskn"))))
+                "15ixzm347n8w6gdvi3j3yks3i15qmp6by9ayvswm34d929m372d6"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "wpa_supplicant/defconfig"
+                    ;; Disable D-Bus to save ~14MiB on the closure size.
+                    (("^CONFIG_CTRL_IFACE_DBUS" line _)
+                     (string-append "#" line)))
+                    #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1152,8 +1164,7 @@ commands and their arguments.")
                (display "
       CONFIG_DEBUG_SYSLOG=y
 
-      # Choose GnuTLS (the default is OpenSSL.)
-      CONFIG_TLS=gnutls
+      CONFIG_TLS=openssl
 
       CONFIG_DRIVER_NL80211=y
       CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
@@ -1187,8 +1198,7 @@ commands and their arguments.")
     (inputs
      `(("readline" ,readline)
        ("libnl" ,libnl)
-       ("gnutls" ,gnutls)
-       ("libgcrypt" ,libgcrypt)))                 ;needed by crypto_gnutls.c
+       ("openssl" ,openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://w1.fi/wpa_supplicant/")
@@ -1221,7 +1231,6 @@ command.")
              (lambda _
                (let ((port (open-file ".config" "al")))
                  (display "
-      CONFIG_CTRL_IFACE_DBUS=y
       CONFIG_CTRL_IFACE_DBUS_NEW=y
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
                  (close-port port))
@@ -1276,6 +1285,72 @@ command.")
                                   qt)))
                         #t))))))
     (synopsis "Graphical user interface for WPA supplicant")))
+
+(define-public hostapd
+  (package
+    (name "hostapd")
+    (version "2.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://w1.fi/releases/hostapd-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1c74rrazkhy4lr7pwgwa2igzca7h9l4brrs7672kiv7fwqmm57wj"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This is mostly copied from 'wpa-supplicant' above.
+             (chdir "hostapd")
+             (copy-file "defconfig" ".config")
+             (let ((port (open-file ".config" "al")))
+               (display "
+      CONFIG_LIBNL32=y
+      CONFIG_IEEE80211R=y
+      CONFIG_IEEE80211N=y
+      CONFIG_IEEE80211AC=y\n" port)
+               (close-port port))
+             #t))
+         (add-after 'install 'install-man-pages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (man  (string-append out "/share/man"))
+                    (man1 (string-append man "/man1"))
+                    (man8 (string-append man "/man8")))
+               (define (copy-man-page target)
+                 (lambda (file)
+                   (install-file file target)))
+
+               (for-each (copy-man-page man1)
+                         (find-files "." "\\.1"))
+               (for-each (copy-man-page man8)
+                         (find-files "." "\\.8"))
+               #t))))
+
+      #:make-flags (list "CC=gcc"
+                         (string-append "BINDIR=" (assoc-ref %outputs "out")
+                                        "/sbin")
+                         (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                                        "/lib"))
+      #:tests? #f))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+
+    ;; There's an optional dependency on SQLite.
+    (inputs `(("openssl" ,openssl)
+              ("libnl" ,libnl)))
+    (home-page "https://w1.fi/hostapd/")
+    (synopsis "Daemon for Wi-Fi access points and authentication servers")
+    (description
+     "hostapd is a user-space daemon for WiFi access points and authentication
+servers.  It implements IEEE 802.11 access point management, IEEE
+802.1X/WPA/WPA2/EAP Authenticators, RADIUS client, EAP server, and RADIUS
+authentication server.")
+
+    ;; Same license as wpa_supplicant.
+    (license license:bsd-3)))
 
 (define-public wakelan
   (package
@@ -1347,7 +1422,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20190405")
+    (version "20190509")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1355,7 +1430,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0hv6r65l8vk3f6i3by7i47vc1917qm47838bpq80lfn22784y53y"))))
+                "17cf5jhcy9wqla5c9s08khqg0pxhar2nmwdcja2jf2srl2a5y2w6"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1902,11 +1977,20 @@ displays a table of current bandwidth usage by pairs of hosts.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1nj486bbg1adfg298zck96vgx57kchcypc1zdz1n7w540vyksxcr"))))
+                "1nj486bbg1adfg298zck96vgx57kchcypc1zdz1n7w540vyksxcr"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Don't insist on write access to /var.
+                  (substitute* "src/etc/Makefile.in"
+                    (("\\$\\(INSTALL\\)(.*)localstatedir" _ middle)
+                     (string-append "-$(INSTALL)" middle "localstatedir")))
+                  #t))))
     (inputs
      `(("openssl" ,openssl)
        ("libgcrypt" ,libgcrypt)))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--localstatedir=/var")))
     (home-page "https://dun.github.io/munge/")
     (synopsis "Cluster computing authentication service")
     (description

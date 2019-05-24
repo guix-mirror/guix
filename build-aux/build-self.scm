@@ -399,6 +399,7 @@ files."
   (mlet %store-monad ((build  (build-program source version guile-version
                                              #:pull-version pull-version))
                       (system (if system (return system) (current-system)))
+                      (home -> (getenv "HOME"))
 
                       ;; Note: Use the deprecated names here because the
                       ;; caller might be Guix <= 0.16.0.
@@ -419,6 +420,9 @@ files."
                          ;; $GUILE_LOAD_PATH & co.
                          (with-clean-environment
                           (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
+                          (when home
+                            ;; Inherit HOME so that 'xdg-directory' works.
+                            (setenv "HOME" home))
                           (open-pipe* OPEN_READ
                                       (derivation->output-path build)
                                       source system version

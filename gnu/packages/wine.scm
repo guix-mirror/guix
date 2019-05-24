@@ -72,7 +72,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "4.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -80,7 +80,7 @@
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "0k8d90mgjzv8vjspmnxzr3i5mbccxnbr9hf03q1bpf5jjppcsdk7"))))
+                "0j29df0px6dzin4j0cbxgza4msvf9spmwranv25krq1g9kq959nk"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -310,7 +310,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "4.7")
+    (version "4.8")
     (source
      (origin
        (method git-fetch)
@@ -320,7 +320,7 @@ integrate Windows applications into your desktop.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1sgyq57dyzchwnvkgx96bcx5rv821s0vidzdyz7x5711j7xmiv70"))))
+         "0npm44zdys78qbqqyvjczqqjdgacpsfds3jxyy1y4yj2xjqzagsq"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -366,7 +366,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1c5swx6jj0hz9w2jgyl30pdjcq9n62qp1rmqyq1d4q2a6n291jiv"))))
+                "0dd1vw3bq47ypdpflgmmbi68pjw5z3wz26kfwvnkxqbp28fapfa8"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("faudio" ,faudio)
               ("ffmpeg" ,ffmpeg)

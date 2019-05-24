@@ -1,9 +1,9 @@
 # htmlxref.cnf - reference file for free Texinfo manuals on the web.
 # Modified by Ludovic Courtès <ludo@gnu.org> for the GNU Guix manual.
 
-htmlxrefversion=2018-07-05.20; # UTC
+htmlxrefversion=2019-05-04.20; # UTC
 
-# Copyright 2010, 2011, 2012, 2013, 2014, 2015 Free Software Foundation, Inc.
+# Copyright 2010, 2011, 2012, 2013, 2014, 2015, 2019 Free Software Foundation, Inc.
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -37,7 +37,7 @@ htmlxrefversion=2018-07-05.20; # UTC
 # associated, and thus gnu.org/manual can't include them.
 
 # shorten references to manuals on www.gnu.org.
-G = http://www.gnu.org
+G = https://www.gnu.org
 GS = ${G}/software
 
 3dldf		mono	${GS}/3dldf/manual/user_ref/3DLDF.html
@@ -275,6 +275,10 @@ gdbm		chapter	${GDBM}/html_chapter/
 gdbm		section ${GDBM}/html_section/
 gdbm		node	${GDBM}/html_node/
 
+# XXX: These are actually pages created by texi2html, so no quite following
+# the expected naming scheme.
+geiser		chapter	http://geiser.nongnu.org/
+
 gettext		mono	${GS}/gettext/manual/gettext.html
 gettext		node	${GS}/gettext/manual/html_node/
 
@@ -389,10 +393,14 @@ guile-gtk	node	${GS}/guile-gtk/docs/guile-gtk/
 guile-rpc	mono	${GS}/guile-rpc/manual/guile-rpc.html
 guile-rpc	node	${GS}/guile-rpc/manual/html_node/
 
-guix		mono	${GS}/guix/manual/guix.html
-guix		node	${GS}/guix/manual/html_node/
+guix.de		mono	${GS}/guix/manual/de/guix.html
+guix.de		node	${GS}/guix/manual/de/html_node/
+guix.es		mono	${GS}/guix/manual/es/guix.html
+guix.es		node	${GS}/guix/manual/es/html_node/
 guix.fr		mono	${GS}/guix/manual/fr/guix.html
 guix.fr		node	${GS}/guix/manual/fr/html_node/
+guix		mono	${GS}/guix/manual/en/guix.html
+guix		node	${GS}/guix/manual/en/html_node/
 
 gv		mono	${GS}/gv/manual/gv.html
 gv		node	${GS}/gv/manual/html_node/
@@ -404,6 +412,10 @@ hello		mono	${GS}/hello/manual/hello.html
 hello		node	${GS}/hello/manual/html_node/
 
 help2man	mono	${GS}/help2man/help2man.html
+
+# XXX: These are actually pages created by texi2html, so no quite following
+# the expected naming scheme.
+hurd		mono	${GS}/hurd/doc/
 
 idutils		mono	${GS}/idutils/manual/idutils.html
 idutils		node	${GS}/idutils/manual/html_node/

@@ -594,8 +594,12 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
          (add-after 'unpack 'add-plugin-dirs
            (lambda _
              (substitute* "gajim/common/configpaths.py"
-               (("_paths\\['PLUGINS_USER'\\]")
-                "_paths['PLUGINS_USER'],os.getenv('GAJIM_PLUGIN_PATH')"))
+               (("_paths\\['PLUGINS_USER'\\]\\]")
+                "_paths['PLUGINS_USER']] + \
+([os.getenv('GAJIM_PLUGIN_PATH')] \
+if os.getenv('GAJIM_PLUGIN_PATH') \
+and Path(os.getenv('GAJIM_PLUGIN_PATH')).is_dir() \
+else [])"))
              #t))
          (replace 'check
            (lambda _
@@ -683,7 +687,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.28")
+    (version "2.6.29")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -691,7 +695,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "1xy9yyd4416my151kj41nc62xwgmnwpagrmw49bniv09y78cqysg"))))
+                "1mif5qkrvxclqbqmq6njini4laznbs5nn82w2f1hkl8c1284dvgi"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

@@ -309,14 +309,14 @@ to open the application in a web browser, for offline usage.")
 (define-public toutenclic
   (package
     (name "toutenclic")
-    (version "6.13")
+    (version "7.00")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.bipede.fr/downloads/logiciels/"
-                           "ToutEnClic-" version ".tar.xz"))
+                           "ToutEnClic-" version "-src.zip"))
        (sha256
-        (base32 "1pjprdzc4bn7ckbg4469691ph6yjjr8f022hb4gi4lacs4h71wnd"))))
+        (base32 "0xg24p925rl5bfqsq3jb2lrkidb0f3kbmay5iyxxmjsn3ra0blyh"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -328,17 +328,20 @@ to open the application in a web browser, for offline usage.")
              (let* ((out (assoc-ref outputs "out"))
                     (share (string-append out "/share/toutenclic"))
                     (pixmaps (string-append out "/share/pixmaps"))
+                    (doc (string-append out "share/doc/" ,name "-" ,version))
                     (bin (string-append out "/bin"))
-                    (executable "toutenclic.py"))
+                    (executable "toutenclic"))
                ;; Install icon.
                (install-file "toutenclic.png" pixmaps)
                ;; Move files into "share/" directory.
-               (mkdir-p share)
-               (copy-recursively "." share)
+               (for-each (lambda (f) (install-file f share))
+                         (find-files "." "\\.py$"))
+               ;; Install documentation.
+               (install-file "ToutEnClic.pdf" doc)
                ;; Create executable in "bin/".
                (mkdir-p bin)
                (with-directory-excursion bin
-                 (symlink (string-append share "/" executable)
+                 (symlink (string-append share "/" executable ".py")
                           executable)))
              #t))
          (add-after 'install 'create-desktop-file
@@ -353,8 +356,8 @@ to open the application in a web browser, for offline usage.")
                            "[Desktop Entry]~@
                             Name=ToutEnClic~@
                             Comment=For schooling without difference~@
-                            Exec=~a/bin/toutenclic.py~@
-                            TryExec=~@*~a/bin/toutenclic.py~@
+                            Exec=~a/bin/toutenclic~@
+                            TryExec=~@*~a/bin/toutenclic~@
                             Terminal=false~@
                             Icon=toutenclic~@
                             Type=Application~%"

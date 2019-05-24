@@ -426,7 +426,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "60.6.1-guix1")
+(define %icecat-version "60.7.0-guix1")
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -448,7 +448,7 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "1x8419a1yg6igsq5ij3ymf1zmnb2wpm9dqcdfkv5wy43xgf7y0wl"))))
+              "08x0nijh0ja5jza95a8y030ibk756bn7zlw3a3c4750yilfhqpqa"))))
 
          (upstream-icecat-base-version "60.3.0") ; maybe older than base-version
          (upstream-icecat-gnu-version "1")
@@ -528,7 +528,13 @@ from forcing GEXP-PROMISE."
                           "-p1" "--input" #+makeicecat-patch)
                   (patch-shebang "makeicecat")
                   (substitute* "makeicecat"
-                    (("^FFMAJOR=.*")
+                    (("^FFMAJOR=(.*)" all ffmajor)
+                     (unless (string=? #$major-version
+                                       (string-trim-both ffmajor))
+                       ;; The makeicecat script cannot be expected to work
+                       ;; properly on a different version of Firefox, even if
+                       ;; no errors occur during execution.
+                       (error "makeicecat major version mismatch"))
                      (string-append "FFMAJOR=" #$major-version "\n"))
                     (("^FFMINOR=.*")
                      (string-append "FFMINOR=" #$minor-version "\n"))
@@ -590,68 +596,7 @@ from forcing GEXP-PROMISE."
   (package
     (name "icecat")
     (version %icecat-version)
-    (source
-     (origin
-      (inherit icecat-source)
-      (patches (search-patches "icecat-avoid-bundled-libraries.patch"
-                               "icecat-use-system-graphite2+harfbuzz.patch"
-                               "icecat-use-system-media-libs.patch"))
-      (modules '((guix build utils)))
-      (snippet
-       '(begin
-          (use-modules (ice-9 ftw))
-          ;; Remove bundled libraries that we don't use, since they may
-          ;; contain unpatched security flaws, they waste disk space and
-          ;; network bandwidth, and may cause confusion.
-          (for-each delete-file-recursively
-                    '(;; FIXME: Removing the bundled icu breaks configure.
-                      ;;   * The bundled icu headers are used in some places.
-                      ;;   * The version number is taken from the bundled copy.
-                      ;;"intl/icu"
-                      ;;
-                      ;; FIXME: A script from the bundled nspr is used.
-                      ;;"nsprpub"
-                      ;;
-                      ;; FIXME: With the update to IceCat 60, using system NSS
-                      ;;        broke certificate validation.  See
-                      ;;        <https://bugs.gnu.org/32833>.  For now, we use
-                      ;;        the bundled NSPR and NSS.  TODO: Investigate,
-                      ;;        and try to unbundle these libraries again.
-                      ;; UNBUNDLE-ME! "security/nss"
-                      ;;
-                      ;; TODO: Use more system media libraries.  See:
-                      ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=517422>
-                      ;;   * libtheora: esr60 wants v1.2, not yet released.
-                      ;;   * soundtouch: avoiding the bundled library would
-                      ;;     result in some loss of functionality.  There's
-                      ;;     also an issue with exception handling
-                      ;;     configuration.  It seems that this is needed in
-                      ;;     some moz.build:
-                      ;;       DEFINES['ST_NO_EXCEPTION_HANDLING'] = 1
-                      ;;   * libopus
-                      ;;   * speex
-                      ;;
-                      "modules/freetype2"
-                      "modules/zlib"
-                      "modules/libbz2"
-                      "ipc/chromium/src/third_party/libevent"
-                      "media/libjpeg"
-                      "media/libvpx"
-                      "media/libogg"
-                      "media/libvorbis"
-                      ;; "media/libtheora" ; wants theora-1.2, not yet released
-                      "media/libtremor"
-                      "gfx/harfbuzz"
-                      "gfx/graphite2"
-                      "js/src/ctypes/libffi"
-                      "db/sqlite3"))
-          ;; Delete .pyc files, typically present in icecat source tarballs
-          (for-each delete-file (find-files "." "\\.pyc$"))
-          ;; Delete obj-* directories, sometimes present in icecat tarballs
-          (for-each delete-file-recursively
-                    (scandir "." (lambda (name)
-                                   (string-prefix? "obj-" name))))
-          #t))))
+    (source icecat-source)
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -697,8 +642,21 @@ from forcing GEXP-PROMISE."
        ("zip" ,zip)
        ("zlib" ,zlib)))
     (native-inputs
-      ;; Icecat 60 checkes for rust>=1.24
-     `(("rust" ,rust-1.24)
+     ;; The following patches are specific to the Guix packaging of IceCat,
+     ;; and therefore we prefer to leave them out of 'source', which should be
+     ;; a tarball suitable for compilation on any system that IceCat supports.
+     ;; (Bug fixes and security fixes, however, should go in 'source').
+     `(("icecat-avoid-bundled-libraries.patch"
+        ,(search-patch "icecat-avoid-bundled-libraries.patch"))
+       ("icecat-use-system-graphite2+harfbuzz.patch"
+        ,(search-patch "icecat-use-system-graphite2+harfbuzz.patch"))
+       ("icecat-use-system-media-libs.patch"
+        ,(search-patch "icecat-use-system-media-libs.patch"))
+
+       ("patch" ,(canonical-package patch))
+
+       ;; Icecat 60 checks for rust>=1.24
+       ("rust" ,rust-1.24)
        ("cargo" ,rust-1.24 "cargo")
        ("llvm" ,llvm-3.9.1)
        ("clang" ,clang-3.9.1)
@@ -798,42 +756,95 @@ from forcing GEXP-PROMISE."
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'ensure-no-mtimes-pre-1980
-          (lambda _
-            ;; Without this, the 'source/test/addons/packed.xpi' and
-            ;; 'source/test/addons/simple-prefs.xpi' targets fail while trying
-            ;; to create zip archives.
-            (let ((early-1980 315619200)) ; 1980-01-02 UTC
-              (ftw "." (lambda (file stat flag)
-                         (unless (<= early-1980 (stat:mtime stat))
-                           (utime file early-1980 early-1980))
-                         #t))
-              #t)))
-         (add-after
-          'unpack 'link-libxul-with-libraries
-          (lambda _
-            ;; libxul.so dynamically opens libraries, so here we explicitly
-            ;; link them into libxul.so instead.
-            ;;
-            ;; TODO: It might be preferable to patch in absolute file names in
-            ;; calls to dlopen or PR_LoadLibrary, but that didn't seem to
-            ;; work.  More investigation is needed.
-            (substitute* "toolkit/library/moz.build"
-              (("^# This library needs to be last" all)
-               (string-append "OS_LIBS += [
+         (add-after 'unpack 'apply-guix-specific-patches
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             (let ((patch (string-append (assoc-ref (or native-inputs inputs)
+                                                    "patch")
+                                         "/bin/patch")))
+               (for-each (match-lambda
+                           ((label . file)
+                            (when (and (string-prefix? "icecat-" label)
+                                       (string-suffix? ".patch" label))
+                              (format #t "applying '~a'...~%" file)
+                              (invoke patch "--force" "--no-backup-if-mismatch"
+                                      "-p1" "--input" file))))
+                         (or native-inputs inputs)))
+             #t))
+         (add-after 'apply-guix-specific-patches 'remove-bundled-libraries
+           (lambda _
+             ;; Remove bundled libraries that we don't use, since they may
+             ;; contain unpatched security flaws, they waste disk space and
+             ;; memory, and may cause confusion.
+             (for-each (lambda (file)
+                         (format #t "deleting '~a'...~%" file)
+                         (delete-file-recursively file))
+                       '(;; FIXME: Removing the bundled icu breaks configure.
+                         ;;   * The bundled icu headers are used in some places.
+                         ;;   * The version number is taken from the bundled copy.
+                         ;;"intl/icu"
+                         ;;
+                         ;; FIXME: A script from the bundled nspr is used.
+                         ;;"nsprpub"
+                         ;;
+                         ;; FIXME: With the update to IceCat 60, using system NSS
+                         ;;        broke certificate validation.  See
+                         ;;        <https://bugs.gnu.org/32833>.  For now, we use
+                         ;;        the bundled NSPR and NSS.  TODO: Investigate,
+                         ;;        and try to unbundle these libraries again.
+                         ;; UNBUNDLE-ME! "security/nss"
+                         ;;
+                         ;; TODO: Use more system media libraries.  See:
+                         ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=517422>
+                         ;;   * libtheora: esr60 wants v1.2, not yet released.
+                         ;;   * soundtouch: avoiding the bundled library would
+                         ;;     result in some loss of functionality.  There's
+                         ;;     also an issue with exception handling
+                         ;;     configuration.  It seems that this is needed in
+                         ;;     some moz.build:
+                         ;;       DEFINES['ST_NO_EXCEPTION_HANDLING'] = 1
+                         ;;   * libopus
+                         ;;   * speex
+                         ;;
+                         "modules/freetype2"
+                         "modules/zlib"
+                         "modules/libbz2"
+                         "ipc/chromium/src/third_party/libevent"
+                         "media/libjpeg"
+                         "media/libvpx"
+                         "media/libogg"
+                         "media/libvorbis"
+                         ;; "media/libtheora" ; wants theora-1.2, not yet released
+                         "media/libtremor"
+                         "gfx/harfbuzz"
+                         "gfx/graphite2"
+                         "js/src/ctypes/libffi"
+                         "db/sqlite3"))
+             #t))
+         (add-after 'remove-bundled-libraries 'link-libxul-with-libraries
+           (lambda _
+             ;; libxul.so dynamically opens libraries, so here we explicitly
+             ;; link them into libxul.so instead.
+             ;;
+             ;; TODO: It might be preferable to patch in absolute file names in
+             ;; calls to dlopen or PR_LoadLibrary, but that didn't seem to
+             ;; work.  More investigation is needed.
+             (substitute* "toolkit/library/moz.build"
+               (("^# This library needs to be last" all)
+                (string-append "OS_LIBS += [
     'GL', 'gnome-2', 'canberra', 'Xss', 'cups', 'gssapi_krb5',
     'avcodec', 'avutil', 'pulse' ]\n\n"
-                              all)))
-            #t))
+                               all)))
+             #t))
          (replace 'bootstrap
            (lambda _
-             (invoke "sh" "-c" "autoconf old-configure.in > old-configure")))
+             (invoke "sh" "-c" "autoconf old-configure.in > old-configure")
+             ;; 'configure' must be newer than 'old-configure.in', or else the
+             ;; build system will raise an alarm and abort.
+             (invoke "touch" "configure")))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda _
              (use-modules (guix build cargo-utils))
-             (let ((null-file "/dev/null")
-                   (null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
+             (let ((null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
                (substitute* '("Cargo.lock" "servo/Cargo.lock")
                  (("(\"checksum .* = )\".*\"" all name)
                   (string-append name "\"" null-hash "\"")))
@@ -844,7 +855,7 @@ from forcing GEXP-PROMISE."
                     (display (string-append
                               "patch-cargo-checksums: generate-checksums for "
                               dir "\n"))
-                    (generate-checksums dir null-file)))
+                    (generate-checksums dir)))
                 (find-files "third_party/rust" ".cargo-checksum.json")))
              #t))
          (add-before 'configure 'augment-CPLUS_INCLUDE_PATH
@@ -860,31 +871,31 @@ from forcing GEXP-PROMISE."
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-append gcc "/include/c++" ":"
                                       gcc "/include/c++/" build ":"
-                                      (getenv "CPLUS_INCLUDE_PATH"))))))
-         (replace
-          'configure
-          ;; configure does not work followed by both "SHELL=..." and
-          ;; "CONFIG_SHELL=..."; set environment variables instead
-          (lambda* (#:key outputs configure-flags #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bash (which "bash"))
-                   (abs-srcdir (getcwd))
-                   (srcdir (string-append "../" (basename abs-srcdir)))
-                   (flags `(,(string-append "--prefix=" out)
-                            ,(string-append "--with-l10n-base="
-                                            abs-srcdir "/l10n")
-                            ,@configure-flags)))
-              (setenv "SHELL" bash)
-              (setenv "CONFIG_SHELL" bash)
-              (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
-              (setenv "CC" "gcc")  ; apparently needed when Stylo is enabled
-              (mkdir "../build")
-              (chdir "../build")
-              (format #t "build directory: ~s~%" (getcwd))
-              (format #t "configure flags: ~s~%" flags)
-              (apply invoke bash
-                     (string-append srcdir "/configure")
-                     flags))))
+                                      (getenv "CPLUS_INCLUDE_PATH"))))
+             #t))
+         (replace 'configure
+           ;; configure does not work followed by both "SHELL=..." and
+           ;; "CONFIG_SHELL=..."; set environment variables instead
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (which "bash"))
+                    (abs-srcdir (getcwd))
+                    (srcdir (string-append "../" (basename abs-srcdir)))
+                    (flags `(,(string-append "--prefix=" out)
+                             ,(string-append "--with-l10n-base="
+                                             abs-srcdir "/l10n")
+                             ,@configure-flags)))
+               (setenv "SHELL" bash)
+               (setenv "CONFIG_SHELL" bash)
+               (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
+               (setenv "CC" "gcc")  ; apparently needed when Stylo is enabled
+               (mkdir "../build")
+               (chdir "../build")
+               (format #t "build directory: ~s~%" (getcwd))
+               (format #t "configure flags: ~s~%" flags)
+               (apply invoke bash
+                      (string-append srcdir "/configure")
+                      flags))))
          (add-before 'configure 'install-desktop-entry
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the '.desktop' file.

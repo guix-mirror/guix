@@ -59,16 +59,15 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.24.1")
+    (version "2.24.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
-
-              (patches (search-patches "webkitgtk-sse2.patch"))
+              (patches (search-patches "webkitgtk-sans-gstreamer-gl.patch"))
               (sha256
                (base32
-                "0v9riwrmwi9wxbb8hlvcbyyxa9zxhcdk6s1xcspalk6asam8xjsk"))))
+                "071jnjvjq6wsxx1jh4ql3j53h1nhphs5ga67fa5i9xjvs3qb3701"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments

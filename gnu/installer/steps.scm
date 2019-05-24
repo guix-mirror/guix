@@ -71,7 +71,12 @@
   installer-step?
   (id                         installer-step-id) ;symbol
   (description                installer-step-description ;string
-                              (default #f))
+                              (default #f)
+
+                              ;; Make it thunked so that 'G_' is called at the
+                              ;; right time, as opposed to being called once
+                              ;; when the installer starts.
+                              (thunked))
   (compute                    installer-step-compute) ;procedure
   (configuration-formatter    installer-step-configuration-formatter ;procedure
                               (default #f)))

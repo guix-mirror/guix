@@ -105,8 +105,7 @@
             mkpart
             rmpart
 
-            create-adjacent-partitions
-            auto-partition
+            auto-partition!
 
             &no-root-mount-point
             no-root-mount-point?
@@ -259,6 +258,7 @@ inferior to MAX-SIZE, #f otherwise."
   (case fs-type
     ((ext4)  "ext4")
     ((btrfs) "btrfs")
+    ((fat16) "fat16")
     ((fat32) "fat32")
     ((swap)  "linux-swap")))
 
@@ -267,6 +267,7 @@ inferior to MAX-SIZE, #f otherwise."
   (case fs-type
     ((ext4)  "ext4")
     ((btrfs) "btrfs")
+    ((fat16) "fat")
     ((fat32) "vfat")))
 
 (define (partition-filesystem-user-type partition)
@@ -278,6 +279,7 @@ of <user-partition> record."
            (cond
             ((string=? name "ext4") 'ext4)
             ((string=? name "btrfs") 'btrfs)
+            ((string=? name "fat16") 'fat16)
             ((string=? name "fat32") 'fat32)
             ((or (string=? name "swsusp")
                  (string=? name "linux-swap(v0)")
@@ -818,8 +820,8 @@ cause them to cross."
 ;; Auto partitionning.
 ;;
 
-(define* (create-adjacent-partitions disk partitions
-                                     #:key (last-partition-end 0))
+(define* (create-adjacent-partitions! disk partitions
+                                      #:key (last-partition-end 0))
   "Create the given PARTITIONS on DISK. LAST-PARTITION-END is the sector from
 which we want to start creating partitions. The START and END of each created
 partition are computed from its SIZE value and the position of the last
@@ -885,15 +887,18 @@ USER-PARTITIONS list and return the updated list."
           (need-formatting? #t)))
        user-partitions))
 
-(define* (auto-partition disk
-                         #:key
-                         (scheme 'entire-root))
+(define* (auto-partition! disk
+                          #:key
+                          (scheme 'entire-root))
   "Automatically create partitions on DISK. All the previous
 partitions (except the ESP on a GPT disk, if present) are wiped. SCHEME is the
 desired partitioning scheme. It can be 'entire-root or
 'entire-root-home. 'entire-root will create a swap partition and a root
 partition occupying all the remaining space. 'entire-root-home will create a
-swap partition, a root partition and a home partition."
+swap partition, a root partition and a home partition.
+
+Return the complete list of partitions on DISK, including the ESP when it
+exists."
   (let* ((device (disk-device disk))
          (disk-type (disk-disk-type disk))
          (has-extended? (disk-type-check-feature
@@ -999,10 +1004,13 @@ swap partition, a root partition and a home partition."
                     (mount-point "/home")))))))
            (new-partitions* (force-user-partitions-formatting
                              new-partitions)))
-      (create-adjacent-partitions disk
-                                  new-partitions*
-                                  #:last-partition-end
-                                  (or end-esp-partition 0)))))
+      (append (if esp-partition
+                  (list (partition->user-partition esp-partition))
+                  '())
+              (create-adjacent-partitions! disk
+                                           new-partitions*
+                                           #:last-partition-end
+                                           (or end-esp-partition 0))))))
 
 
 ;;
@@ -1042,13 +1050,23 @@ bit bucket."
       (with-error-to-port (%make-void-port "w")
         (lambda () exp ...)))))
 
+(define (create-btrfs-file-system partition)
+  "Create an btrfs file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "mkfs.btrfs" "-f" partition)))
+
 (define (create-ext4-file-system partition)
   "Create an ext4 file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.ext4" "-F" partition)))
 
+(define (create-fat16-file-system partition)
+  "Create a fat16 file-system for PARTITION file-name."
+  (with-null-output-ports
+   (invoke "mkfs.fat" "-F16" partition)))
+
 (define (create-fat32-file-system partition)
-  "Create an ext4 file-system for PARTITION file-name."
+  "Create a fat32 file-system for PARTITION file-name."
   (with-null-output-ports
    (invoke "mkfs.fat" "-F32" partition)))
 
@@ -1106,10 +1124,18 @@ NEED-FORMATING? field set to #t."
          (luks-format-and-open user-partition))
 
        (case fs-type
+         ((btrfs)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-btrfs-file-system file-name)))
          ((ext4)
           (and need-formatting?
                (not (eq? type 'extended))
                (create-ext4-file-system file-name)))
+         ((fat16)
+          (and need-formatting?
+               (not (eq? type 'extended))
+               (create-fat16-file-system file-name)))
          ((fat32)
           (and need-formatting?
                (not (eq? type 'extended))

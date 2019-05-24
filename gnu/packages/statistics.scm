@@ -66,6 +66,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
@@ -459,16 +460,16 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
 (define-public r-cluster
   (package
     (name "r-cluster")
-    (version "2.0.8")
+    (version "2.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cluster" version))
        (sha256
         (base32
-         "0jkmlhjknndh0lmyvqz7s7j1hhnarixm6zb39np4ssw47flk0nfc"))))
+         "1bg5dvs4bzj0rp75jpxaklz12rvyh5w99h7zkvfgpgn86ljg1rlf"))))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/cluster")
     (synopsis "Methods for cluster analysis")
@@ -586,14 +587,14 @@ and operations on them using LAPACK and SuiteSparse.")
 (define-public r-nlme
   (package
     (name "r-nlme")
-    (version "3.1-139")
+    (version "3.1-140")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nlme" version))
        (sha256
         (base32
-         "0fap121c18nbznyzvnqvsdiszg2nbmkas6zhgrz1f8jiv1lzqq04"))))
+         "0k9x5j34fx093a023da9ny3b3101lbwpmfm27mkvfj950l22z88x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -802,13 +803,13 @@ effects of different types of color-blindness.")
 (define-public r-digest
   (package
     (name "r-digest")
-    (version "0.6.18")
+    (version "0.6.19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "digest" version))
        (sha256
-        (base32 "0k3iv0r8wy8w7zchmgrnrqv3bc149075j4817kf0q521vi4f6vbj"))))
+        (base32 "1x6cbj9qvkk7pxv9xdqibazw3x8psjp6x0m0ildx1jwyb2ymkl98"))))
     (build-system r-build-system)
     ;; Vignettes require r-knitr, which requires r-digest, so we have to
     ;; disable them and the tests.
@@ -1225,19 +1226,19 @@ and to generate base64 encoded string from raster matrix.")
 (define-public r-svglite
   (package
     (name "r-svglite")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "svglite" version))
        (sha256
         (base32
-         "1bws3lc4hlhln11zd7lalhiyc43yk6c6vrzy41fkxk1dkjazfx51"))))
+         "1gwv51wqp6pgm2f9gavsiq65njs77fr49n8y6y9ax60k3a4vvg14"))))
     (build-system r-build-system)
-    (native-inputs  `(("r-rcpp" ,r-rcpp)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
-       ("r-gdtools" ,r-gdtools)))
+       ("r-gdtools" ,r-gdtools)
+       ("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/hadley/svglite")
     (synopsis "SVG graphics device")
     (description
@@ -1447,13 +1448,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.22")
+    (version "1.23")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "1iks80g1cj25rvgyf0y2jc2pmfvsq4sbgdp788w9016bk71wzdcs"))))
+                "16ba4258c915xydhniw4cw7fvv1vp4cnwd1w49ykx7zw00rznfq6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -1695,13 +1696,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.8.0.1")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "0p6dbjrgqyklc67g53v1a5xdp9x2jpcsdcs6v3djf9d366fqh244"))))
+                "1nw12hzk1jcac5879nfmf1yp98jpb3i59qkb8sfpk2cd6zqgfgjz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2072,13 +2073,13 @@ jackknifed confidence intervals are available for most estimates.")
 (define-public r-rversions
   (package
     (name "r-rversions")
-    (version "1.1.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rversions" version))
               (sha256
                (base32
-                "0g4wvq6m9inhy6ww18lvkhkgarb1m9dp2kdxkkyk5qvldgqa598l"))))
+                "0mkg9zrjxlbwqzijiysivrs523x48syqj30xdfp88clpkqfk435m"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
@@ -2135,14 +2136,14 @@ R version.")
 (define-public r-checkmate
   (package
     (name "r-checkmate")
-    (version "1.9.1")
+    (version "1.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "checkmate" version))
        (sha256
         (base32
-         "1y4ylzn55kpyfpzcx9rxb9413d3ck6hair36ldl0ak61ia5kc75p"))))
+         "15ccwvmw73c2zz1k10k5zdn8px0rrbnvs1b4nzvlb0iwj7cimhp4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)))
@@ -2201,14 +2202,14 @@ or source files in a key-value fashion.")
 (define-public r-batchjobs
   (package
     (name "r-batchjobs")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "BatchJobs" version))
        (sha256
         (base32
-         "035658marnw57p4f38g99rwmvmb6hpbq0fhlxp3qbw22zfnnkvs9"))))
+         "1zz4sspj596pijxlz321g0jy2rg9ki83j6fihbwisjwr66p2vk1m"))))
     (properties `((upstream-name . "BatchJobs")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2596,13 +2597,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.400.2.0")
+    (version "0.9.400.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "01bf8jdlzndmqqzw16lpwx7zz1hkykd001dxxd9rzrgmn86f2xvs"))))
+                "1c0kmp54xgg67hxpqm8bibcxmmwljbdvm9p1d9wzirp83x86v4sn"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     ;; All needed for vignettes
@@ -3003,14 +3004,14 @@ statements.")
 (define-public r-segmented
   (package
     (name "r-segmented")
-    (version "0.5-3.0")
+    (version "0.5-4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "segmented" version))
        (sha256
         (base32
-         "0nrik5fyq59hwiwjcpbi4p5yfavgfjq6wyrynhkrbm4k6v1g1wlq"))))
+         "0wa0xjda2j33284jkp5hj1wdjysc5f4paj1s1lcixgawj4ckmxkz"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/segmented")
     (synopsis "Regression models with breakpoints estimation")
@@ -3161,13 +3162,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "1s5d3sld4l8zygpkvprvlbqa0pm2cv1bm7h7p999wxlap28vnnqf"))))
+                "05kr88yshq6siarp5q7aapvsr63vx3p0aqablwgifn8m2sfqxmif"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)
@@ -3237,14 +3238,14 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "2.0-16")
+   (version "2.0-18")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
       (base32
-       "1brr51z1fzbpyj6myyir4g6dhbp6xwl7nx4xnvrjarnf5y0csk55"))))
+       "0sr5akaiaab1sdh9c8gfmc4kp9b4vqhd90d9ig0rqpqhp3bykp78"))))
    (build-system r-build-system)
    (inputs
     `(("gfortran" ,gfortran)))
@@ -3776,14 +3777,14 @@ and tidyr provides no margins or aggregation.")
 (define-public r-hexbin
   (package
     (name "r-hexbin")
-    (version "1.27.2")
+    (version "1.27.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hexbin" version))
        (sha256
         (base32
-         "0lpfl0015lg5x7lvv9dr302bca22c7fs91pnd896ypgpzqg7pm26"))))
+         "14f181lw6sj5xhfxbrpyyinsjfl0nzqilq6z80lgrhj2cnkj593y"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -4108,14 +4109,14 @@ hierarchical clustering dendrograms.")
 (define-public r-preprocesscore
   (package
     (name "r-preprocesscore")
-    (version "1.44.0")
+    (version "1.46.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "preprocessCore" version))
        (sha256
         (base32
-         "0ijyjqi8mxxf350dhvgp36swwww5ag7ac9a6r6ymihc5syjr4w4j"))))
+         "0iiyn42hlvmc5vabg5x15mls11124i23sh4qijwk0narh438cqm0"))))
     (properties
      `((upstream-name . "preprocessCore")))
     (build-system r-build-system)
@@ -4154,14 +4155,14 @@ existing packages provide.")
 (define-public r-sfsmisc
   (package
     (name "r-sfsmisc")
-    (version "1.1-3")
+    (version "1.1-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sfsmisc" version))
        (sha256
         (base32
-         "1y25nnw09qfm66523w1z4q766lv15a6ykvsq30r154n7m7aggvsq"))))
+         "0zaw617zarmwir8l60riky0z6r1j3mwfnm1f32vqcbljb74akdj4"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sfsmisc")
     (synopsis "Utilities from \"Seminar fuer Statistik\" ETH Zurich")
@@ -4443,13 +4444,13 @@ data at that region, and avoids over-plotting.")
 (define-public r-ggthemes
   (package
     (name "r-ggthemes")
-    (version "4.1.1")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggthemes" version))
               (sha256
                (base32
-                "092hks6bxi6al8nclgswnzfmx5wp6n3qf63aqiajca7dx8w8n0m2"))))
+                "0rrkzfggc1nlda1w1lbqdycx6nawxbkac1szhvkwrqlzh6agxcsv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -4817,14 +4818,14 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.93-4")
+    (version "0.93-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "1q56y0iqp7qhavm4xnpzhs64q7l893y7yiq3b20fllpghka077pa"))))
+         "0mkzbsjl5nihyj7mzks14p6kr3spp44xvygjz4ran11gspdn9rdx"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -4833,7 +4834,7 @@ can be efficiently implemented directly in the R language.")
     (home-page "http://robustbase.r-forge.r-project.org/")
     (synopsis "Basic robust statistics")
     (description
-     "This packages allows to analyze data with robust methods such as
+     "This package allows to analyze data with robust methods such as
 regression methodology including model selections and multivariate statistics.")
     (license license:gpl2+)))
 
@@ -5396,14 +5397,14 @@ first and second order derivatives.")
 (define-public r-sn
   (package
     (name "r-sn")
-    (version "1.5-3")
+    (version "1.5-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sn" version))
        (sha256
         (base32
-         "10via4lg0vx9pzq350vwhz5wv1dhzxr2l3r6jq99nk37vmyvj8fc"))))
+         "0x46gxkplxbnhaqbpiav1r4xlv4ib7n57kxmca7scqwj22y7wrs6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mnormt" ,r-mnormt)
@@ -5411,7 +5412,7 @@ first and second order derivatives.")
     (home-page "http://azzalini.stat.unipd.it/SN")
     (synopsis "The skew-normal and skew-t distributions")
     (description
-     "This packages provides functionalities to build and manipulate
+     "This package provides functionalities to build and manipulate
 probability distributions of the skew-normal family and some related
 ones, notably the skew-t family, and provides related statistical
 methods for data fitting and diagnostics, in the univariate and the

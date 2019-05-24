@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
             containerized-operating-system
             container-script))
 
-(define (container-essential-services os)
+(define* (container-essential-services os #:key shared-network?)
   "Return a list of essential services corresponding to OS, a
 non-containerized OS.  This procedure essentially strips essential services
 from OS that are needed on the bare metal and not in a container."
@@ -45,18 +46,32 @@ from OS that are needed on the bare metal and not in a container."
                     (list (service-kind %linux-bare-metal-service)
                           firmware-service-type
                           system-service-type)))
-            (operating-system-essential-services os)))
+            (operating-system-default-essential-services os)))
 
   (cons (service system-service-type
                  (let ((locale (operating-system-locale-directory os)))
                    (with-monad %store-monad
                      (return `(("locale" ,locale))))))
-        base))
+        ;; If network is to be shared with the host, remove network
+        ;; configuration files from etc-service.
+        (if shared-network?
+            (modify-services base
+              (etc-service-type
+               files => (remove
+                         (match-lambda
+                           ((filename _)
+                            (member filename
+                                    (map basename %network-configuration-files))))
+                         files)))
+            base)))
 
-(define (containerized-operating-system os mappings)
+(define* (containerized-operating-system os mappings
+                                         #:key
+                                         shared-network?
+                                         (extra-file-systems '()))
   "Return an operating system based on OS for use in a Linux container
 environment.  MAPPINGS is a list of <file-system-mapping> to realize in the
-containerized OS."
+containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
   (define user-file-systems
     (remove (lambda (fs)
               (let ((target (file-system-mount-point fs))
@@ -65,8 +80,8 @@ containerized OS."
                     (string=? target "/")
                     (and (string? source)
                          (string-prefix? "/dev/" source))
-                    (string-prefix? "/dev" target)
-                    (string-prefix? "/sys" target))))
+                    (string-prefix? "/dev/" target)
+                    (string-prefix? "/sys/" target))))
             (operating-system-file-systems os)))
 
   (define (mapping->fs fs)
@@ -76,28 +91,63 @@ containerized OS."
   (define useless-services
     ;; Services that make no sense in a container.  Those that attempt to
     ;; access /dev/tty[0-9] in particular cannot work in a container.
-    (list console-font-service-type
-          mingetty-service-type
-          agetty-service-type))
+    (append (list console-font-service-type
+                  mingetty-service-type
+                  agetty-service-type)
+            ;; Remove nscd service if network is shared with the host.
+            (if shared-network?
+                (list nscd-service-type)
+                (list))))
 
   (operating-system
     (inherit os)
     (swap-devices '()) ; disable swap
-    (essential-services (container-essential-services os))
+    (essential-services (container-essential-services
+                         this-operating-system
+                         #:shared-network? shared-network?))
     (services (remove (lambda (service)
                         (memq (service-kind service)
                               useless-services))
                       (operating-system-user-services os)))
-    (file-systems (append (map mapping->fs (cons %store-mapping mappings))
-                          %container-file-systems
-                          user-file-systems))))
+    (file-systems (append (map mapping->fs mappings)
+                          extra-file-systems
+                          user-file-systems
 
-(define* (container-script os #:key (mappings '()))
+                          ;; Provide a dummy root file system so we can create
+                          ;; a 'boot-parameters' file.
+                          (list (file-system
+                                  (mount-point "/")
+                                  (device "nothing")
+                                  (type "dummy")))))))
+
+(define* (container-script os #:key (mappings '()) shared-network?)
   "Return a derivation of a script that runs OS as a Linux container.
 MAPPINGS is a list of <file-system> objects that specify the files/directories
 that will be shared with the host system."
-  (let* ((os           (containerized-operating-system os mappings))
-         (file-systems (filter file-system-needed-for-boot?
+  (define network-mappings
+    ;; Files to map if network is to be shared with the host
+    (append %network-file-mappings
+            (let ((nscd-run-directory "/var/run/nscd"))
+              (if (file-exists? nscd-run-directory)
+                  (list (file-system-mapping
+                         (source nscd-run-directory)
+                         (target nscd-run-directory)))
+                  '()))))
+
+  (define (mountable-file-system? file-system)
+    ;; Return #t if FILE-SYSTEM should be mounted in the container.
+    (and (not (string=? "/" (file-system-mount-point file-system)))
+         (file-system-needed-for-boot? file-system)))
+
+  (let* ((os           (containerized-operating-system
+                        os
+                        (cons %store-mapping
+                              (if shared-network?
+                                  (append network-mappings mappings)
+                                  mappings))
+                        #:shared-network? shared-network?
+                        #:extra-file-systems %container-file-systems))
+         (file-systems (filter mountable-file-system?
                                (operating-system-file-systems os)))
          (specs        (map file-system->spec file-systems)))
 
@@ -121,6 +171,9 @@ that will be shared with the host system."
               ;; users and groups, which is sufficient for most cases.
               ;;
               ;; See: http://www.freedesktop.org/software/systemd/man/systemd-nspawn.html#--private-users=
-              #:host-uids 65536))))
+              #:host-uids 65536
+              #:namespaces (if #$shared-network?
+                               (delq 'net %namespaces)
+                               %namespaces)))))
 
     (gexp->script "run-container" script)))

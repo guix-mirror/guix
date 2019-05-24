@@ -83,6 +83,8 @@
             slim-configuration-shepherd
             slim-configuration-auto-login-session
             slim-configuration-xorg
+            slim-configuration-display
+            slim-configuration-vt
             slim-configuration-sessreg
 
             slim-service-type
@@ -488,6 +490,10 @@ desktop session from the system or user profile will be used."
                       (default #f))
   (xorg-configuration slim-configuration-xorg
                       (default (xorg-configuration)))
+  (display slim-configuration-display
+           (default ":0"))
+  (vt slim-configuration-vt
+      (default "vt7"))
   (sessreg slim-configuration-sessreg
            (default sessreg)))
 
@@ -495,24 +501,31 @@ desktop session from the system or user profile will be used."
   "Return a PAM service for @command{slim}."
   (list (unix-pam-service
          "slim"
+         #:login-uid? #t
          #:allow-empty-passwords?
          (slim-configuration-allow-empty-passwords? config))))
 
 (define (slim-shepherd-service config)
-  (define slim.cfg
-    (let ((xinitrc (xinitrc #:fallback-session
-                            (slim-configuration-auto-login-session config)))
-          (xauth   (slim-configuration-xauth config))
-          (startx  (xorg-start-command (slim-configuration-xorg config)))
-          (shepherd   (slim-configuration-shepherd config))
-          (theme-name (slim-configuration-theme-name config))
-          (sessreg (slim-configuration-sessreg config)))
+  (let* ((xinitrc (xinitrc #:fallback-session
+                           (slim-configuration-auto-login-session config)))
+         (xauth   (slim-configuration-xauth config))
+         (startx  (xorg-start-command (slim-configuration-xorg config)))
+         (display (slim-configuration-display config))
+         (vt (slim-configuration-vt config))
+         (shepherd   (slim-configuration-shepherd config))
+         (theme-name (slim-configuration-theme-name config))
+         (sessreg (slim-configuration-sessreg config))
+         (lockfile (string-append "/var/run/slim-" vt ".lock")))
+    (define slim.cfg
       (mixed-text-file "slim.cfg"  "
 default_path /run/current-system/profile/bin
 default_xserver " startx "
-xserver_arguments :0 vt7
+display_name " display "
+xserver_arguments " vt "
 xauth_path " xauth "/bin/xauth
-authfile /var/run/slim.auth
+authfile /var/run/slim-" vt ".auth
+lockfile " lockfile "
+logfile /var/log/slim-" vt ".log
 
 # The login command.  '%session' is replaced by the chosen session name, one
 # of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
@@ -530,32 +543,39 @@ reboot_cmd " shepherd "/sbin/reboot\n"
     "")
 (if theme-name
     (string-append "current_theme " theme-name "\n")
-    ""))))
+    "")))
 
-  (define theme
-    (slim-configuration-theme config))
+    (define theme
+      (slim-configuration-theme config))
 
-  (list (shepherd-service
-         (documentation "Xorg display server")
-         (provision '(xorg-server))
-         (requirement '(user-processes host-name udev))
-         (start
-          #~(lambda ()
-              ;; A stale lock file can prevent SLiM from starting, so remove it to
-              ;; be on the safe side.
-              (false-if-exception (delete-file "/var/run/slim.lock"))
+    (list (shepherd-service
+           (documentation "Xorg display server")
+           (provision (append
+                       ;; For compatibility, also provide 'xorg-server'.
+                       (if (string=? vt "vt7")
+                           '(xorg-server)
+                           '())
 
-              (fork+exec-command
-               (list (string-append #$(slim-configuration-slim config)
-                                    "/bin/slim")
-                     "-nodaemon")
-               #:environment-variables
-               (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
-                     #$@(if theme
-                            (list #~(string-append "SLIM_THEMESDIR=" #$theme))
-                            #~())))))
-         (stop #~(make-kill-destructor))
-         (respawn? #t))))
+                       (list (symbol-append 'xorg-server-
+                                            (string->symbol vt)))))
+           (requirement '(user-processes host-name udev))
+           (start
+            #~(lambda ()
+                ;; A stale lock file can prevent SLiM from starting, so remove it to
+                ;; be on the safe side.
+                (false-if-exception (delete-file lockfile))
+
+                (fork+exec-command
+                 (list (string-append #$(slim-configuration-slim config)
+                                      "/bin/slim")
+                       "-nodaemon")
+                 #:environment-variables
+                 (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
+                       #$@(if theme
+                              (list #~(string-append "SLIM_THEMESDIR=" #$theme))
+                              #~())))))
+           (stop #~(make-kill-destructor))
+           (respawn? #t)))))
 
 (define slim-service-type
   (service-type (name 'slim)
@@ -754,14 +774,38 @@ the GNOME desktop environment.")
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define dbus-daemon-wrapper
-  (program-file "gdm-dbus-wrapper"
-                #~(begin
-                    (setenv "XDG_CONFIG_DIRS"
-                            "/run/current-system/profile/etc/xdg")
-                    (setenv "XDG_DATA_DIRS"
-                            "/run/current-system/profile/share")
-                    (apply execl (string-append #$dbus "/bin/dbus-daemon")
-                           (program-arguments)))))
+  (program-file
+   "gdm-dbus-wrapper"
+   #~(begin
+       (use-modules (srfi srfi-26))
+
+       (define system-profile
+         "/run/current-system/profile")
+
+       (define user-profile
+         (and=> (getpw (getuid))
+                (lambda (pw)
+                  (string-append (passwd:dir pw) "/.guix-profile"))))
+
+       ;; If we are able to find the user's profile, we can add it to
+       ;; the search paths set below.  We need to do this so that D-Bus
+       ;; can start services installed by the user.  This allows
+       ;; applications that require session D-Bus services (e.g,
+       ;; 'evolution') to work even if those services are only available
+       ;; in the user's profile.  See <https://bugs.gnu.org/35267>.
+       (define profiles
+         (if user-profile
+             (list user-profile system-profile)
+             (list system-profile)))
+
+       (setenv "XDG_CONFIG_DIRS"
+               (string-join (map (cut string-append <> "/etc/xdg") profiles)
+                            ":"))
+       (setenv "XDG_DATA_DIRS"
+               (string-join (map (cut string-append <> "/share") profiles)
+                            ":"))
+       (apply execl (string-append #$dbus "/bin/dbus-daemon")
+              (program-arguments)))))
 
 (define-record-type* <gdm-configuration>
   gdm-configuration make-gdm-configuration
@@ -811,7 +855,8 @@ the GNOME desktop environment.")
   "Return a PAM service for @command{gdm}."
   (list
    (pam-service
-    (inherit (unix-pam-service "gdm-autologin"))
+    (inherit (unix-pam-service "gdm-autologin"
+                               #:login-uid? #t))
     (auth (list (pam-entry
                  (control "[success=ok default=1]")
                  (module (file-append (gdm-configuration-gdm config)
@@ -825,6 +870,7 @@ the GNOME desktop environment.")
                  (control "required")
                  (module "pam_permit.so")))))
    (unix-pam-service "gdm-password"
+                     #:login-uid? #t
                      #:allow-empty-passwords?
                      (gdm-configuration-allow-empty-passwords? config))))
 

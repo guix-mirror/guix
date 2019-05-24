@@ -145,7 +145,7 @@ efficiency through the use of a compact vector representation of n-grams.")
 (define-public speech-dispatcher
   (package
     (name "speech-dispatcher")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/brailcom/speechd/releases"
@@ -153,11 +153,13 @@ efficiency through the use of a compact vector representation of n-grams.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yd2rb02565picga4gh2a0bvfxbhdyaj0cv9aaj5a8fc5zs29fbk"))))
+                "16bg52hnkrsrs7kgbzanb34b9zb6fqxwj0a9bmsxmj1skkil1h1p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static"
+
                            ;; Disable support for proprietary TTS engines.
+                           "--with-ibmtts=no"
                            "--with-kali=no" "--with-baratinoo=no")))
     (native-inputs
      `(("intltool" ,intltool)
@@ -176,11 +178,11 @@ device independent layer for access to speech synthesis through a simple,
 stable and well documented interface.")
     (home-page "https://devel.freebsoft.org/speechd")
     ;; The software is distributed under GPL2+, but includes a number
-    ;; of files covered by other licenses.
+    ;; of files covered by other licenses.  Note: in practice, this
+    ;; is linked against dotconf, which is LGPL 2.1 only.
     (license (list license:gpl2+
                    license:fdl1.2+ ; Most files in doc/ are dual gpl2+/fdl1.2+.
                    license:lgpl2.1+
-                   license:gpl2
                    (license:non-copyleft
                     ;; festival_client.{c,h} carries an expat-style license.
                     "See src/modules/festival_client.c in the distribution.")

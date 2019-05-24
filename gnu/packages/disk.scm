@@ -57,6 +57,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages vim)
@@ -609,7 +610,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "64.1")
+    (version "65")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -618,7 +619,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1la82fqbdwjkw6il498nkdfgqc4aszv481xf2p9p07jfvankx24v"))))
+                "0d8hzfvyxs2q8kgkwgdizlml41kin4mhx3vpdsjk34pfi7mqy69y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)

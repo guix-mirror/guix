@@ -4,9 +4,10 @@
 ;;   guix system reconfigure /etc/config.scm
 ;;
 
-(use-modules (gnu) (srfi srfi-1))
+(use-modules (gnu) (guix) (srfi srfi-1))
 (use-service-modules desktop networking ssh xorg)
-(use-package-modules bootloaders certs fonts nvi wget xorg)
+(use-package-modules bootloaders certs fonts nvi
+                     package-management wget xorg)
 
 (define vm-image-motd (plain-file "motd" "
 \x1b[1;37mThis is the GNU system.  Welcome!\x1b[0m
@@ -33,6 +34,9 @@ accounts.\x1b[0m
   (timezone "Etc/UTC")
   (locale "en_US.utf8")
   (keyboard-layout (keyboard-layout "us" "altgr-intl"))
+
+  ;; Label for the GRUB boot menu.
+  (label (string-append "GNU Guix " (package-version guix)))
 
   (firmware '())
 
@@ -88,14 +92,18 @@ root ALL=(ALL) ALL
                  ;; Use the DHCP client service rather than NetworkManager.
                  (service dhcp-client-service-type))
 
-           ;; Remove GDM, NetworkManager, and wpa-supplicant, which don't make
-           ;; sense in a VM.
+           ;; Remove GDM, ModemManager, NetworkManager, and wpa-supplicant,
+           ;; which don't make sense in a VM.
            (remove (lambda (service)
                      (let ((type (service-kind service)))
-                       (memq type (list gdm-service-type
-                                        wpa-supplicant-service-type
-                                        cups-pk-helper-service-type
-                                        network-manager-service-type))))
+                       (or (memq type
+                                 (list gdm-service-type
+                                       wpa-supplicant-service-type
+                                       cups-pk-helper-service-type
+                                       network-manager-service-type
+                                       modem-manager-service-type))
+                           (eq? 'network-manager-applet
+                                (service-type-name type)))))
                    (modify-services %desktop-services
                      (login-service-type config =>
                                          (login-configuration

@@ -1872,7 +1872,7 @@ unlit literate code files; and an option to turn off macro-expansion.")
     (synopsis "Reify arbitrary terms into types that can be reflected back
 into terms")
     (description "This package addresses the 'configuration problem' which is
-propogating configurations that are available at run-time, allowing multiple
+propagating configurations that are available at run-time, allowing multiple
 configurations to coexist without resorting to mutable global variables or
 @code{System.IO.Unsafe.unsafePerformIO}.")
     (license license:bsd-3)))
@@ -10044,7 +10044,7 @@ Haskell data types to and from HTTP API data.")
     (home-page "https://www.yesodweb.com/book/persistent")
     (synopsis "Type-safe, multi-backend data serialization for Haskell")
     (description "This Haskell package allows Haskell programs to access data
-storage sytems like PostgreSQL, SQLite, MySQL and MongoDB in a type-safe
+storage systems like PostgreSQL, SQLite, MySQL and MongoDB in a type-safe
 way.")
     (license license:expat)))
 

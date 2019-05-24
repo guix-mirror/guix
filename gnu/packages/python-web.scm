@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages time)
   #:use-module (gnu packages web)
@@ -298,6 +300,28 @@ other HTTP libraries.")
 
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
+
+(define-public python-html2text
+  (package
+    (name "python-html2text")
+    (version "2018.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "html2text" version))
+       (sha256
+        (base32
+         "1m6d7ciq30adc3d1n8g6r46072n7q8kdy039pqvnnmp763xi8xb2"))))
+    (build-system python-build-system)
+    (home-page "https://pypi.org/project/html2text/")
+    (synopsis "Convert HTML into plain text")
+    (description "html2text takes HTML and converts it into plain ASCII text
+which is also valid markdown.  html2text was originally written by Aaron
+Swartz.")
+    (license license:gpl3+)))
+
+(define-public python2-html2text
+  (package-with-python2 python-html2text))
 
 (define-public python-mechanicalsoup
   (package
@@ -637,6 +661,28 @@ options.")
 (define-public python2-cssutils
   (package-with-python2 python-cssutils))
 
+(define-public python-css-parser
+  (package
+    (inherit python-cssutils)
+    (name "python-css-parser")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "css-parser" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i4xfykiffxzr4f6y0m2ggqvx1rzam6pw6krlr5k6ldf29akbay7"))))
+    (home-page "https://github.com/ebook-utils/css-parser")
+    (synopsis "Fork of cssutils modified for parsing ebooks")
+    (description
+     "Css-parser is a fork of cssutils 1.0.2, updated and modified for parsing
+ebooks, due to cssutils not receiving updates as of 1.0.2.")
+    (license license:lgpl3+)))
+
+(define-public python2-css-parser
+  (package-with-python2 python-css-parser))
+
 (define-public python-cssselect
   (package
     (name "python-cssselect")
@@ -816,6 +862,7 @@ term.js Javascript terminal emulator library.")
       (propagated-inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
+         ("python2-futures" ,python2-futures)
           ,@(package-propagated-inputs terminado))))))
 
 (define-public python-wsgi-intercept
@@ -1280,13 +1327,13 @@ WebSocket usage in Python programs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.21.0")
+    (version "2.22.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "13jr0wkj9c2j8c0c8iaal9iivi0bpxghnsdn6lxcpnmc657q4ajh"))))
+               "1d5ybh11jr5sm7xp6mz8fyc7vrp4syifds91m7sj60xalal0gq0i"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -1387,34 +1434,36 @@ with python-requests.")
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
-    (version "1.0.3")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "oauthlib" version))
               (sha256
                (base32
-                "1bfrj70vdjxjw74khbyh6f0dksv7p5rh2346jnlrffyacd3gwjzg"))))
+                "163jg4a8f7c5ki655grrr47kgljy12wri3qly7ijf64sk1fjrqqc"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-mock" ,python-mock)
-       ("python-cryptography" ,python-cryptography)
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
        ("python-pyjwt" ,python-pyjwt)
        ("python-blinker" ,python-blinker)))
-    (home-page "https://github.com/idan/oauthlib")
+    (home-page "https://github.com/oauthlib/oauthlib")
     (synopsis "OAuth implementation for Python")
     (description
      "Oauthlib is a generic, spec-compliant, thorough implementation of the
 OAuth request-signing logic.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-oauthlib))))))
+    (license license:bsd-3)))
 
 (define-public python2-oauthlib
-  (let ((base (package-with-python2 (strip-python2-variant python-oauthlib))))
-    (package
-      (inherit base)
-      (native-inputs `(("python2-unittest2" ,python2-unittest2)
-                       ,@(package-native-inputs base))))))
+  (package-with-python2 python-oauthlib))
 
 (define-public python-rauth
   (package
@@ -1451,14 +1500,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.24.1")
+    (version "1.25.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "08lwd9f3hqznyf32vnzwvp87pchx062nkbgyrf67rwlkgj0jk5fy"))))
+          "0cij8qcvvpj62g1q8n785qjkdymfh4b7vf45si4sw64l41rr3rfv"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs
@@ -1819,14 +1868,14 @@ concurrent HTTP client library for python using @code{gevent}.")
 (define-public python-requests-oauthlib
   (package
     (name "python-requests-oauthlib")
-    (version "0.6.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "requests-oauthlib" version))
        (sha256
         (base32
-         "0ykff67sjcl227c23g0rxzfx34rr5bf21kwv0z3zmgk0lfmch7hn"))))
+         "0mrglgcvq7k48pf27s4gifdk0za8xmgpf55jy15yjj471qrk6rdx"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1837,7 +1886,8 @@ concurrent HTTP client library for python using @code{gevent}.")
              (delete-file "tests/test_core.py")
              #t)))))
     (native-inputs
-     `(("python-requests-mock" ,python-requests-mock)
+     `(("python-pyjwt" ,python-pyjwt)
+       ("python-requests-mock" ,python-requests-mock)
        ("python-mock" ,python-mock)))
     (propagated-inputs
      `(("python-oauthlib" ,python-oauthlib)

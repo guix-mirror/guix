@@ -26,7 +26,7 @@
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
@@ -700,7 +700,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
@@ -712,7 +712,7 @@ libebml is a C++ library to read and write EBML files.")
              (string-append "https://www.freedesktop.org/software/vaapi/releases/"
                             "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "14ckq67z3pcd7jrnrm3ckss440g6dzp2m0ff5rps54qmq9b309lr"))))
+        (base32 "0w7fkkrnfizzglviybxiyhxcvd3mfsiqlpda7rwj3ccihn857q79"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1446,7 +1446,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.04.30")
+    (version "2019.05.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1454,7 +1454,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1s43adnky8ayhjwmgmiqy6rmmygd4c23v36jhy2lzr2jpn8l53z1"))))
+                "1y272jgdqwhf2njzqfln80zb2pmw83rvp6lxza6wghb7cld249j1"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

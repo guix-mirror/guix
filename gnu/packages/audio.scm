@@ -17,7 +17,7 @@
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
@@ -3701,7 +3701,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.04")
+    (version "19.05")
     (source
      (origin
        (method git-fetch)
@@ -3710,7 +3710,7 @@ library.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "00lqf8bjcwm4k8yky9jmqghkxijcm2lxspb9zyl1270yqmj05kiw"))))
+        (base32 "1dja2ykixk1ycqda116cg9fy4qg364dqj88amfln0r9pnsj2kbxk"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DFFMPEG=ON")))

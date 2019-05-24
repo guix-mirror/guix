@@ -128,9 +128,9 @@ package definition."
 (define %cran-url "https://cran.r-project.org/web/packages/")
 (define %bioconductor-url "https://bioconductor.org/packages/")
 
-;; The latest Bioconductor release is 3.8.  Bioconductor packages should be
+;; The latest Bioconductor release is 3.9.  Bioconductor packages should be
 ;; updated together.
-(define %bioconductor-version "3.8")
+(define %bioconductor-version "3.9")
 
 (define %bioconductor-packages-list-url
   (string-append "https://bioconductor.org/packages/"
@@ -237,6 +237,11 @@ empty list when the FIELD cannot be found."
         "translations"
         "utils"))
 
+;; The field for system dependencies is often abused to specify non-package
+;; dependencies (such as c++11).  This list is used to ignore them.
+(define invalid-packages
+  (list "c++11"))
+
 (define cran-guix-name (cut guix-name "r-" <>))
 
 (define (needs-fortran? tarball)
@@ -310,7 +315,8 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                       (if (needs-zlib? tarball) '("zlib") '())
                       (map string-downcase (listify meta "SystemRequirements"))))
          (propagate  (filter (lambda (name)
-                               (not (member name default-r-packages)))
+                               (not (member name (append default-r-packages
+                                                         invalid-packages))))
                              (lset-union equal?
                                          (listify meta "Imports")
                                          (listify meta "LinkingTo")

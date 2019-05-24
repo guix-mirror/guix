@@ -35,11 +35,13 @@
   #:use-module (gnu packages dav)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
@@ -48,7 +50,7 @@
 (define-public libical
   (package
     (name "libical")
-    (version "3.0.4")
+    (version "3.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -56,7 +58,7 @@
                     version "/libical-" version ".tar.gz"))
               (sha256
                (base32
-                "0ifisnh42cw5z53hp9p52l3ggc7k877zlqk0n06gdhrk0bhidckj"))))
+                "1rkq9qkvbv76n6k6kc8pxhwj9vhyigkb6flfcn1rk6wwqk451mbs"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
@@ -76,7 +78,8 @@
                  (("\\\"/usr/share/lib/zoneinfo\\\"") "")))
              #t)))))
     (native-inputs
-     `(("perl" ,perl)
+     `(("gtk-doc" ,gtk-doc)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)

@@ -25,6 +25,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages perl)
@@ -42,7 +43,7 @@
 (define-public coq
   (package
     (name "coq")
-    (version "8.8.2")
+    (version "8.9.0")
     (source
      (origin
        (method git-fetch)
@@ -51,7 +52,7 @@
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03v8b57mz3ivsijwxy51avzwiyhla5ijaf98a5a2q29yabdq8dkp"))))
+        (base32 "01ad7az6f95w16xya7979lk32agy22lf4bqgqf5qpnarpkpxhbw8"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -62,6 +63,8 @@
        ("python" ,python-2)
        ("camlp5" ,camlp5)
        ("ocaml-num" ,ocaml-num)))
+    (native-inputs
+     `(("ocaml-ounit" ,ocaml-ounit)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -231,14 +234,14 @@ inside Coq.")
 (define-public coq-gappa
   (package
     (name "coq-gappa")
-    (version "1.3.2")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36397/gappa-"
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/37918/gappa-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19kg2zldaqs4smy7bv9hp650sqg46xbx1ss7jnyagpxdscwn9apd"))))
+                "1wdg07dk4lbq7dr80ywzna0lclwgi8bddzc6yfx19z1zn9yljzxh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -253,7 +256,8 @@ inside Coq.")
     (arguments
      `(#:configure-flags
        (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa"))
+                            "/lib/coq/user-contrib/Gappa")
+             "CXXFLAGS=-std=c++11")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-remake
@@ -281,7 +285,7 @@ assistant.")
 (define-public coq-mathcomp
   (package
     (name "coq-mathcomp")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -290,7 +294,7 @@ assistant.")
              (commit (string-append "mathcomp-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1cdzi67jj440xkdpxm10aly80zpn56vjzj2ygb67iq3xpljlv95h"))))
+        (base32 "1sdrw3b6lc8crz02lp90a863rvyzhc9vcfsrdvc9m311yiaad4xv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -372,7 +376,7 @@ theorems between the two libraries.")
 (define-public coq-bignums
   (package
     (name "coq-bignums")
-    (version "8.8.0")
+    (version "8.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/coq/bignums/archive/V"
@@ -380,7 +384,7 @@ theorems between the two libraries.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08m1cmq4hkaf4sb0vy978c11rgzvds71cphyadmr2iirpr5815r0"))))
+                "0pmk9smw7a14wrfkvjlvmpxim4bsv6xnm5xkrlld2faqy74a044g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -450,7 +454,7 @@ Coq proof assistant.")
   ;; Latest commit on that branch, where work on supporting coq 8.6 and
   ;; more recent versions of coq happen.
   (let ((branch "coq86-devel")
-        (commit "d0d73557979796b3d4be7aac72135581c33f26f7"))
+        (commit "fa6ef30664511ffa659cbcf3c962715cbee03572"))
     (package
       (name "coq-autosubst")
       (version (git-version "1" branch commit))
@@ -461,7 +465,7 @@ Coq proof assistant.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "1852xb5cwkjw3dlc0lp2sakwa40bjzw37qmwz4bn3vqazg1hnh6r"))))
+                 (base32 "1cl0bp96bk6lplbl7n5c703vd3gvbs5mvf2qrf8q333kkqd7jqq4"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f
@@ -495,16 +499,16 @@ uses Ltac to synthesize the substitution operation.")
 (define-public coq-equations
   (package
     (name "coq-equations")
-    (version "1.1")
+    (version "1.2-beta2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/mattam82/Coq-Equations.git")
-                    (commit (string-append "v" version "-8.8"))))
+                    (commit (string-append "v" version "-8.9"))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "129rxsdsf88vjcw0xhm74yax1hmnk6f8n9ksg0hcyyjq1ijddiwa"))))
+                "0y2zwv7jxs1crprj5qvg46h0v9wyfn99ln40yskq91y9h1lj5h3j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)
@@ -532,3 +536,59 @@ compiles everything down to eliminators for inductive types, equality
 and accessibility, providing a definitional extension to the Coq
 kernel.")
     (license license:lgpl2.1)))
+
+(define-public coq-stdpp
+  (package
+    (name "coq-stdpp")
+    (version "1.2.0")
+    (synopsis "Alternative Coq standard library std++")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.mpi-sws.org/iris/stdpp.git")
+                    (commit (string-append "coq-stdpp-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "11m7kqxsbxygk41v2wsi3npdzwin9fcnzc1gn0gq0rd57wnqk83i"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("coq" ,coq)))
+    (arguments
+     `(#:tests? #f ;; the tests are being run automaticlly as part of `make all`
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "COQLIB" (string-append (assoc-ref outputs "out") "/lib/coq/"))
+             (invoke "make"
+                     (string-append "COQLIB=" (assoc-ref outputs "out")
+                                    "/lib/coq/")
+                     "install"))))))
+    (description "This project contains an extended \"Standard Library\" for
+Coq called coq-std++.  The key features are:
+@itemize
+@item Great number of definitions and lemmas for common data structures such
+as lists, finite maps, finite sets, and finite multisets.
+
+@item Type classes for common notations (like ∅, ∪, and Haskell-style monad
+notations) so that these can be overloaded for different data structures.
+
+@item It uses type classes to keep track of common properties of types, like
+it having decidable equality or being countable or finite.
+
+@item Most data structures are represented in canonical ways so that Leibniz
+equality can be used as much as possible (for example, for maps we have m1 =
+m2 iff ∀ i, m1 !! i = m2 !! i).  On top of that, the library provides setoid
+instances for most types and operations.
+
+@item Various tactics for common tasks, like an ssreflect inspired done tactic
+for finishing trivial goals, a simple breadth-first solver naive_solver, an
+equality simplifier simplify_eq, a solver solve_proper for proving
+compatibility of functions with respect to relations, and a solver set_solver
+for goals involving set operations.
+
+@item The library is dependency- and axiom-free.
+@end itemize")
+    (home-page "https://gitlab.mpi-sws.org/iris/stdpp")
+    (license license:bsd-3)))

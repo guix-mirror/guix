@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -33,6 +33,9 @@ guix pack --version
 GUIX_BUILD_OPTIONS="--no-substitutes"
 export GUIX_BUILD_OPTIONS
 
+test_directory="`mktemp -d`"
+trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
+
 # Build a tarball with no compression.
 guix pack --compression=none --bootstrap guile-bootstrap
 
@@ -42,14 +45,18 @@ out2="`guix pack --bootstrap -e '(@ (gnu packages bootstrap) %bootstrap-guile)'`
 test -n "$out1"
 test "$out1" = "$out2"
 
+# Test '--root'.
+guix pack -r "$test_directory/my-guile" --bootstrap guile-bootstrap
+test "`readlink "$test_directory/my-guile"`" = "$out1"
+guix gc --list-roots | grep "^$test_directory/my-guile$"
+rm "$test_directory/my-guile"
+
 # Build a tarball with a symlink.
 the_pack="`guix pack --bootstrap -S /opt/gnu/bin=bin guile-bootstrap`"
 
 # Try to extract it.  Note: we cannot test whether /opt/gnu/bin/guile itself
 # exists because /opt/gnu/bin may be an absolute symlink to a store item that
 # has been GC'd.
-test_directory="`mktemp -d`"
-trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 cd "$test_directory"
 tar -xf "$the_pack"
 test -L opt/gnu/bin
@@ -59,7 +66,7 @@ is_available () {
     type "$1" > /dev/null
 }
 
-if is_available chroot && is_available unshare; then
+if is_available chroot && is_available unshare && unshare -r true; then
     # Verify we can use what we built.
     unshare -r chroot . /opt/gnu/bin/guile --version
     cd -

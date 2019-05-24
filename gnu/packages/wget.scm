@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,24 +89,42 @@ in downloaded documents to relative links.")
           "1hh9svyypqcvdg5mjxyyfzpdzhylhf7s7xq5dzglnm4injx3i3ak"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
-         (add-before 'install 'use-inputs
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((wget (assoc-ref inputs "wget")))
-               (substitute* "wgetpaste"
-                 (("(LC_ALL=C) wget" _ prefix)
-                  (format "~a ~a/bin/wget" prefix wget)))
-               #t)))
+         (add-after 'unpack 'remove-dead-paste-site
+           ;; This phase is adaped from the following patch:
+           ;; https://gitweb.gentoo.org/repo/gentoo.git/tree/app-text/wgetpaste/files/wgetpaste-remove-dead.patch
+           (lambda _
+             (substitute* "wgetpaste"
+               ((" poundpython\"") "\"")
+               (("-poundpython") "-dpaste"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (zsh (string-append out "/share/zsh/site-functions")))
                (install-file "wgetpaste" bin)
-               (install-file "_wgetpaste" zsh)))))
+               (install-file "_wgetpaste" zsh)
+               #t)))
+         (add-after 'install 'wrap-program
+           ;; /bin/wgetpaste prides itself on relying only on the following
+           ;; inputs, and doesn't need to execute arbitrary commands, so
+           ;; override PATH completely to detect any new dependencies early.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/wgetpaste")
+                 `("PATH" ":" =
+                   ,(delete-duplicates
+                     (map (lambda (command) (dirname (which command)))
+                          (list "bash" "mktemp" "sed" "sort" "tee" "tr"
+                                "wget")))))
+               #t))))
        #:tests? #f))                    ; no test target
     (inputs
      `(("wget" ,wget)))

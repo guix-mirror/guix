@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -175,7 +175,7 @@ ISO9660 UUID representation."
   "Convert FAT32/FAT16 UUID, a 4-byte bytevector, to its string representation."
   (let ((high  (bytevector-uint-ref uuid 0 %fat-endianness 2))
         (low (bytevector-uint-ref uuid 2 %fat-endianness 2)))
-    (format #f "~:@(~x-~x~)" low high)))
+    (format #f "~:@(~4,'0x-~4,'0x~)" low high)))
 
 (define %fat-uuid-rx
   (make-regexp "^([[:xdigit:]]{4})-([[:xdigit:]]{4})$"))

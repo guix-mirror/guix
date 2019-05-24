@@ -341,7 +341,7 @@ for the corresponding packages."
                      (list (package->manifest-entry* package output))))
                   (('package 'package (? string? spec))
                    (package-environment-inputs
-                    (specification->package+output spec)))
+                    (transform (specification->package+output spec))))
                   (('expression mode str)
                    ;; Add all the outputs of the package STR evaluates to.
                    (packages->outputs (read/eval str) mode))

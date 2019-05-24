@@ -7,17 +7,10 @@ some things, so we patch the Makefile.in instead.
 Also fix to not try to create /var/lib/upower if /var isn't writable.
 
 Patch by Andy Wingo <wingo@igalia.com>
+Reduced to upower 0.99.10 by Tobias Geerinckx-Rice <me@tobias.gr>
 
 --- upower-0.99.2.orig/src/Makefile.in	2014-12-18 10:32:01.000000000 +0100
 +++ upower-0.99.2/src/Makefile.in	2015-04-04 19:49:28.020843678 +0200
-@@ -780,6 +780,7 @@
- 
- @UP_BUILD_TESTS_TRUE@up_self_test_CFLAGS = $(AM_CFLAGS) $(WARNINGFLAGS_C)
- @UP_BUILD_TESTS_TRUE@TESTS_ENVIRONMENT = $(DBUS_LAUNCH)
-+@UP_BUILD_TESTS_TRUE@AM_TESTS_ENVIRONMENT = UPOWER_CONF_FILE_NAME=$(top_srcdir)/etc/UPower.conf
- dbusservicedir = $(datadir)/dbus-1/system-services
- dbusservice_in_files = org.freedesktop.UPower.service.in
- dbusservice_DATA = $(dbusservice_in_files:.service.in=.service)
 @@ -1789,7 +1790,7 @@
  @HAVE_SYSTEMDSYSTEMUNITDIR_TRUE@	@sed -e "s|\@libexecdir\@|$(libexecdir)|" $< > $@
  
@@ -27,18 +20,3 @@ Patch by Andy Wingo <wingo@igalia.com>
  		mkdir -p $(DESTDIR)$(historydir); \
  	fi
  
---- upower-0.99.2.orig/src/up-self-test.c	2014-07-17 09:46:15.000000000 +0200
-+++ upower-0.99.2/src/up-self-test.c	2015-04-04 18:43:04.952741927 +0200
-@@ -295,12 +295,6 @@
- #endif
- 	g_test_init (&argc, &argv, NULL);
- 
--	/* make check, vs. make distcheck */
--	if (g_file_test ("../etc/UPower.conf", G_FILE_TEST_EXISTS))
--		g_setenv ("UPOWER_CONF_FILE_NAME", "../etc/UPower.conf", TRUE);
--	else
--		g_setenv ("UPOWER_CONF_FILE_NAME", "../../../etc/UPower.conf", TRUE);
--
- 	/* tests go here */
- 	g_test_add_func ("/power/backend", up_test_backend_func);
- 	g_test_add_func ("/power/device", up_test_device_func);

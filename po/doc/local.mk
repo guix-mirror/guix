@@ -20,6 +20,7 @@ DOC_PO_FILES=					\
   %D%/guix-manual.es.po				\
   %D%/guix-manual.de.po				\
   %D%/guix-manual.fr.po				\
+  %D%/guix-manual.ru.po				\
   %D%/guix-manual.zh_CN.po
 
 EXTRA_DIST = \
@@ -30,22 +31,24 @@ POT_OPTIONS = --package-name "guix" --package-version "$(VERSION)" \
 	          --copyright-holder "Ludovic Courtès" \
 			  --msgid-bugs-address "ludo@gnu.org"
 
-$(srcdir)/po/doc/guix-manual.%.po: $(srcdir)/po/doc/guix-manual.pot
-	@lang=`echo $$(basename "$@") | sed -e 's|^guix-manual.||' -e 's|.po$$||'` ;\
-	if test -f "$@"; then \
+doc-po-update-%:
+	@lang=`echo "$@" | sed -e's/^doc-po-update-//'` ; \
+	output="$(srcdir)/po/doc/guix-manual.$$lang.po" ; \
+	input="$(srcdir)/po/doc/guix-manual.pot" ; \
+	if test -f "$$output"; then \
 	  test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $@ $<"; \
+	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $$output $$input"; \
 	  cd $(srcdir) \
 	    && { case `$(MSGMERGE_UPDATE) --version | sed 1q | sed -e 's,^[^0-9]*,,'` in \
 	        '' | 0.[0-9] | 0.[0-9].* | 0.1[0-7] | 0.1[0-7].*) \
-	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) $@ $<;; \
+	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) "$$output" "$$input";; \
 	        *) \
-	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $@ $<;; \
+	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} "$$output" "$$input";; \
 	      esac; \
 	    }; \
-	  touch "$@"; \
+	  touch "$$output"; \
 	else \
-	     echo "File $@ does not exist. If you are a translator, you can create it through 'msginit'." 1>&2; \
+	     echo "File $$output does not exist.  If you are a translator, you can create it with 'msginit'." 1>&2; \
 	     exit 1; \
 	fi
 
@@ -54,7 +57,7 @@ $(srcdir)/po/doc/%.pot-update: doc/%.texi
 		-p "$$(echo $@ | sed 's|-update||')" $(POT_OPTIONS)
 	@touch "$$(echo $@ | sed 's|-update||')"
 
-TMP_POT_FILES=contributing.pot guix.pot
+TMP_POT_FILES = contributing.pot guix.pot
 
 doc-pot-update:
 	for f in $(TMP_POT_FILES); do \
@@ -65,6 +68,9 @@ doc-pot-update:
 	rm -f $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES))
 
 doc-po-update: doc-pot-update
-	for f in $(DOC_PO_FILES); do \
-		$(MAKE) "$$f"; \
+	for f in $(DOC_PO_FILES); do						\
+	  lang="`echo "$$f" | $(SED) -es'|.*/guix-manual\.\(.*\)\.po$$|\1|g'`";	\
+	  $(MAKE) "doc-po-update-$$lang";					\
 	done
+
+.PHONY: doc-po-update doc-pot-update

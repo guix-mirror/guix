@@ -58,7 +58,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.3.4")
+    (version "7.3.5")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -66,7 +66,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "10rvj9dn41213w0q2l123rn6sycr29syik88czprhpv5z2hrzrvg"))
+                "0wi4vd1c3ylsv7cs5b74pkspybb22qwk6fs5r2as3m3glhw1h0g1"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -322,6 +322,8 @@
                          "ext/mbstring/tests/bug77370.phpt"
                          "ext/mbstring/tests/bug77371.phpt"
                          "ext/mbstring/tests/bug77381.phpt"
+                         "ext/mbstring/tests/mbregex_stack_limit.phpt"
+                         "ext/mbstring/tests/mbregex_stack_limit2.phpt"
                          "ext/ldap/tests/ldap_set_option_error.phpt"
 
                          ;; Sometimes cannot start the LDAP server.

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,7 +105,7 @@ paragraph."
 (define (write-packages-updates news-file old new)
   "Write to NEWS-FILE the list of packages upgraded between OLD and NEW."
   (define important
-    '("gcc" "glibc" "binutils" "gdb"                   ;toolchain
+    '("gcc-toolchain" "glibc" "binutils" "gdb"         ;toolchain
       "shepherd" "linux-libre" "xorg-server" "cups"    ;OS
       "gnome" "xfce" "enlightenment" "lxde" "mate"     ;desktop env.
       "guile" "bash" "python" "python2" "perl"         ;languages

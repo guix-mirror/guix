@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -559,7 +560,6 @@ of other programs.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("kguiaddons" ,kguiaddons)
-       ("kwindowsystem" ,kwindowsystem)
        ("libdbusmenu-qt" ,libdbusmenu-qt)
        ("liblxqt" ,liblxqt)
        ("libqtxdg" ,libqtxdg)
@@ -582,6 +582,10 @@ of other programs.")
      `(("pkg-config" ,pkg-config)
        ("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
+    (propagated-inputs
+     ;; Propagating KWINDOWSYSTEM so that the list of opened applications
+     ;; shows up in lxqt-panel's taskbar plugin.
+     `(("kwindowsystem" ,kwindowsystem)))
     (arguments
      '(#:tests? #f                      ; no tests
        #:phases
@@ -651,7 +655,7 @@ of other programs.")
              #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "The LXQt PolicyKit agent")
-    (description "lxqt-policykit is the polkit authentification agent of
+    (description "lxqt-policykit is the polkit authentication agent of
 LXQt.")
     (license license:lgpl2.1+)))
 
@@ -826,6 +830,15 @@ allows for launching applications or shutting down the system.")
                             "config/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
+             #t))
+         ;; add write permission to lxqt-rc.xml file which is stored as read-only in store
+         (add-after 'unpack 'patch-openbox-permission
+           (lambda _
+             (substitute* "startlxqt.in"
+               (("cp \"\\$LXQT_DEFAULT_OPENBOX_CONFIG\" \"\\$XDG_CONFIG_HOME/openbox\"")
+                 (string-append "cp \"$LXQT_DEFAULT_OPENBOX_CONFIG\" \"$XDG_CONFIG_HOME/openbox\"\n"
+                                "        # fix openbox permission issue\n"
+                                "        chmod u+w  \"$XDG_CONFIG_HOME/openbox\"/*")))
              #t))
          (add-after 'unpack 'patch-translations-dir
            (lambda* (#:key outputs #:allow-other-keys)

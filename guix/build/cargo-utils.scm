@@ -41,12 +41,10 @@
       (close-pipe port)
       result)))
 
-(define (generate-checksums dir-name src-name)
+(define (generate-checksums dir-name)
   "Given DIR-NAME, a store directory, checksum all the files in it one
 by one and put the result into the file \".cargo-checksum.json\" in
-the same directory.  Also includes the checksum of an extra file
-SRC-NAME as if it was part of the directory DIR-NAME with name
-\"package\"."
+the same directory."
   (let* ((file-names (find-files dir-name "."))
          (dir-prefix-name (string-append dir-name "/"))
          (dir-prefix-name-len (string-length dir-prefix-name))
@@ -62,6 +60,9 @@ SRC-NAME as if it was part of the directory DIR-NAME with name
                   (write file-relative-name port)
                   (display ":" port)
                   (write (file-sha256 file-name) port))) file-names))
+        ;; NB: cargo requires the "package" field in order to check if the Cargo.lock
+        ;; file needs to be regenerated when the value changes. However, it doesn't
+        ;; appear to care what the value is to begin with...
         (display "},\"package\":" port)
-        (write (file-sha256 src-name) port)
+        (write (file-sha256 "/dev/null") port)
         (display "}" port)))))

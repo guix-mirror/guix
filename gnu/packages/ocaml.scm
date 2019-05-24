@@ -756,35 +756,33 @@ Emacs.")
 (define-public ocaml-menhir
   (package
     (name "ocaml-menhir")
-    (version "20161115")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://gallium.inria.fr/~fpottier/menhir/"
-                    "menhir-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1j8nmcj2gq6hyyi16z27amiahplgrnk4ppchpm0v4qy80kwkf47k"))))
-    (build-system gnu-build-system)
+    (version "20181113")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.inria.fr/fpottier/menhir.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1iqdf64ayq4s3d9jkwhs3s8wqc2s48b292hp0kcjsskfhcvwg0kr"))))
+    (build-system ocaml-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)))
     (arguments
-     `(#:parallel-build? #f ; Parallel build causes failure
+     `(#:make-flags `("USE_OCAMLFIND=true"
+                      ,(string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:tests? #f ; No check target
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "PREFIX" out))
-             #t)))))
-    (home-page "http://gallium.inria.fr/~fpottier/menhir")
+         (delete 'configure))))
+    (home-page "http://gallium.inria.fr/~fpottier/menhir/")
     (synopsis "Parser generator")
     (description "Menhir is a parser generator.  It turns high-level grammar
 specifications, decorated with semantic actions expressed in the OCaml
-programming language into parsers, again expressed in OCaml. It is based on
+programming language into parsers, again expressed in OCaml.  It is based on
 Knuth’s LR(1) parser construction technique.")
     ;; The file src/standard.mly and all files listed in src/mnehirLib.mlpack
     ;; that have an *.ml or *.mli extension are GPL licensed. All other files
@@ -1318,14 +1316,14 @@ coverage information.")
 (define-public dune
   (package
     (name "dune")
-    (version "1.9.1")
+    (version "1.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml/dune/releases/"
                                   "download/" version "/dune-" version ".tbz"))
               (sha256
                (base32
-                "0z4jnj0a5vxjqlwksplhag9b3s3iqdcpcpjjzfazv5jdl5cf58f9"))))
+                "1jlhnx580v6i1d451z5cl8ibfd0m9qln963y2pp5v6s2winyqyri"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
@@ -1368,7 +1366,7 @@ following a very simple s-expression syntax.")
        ("ocamlbuild" ,ocamlbuild)
        ("ocaml-result" ,ocaml-result)))
     (properties `((upstream-name . "ocaml-migrate-parsetree")))
-    (synopsis "OCaml parsetree convertor")
+    (synopsis "OCaml parsetree converter")
     (description "This library converts between parsetrees of different OCaml
 versions.  For each version, there is a snapshot of the parsetree and conversion
 functions to the next and/or previous version.")
@@ -1521,19 +1519,21 @@ library.")
 (define-public ocaml-sqlite3
   (package
     (name "ocaml-sqlite3")
-    (version "4.1.2")
+    (version "4.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mmottl/sqlite3-ocaml/releases/download/v"
-             version "/sqlite3-ocaml-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/mmottl/sqlite3-ocaml")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "14c1nir7c6bivajg0vyx853y7la7r5d25g1v5hjb2wfi73r15p1m"))))
-    (build-system ocaml-build-system)
+         "1536agm5fgcqysszhpd3kmw7lkc5n5ni7gmlyglrbvmnmrwf3av2"))))
+    (build-system dune-build-system)
     (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)
+     `(("ocaml-base" ,ocaml-base)
+       ("ocaml-stdio" ,ocaml-stdio)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("sqlite" ,sqlite)))
@@ -2170,29 +2170,21 @@ multitude of other network protocols (FTP/SMTP/RTSP/etc).")
 (define-public ocaml-base64
   (package
     (name "ocaml-base64")
-    (version "2.1.2")
+    (version "3.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mirage/ocaml-base64/"
-                                  "releases/download/v" version "/base64-"
-                                   version ".tbz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mirage/ocaml-base64")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                 "1p45sawchmrkr22gkmydjc4ary23pisp58zsnb7iq7d82nxs1lfq"))))
-    (build-system ocaml-build-system)
-    (arguments
-     `(#:build-flags (list "build" "--tests" "true")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))))
+                 "1ilw3zj0w6cq7i4pvr8m2kv5l5f2y9aldmv72drlwwns013b1gwy"))))
+    (build-system dune-build-system)
     (native-inputs
-     `(("topkg" ,ocaml-topkg)
-       ("ocamlbuild" ,ocamlbuild)
-       ("opam" ,opam)
-       ("rresult" ,ocaml-rresult)
-       ("bos" ,ocaml-bos)
-       ("alcotest" ,ocaml-alcotest)))
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-bos" ,ocaml-bos)
+       ("ocaml-rresult" ,ocaml-rresult)))
     (home-page "https://github.com/mirage/ocaml-base64")
     (synopsis "Base64 encoding for OCaml")
     (description "Base64 is a group of similar binary-to-text encoding schemes
@@ -2732,7 +2724,9 @@ Format module of the OCaml standard library.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lyqllmfsxmwlg7qidy92kvxi9n39lvachmydcyi81f8p07ykd2d"))))
+        (base32 "0lyqllmfsxmwlg7qidy92kvxi9n39lvachmydcyi81f8p07ykd2d"))
+       (patches
+         (search-patches "ocaml-piqilib-Update-base64.patch"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
@@ -3153,7 +3147,15 @@ without writing or generating any C!")
     `(#:build-flags (list "build" "--tests" "true")
       #:phases
       (modify-phases %standard-phases
-        (delete 'configure))))
+        (delete 'configure)
+        (add-before 'build 'fix-for-guix
+          (lambda _
+            (substitute* "src/ocb_stubblr.ml"
+              ;; Do not fail when opam is not present or initialized
+              (("error_msgf \"error running opam\"") "\"\"")
+              ;; Guix doesn't have cc, but it has gcc
+              (("\"cc\"") "\"gcc\""))
+            #t)))))
    (inputs
     `(("topkg" ,ocaml-topkg)
       ("opam" ,opam)))
@@ -3169,7 +3171,7 @@ OCaml projects that contain C stubs.")
 (define-public ocaml-tsdl
   (package
     (name "ocaml-tsdl")
-    (version "0.9.1")
+    (version "0.9.6")
     (home-page "http://erratique.ch/software/tsdl")
     (source (origin
               (method url-fetch)
@@ -3178,7 +3180,7 @@ OCaml projects that contain C stubs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08bb97fhvz829fb0sgjn2p20mp7b04v98zy2qxpk2w390a6c4b34"))))
+                "00krjhmnchsnz33h9zhh0v69xbvi86l0xf0dvy7iivylb7f7x3n4"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:build-flags '("build")
@@ -3188,6 +3190,8 @@ OCaml projects that contain C stubs.")
          (delete 'configure))))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
+       ("ocaml-astring" ,ocaml-astring)
+       ("ocaml-ocb-stubblr" ,ocaml-ocb-stubblr)
        ("opam" ,opam)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -3842,7 +3846,7 @@ provided by companion libraries such as
      '(#:tests? #f)) ;no tests
     (properties `((upstream-name . "ocaml-compiler-libs")))
     (synopsis "Compiler libraries repackaged")
-    (description "This packaeg simply repackages the OCaml compiler libraries
+    (description "This package simply repackages the OCaml compiler libraries
 so they don't expose everything at toplevel.  For instance, @code{Ast_helper}
 is now @code{Ocaml_common.Ast_helper}.")
     (license license:expat)))
@@ -4609,7 +4613,7 @@ to denote the expected output.")
     (properties `((upstream-name . "ppx_js_style")))
     (home-page "https://github.com/janestreet/ppx_js_style")
     (synopsis "Code style checker for Jane Street Packages")
-    (description "This packages is a no-op ppx rewriter.  It is used as a
+    (description "This package is a no-op ppx rewriter.  It is used as a
 @code{lint} tool to enforce some coding conventions across all Jane Street
 packages.")
     (license license:asl2.0)))
@@ -4962,3 +4966,150 @@ the full Core is not available, such as in Javascript.")
                license:asl2.0
                ;; MLton and sjs
                license:expat))))
+
+(define-public ocaml-markup
+  (package
+    (name "ocaml-markup")
+    (version "0.8.0")
+    (home-page "https://github.com/aantron/markup.ml")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append home-page ".git"))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0aif4abvfmi9xc1pvw5n5rbm6rzkkpsxyvdn0lanr33rjpvkwdlm"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-uchar" ,ocaml-uchar)
+       ("ocaml-uutf" ,ocaml-uutf)
+       ("ocaml-lwt" ,ocaml-lwt)))
+    (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
+    (synopsis "Error-recovering functional HTML5 and XML parsers and writers")
+    (description "Markup.ml provides an HTML parser and an XML parser.  The
+parsers are wrapped in a simple interface: they are functions that transform
+byte streams to parsing signal streams.  Streams can be manipulated in various
+ways, such as processing by fold, filter, and map, assembly into DOM tree
+structures, or serialization back to HTML or XML.
+
+Both parsers are based on their respective standards.  The HTML parser, in
+particular, is based on the state machines defined in HTML5.
+
+The parsers are error-recovering by default, and accept fragments.  This makes
+it very easy to get a best-effort parse of some input.  The parsers can,
+however, be easily configured to be strict, and to accept only full documents.
+
+Apart from this, the parsers are streaming (do not build up a document in
+memory), non-blocking (can be used with threading libraries), lazy (do not
+consume input unless the signal stream is being read), and process the input in
+a single pass.  They automatically detect the character encoding of the input
+stream, and convert everything to UTF-8.")
+    (license license:bsd-3)))
+
+(define-public ocaml-tyxml
+  (package
+    (name "ocaml-tyxml")
+    (version "4.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocsigen/tyxml.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0wv19xipkj8l2sks1h53105ywbjwk7q93fb7b8al4a2g9wr109c0"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-re" ,ocaml-re)
+       ("ocaml-seq" ,ocaml-seq)
+       ("ocaml-uutf" ,ocaml-uutf)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+       ("ocaml-markup" ,ocaml-markup)))
+    (native-inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)))
+    (arguments `(#:jbuild? #t))
+    (home-page "https://github.com/ocsigen/tyxml/")
+    (synopsis "TyXML is a library for building correct HTML and SVG documents")
+    (description "TyXML provides a set of convenient combinators that uses the
+OCaml type system to ensure the validity of the generated documents.  TyXML can
+be used with any representation of HTML and SVG: the textual one, provided
+directly by this package, or DOM trees (@code{js_of_ocaml-tyxml}) virtual DOM
+(@code{virtual-dom}) and reactive or replicated trees (@code{eliom}).  You can
+also create your own representation and use it to instantiate a new set of
+combinators.")
+    (license license:lgpl2.1)))
+
+(define-public ocaml-bisect-ppx
+  (package
+    (name "ocaml-bisect-ppx")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aantron/bisect_ppx.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vp3qvrkz7q25nbmvd40vhsnz2k9aqh17bnd21i3q8q0xlr5hdag"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
+       ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
+       ("ocaml-ounit" ,ocaml-ounit)))
+    (home-page "https://github.com/aantron/bisect_ppx")
+    (synopsis "Code coverage for OCaml")
+    (description "Bisect_ppx helps you test thoroughly.  It is a small
+preprocessor that inserts instrumentation at places in your code, such as
+if-then-else and match expressions.  After you run tests, Bisect_ppx gives a
+nice HTML report showing which places were visited and which were missed.
+
+Usage is simple - add package bisect_ppx when building tests, run your tests,
+then run the Bisect_ppx report tool on the generated visitation files.")
+    (license license:mpl2.0)))
+
+(define-public ocaml-odoc
+  (package
+    (name "ocaml-odoc")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ocaml/odoc")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0br11cw6wa0mwafja4xdb45d2f8908l6nzdq5mw5lbfq2jnp68km"))))
+    (build-system dune-build-system)
+    (inputs
+     `(("ocaml-alcotest" ,ocaml-alcotest)
+       ("ocaml-markup" ,ocaml-markup)
+       ("ocaml-sexplib" ,ocaml-sexplib)
+       ("ocaml-re" ,ocaml-re)
+       ("ocaml-uutf" ,ocaml-uutf)))
+    (native-inputs
+     `(("ocaml-astring" ,ocaml-astring)
+       ("ocaml-cmdliner" ,ocaml-cmdliner)
+       ("ocaml-cppo" ,ocaml-cppo)
+       ("ocaml-fpath" ,ocaml-fpath)
+       ("ocaml-result" ,ocaml-result)
+       ("ocaml-tyxml" ,ocaml-tyxml)
+       ("ocaml-bisect-ppx" ,ocaml-bisect-ppx)))
+    (home-page "https://github.com/ocaml/odoc")
+    (synopsis "OCaml documentation generator")
+    (description "Odoc is a documentation generator for OCaml.  It reads
+@emph{doc comments}, delimited with @code{(** ... *)}, and outputs
+@acronym{HTML}.
+
+Text inside doc comments is marked up in ocamldoc syntax.  Odoc's main
+advantage over ocamldoc is an accurate cross-referencer, which handles the
+complexity of the OCaml module system.")
+    (license license:isc)))

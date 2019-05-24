@@ -37,11 +37,11 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls))
 

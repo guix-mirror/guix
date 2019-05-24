@@ -133,6 +133,25 @@ case "$transformed_drv" in
 esac
 rmdir "$tmpdir/emacs-36.8"
 
+# Transformation options without '--ad-hoc'.
+drv="`guix environment -n emacs-geiser 2>&1 | grep '\.drv$'`"
+transformed_drv="`guix environment -n emacs-geiser \
+  --with-input=emacs-minimal=vim 2>&1 | grep '\.drv$'`"
+test "$drv" != "$transformed_drv"
+case "$drv" in
+    *-emacs-minimal*.drv*) true;;
+    *)                     false;;
+esac
+case "$transformed_drv" in
+    *-emacs-minimal*.drv*) false;;
+    *)                     true;;
+esac
+case "$transformed_drv" in
+    *-vim*.drv*) true;;
+    *)           false;;
+esac
+
+
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
     # Compute the build environment for the initial GNU Make.

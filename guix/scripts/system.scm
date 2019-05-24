@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -756,13 +757,17 @@ checking this by themselves in their 'check' procedure."
 
 (define* (system-derivation-for-action os action
                                        #:key image-size file-system-type
-                                       full-boot? mappings)
+                                       full-boot? container-shared-network?
+                                       mappings)
   "Return as a monadic value the derivation for OS according to ACTION."
   (case action
     ((build init reconfigure)
      (operating-system-derivation os))
     ((container)
-     (container-script os #:mappings mappings))
+     (container-script
+      os
+      #:mappings mappings
+      #:shared-network? container-shared-network?))
     ((vm-image)
      (system-qemu-image os #:disk-image-size image-size))
     ((vm)
@@ -781,7 +786,7 @@ checking this by themselves in their 'check' procedure."
                         #:disk-image-size image-size
                         #:file-system-type file-system-type))
     ((docker-image)
-     (system-docker-image os #:register-closures? #t))))
+     (system-docker-image os))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
@@ -826,6 +831,7 @@ and TARGET arguments."
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
                          image-size file-system-type full-boot?
+                         container-shared-network?
                          (mappings '())
                          (gc-root #f))
   "Perform ACTION for OS.  INSTALL-BOOTLOADER? specifies whether to install
@@ -834,6 +840,8 @@ target root directory; IMAGE-SIZE is the size of the image to be built, for
 the 'vm-image' and 'disk-image' actions.  The root file system is created as a
 FILE-SYSTEM-TYPE file system.  FULL-BOOT? is used for the 'vm' action; it
 determines whether to boot directly to the kernel or to the bootloader.
+CONTAINER-SHARED-NETWORK? determines if the container will use a separate
+network namespace.
 
 When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
 building anything.
@@ -883,6 +891,7 @@ static checks."
                                                 #:file-system-type file-system-type
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
+                                                #:container-shared-network? container-shared-network?
                                                 #:mappings mappings))
 
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
@@ -1020,6 +1029,8 @@ Some ACTIONS support additional ARGS.\n"))
   (display (G_ "
       --share=SPEC       for 'vm', share host file system according to SPEC"))
   (display (G_ "
+  -N, --network          for 'container', allow containers to access the network"))
+  (display (G_ "
   -r, --root=FILE        for 'vm', 'vm-image', 'disk-image', 'container',
                          and 'build', make FILE a symlink to the result, and
                          register it as a garbage collector root"))
@@ -1066,6 +1077,9 @@ Some ACTIONS support additional ARGS.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'image-size (size->number arg)
                                result)))
+         (option '(#\N "network") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'container-shared-network? #t result)))
          (option '("no-bootloader" "no-grub") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'install-bootloader? #f result)))
@@ -1129,22 +1143,30 @@ Some ACTIONS support additional ARGS.\n"))
 ACTION must be one of the sub-commands that takes an operating system
 declaration as an argument (a file name.)  OPTS is the raw alist of options
 resulting from command-line parsing."
+  (define (ensure-operating-system file-or-exp obj)
+    (unless (operating-system? obj)
+      (leave (G_ "'~a' does not return an operating system~%")
+             file-or-exp))
+    obj)
+
   (let* ((file        (match args
                         (() #f)
                         ((x . _) x)))
          (expr        (assoc-ref opts 'expression))
          (system      (assoc-ref opts 'system))
-         (os          (cond
-                       ((and expr file)
-                        (leave
-                         (G_ "both file and expression cannot be specified~%")))
-                       (expr
-                        (read/eval expr))
-                       (file
-                        (load* file %user-module
-                                    #:on-error (assoc-ref opts 'on-error)))
-                       (else
-                        (leave (G_ "no configuration specified~%")))))
+         (os          (ensure-operating-system
+                       (or file expr)
+                       (cond
+                        ((and expr file)
+                         (leave
+                          (G_ "both file and expression cannot be specified~%")))
+                        (expr
+                         (read/eval expr))
+                        (file
+                         (load* file %user-module
+                                #:on-error (assoc-ref opts 'on-error)))
+                        (else
+                         (leave (G_ "no configuration specified~%"))))))
 
          (dry?        (assoc-ref opts 'dry-run?))
          (bootloader? (assoc-ref opts 'install-bootloader?))
@@ -1182,6 +1204,8 @@ resulting from command-line parsing."
                              #:file-system-type (assoc-ref opts 'file-system-type)
                              #:image-size (assoc-ref opts 'image-size)
                              #:full-boot? (assoc-ref opts 'full-boot?)
+                             #:container-shared-network?
+                             (assoc-ref opts 'container-shared-network?)
                              #:mappings (filter-map (match-lambda
                                                       (('file-system-mapping . m)
                                                        m)

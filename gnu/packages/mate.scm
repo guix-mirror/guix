@@ -100,8 +100,7 @@ MATE applications.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -126,12 +125,12 @@ MATE applications.")
        ("libcanberra" ,libcanberra)
        ("upower" ,upower)))
     (home-page "https://mate-desktop.org/")
-    (synopsis "A Power Manager for MATE")
+    (synopsis "Power manager for MATE")
     (description
      "MATE Power Manager is a MATE session daemon that acts as a policy agent on
-top of UPower. It listens to system events and responds with user-configurable
+top of UPower.  It listens to system events and responds with user-configurable
 actions.")
-    (license license:gpl3+)))
+    (license license:gpl2+)))
 
 (define-public mate-icon-theme
   (package
@@ -587,7 +586,7 @@ assorted menu related utility programs.")
        ("glib" ,glib)
        ("gucharmap" ,gucharmap)
        ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-3)
        ("libgtop" ,libgtop)
        ("libmateweather" ,libmateweather)
        ("libnotify" ,libnotify)
@@ -1470,7 +1469,7 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("enchant" ,enchant-1.6)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-3)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("iso-codes" ,iso-codes)
        ("libcanberra" ,libcanberra)

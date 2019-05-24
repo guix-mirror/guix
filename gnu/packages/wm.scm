@@ -412,7 +412,7 @@ subscribe to events.")
        "This utility for the i3 window manager allows you to quickly switch to
 and locate windows on all your workspaces, using an interactive dmenu
 prompt.")
-      (license (license:non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+      (license license:wtfpl2))))
 
 (define-public i3lock-color
   (package

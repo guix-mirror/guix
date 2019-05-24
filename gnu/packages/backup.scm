@@ -503,6 +503,7 @@ detection, and lossless compression.")
        (sha256
         (base32
          "0x95nhv4h34m8cxycbwc4xdz350saaxlgh727b23bgn4ci7gh3vx"))
+       (patches (search-patches "borg-fix-hard-link-preloading.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -658,14 +659,14 @@ changes are stored.")
 (define-public wimlib
   (package
     (name "wimlib")
-    (version "1.13.0")
+    (version "1.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wimlib.net/downloads/"
                                   "wimlib-" version ".tar.gz"))
               (sha256
                (base32
-                "02wpsxjlw9vysj6x6q7kmvbcdkpvdzw201mmj5x0q670mapjrnai"))))
+                "0pxgrpr3dr81rcf2jh71aiiq3v4anc5sj1nld18f2vhvbijbrx27"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -856,7 +857,7 @@ is like a time machine for your data. ")
 (define-public restic
   (package
     (name "restic")
-    (version "0.9.4")
+    (version "0.9.5")
     ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
     ;; directory.
     (source (origin
@@ -867,20 +868,17 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "13ksprq1ia86px8x4lqrmx0l6y9rb1ppg8pnp7lcx0zxnq7skp67"))))
+                "0afl3dv7gzwdc9klikk3fsb57d0px2fwihb0xxb7zq7d8vlhh8p2"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"
-       #:unpack-path "github.com/restic"
       ;; We don't need to install the source code for end-user applications.
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (with-directory-excursion (string-append
-                                        "src/github.com/restic/restic-"
-                                        ,version)
+             (with-directory-excursion "src/github.com/restic/restic"
                ;; Disable 'restic self-update'.  It makes little sense in Guix.
                (substitute* "build.go" (("selfupdate") ""))
                (setenv "HOME" (getcwd)) ; for $HOME/.cache/go-build
@@ -888,9 +886,7 @@ is like a time machine for your data. ")
 
          (replace 'check
            (lambda _
-             (with-directory-excursion (string-append
-                                        "src/github.com/restic/restic-"
-                                        ,version)
+             (with-directory-excursion "src/github.com/restic/restic"
                ;; Disable FUSE tests.
                (setenv "RESTIC_TEST_FUSE" "0")
                (invoke "go" "run" "build.go" "--test"))))
@@ -898,8 +894,7 @@ is like a time machine for your data. ")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (src (string-append "src/github.com/restic/restic-"
-                                       ,version)))
+                   (src "src/github.com/restic/restic"))
                (install-file (string-append src "/restic")
                              (string-append out "/bin"))
                #t)))
@@ -909,8 +904,7 @@ is like a time machine for your data. ")
              (let* ((out (assoc-ref outputs "out"))
                     (man "/share/man")
                     (man-section (string-append man "/man"))
-                    (src (string-append "src/github.com/restic/restic-"
-                                        ,version "/doc/man/")))
+                    (src "src/github.com/restic/restic/doc/man/"))
                ;; Install all the man pages to "out".
                (for-each
                  (lambda (file)
@@ -979,14 +973,14 @@ precious backup space.
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.4")
+    (version "2.3.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/burp/burp-" version
                                   "/burp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0r82mmfjm57yr4f34za3x3rkgc5z2c7nwbnsjjki16qfc9kjyai3"))))
+                "101nn30apcbmy9k0wksdf8d4ccw7sfcqzkasgg17a5y332x2imr9"))))
     (build-system gnu-build-system)
     (inputs
      `(("librsync" ,librsync)

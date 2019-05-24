@@ -57,7 +57,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.22.3")
+    (version "1.23.0")
     (source(origin
               (method url-fetch)
               (uri
@@ -65,7 +65,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "11vilv80l3q7hz8vyhclvjcnlgk93r7p9dvg634186iddjzls0j3"))
+                "1lyzxf03kdfvkbb6p7hxlarbb35lq5bh094g49v3bz9z4z9065p2"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -646,7 +646,7 @@ printer/driver specific, but spooler-independent PPD file.")
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "00k22vmghxls7rk2hrbz9v17wi5z8vdk3fmsp2lrfghfcad8nhpx"))))
+                "0djzp3ddslmzyxkjhzkhkg6qqqm02whjfnfvh5glprkshcskzlg9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

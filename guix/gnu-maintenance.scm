@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -79,7 +79,7 @@
 ;;;
 
 (define %gnumaint-base-url
-  "http://cvs.savannah.gnu.org/viewvc/*checkout*/womb/gnumaint/")
+  "https://web.cvs.savannah.gnu.org/viewvc/*checkout*/www/www/prep/gnumaint/")
 
 (define %package-list-url
   (string->uri

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -243,7 +243,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.4.14")
+    (version "0.6.4")
     (source (origin
               (method git-fetch)
               (uri
@@ -252,7 +252,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "0wwnd9adc1wav2299id17k5fbp0ib5gxkbihlk6jlh3v4i5nz11x"))
+                "0rwdw43fq7c581m6frzsd06h71sf7abk7danwa3cp6wd6cgkwdbk"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)

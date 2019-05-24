@@ -19,6 +19,7 @@
 
 (define-module (gnu installer newt user)
   #:use-module (gnu installer user)
+  #:use-module ((gnu installer steps) #:select (&installer-step-abort))
   #:use-module (gnu installer newt page)
   #:use-module (gnu installer newt utils)
   #:use-module (guix i18n)
@@ -27,6 +28,8 @@
   #:use-module (ice-9 receive)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (run-user-page))
 
 (define* (run-user-add-page #:key (name "") (real-name "")
@@ -34,7 +37,7 @@
   "Run a form to enter the user name, home directory, and password.  Use NAME,
 REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
   (define (pad-label label)
-    (string-pad-right label 20))
+    (string-pad-right label 25))
 
   (let* ((label-name
           (make-label -1 -1 (pad-label (G_ "Name"))))
@@ -44,16 +47,19 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
           (make-label -1 -1 (pad-label (G_ "Home directory"))))
          (label-password
           (make-label -1 -1 (pad-label (G_ "Password"))))
-         (entry-width 30)
+         (entry-width 35)
          (entry-name (make-entry -1 -1 entry-width
                                  #:initial-value name))
          (entry-real-name (make-entry -1 -1 entry-width
                                       #:initial-value real-name))
          (entry-home-directory (make-entry -1 -1 entry-width
                                            #:initial-value home-directory))
+         (password-visible-cb
+          (make-checkbox -1 -1 (G_ "Hide") #\x "x "))
          (entry-password (make-entry -1 -1 entry-width
-                                     #:flags FLAG-PASSWORD))
-         (entry-grid (make-grid 2 5))
+                                     #:flags (logior FLAG-PASSWORD
+                                                     FLAG-SCROLL)))
+         (entry-grid (make-grid 3 5))
          (button-grid (make-grid 1 1))
          (ok-button (make-button -1 -1 (G_ "OK")))
          (grid (make-grid 1 2))
@@ -71,6 +77,12 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
     (set-entry-grid-field 0 3 label-password)
     (set-entry-grid-field 1 3 entry-password)
 
+    (set-grid-field entry-grid
+                    2 3
+                    GRID-ELEMENT-COMPONENT
+                    password-visible-cb
+                    #:pad-left 1)
+
     (set-grid-field button-grid 0 0 GRID-ELEMENT-COMPONENT ok-button)
 
     (add-component-callback
@@ -83,11 +95,19 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
          (set-entry-text entry-real-name
                          (string-titlecase (entry-value entry-name))))))
 
+    (add-component-callback
+     password-visible-cb
+     (lambda (component)
+       (set-entry-flags entry-password
+                        FLAG-PASSWORD
+                        FLAG-ROLE-TOGGLE)))
+
     (add-components-to-form form
                             label-name label-real-name
                             label-home-directory label-password
                             entry-name entry-real-name
                             entry-home-directory entry-password
+                            password-visible-cb
                             ok-button)
 
     (make-wrapped-grid-window (vertically-stacked-grid
@@ -136,7 +156,7 @@ a thunk, if the confirmation doesn't match PASSWORD, and return its result."
     (run-input-page (G_ "Please confirm the password.")
                     (G_ "Password confirmation required")
                     #:allow-empty-input? #t
-                    #:input-flags FLAG-PASSWORD))
+                    #:input-hide-checkbox? #t))
 
   (if (string=? password confirmation)
       password
@@ -153,7 +173,7 @@ a thunk, if the confirmation doesn't match PASSWORD, and return its result."
     (run-input-page (G_ "Please choose a password for the system \
 administrator (\"root\").")
                     (G_ "System administrator password")
-                    #:input-flags FLAG-PASSWORD))
+                    #:input-hide-checkbox? #t))
 
   (confirm-password password run-root-password-page))
 
@@ -179,7 +199,7 @@ administrator (\"root\").")
                      (list GRID-ELEMENT-COMPONENT del-button)))))
            (ok-button (make-button -1 -1 (G_ "OK")))
            (exit-button (make-button -1 -1 (G_ "Exit")))
-           (title "User creation")
+           (title (G_ "User creation"))
            (grid
             (vertically-stacked-grid
              GRID-ELEMENT-COMPONENT info-textbox
@@ -231,7 +251,11 @@ administrator (\"root\").")
                   (run-error-page (G_ "Please create at least one user.")
                                   (G_ "No user"))
                   (run users))
-                (reverse users)))))
+                (reverse users))
+               ((components=? argument exit-button)
+                (raise
+                 (condition
+                  (&installer-step-abort)))))))
           (lambda ()
             (destroy-form-and-pop form))))))
 

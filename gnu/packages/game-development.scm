@@ -32,6 +32,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages game-development)
+  #:use-module (srfi srfi-1)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -1037,13 +1039,14 @@ robust and compatible with many systems and operating systems.")
     (version "3.2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/MyGUI/" name
-                       "/archive/MyGUI" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MyGUI/mygui")
+             (commit (string-append "MyGUI" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "13x7cydmj7gjmsg702sqjbfi53z265iv6j7binv3r6a7ibndfa0a"))))
+         "1wk7jmwm55rhlqqcyvqsxdmwvl70bysl9azh4kd9n57qlmgk3zmw"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; No test target
@@ -1051,7 +1054,11 @@ robust and compatible with many systems and operating systems.")
        (list "-DMYGUI_INSTALL_DOCS=TRUE"
              (string-append "-DOGRE_INCLUDE_DIR="
                             (assoc-ref %build-inputs "ogre")
-                            "/include/OGRE"))))
+                            "/include/OGRE")
+             ;; Demos and tools are Windows-specific:
+             ;; https://github.com/MyGUI/mygui/issues/24.
+             "-DMYGUI_BUILD_DEMOS=FALSE"
+             "-DMYGUI_BUILD_TOOLS=FALSE")))
     (native-inputs
      `(("boost" ,boost)
        ("doxygen" ,doxygen)
@@ -1070,6 +1077,29 @@ and 3D applications.  The main goals of mygui are: speed, flexibility and ease
 of use.")
     (home-page "http://mygui.info/")
     (license license:expat)))
+
+(define-public mygui-gl
+  ;; Closure size is reduced by some 800 MiB.
+  (package
+    (inherit mygui)
+    (name "mygui-gl")
+    (version "3.2.2")
+    (arguments
+     (substitute-keyword-arguments (package-arguments mygui)
+       ((#:configure-flags _)
+        `(cons* "-DMYGUI_RENDERSYSTEM=4" ; 3 is Ogre, 4 is OpenGL.
+                ;; We can't reuse the flags because of the mention to Ogre.
+                (list "-DMYGUI_INSTALL_DOCS=TRUE"
+                      ;; Demos and tools are Windows-specific:
+                      ;; https://github.com/MyGUI/mygui/issues/24.
+                      "-DMYGUI_BUILD_DEMOS=FALSE"
+                      "-DMYGUI_BUILD_TOOLS=FALSE")))))
+    (inputs
+     `(("mesa" ,mesa)
+       ("glu" ,glu)
+       ,@(fold alist-delete (package-inputs mygui)
+               '("ogre"))))
+    (synopsis "Fast, flexible and simple GUI (OpenGL backend)")))
 
 (define-public openmw
   (package
@@ -1097,7 +1127,7 @@ of use.")
      `(("bullet" ,bullet)
        ("ffmpeg" ,ffmpeg)
        ("libxt" ,libxt)
-       ("mygui" ,mygui)
+       ("mygui" ,mygui-gl)              ; OpenMW does not need Ogre.
        ("openal" ,openal)
        ("openscenegraph" ,openscenegraph)
        ("qtbase" ,qtbase)
@@ -1434,3 +1464,62 @@ collection of handy utility functions.  All are 100% portable across nearly
 all modern computing platforms.  Each library component is fairly independent
 of the others")
     (license license:lgpl2.0+)))
+
+(define-public ioquake3
+  ;; We follow master since it seems that there won't be releases after 1.3.6.
+  (let ((commit "95b9cab4d644fa3bf757cfff821cc4f7d76e38b0"))
+    (package
+      (name "ioquake3")
+      (version (git-version "1.3.6" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ioquake/ioq3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1vflk028z9gccg5yfi5451y1k5wxjdh3qbhjf4x6r7w2pzlxh16z"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("sdl2" ,sdl2)
+         ("libjpeg" ,libjpeg)
+         ("openal" ,openal)
+         ("curl" ,curl)
+         ("opusfile" ,opusfile)
+         ("opus" ,opus)
+         ("libvorbis" ,libvorbis)
+         ("freetype" ,freetype)
+         ("libogg" ,libogg)))
+      (native-inputs
+       `(("which" ,which)               ; Else SDL_version.h won't be found.
+         ("pkg-config" ,pkg-config)))
+      (arguments
+       '(#:tests? #f                    ; No tests.
+         #:make-flags '("CC=gcc"
+                        "USE_INTERNAL_LIBS=0"
+                        "USE_FREETYPE=1"
+                        "USE_RENDERER_DLOPEN=0"
+                        "USE_OPENAL_DLOPEN=0"
+                        "USE_CURL_DLOPEN=0")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "copyfiles" "CC=gcc"
+                        "USE_INTERNAL_LIBS=0"
+                       (string-append "COPYDIR="
+                                      (assoc-ref outputs "out")
+                                      "/bin")))))))
+      (home-page "https://ioquake3.org/")
+      (synopsis "FPS game engine based on Quake 3")
+      (description "ioquake3 is a free software first person shooter engine
+based on the Quake 3: Arena and Quake 3: Team Arena source code.  Compared to
+the original, ioquake3 has been cleaned up, bugs have been fixed and features
+added.  The permanent goal is to create the open source Quake 3 distribution
+upon which people base their games, ports to new platforms, and other
+projects.")
+      (supported-systems '("x86_64-linux" "i686-linux"))
+      (license license:gpl2))))

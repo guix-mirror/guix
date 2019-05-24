@@ -108,7 +108,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.12.4-P1")
+    (version "9.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -116,9 +116,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "1if7zc5gzrfd28csc63v9bjwrc0rgvm1x9yx058946hc5gp5lyp2"))
-              (patches
-               (search-patches "bind-fix-unused-pk11-ecc-constants.patch"))))
+                "033zqajnj5ys45g899132xkhh9f0hsh76ffv7302wl166xbjfh0f"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -163,7 +161,11 @@ and BOOTP/TFTP for network booting of diskless machines.")
          ;;          (system "bin/tests/system/ifconfig.sh up")))
          (replace 'check
            (lambda _
-             (invoke "make" "force-test"))))))
+             ;; XXX Even ‘make force-test’ tries to create network interfaces
+             ;; and fails.  The only working target is the (trivial) fuzz test.
+             (with-directory-excursion "fuzz"
+               (invoke "make" "check"))
+             #t)))))
     (synopsis "An implementation of the Domain Name System")
     (description "BIND is an implementation of the @dfn{Domain Name System}
 (DNS) protocols for the Internet.  It is a reference implementation of those

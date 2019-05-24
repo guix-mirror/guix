@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -590,14 +592,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "13605bpnnbqsdr8ybqnscbz9g422zmyymn4q5aci28vc1wylr1l6"))))
+        (base32 "0fz5lbyiw4a27fqc4ndi1w20bpcb6wi9k7vjv29l9fhd99kca7ky"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -728,6 +730,56 @@ fashion.")
 manage, and delete Internet resources from Gandi.net such as domain names,
 virtual machines, and certificates.")
     (license license:gpl3+)))
+
+(define-public go-netns
+  (let ((commit "13995c7128ccc8e51e9a6bd2b551020a27180abd")
+        (revision "1"))
+    (package
+      (name "go-netns")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/vishvananda/netns.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1zk6w8158qi4niva5rijchbv9ixgmijsgqshh54wdaav4xrhjshn"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/vishvananda/netns"
+         #:tests? #f))                  ;tests require root privileges
+      (home-page "https://github.com/vishvananda/netns")
+      (synopsis "Simple network namespace handling for Go")
+      (description "The netns package provides a simple interface for
+handling network namespaces in Go.")
+      (license license:asl2.0))))
+
+(define-public go-sctp
+  ;; docker-libnetwork-cmd-proxy requires this exact commit.
+  (let ((commit "07191f837fedd2f13d1ec7b5f885f0f3ec54b1cb")
+        (revision "1"))
+    (package
+      (name "go-sctp")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ishidawataru/sctp.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1mk9ncm10gwi5pn5wcw4skbyf4qg7n5qdf1mim4gf3mrckvi6g6h"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/ishidawataru/sctp"))
+      (home-page "https://github.com/ishidawataru/sctp")
+      (synopsis "SCTP library for the Go programming language")
+      (description "This library provides methods for using the stream control
+transmission protocol (SCTP) in a Go application.")
+      (license license:asl2.0))))
 
 (define-public httping
   (package
@@ -2165,22 +2217,23 @@ SNMP v3 using both IPv4 and IPv6.")
 (define-public ubridge
   (package
     (name "ubridge")
-    (version "0.9.14")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/GNS3/ubridge/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1hivb8wqkk5047bdl2vbsbcvkmam1107hx1ahy4virq2bkqki1fj"))))
+    (version "0.9.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/GNS3/ubridge.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0fl07zyall04map6v2l1bclqh8y3rrhsx61s2v0sr8b00j201jg4"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-before 'install 'set-bindir
            (lambda* (#:key  inputs outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out")

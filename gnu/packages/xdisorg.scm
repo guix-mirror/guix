@@ -379,7 +379,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.97")
+    (version "2.4.98")
     (source
       (origin
         (method url-fetch)
@@ -389,7 +389,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "08yimlp6jir1rs5ajgdx74xa5qdzcqahpdzdk0rmkmhh7vdcrl3p"))
+          "150qdzsm2nx6dfacc75rx53anzsc6m31nhxidf5xxax3mk6fvq4b"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -677,7 +677,7 @@ do visual scraping to find things on the screen.  The control interface
 allows mouse movement, clicking, button up/down, key up/down, etc, and
 uses the XTest extension so you don't have the annoying problems that
 xse has when apps ignore sent events.  The visgrep program can find
-images inside of images and reports the coordinates, allowing progams
+images inside of images and reports the coordinates, allowing programs
 to find buttons, etc, on the screen to click on.")
     (home-page "https://www.hoopajoo.net/projects/xautomation.html")
     (license license:gpl2+)))

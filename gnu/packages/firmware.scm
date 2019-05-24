@@ -186,19 +186,21 @@ by the b43-open driver of Linux-libre.")
 (define-public seabios
   (package
     (name "seabios")
-    (version "1.12.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.seabios.org/downloads/"
-                                  "seabios-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0jx7pnsc2s4a7wbvvwqig6x8wmkw7f2sz0pbgj4jfp77cpjvh5yz"))))
+    (version "1.12.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://review.coreboot.org/seabios.git")
+             (commit (string-append "rel-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g9y03r5ky58q2g9rhbwfhs42z0zb9f59wfxpwh6zjqa6fyv1r80"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python-2" ,python-2)))
     (arguments
-     `(#:tests? #f ; No check target.
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (replace 'configure

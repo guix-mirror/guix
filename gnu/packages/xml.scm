@@ -678,14 +678,14 @@ This module provide functions which simplify writing tests for
 (define-public perl-xml-compile
   (package
     (name "perl-xml-compile")
-    (version "1.61")
+    (version "1.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-" version ".tar.gz"))
               (sha256
                (base32
-                "13dvsaj8simivj867rkjlf7hhvvcwlahnhk70zf8cq2xbg8wmf7x"))))
+                "0a75gr4qcjj8ybzljacbbkdxprbqpypz49bc0jb7cfamx1hp7p2w"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-carp" ,perl-carp)

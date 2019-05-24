@@ -1,5 +1,5 @@
 dnl GNU Guix --- Functional package management for GNU
-dnl Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 dnl Copyright © 2014 Mark H Weaver <mhw@netris.org>
 dnl Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 dnl
@@ -310,6 +310,21 @@ AC_DEFUN([GUIX_LIBZ_LIBDIR], [
     [guix_cv_libz_libdir],
     [guix_cv_libz_libdir="`$PKG_CONFIG zlib --variable=libdir 2> /dev/null`"])
   $1="$guix_cv_libz_libdir"
+])
+
+dnl GUIX_LIBLZ_FILE_NAME VAR
+dnl
+dnl Attempt to determine liblz's absolute file name; store the result in VAR.
+AC_DEFUN([GUIX_LIBLZ_FILE_NAME], [
+  AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+  AC_CACHE_CHECK([lzlib's file name],
+    [guix_cv_liblz_libdir],
+    [old_LIBS="$LIBS"
+     LIBS="-llz"
+     AC_LINK_IFELSE([AC_LANG_SOURCE([int main () { return LZ_decompress_open(); }])],
+       [guix_cv_liblz_libdir="`ldd conftest$EXEEXT | grep liblz | sed '-es/.*=> \(.*\) .*$/\1/g'`"])
+     LIBS="$old_LIBS"])
+  $1="$guix_cv_liblz_libdir"
 ])
 
 dnl GUIX_CURRENT_LOCALSTATEDIR

@@ -65,7 +65,7 @@
 
 (define %default-log-urls
   ;; Default base URLs for build logs.
-  '("http://ci.guix.info/log"))
+  '("http://ci.guix.gnu.org/log"))
 
 ;; XXX: The following procedure cannot be in (guix store) because of the
 ;; dependency on (guix derivations).
@@ -370,7 +370,10 @@ a checkout of the Git repository at the given URL."
                       (package
                         (inherit old)
                         (source (git-checkout (url url)
-                                              (recursive? #t)))))))))
+                                              (recursive? #t)))))))
+             (_
+              (leave (G_ "~a: invalid Git URL replacement specification~%")
+                     spec))))
          replacement-specs))
 
   (define rewrite

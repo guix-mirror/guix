@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
+;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -33,6 +35,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages time))
 
 (define-public python-django
@@ -119,6 +122,46 @@ to the @dfn{don't repeat yourself} (DRY) principle.")
          ;; required.
          ,@(package-native-inputs base))))))
 
+(define-public python-django-extensions
+  (package
+    (name "python-django-extensions")
+    (version "2.1.6")
+    (source
+     (origin
+       (method git-fetch)
+       ;; Fetch from the git repository, so that the tests can be run.
+       (uri (git-reference
+             (url "https://github.com/django-extensions/django-extensions.git")
+             (commit version)))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+         "0p4qrdinrv6indczlc8dcnm528i5fzmcn9xk1ja7ycfkyk5x6j5w"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ;TODO collected 378 items / 3 errors / 1 skipped
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-vobject" ,python-vobject)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-dateutil" ,python-dateutil)
+       ("python-django" ,python-django)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-factory-boy" ,python-factory-boy)
+       ("python-tox" ,python-tox)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-django" ,python-pytest-django)
+       ("python-shortuuid" , python-shortuuid)))
+    (home-page
+     "https://github.com/django-extensions/django-extensions")
+    (synopsis "Custom management extensions for Django")
+    (description
+     "Django-extensions extends Django providing, for example, management
+commands, additional database fields and admin extensions.")
+    (license license:expat)))
+
 (define-public python-django-simple-math-captcha
   (package
     (name "python-django-simple-math-captcha")
@@ -146,6 +189,38 @@ with arguments to the field constructor.")
 
 (define-public python2-django-simple-math-captcha
   (package-with-python2 python-django-simple-math-captcha))
+
+(define-public python-django-taggit
+  (package
+    (name "python-django-taggit")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-taggit" version))
+       (sha256
+        (base32
+         "044fzcpmns90kaxdi49qczlam4xsi8rl73rpfwvxx1gkcqzidgq1"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python3" "-m" "django" "test" "--settings=tests.settings"))))))
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-isort" ,python-isort)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-mock" ,python-mock)))
+    (home-page
+     "https://github.com/jazzband/django-taggit")
+    (synopsis
+     "Reusable Django application for simple tagging")
+    (description
+     "Django-taggit is a reusable Django application for simple tagging.")
+    (license license:bsd-3)))
 
 (define-public python-pytest-django
   (package
@@ -675,13 +750,13 @@ support, and optional data-URI image and font embedding.")
 (define-public python-django-rq
   (package
     (name "python-django-rq")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "django-rq" version))
               (sha256
                (base32
-                "0xh6qa7i779vh58lwwv6yk0wx8bi38mvmpz79grnl2cl8531r928"))))
+                "1ips1ikv5qhgwb58ssn496vgqg9qv6jinwmwbrg9l3s75fskd1l5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

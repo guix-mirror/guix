@@ -430,7 +430,7 @@ test) much simpler.")
      `(("go-github.com-smartystreets-gunit" ,go-github.com-smartystreets-gunit)))
     (synopsis "Assertions for testing with Go")
     (description
-     "The @code{assertions} package provides convinient assertion functions
+     "The @code{assertions} package provides convenient assertion functions
 for writing tests in Go.")
     (home-page "https://github.com/smartystreets/assertions")
     (license license:expat)))
@@ -2058,13 +2058,13 @@ time by mocking the datetime module.")
 (define-public python-flexmock
   (package
     (name "python-flexmock")
-    (version "0.10.3")
+    (version "0.10.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flexmock" version))
               (sha256
                (base32
-                "031c624pdqm7cc0xh4yz5k69gqxn2bbrjz13s17684q5shn0ik21"))))
+                "0b6qw3grhgx58kxlkj7mdma7xdvlj02zabvcf7w2qifnfjwwwcsh"))))
     (build-system python-build-system)
     (home-page "https://flexmock.readthedocs.org")
     (synopsis "Testing library for Python")

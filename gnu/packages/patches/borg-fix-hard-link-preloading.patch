@@ -1,0 +1,157 @@
+Fix a bug that would cause the test suite to hang:
+
+https://github.com/borgbackup/borg/issues/4350
+
+Patch copied from upstream source repository:
+
+https://github.com/borgbackup/borg/commit/18242ab9e2f26c450b8507aa1d5eceadab8ad027
+
+From 18242ab9e2f26c450b8507aa1d5eceadab8ad027 Mon Sep 17 00:00:00 2001
+From: Thomas Waldmann <tw@waldmann-edv.de>
+Date: Thu, 2 May 2019 21:02:26 +0200
+Subject: [PATCH] preload chunks for hardlink slaves w/o preloaded master,
+ fixes #4350
+
+also split the hardlink extraction test into 2 tests.
+
+(cherry picked from commit f33f318d816505161d1449a02ddfdeb97d6fe80a)
+---
+ src/borg/archive.py            | 42 +++++++++++++++++++++++++++++-----
+ src/borg/archiver.py           |  5 ++--
+ src/borg/testsuite/archiver.py | 20 +++++++++-------
+ 3 files changed, 51 insertions(+), 16 deletions(-)
+
+diff --git a/src/borg/archive.py b/src/borg/archive.py
+index adc1f42c..0793672a 100644
+--- a/src/borg/archive.py
++++ b/src/borg/archive.py
+@@ -192,7 +192,7 @@ def __init__(self, repository, key):
+         self.repository = repository
+         self.key = key
+ 
+-    def unpack_many(self, ids, filter=None, preload=False):
++    def unpack_many(self, ids, filter=None, partial_extract=False, preload=False, hardlink_masters=None):
+         """
+         Return iterator of items.
+ 
+@@ -209,12 +209,40 @@ def unpack_many(self, ids, filter=None, preload=False):
+             for item in items:
+                 if 'chunks' in item:
+                     item.chunks = [ChunkListEntry(*e) for e in item.chunks]
++
++            def preload(chunks):
++                self.repository.preload([c.id for c in chunks])
++
+             if filter:
+                 items = [item for item in items if filter(item)]
++
+             if preload:
+-                for item in items:
+-                    if 'chunks' in item:
+-                        self.repository.preload([c.id for c in item.chunks])
++                if filter and partial_extract:
++                    # if we do only a partial extraction, it gets a bit
++                    # complicated with computing the preload items: if a hardlink master item is not
++                    # selected (== not extracted), we will still need to preload its chunks if a
++                    # corresponding hardlink slave is selected (== is extracted).
++                    # due to a side effect of the filter() call, we now have hardlink_masters dict populated.
++                    masters_preloaded = set()
++                    for item in items:
++                        if 'chunks' in item:  # regular file, maybe a hardlink master
++                            preload(item.chunks)
++                            # if this is a hardlink master, remember that we already preloaded it:
++                            if 'source' not in item and hardlinkable(item.mode) and item.get('hardlink_master', True):
++                                masters_preloaded.add(item.path)
++                        elif 'source' in item and hardlinkable(item.mode):  # hardlink slave
++                            source = item.source
++                            if source not in masters_preloaded:
++                                # we only need to preload *once* (for the 1st selected slave)
++                                chunks, _ = hardlink_masters[source]
++                                preload(chunks)
++                                masters_preloaded.add(source)
++                else:
++                    # easy: we do not have a filter, thus all items are selected, thus we need to preload all chunks.
++                    for item in items:
++                        if 'chunks' in item:
++                            preload(item.chunks)
++
+             for item in items:
+                 yield item
+ 
+@@ -433,8 +461,10 @@ def item_filter(self, item, filter=None):
+             return False
+         return filter(item) if filter else True
+ 
+-    def iter_items(self, filter=None, preload=False):
+-        for item in self.pipeline.unpack_many(self.metadata.items, preload=preload,
++    def iter_items(self, filter=None, partial_extract=False, preload=False, hardlink_masters=None):
++        assert not (filter and partial_extract and preload) or hardlink_masters is not None
++        for item in self.pipeline.unpack_many(self.metadata.items, partial_extract=partial_extract,
++                                              preload=preload, hardlink_masters=hardlink_masters,
+                                               filter=lambda item: self.item_filter(item, filter)):
+             yield item
+ 
+diff --git a/src/borg/archiver.py b/src/borg/archiver.py
+index 957959d6..dcc20455 100644
+--- a/src/borg/archiver.py
++++ b/src/borg/archiver.py
+@@ -755,7 +755,8 @@ def peek_and_store_hardlink_masters(item, matched):
+         else:
+             pi = None
+ 
+-        for item in archive.iter_items(filter, preload=True):
++        for item in archive.iter_items(filter, partial_extract=partial_extract,
++                                       preload=True, hardlink_masters=hardlink_masters):
+             orig_path = item.path
+             if strip_components:
+                 item.path = os.sep.join(orig_path.split(os.sep)[strip_components:])
+@@ -997,7 +998,7 @@ def item_to_tarinfo(item, original_path):
+                 return None, stream
+             return tarinfo, stream
+ 
+-        for item in archive.iter_items(filter, preload=True):
++        for item in archive.iter_items(filter, preload=True, hardlink_masters=hardlink_masters):
+             orig_path = item.path
+             if strip_components:
+                 item.path = os.sep.join(orig_path.split(os.sep)[strip_components:])
+diff --git a/src/borg/testsuite/archiver.py b/src/borg/testsuite/archiver.py
+index c35ad800..935b3d79 100644
+--- a/src/borg/testsuite/archiver.py
++++ b/src/borg/testsuite/archiver.py
+@@ -823,7 +823,18 @@ def test_mount_hardlinks(self):
+             assert open('input/dir1/subdir/hardlink', 'rb').read() == b'123456'
+ 
+     @requires_hardlinks
+-    def test_extract_hardlinks(self):
++    def test_extract_hardlinks1(self):
++        self._extract_hardlinks_setup()
++        with changedir('output'):
++            self.cmd('extract', self.repository_location + '::test')
++            assert os.stat('input/source').st_nlink == 4
++            assert os.stat('input/abba').st_nlink == 4
++            assert os.stat('input/dir1/hardlink').st_nlink == 4
++            assert os.stat('input/dir1/subdir/hardlink').st_nlink == 4
++            assert open('input/dir1/subdir/hardlink', 'rb').read() == b'123456'
++
++    @requires_hardlinks
++    def test_extract_hardlinks2(self):
+         self._extract_hardlinks_setup()
+         with changedir('output'):
+             self.cmd('extract', self.repository_location + '::test', '--strip-components', '2')
+@@ -839,13 +850,6 @@ def test_extract_hardlinks(self):
+             assert open('input/dir1/subdir/hardlink', 'rb').read() == b'123456'
+             assert os.stat('input/dir1/aaaa').st_nlink == 2
+             assert os.stat('input/dir1/source2').st_nlink == 2
+-        with changedir('output'):
+-            self.cmd('extract', self.repository_location + '::test')
+-            assert os.stat('input/source').st_nlink == 4
+-            assert os.stat('input/abba').st_nlink == 4
+-            assert os.stat('input/dir1/hardlink').st_nlink == 4
+-            assert os.stat('input/dir1/subdir/hardlink').st_nlink == 4
+-            assert open('input/dir1/subdir/hardlink', 'rb').read() == b'123456'
+ 
+     def test_extract_include_exclude(self):
+         self.cmd('init', '--encryption=repokey', self.repository_location)
+-- 
+2.21.0
+

@@ -120,7 +120,7 @@ if test "x$guix_build_daemon" = "xyes"; then
 
   dnl Determine the appropriate default list of substitute URLs (GnuTLS
   dnl is required so we can default to 'https'.)
-  guix_substitute_urls="https://ci.guix.info"
+  guix_substitute_urls="https://ci.guix.gnu.org"
 
   AC_MSG_CHECKING([for default substitute URLs])
   AC_MSG_RESULT([$guix_substitute_urls])
