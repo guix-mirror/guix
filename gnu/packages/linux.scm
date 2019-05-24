@@ -3338,14 +3338,14 @@ applications.")
 (define-public sbc
   (package
     (name "sbc")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "02ckd2z51z0h85qgv7x8vv8ybp5czm9if1z78411j53gaz7j4476"))))
+                "1jal98pnrjkzxlkiqy0ykh4qmgnydz9bmsp1jn581p5kddpg92si"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))
