@@ -227,14 +227,14 @@ automatically.")
 (define-public help2man/latest
   (package
     (inherit help2man)
-    (version "1.47.8")
+    (version "1.47.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/help2man/help2man-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1p5830h88cx0zn0snwaj0vpph81xicpsirfwlxmcgjrlmn0nm3sj"))))))
+                "1yywli520246aba12vpgj7bhr1r13swad3xm49a0cygqcgywnwgk"))))))
 
 (define-public scdoc
   (package
