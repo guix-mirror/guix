@@ -124,14 +124,14 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.28.0")
+    (version "1.29.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "1b86gsigfviacq47wdk82avzh5ipz6c06in65qclf805ssi8gbrh"))))
+                "032pr9366qsxl78bd4id2c5pfrjv1j997zm5a7a8dbycllyh91hl"))))
     (build-system gnu-build-system)
     (arguments
      '(;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
