@@ -36,6 +36,7 @@
   #:use-module (gcrypt pk-crypto)
   #:use-module ((guix pki) #:select (%public-key-file %private-key-file))
   #:use-module (guix zlib)
+  #:use-module (guix lzlib)
   #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
@@ -229,6 +230,19 @@ FileSize: ~a~%"
                (string-append "/nar/gzip/" (basename %item))))))
     (get-bytevector-n nar (bytevector-length %gzip-magic-bytes))))
 
+(unless (lzlib-available?)
+  (test-skip 1))
+(test-equal "/nar/lzip/*"
+  "bar"
+  (call-with-temporary-output-file
+   (lambda (temp port)
+     (let ((nar (http-get-port
+                 (publish-uri
+                  (string-append "/nar/lzip/" (basename %item))))))
+       (call-with-lzip-input-port nar
+         (cut restore-file <> temp)))
+     (call-with-input-file temp read-string))))
+
 (unless (zlib-available?)
   (test-skip 1))
 (test-equal "/*.narinfo with compression"
@@ -241,6 +255,28 @@ FileSize: ~a~%"
                     (guix-publish "--port=6799" "-C5"))))))
     (wait-until-ready 6799)
     (let* ((url  (string-append "http://localhost:6799/"
+                                (store-path-hash-part %item) ".narinfo"))
+           (body (http-get-port url)))
+      (filter (lambda (item)
+                (match item
+                  (("Compression" . _) #t)
+                  (("StorePath" . _)  #t)
+                  (("URL" . _) #t)
+                  (_ #f)))
+              (recutils->alist body)))))
+
+(unless (lzlib-available?)
+  (test-skip 1))
+(test-equal "/*.narinfo with lzip compression"
+  `(("StorePath" . ,%item)
+    ("URL" . ,(string-append "nar/lzip/" (basename %item)))
+    ("Compression" . "lzip"))
+  (let ((thread (with-separate-output-ports
+                 (call-with-new-thread
+                  (lambda ()
+                    (guix-publish "--port=6790" "-Clzip"))))))
+    (wait-until-ready 6790)
+    (let* ((url  (string-append "http://localhost:6790/"
                                 (store-path-hash-part %item) ".narinfo"))
            (body (http-get-port url)))
       (filter (lambda (item)

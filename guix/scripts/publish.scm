@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +51,7 @@
   #:use-module (guix store)
   #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix zlib)
+  #:autoload   (guix lzlib) (lzlib-available?)
   #:use-module (guix cache)
   #:use-module (guix ui)
   #:use-module (guix scripts)
@@ -74,8 +75,8 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (G_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
   (display (G_ "
-  -C, --compression[=LEVEL]
-                         compress archives at LEVEL"))
+  -C, --compression[=METHOD:LEVEL]
+                         compress archives with METHOD at LEVEL"))
   (display (G_ "
   -c, --cache=DIRECTORY  cache published items to DIRECTORY"))
   (display (G_ "
@@ -121,6 +122,9 @@ Publish ~a over HTTP.\n") %store-directory)
   ;; Since we compress on the fly, default to fast compression.
   (compression 'gzip 3))
 
+(define (default-compression type)
+  (compression type 3))
+
 (define (actual-compression item requested)
   "Return the actual compression used for ITEM, which may be %NO-COMPRESSION
 if ITEM is already compressed."
@@ -153,18 +157,28 @@ if ITEM is already compressed."
                             name)))))
         (option '(#\C "compression") #f #t
                 (lambda (opt name arg result)
-                  (match (if arg (string->number* arg) 3)
-                    (0
-                     (alist-cons 'compression %no-compression result))
-                    (level
-                     (if (zlib-available?)
-                         (alist-cons 'compression
-                                     (compression 'gzip level)
-                                     result)
-                         (begin
-                           (warning (G_ "zlib support is missing; \
-compression disabled~%"))
-                           result))))))
+                  (let* ((colon (string-index arg #\:))
+                         (type  (cond
+                                 (colon (string-take arg colon))
+                                 ((string->number arg) "gzip")
+                                 (else arg)))
+                         (level (if colon
+                                    (string->number*
+                                     (string-drop arg (+ 1 colon)))
+                                    (or (string->number arg) 3))))
+                    (match level
+                      (0
+                       (alist-cons 'compression %no-compression result))
+                      (level
+                       (match (string->compression-type type)
+                         ((? symbol? type)
+                          (alist-cons 'compression
+                                      (compression type level)
+                                      result))
+                         (_
+                          (warning (G_ "~a: unsupported compression type~%")
+                                   type)
+                          result)))))))
         (option '(#\c "cache") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'cache arg result)))
@@ -511,6 +525,13 @@ requested using POOL."
          #:level (compression-level compression)
          #:buffer-size (* 128 1024))
        (rename-file (string-append nar ".tmp") nar))
+      ('lzip
+       ;; Note: the file port gets closed along with the lzip port.
+       (call-with-lzip-output-port (open-output-file (string-append nar ".tmp"))
+         (lambda (port)
+           (write-file item port))
+         #:level (compression-level compression))
+       (rename-file (string-append nar ".tmp") nar))
       ('none
        ;; Cache nars even when compression is disabled so that we can
        ;; guarantee the TTL (see <https://bugs.gnu.org/28664>.)
@@ -715,6 +736,9 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
      (make-gzip-output-port (response-port response)
                             #:level level
                             #:buffer-size (* 64 1024)))
+    (($ <compression> 'lzip level)
+     (make-lzip-output-port (response-port response)
+                            #:level level))
     (($ <compression> 'none)
      (response-port response))
     (#f
@@ -789,12 +813,23 @@ blocking."
   http-write
   (@@ (web server http) http-close))
 
+(define (string->compression-type string)
+  "Return a symbol denoting the compression method expressed by STRING; return
+#f if STRING doesn't match any supported method."
+  (match string
+    ("gzip" (and (zlib-available?) 'gzip))
+    ("lzip" (and (lzlib-available?) 'lzip))
+    (_      #f)))
+
 (define* (make-request-handler store
                                #:key
                                cache pool
                                narinfo-ttl
                                (nar-path "nar")
                                (compression %no-compression))
+  (define compression-type?
+    string->compression-type)
+
   (define nar-path?
     (let ((expected (split-and-decode-uri-path nar-path)))
       (cut equal? expected <>)))
@@ -843,13 +878,18 @@ blocking."
           ;; is restarted with different compression parameters.
 
           ;; /nar/gzip/<store-item>
-          ((components ... "gzip" store-item)
-           (if (and (nar-path? components) (zlib-available?))
-               (let ((compression (match compression
-                                    (($ <compression> 'gzip)
-                                     compression)
-                                    (_
-                                     %default-gzip-compression))))
+          ((components ... (? compression-type? type) store-item)
+           (if (nar-path? components)
+               (let* ((compression-type (string->compression-type type))
+                      (compression (match compression
+                                     (($ <compression> type)
+                                      (if (eq? type compression-type)
+                                          compression
+                                          (default-compression
+                                            compression-type)))
+                                     (_
+                                      (default-compression
+                                        compression-type)))))
                  (if cache
                      (render-nar/cached store cache request store-item
                                         #:ttl narinfo-ttl
