@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -477,3 +478,28 @@ minimalism and usability in mind.  Its features include animated GIF
 controls, file history, rotation/mirroring, and multithreaded
 preloading.")
     (license license:gpl3+)))
+
+(define-public chafa
+  (package
+    (name "chafa")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hpjansson.org/chafa/releases/chafa-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "00cf2z52az0z6bzc3hfm4l8infipy5ck410wqmbaybd2csjr3m29"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("imagemagick" ,imagemagick)))
+    (synopsis "Convert images to ANSI/Unicode characters")
+    (description
+     "Chafa is a command-line utility that converts all kinds of images,
+including animated GIFs, into ANSI/Unicode character output that can be
+displayed in a terminal.")
+    (home-page "https://hpjansson.org/chafa/")
+    (license license:lgpl3+)))
