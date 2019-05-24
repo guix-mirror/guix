@@ -19,6 +19,7 @@
 (define-module (gnu packages squirrel)
   #:use-module (gnu packages)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages python-xyz)
   #:use-module (guix build-system cmake)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -42,9 +43,36 @@
                 "1jyh1523zrrnh9swanfrda0s14mvwc9431dh07g0nx74hbxsfia8"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no tests
+     '(#:configure-flags '("-DDISABLE_STATIC=ON")
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc-dir (string-append out "/share/doc/squirrel")))
+               (for-each
+                (lambda (file)
+                  (install-file (string-append "../squirrel3/" file) doc-dir))
+                '("COPYRIGHT" "HISTORY" "README"
+                  "doc/sqstdlib3.pdf" "doc/squirrel3.pdf")))
+             #t))
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (include-dir (string-append out "/include/squirrel")))
+               (mkdir-p include-dir)
+               (for-each
+                (lambda (header-file)
+                  (copy-recursively header-file
+                                    (string-append include-dir
+                                                   "/"
+                                                   (basename header-file))))
+                (find-files "../squirrel3/include")))
+             #t)))))
     (native-inputs
-     `(("cmake" ,cmake)))
+     `(("cmake" ,cmake)
+       ("python-sphinx" ,python-sphinx)))
     (home-page "https://squirrel-lang.org/")
     (synopsis "High level imperative, object-oriented programming language")
     (description
