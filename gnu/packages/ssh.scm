@@ -442,12 +442,13 @@ especially over Wi-Fi, cellular, and long-distance links.")
     (version "3.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/MisterTea/EternalTCP/archive/et-v"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MisterTea/EternalTCP.git")
+             (commit (string-append "et-v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1n2w2kqbshdmbb0gz4yizyw9gqfls6qm2dnwx1d9c2hz7hmi7521"))))
+        (base32 "1m5caxckn2ihwp9s2pbyh5amxlpwr7yc54q8s0kb10fr52w2vfnm"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))
     (native-inputs

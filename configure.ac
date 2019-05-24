@@ -250,6 +250,16 @@ AC_MSG_CHECKING([for zlib's shared library name])
 AC_MSG_RESULT([$LIBZ])
 AC_SUBST([LIBZ])
 
+dnl Library name of lzlib suitable for 'dynamic-link'.
+GUIX_LIBLZ_FILE_NAME([LIBLZ])
+if test "x$LIBLZ" = "x"; then
+  LIBLZ="liblz"
+else
+  # Strip the .so or .so.1 extension since that's what 'dynamic-link' expects.
+  LIBLZ="`echo $LIBLZ | sed -es'/\.so\(\.[[0-9.]]\+\)\?//g'`"
+fi
+AC_SUBST([LIBLZ])
+
 dnl Check for Guile-SSH, for the (guix ssh) module.
 GUIX_CHECK_GUILE_SSH
 AM_CONDITIONAL([HAVE_GUILE_SSH],

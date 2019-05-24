@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -173,21 +173,18 @@ memory-efficient event trace data format plus support library.")
 (define-public opari2
   (package
     (name "opari2")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
      (origin
-      (method url-fetch)
-      (uri (let* ((parts (string-split version #\.) )
-                  (major (car parts))
-                  (minor (cadr parts)))
-             (string-append "http://www.vi-hps.org/upload/packages/opari2/opari2-"
-                            version ".tar.gz")))
-      (sha256 (base32 "0v785mhw9azj3ln5v7akj5b1cxvzfkxz8kj565pfwllir7xzqbky"))))
+       (method url-fetch)
+       (uri (string-append "https://www.vi-hps.org/cms/upload/packages/opari2/"
+                           "opari2-" version ".tar.gz"))
+       (sha256 (base32 "0cd1l30x8hygvbh6yay7mn483vjq3z4b7wnsffs80rznj93k57pn"))))
     (build-system gnu-build-system)
     (inputs `(("gfortran" ,gfortran)))
-    (native-inputs `(("gawk" ,gawk)     ;for tests
+    (native-inputs `(("gawk" ,gawk)     ; for tests
                      ("which" ,which)))
-    (home-page "http://www.vi-hps.org/projects/score-p")
+    (home-page "https://www.vi-hps.org/projects/score-p")
     (synopsis "OpenMP runtime performance measurement instrumenter")
     (description "OPARI2 is a source-to-source instrumentation tool for OpenMP
 and hybrid codes.  It surrounds OpenMP directives and runtime library calls

@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 ng0 <ng0@n0.is>
@@ -671,7 +671,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 (define-public loksh
   (package
     (name "loksh")
-    (version "6.4")
+    (version "6.5")
     (source
      (origin
        (method git-fetch)
@@ -680,7 +680,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1d92cf5iadj1vwg0wwksaq1691zaxjrd2y4qygj4sdd25zsahj6p"))))
+        (base32 "01ra64zm1ryb4jsbmh8c3fjaymyy1992hzpm6iydbfxn1sjdihha"))))
     (build-system gnu-build-system)
     (inputs
      `(("libbsd" ,libbsd)

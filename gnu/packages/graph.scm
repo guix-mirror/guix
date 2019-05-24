@@ -162,14 +162,14 @@ model.")
 (define-public r-rgraphviz
   (package
     (name "r-rgraphviz")
-    (version "2.26.0")
+    (version "2.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rgraphviz" version))
        (sha256
         (base32
-         "0bp6517xsih0wng2rgkh9z4r1afqhwl3h04z6ssm7p4cdj0ahm4y"))))
+         "0nivz8fshaqig6ynjqbya2gmxsy4hm7jnd8fhb853z5g0ydp7g0c"))))
     (properties `((upstream-name . "Rgraphviz")))
     (build-system r-build-system)
     ;; FIXME: Rgraphviz bundles the sources of an older variant of
@@ -415,3 +415,34 @@ CPUFLAGS = ~{~a ~}~%"
     (description "Faiss is a library for efficient similarity search and
 clustering of dense vectors.  This package provides Python bindings to the
 Faiss library.")))
+
+(define-public python-leidenalg
+  (package
+    (name "python-leidenalg")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "leidenalg" version))
+       (sha256
+        (base32
+         "15fwld9hdw357rd026mzcwpah5liy4f33vc9x9kwy37g71b2rjf1"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; tests are not included
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("igraph" ,igraph)))
+    (propagated-inputs
+     `(("python-igraph" ,python-igraph)))
+    (home-page "https://github.com/vtraag/leidenalg")
+    (synopsis "Community detection in large networks")
+    (description
+     "Leiden is a general algorithm for methods of community detection in
+large networks.  This package implements the Leiden algorithm in C++ and
+exposes it to Python.  Besides the relative flexibility of the implementation,
+it also scales well, and can be run on graphs of millions of nodes (as long as
+they can fit in memory).  The core function is @code{find_partition} which
+finds the optimal partition using the Leiden algorithm, which is an extension
+of the Louvain algorithm, for a number of different methods.")
+    (license license:gpl3+)))

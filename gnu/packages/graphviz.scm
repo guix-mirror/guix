@@ -260,14 +260,14 @@ structure and layout algorithms.")
 (define-public xdot
   (package
     (name "xdot")
-    (version "0.7")
+    (version "1.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "xdot" version))
       (sha256
        (base32
-        "1q0f3pskb09saw1qkd2s6vmk80rq5zjhq8l93dfr2x6r04r0q46j"))))
+        "0cr4rh7dz4dfzyxrk5pzhm0d15gkrgkfp3i5lw178xy81pc56p71"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

@@ -39,6 +39,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +86,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emulators)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
@@ -141,6 +143,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -920,7 +923,7 @@ watch your CPU playing while enjoying a cup of tea!")
 (define-public nethack
   (package
     (name "nethack")
-    (version "3.6.1")
+    (version "3.6.2")
     (source
       (origin
         (method url-fetch)
@@ -928,7 +931,7 @@ watch your CPU playing while enjoying a cup of tea!")
          (string-append "https://www.nethack.org/download/" version "/nethack-"
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
-          (base32 "1dha0ijvxhx7c9hr0452h93x81iiqsll8bc9msdnp7xdqcfbz32b"))))
+          (base32 "07fvkm3v11a4pjrq2f66vjslljsvk6raal53skn4gqsfdbd0ml7v"))))
     (inputs
       `(("ncurses" ,ncurses)
         ("bison" ,bison)
@@ -2221,7 +2224,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.6")
+    (version "1.14.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -2230,7 +2233,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "0aw3czw3nq8ffakhw2libhvrhnllj61xc5lxpjqv0ig1419s1lj5"))))
+                "0j2yvkcggj5k0r2cqk8ndnj77m37a00srfd9qg7pdpqffbinqpj7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no check target
@@ -2867,7 +2870,7 @@ is attributed to Albert Einstein.")
 (define-public powwow
   (package
     (name "powwow")
-    (version "1.2.18")
+    (version "1.2.19")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2875,7 +2878,7 @@ is attributed to Albert Einstein.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1gf0jc1vfv05lxij51n3c1dqn3aiiy2kj1v6q14an3wm7yl7cllp"))))
+                "10rjl63hmf62qslyhzqrbw3i2zf09dgxv65avhj0iiz0m4pbc9wy"))))
     (inputs
      `(("ncurses" ,ncurses)))
     (build-system gnu-build-system)
@@ -4409,14 +4412,14 @@ with the mouse isn’t always trivial.")
 (define-public chroma
   (package
     (name "chroma")
-    (version "1.16")
+    (version "1.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1gfaw1kf7cxf5ibr61n6dxjihi49gmysn4cvawx1pqvy52ljpk0p"))))
+                "047sf00x71xbmi8bqrhfbmr9bk89l2gbykkqsfpw4wz6yfjscs6y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests included
@@ -5536,6 +5539,41 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 allows players to easily join servers dedicated to playing Doom
 online.")
     (license license:gpl2+)))
+
+(define-public chocolate-doom
+  (package
+    (name "chocolate-doom")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.chocolate-doom.org/downloads/"
+                                  version
+                                  "/chocolate-doom-"
+                                  version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1f6sw6qa9z0a70dsjh5cs45fkyyxw68s7vkqlykihz8cjcisdbkk"))))
+    (build-system gnu-build-system)
+    (inputs `(("sdl2-net" ,sdl2-net)
+              ("sdl2-mixer" , sdl2-mixer)
+              ("sdl2" ,sdl2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Doom source port preserving the look, feel, and bugs of vanilla
+Doom")
+    (description
+     "Chocolate Doom takes a different approach to other source ports.  Its
+aim is to accurately reproduce the experience of playing Vanilla Doom.  It is
+a conservative, historically accurate Doom source port, which is compatible
+with the thousands of mods and levels that were made before the Doom source
+code was released.  Rather than flashy new graphics, Chocolate Doom's main
+features are its accurate reproduction of the game as it was played in the
+1990s.  The project is developed around a carefully-considered philosophy that
+intentionally restricts which features may be added (and rejects any that
+affect gameplay).")
+    (home-page "https://www.chocolate-doom.org/wiki/index.php/Chocolate_Doom")
+    (license license:gpl2)))
 
 (define-public fortune-mod
   (package
@@ -6658,7 +6696,7 @@ fight each other on an arena-like map.")
 (define-public flare-engine
   (package
     (name "flare-engine")
-    (version "1.09.01")
+    (version "1.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6667,7 +6705,7 @@ fight each other on an arena-like map.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1117nxir0zwz4pipx7sxj64p68ig6gbz94lkkjbgrk44lhs0hz8p"))))
+                "19l83145ya1wk666acr91b6917a63ak7l77d10i5im8xfhv29ml4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -6686,7 +6724,7 @@ action RPGs.")
 (define-public flare-game
   (package
     (name "flare-game")
-    (version "1.09.01")
+    (version "1.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6695,7 +6733,7 @@ action RPGs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hn2cchqsbvvgzqc6zvblnl3qrr6sp5rqxpsrcvdmbjm7b37x37b"))))
+                "0dx4f1j1n3p4q3h0r0fb89f0llvhg9lia0s247pacff3r88ljihk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -7131,3 +7169,150 @@ and bring the war to your enemy.")
                    license:bsd-2 license:bsd-3 license:cc-by3.0 license:cc0
                    license:expat license:fdl1.3+ license:public-domain
                    license:zlib))))
+
+(define-public harmonist
+  (package
+    (name "harmonist")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://git.tuxfamily.org/harmonist/harmonist.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "006vkhb84v78ssfwppc221n4za0y02ypg7ihrihin4vj4gllmzf7"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "git.tuxfamily.org/harmonist/harmonist"))
+    (inputs
+     `(("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)))
+    (home-page "https://harmonist.tuxfamily.org/")
+    (synopsis "Stealth coffee-break roguelike game")
+    (description "Harmonist: Dayoriah Clan Infiltration is a stealth
+coffee-break roguelike game.  The game has a heavy focus on tactical
+positioning, light and noise mechanisms, making use of various terrain types
+and cones of view for monsters.  Aiming for a replayable streamlined experience,
+the game avoids complex inventory management and character building, relying
+on items and player adaptability for character progression.")
+    (license license:isc)))
+
+(define-public drascula
+  (package
+    (name "drascula")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                                  "Drascula_%20The%20Vampire%20Strikes%20Back/"
+                                  "drascula-" version ".zip"))
+              (sha256
+               (base32
+                "1pj29rpb754sn6a56f8brfv6f2m1p5qgaqik7d68pfi2bb5zccdp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let* ((out (assoc-ref %outputs "out"))
+                (share (string-append out "/share/drascula"))
+                (scummvm (assoc-ref %build-inputs "scummvm")))
+           ;; Install data.
+           (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip"))
+                 (doc (string-append out "/share/doc/" ,name "-" ,version)))
+             (for-each
+              (lambda (input)
+                (invoke unzip
+                        "-j"
+                        (assoc-ref %build-inputs input)
+                        "-x" "__MACOSX")
+                ;; Every input provides "readme.txt", and we want to
+                ;; preserve them all.  Therefore we rename them first.
+                (match input
+                  ("drascula-int"
+                   (rename-file "readme.txt" "readme-international.txt"))
+                  ("drascula-audio"
+                   (rename-file "readme.txt" "readme-audio.txt"))
+                  (_ #f))
+                ;; Install documentation.
+                (for-each (lambda (f) (install-file f doc))
+                          (find-files "." "\\.(txt|doc)$"))
+                ;; Install data.
+                (for-each (lambda (f) (install-file f share))
+                          (find-files "." "\\.(ogg|00[0-9])$")))
+              '("drascula-audio" "drascula-int" "source")))
+           ;; Create standalone executable.
+           (let* ((bin (string-append out "/bin"))
+                  (executable (string-append bin "/drascula"))
+                  (bash (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash")))
+             (mkdir-p bin)
+             (with-output-to-file executable
+               (lambda ()
+                 (format #t "#!~a~%" bash)
+                 (format #t
+                         "exec ~a/bin/scummvm --path=~a drascula~%"
+                         scummvm share)))
+             (chmod executable #o755))
+           ;; Create desktop file.  There is no dedicated icon for the
+           ;; game, so we borrow SCUMMVM's.
+           (let ((apps (string-append out "/share/applications")))
+             (mkdir-p apps)
+             (with-output-to-file (string-append apps "/drascula.desktop")
+               (lambda _
+                 (format #t
+                         "[Desktop Entry]~@
+                     Name=Drascula: The Vampire Strikes Back~@
+                     GenericName=Drascula~@
+                     Exec=~a/bin/drascula~@
+                     Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
+                     Categories=AdventureGame;Game;RolePlaying;~@
+                     Keywords=game;adventure;roleplaying;2D,fantasy;~@
+                     Comment=Classic 2D point and click adventure game~@
+                     Comment[de]=klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier~@
+                     Comment[fr]=Jeux classique d'aventure pointer-et-cliquer en 2D~@
+                     Comment[it]=Gioco classico di avventura punta e clicca 2D~@
+                     Type=Application~%"
+                         out scummvm))))
+           #t))))
+    (native-inputs
+     `(("bash" ,bash)
+       ("unzip" ,unzip)))
+    (inputs
+     `(("scummvm" ,scummvm)
+       ("drascula-int"
+        ,(let ((version "1.1"))
+           (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                                 "Drascula_%20The%20Vampire%20Strikes%20Back/"
+                                 "drascula-int-" version ".zip"))
+             (sha256
+              (base32
+               "12236i7blamal92p1i8dgp3nhp2yicics4whsl63v682bj999n14")))))
+       ("drascula-audio"
+        ,(let ((version "2.0"))
+           (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/scummvm/extras/"
+                                 "Drascula_%20The%20Vampire%20Strikes%20Back/"
+                                 "drascula-audio-" version ".zip"))
+             (sha256
+              (base32
+               "00g4izmsqzxb8ry1vhfx6jrygl58lvlij09nw01ds4zddsiznsky")))))))
+    (home-page "https://www.scummvm.org")
+    (synopsis "Classic 2D point and click adventure game")
+    (description "Drascula: The Vampire Strikes Back is a classic humorous 2D
+point and click adventure game.
+
+In Drascula you play the role of John Hacker, a British estate agent, that
+gets to meet a gorgeous blond girl who is kidnapped by the notorious vampire
+Count Drascula and embark on a fun yet dangerous quest to rescue her.
+Unfortunately, Hacker is not aware of Drascula's real ambitions: DOMINATING
+the World and demonstrating that he is even more evil than his brother Vlad.")
+    ;; Drascula uses a BSD-like license.
+    (license (license:non-copyleft "file:///readme.txt"))))

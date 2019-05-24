@@ -33,14 +33,14 @@
 (define-public ncdc
   (package
     (name "ncdc")
-    (version "1.21")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://dev.yorhel.nl/download/ncdc-" version
                            ".tar.gz"))
        (sha256 (base32
-                "10hrk7pcvfl9cj6d0kr4qf3l068ikqhccbg7lf25pr2kln9lz412"))))
+                "0n9sn4rh4zhmzjknsvyp4bfh925abz93ln43gl8a1v63rs2yyhgx"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)

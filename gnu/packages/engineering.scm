@@ -779,7 +779,7 @@ language.")
                "-DKICAD_SCRIPTING=ON"
                "-DKICAD_SCRIPTING_MODULES=ON"
                "-DKICAD_SCRIPTING_WXPYTHON=ON"
-               ;; Has to be set explicitely, as we don't have the wxPython
+               ;; Has to be set explicitly, as we don't have the wxPython
                ;; headers in the wxwidgets store item, but in wxPython.
                (string-append "-DCMAKE_CXX_FLAGS=-I"
                               (assoc-ref %build-inputs "wxpython")
@@ -851,18 +851,18 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
     (package
       (name "kicad-library")
       (version version)
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "http://downloads.kicad-pcb.org/libraries/kicad-library-"
-                      version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1azb7v1y3l6j329r9gg7f4zlg0wz8nh4s4i5i0l9s4yh9r6i9zmv"))))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://kicad-downloads.s3.cern.ch/libraries/kicad-library-"
+               version ".tar.gz"))
+         (sha256
+          (base32 "1azb7v1y3l6j329r9gg7f4zlg0wz8nh4s4i5i0l9s4yh9r6i9zmv"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
-         #:tests? #f ; no tests
+         #:tests? #f                    ; no tests
          #:phases
          (modify-phases %standard-phases
            (add-after 'install 'install-footprints ; from footprints tarball
@@ -882,14 +882,14 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
                       (fp-lib-table (string-append template-dir "/fp-lib-table")))
                  (delete-file fp-lib-table)
                  (copy-file (string-append fp-lib-table ".for-pretty")
-                              fp-lib-table))
+                            fp-lib-table))
                #t)))))
       (native-search-paths
        (list (search-path-specification
-              (variable "KISYSMOD") ; footprint path
+              (variable "KISYSMOD")     ; footprint path
               (files '("share/kicad/modules")))
              (search-path-specification
-              (variable "KISYS3DMOD") ; 3D model path
+              (variable "KISYS3DMOD")   ; 3D model path
               (files '("share/kicad/modules/packages3d")))))
       ;; Kicad distributes footprints in a separate tarball.
       (native-inputs

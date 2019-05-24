@@ -4908,13 +4908,13 @@ than the bitmaps Metafont creates.")
 (define-public texlive-latex-acmart
   (package
     (name "texlive-latex-acmart")
-    (version "1.45")
+    (version "1.60")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "acmart"))
               (sha256
                (base32
-                "10zs8ga88ksypv1v4p6mynmfa7749q2hgxlr4shnwfjd9wrb421q"))
+                "0n62cs8dhcbn29y9ij1nnyigzr76yhk36kyahhqkkmvbafbys9s7"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/acmart"))

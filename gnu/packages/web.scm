@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,6 +74,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
@@ -115,13 +117,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages valgrind)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages curl)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control))
+  #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xml))
 
 (define-public httpd
   (package
@@ -199,14 +201,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.15.12")
+    (version "1.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1giavdph0jqhywdkj4650s5qhz6qfd6nrv74k9q005yy2ym90nrx"))))
+                "1aqgmrjzmklmv2iiyirk2h0hy35v1a76gczhjkxnms2krl35s6z2"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -4037,14 +4039,20 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
   (package
     (name "jq")
     (version "1.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/stedolan/jq"
-                                  "/releases/download/jq-" version
-                                  "/jq-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1a76f46a652i2g333kfvrl6mp2w7whf6h1yly519izg4y967h9cn"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/stedolan/jq"
+                           "/releases/download/jq-" version
+                           "/jq-" version ".tar.gz"))
+       (sha256
+        (base32 "0wmapfskhzfwranf6515nzmm84r7kwljgfs7dg6bjgxakbicis2x"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled onigurama.
+           (delete-file-recursively "modules")
+           #t))))
     (inputs
      `(("oniguruma" ,oniguruma)))
     (native-inputs
@@ -4811,14 +4819,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.53")
+  (version "5.54")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "119560alb8k0qz2zkjb2i80ikmn76fa6dg681fvrw9hlxsb9hhw0"))))
+       (base32 "00krr0h3vsyi93mqhrbgfgn8v47l4l3hzdg1ccfnpd3lqak8i1ay"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.
@@ -5213,55 +5221,6 @@ message stream (in a web server that is per connection).")
 inspired by Ruby's @code{fakeweb}.")
     (license license:expat)))
 
-(define-public python2-httpretty
-  (package
-    (name "python2-httpretty")
-    (version "0.8.14")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "httpretty" version))
-       (sha256
-        (base32
-         "0vlp5qkyw3pxwwsg7xmdcfh1csvypvaz4m6abida8s4xmjxpdhc3"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python-sphinx-rtd-theme" ,python2-sphinx-rtd-theme)
-       ("python-sphinx" ,python2-sphinx)
-       ("python-coverage" ,python2-coverage)
-       ("python-tornado" ,python2-tornado)
-       ("python-urllib3" ,python2-urllib3)
-       ("python-sure" ,python2-sure)
-       ("python-steadymark" ,python2-steadymark)
-       ("python-requests" ,python2-requests)
-       ("python-rednose" ,python2-rednose)
-       ("python-nose-randomly" ,python2-nose-randomly)
-       ("python-misaka" ,python2-misaka)
-       ("python-pytest-httpbin" ,python2-pytest-httpbin)
-       ("python-nose" ,python2-nose)))
-    (arguments
-     `(#:tests? #f
-       ;; Requires mock>=1.3.0 which requires a more up-to-date
-       ;; python-pbr. After updating these trying to build the
-       ;; package leads to failures in python-flake8 and other
-       ;; packages. The cascade of updates and failures this
-       ;; leads to, seems to not be worth having the test run.
-       #:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'patch-test-requirements
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Update requirements from dependecy==version
-             ;; to dependency>=version
-             (substitute* "development.txt"
-               (("==") ">="))
-             #t)))))
-    (home-page "http://github.com/gabrielfalcao/httpretty")
-    (synopsis "HTTP client mock for Python")
-    (description "@code{httpretty} is a helper for faking web requests,
-inspired by Ruby's @code{fakeweb}.")
-    (license license:expat)))
-
 (define-public jo
   (package
     (name "jo")
@@ -5328,7 +5287,7 @@ command-line arguments or read from stdin.")
     (synopsis "Command-line interface to archive.org")
     (description "@code{ia} is a command-line tool for using
 @url{archive.org} from the command-line.  It also emplements the
-internetarchive python module for programatic access to archive.org.")
+internetarchive python module for programmatic access to archive.org.")
     (properties
      `((python2-variant . ,(delay python2-internetarchive))))
     (license license:agpl3+)))
@@ -5647,7 +5606,7 @@ technologies.")
        ("hamcrest" ,java-hamcrest-all)))
     (home-page "https://www.eclipse.org/jetty/")
     (synopsis "Helper classes for jetty tests")
-    (description "This packages contains helper classes for testing the Jetty
+    (description "This package contains helper classes for testing the Jetty
 Web Server.")
     ;; This program is licensed under both epl and asl.
     (license (list license:epl1.0 license:asl2.0))))
@@ -6426,7 +6385,7 @@ serves files from a local directory.
 @item @command{nghttpx}, a fast, multi-threaded HTTP/2 reverse proxy that can be
 deployed in front of existing web servers that don't support HTTP/2.
 Both @command{nghttpd} and @command{nghttpx} can fall back to HTTP/1.1 for
-backwards compatibilty with clients that don't speak HTTP/2.
+backwards compatibility with clients that don't speak HTTP/2.
 @item @command{h2load} for benchmarking (only!) your own HTTP/2 servers.
 @item HTTP/2 uses a header compression method called @dfn{HPACK}.
 nghttp2 provides a HPACK encoder and decoder as part of its public API.

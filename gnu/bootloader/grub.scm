@@ -360,7 +360,6 @@ entries corresponding to old generations of the system."
                              (keyboard-layout-file layout #:grub grub))))
           (when keymap
             (format port "\
-terminal_input at_keyboard
 insmod keylayouts
 keymap ~a~%" keymap)))))
 

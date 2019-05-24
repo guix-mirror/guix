@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1745,3 +1746,55 @@ popular spread sheet programs.")
 shell scripts.  Example of how to use @code{yad} can be consulted at
 @url{https://sourceforge.net/p/yad-dialog/wiki/browse_pages/}.")
     (license license:gpl3+)))
+
+(define-public libdbusmenu
+  (package
+    (name "libdbusmenu")
+    (version "16.04.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/libdbusmenu/"
+                           (version-major+minor version) "/" version
+                           "/+download/libdbusmenu-" version ".tar.gz"))
+       (sha256
+        (base32 "12l7z8dhl917iy9h02sxmpclnhkdjryn08r8i4sr8l3lrlm4mk5r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '("--sysconfdir=/etc"
+         "--localstatedir=/var"
+         ;; The shebang of the generated test files should be patched before
+         ;; enabling tests.
+         "--disable-tests")
+       #:make-flags
+       `(,(string-append "typelibdir=" (assoc-ref %outputs "out")
+                         "/lib/girepository-1.0"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-environment
+           (lambda _
+             (setenv "HAVE_VALGRIND_TRUE" "")
+             (setenv "HAVE_VALGRIND_FALSE" "#")
+             #t)))))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gnome-doc-utils" ,gnome-doc-utils)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("json-glib" ,json-glib)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("vala" ,vala)))
+    (home-page "https://launchpad.net/libdbusmenu")
+    (synopsis "Library for passing menus over DBus")
+    (description "@code{libdbusmenu} passes a menu structure across DBus so
+that a program can create a menu simply without worrying about how it is
+displayed on the other side of the bus.")
+
+    ;; Dual-licensed under either LGPLv2.1 or LGPLv3.
+    (license (list license:lgpl2.1 license:lgpl3))))

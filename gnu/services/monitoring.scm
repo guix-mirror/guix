@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
-;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -102,7 +102,7 @@
   (service-type
    (name 'darkstat)
    (description
-    "Run @command{darkstat} to serve network traffic statictics reports over
+    "Run @command{darkstat} to serve network traffic statistics reports over
 HTTP.")
    (extensions
     (list (service-extension account-service-type
@@ -141,7 +141,8 @@ prometheus.")
    (extensions
     (list (service-extension
            shepherd-root-service-type
-           (compose list prometheus-node-exporter-shepherd-service))))))
+           (compose list prometheus-node-exporter-shepherd-service))))
+   (default-value (prometheus-node-exporter-configuration))))
 
 
 ;;;

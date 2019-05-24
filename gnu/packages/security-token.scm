@@ -407,7 +407,7 @@ PCSC API Python wrapper module.")
 (define-public libu2f-host
   (package
     (name "libu2f-host")
-    (version "1.1.9")
+    (version "1.1.10")
     (source (origin
               (method url-fetch)
               (uri
@@ -416,7 +416,7 @@ PCSC API Python wrapper module.")
                 "/libu2f-host/Releases/libu2f-host-" version ".tar.xz"))
               (sha256
                (base32
-                "1hnh3f4scx07v9jfkr1nnxasmydk1cmivn0nijcp2p75bc1fznip"))))
+                "0vrivl1dwql6nfi48z6dy56fwy2z13d7abgahgrs2mcmqng7hra2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

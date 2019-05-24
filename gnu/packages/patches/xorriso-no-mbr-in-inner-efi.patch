@@ -1,0 +1,47 @@
+https://dev.lovelyhq.com/libburnia/libisoburn/commit/1eb51f44dadb8b6c5f87533ca357186cdc1ac625
+diff --git a/frontend/grub-mkrescue-sed.sh b/frontend/grub-mkrescue-sed.sh
+index b3948c99..dcd9d696 100755
+--- a/frontend/grub-mkrescue-sed.sh
++++ b/frontend/grub-mkrescue-sed.sh
+@@ -120,6 +120,7 @@ fi
+ # "yes" overwrites the MBR partition table area in the EFI boot image by zeros.
+ # Some EFI implementations get stuck when seeing in the EFI partition a
+ # partition table entry which begins at LBA 0.
++# "extra" not only zeros the partition table but also the MBR signature.
+ efi_zero_inner_pt=no
+ if test -n "$MKRESCUE_SED_IN_EFI_NO_PT"
+ then
+@@ -192,24 +193,31 @@ then
+   find "$dir"
+ fi
+ 
+-if test "$efi_zero_inner_pt" = yes
++if test "$efi_zero_inner_pt" = yes -o "$efi_zero_inner_pt" = extra
+ then
+   did_dd=0
+   if test -e "$dir"/efi.img
+   then
++    # Look for 0x55 0xAA in bytes 510 and 511
+     magic=$(dd bs=1 skip=510 count=2 if="$dir"/efi.img 2>/dev/null | \
+             od -c | head -1 | awk '{print $2 " " $3}')
+     if test "$magic" = "U 252"
+     then
++      echo "Performing actions for MKRESCUE_SED_IN_EFI_NO_PT=$efi_zero_inner_pt" >&2
+       dd if=/dev/zero bs=1 seek=446 count=64 conv=notrunc of="$dir"/efi.img
+       did_dd=1
++      if test "$efi_zero_inner_pt" = extra
++      then
++        dd if=/dev/zero bs=1 seek=510 count=2 conv=notrunc of="$dir"/efi.img
++      fi
++      echo >&2
+     fi
+   fi
+   if test "$did_dd" = 0
+   then
+     echo >&2
+     echo "$0 : NOTE : No EFI image found or no MBR signature in it." >&2
+-    echo "$0 : NOTE : Will not obey MKRESCUE_SED_IN_EFI_NO_PT=yes" >&2
++    echo "$0 : NOTE : Will not obey MKRESCUE_SED_IN_EFI_NO_PT=$efi_zero_inner_pt" >&2
+     echo >&2
+   fi
+ fi

@@ -434,8 +434,10 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/smalltalk.scm			\
   %D%/packages/sml.scm				\
   %D%/packages/speech.scm			\
+  %D%/packages/sphinx.scm			\
   %D%/packages/spice.scm			\
   %D%/packages/sqlite.scm			\
+  %D%/packages/squirrel.scm			\
   %D%/packages/ssh.scm				\
   %D%/packages/sssd.scm				\
   %D%/packages/stalonetray.scm			\
@@ -494,6 +496,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/xorg.scm				\
   %D%/packages/xfce.scm				\
   %D%/packages/zile.scm				\
+  %D%/packages/zwave.scm			\
 						\
   %D%/services.scm				\
   %D%/services/admin.scm			\
@@ -629,8 +632,7 @@ endif
 
 installerdir = $(guilemoduledir)/%D%/installer
 dist_installer_DATA =				\
-  %D%/installer/aux-files/logo.txt	        \
-  %D%/installer/aux-files/SUPPORTED
+  %D%/installer/aux-files/logo.txt
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
@@ -683,14 +685,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/beets-python-3.7-fix.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
-  %D%/packages/patches/bind-fix-unused-pk11-ecc-constants.patch	\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/boost-fix-icu-build.patch		\
+  %D%/packages/patches/borg-fix-hard-link-preloading.patch	\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
-  %D%/packages/patches/calibre-use-packaged-feedparser.patch	\
+  %D%/packages/patches/calibre-remove-test-bs4.patch		\
+  %D%/packages/patches/calibre-remove-test-sqlite.patch		\
+  %D%/packages/patches/calibre-remove-test-unrar.patch		\
   %D%/packages/patches/casync-renameat2-declaration.patch	\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
@@ -743,7 +747,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
-  %D%/packages/patches/efl-mesa-compat.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/einstein-build.patch			\
@@ -813,7 +816,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
+  %D%/packages/patches/gcc-8-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
+  %D%/packages/patches/gcc-9-asan-fix-limits-include.patch	\
+  %D%/packages/patches/gcc-9-strmov-store-file-names.patch	\
   %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-CVE-2018-1000222.patch		\
   %D%/packages/patches/gd-CVE-2019-6977.patch			\
@@ -858,7 +864,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
-  %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
+  %D%/packages/patches/gnome-tweaks-search-paths.patch		\
   %D%/packages/patches/gnucash-fix-test-transaction-failure.patch \
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
@@ -1110,6 +1116,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-dose3-Fix-for-ocaml-4.06.patch	\
   %D%/packages/patches/ocaml-dose3-dont-make-printconf.patch	\
   %D%/packages/patches/ocaml-dose3-Install-mli-cmx-etc.patch	\
+  %D%/packages/patches/ocaml-piqilib-Update-base64.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
@@ -1265,6 +1272,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-sigusr1.patch			\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
+  %D%/packages/patches/slim-display.patch			\
   %D%/packages/patches/snappy-add-O2-flag-in-CmakeLists.txt.patch	\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
@@ -1342,7 +1350,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wavpack-CVE-2018-6767.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
-  %D%/packages/patches/webkitgtk-sse2.patch			\
+  %D%/packages/patches/webkitgtk-sans-gstreamer-gl.patch	\
   %D%/packages/patches/weechat-python.patch			\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
@@ -1362,11 +1370,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-siliconmotion-fix-ftbfs.patch \
   %D%/packages/patches/xf86-video-sis-xorg-compat.patch 	\
   %D%/packages/patches/xf86-video-tga-remove-mibstore.patch	\
+  %D%/packages/patches/xf86-video-voodoo-pcitag.patch		\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-session-fix-xflock4.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
-  %D%/packages/patches/xinetd-CVE-2013-4342.patch
+  %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
+  %D%/packages/patches/xorriso-no-partition-table-in-inner-efi.patch \
+  %D%/packages/patches/xorriso-no-mbr-in-inner-efi.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

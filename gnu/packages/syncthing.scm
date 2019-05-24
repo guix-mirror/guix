@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0xrlw95yp2p66rlvp2a2czf92m3hb3l8v3p39cwnaiw928y5i5m7"))
+                "0x2203xa4fxadj7ra7l2ac285j3gi1qgghpkssl4hkcq0kjmxqrk"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -112,7 +112,6 @@
 
     (arguments
      `(#:import-path "github.com/syncthing/syncthing"
-       #:unpack-path "github.com/syncthing"
        ;; We don't need to install the source code for end-user applications.
        #:install-source? #f
        #:phases
@@ -193,7 +192,7 @@ Protocol.")
       (arguments
        `(#:import-path "github.com/AudriusButkevicius/go-nat-pmp"))
       (synopsis "Port mapping and discovery of external IP address")
-      (description "This packages provides a Go client for the NAT-PMP internet
+      (description "This package provides a Go client for the NAT-PMP internet
 protocol for port mapping and discovering the external IP address of a
 firewall.")
       (home-page "https://github.com/AudriusButkevicius/go-nat-pmp")
@@ -336,7 +335,7 @@ structs in the Go programming language.")
       (arguments
         `(#:import-path "github.com/gobwas/glob"))
       (synopsis "Go globbing library")
-      (description "This packages provides a Go implementation of globs.")
+      (description "This package provides a Go implementation of globs.")
       (home-page "https://github.com/gobwas/glob")
       (license expat))))
 
@@ -436,7 +435,7 @@ address of the default LAN gateway.")
        ;; Postgres instance.
        #:tests? #f))
     (synopsis "Golang Postgres driver for Go's database/sql")
-    (description "This packages provides a pure Go Postgres driver for Go's
+    (description "This package provides a pure Go Postgres driver for Go's
 database/sql package.")
     (home-page "https://github.com/lib/pq")
     (license expat)))
@@ -463,7 +462,7 @@ database/sql package.")
      `(#:import-path "github.com/oschwald/geoip2-golang"
        #:tests? #f)) ; Requires some unpackaged software and test data
     (synopsis "MaxMind GeoIP2 reader")
-    (description "This packages provides a library for reading MaxMind
+    (description "This package provides a library for reading MaxMind
 GeoLite2 and GeoIP2 databases in Go.")
     (home-page "https://github.com/oschwald/geoip2-golang")
     (license isc)))
@@ -757,7 +756,7 @@ hashes.")
     (arguments
      `(#:import-path "github.com/pkg/errors"))
     (synopsis "Go error handling primitives")
-    (description "This packages provides @code{error}, which offers simple
+    (description "This package provides @code{error}, which offers simple
 error handling primitives in Go.")
     (home-page "https://github.com/pkg/errors")
     (license bsd-2)))
@@ -782,7 +781,7 @@ error handling primitives in Go.")
       (arguments
        '(#:import-path "github.com/petermattis/goid"))
       (synopsis "Identify the running goroutine")
-      (description "This package offers a method of programatically retrieving
+      (description "This package offers a method of programmatically retrieving
 the current goroutine's ID.")
       (home-page "https://github.com/petermattis/goid")
       (license asl2.0))))

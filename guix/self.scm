@@ -377,12 +377,6 @@ TRANSLATIONS, an alist of msgid and msgstr."
 
 (define (info-manual source)
   "Return the Info manual built from SOURCE."
-  (define po4a
-    (specification->package "po4a"))
-
-  (define gettext
-    (specification->package "gettext"))
-
   (define texinfo
     (module-ref (resolve-interface '(gnu packages texinfo))
                 'texinfo))
@@ -925,6 +919,7 @@ Info manual."
                                %store-database-directory
                                %config-directory
                                %libz
+                               ;; TODO: %liblz
                                %gzip
                                %bzip2
                                %xz))

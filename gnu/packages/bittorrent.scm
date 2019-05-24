@@ -377,17 +377,17 @@ and will take advantage of multiple processor cores where possible.")
 (define-public libtorrent-rasterbar
   (package
     (name "libtorrent-rasterbar")
-    (version "1.1.11")
+    (version "1.1.13")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "https://github.com/arvidn/libtorrent/releases/download/libtorrent_"
+                "https://github.com/arvidn/libtorrent/releases/download/libtorrent-"
                 (string-join (string-split version #\.) "_")
                 "/libtorrent-rasterbar-" version ".tar.gz"))
               (sha256
                (base32
-                "0isqidr11fnhybr0wvk0qxd97jaikmh8fx9h89b84yd2gyxdw8vw"))))
+                "1mza92ljjqvlz9582pmls3n45srqhxvw3q348xihcg4fhlchf11h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -426,7 +426,7 @@ desktops.")
 (define-public qbittorrent
   (package
     (name "qbittorrent")
-    (version "4.1.5")
+    (version "4.1.6")
     (source
      (origin
        (method git-fetch)
@@ -435,7 +435,7 @@ desktops.")
              (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09zcygaxfv9g6av0vsvlyzv4v65wvj766xyfx31yz5ig3xan6ak1"))))
+        (base32 "1y9kv84sy5fg64wbl4xpm8qh0hjba7ibk045cazp0m736rjmxk8c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

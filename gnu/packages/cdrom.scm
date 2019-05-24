@@ -162,8 +162,20 @@ libcdio.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0aq6lvlwlkxz56l5sbvgycr6j5c82ch2bv6zrnc2345ibfpafgx9"))))
+               "0aq6lvlwlkxz56l5sbvgycr6j5c82ch2bv6zrnc2345ibfpafgx9"))
+             (patches
+              (search-patches "xorriso-no-partition-table-in-inner-efi.patch"
+                              "xorriso-no-mbr-in-inner-efi.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-frontends
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-bin (string-append out "/bin")))
+               (install-file "frontend/grub-mkrescue-sed.sh" out-bin)
+               #t))))))
     (inputs
      `(("acl" ,acl)
        ("readline" ,readline)
@@ -713,16 +725,20 @@ session, and it can create M3U playlists.")
   (package
     (name "ripit")
     (version "3.9.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.suwald.com/ripit/ripit-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0ap71x477jy9c4jiqazb3y45hxdxm3jbq24x05g3vjyqzigi4x1b"))))
+    (source
+     (origin
+       (method url-fetch)
+       ;; The original suwald.com domain has expired.
+       (uri (list
+             (string-append "https://web.archive.org/web/20160327050927/"
+                            "http://suwald.com/ripit/ripit-" version ".tar.gz")
+             (string-append "https://ponce.cc/slackware/sources/repo/ripit-"
+                            version ".tar.gz")))
+       (sha256
+        (base32 "0ap71x477jy9c4jiqazb3y45hxdxm3jbq24x05g3vjyqzigi4x1b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No test suite.
+     `(#:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -744,7 +760,8 @@ session, and it can create M3U playlists.")
        ("vorbis-tools" ,vorbis-tools)
        ("wavpack" ,wavpack)
        ("perl-cddb-get" ,perl-cddb-get)))
-    (home-page "http://www.suwald.com/ripit/about.php")
+    (home-page (string-append "https://web.archive.org/web/20170119092156/"
+                              "http://www.suwald.com/ripit/about.php"))
     (synopsis "Command-line program to extract audio CDs")
     (description "RipIT is used to extract audio from CDs.")
     (license gpl2)))
@@ -867,7 +884,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
 (define-public libmirage
   (package
     (name "libmirage")
-    (version "3.2.0")
+    (version "3.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -875,7 +892,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1ydph33sfxplp4872dp8ghp574jk5d4qr8hqz61qnznq1b11cnbr"))))
+                "0gwrfia0fyhi0b3p2pfyyvrcfcb0qysfzgpdqsqjqbx4xaqx5wpi"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -896,7 +913,7 @@ the data stored in various image formats.")
 (define-public cdemu-daemon
   (package
     (name "cdemu-daemon")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -904,7 +921,7 @@ the data stored in various image formats.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "171qqcziqgf6dd9n8xs9hc71krhjiyx9qr767s8znidyjj88hbc4"))))
+                "0himyrhhfjsr4ff5aci7240bpm9x34h20pid412ci8fm16nk929b"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -925,7 +942,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
 (define-public cdemu-client
   (package
     (name "cdemu-client")
-    (version "3.2.0")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -933,7 +950,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1zwz987pb2pakfk9kz8a6xa9hq1ip48cn4ryl9z85dik8k2sizm9"))))
+                "1d8m24qvv62xcwafw5zs4yf39vs64kxl4idqcngd8yyjhrb2ykg5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

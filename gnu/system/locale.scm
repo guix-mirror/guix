@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +20,7 @@
 (define-module (gnu system locale)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (guix modules)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -37,7 +38,9 @@
             locale-directory
 
             %default-locale-libcs
-            %default-locale-definitions))
+            %default-locale-definitions
+
+            glibc-supported-locales))
 
 ;;; Commentary:
 ;;;
@@ -201,5 +204,70 @@ data format changes between libc versions."
                         "uk_UA"
                         "vi_VN"
                         "zh_CN"))))
+
+
+;;;
+;;; Locales supported by glibc.
+;;;
+
+(define* (glibc-supported-locales #:optional (glibc glibc))
+  "Return a file-like object that contains a list of locale name/encoding
+pairs such as (\"oc_FR.UTF-8\" . \"UTF-8\").  Each pair corresponds to a
+locale supported by GLIBC."
+  (define build
+    (with-imported-modules (source-module-closure
+                            '((guix build gnu-build-system)))
+      #~(begin
+          (use-modules (guix build gnu-build-system)
+                       (srfi srfi-1)
+                       (ice-9 rdelim)
+                       (ice-9 match)
+                       (ice-9 regex)
+                       (ice-9 pretty-print))
+
+          (define unpack
+            (assq-ref %standard-phases 'unpack))
+
+          (define locale-rx
+            ;; Regexp matching a locale line in 'localedata/SUPPORTED'.
+            (make-regexp
+             "^[[:space:]]*([[:graph:]]+)/([[:graph:]]+)[[:space:]]*\\\\$"))
+
+          (define (read-supported-locales port)
+            ;; Read the 'localedata/SUPPORTED' file from PORT.  That file is
+            ;; actually a makefile snippet, with one locale per line, and a
+            ;; header that can be discarded.
+            (let loop ((locales '()))
+              (define line
+                (read-line port))
+
+              (cond ((eof-object? line)
+                     (reverse locales))
+                    ((string-prefix? "#" (string-trim line)) ;comment
+                     (loop locales))
+                    ((string-contains line "=")  ;makefile variable assignment
+                     (loop locales))
+                    (else
+                     (match (regexp-exec locale-rx line)
+                       (#f
+                        (loop locales))
+                       (m
+                        (loop (alist-cons (match:substring m 1)
+                                          (match:substring m 2)
+                                          locales))))))))
+
+          (setenv "PATH"
+                  (string-append #+(file-append tar "/bin") ":"
+                                 #+(file-append xz "/bin") ":"
+                                 #+(file-append gzip "/bin")))
+          (unpack #:source #+(package-source glibc))
+
+          (let ((locales (call-with-input-file "localedata/SUPPORTED"
+                           read-supported-locales)))
+            (call-with-output-file #$output
+              (lambda (port)
+                (pretty-print locales port)))))))
+
+  (computed-file "glibc-supported-locales.scm" build))
 
 ;;; locale.scm ends here

@@ -646,7 +646,7 @@ printer/driver specific, but spooler-independent PPD file.")
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "00k22vmghxls7rk2hrbz9v17wi5z8vdk3fmsp2lrfghfcad8nhpx"))))
+                "0djzp3ddslmzyxkjhzkhkg6qqqm02whjfnfvh5glprkshcskzlg9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

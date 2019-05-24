@@ -22,9 +22,10 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 info_TEXINFOS = %D%/guix.texi			\
+  %D%/guix.de.texi				\
   %D%/guix.es.texi				\
   %D%/guix.fr.texi				\
-  %D%/guix.de.texi				\
+  %D%/guix.ru.texi				\
   %D%/guix.zh_CN.texi
 
 %C%_guix_TEXINFOS = \
@@ -60,10 +61,12 @@ TRANSLATED_INFO =				\
   %D%/guix.de.texi				\
   %D%/guix.es.texi				\
   %D%/guix.fr.texi				\
+  %D%/guix.ru.texi				\
   %D%/guix.zh_CN.texi				\
   %D%/contributing.de.texi			\
   %D%/contributing.es.texi			\
   %D%/contributing.fr.texi			\
+  %D%/contributing.ru.texi			\
   %D%/contributing.zh_CN.texi
 
 # Bundle this file so that makeinfo finds it in out-of-source-tree builds.
@@ -121,6 +124,10 @@ dist_infoimage_DATA =				\
   %D%/images/installer-network.png		\
   %D%/images/installer-partitions.png		\
   %D%/images/installer-resume.png
+
+# Ask for warnings about cross-referenced manuals that are not listed in
+# htmlxref.cnf.
+AM_MAKEINFOHTMLFLAGS = --set-customization-variable CHECK_HTMLXREF=true
 
 # Try hard to obtain an image size and aspect that's reasonable for inclusion
 # in an Info or PDF document.

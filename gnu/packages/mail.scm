@@ -106,6 +106,7 @@
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages screen)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -488,7 +489,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "3.2.0")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -496,7 +497,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "1q6palbpf6lh6bvy9ly26q5apl5k0z0r4mvl6zzqh90rz4rn1v3m"))))
+                "04bk7rqs5slpvlvqf11i6s37s8b2xn6acls8smyl9asjnpp7a23a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -846,14 +847,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.28.3")
+    (version "0.28.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v0ff6qqwj42p3n6qw30czzqi52nvgf3dn05vd7a03g39a5js8af"))))
+                "1jjnhs4xs4gksvg0a9qn68rxrj41im5bh58snka2pkj20nxwmcds"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -895,9 +896,9 @@ invoking @command{notifymuch} from the post-new hook.")
      `(("bash-completion" ,bash-completion)
        ("emacs" ,emacs-no-x) ; Minimal lacks libxml, needed for some tests.
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
-       ("python-docutils" ,python2-docutils)
-       ("python-sphinx" ,python2-sphinx)
+       ("python" ,python)
+       ("python-docutils" ,python-docutils)
+       ("sphinx" ,python-sphinx)
 
        ;; The following are required for tests only.
        ("which" ,which)
@@ -1079,7 +1080,7 @@ MailCore 2.")
     (arguments
      `(#:tests? #f))
     (synopsis "Portrait image compressor")
-    (description "This packages takes your 48x48x1 portrait image and
+    (description "This package takes your 48x48x1 portrait image and
 compresses it.")
     (home-page "http://www.cs.indiana.edu/pub/faces/")
     (license (x11-style "file://README"))))
@@ -1281,7 +1282,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.5.1")
+    (version "2.3.6")
     (source
      (origin
        (method url-fetch)
@@ -1289,8 +1290,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32
-         "0gy3qzwbp6zsyn44pcfq8iiv9iy9q7z6py30h60alb1vkr3rv3yp"))))
+        (base32 "1irnalplb47nlc26dn7zzdi95zhrxxi3miza7p3wdsgapv0qs7gd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1947,14 +1947,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "1di86frxv4gj8fasni409m87qmv0j0vmj13lawkz1pwv9hbynhjb"))))
+        (base32 "0j21cp8bw12vgfymxi3i4av3j97lrcyb5y9xa3mb59wr17izz73x"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)

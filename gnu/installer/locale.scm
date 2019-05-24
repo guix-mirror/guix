@@ -62,12 +62,13 @@
 (define (locale-modifier assoc)
   (assoc-ref assoc 'modifier))
 
-(define (locale-string->locale string)
-  "Return the locale association list built from the parsing of STRING."
+(define* (locale-string->locale string #:optional codeset)
+  "Return the locale association list built from the parsing of STRING and,
+optionally, CODESET."
   (let ((matches (string-match locale-regexp string)))
     `((language  . ,(match:substring matches 1))
       (territory . ,(match:substring matches 3))
-      (codeset   . ,(match:substring matches 5))
+      (codeset   . ,(or codeset (match:substring matches 5)))
       (modifier  . ,(match:substring matches 7)))))
 
 (define (normalize-codeset codeset)
@@ -107,17 +108,12 @@
                    '())))))
 
 (define (supported-locales->locales supported-locales)
-  "Parse the SUPPORTED-LOCALES file from the glibc and return the matching
-list of LOCALE association lists."
- (call-with-input-file supported-locales
-    (lambda (port)
-      (let ((lines (read-lines port)))
-        (map (lambda (line)
-               (match (string-split line #\ )
-                 ((locale-string codeset)
-                  (let ((line-locale (locale-string->locale locale-string)))
-                    (assoc-set! line-locale 'codeset codeset)))))
-             lines)))))
+  "Given SUPPORTED-LOCALES, a file produced by 'glibc-supported-locales',
+return a list of locales where each locale is an alist."
+  (map (match-lambda
+         ((locale . codeset)
+          (locale-string->locale locale codeset)))
+       (call-with-input-file supported-locales read)))
 
 
 ;;;

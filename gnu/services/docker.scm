@@ -31,13 +31,25 @@
   #:export (docker-configuration
             docker-service-type))
 
+;;; We're not using serialize-configuration, but we must define this because
+;;; the define-configuration macro validates it exists.
+(define (serialize-boolean field-name val)
+  "")
+
 (define-configuration docker-configuration
   (docker
    (package docker)
    "Docker daemon package.")
   (containerd
    (package containerd)
-   "containerd package."))
+   "containerd package.")
+  (proxy
+   (package docker-libnetwork-cmd-proxy)
+   "The proxy package to support inter-container and outside-container
+loop-back communications.")
+  (enable-proxy?
+   (boolean #t)
+   "Enable or disable the user-land proxy (enabled by default)."))
 
 (define %docker-accounts
   (list (user-group (name "docker") (system? #t))))
@@ -66,7 +78,9 @@
            (stop #~(make-kill-destructor)))))
 
 (define (docker-shepherd-service config)
-  (let* ((docker (docker-configuration-docker config)))
+  (let* ((docker (docker-configuration-docker config))
+         (enable-proxy? (docker-configuration-enable-proxy? config))
+         (proxy (docker-configuration-proxy config)))
     (shepherd-service
            (documentation "Docker daemon.")
            (provision '(dockerd))
@@ -83,7 +97,10 @@
                           udev))
            (start #~(make-forkexec-constructor
                      (list (string-append #$docker "/bin/dockerd")
-                           "-p" "/var/run/docker.pid")
+                           "-p" "/var/run/docker.pid"
+                           (if #$enable-proxy? "--userland-proxy" "")
+                           "--userland-proxy-path" (string-append #$proxy
+                                                                  "/bin/proxy"))
                      #:pid-file "/var/run/docker.pid"
                      #:log-file "/var/log/docker.log"))
            (stop #~(make-kill-destructor)))))

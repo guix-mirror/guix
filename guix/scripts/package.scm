@@ -180,9 +180,9 @@ hooks\" run when building the profile."
 ;;;
 
 (define (find-packages-by-description regexps)
-  "Return two values: the list of packages whose name, synopsis, or
-description matches at least one of REGEXPS sorted by relevance, and the list
-of relevance scores."
+  "Return two values: the list of packages whose name, synopsis, description,
+or output matches at least one of REGEXPS sorted by relevance, and the list of
+relevance scores."
   (let ((matches (fold-packages (lambda (package result)
                                   (if (package-superseded package)
                                       result

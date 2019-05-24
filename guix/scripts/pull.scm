@@ -203,6 +203,10 @@ true, display what would be built without actually building it."
   (define update-profile
     (store-lift build-and-use-profile))
 
+  (define guix-command
+    ;; The 'guix' command before we've built the new profile.
+    (which "guix"))
+
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
       (update-profile profile manifest
@@ -211,17 +215,18 @@ true, display what would be built without actually building it."
       (munless dry-run?
         (return (newline))
         (return (display-profile-news profile #:concise? #t))
-        (match (which "guix")
-          (#f (return #f))
-          (str
-           (let ((new (map (cut string-append <> "/bin/guix")
-                           (list (user-friendly-profile profile)
-                                 profile))))
-             (unless (member str new)
-               (display-hint (format #f (G_ "After setting @code{PATH}, run
+        (if guix-command
+            (let ((new (map (cut string-append <> "/bin/guix")
+                            (list (user-friendly-profile profile)
+                                  profile))))
+              ;; Is the 'guix' command previously in $PATH the same as the new
+              ;; one?  If the answer is "no", then suggest 'hash guix'.
+              (unless (member guix-command new)
+                (display-hint (format #f (G_ "After setting @code{PATH}, run
 @command{hash guix} to make sure your shell refers to @file{~a}.")
-                                     (first new))))
-             (return #f))))))))
+                                      (first new))))
+              (return #f))
+            (return #f))))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."

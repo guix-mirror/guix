@@ -59,9 +59,11 @@ Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
 Copyright @copyright{} 2018 Gábor Boskovits@*
-Copyright @copyright{} 2018 Florian Pelz@*
+Copyright @copyright{} 2018, 2019 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
+Copyright @copyright{} 2019 Josh Holland@*
+Copyright @copyright{} 2019 Diego Nicola Barbato@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -114,8 +116,9 @@ package management tool written for the GNU system.
 @c translation.
 This manual is also available in Simplified Chinese (@pxref{Top,,, guix.zh_CN,
 GNU Guix参考手册}), French (@pxref{Top,,, guix.fr, Manuel de référence de GNU
-Guix}), German (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}), and
-Spanish (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}).  If you
+Guix}), German (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}),
+Spanish (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}), and
+Russian (@pxref{Top,,, guix.ru, Руководство GNU Guix}).  If you
 would like to translate it in your native language, consider joining the
 @uref{https://translationproject.org/domain/guix-manual.html, Translation
 Project}.
@@ -437,13 +440,13 @@ using the EABI hard-float application binary interface (ABI),
 and Linux-Libre kernel.
 
 @item aarch64-linux
-little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.  This is
-currently in an experimental stage, with limited support.
-@xref{Contributing}, for how to help!
+little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.
 
 @item mips64el-linux
 little-endian 64-bit MIPS processors, specifically the Loongson series,
-n32 ABI, and Linux-Libre kernel.
+n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully
+supported; in particular, the project's build farms no longer provide
+substitutes for this architecture.
 
 @end table
 
@@ -4924,6 +4927,12 @@ is an infinity of channel URLs and commit IDs that can lead to the same pack.
 Recording such ``silent'' metadata in the output thus potentially breaks the
 source-to-binary bitwise reproducibility property.
 
+@item --root=@var{file}
+@itemx -r @var{file}
+@cindex garbage collector root, for packs
+Make @var{file} a symlink to the resulting pack, and register it as a garbage
+collector root.
+
 @item --localstatedir
 @itemx --profile-name=@var{name}
 Include the ``local state directory'', @file{/var/guix}, in the resulting
@@ -5242,8 +5251,7 @@ Return the @code{<derivation>} object of @var{package} cross-built from
 
 @var{target} must be a valid GNU triplet denoting the target hardware
 and operating system, such as @code{"mips64el-linux-gnu"}
-(@pxref{Configuration Names, GNU configuration triplets,, configure, GNU
-Configure and Build System}).
+(@pxref{Specifying Target Triplets,,, autoconf, Autoconf}).
 @end deffn
 
 @cindex package transformations
@@ -5779,7 +5787,7 @@ supports builds of packages using Cargo, the build tool of the
 @uref{https://www.rust-lang.org, Rust programming language}.
 
 In its @code{configure} phase, this build system replaces dependencies
-specified in the @file{Carto.toml} file with inputs to the Guix package.
+specified in the @file{Cargo.toml} file with inputs to the Guix package.
 The @code{install} phase installs the binaries, and it also installs the
 source code and @file{Cargo.toml} file.
 @end defvr
@@ -6069,7 +6077,7 @@ are run after installation using the R function
 @end defvr
 
 @defvr {Scheme Variable} rakudo-build-system
-This variable is exported by @code{(guix build-system rakudo)} It
+This variable is exported by @code{(guix build-system rakudo)}.  It
 implements the build procedure used by @uref{https://rakudo.org/,
 Rakudo} for @uref{https://perl6.org/, Perl6} packages. It installs the
 package to @code{/gnu/store/@dots{}/NAME-VERSION/share/perl6} and
@@ -8100,7 +8108,7 @@ also be offloaded to a remote machine of the right architecture.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+as @code{"mips64el-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @anchor{build-check}
@@ -10081,8 +10089,17 @@ challenge}, it ignores signatures on those substitutes, which is
 innocuous since the command only gathers statistics and cannot install
 those substitutes.
 
-Among other things, it is possible to query specific system types and
-specific package sets.  The available options are listed below.
+The general syntax is:
+
+@example
+guix weather @var{options}@dots{} [@var{packages}@dots{}]
+@end example
+
+When @var{packages} is omitted, @command{guix weather} checks the availability
+of substitutes for @emph{all} the packages, or for those specified with
+@option{--manifest}; otherwise it only considers the specified packages.  It
+is also possible to query specific system types with @option{--system}.  The
+available options are listed below.
 
 @table @code
 @item --substitute-urls=@var{urls}
@@ -11758,8 +11775,8 @@ interpreted as backspace when the user types their login name.
 
 @item @code{kill-characters} (default: @code{#f})
 This option accepts a string that should be interpreted to mean "ignore
-all previous characters" (also called a "kill" character) when the types
-their login name.
+all previous characters" (also called a "kill" character) when the user
+types their login name.
 
 @item @code{chdir} (default: @code{#f})
 This option accepts, as a string, a directory path that will be changed
@@ -12024,7 +12041,7 @@ A directory path where the @command{guix-daemon} will perform builds.
 @deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 udev rules can be provided as a list of files through the @var{rules}
-variable.  The procedures @var{udev-rule} and @var{file->udev-rule} from
+variable.  The procedures @code{udev-rule} and @code{file->udev-rule} from
 @code{(gnu services base)} simplify the creation of such rule files.
 @end deffn
 
@@ -12806,7 +12823,7 @@ A list of local IP addresses or hostnames the ntpd daemon should listen on.
 A list of local IP address the ntpd daemon should use for outgoing queries.
 @item @code{sensor} (default: @code{'()})
 Specify a list of timedelta sensor devices ntpd should use.  @code{ntpd}
-will listen to each sensor that acutally exists and ignore non-existant ones.
+will listen to each sensor that actually exists and ignore non-existent ones.
 See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
 information.
 @item @code{server} (default: @var{%ntp-servers})
@@ -12997,7 +13014,8 @@ so anyone (or just yourself) can download existing files or upload new
 files.
 
 @deffn {Scheme Variable} rsync-service-type
-This is the type for the @uref{https://rsync.samba.org, rsync} rsync daemon,
+This is the service type for the @uref{https://rsync.samba.org, rsync} daemon,
+The value for this service type is a
 @command{rsync-configuration} record as in this example:
 
 @example
@@ -13485,6 +13503,33 @@ This is the type for the SLiM graphical login manager for X11.
 Like GDM, SLiM looks for session types described by @file{.desktop} files and
 allows users to choose a session from the log-in screen using @kbd{F1}.  It
 also honors @file{~/.xsession} files.
+
+Unlike GDM, SLiM does not spawn the user session on a different VT after
+logging in, which means that you can only start one graphical session.  If you
+want to be able to run multiple graphical sessions at the same time you have
+to add multiple SLiM services to your system services.  The following example
+shows how to replace the default GDM service with two SLiM services on tty7
+and tty8.
+
+@lisp
+(use-modules (gnu services)
+             (gnu services desktop)
+             (gnu services xorg)
+             (srfi srfi-1))  ;for 'remove'
+
+(operating-system
+  ;; ...
+  (services (cons* (service slim-service-type (slim-configuration
+                                               (display ":0")
+                                               (vt "vt7")))
+                   (service slim-service-type (slim-configuration
+                                               (display ":1")
+                                               (vt "vt8")))
+                   (remove (lambda (service)
+                             (eq? (service-kind service) gdm-service-type))
+                           %desktop-services))))
+@end lisp
+
 @end defvr
 
 @deftp {Data Type} slim-configuration
@@ -13521,6 +13566,12 @@ false, you will be unable to log in.
 
 @item @code{xorg-configuration} (default @code{(xorg-configuration)})
 Configuration of the Xorg graphical server.
+
+@item @code{display} (default @code{":0"})
+The display on which to start the Xorg graphical server.
+
+@item @code{vt} (default @code{"vt7"})
+The VT on which to start the Xorg graphical server.
 
 @item @code{xauth} (default: @code{xauth})
 The XAuth package to use.
@@ -13696,7 +13747,7 @@ default is @code{-nolisten tcp}.
 @deffn {Scheme Procedure} set-xorg-configuration @var{config} @
   [@var{login-manager-service-type}]
 Tell the log-in manager (of type @var{login-manager-service-type}) to use
-@var{config}, an <xorg-configuration> record.
+@var{config}, an @code{<xorg-configuration>} record.
 
 Since the Xorg configuration is embedded in the log-in manager's
 configuration---e.g., @code{gdm-configuration}---this procedure provides a
@@ -13832,7 +13883,7 @@ Defaults to @samp{"0640"}.
 
 @deftypevr {@code{files-configuration} parameter} log-location error-log
 Defines the error log filename.  Specifying a blank filename disables
-access log generation.  The value @code{stderr} causes log entries to be
+error log generation.  The value @code{stderr} causes log entries to be
 sent to the standard error file when the scheduler is running in the
 foreground, or to the system log daemon when run in the background.  The
 value @code{syslog} causes log entries to be sent to the system log
@@ -13897,7 +13948,7 @@ Defaults to @samp{"0644"}.
 
 @deftypevr {@code{files-configuration} parameter} log-location page-log
 Defines the page log filename.  Specifying a blank filename disables
-access log generation.  The value @code{stderr} causes log entries to be
+page log generation.  The value @code{stderr} causes log entries to be
 sent to the standard error file when the scheduler is running in the
 foreground, or to the system log daemon when run in the background.  The
 value @code{syslog} causes log entries to be sent to the system log
@@ -14585,13 +14636,14 @@ adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{gdm-service-type}}), screen lockers, a network management tool
-(@pxref{Networking Services, @code{network-manager-service-type}}), energy and color
-management services, the @code{elogind} login and seat manager, the
-Polkit privilege service, the GeoClue location service, the
-AccountsService daemon that allows authorized users change system
-passwords, an NTP client (@pxref{Networking Services}), the Avahi
-daemon, and has the name service switch service configured to be able to
-use @code{nss-mdns} (@pxref{Name Service Switch, mDNS}).
+(@pxref{Networking Services, @code{network-manager-service-type}}) with modem
+support (@pxref{Networking Services, @code{modem-manager-service-type}}),
+energy and color management services, the @code{elogind} login and seat
+manager, the Polkit privilege service, the GeoClue location service, the
+AccountsService daemon that allows authorized users change system passwords,
+an NTP client (@pxref{Networking Services}), the Avahi daemon, and has the
+name service switch service configured to be able to use @code{nss-mdns}
+(@pxref{Name Service Switch, mDNS}).
 @end defvr
 
 The @var{%desktop-services} variable can be used as the @code{services}
@@ -14643,7 +14695,7 @@ polkit with the actions from @code{gnome-settings-daemon}.
 Configuration record for the GNOME desktop environment.
 
 @table @asis
-@item @code{gnome} (default @code{gnome})
+@item @code{gnome} (default: @code{gnome})
 The GNOME package to use.
 @end table
 @end deftp
@@ -14653,7 +14705,7 @@ This is the type of a service to run the @uref{Xfce, https://xfce.org/}
 desktop environment.  Its value is an @code{xfce-desktop-configuration} object
 (see below.)
 
-This service that adds the @code{xfce} package to the system profile, and
+This service adds the @code{xfce} package to the system profile, and
 extends polkit with the ability for @code{thunar} to manipulate the file
 system as root from within a user session, after the user has authenticated
 with the administrator's password.
@@ -14663,7 +14715,7 @@ with the administrator's password.
 Configuration record for the Xfce desktop environment.
 
 @table @asis
-@item @code{xfce} (default @code{xfce})
+@item @code{xfce} (default: @code{xfce})
 The Xfce package to use.
 @end table
 @end deftp
@@ -14682,7 +14734,7 @@ profile, and extends polkit with the actions from
 Configuration record for the MATE desktop environment.
 
 @table @asis
-@item @code{mate} (default @code{mate})
+@item @code{mate} (default: @code{mate})
 The MATE package to use.
 @end table
 @end deftp
@@ -14694,7 +14746,7 @@ profile, and extends dbus with actions from @code{efl}.
 
 @deftp {Data Type} enlightenment-desktop-service-configuration
 @table @asis
-@item @code{enlightenment} (default @code{enlightenment})
+@item @code{enlightenment} (default: @code{enlightenment})
 The enlightenment package to use.
 @end table
 @end deftp
@@ -15845,13 +15897,13 @@ failed.
 Defaults to @samp{#f}.
 @end deftypevr
 
-@deftypevr {@code{dovecot-configuration} parameter} boolean auth-verbose-passwords?
+@deftypevr {@code{dovecot-configuration} parameter} string auth-verbose-passwords
 In case of password mismatches, log the attempted password.  Valid
 values are no, plain and sha1.  sha1 can be useful for detecting brute
 force password attempts vs.  user simply trying the same password over
 and over again.  You can also truncate the value to n chars by appending
 ":n" (e.g.@: sha1:6).
-Defaults to @samp{#f}.
+Defaults to @samp{"no"}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean auth-debug?
@@ -17312,7 +17364,7 @@ Maximum size in bytes that a user can send in one text chat message.
 Maximum size in bytes that a user can send in one image message.
 
 @item @code{cert-required?} (default: @code{#f})
-If it is set to @code{#t} clients that use weak password authentification
+If it is set to @code{#t} clients that use weak password authentication
 will not be accepted. Users must have completed the certificate wizard to join.
 
 @item @code{remember-channel?} (default: @code{#f})
@@ -18034,7 +18086,7 @@ A service type for the Kerberos 5 PAM module.
 @end defvr
 
 @deftp {Data Type} pam-krb5-configuration
-Data type representing the configuration of the Kerberos 5 PAM module
+Data type representing the configuration of the Kerberos 5 PAM module.
 This type has the following parameters:
 @table @asis
 @item @code{pam-krb5} (default: @code{pam-krb5})
@@ -20120,7 +20172,7 @@ Defaults to @samp{()}.
 
 The @code{(gnu services vpn)} module provides services related to
 @dfn{virtual private networks} (VPNs).  It provides a @emph{client} service for
-your machine to connect to a VPN, and a @emph{servire} service for your machine
+your machine to connect to a VPN, and a @emph{server} service for your machine
 to host a VPN.  Both services use @uref{https://openvpn.net/, OpenVPN}.
 
 @deffn {Scheme Procedure} openvpn-client-service @
@@ -21717,7 +21769,7 @@ Defaults to @samp{"3:remote 4:event"}.
 @deftypevr {@code{libvirt-configuration} parameter} string log-outputs
 Logging outputs.
 
-An output is one of the places to save logging information The format
+An output is one of the places to save logging information.  The format
 for an output can be:
 
 @table @code
@@ -24463,20 +24515,26 @@ system configuration file.  You can then load the image and launch a
 Docker container using commands like the following:
 
 @example
-image_id="$(docker load < guix-system-docker-image.tar.gz)"
-docker run -e GUIX_NEW_SYSTEM=/var/guix/profiles/system \\
-    --entrypoint /var/guix/profiles/system/profile/bin/guile \\
-    $image_id /var/guix/profiles/system/boot
+image_id="`docker load < guix-system-docker-image.tar.gz`"
+container_id="`docker create $image_id`"
+docker start $container_id
 @end example
 
 This command starts a new Docker container from the specified image.  It
 will boot the Guix system in the usual manner, which means it will
 start any services you have defined in the operating system
-configuration.  Depending on what you run in the Docker container, it
+configuration.  You can get an interactive shell running in the container
+using @command{docker exec}:
+
+@example
+docker exec -ti $container_id /run/current-system/profile/bin/bash --login
+@end example
+
+Depending on what you run in the Docker container, it
 may be necessary to give the container additional permissions.  For
 example, if you intend to build software using Guix inside of the Docker
 container, you may need to pass the @option{--privileged} option to
-@code{docker run}.
+@code{docker create}.
 
 @item container
 Return a script to run the operating system declared in @var{file}
@@ -24550,6 +24608,11 @@ coreutils, GNU Coreutils}).
 When this option is omitted, @command{guix system} computes an estimate
 of the image size as a function of the size of the system declared in
 @var{file}.
+
+@item --network
+@itemx -N
+For the @code{container} action, allow containers to access the host network,
+that is, do not create a network namespace.
 
 @item --root=@var{file}
 @itemx -r @var{file}
@@ -24649,7 +24712,7 @@ example graph.
 @cindex virtual machine
 To run Guix in a virtual machine (VM), one can use the pre-built Guix VM image
 distributed at
-@indicateurl{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.@var{system}.xz}
+@url{@value{BASE-URL}/guix-system-vm-image-@value{VERSION}.x86_64-linux.xz}.
 This image is a compressed image in QCOW format.  You will first need to
 decompress with @command{xz -d}, and then you can pass it to an emulator such
 as QEMU (see below for details).
@@ -25245,7 +25308,7 @@ These are the names that may be passed to @command{herd start},
 shepherd, The GNU Shepherd Manual}).  @xref{Slots of services, the
 @code{provides} slot,, shepherd, The GNU Shepherd Manual}, for details.
 
-@item @code{requirements} (default: @code{'()})
+@item @code{requirement} (default: @code{'()})
 List of symbols denoting the Shepherd services this one depends on.
 
 @cindex one-shot services, for the Shepherd
@@ -25276,6 +25339,10 @@ This is a list of @code{shepherd-action} objects (see below) defining
 @example
 herd @var{action} @var{service} [@var{arguments}@dots{}]
 @end example
+
+@item @code{auto-start?} (default: @code{#t})
+Whether this service should be started automatically by the Shepherd.  If it
+is @code{#f} the service has to be started manually with @code{herd start}.
 
 @item @code{documentation}
 A documentation string, as shown when running:

@@ -20,6 +20,7 @@ DOC_PO_FILES=					\
   %D%/guix-manual.es.po				\
   %D%/guix-manual.de.po				\
   %D%/guix-manual.fr.po				\
+  %D%/guix-manual.ru.po				\
   %D%/guix-manual.zh_CN.po
 
 EXTRA_DIST = \

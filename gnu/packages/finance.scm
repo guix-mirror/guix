@@ -63,6 +63,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
@@ -344,7 +345,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.3.4")
+    (version "3.3.5")
     (source
      (origin
        (method url-fetch)
@@ -352,8 +353,7 @@ do so.")
                            version "/Electrum-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0h128wklz5qwx5zqzbd48x46kxjxs12wcna9lhak70y5pj2hw8rg"))
+        (base32 "1csj0n96zlajnrs39wsazfj5lmy7v7n77cdz56lr8nkmchh6k9z1"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -934,7 +934,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.53.1")
+    (version "0.54.1")
     (source
      (origin
        (method git-fetch)
@@ -945,7 +945,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "10dbikajnxh5jhcyhhsy2alv9d0qc6i57p4pvbkdf095cnj4qrvr"))))
+         "15z5wc3ahvv8axyiqmf7hd4y91ahh1x4bfmgsqxwygyhswl1yjq8"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
@@ -992,7 +992,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.6.5")
+    (version "0.7.0")
     (source
      (origin
        (method git-fetch)
@@ -1002,7 +1002,7 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1fy509vsmz7rs9m3vah0ky0jvq9mxmfga6b18rkrkl2lbjk872q2"))))
+         "0pnd5v15sgxxm114sbs0z24a4dars5hy1nabc9v9ask7kxzrxs9y"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
@@ -1011,7 +1011,8 @@ main features are:
        ("duniterpy" ,python-duniterpy)
        ("ipaddress" ,python-ipaddress)
        ("pynacl" ,python-pynacl)
-       ("tabulate" ,python-tabulate)))
+       ("tabulate" ,python-tabulate)
+       ("texttable" ,python-texttable)))
     (home-page "https://silkaj.duniter.org/")
     (synopsis "Command line client for Duniter network")
     (description "@code{Silkaj} is a command line client for the

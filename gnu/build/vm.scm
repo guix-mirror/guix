@@ -423,13 +423,17 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
             ;; Graft the configuration file onto the image.
             (string-append "boot/grub/grub.cfg=" config-file))))
 
-(define* (make-iso9660-image grub config-file os-drv target
+(define* (make-iso9660-image xorriso grub-mkrescue-environment
+                             grub config-file os-drv target
                              #:key (volume-id "Guix_image") (volume-uuid #f)
                              register-closures? (closures '()))
   "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
 GRUB configuration and OS-DRV as the stuff in it."
   (define grub-mkrescue
     (string-append grub "/bin/grub-mkrescue"))
+
+  (define grub-mkrescue-sed.sh
+    (string-append xorriso "/bin/grub-mkrescue-sed.sh"))
 
   (define target-store
     (string-append "/tmp/root" (%store-directory)))
@@ -483,9 +487,19 @@ GRUB configuration and OS-DRV as the stuff in it."
                               #x77777777)
                           16))
 
+  (setenv "MKRESCUE_SED_MODE" "original")
+  (setenv "MKRESCUE_SED_XORRISO" (string-append xorriso
+                                                "/bin/xorriso"))
+  (setenv "MKRESCUE_SED_IN_EFI_NO_PT" "yes")
+  (for-each (match-lambda
+             ((name . value) (setenv name value)))
+            grub-mkrescue-environment)
+
   (let ((pipe
          (apply open-pipe* OPEN_WRITE
-                grub-mkrescue "-o" target
+                grub-mkrescue
+                (string-append "--xorriso=" grub-mkrescue-sed.sh)
+                "-o" target
                 (string-append "boot/grub/grub.cfg=" config-file)
                 "etc=/tmp/root/etc"
                 "var=/tmp/root/var"

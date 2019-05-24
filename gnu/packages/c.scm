@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,6 +29,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
@@ -287,3 +288,31 @@ Its three main components are:
 @end enumerate\n")
     ;; Like the BSD-3 license but with an extra anti patent clause.
     (license (license:non-copyleft "file://COPYRIGHT"))))
+
+(define-public libfixposix
+  (package
+    (name "libfixposix")
+    (version "0.4.3")
+    (home-page "https://github.com/sionescu/libfixposix")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1x4q6yspi5g2s98vq4qszw4z3zjgk9l5zs8471w4d4cs6l97w08j"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("check" ,check)))
+    (synopsis "Thin wrapper over POSIX syscalls")
+    (description
+     "The purpose of libfixposix is to offer replacements for parts of POSIX
+whose behaviour is inconsistent across *NIX flavours.")
+    (license license:boost1.0)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -34,7 +34,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
-(define-public gdb
+(define-public gdb-8.2
   (package
     (name "gdb")
     (version "8.2.1")
@@ -105,3 +105,20 @@ to specify the runtime conditions, to define breakpoints, and to change how
 the program is running to try to fix bugs.  It can be used to debug programs
 written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
+
+(define-public gdb-8.3
+  (package
+    (inherit gdb-8.2)
+    (version "8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdb/gdb-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0bnpzz0rl672xg5547q5qck2sxi6cnyixmk8bbb4gifw17ipwbw0"))))))
+
+(define-public gdb
+  ;; This is the fixed version that packages depend on.  Update it rarely
+  ;; enough to avoid massive rebuilds.
+  gdb-8.2)

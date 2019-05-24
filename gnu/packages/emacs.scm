@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
@@ -115,7 +115,8 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f  ; no check target
-       #:configure-flags (list "--with-modules")
+       #:configure-flags (list "--with-modules"
+                               "--disable-build-details")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-/bin/pwd
@@ -202,11 +203,12 @@ languages.")
     (synopsis "The extensible text editor (used only for byte-compilation)")
     (build-system gnu-build-system)
     (arguments
-     `(,@(substitute-keyword-arguments (package-arguments emacs)
-           ((#:phases phases)
-            `(modify-phases ,phases
-               (delete 'install-site-start))))
-        #:configure-flags (list "--with-gnutls=no")))
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'install-site-start)))
+       ((#:configure-flags flags ''())
+        `(list "--with-gnutls=no" "--disable-build-details"))))
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
@@ -220,9 +222,9 @@ languages.")
 editor (with xwidgets support)")
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       '("--with-xwidgets")
-       ,@(package-arguments emacs)))
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:configure-flags flags ''())
+        `(cons "--with-xwidgets" ,flags))))
     (inputs
      `(("webkitgtk" ,webkitgtk)
        ("libxcomposite" ,libxcomposite)

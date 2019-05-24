@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu services desktop)
   #:use-module (gnu packages bootstrap) ; %bootstrap-guile
   #:use-module (gnu packages docker)
+  #:use-module (gnu packages guile)
   #:use-module (guix gexp)
   #:use-module (guix grafts)
   #:use-module (guix monads)
@@ -38,7 +40,8 @@
   #:use-module (guix tests)
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
-  #:export (%test-docker))
+  #:export (%test-docker
+            %test-docker-system))
 
 (define %docker-os
   (simple-operating-system
@@ -166,3 +169,116 @@ standard output device and then enters a new line.")
    (name "docker")
    (description "Test Docker container of Guix.")
    (value (build-tarball&run-docker-test))))
+
+
+(define (run-docker-system-test tarball)
+  "Load DOCKER-TARBALL as Docker image and run it in a Docker container,
+inside %DOCKER-OS."
+  (define os
+    (marionette-operating-system
+     %docker-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     ;; FIXME: Because we're using the volatile-root setup where the root file
+     ;; system is a tmpfs overlaid over a small root file system, 'docker
+     ;; load' must be able to store the whole image into memory, hence the
+     ;; huge memory requirements.  We should avoid the volatile-root setup
+     ;; instead.
+     (memory-size 3000)
+     (port-forwardings '())))
+
+  (define test
+    (with-imported-modules '((gnu build marionette)
+                             (guix build utils))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (gnu build marionette)
+                       (guix build utils))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "docker")
+
+          (test-assert "service running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (match (start-service 'dockerd)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((pid) (number? pid))))))
+             marionette))
+
+          (test-assert "load system image and run it"
+            (marionette-eval
+             `(begin
+                (define (slurp command . args)
+                  ;; Return the output from COMMAND.
+                  (let* ((port (apply open-pipe* OPEN_READ command args))
+                         (output (read-line port))
+                         (status (close-pipe port)))
+                    output))
+
+                (define (docker-cli command . args)
+                  ;; Run the given Docker COMMAND.
+                  (apply invoke #$(file-append docker-cli "/bin/docker")
+                         command args))
+
+                (define (wait-for-container-file container file)
+                  ;; Wait for FILE to show up in CONTAINER.
+                  (docker-cli "exec" container
+                              #$(file-append guile-2.2 "/bin/guile")
+                              "-c"
+                              (object->string
+                               `(let loop ((n 15))
+                                  (when (zero? n)
+                                    (error "file didn't show up" ,file))
+                                  (unless (file-exists? ,file)
+                                    (sleep 1)
+                                    (loop (- n 1)))))))
+
+                (let* ((line (slurp #$(file-append docker-cli "/bin/docker")
+                                    "load" "-i" #$tarball))
+                       (repository&tag (string-drop line
+                                                    (string-length
+                                                     "Loaded image: ")))
+                       (container (slurp
+                                   #$(file-append docker-cli "/bin/docker")
+                                   "create" repository&tag)))
+                  (docker-cli "start" container)
+
+                  ;; Wait for shepherd to be ready.
+                  (wait-for-container-file container
+                                           "/var/run/shepherd/socket")
+
+                  (docker-cli "exec" container
+                              "/run/current-system/profile/bin/herd"
+                              "status")
+                  (slurp #$(file-append docker-cli "/bin/docker")
+                         "exec" container
+                         "/run/current-system/profile/bin/herd"
+                         "status" "guix-daemon")))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "docker-system-test" test))
+
+(define %test-docker-system
+  (system-test
+   (name "docker-system")
+   (description "Run a system image as produced by @command{guix system
+docker-image} inside Docker.")
+   (value (with-monad %store-monad
+            (>>= (system-docker-image (simple-operating-system))
+                 run-docker-system-test)))))

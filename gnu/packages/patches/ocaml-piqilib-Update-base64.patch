@@ -1,0 +1,46 @@
+From 98abdbff3d5316a75f27d6a76fe09317d56f2a38 Mon Sep 17 00:00:00 2001
+From: Vincent Bernardoff <vb@luminar.eu.org>
+Date: Sun, 10 Feb 2019 14:47:07 +0100
+Subject: [PATCH] Fix compilation with newer base64 versions
+
+---
+ opam                   | 2 +-
+ piqilib/piqi_base64.ml | 9 ++++-----
+ 2 files changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/opam b/opam
+index 3a9128e..bb5a53f 100644
+--- a/opam
++++ b/opam
+@@ -26,6 +26,6 @@ depends: [
+   "easy-format"
+   "ulex"
+   "xmlm"
+-  "base64" {>="2.0.0"}
++  "base64" {>="3.1.0"}
+ ]
+ dev-repo: "git://github.com/alavrik/piqi"
+diff --git a/piqilib/piqi_base64.ml b/piqilib/piqi_base64.ml
+index c5a6ae7..a98346e 100644
+--- a/piqilib/piqi_base64.ml
++++ b/piqilib/piqi_base64.ml
+@@ -18,12 +18,11 @@
+ (* TODO: add more base64 validation; the base64 library doesn't do any
+  * validation *)
+ let decode x =
+-  try
+-    B64.decode x
+-  with _ ->
+-    invalid_arg "Piqi_base64.decode"
++  match Base64.decode x with
++  | Error _ -> invalid_arg "Piqi_base64.decode"
++  | Ok v -> v
+ 
+ 
+ let encode x =
+-  B64.encode x
++  Base64.encode_exn x
+ 
+-- 
+2.21.0
+

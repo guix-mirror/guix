@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -27,8 +27,9 @@ guix pack --version
 # the test in the user's global store if possible, on the grounds that
 # binaries may already be there or can be built or downloaded inexpensively.
 
-NIX_STORE_DIR="`guile -c '(use-modules (guix config))(display %storedir)'`"
+storedir="`guile -c '(use-modules (guix config))(display %storedir)'`"
 localstatedir="`guile -c '(use-modules (guix config))(display %localstatedir)'`"
+NIX_STORE_DIR="$storedir"
 GUIX_DAEMON_SOCKET="$localstatedir/guix/daemon-socket/socket"
 export NIX_STORE_DIR GUIX_DAEMON_SOCKET
 

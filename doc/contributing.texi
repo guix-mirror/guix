@@ -57,14 +57,14 @@ all the dependencies and appropriate environment variables are set up to
 hack on Guix:
 
 @example
-guix environment guix
+guix environment guix --pure
 @end example
 
 @xref{Invoking guix environment}, for more information on that command.
 Extra dependencies can be added with @option{--ad-hoc}:
 
 @example
-guix environment guix --ad-hoc help2man git strace
+guix environment guix --pure --ad-hoc help2man git strace
 @end example
 
 Run @command{./bootstrap} to generate the build system infrastructure

@@ -161,7 +161,7 @@
 text manipulation and now used for a wide range of tasks including system
 administration, web development, network programming, GUI development, and
 more.")
-    (home-page "http://www.perl.org/")
+    (home-page "https://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
 (define-public perl-algorithm-c3
@@ -1795,7 +1795,7 @@ they are copies of each other.")
     (home-page "https://metacpan.org/release/Data-Uniqid")
     (synopsis "Perl extension for generating unique identifiers")
     (description "@code{Data::Uniqid} provides three simple routines for
-generating unique ids.  These ids are coded with a Base62 systen to make them
+generating unique ids.  These ids are coded with a Base62 system to make them
 short and handy (e.g. to use it as part of a URL).")
     (license (package-license perl))))
 
@@ -1885,15 +1885,14 @@ indentation and newlines plus sub deparsing.")
 (define-public perl-data-page
   (package
     (name "perl-data-page")
-    (version "2.02")
+    (version "2.03")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Data-Page-" version ".tar.gz"))
        (sha256
-        (base32
-         "1hvi92c4h2angryc6pngw7gbm3ysc2jfmyxk2wh9ia4vdwpbs554"))))
+        (base32 "12rxrr2b11qjk0c437cisw2kfqkafw1awcng09cv6yhzglb55yif"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -6243,7 +6242,7 @@ installing configuration files or for finding any piece of settings.")
     (description
      "@code{MooX::HandlesVia} is an extension of Moo's @code{handles}
 attribute functionality.  It provides a means of proxying functionality from
-an external class to the given atttribute.")
+an external class to the given attribute.")
     (license perl-license)))
 
 (define-public perl-moox-late
@@ -8430,14 +8429,14 @@ text sequences from strings.")
 (define-public perl-text-csv
   (package
     (name "perl-text-csv")
-    (version "1.99")
+    (version "2.00")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IS/ISHIGAKI/"
                            "Text-CSV-" version ".tar.gz"))
        (sha256
-        (base32 "1llccsl6sr11g9affh43m6q5r85qgnpi9n7idcs1vi9cn4ww0kp7"))))
+        (base32 "1hmjrc8h622nybdq8lpqi3hlrcjvb474s4a4b2cjs8h5b0cxkjwc"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV")
     (synopsis "Manipulate comma-separated values")
@@ -8459,7 +8458,7 @@ can combine fields into a CSV string and parse a CSV string into fields.")
         (base32 "1gcy1bxym6f7qsxivkl3c5p94r1bjhf9csy1x38a1gk8mx744kma"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV_XS")
-    (synopsis "Rountines for manipulating CSV files")
+    (synopsis "Routines for manipulating CSV files")
     (description "@code{Text::CSV_XS} provides facilities for the composition
 and decomposition of comma-separated values.  An instance of the
 @code{Text::CSV_XS} class will combine fields into a CSV string and parse a
@@ -8824,15 +8823,14 @@ $object->TIEHASH are avoided.")
 (define-public perl-time-duration
   (package
     (name "perl-time-duration")
-    (version "1.20")
+    (version "1.21")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AV/AVIF/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Time-Duration-" version ".tar.gz"))
        (sha256
-        (base32
-         "1f5vkid4pl5iq3hal01hk1zjbbzrqpx4m1djawbp93l152shb0j5"))))
+        (base32 "1f59z2svfydxgd1gzrb5k3hl6d432kzmskk7jhv2dyb5hyx0wd7y"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)

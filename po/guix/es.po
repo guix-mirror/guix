@@ -1,16 +1,16 @@
-# Spanish messages for GNU Guix.
+# Spanish messages for GNU Guix domain.
 # Copyright (C) 2017, 2018, 2019 the authors of Guix (msgids)
 # This file is distributed under the same license as the guix package.
 # Jorge Maldonado Ventura <jorgesumle@freakspot.net>, 2018.
 # Miguel Ángel Arruga Vivas <rosen644835@gmail.com>, 2019.
 #
-#: guix/ui.scm:204
+#: guix/ui.scm:206
 msgid ""
 msgstr ""
-"Project-Id-Version: guix 1.0.0-pre2\n"
+"Project-Id-Version: guix 1.0.1-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2019-04-24 13:25+0200\n"
-"PO-Revision-Date: 2019-04-25 13:24+0200\n"
+"POT-Creation-Date: 2019-05-10 20:54+0200\n"
+"PO-Revision-Date: 2019-05-16 15:43+0200\n"
 "Last-Translator: Miguel Ángel Arruga Vivas <rosen644835@gmail.com>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
@@ -82,7 +82,7 @@ msgid "choosing ~a@~a from ~a~%"
 msgstr "seleccionando ~a@~a de ~a~%"
 
 # FUZZY
-#: gnu/packages.scm:486 guix/scripts/package.scm:208
+#: gnu/packages.scm:486 guix/scripts/package.scm:212
 #, scheme-format
 msgid "package '~a' has been superseded by '~a'~%"
 msgstr "el paquete '~a' ha sido reemplazado por '~a'~%"
@@ -207,22 +207,22 @@ msgstr "más de un servicio objetivo de tipo '~a'"
 msgid "service of type '~a' not found"
 msgstr "servicio de tipo '~a' no encontrado"
 
-#: gnu/system.scm:334
+#: gnu/system.scm:335
 #, scheme-format
 msgid "unrecognized boot parameters at '~a'~%"
 msgstr "parámetros de arranque en '~a' no reconocidos~%"
 
-#: gnu/system.scm:732
+#: gnu/system.scm:736
 #, scheme-format
 msgid "using a string for file '~a' is deprecated; use 'plain-file' instead~%"
 msgstr "el uso de una cadena para el fichero '~a' está obsoleto; use 'plain-file'~%"
 
-#: gnu/system.scm:748
+#: gnu/system.scm:752
 #, scheme-format
 msgid "using a monadic value for '~a' is deprecated; use 'plain-file' instead~%"
 msgstr "el uso de un valor monádico para '~a' está obsoleto; use 'plain-file'~%"
 
-#: gnu/system.scm:893
+#: gnu/system.scm:897
 #, scheme-format
 msgid "~a: invalid locale name"
 msgstr "~a: nombre de localización no válido"
@@ -311,7 +311,7 @@ msgstr "Selección de distribución de teclado"
 
 #: gnu/installer.scm:232
 msgid "Partitioning"
-msgstr "Particionado"
+msgstr "Particionamiento"
 
 #: gnu/installer.scm:240 gnu/installer/newt/hostname.scm:26
 msgid "Hostname"
@@ -321,7 +321,8 @@ msgstr "Nombre de máquina"
 msgid "Network selection"
 msgstr "Selección de red"
 
-#: gnu/installer.scm:256 gnu/installer/newt/user.scm:46
+#: gnu/installer.scm:256 gnu/installer/newt/user.scm:65
+#: gnu/installer/newt/user.scm:201
 msgid "User creation"
 msgstr "Creación de usuarias"
 
@@ -329,7 +330,7 @@ msgstr "Creación de usuarias"
 msgid "Services"
 msgstr "Servicios"
 
-#: gnu/installer.scm:271 gnu/installer/newt/final.scm:41
+#: gnu/installer.scm:271 gnu/installer/newt/final.scm:51
 msgid "Configuration file"
 msgstr "Fichero de configuración"
 
@@ -351,65 +352,67 @@ msgstr "El instalador ha encontrado un problema inesperado. La pila de llamadas 
 msgid "Unexpected problem"
 msgstr "Problema inesperado"
 
-#: gnu/installer/newt/ethernet.scm:65
+#: gnu/installer/newt/ethernet.scm:66
 msgid "No ethernet service available, please try again."
 msgstr "No hay un servicio ethernet disponible, por favor, intentelo de nuevo."
 
-#: gnu/installer/newt/ethernet.scm:66
+#: gnu/installer/newt/ethernet.scm:67
 msgid "No service"
 msgstr "Ningún servicio"
 
-#: gnu/installer/newt/ethernet.scm:71
+#: gnu/installer/newt/ethernet.scm:76
 msgid "Please select an ethernet network."
 msgstr "Por favor, seleccione una red ethernet."
 
-#: gnu/installer/newt/ethernet.scm:72
+#: gnu/installer/newt/ethernet.scm:77
 msgid "Ethernet connection"
 msgstr "Conexión ethernet"
 
-#: gnu/installer/newt/ethernet.scm:75 gnu/installer/newt/keymap.scm:44
-#: gnu/installer/newt/locale.scm:43 gnu/installer/newt/network.scm:61
-#: gnu/installer/newt/network.scm:76 gnu/installer/newt/page.scm:156
-#: gnu/installer/newt/page.scm:481 gnu/installer/newt/page.scm:538
-#: gnu/installer/newt/partition.scm:52 gnu/installer/newt/partition.scm:80
-#: gnu/installer/newt/partition.scm:112 gnu/installer/newt/partition.scm:123
-#: gnu/installer/newt/partition.scm:619 gnu/installer/newt/partition.scm:640
-#: gnu/installer/newt/partition.scm:679 gnu/installer/newt/partition.scm:730
-#: gnu/installer/newt/partition.scm:741 gnu/installer/newt/services.scm:81
-#: gnu/installer/newt/timezone.scm:63 gnu/installer/newt/user.scm:119
-#: gnu/installer/newt/wifi.scm:201
+#: gnu/installer/newt/ethernet.scm:81 gnu/installer/newt/keymap.scm:44
+#: gnu/installer/newt/locale.scm:43 gnu/installer/newt/network.scm:63
+#: gnu/installer/newt/network.scm:84 gnu/installer/newt/page.scm:175
+#: gnu/installer/newt/page.scm:508 gnu/installer/newt/page.scm:565
+#: gnu/installer/newt/partition.scm:54 gnu/installer/newt/partition.scm:83
+#: gnu/installer/newt/partition.scm:115 gnu/installer/newt/partition.scm:126
+#: gnu/installer/newt/partition.scm:624 gnu/installer/newt/partition.scm:645
+#: gnu/installer/newt/partition.scm:685 gnu/installer/newt/partition.scm:738
+#: gnu/installer/newt/partition.scm:749 gnu/installer/newt/services.scm:85
+#: gnu/installer/newt/timezone.scm:63 gnu/installer/newt/user.scm:200
+#: gnu/installer/newt/wifi.scm:202
 msgid "Exit"
 msgstr "Salir"
 
-#: gnu/installer/newt/final.scm:37
-msgid "We're now ready to proceed with the installation! A system configuration file has been generated, it is displayed below.  The new system will be created from this file once you've pressed OK.  This will take a few minutes."
-msgstr "¡Estamos procediento con la instalación! Un fichero de configuración del sistema se ha generado, se muestra a continuación. El nuevo sistema se creará desde este fichero una vez haya pulsado OK. Esto tomará algunos minutos."
+# FUZZY
+#: gnu/installer/newt/final.scm:44
+#, scheme-format
+msgid "We're now ready to proceed with the installation! A system configuration file has been generated, it is displayed below.  This file will be available as '~a' on the installed system.  The new system will be created from this file once you've pressed OK.  This will take a few minutes."
+msgstr "¡Estamos preparadas para continuar con la instalación! Se ha generado un fichero de configuración del sistema, el cual se muestra a continuación. Este fichero estará disponible como «~a» en el sistema instalado. El nuevo sistema se creará desde este fichero una vez haya pulsado OK. Tardará algunos minutos."
 
-#: gnu/installer/newt/final.scm:54
+#: gnu/installer/newt/final.scm:64
 msgid "Installation complete"
 msgstr "Instalación completada"
 
-#: gnu/installer/newt/final.scm:55 gnu/installer/newt/welcome.scm:115
+#: gnu/installer/newt/final.scm:65 gnu/installer/newt/welcome.scm:115
 msgid "Reboot"
 msgstr "Reiniciar"
 
-#: gnu/installer/newt/final.scm:56
+#: gnu/installer/newt/final.scm:66
 msgid "Congratulations!  Installation is now complete.  You may remove the device containing the installation image and press the button to reboot."
 msgstr "¡Enhorabuena! La instalación se ha completado. Puede retirar el dispositivo que contiene la imagen de instalación y pulsar el botón para reiniciar."
 
-#: gnu/installer/newt/final.scm:62
+#: gnu/installer/newt/final.scm:75
 msgid "Installation failed"
 msgstr "Fallo en la instalación"
 
-#: gnu/installer/newt/final.scm:63
+#: gnu/installer/newt/final.scm:76
 msgid "Restart installer"
 msgstr "Reiniciar el instalador"
 
-#: gnu/installer/newt/final.scm:64
+#: gnu/installer/newt/final.scm:77
 msgid "Retry system install"
 msgstr "Reintentar la instalación del sistema"
 
-#: gnu/installer/newt/final.scm:65
+#: gnu/installer/newt/final.scm:78
 msgid "The final system installation step failed.  You can retry the last step, or restart the installer."
 msgstr "Falló el paso final de la instalación del sistema. Puede reintentar el último paso o reiniciar el instalador."
 
@@ -437,7 +440,7 @@ msgstr "Por favor, seleccione la variante de su distribución del teclado."
 
 #: gnu/installer/newt/keymap.scm:59 gnu/installer/newt/locale.scm:63
 #: gnu/installer/newt/locale.scm:78 gnu/installer/newt/locale.scm:94
-#: gnu/installer/newt/partition.scm:575 gnu/installer/newt/timezone.scm:64
+#: gnu/installer/newt/partition.scm:580 gnu/installer/newt/timezone.scm:64
 msgid "Back"
 msgstr "Atrás"
 
@@ -484,8 +487,8 @@ msgstr "Ningún modificador"
 
 # FUZZY
 #: gnu/installer/newt/menu.scm:35
-msgid "Choose where you want to resume the install.You can also abort the installation by pressing the Abort button."
-msgstr "Seleccione donde desea reanudar la instalación. Puede también abortar la instalación pulsando el botón Abortar."
+msgid "Choose where you want to resume the install.  You can also abort the installation by pressing the Abort button."
+msgstr "Seleccione dónde desea reanudar la instalación. También puede interrumpir la instalación pulsando el botón Abortar."
 
 #: gnu/installer/newt/menu.scm:37
 msgid "Installation menu"
@@ -495,40 +498,46 @@ msgstr "Menú de instalación"
 msgid "Abort"
 msgstr "Abortar"
 
-#: gnu/installer/newt/network.scm:59 gnu/installer/newt/network.scm:73
+#: gnu/installer/newt/network.scm:61 gnu/installer/newt/network.scm:80
 msgid "Internet access"
 msgstr "Acceso a internet"
 
-#: gnu/installer/newt/network.scm:60 gnu/installer/newt/page.scm:155
+#: gnu/installer/newt/network.scm:62 gnu/installer/newt/page.scm:174
 msgid "Continue"
 msgstr "Continuar"
 
-#: gnu/installer/newt/network.scm:62
+#: gnu/installer/newt/network.scm:64
 msgid "The install process requires Internet access but no network device were found. Do you want to continue anyway?"
 msgstr "El proceso de instalación necesita acceso a internet pero no se ha encontrado ningún dispositivo de red. ¿Desea continuar de todos modos?"
 
-#: gnu/installer/newt/network.scm:71
+#: gnu/installer/newt/network.scm:78
 msgid "The install process requires Internet access. Please select a network device."
 msgstr "El proceso de instalación necesita acceso a internet. Por favor, seleccione un dispositivo de red."
 
 # FUZZY
-#: gnu/installer/newt/network.scm:95
+#: gnu/installer/newt/network.scm:103
 msgid "Powering technology"
 msgstr "Tecnología de alimentación"
 
-#: gnu/installer/newt/network.scm:115
+# FUZZY
+#: gnu/installer/newt/network.scm:104
+#, scheme-format
+msgid "Waiting for technology ~a to be powered."
+msgstr "Esperando que la tecnología ~a obtenga alimentación."
+
+#: gnu/installer/newt/network.scm:124
 msgid "Checking connectivity"
 msgstr "Comprobando la conectividad"
 
-#: gnu/installer/newt/network.scm:116
+#: gnu/installer/newt/network.scm:125
 msgid "Waiting for Internet access establishment..."
 msgstr "Esperando al establecimiento del acceso a internet..."
 
-#: gnu/installer/newt/network.scm:126
+#: gnu/installer/newt/network.scm:135
 msgid "The selected network does not provide access to the Internet, please try again."
 msgstr "La red seleccionada no proporciona acceso a internet, por favor, intente de nuevo."
 
-#: gnu/installer/newt/network.scm:128 gnu/installer/newt/wifi.scm:105
+#: gnu/installer/newt/network.scm:137 gnu/installer/newt/wifi.scm:106
 msgid "Connection error"
 msgstr "Error de conexión"
 
@@ -541,22 +550,36 @@ msgstr "Conectando a ~a, por favor, espere."
 msgid "Connection in progress"
 msgstr "Conexión en progreso"
 
+#: gnu/installer/newt/page.scm:91 gnu/installer/newt/user.scm:58
+msgid "Hide"
+msgstr "Ocultar"
+
 # FUZZY
-#: gnu/installer/newt/page.scm:89 gnu/installer/newt/page.scm:480
-#: gnu/installer/newt/page.scm:537 gnu/installer/newt/partition.scm:438
-#: gnu/installer/newt/partition.scm:618 gnu/installer/newt/partition.scm:639
-#: gnu/installer/newt/partition.scm:677 gnu/installer/newt/user.scm:44
-#: gnu/installer/newt/user.scm:118
+#: gnu/installer/newt/page.scm:97 gnu/installer/newt/page.scm:507
+#: gnu/installer/newt/page.scm:564 gnu/installer/newt/partition.scm:443
+#: gnu/installer/newt/partition.scm:623 gnu/installer/newt/partition.scm:644
+#: gnu/installer/newt/partition.scm:683 gnu/installer/newt/user.scm:63
+#: gnu/installer/newt/user.scm:199
 msgid "OK"
 msgstr "OK"
 
-#: gnu/installer/newt/page.scm:104
+#: gnu/installer/newt/page.scm:123
 msgid "Please enter a non empty input."
 msgstr "Por favor, proporcione una entrada no vacía."
 
-#: gnu/installer/newt/page.scm:105 gnu/installer/newt/user.scm:76
+#: gnu/installer/newt/page.scm:124 gnu/installer/newt/user.scm:119
 msgid "Empty input"
 msgstr "Entrada vacía"
+
+# TODO (MAAV): Revisar
+#: gnu/installer/newt/partition.scm:45
+msgid "Everything is one partition"
+msgstr "Todo en una partición"
+
+# TODO (MAAV): Revisar
+#: gnu/installer/newt/partition.scm:46
+msgid "Separate /home partition"
+msgstr "Partición separada para /home"
 
 #: gnu/installer/newt/partition.scm:48
 msgid "Please select a partitioning scheme."
@@ -566,182 +589,195 @@ msgstr "Por favor, seleccione un esquema de particionado."
 msgid "Partition scheme"
 msgstr "Esquema de particionado"
 
-#: gnu/installer/newt/partition.scm:59
+#: gnu/installer/newt/partition.scm:61
 msgid "We are about to format your hard disk.  All its data will be lost.  Do you wish to continue?"
 msgstr "Vamos a dar formato a su disco duro. Todos sus datos se perderán. ¿Desea continuar?"
 
-#: gnu/installer/newt/partition.scm:61
+#: gnu/installer/newt/partition.scm:63
 msgid "Format disk?"
 msgstr "¿Dar formato al disco?"
 
-#: gnu/installer/newt/partition.scm:64
+#: gnu/installer/newt/partition.scm:66
 msgid "Partition formatting is in progress, please wait."
 msgstr "El formato de la partición está en progreso, por favor, espere."
 
-#: gnu/installer/newt/partition.scm:65
+#: gnu/installer/newt/partition.scm:67
 msgid "Preparing partitions"
 msgstr "Preparando las particiones"
 
-#: gnu/installer/newt/partition.scm:76
+#: gnu/installer/newt/partition.scm:78
 msgid "Please select a disk."
 msgstr "Por favor, seleccione un disco."
 
-#: gnu/installer/newt/partition.scm:77
+#: gnu/installer/newt/partition.scm:79
 msgid "Disk"
 msgstr "Disco"
 
-#: gnu/installer/newt/partition.scm:88
+#: gnu/installer/newt/partition.scm:91
 msgid "Select a new partition table type. Be careful, all data on the disk will be lost."
 msgstr "Seleccione un nuevo tipo de tabla de particiones. Tenga cuidado, se perderán todos los datos en el disco."
 
-#: gnu/installer/newt/partition.scm:90
+#: gnu/installer/newt/partition.scm:93
 msgid "Partition table"
 msgstr "Tabla de particiones"
 
-#: gnu/installer/newt/partition.scm:107
+#: gnu/installer/newt/partition.scm:110
 msgid "Please select a partition type."
 msgstr "Por favor, seleccione un tipo de partición."
 
-#: gnu/installer/newt/partition.scm:108
+#: gnu/installer/newt/partition.scm:111
 msgid "Partition type"
 msgstr "Tipo de partición"
 
-#: gnu/installer/newt/partition.scm:118
+#: gnu/installer/newt/partition.scm:121
 msgid "Please select the file-system type for this partition."
 msgstr "Por favor, seleccione el tipo de sistema de ficheros para esta partición."
 
-#: gnu/installer/newt/partition.scm:119
+#: gnu/installer/newt/partition.scm:122
 msgid "File-system type"
 msgstr "Tipo del sistema de ficheros"
 
-#: gnu/installer/newt/partition.scm:132
+#: gnu/installer/newt/partition.scm:135
 msgid "Primary partitions count exceeded."
 msgstr "Se excedió el número posible de particiones primarias."
 
-#: gnu/installer/newt/partition.scm:133 gnu/installer/newt/partition.scm:138
-#: gnu/installer/newt/partition.scm:143
+#: gnu/installer/newt/partition.scm:136 gnu/installer/newt/partition.scm:141
+#: gnu/installer/newt/partition.scm:146
 msgid "Creation error"
 msgstr "Error de creación"
 
-#: gnu/installer/newt/partition.scm:137
+#: gnu/installer/newt/partition.scm:140
 msgid "Extended partition creation error."
 msgstr "Error al crear la partición extendida."
 
-#: gnu/installer/newt/partition.scm:142
+#: gnu/installer/newt/partition.scm:145
 msgid "Logical partition creation error."
 msgstr "Error al crear la partición lógica."
 
-#: gnu/installer/newt/partition.scm:156
+#: gnu/installer/newt/partition.scm:159
 #, scheme-format
 msgid "Please enter the password for the encryption of partition ~a (label: ~a)."
 msgstr "Por favor, introduzca la contraseña para el cifrado de la partición ~a (etiqueta: ~a)."
 
-#: gnu/installer/newt/partition.scm:158 gnu/installer/newt/wifi.scm:90
+#: gnu/installer/newt/partition.scm:161 gnu/installer/newt/wifi.scm:91
 msgid "Password required"
 msgstr "Contraseña necesaria"
 
-#: gnu/installer/newt/partition.scm:162
+#: gnu/installer/newt/partition.scm:166
 #, scheme-format
 msgid "Please confirm the password for the encryption of partition ~a (label: ~a)."
 msgstr "Por favor, confirme la contraseña para el cifrado de la partición ~a (etiqueta: ~a)."
 
-#: gnu/installer/newt/partition.scm:164
+#: gnu/installer/newt/partition.scm:168 gnu/installer/newt/user.scm:156
 msgid "Password confirmation required"
 msgstr "Se necesita la confirmación de la contraseña"
 
-#: gnu/installer/newt/partition.scm:175
+#: gnu/installer/newt/partition.scm:180 gnu/installer/newt/user.scm:164
 msgid "Password mismatch, please try again."
 msgstr "Las contraseñas no coinciden, por favor, intentelo de nuevo."
 
-#: gnu/installer/newt/partition.scm:176
+#: gnu/installer/newt/partition.scm:181 gnu/installer/newt/user.scm:165
 msgid "Password error"
 msgstr "Error de contraseña"
 
-#: gnu/installer/newt/partition.scm:262
+#: gnu/installer/newt/partition.scm:267
 msgid "Please enter the partition gpt name."
 msgstr "Por favor, introduzca el nombre de gpt de la partición."
 
-#: gnu/installer/newt/partition.scm:263
+#: gnu/installer/newt/partition.scm:268
 msgid "Partition name"
 msgstr "Nombre de la partición"
 
-#: gnu/installer/newt/partition.scm:293
+#: gnu/installer/newt/partition.scm:298
 msgid "Please enter the encrypted label"
 msgstr "Por favor, introduzca la etiqueta de cifrado"
 
-#: gnu/installer/newt/partition.scm:294
+#: gnu/installer/newt/partition.scm:299
 msgid "Encryption label"
 msgstr "Etiqueta de cifrado"
 
-#: gnu/installer/newt/partition.scm:311
+#: gnu/installer/newt/partition.scm:316
 #, scheme-format
 msgid "Please enter the size of the partition. The maximum size is ~a."
 msgstr "Por favor, introduzca el tamaño de la partición. El tamaño máximo es ~a."
 
-#: gnu/installer/newt/partition.scm:313
+#: gnu/installer/newt/partition.scm:318
 msgid "Partition size"
 msgstr "Tamaño de la partición"
 
-#: gnu/installer/newt/partition.scm:331
+#: gnu/installer/newt/partition.scm:336
 msgid "The percentage can not be superior to 100."
 msgstr "El porcentaje no puede ser superior a 100."
 
-#: gnu/installer/newt/partition.scm:332 gnu/installer/newt/partition.scm:337
-#: gnu/installer/newt/partition.scm:342
+#: gnu/installer/newt/partition.scm:337 gnu/installer/newt/partition.scm:342
+#: gnu/installer/newt/partition.scm:347
 msgid "Size error"
 msgstr "Error en el tamaño"
 
-#: gnu/installer/newt/partition.scm:336
+#: gnu/installer/newt/partition.scm:341
 msgid "The requested size is incorrectly formatted, or too large."
 msgstr "El tamaño solicitado no tiene un formato correcto, o es demasiado grande."
 
-#: gnu/installer/newt/partition.scm:341
+#: gnu/installer/newt/partition.scm:346
 msgid "The request size is superior to the maximum size."
 msgstr "El tamaño solicitado es superior al tamaño máximo."
 
 # FUZZY
-#: gnu/installer/newt/partition.scm:361
+#: gnu/installer/newt/partition.scm:366
 msgid "Please enter the desired mounting point for this partition. Leave this field empty if you don't want to set a mounting point."
 msgstr "Por favor, introduzca el punto de montaje deseado para esta partición. Deje este campo vacío si no desea establecer un punto de montaje."
 
 # FUZZY
-#: gnu/installer/newt/partition.scm:363
+#: gnu/installer/newt/partition.scm:368
 msgid "Mounting point"
 msgstr "Punto de montaje"
 
-# FUZZY
+# TODO (MAAV): Mejorar mensaje
 #: gnu/installer/newt/partition.scm:432
+#, scheme-format
+msgid "Creating ~a partition starting at ~a of ~a."
+msgstr "Creando partición de tipo ~a que comienza en ~a de ~a."
+
+# FUZZY
+# TODO (MAAV): Mejorar mensaje, entender mejor contexto.
+#: gnu/installer/newt/partition.scm:434
+#, scheme-format
+msgid "You are currently editing partition ~a."
+msgstr "Actualmente se encuentra editando la partición ~a."
+
+# FUZZY
+#: gnu/installer/newt/partition.scm:437
 msgid "Partition creation"
 msgstr "Crear partición"
 
 # FUZZY
-#: gnu/installer/newt/partition.scm:433
+#: gnu/installer/newt/partition.scm:438
 msgid "Partition edit"
 msgstr "Editar partición"
 
-#: gnu/installer/newt/partition.scm:615
+#: gnu/installer/newt/partition.scm:620
 #, scheme-format
 msgid "Are you sure you want to delete everything on disk ~a?"
 msgstr "¿Está segura de que desea borrar todo en el disco ~a?"
 
-#: gnu/installer/newt/partition.scm:617
+#: gnu/installer/newt/partition.scm:622
 msgid "Delete disk"
 msgstr "Borrar disco"
 
-#: gnu/installer/newt/partition.scm:631
+#: gnu/installer/newt/partition.scm:636
 msgid "You cannot delete a free space area."
 msgstr "No puede borrar un área de espacio libre."
 
-#: gnu/installer/newt/partition.scm:632 gnu/installer/newt/partition.scm:638
+#: gnu/installer/newt/partition.scm:637 gnu/installer/newt/partition.scm:643
 msgid "Delete partition"
 msgstr "Borrar partición"
 
-#: gnu/installer/newt/partition.scm:636
+#: gnu/installer/newt/partition.scm:641
 #, scheme-format
 msgid "Are you sure you want to delete partition ~a?"
 msgstr "¿Está segura de que desea borrar la partición ~a?"
 
-#: gnu/installer/newt/partition.scm:653
+#: gnu/installer/newt/partition.scm:658
 msgid ""
 "You can change a disk's partition table by selecting it and pressing ENTER. You can also edit a partition by selecting it and pressing ENTER, or remove it by pressing DELETE. To create a new partition, select a free space area and press ENTER.\n"
 "\n"
@@ -751,56 +787,68 @@ msgstr ""
 "\n"
 "Al menos una partición debe tener '/' como su punto de montaje."
 
-#: gnu/installer/newt/partition.scm:659
+#: gnu/installer/newt/partition.scm:664
 #, scheme-format
 msgid "This is the proposed partitioning. It is still possible to edit it or to go back to install menu by pressing the Exit button.~%~%"
 msgstr "Estas son las particiones propuestas. Todavía es posible editarlas o volver al menú de instalación presionando el botón Salir.~%~%"
 
-#: gnu/installer/newt/partition.scm:669
+#: gnu/installer/newt/partition.scm:674
 msgid "Guided partitioning"
 msgstr "Particionado guiado"
 
-#: gnu/installer/newt/partition.scm:670
+#: gnu/installer/newt/partition.scm:675
 msgid "Manual partitioning"
 msgstr "Particionado manual"
 
-#: gnu/installer/newt/partition.scm:688
+#: gnu/installer/newt/partition.scm:694
 msgid "No root mount point found."
 msgstr "No se ha encontrado un punto de montaje para la raíz."
 
-#: gnu/installer/newt/partition.scm:689
+#: gnu/installer/newt/partition.scm:695
 msgid "Missing mount point"
 msgstr "Falta el punto de montaje"
 
-#: gnu/installer/newt/partition.scm:726
+#: gnu/installer/newt/partition.scm:728
+msgid "Guided - using the entire disk"
+msgstr "Guíado - uso del disco completo"
+
+#: gnu/installer/newt/partition.scm:729
+msgid "Guided - using the entire disk with encryption"
+msgstr "Guíado - uso del disco completo con cifrado"
+
+#: gnu/installer/newt/partition.scm:730
+msgid "Manual"
+msgstr "Manual"
+
+#: gnu/installer/newt/partition.scm:732
 msgid "Please select a partitioning method."
-msgstr "Por favor, seleccione un método de particionado."
+msgstr "Por favor, seleccione un método de particionamiento."
 
-#: gnu/installer/newt/partition.scm:727
+#: gnu/installer/newt/partition.scm:733
 msgid "Partitioning method"
-msgstr "Método de particionado"
+msgstr "Método de particionamiento"
 
-#: gnu/installer/newt/services.scm:35
+#: gnu/installer/newt/services.scm:36
 msgid "Please select the desktop(s) environment(s) you wish to install. If you select multiple desktops environments, you will be able to choose the one to use on the log-in screen."
 msgstr "Por favor, seleccione el o los entornos de escritorio que desea instalar. Si selecciona múltiples entornos de escritorio, podrá seleccionar el que va a usar en la pantalla de ingreso al sistema."
 
-#: gnu/installer/newt/services.scm:38
+#: gnu/installer/newt/services.scm:39
 msgid "Desktop environment"
 msgstr "Entorno de escritorio"
 
-#: gnu/installer/newt/services.scm:51
+#: gnu/installer/newt/services.scm:56
 msgid "You can now select networking services to run on your system."
 msgstr "Ahora puede seleccionar los servicios de red a ejecutar en su sistema."
 
-#: gnu/installer/newt/services.scm:53
+#: gnu/installer/newt/services.scm:58
 msgid "Network service"
 msgstr "Servicio de red"
 
-#: gnu/installer/newt/services.scm:67
+#: gnu/installer/newt/services.scm:71
 msgid "Network management"
 msgstr "Gestión de red"
 
-#: gnu/installer/newt/services.scm:70
+#: gnu/installer/newt/services.scm:74
 msgid ""
 "Choose the method to manage network connections.\n"
 "\n"
@@ -814,35 +862,55 @@ msgstr ""
 msgid "Please select a timezone."
 msgstr "Por favor, seleccione una zona horaria."
 
-#: gnu/installer/newt/user.scm:36
+#: gnu/installer/newt/user.scm:43
 msgid "Name"
 msgstr "Nombre"
 
-#: gnu/installer/newt/user.scm:38
+#: gnu/installer/newt/user.scm:45
+msgid "Real name"
+msgstr "Nombre real"
+
+#: gnu/installer/newt/user.scm:47
 msgid "Home directory"
 msgstr "Directorio de la usuaria"
 
-#: gnu/installer/newt/user.scm:75
+#: gnu/installer/newt/user.scm:49
+msgid "Password"
+msgstr "Contraseña"
+
+#: gnu/installer/newt/user.scm:118
 msgid "Empty inputs are not allowed."
 msgstr "No se permiten entradas vacías."
 
-#: gnu/installer/newt/user.scm:106
+#: gnu/installer/newt/user.scm:155
+msgid "Please confirm the password."
+msgstr "Por favor, confirme la contraseña."
+
+#: gnu/installer/newt/user.scm:172
+msgid "Please choose a password for the system administrator (\"root\")."
+msgstr "Por favor, seleccione una contraseña para la administradora del sistema (\"root\")."
+
+#: gnu/installer/newt/user.scm:174
+msgid "System administrator password"
+msgstr "Contraseña de administración del sistema"
+
+#: gnu/installer/newt/user.scm:187
 msgid "Please add at least one user to system using the 'Add' button."
 msgstr "Por favor, añada al menos una usuaria al sistema mediante el botón 'Añadir'."
 
-#: gnu/installer/newt/user.scm:109
+#: gnu/installer/newt/user.scm:190
 msgid "Add"
 msgstr "Añadir"
 
-#: gnu/installer/newt/user.scm:110
+#: gnu/installer/newt/user.scm:191
 msgid "Delete"
 msgstr "Borrar"
 
-#: gnu/installer/newt/user.scm:169
+#: gnu/installer/newt/user.scm:250
 msgid "Please create at least one user."
 msgstr "Por favor, cree al menos una usuaria."
 
-#: gnu/installer/newt/user.scm:170
+#: gnu/installer/newt/user.scm:251
 msgid "No user"
 msgstr "Ninguna usuaria"
 
@@ -873,49 +941,49 @@ msgid "Install using the shell based process"
 msgstr "Instalación mediante el proceso basado en shell"
 
 # FUZZY
-#: gnu/installer/newt/wifi.scm:80
+#: gnu/installer/newt/wifi.scm:81
 msgid "Unable to find a wifi technology"
-msgstr "No se pudo encntrar una tecnología wifi"
+msgstr "No se pudo encontrar una tecnología wifi"
 
-#: gnu/installer/newt/wifi.scm:84
+#: gnu/installer/newt/wifi.scm:85
 msgid "Scanning wifi for available networks, please wait."
 msgstr "Buscando redes wifi disponibles, por favor, espere."
 
-#: gnu/installer/newt/wifi.scm:85
+#: gnu/installer/newt/wifi.scm:86
 msgid "Scan in progress"
 msgstr "Búsqueda en progreso"
 
-#: gnu/installer/newt/wifi.scm:89
+#: gnu/installer/newt/wifi.scm:90
 msgid "Please enter the wifi password."
 msgstr "Por favor, introduzca la contraseña de la wifi."
 
-#: gnu/installer/newt/wifi.scm:95
+#: gnu/installer/newt/wifi.scm:96
 #, scheme-format
 msgid "The password you entered for ~a is incorrect."
 msgstr "La contraseña que introdujo para ~a es incorrecta."
 
-#: gnu/installer/newt/wifi.scm:97
+#: gnu/installer/newt/wifi.scm:98
 msgid "Wrong password"
 msgstr "Contraseña incorrecta"
 
-#: gnu/installer/newt/wifi.scm:103
+#: gnu/installer/newt/wifi.scm:104
 #, scheme-format
 msgid "An error occurred while trying to connect to ~a, please retry."
 msgstr "Sucedió un error mientras se intentaba conectar a ~a, por favor, vuelva a intentarlo."
 
-#: gnu/installer/newt/wifi.scm:196
+#: gnu/installer/newt/wifi.scm:197
 msgid "Please select a wifi network."
 msgstr "Por favor, seleccione una red wifi."
 
-#: gnu/installer/newt/wifi.scm:202
+#: gnu/installer/newt/wifi.scm:203
 msgid "Scan"
-msgstr "Búscar"
+msgstr "Buscar"
 
-#: gnu/installer/newt/wifi.scm:207
+#: gnu/installer/newt/wifi.scm:208
 msgid "No wifi detected"
 msgstr "No se detectó wifi"
 
-#: gnu/installer/newt/wifi.scm:222
+#: gnu/installer/newt/wifi.scm:223
 msgid "Wifi"
 msgstr "Wifi"
 
@@ -928,23 +996,28 @@ msgstr "Espacio libre"
 msgid "Device ~a is still in use."
 msgstr "El dispositivo ~a está todavía en uso."
 
-#: gnu/installer/services.scm:81
+#: gnu/installer/services.scm:85
 msgid "OpenSSH secure shell daemon (sshd)"
 msgstr "Daemon de shell seguro OpenSSH (sshd)"
 
-#: gnu/installer/services.scm:85
+#: gnu/installer/services.scm:89
 msgid "Tor anonymous network router"
 msgstr "Encaminador de red anónima Tor"
 
-#: gnu/installer/services.scm:91
+# FUZZY
+#: gnu/installer/services.scm:93
+msgid "Mozilla NSS certificates, for HTTPS access"
+msgstr "Certificados NSS de Mozilla, para acceso HTTPS"
+
+#: gnu/installer/services.scm:100
 msgid "NetworkManager network connection manager"
 msgstr "Gestor de conexiones de red NetworkManager"
 
-#: gnu/installer/services.scm:96
+#: gnu/installer/services.scm:105
 msgid "Connman network connection manager"
 msgstr "Gestor de conexiones de red Connman"
 
-#: gnu/installer/services.scm:101
+#: gnu/installer/services.scm:110
 msgid "DHCP client (dynamic IP address assignment)"
 msgstr "Cliente DHCP (asignación de IP dinámica)"
 
@@ -953,15 +1026,27 @@ msgstr "Cliente DHCP (asignación de IP dinámica)"
 msgid "Unable to locate path: ~a."
 msgstr "No se pudo encontrar la ruta: ~a."
 
+#: gnu/installer/utils.scm:64
+#, scheme-format
+msgid "Press Enter to continue.~%"
+msgstr "Presione Intro para continuar.~%"
+
+# FUZZY
+#: gnu/installer/utils.scm:86
+#, scheme-format
+msgid "Command failed with exit code ~a.~%"
+msgstr "La orden falló con ~a como código de salida.~%"
+
 #: guix/scripts.scm:61
 #, scheme-format
 msgid "invalid argument: ~a~%"
 msgstr "parámetro no válido: ~a~%"
 
 #: guix/scripts.scm:89 guix/scripts/download.scm:135
-#: guix/scripts/import/cran.scm:84 guix/scripts/import/elpa.scm:85
-#: guix/scripts/publish.scm:888 guix/scripts/edit.scm:79
-#: guix/scripts/describe.scm:199 guix/scripts/processes.scm:216
+#: guix/scripts/search.scm:60 guix/scripts/import/cran.scm:84
+#: guix/scripts/import/elpa.scm:85 guix/scripts/publish.scm:888
+#: guix/scripts/edit.scm:79 guix/scripts/describe.scm:205
+#: guix/scripts/processes.scm:230
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: opción no reconocida~%"
@@ -1177,8 +1262,8 @@ msgid ""
 "      --no-build-hook    do not attempt to offload builds via the build hook"
 msgstr ""
 "\n"
-"      --no-build-hook    no intenta delegar construcciones a través del hook\n"
-"                         de construcción"
+"      --no-build-hook    no intenta delegar construcciones a través del\n"
+"                         procedimiento de extensión de construcción"
 
 #: guix/scripts/build.scm:500
 msgid ""
@@ -1343,9 +1428,11 @@ msgstr ""
 
 # FUZZY
 # MAAV: No es literal, pero me parece adecuado.
-#: guix/scripts/build.scm:674 guix/scripts/package.scm:360
-#: guix/scripts/pull.scm:95 guix/scripts/system.scm:1032
-#: guix/scripts/copy.scm:120 guix/scripts/pack.scm:771
+#: guix/scripts/build.scm:674 guix/scripts/package.scm:364
+#: guix/scripts/install.scm:36 guix/scripts/remove.scm:36
+#: guix/scripts/upgrade.scm:36 guix/scripts/pull.scm:95
+#: guix/scripts/system.scm:1032 guix/scripts/copy.scm:120
+#: guix/scripts/pack.scm:771
 msgid ""
 "\n"
 "  -v, --verbosity=LEVEL  use the given verbosity LEVEL"
@@ -1372,17 +1459,18 @@ msgstr ""
 "                         de las derivaciones proporcionadas"
 
 #: guix/scripts/build.scm:685 guix/scripts/download.scm:83
-#: guix/scripts/package.scm:378 guix/scripts/gc.scm:84
-#: guix/scripts/hash.scm:60 guix/scripts/import.scm:93
-#: guix/scripts/import/cran.scm:47 guix/scripts/pull.scm:103
-#: guix/scripts/substitute.scm:898 guix/scripts/system.scm:1035
-#: guix/scripts/lint.scm:1180 guix/scripts/publish.scm:94
-#: guix/scripts/edit.scm:43 guix/scripts/size.scm:244
-#: guix/scripts/graph.scm:499 guix/scripts/challenge.scm:241
-#: guix/scripts/copy.scm:125 guix/scripts/pack.scm:776
-#: guix/scripts/weather.scm:270 guix/scripts/describe.scm:71
-#: guix/scripts/processes.scm:200 guix/scripts/container.scm:34
-#: guix/scripts/container/exec.scm:43
+#: guix/scripts/package.scm:382 guix/scripts/install.scm:43
+#: guix/scripts/remove.scm:41 guix/scripts/upgrade.scm:43
+#: guix/scripts/search.scm:34 guix/scripts/gc.scm:84 guix/scripts/hash.scm:60
+#: guix/scripts/import.scm:93 guix/scripts/import/cran.scm:47
+#: guix/scripts/pull.scm:103 guix/scripts/substitute.scm:898
+#: guix/scripts/system.scm:1035 guix/scripts/lint.scm:1180
+#: guix/scripts/publish.scm:94 guix/scripts/edit.scm:43
+#: guix/scripts/size.scm:244 guix/scripts/graph.scm:499
+#: guix/scripts/challenge.scm:241 guix/scripts/copy.scm:125
+#: guix/scripts/pack.scm:776 guix/scripts/weather.scm:270
+#: guix/scripts/describe.scm:72 guix/scripts/processes.scm:214
+#: guix/scripts/container.scm:34 guix/scripts/container/exec.scm:43
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -1391,17 +1479,18 @@ msgstr ""
 "  -h, --help             muestra este mensaje de ayuda y termina"
 
 #: guix/scripts/build.scm:687 guix/scripts/download.scm:85
-#: guix/scripts/package.scm:380 guix/scripts/gc.scm:86
-#: guix/scripts/hash.scm:62 guix/scripts/import.scm:95
-#: guix/scripts/import/cran.scm:51 guix/scripts/pull.scm:105
-#: guix/scripts/substitute.scm:900 guix/scripts/system.scm:1037
-#: guix/scripts/lint.scm:1184 guix/scripts/publish.scm:96
-#: guix/scripts/edit.scm:45 guix/scripts/size.scm:246
-#: guix/scripts/graph.scm:501 guix/scripts/challenge.scm:243
-#: guix/scripts/copy.scm:127 guix/scripts/pack.scm:778
-#: guix/scripts/weather.scm:272 guix/scripts/describe.scm:73
-#: guix/scripts/processes.scm:202 guix/scripts/container.scm:36
-#: guix/scripts/container/exec.scm:45
+#: guix/scripts/package.scm:384 guix/scripts/install.scm:45
+#: guix/scripts/remove.scm:43 guix/scripts/upgrade.scm:45
+#: guix/scripts/search.scm:36 guix/scripts/gc.scm:86 guix/scripts/hash.scm:62
+#: guix/scripts/import.scm:95 guix/scripts/import/cran.scm:51
+#: guix/scripts/pull.scm:105 guix/scripts/substitute.scm:900
+#: guix/scripts/system.scm:1037 guix/scripts/lint.scm:1184
+#: guix/scripts/publish.scm:96 guix/scripts/edit.scm:45
+#: guix/scripts/size.scm:246 guix/scripts/graph.scm:501
+#: guix/scripts/challenge.scm:243 guix/scripts/copy.scm:127
+#: guix/scripts/pack.scm:778 guix/scripts/weather.scm:272
+#: guix/scripts/describe.scm:74 guix/scripts/processes.scm:216
+#: guix/scripts/container.scm:36 guix/scripts/container/exec.scm:45
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -1489,8 +1578,8 @@ msgid "unsupported hash format: ~a~%"
 msgstr "formato de hash no implementado: ~a~%"
 
 # FUZZY
-#: guix/scripts/download.scm:138 guix/scripts/package.scm:896
-#: guix/scripts/publish.scm:890
+#: guix/scripts/download.scm:138 guix/scripts/package.scm:900
+#: guix/scripts/upgrade.scm:79 guix/scripts/publish.scm:890
 #, scheme-format
 msgid "~A: extraneous argument~%"
 msgstr "~A: parámetro no conocido~%"
@@ -1511,47 +1600,47 @@ msgstr "~a: se produjo un fallo al procesar la URI~%"
 msgid "~a: download failed~%"
 msgstr "~a: descarga fallida~%"
 
-#: guix/scripts/package.scm:111
+#: guix/scripts/package.scm:115
 #, scheme-format
 msgid "not removing generation ~a, which is current~%"
 msgstr "no se borra la generación ~a, que es la actual~%"
 
 # FUZZY
-#: guix/scripts/package.scm:118
+#: guix/scripts/package.scm:122
 #, scheme-format
 msgid "no matching generation~%"
 msgstr "ninguna generación corresponde con el patrón~%"
 
 # FUZZY
-#: guix/scripts/package.scm:121 guix/scripts/package.scm:693
+#: guix/scripts/package.scm:125 guix/scripts/package.scm:697
 #: guix/scripts/system.scm:626
 #, scheme-format
 msgid "invalid syntax: ~a~%"
 msgstr "sintaxis erronea: ~a~%"
 
-#: guix/scripts/package.scm:150
+#: guix/scripts/package.scm:154
 #, scheme-format
 msgid "nothing to be done~%"
 msgstr "nada que hacer~%"
 
-#: guix/scripts/package.scm:164
+#: guix/scripts/package.scm:168
 #, scheme-format
 msgid "~a package in profile~%"
 msgid_plural "~a packages in profile~%"
 msgstr[0] "~a paquete en el perfil~%"
 msgstr[1] "~a paquetes en el perfil~%"
 
-#: guix/scripts/package.scm:251
+#: guix/scripts/package.scm:255
 #, scheme-format
 msgid "package '~a' no longer exists~%"
 msgstr "paquete '~a' ya no existe~%"
 
-#: guix/scripts/package.scm:297
+#: guix/scripts/package.scm:301
 #, scheme-format
 msgid "The following environment variable definitions may be needed:~%"
 msgstr "Puede que se necesiten las siguientes definiciones de variables de entorno:~%"
 
-#: guix/scripts/package.scm:317
+#: guix/scripts/package.scm:321
 msgid ""
 "Usage: guix package [OPTION]...\n"
 "Install, remove, or upgrade packages in a single transaction.\n"
@@ -1559,7 +1648,7 @@ msgstr ""
 "Uso: guix package [OPCIÓN]...\n"
 "Instala, elimina o actualiza paquetes en una única transacción.\n"
 
-#: guix/scripts/package.scm:319
+#: guix/scripts/package.scm:323
 msgid ""
 "\n"
 "  -i, --install PACKAGE ...\n"
@@ -1569,7 +1658,7 @@ msgstr ""
 "  -i, --install PAQUETE ...\n"
 "                         instala PAQUETE"
 
-#: guix/scripts/package.scm:322
+#: guix/scripts/package.scm:326
 msgid ""
 "\n"
 "  -e, --install-from-expression=EXP\n"
@@ -1579,7 +1668,7 @@ msgstr ""
 "  -e, --install-from-expression=EXP\n"
 "                         instala el paquete al que EXP evalúa"
 
-#: guix/scripts/package.scm:325
+#: guix/scripts/package.scm:329
 msgid ""
 "\n"
 "  -f, --install-from-file=FILE\n"
@@ -1591,7 +1680,7 @@ msgstr ""
 "                         instala el paquete al que el código en\n"
 "                         FICHERO evalúa"
 
-#: guix/scripts/package.scm:329
+#: guix/scripts/package.scm:333
 msgid ""
 "\n"
 "  -r, --remove PACKAGE ...\n"
@@ -1601,7 +1690,7 @@ msgstr ""
 "  -r, --remove PAQUETE ...\n"
 "                         elimina PAQUETE"
 
-#: guix/scripts/package.scm:332
+#: guix/scripts/package.scm:336
 msgid ""
 "\n"
 "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
@@ -1610,7 +1699,7 @@ msgstr ""
 "  -u, --upgrade[=REGEXP] actualiza todos los paquetes instalados cuyo nombre\n"
 "                         acepta REGEXP"
 
-#: guix/scripts/package.scm:334
+#: guix/scripts/package.scm:338
 msgid ""
 "\n"
 "  -m, --manifest=FILE    create a new profile generation with the manifest\n"
@@ -1621,7 +1710,7 @@ msgstr ""
 "                         manifiesto del FICHERO"
 
 # FUZZY
-#: guix/scripts/package.scm:337
+#: guix/scripts/package.scm:341
 msgid ""
 "\n"
 "      --do-not-upgrade[=REGEXP] do not upgrade any packages matching REGEXP"
@@ -1629,7 +1718,7 @@ msgstr ""
 "\n"
 "      --do-not-upgrade[=REGEXP] no actualiza ningún paquete que REGEXP acepte"
 
-#: guix/scripts/package.scm:339
+#: guix/scripts/package.scm:343
 msgid ""
 "\n"
 "      --roll-back        roll back to the previous generation"
@@ -1637,7 +1726,7 @@ msgstr ""
 "\n"
 "      --roll-back        vuelve a la generación previa"
 
-#: guix/scripts/package.scm:341
+#: guix/scripts/package.scm:345
 msgid ""
 "\n"
 "      --search-paths[=KIND]\n"
@@ -1648,7 +1737,7 @@ msgstr ""
 "                         muestra las definiciones de variables de entorno\n"
 "                         necesarias"
 
-#: guix/scripts/package.scm:344 guix/scripts/pull.scm:90
+#: guix/scripts/package.scm:348 guix/scripts/pull.scm:90
 msgid ""
 "\n"
 "  -l, --list-generations[=PATTERN]\n"
@@ -1658,7 +1747,7 @@ msgstr ""
 "  -l, --list-generations[=PATRÓN]\n"
 "                         enumera las generaciones que correspondan con PATRÓN"
 
-#: guix/scripts/package.scm:347
+#: guix/scripts/package.scm:351
 msgid ""
 "\n"
 "  -d, --delete-generations[=PATTERN]\n"
@@ -1668,7 +1757,7 @@ msgstr ""
 "  -d, --delete-generations[=PATRÓN]\n"
 "                         borra las generaciones que correspondan con PATRÓN"
 
-#: guix/scripts/package.scm:350
+#: guix/scripts/package.scm:354
 msgid ""
 "\n"
 "  -S, --switch-generation=PATTERN\n"
@@ -1678,7 +1767,8 @@ msgstr ""
 "  -S, --switch-generation=PATRÓN\n"
 "                         cambia a una generación que corresponda con PATRÓN"
 
-#: guix/scripts/package.scm:353
+#: guix/scripts/package.scm:357 guix/scripts/install.scm:33
+#: guix/scripts/remove.scm:33 guix/scripts/upgrade.scm:34
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
@@ -1687,7 +1777,7 @@ msgstr ""
 "  -p, --profile=PERFIL   usa PERFIL en vez del perfil predeterminado de\n"
 "                         la usuaria"
 
-#: guix/scripts/package.scm:356
+#: guix/scripts/package.scm:360
 msgid ""
 "\n"
 "      --allow-collisions do not treat collisions in the profile as an error"
@@ -1696,7 +1786,7 @@ msgstr ""
 "      --allow-collisions no toma las colisiones en el perfil como errores"
 
 # FUZZY
-#: guix/scripts/package.scm:358
+#: guix/scripts/package.scm:362
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the profile"
@@ -1706,7 +1796,7 @@ msgstr ""
 "                         el perfil"
 
 # FUZZY
-#: guix/scripts/package.scm:363
+#: guix/scripts/package.scm:367
 msgid ""
 "\n"
 "  -s, --search=REGEXP    search in synopsis and description using REGEXP"
@@ -1714,7 +1804,7 @@ msgstr ""
 "\n"
 "  -s, --search=REGEXP    busca en las sinopsis y descripciones usando REGEXP"
 
-#: guix/scripts/package.scm:365
+#: guix/scripts/package.scm:369
 msgid ""
 "\n"
 "  -I, --list-installed[=REGEXP]\n"
@@ -1724,7 +1814,7 @@ msgstr ""
 "  -I, --list-installed[=REGEXP]\n"
 "                         enumera los paquetes instalados que REGEXP acepte"
 
-#: guix/scripts/package.scm:368
+#: guix/scripts/package.scm:372
 msgid ""
 "\n"
 "  -A, --list-available[=REGEXP]\n"
@@ -1734,7 +1824,7 @@ msgstr ""
 "  -A, --list-available[=REGEXP]\n"
 "                         enumera los paquetes disponibles que REGEXP acepte"
 
-#: guix/scripts/package.scm:371
+#: guix/scripts/package.scm:375
 msgid ""
 "\n"
 "      --show=PACKAGE     show details about PACKAGE"
@@ -1742,42 +1832,95 @@ msgstr ""
 "\n"
 "      --show=PAQUETE     muestra los detalles de PAQUETE"
 
-#: guix/scripts/package.scm:423
+#: guix/scripts/package.scm:427
 #, scheme-format
 msgid "upgrade regexp '~a' looks like a command-line option~%"
 msgstr "la expresión regular de actualización '~a' parece una opción de línea de ordenes~%"
 
 # FUZZY
-#: guix/scripts/package.scm:426
+#: guix/scripts/package.scm:430
 #, scheme-format
 msgid "is this intended?~%"
 msgstr "¿es lo que deseaba?~%"
 
-#: guix/scripts/package.scm:471
+#: guix/scripts/package.scm:475
 #, scheme-format
 msgid "~a: unsupported kind of search path~%"
 msgstr "~a: tipo de ruta de búsqueda no implementado~%"
 
-#: guix/scripts/package.scm:767
+#: guix/scripts/package.scm:771
 #, scheme-format
 msgid "~a~@[@~a~]: package not found~%"
 msgstr "~a~@[@~a~]: paquete no encontrado~%"
 
 # FUZZY
-#: guix/scripts/package.scm:801
+#: guix/scripts/package.scm:805
 #, scheme-format
 msgid "cannot switch to generation '~a'~%"
 msgstr "no se pudo pasar a la generación '~a'~%"
 
-#: guix/scripts/package.scm:818
+#: guix/scripts/package.scm:822
 #, scheme-format
 msgid "would install new manifest from '~a' with ~d entries~%"
 msgstr "se instalaría un nuevo manifiesto desde '~a' con ~d entradas~%"
 
-#: guix/scripts/package.scm:820
+#: guix/scripts/package.scm:824
 #, scheme-format
 msgid "installing new manifest from '~a' with ~d entries~%"
 msgstr "instalando un nuevo manifiesto desde '~a' con ~d entradas~%"
+
+# FUZZY
+#: guix/scripts/install.scm:30
+msgid ""
+"Usage: guix install [OPTION] PACKAGES...\n"
+"Install the given PACKAGES.\n"
+"This is an alias for 'guix package -i'.\n"
+msgstr ""
+"Uso: guix install [OPCIÓN] PAQUETES...\n"
+"Instala los PAQUETES proporcionados.\n"
+"Es un alias de 'guix package -i'.\n"
+
+#: guix/scripts/remove.scm:30
+msgid ""
+"Usage: guix remove [OPTION] PACKAGES...\n"
+"Remove the given PACKAGES.\n"
+"This is an alias for 'guix package -r'.\n"
+msgstr ""
+"Uso: guix remove [OPCIÓN] PAQUETES...\n"
+"Elimina los PAQUETES proporcionados.\n"
+"Es un alias de 'guix package -r'.\n"
+
+# FUZZY
+#: guix/scripts/upgrade.scm:31
+msgid ""
+"Usage: guix upgrade [OPTION] [REGEXP]\n"
+"Upgrade packages that match REGEXP.\n"
+"This is an alias for 'guix package -u'.\n"
+msgstr ""
+"Uso: guix upgrade [OPCIÓN] [REGEXP]\n"
+"Actualiza los paquetes que correspondan con REGEXP.\n"
+"Es un alias de 'guix package -u'.\n"
+
+#: guix/scripts/search.scm:29
+msgid ""
+"Usage: guix search [OPTION] REGEXPS...\n"
+"Search for packages matching REGEXPS."
+msgstr ""
+"Uso: guix search [OPCIÓN] REGEXPS...\n"
+"Busca paquetes que correspondan con REGEXPS."
+
+#: guix/scripts/search.scm:31
+msgid ""
+"\n"
+"This is an alias for 'guix package -s'.\n"
+msgstr ""
+"\n"
+"Es un alias de 'guix package -s'.\n"
+
+#: guix/scripts/search.scm:65
+#, scheme-format
+msgid "missing arguments: no regular expressions to search for~%"
+msgstr "faltan parámetros: no hay expresiones regulares para la búsqueda~%"
 
 #: guix/scripts/gc.scm:45
 msgid ""
@@ -1990,9 +2133,9 @@ msgstr ""
 "\n"
 "  -r, --recursive        calcula recursivamente el hash en FICHERO"
 
-#: guix/scripts/hash.scm:151 guix/ui.scm:443 guix/ui.scm:450 guix/ui.scm:475
-#: guix/ui.scm:785 guix/ui.scm:807 guix/ui.scm:813 guix/ui.scm:819
-#: guix/ui.scm:872
+#: guix/scripts/hash.scm:151 guix/ui.scm:445 guix/ui.scm:452 guix/ui.scm:477
+#: guix/ui.scm:787 guix/ui.scm:809 guix/ui.scm:815 guix/ui.scm:821
+#: guix/ui.scm:874
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
@@ -2195,7 +2338,7 @@ msgstr ""
 msgid "New in this revision:\n"
 msgstr "Nuevo en esta revisión:\n"
 
-#: guix/scripts/pull.scm:221
+#: guix/scripts/pull.scm:225
 #, scheme-format
 msgid ""
 "After setting @code{PATH}, run\n"
@@ -2205,55 +2348,55 @@ msgstr ""
 "@command{hash guix} para asegurarsede que su shell hace referencia a @file{~a}."
 
 # FUZZY
-#: guix/scripts/pull.scm:245
+#: guix/scripts/pull.scm:250
 #, scheme-format
 msgid "Git error ~a~%"
 msgstr "Error Git ~a~%"
 
 # FUZZY
-#: guix/scripts/pull.scm:247 guix/git.scm:306
+#: guix/scripts/pull.scm:252 guix/git.scm:306
 #, scheme-format
 msgid "Git error: ~a~%"
 msgstr "Error git: ~a~%"
 
-#: guix/scripts/pull.scm:272
+#: guix/scripts/pull.scm:277
 #, scheme-format
 msgid "Migrating profile generations to '~a'...~%"
 msgstr "Migrando las generaciones del perfil a '~a'...~%"
 
-#: guix/scripts/pull.scm:307
+#: guix/scripts/pull.scm:312
 #, scheme-format
 msgid "while creating symlink '~a': ~a~%"
 msgstr "durante la creación del enlace simbólico '~a': ~a~%"
 
-#: guix/scripts/pull.scm:329
+#: guix/scripts/pull.scm:334
 #, scheme-format
 msgid "    repository URL: ~a~%"
 msgstr "    URL del repositorio: ~a~%"
 
-#: guix/scripts/pull.scm:331
+#: guix/scripts/pull.scm:336
 #, scheme-format
 msgid "    branch: ~a~%"
 msgstr "    rama: ~a~%"
 
-#: guix/scripts/pull.scm:332
+#: guix/scripts/pull.scm:337
 #, scheme-format
 msgid "    commit: ~a~%"
 msgstr "    revisión: ~a~%"
 
-#: guix/scripts/pull.scm:434
+#: guix/scripts/pull.scm:439
 msgid "  ~h new package: ~a~%"
 msgid_plural "  ~h new packages: ~a~%"
 msgstr[0] "  ~h nuevo paquete: ~a~%"
 msgstr[1] "  ~h nuevos paquetes: ~a~%"
 
-#: guix/scripts/pull.scm:442
+#: guix/scripts/pull.scm:447
 msgid "  ~h package upgraded: ~a~%"
 msgid_plural "  ~h packages upgraded: ~a~%"
 msgstr[0] "  ~h paquete actualizado: ~a~%"
 msgstr[1] "  ~h paquetes actualizados: ~a~%"
 
-#: guix/scripts/pull.scm:451
+#: guix/scripts/pull.scm:456
 msgid ""
 "Run @command{guix pull --news} to view the complete\n"
 "list of package changes."
@@ -2261,12 +2404,12 @@ msgstr ""
 "Ejecute @command{guix pull --news} para ver la lista\n"
 "completa de cambios en los paquetes."
 
-#: guix/scripts/pull.scm:515
+#: guix/scripts/pull.scm:520
 #, scheme-format
 msgid "'~a' did not return a list of channels~%"
 msgstr "'~a' no ha devuelto una lista de canales~%"
 
-#: guix/scripts/pull.scm:529
+#: guix/scripts/pull.scm:534
 #, scheme-format
 msgid ""
 "The 'GUIX_PULL_URL' environment variable is deprecated.\n"
@@ -2275,12 +2418,12 @@ msgstr ""
 "La variable de entorno 'GUIX_PULL_URL' está obsoleta.\n"
 "Use '~/.config/guix/channels.scm' en vez de dicha variable."
 
-#: guix/scripts/pull.scm:578
+#: guix/scripts/pull.scm:583
 #, scheme-format
 msgid "Building from this channel:~%"
 msgid_plural "Building from these channels:~%"
-msgstr[0] "Construyendo de este canal:~%"
-msgstr[1] "Construyendo de estos canales:~%"
+msgstr[0] "Construyendo a partir de este canal:~%"
+msgstr[1] "Construyendo a partir de estos canales:~%"
 
 #: guix/scripts/substitute.scm:126
 #, scheme-format
@@ -2892,7 +3035,7 @@ msgstr "guix system: falta el nombre de la orden~%"
 msgid "Try 'guix system --help' for more information.~%"
 msgstr "Pruebe 'guix system --help' para más información.~%"
 
-#: guix/scripts/system/search.scm:88 guix/ui.scm:1330 guix/ui.scm:1344
+#: guix/scripts/system/search.scm:88 guix/ui.scm:1332 guix/ui.scm:1346
 msgid "unknown"
 msgstr "desconocida"
 
@@ -3452,7 +3595,8 @@ msgid ""
 "  -s, --system=SYSTEM    consider packages for SYSTEM--e.g., \"i686-linux\""
 msgstr ""
 "\n"
-"  -s, --system=SISTEMA   considera paquetes para SISTEMA---por ejemplo, \"i686-linux\""
+"  -s, --system=SISTEMA   considera paquetes para SISTEMA---por\n"
+"                         ejemplo, \"i686-linux\""
 
 #. TRANSLATORS: "closure" and "self" must not be translated.
 #: guix/scripts/size.scm:239
@@ -4046,14 +4190,14 @@ msgstr[1] "Los siguientes ~a paquetes faltan en '~a' para '~a':~%"
 msgid "~a package is missing from '~a' for '~a':~%"
 msgid_plural "~a packages are missing from '~a' for '~a', among which:~%"
 msgstr[0] "Falta ~a paquete de '~a' para '~a':~%"
-msgstr[1] "Faltan ~a paquetes de '~a' para '~a':~%"
+msgstr[1] "Faltan ~a paquetes de '~a' para '~a', entre los cuales:~%"
 
-#: guix/scripts/describe.scm:45
+#: guix/scripts/describe.scm:46
 #, scheme-format
 msgid "~a: unsupported output format~%"
 msgstr "~a: formato de salida no implementado~%"
 
-#: guix/scripts/describe.scm:64
+#: guix/scripts/describe.scm:65
 msgid ""
 "Usage: guix describe [OPTION]...\n"
 "Display information about the channels currently in use.\n"
@@ -4061,7 +4205,7 @@ msgstr ""
 "Uso: guix describe [OPCIÓN]...\n"
 "Muestra información sobre los canales en uso actualmente.\n"
 
-#: guix/scripts/describe.scm:66
+#: guix/scripts/describe.scm:67
 msgid ""
 "\n"
 "  -f, --format=FORMAT    display information in the given FORMAT"
@@ -4069,7 +4213,7 @@ msgstr ""
 "\n"
 "  -f, --format=FORMATO   muestra información en el FORMATO proporcionado"
 
-#: guix/scripts/describe.scm:68
+#: guix/scripts/describe.scm:69
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  display information about PROFILE"
@@ -4077,43 +4221,51 @@ msgstr ""
 "\n"
 "  -p, --profile=PERFIL   muestra información sobre PERFIL"
 
-#: guix/scripts/describe.scm:87
+#: guix/scripts/describe.scm:88
 #, scheme-format
 msgid "~%;; warning: GUIX_PACKAGE_PATH=\"~a\"~%"
 msgstr "~%;; aviso: GUIX_PACKAGE_PATH=\"~a\"~%"
 
-#: guix/scripts/describe.scm:90
+#: guix/scripts/describe.scm:91
 #, scheme-format
 msgid "'GUIX_PACKAGE_PATH' is set but it is not captured~%"
 msgstr "Se le ha asignado un valor a 'GUIX_PACKAGE_PATH' pero no se captura~%"
 
-#: guix/scripts/describe.scm:117
+#: guix/scripts/describe.scm:118
 #, scheme-format
 msgid "failed to determine origin~%"
 msgstr "no se pudo determinar el origen~%"
 
-#: guix/scripts/describe.scm:123
+#: guix/scripts/describe.scm:119
+#, scheme-format
+msgid ""
+"Perhaps this\n"
+"@command{guix} command was not obtained with @command{guix pull}?  Its version\n"
+"string is ~a.~%"
+msgstr "¿Es posible que este ejecutable @command{guix} no se obtuviese con @command{guix pull}? Su cadena de versión es ~a.~%"
+
+#: guix/scripts/describe.scm:129
 #, scheme-format
 msgid "Git checkout:~%"
 msgstr "Copia de trabajo Git:~%"
 
-#: guix/scripts/describe.scm:124
+#: guix/scripts/describe.scm:130
 #, scheme-format
 msgid "  repository: ~a~%"
 msgstr "  repositorio: ~a~%"
 
-#: guix/scripts/describe.scm:125
+#: guix/scripts/describe.scm:131
 #, scheme-format
 msgid "  branch: ~a~%"
 msgstr "  rama: ~a~%"
 
-#: guix/scripts/describe.scm:126
+#: guix/scripts/describe.scm:132
 #, scheme-format
 msgid "  commit: ~a~%"
 msgstr "  revisión: ~a~%"
 
 # FUZZY
-#: guix/scripts/processes.scm:197
+#: guix/scripts/processes.scm:211
 msgid ""
 "Usage: guix processes\n"
 "List the current Guix sessions and their processes."
@@ -4223,65 +4375,64 @@ msgstr "~a: ~a: no hay campo «version» en las fuentes; omitiendo~%"
 
 #. TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
 #. "~a" is a placeholder for that phrase.
-#: guix/ui.scm:203
+#: guix/ui.scm:205
 msgid "warning: "
 msgstr "aviso: "
 
 # FUZZY
-#: guix/ui.scm:205
+#: guix/ui.scm:207
 msgid "error: "
 msgstr "error: "
 
-#: guix/ui.scm:252
+#: guix/ui.scm:254
 #, scheme-format
 msgid "error: ~a: unbound variable"
 msgstr "error: ~a: variable sin asignar"
 
-#: guix/ui.scm:348
+#: guix/ui.scm:350
 msgid "entering debugger; type ',bt' for a backtrace\n"
 msgstr "entrando en el depurador; teclee ',bt' para ver la pila de llamadas\n"
 
-# FUZZY
-#: guix/ui.scm:403
+#: guix/ui.scm:405
 msgid "hint: "
-msgstr "indicación: "
+msgstr "consejo: "
 
-#: guix/ui.scm:420
+#: guix/ui.scm:422
 msgid "Did you forget a @code{use-modules} form?"
 msgstr "¿Se ha olvidado de usar una forma @code{use-modules}?"
 
-#: guix/ui.scm:422
+#: guix/ui.scm:424
 #, scheme-format
 msgid "Did you forget @code{(use-modules ~a)}?"
 msgstr "¿Se ha olvidado de @code{(use-modules ~a)}?"
 
-#: guix/ui.scm:431 guix/ui.scm:472 guix/ui.scm:478
+#: guix/ui.scm:433 guix/ui.scm:474 guix/ui.scm:480
 #, scheme-format
 msgid "failed to load '~a': ~a~%"
 msgstr "no se pudo cargar '~a': ~a~%"
 
-#: guix/ui.scm:438
+#: guix/ui.scm:440
 #, scheme-format
 msgid "~amissing closing parenthesis~%"
 msgstr "~afalta el paréntesis de cierre~%"
 
-#: guix/ui.scm:452 guix/ui.scm:875
+#: guix/ui.scm:454 guix/ui.scm:877
 #, scheme-format
 msgid "exception thrown: ~s~%"
 msgstr "excepción lanzada: ~s~%"
 
-#: guix/ui.scm:456 guix/ui.scm:484
+#: guix/ui.scm:458 guix/ui.scm:486
 #, scheme-format
 msgid "failed to load '~a':~%"
 msgstr "no se pudo cargar '~a':~%"
 
-#: guix/ui.scm:481
+#: guix/ui.scm:483
 #, scheme-format
 msgid "failed to load '~a': exception thrown: ~s~%"
 msgstr "no se pudo cargar '~a': excepción lanzada: ~s~%"
 
 # FUZZY
-#: guix/ui.scm:514
+#: guix/ui.scm:516
 msgid ""
 "Consider installing the @code{glibc-utf8-locales} or\n"
 "@code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these\n"
@@ -4309,16 +4460,16 @@ msgstr ""
 #. TRANSLATORS: Translate "(C)" to the copyright symbol
 #. (C-in-a-circle), if this symbol is available in the user's
 #. locale.  Otherwise, do not translate "(C)"; leave it as-is.  */
-#: guix/ui.scm:552
+#: guix/ui.scm:554
 msgid "(C)"
 msgstr "©"
 
-#: guix/ui.scm:553
+#: guix/ui.scm:555
 msgid "the Guix authors\n"
 msgstr "las autoras de Guix\n"
 
 # MAAV: Esta traducción debería ser uniforme/legal
-#: guix/ui.scm:554
+#: guix/ui.scm:556
 msgid ""
 "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 "This is free software: you are free to change and redistribute it.\n"
@@ -4332,7 +4483,7 @@ msgstr ""
 #. package.  Please add another line saying "Report translation bugs to
 #. ...\n" with the address for translation bugs (typically your translation
 #. team's web or email address).
-#: guix/ui.scm:566
+#: guix/ui.scm:568
 #, scheme-format
 msgid ""
 "\n"
@@ -4342,7 +4493,7 @@ msgstr ""
 "Informe de errores a: ~a.\n"
 "Informe de errores de traducción a: es@tp.org.es."
 
-#: guix/ui.scm:568
+#: guix/ui.scm:570
 #, scheme-format
 msgid ""
 "\n"
@@ -4351,7 +4502,7 @@ msgstr ""
 "\n"
 "Página Web de ~a: <~a>"
 
-#: guix/ui.scm:570
+#: guix/ui.scm:572
 msgid ""
 "\n"
 "General help using GNU software: <http://www.gnu.org/gethelp/>"
@@ -4359,27 +4510,27 @@ msgstr ""
 "\n"
 "Ayuda general para el uso de software GNU: <http://www.gnu.org/gethelp/>"
 
-#: guix/ui.scm:625
+#: guix/ui.scm:627
 #, scheme-format
 msgid "'~a' is not a valid regular expression: ~a~%"
 msgstr "'~a' no es una expresión regular válida: ~a~%"
 
-#: guix/ui.scm:631
+#: guix/ui.scm:633
 #, scheme-format
 msgid "~a: invalid number~%"
 msgstr "~a: número no válido~%"
 
-#: guix/ui.scm:648
+#: guix/ui.scm:650
 #, scheme-format
 msgid "invalid number: ~a~%"
 msgstr "número no válido: ~a~%"
 
-#: guix/ui.scm:671
+#: guix/ui.scm:673
 #, scheme-format
 msgid "unknown unit: ~a~%"
 msgstr "unidad desconocida: ~a~%"
 
-#: guix/ui.scm:686
+#: guix/ui.scm:688
 #, scheme-format
 msgid ""
 "You cannot have two different versions\n"
@@ -4388,7 +4539,7 @@ msgstr ""
 "No puede tener dos versiones diferentes\n"
 "o variantes de @code{~a} en el mismo perfil."
 
-#: guix/ui.scm:689
+#: guix/ui.scm:691
 #, scheme-format
 msgid ""
 "Try upgrading both @code{~a} and @code{~a},\n"
@@ -4397,116 +4548,116 @@ msgstr ""
 "Intente actualizar @code{~a} y @code{~a},\n"
 "o borre uno de ellos del perfil."
 
-#: guix/ui.scm:708
+#: guix/ui.scm:710
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
 msgstr "~a:~a:~a: el paquete «~a» tiene una entrada no válida: ~s~%"
 
-#: guix/ui.scm:715
+#: guix/ui.scm:717
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
 msgstr "~a: ~a: el sistema de construcción «~a» no permite la compilación cruzada~%"
 
-#: guix/ui.scm:721
+#: guix/ui.scm:723
 #, scheme-format
 msgid "~s: invalid G-expression input~%"
 msgstr "~s: entrada de expresión-G no válida~%"
 
-#: guix/ui.scm:724
+#: guix/ui.scm:726
 #, scheme-format
 msgid "profile '~a' does not exist~%"
 msgstr "el perfil '~a' no existe~%"
 
-#: guix/ui.scm:727
+#: guix/ui.scm:729
 #, scheme-format
 msgid "generation ~a of profile '~a' does not exist~%"
 msgstr "la generación ~a del perfil '~a' no existe~%"
 
-#: guix/ui.scm:732
+#: guix/ui.scm:734
 #, scheme-format
 msgid "package '~a~@[@~a~]~@[:~a~]' not found in profile~%"
 msgstr "no se ha encontrado el paquete '~a~@[@~a~]~@[:~a~]' en el perfil~%"
 
-#: guix/ui.scm:744
+#: guix/ui.scm:746
 #, scheme-format
 msgid "   ... propagated from ~a@~a~%"
 msgstr "   ... propagada desde ~a@~a~%"
 
-#: guix/ui.scm:754
+#: guix/ui.scm:756
 #, scheme-format
 msgid "profile contains conflicting entries for ~a~a~%"
 msgstr "el perfil contiene entradas en conflicto para ~a~a~%"
 
-#: guix/ui.scm:757
+#: guix/ui.scm:759
 #, scheme-format
 msgid "  first entry: ~a@~a~a ~a~%"
 msgstr "  primera entrada: ~a@~a~a ~a~%"
 
-#: guix/ui.scm:763
+#: guix/ui.scm:765
 #, scheme-format
 msgid "  second entry: ~a@~a~a ~a~%"
 msgstr "  segunda entrada: ~a@~a~a ~a~%"
 
-#: guix/ui.scm:775
+#: guix/ui.scm:777
 #, scheme-format
 msgid "corrupt input while restoring '~a' from ~s~%"
 msgstr "entrada corrupta durante la restauración de '~a' desde ~s~%"
 
-#: guix/ui.scm:777
+#: guix/ui.scm:779
 #, scheme-format
 msgid "corrupt input while restoring archive from ~s~%"
 msgstr "entrada corrupta durante la restauración del archivo desde ~s~%"
 
-#: guix/ui.scm:780
+#: guix/ui.scm:782
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
 msgstr "no se pudo conectar a «~a»: ~a~%"
 
-#: guix/ui.scm:788
+#: guix/ui.scm:790
 #, scheme-format
 msgid "reference to invalid output '~a' of derivation '~a'~%"
 msgstr "referencia a la salida '~a' no válida de la derivación '~a'~%"
 
-#: guix/ui.scm:792
+#: guix/ui.scm:794
 #, scheme-format
 msgid "file '~a' could not be found in these directories:~{ ~a~}~%"
 msgstr "el fichero '~a' no se ha podido encontrar en estos directorios:~{ ~a~}~%"
 
-#: guix/ui.scm:797
+#: guix/ui.scm:799
 #, scheme-format
 msgid "program exited~@[ with non-zero exit status ~a~]~@[ terminated by signal ~a~]~@[ stopped by signal ~a~]: ~s~%"
 msgstr "el programa finalizó~@[ con un estado de salida distinto a cero ~a~]~@[ abruptamente por una señal ~a~]~@[ parado por una señal ~a~]: ~s~%"
 
-#: guix/ui.scm:825
+#: guix/ui.scm:827
 #, scheme-format
 msgid "~a: ~a~%"
 msgstr "~a: ~a~%"
 
-#: guix/ui.scm:860
+#: guix/ui.scm:862
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
 msgstr "no se pudo leer la expresión ~s: ~s~%"
 
-#: guix/ui.scm:866
+#: guix/ui.scm:868
 #, scheme-format
 msgid "failed to evaluate expression '~a':~%"
 msgstr "no se pudo evaluar la expresión '~a':~%"
 
-#: guix/ui.scm:869
+#: guix/ui.scm:871
 #, scheme-format
 msgid "syntax error: ~a~%"
 msgstr "error sintáctico: ~a~%"
 
-#: guix/ui.scm:887
+#: guix/ui.scm:889
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
 msgstr "la expresión ~s no evalúa a un paquete~%"
 
-#: guix/ui.scm:907
+#: guix/ui.scm:909
 msgid "at least ~,1h MB needed but only ~,1h MB available in ~a~%"
 msgstr "se necesita al menos ~,1h MB pero únicamente ~,1h MB está disponible en ~a~%"
 
-#: guix/ui.scm:1009
+#: guix/ui.scm:1011
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
@@ -4515,18 +4666,18 @@ msgstr[1] "~:[Se construirían las siguientes derivaciones:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1017
+#: guix/ui.scm:1019
 msgid "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[se descargarían ~,1h MB:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1022
+#: guix/ui.scm:1024
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr[0] "~:[Se descargaría el siguiente fichero:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Se descargarían los siguientes ficheros:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1028
+#: guix/ui.scm:1030
 #, scheme-format
 msgid "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
@@ -4534,14 +4685,14 @@ msgstr[0] "~:[Se realizaría el siguiente injerto:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Se realizarían los siguientes injertos:~%~{   ~a~%~}~;~]"
 
 # FUZZY
-#: guix/ui.scm:1033
+#: guix/ui.scm:1035
 #, scheme-format
 msgid "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
-msgstr[0] "~:[Se construiría el siguiente hook del perfil:~%~{   ~a~%~}~;~]"
-msgstr[1] "~:[Se construirían los siguientes hook del perfil:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Se construiría la siguiente extensión del perfil:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[Se construirían los siguientes extensiones del perfil:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1039
+#: guix/ui.scm:1041
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
@@ -4550,92 +4701,92 @@ msgstr[1] "~:[Se construirán las siguientes derivaciones:~%~{   ~a~%~}~;~]"
 
 #. TRANSLATORS: "MB" is for "megabyte"; it should be
 #. translated to the corresponding abbreviation.
-#: guix/ui.scm:1047
+#: guix/ui.scm:1049
 msgid "~:[~,1h MB will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[se descargarán ~,1h MB:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1052
+#: guix/ui.scm:1054
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr[0] "~:[Se descargará el siguiente fichero:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Se descargarán los siguientes ficheros:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1058
+#: guix/ui.scm:1060
 #, scheme-format
 msgid "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
 msgstr[0] "~:[Se realizará el siguiente injerto:~%~{   ~a~%~}~;~]"
 msgstr[1] "~:[Se realizarán los siguientes injertos:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1063
+#: guix/ui.scm:1065
 #, scheme-format
 msgid "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
 msgid_plural "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
-msgstr[0] "~:[Se construirá el siguiente hook del perfil:~%~{   ~a~%~}~;~]"
-msgstr[1] "~:[Se construirán los siguientes hook del perfil:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Se construirá la siguiente extensión del perfil:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[Se construirán las siguientes extensiones del perfil:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:1122
+#: guix/ui.scm:1124
 #, scheme-format
 msgid "The following package would be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be removed:~%~{~a~%~}~%"
 msgstr[0] "Se eliminaría el siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se eliminarían los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1127
+#: guix/ui.scm:1129
 #, scheme-format
 msgid "The following package will be removed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be removed:~%~{~a~%~}~%"
 msgstr[0] "Se eliminará el siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se eliminarán los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1140
+#: guix/ui.scm:1142
 #, scheme-format
 msgid "The following package would be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be downgraded:~%~{~a~%~}~%"
 msgstr[0] "Se pasaría a una versión previa del siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se pasaría a una versión previa de los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1145
+#: guix/ui.scm:1147
 #, scheme-format
 msgid "The following package will be downgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be downgraded:~%~{~a~%~}~%"
 msgstr[0] "Se pasará a una versión previa del siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se pasará a una versión previa de los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1158
+#: guix/ui.scm:1160
 #, scheme-format
 msgid "The following package would be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages would be upgraded:~%~{~a~%~}~%"
 msgstr[0] "Se actualizaría el siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se actualizarían los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1163
+#: guix/ui.scm:1165
 #, scheme-format
 msgid "The following package will be upgraded:~%~{~a~%~}~%"
 msgid_plural "The following packages will be upgraded:~%~{~a~%~}~%"
 msgstr[0] "Se actualizará el siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se actualizarán los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1174
+#: guix/ui.scm:1176
 #, scheme-format
 msgid "The following package would be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages would be installed:~%~{~a~%~}~%"
 msgstr[0] "Se instalaría el siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se instalarían los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1179
+#: guix/ui.scm:1181
 #, scheme-format
 msgid "The following package will be installed:~%~{~a~%~}~%"
 msgid_plural "The following packages will be installed:~%~{~a~%~}~%"
 msgstr[0] "Se instalará el siguiente paquete:~%~{~a~%~}~%"
 msgstr[1] "Se instalarán los siguientes paquetes:~%~{~a~%~}~%"
 
-#: guix/ui.scm:1196 guix/deprecation.scm:46
+#: guix/ui.scm:1198 guix/deprecation.scm:46
 msgid "<unknown location>"
 msgstr "<ubicación desconocida>"
 
-#: guix/ui.scm:1567
+#: guix/ui.scm:1580
 #, scheme-format
 msgid "Generation ~a\t~a"
 msgstr "Generación ~a\t~a"
@@ -4645,7 +4796,7 @@ msgstr "Generación ~a\t~a"
 #. usual way of presenting dates in your locale.
 #. See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
 #. for details.
-#: guix/ui.scm:1576
+#: guix/ui.scm:1589
 #, scheme-format
 msgid "~b ~d ~Y ~T"
 msgstr "~d ~b ~Y ~T"
@@ -4653,27 +4804,27 @@ msgstr "~d ~b ~Y ~T"
 #. TRANSLATORS: The word "current" here is an adjective for
 #. "Generation", as in "current generation".  Use the appropriate
 #. gender where applicable.
-#: guix/ui.scm:1582
+#: guix/ui.scm:1595
 #, scheme-format
 msgid "~a\t(current)~%"
 msgstr "~a\t(actual)~%"
 
-#: guix/ui.scm:1625
+#: guix/ui.scm:1638
 #, scheme-format
 msgid "switched from generation ~a to ~a~%"
 msgstr "se pasó de la generación ~a a la ~a."
 
-#: guix/ui.scm:1641
+#: guix/ui.scm:1654
 #, scheme-format
 msgid "deleting ~a~%"
 msgstr "borrando ~a~%"
 
-#: guix/ui.scm:1672
+#: guix/ui.scm:1685
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Pruebe «guix --help» para obtener más información.~%"
 
-#: guix/ui.scm:1700
+#: guix/ui.scm:1713
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
@@ -4682,21 +4833,21 @@ msgstr ""
 "Ejecuta ORDEN con PARÁMETROS.\n"
 
 # FUZZY
-#: guix/ui.scm:1703
+#: guix/ui.scm:1716
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "ORDEN debe ser una de las enumeradas a continuación:\n"
 
-#: guix/ui.scm:1723
+#: guix/ui.scm:1736
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: orden no encontrada~%"
 
-#: guix/ui.scm:1753
+#: guix/ui.scm:1766
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: falta el nombre de la orden~%"
 
-#: guix/ui.scm:1761
+#: guix/ui.scm:1774
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: opción '~a' no reconocida~%"
@@ -4727,7 +4878,7 @@ msgstr "generando la caché de esquemas de GLib..."
 
 #: guix/status.scm:386
 msgid "creating GTK+ icon theme cache..."
-msgstr "creando la caché de temas de iconos GTK+..."
+msgstr "creando la caché de temas de iconos de GTK+..."
 
 #: guix/status.scm:388
 msgid "building cache files for GTK+ input methods..."
@@ -4751,7 +4902,7 @@ msgstr "construyendo configuración de TeX Live..."
 
 #: guix/status.scm:398
 msgid "building database for manual pages..."
-msgstr "construyendo la base de datos para páginas de manual..."
+msgstr "construyendo la base de datos de páginas de manual..."
 
 #: guix/status.scm:400
 msgid "building package cache..."
@@ -4768,7 +4919,7 @@ msgstr[1] "injertando ~a paquetes en ~a..."
 #: guix/status.scm:484
 #, scheme-format
 msgid "running profile hook of type '~a'..."
-msgstr "ejecuntando el hook de perfil de tipo '~a'..."
+msgstr "ejecutando la extensión del perfil del tipo '~a'..."
 
 #: guix/status.scm:487
 #, scheme-format
@@ -4945,7 +5096,7 @@ msgstr "actualizando el submódulo '~a'...~%"
 #: guix/git.scm:205
 #, scheme-format
 msgid "Support for submodules is missing; please upgrade Guile-Git.~%"
-msgstr "No están implementados los submodulos; por favor, actualice Guile-Git.~%"
+msgstr "Los submódulos no están implementados; por favor, actualice Guile-Git.~%"
 
 #: guix/git.scm:344
 #, scheme-format
@@ -5045,12 +5196,12 @@ msgstr "URLS"
 # FUZZY
 #: nix/nix-daemon/guix-daemon.cc:115
 msgid "use URLS as the default list of substitute providers"
-msgstr "usa URLS como la lista predeterminada de proveedoras de sustituciones"
+msgstr "usa URLS como lista predeterminada de proveedoras de sustituciones"
 
 # FUZZY
 #: nix/nix-daemon/guix-daemon.cc:117
 msgid "do not use the 'build hook'"
-msgstr "no usa el 'hook de construcción'"
+msgstr "no se usa el procedimiento de extensión de construcción (build-hook)"
 
 #: nix/nix-daemon/guix-daemon.cc:119
 msgid "cache build failures"
@@ -5110,13 +5261,6 @@ msgstr "produce salida de depuración"
 #~ msgstr ""
 #~ "Considere la ejecución de @command{guix gc}\n"
 #~ "para liberar espacio."
-
-#~ msgid ""
-#~ "Usage: guix archive [OPTION]... PACKAGE...\n"
-#~ "Export/import one or more packages from/to the store.\n"
-#~ msgstr ""
-#~ "Uso: guix archive [OPCIÓN]... PAQUETE...\n"
-#~ "Exporta/importa uno o más paquetes desde/a el almacén.\n"
 
 #~ msgid "package `~a' has no source~%"
 #~ msgstr "el paquete '~a' no tiene fuentes~%"

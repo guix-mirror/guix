@@ -52,7 +52,7 @@
     (or (not dyninfo)                             ;static executable
         (lset<= string=?
                 (list (string-append "libguile-" (effective-version))
-                      "libgc" "libunistring" "libffi")
+                      "libc")
                 (map (lambda (lib)
                        (string-take lib (string-contains lib ".so")))
                      (elf-dynamic-info-needed dyninfo))))))
@@ -79,7 +79,7 @@
          (lambda (port)
            (display "int main () { puts(\"hello\"); }" port)))
        (invoke c-compiler "t.c"
-               "-Wl,-rpath=/foo" "-Wl,-rpath=/bar")
+               "-Wl,--enable-new-dtags" "-Wl,-rpath=/foo" "-Wl,-rpath=/bar")
        (let* ((dyninfo (elf-dynamic-info
                         (parse-elf (call-with-input-file "a.out"
                                      get-bytevector-all))))

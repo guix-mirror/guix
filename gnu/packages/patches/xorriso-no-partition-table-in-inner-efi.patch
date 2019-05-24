@@ -1,0 +1,107 @@
+https://dev.lovelyhq.com/libburnia/libisoburn/commit/3a2a3ba737a06162c22ace0ae09d33ba97aa2673
+diff --git a/frontend/grub-mkrescue-sed.sh b/frontend/grub-mkrescue-sed.sh
+index d772ff22..b3948c99 100755
+--- a/frontend/grub-mkrescue-sed.sh
++++ b/frontend/grub-mkrescue-sed.sh
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ 
+-# Copyright (C) 2015 - 2016
++# Copyright (C) 2015 - 2019
+ # Thomas Schmitt <scdbackup@gmx.net>, libburnia-project.org
+ # Provided under BSD license: Use, modify, and distribute as you like.
+ 
+@@ -117,6 +117,15 @@ fi
+ #  command line.)
+ # Each argument must be a single word. No whitespace. No quotation marks.
+ 
++# "yes" overwrites the MBR partition table area in the EFI boot image by zeros.
++# Some EFI implementations get stuck when seeing in the EFI partition a
++# partition table entry which begins at LBA 0.
++efi_zero_inner_pt=no
++if test -n "$MKRESCUE_SED_IN_EFI_NO_PT"
++then
++  efi_zero_inner_pt="$MKRESCUE_SED_IN_EFI_NO_PT"
++fi
++
+ 
+ #
+ #                               Do the work 
+@@ -183,12 +192,48 @@ then
+   find "$dir"
+ fi
+ 
++if test "$efi_zero_inner_pt" = yes
++then
++  did_dd=0
++  if test -e "$dir"/efi.img
++  then
++    magic=$(dd bs=1 skip=510 count=2 if="$dir"/efi.img 2>/dev/null | \
++            od -c | head -1 | awk '{print $2 " " $3}')
++    if test "$magic" = "U 252"
++    then
++      dd if=/dev/zero bs=1 seek=446 count=64 conv=notrunc of="$dir"/efi.img
++      did_dd=1
++    fi
++  fi
++  if test "$did_dd" = 0
++  then
++    echo >&2
++    echo "$0 : NOTE : No EFI image found or no MBR signature in it." >&2
++    echo "$0 : NOTE : Will not obey MKRESCUE_SED_IN_EFI_NO_PT=yes" >&2
++    echo >&2
++  fi
++fi
++
+ efi_tmp_name=
++if test x"$mode" = xmjg \
++     -o x"$mode" = xmbr_only \
++     -o x"$mode" = xgpt_appended \
++     -o x"$mode" = xmbr_hfs
++then
++  # Move EFI partition image file out of the "$dir" tree, i.e. out of the ISO
++  efi_tmp_name=grub-mkrescue-sed-efi-img.$$
++  if test -e "$dir"/efi.img
++  then
++    mv "$dir"/efi.img /tmp/$efi_tmp_name
++  elif test -e /tmp/$efi_tmp_name
++  then
++    rm /tmp/$efi_tmp_name
++  fi
++fi
++
+ if test x"$mode" = xmjg
+ then
+   # Exchange arguments for the experimental GRUB2 mjg layout
+-  efi_tmp_name=grub-mkrescue-sed-efi-img.$$
+-  mv "$dir"/efi.img /tmp/$efi_tmp_name
+   x=$(echo " $*" | sed \
+     -e "s/-efi-boot-part --efi-boot-image/-no-pad -append_partition $partno 0xef \/tmp\/$efi_tmp_name/" \
+     -e "s/--efi-boot efi\.img/-eltorito-alt-boot -e --interval:appended_partition_${partno}:all:: -no-emul-boot -isohybrid-gpt-basdat/" \
+@@ -207,8 +252,6 @@ then
+ elif test x"$mode" = xmbr_only
+ then
+   # Exchange arguments for no-HFS MBR-only layout
+-  efi_tmp_name=grub-mkrescue-sed-efi-img.$$
+-  mv "$dir"/efi.img /tmp/$efi_tmp_name
+   x=$(echo " $*" | sed \
+     -e "s/-efi-boot-part --efi-boot-image/$iso_mbr_part_type -no-pad -append_partition 2 0xef \/tmp\/$efi_tmp_name/" \
+     -e "s/--efi-boot efi\.img/-eltorito-alt-boot -e --interval:appended_partition_2:all:: -no-emul-boot/" \
+@@ -228,8 +271,6 @@ then
+ elif test x"$mode" = xmbr_hfs
+ then
+   # Exchange arguments for MBR and HFS+ layout
+-  efi_tmp_name=grub-mkrescue-sed-efi-img.$$
+-  mv "$dir"/efi.img /tmp/$efi_tmp_name
+   x=$(echo " $*" | sed \
+     -e "s/-efi-boot-part --efi-boot-image/$iso_mbr_part_type -no-pad -append_partition 2 0xef \/tmp\/$efi_tmp_name/" \
+     -e "s/--efi-boot efi\.img/-eltorito-alt-boot -e --interval:appended_partition_2:all:: -no-emul-boot/" \
+@@ -247,8 +288,6 @@ then
+ elif test x"$mode" = xgpt_appended
+ then
+   # Exchange arguments for no-HFS MBR-only layout
+-  efi_tmp_name=grub-mkrescue-sed-efi-img.$$
+-  mv "$dir"/efi.img /tmp/$efi_tmp_name
+   x=$(echo " $*" | sed \
+     -e "s/-efi-boot-part --efi-boot-image/-no-pad -append_partition 2 0xef \/tmp\/$efi_tmp_name -appended_part_as_gpt -partition_offset 16/" \
+     -e "s/--efi-boot efi\.img/-eltorito-alt-boot -e --interval:appended_partition_2:all:: -no-emul-boot/" \

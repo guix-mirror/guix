@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -92,6 +94,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
@@ -103,6 +106,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix bzr-download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -240,7 +244,7 @@ ElasticSearch server")
 (define-public leveldb
   (package
     (name "leveldb")
-    (version "1.21")
+    (version "1.22")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -249,7 +253,7 @@ ElasticSearch server")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00v0w6883z7a6204894j59nd5v6dazn3c8hvh3sbczv4wiabppw2"))))
+                "0qrnhiyq7r4wa1a4wi82zgns35smj94mcjsc7kfs1k6ia9ys79z7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
@@ -265,14 +269,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.13")
+    (version "1.5.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "0qsdkjrns4f02lmabq8c7mzl5n4382q2p6a0dvmsjdcpjisagqb1"))))
+        (base32 "1agj198rm5kc64z8qxck65kdzvw30pdfxalygipnryw0lwlxynww"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -283,6 +287,128 @@ mapping from string keys to string values.")
 and generic API, and was originally intended for use with dynamic web
 applications.")
     (license license:bsd-3)))
+
+(define-public libmemcached
+  (package
+    (name "libmemcached")
+    (version "1.0.18")
+    ;; We build from the sources since we want to build the extra HTML
+    ;; documentation which is not included with the release.
+    (source (origin
+              (method bzr-fetch)
+              (uri (bzr-reference
+                    (url "lp:libmemcached/1.0")
+                    (revision (string-append "tag:" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1842s4dxdh21gdr46q4dgxigidcs6dkqnbnqjwb9l8r0bqx5nb10"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("memcached" ,memcached)
+       ("libtool" ,libtool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("perl" ,perl)
+       ("python-sphinx" ,python-sphinx))) ;to build the HTML doc.
+    (inputs
+     `(("libevent" ,libevent)
+       ("cyrus-sasl" ,cyrus-sasl)))
+    (outputs '("out" "doc"))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'fix-configure.ac
+           ;; Move the AC_CONFIG_AUX_DIR macro use under AC_INIT, otherwise we
+           ;; get the error ``configure: error: cannot find install-sh,
+           ;; install.sh, or shtool in "." "./.." "./../.."`` (see:
+           ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=19539 and
+           ;; https://bugs.launchpad.net/libmemcached/+bug/1803922).
+           (lambda _
+             (delete-file "bootstrap.sh") ;not useful in the context of Guix
+             (substitute* "configure.ac"
+               (("^AC_CONFIG_AUX_DIR\\(\\[build-aux\\]\\).*") "")
+               (("(^AC_INIT.*)" anchor)
+                (string-append anchor "AC_CONFIG_AUX_DIR([build-aux])\n")))
+             #t))
+         (add-before 'bootstrap 'disable-failing-tests
+           ;; See: https://bugs.launchpad.net/libmemcached/+bug/1803926
+           (lambda _
+             ;; Mark some heavily failing test suites as expected to fail.
+             (substitute* "Makefile.am"
+               (("(XFAIL_TESTS =[^\n]*)" xfail_tests)
+                (string-append xfail_tests " tests/testudp"
+                               " tests/libmemcached-1.0/testapp"
+                               " tests/libmemcached-1.0/testsocket")))
+             ;; Disable two tests of the unittest test suite.
+             (substitute* "libtest/unittest.cc"
+               ((".*echo_fubar_BINARY \\},.*") "")
+               ((".*application_doesnotexist_BINARY \\},.*") ""))
+             #t))
+         (add-after 'disable-dns-tests 'build-and-install-html-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((html (string-append (assoc-ref outputs "doc")
+                                        "/share/doc/libmemcached/html/")))
+               (invoke "make" "install-html")
+               ;; Cleanup useless files.
+               (for-each delete-file-recursively
+                         (map (lambda (x) (string-append html x))
+                              '("_sources" ".doctrees" ".buildinfo"))))
+             #t)))))
+    (home-page "https://libmemcached.org/")
+    (synopsis "C++ library for memcached")
+    (description "libMemcached is a library to use memcached in C/C++
+applications.  It comes with a complete reference guide and documentation of
+the API, and provides features such as:
+@itemize
+@item Asynchronous and synchronous transport support
+@item Consistent hashing and distribution
+@item Tunable hashing algorithm to match keys
+@item Access to large object support
+@item Local replication
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public python-pylibmc
+  (package
+    (name "python-pylibmc")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pylibmc" version))
+       (sha256
+        (base32
+         "1n6nvvhl0g52gpzzwdj1my6049xljkfwyxxygnwda9smrbj7pyay"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-memcached-daemon
+           ;; The test suite requires a memcached server.
+           (lambda _
+             (invoke "memcached" "-d"))))))
+    (native-inputs
+     `(("memcached" ,memcached)
+       ("python-nose" ,python-nose)))
+    (inputs
+     `(("libmemcached" ,libmemcached)
+       ("zlib" ,zlib)
+       ("cyrus-sasl" ,cyrus-sasl)))
+    (home-page
+     "http://sendapatch.se/projects/pylibmc/")
+    (synopsis
+     "Python client for memcached")
+    (description
+     "@code{pylibmc} is a client in Python for memcached.  It is a wrapper
+around TangentOrg’s libmemcached library, and can be used as a drop-in
+replacement for the code@{python-memcached} library.")
+    (license license:bsd-3)))
+
+(define-public python2-pylibmc
+  (package-with-python2 python-pylibmc))
 
 (define-public mongodb
   (package
@@ -675,6 +801,7 @@ as a drop-in replacement of MySQL.")
   (package
     (name "postgresql")
     (version "10.7")
+    (replacement postgresql-10.8)
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
@@ -717,18 +844,34 @@ TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
 
-(define-public postgresql-9.6
+;; This release fixes CVE-2019-10129 and CVE-2019-10130.  See
+;; <https://www.postgresql.org/about/news/1939/> for details.
+;; TODO: Remove this in the next rebuild cycle.
+(define-public postgresql-10.8
   (package
     (inherit postgresql)
-    (name "postgresql")
-    (version "9.6.12")
+    (version "10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "114xay230xia2fagisxahs5fc2mza8hmmkr6ibd7nxllp938931f"))))))
+                "0pfdmy4w95b49w9rkn8dwvzmi2brpqfvbxd04y0k0s0xvymc565i"))
+              (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))))
+
+(define-public postgresql-9.6
+  (package
+    (inherit postgresql)
+    (name "postgresql")
+    (version "9.6.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "197964wb5pc5fx81a6mh9hlcrr9sgr3nqlpmljv6asi9aq0d5gpc"))))))
 
 (define-public python-pymysql
   (package
@@ -1376,7 +1519,7 @@ columns, primary keys, unique constraints and relationships.")
        #:tests? #f))
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
-       ("mysql" ,mysql)))
+       ("mysql" ,mariadb)))
     (home-page "https://metacpan.org/release/DBD-mysql")
     (synopsis "DBI MySQL interface")
     (description "This package provides a MySQL driver for the Perl5
@@ -2492,12 +2635,11 @@ database).")
          "0kv4a1icwdav8jpl7qvnr931lw5h3v22ids6lwq6qpi1hjzf33pz"))))
     (build-system python-build-system)
     (native-inputs
-     `(("mariadb" ,mariadb)
-       ("nose" ,python-nose)
+     `(("nose" ,python-nose)
        ("mock" ,python-mock)
        ("py.test" ,python-pytest)))
     (inputs
-     `(("mysql" ,mysql)
+     `(("mysql" ,mariadb)
        ("libz" ,zlib)
        ("openssl" ,openssl)))
     (home-page "https://github.com/PyMySQL/mysqlclient-python")
@@ -2635,7 +2777,7 @@ is designed to have a low barrier to entry.")
     (home-page "https://github.com/benjolitz/trollius-redis")
     (synopsis "Port of asyncio-redis to trollius")
     (description "@code{trollius-redis} is a Redis client for Python
-  trollius.  It is an asynchronious IO (PEP 3156) implementation of the
+  trollius.  It is an asynchronous IO (PEP 3156) implementation of the
   Redis protocol.")
     (license license:bsd-2)))
 

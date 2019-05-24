@@ -205,9 +205,10 @@ target that libc."
               (patches
                (append
                 (origin-patches (package-source xgcc))
-                (cons (if (version>=? (package-version xgcc) "6.0")
-                          (search-patch "gcc-6-cross-environment-variables.patch")
-                          (search-patch "gcc-cross-environment-variables.patch"))
+                (cons (cond
+                       ((version>=? (package-version xgcc) "8.0") (search-patch "gcc-8-cross-environment-variables.patch"))
+                       ((version>=? (package-version xgcc) "6.0") (search-patch "gcc-6-cross-environment-variables.patch"))
+                       (else  (search-patch "gcc-cross-environment-variables.patch")))
                       (cross-gcc-patches target))))
               (modules '((guix build utils)))
               (snippet
@@ -421,14 +422,15 @@ target that libc."
 
 (define* (cross-libc target
                      #:optional
+                     (libc glibc)
                      (xgcc (cross-gcc target))
                      (xbinutils (cross-binutils target))
                      (xheaders (cross-kernel-headers target)))
-  "Return a libc cross-built for TARGET, a GNU triplet.  Use XGCC and
-XBINUTILS and the cross tool chain."
-  (if (cross-newlib? target)
-      (native-libc target)
-      (let ((libc glibc))
+  "Return LIBC cross-built for TARGET, a GNU triplet. Use XGCC and XBINUTILS
+and the cross tool chain."
+  (if (cross-newlib? target libc)
+      (native-libc target libc)
+      (let ((libc libc))
         (package (inherit libc)
           (name (string-append "glibc-cross-" target))
           (arguments
@@ -501,13 +503,17 @@ XBINUTILS and the cross tool chain."
                            ,@(package-inputs libc)     ;FIXME: static-bash
                            ,@(package-native-inputs libc)))))))
 
-(define (native-libc target)
+(define* (native-libc target
+                     #:optional
+                     (libc glibc))
   (if (target-mingw? target)
       mingw-w64
-      glibc))
+      libc))
 
-(define (cross-newlib? target)
-  (not (eq? (native-libc target) glibc)))
+(define* (cross-newlib? target
+                       #:optional
+                       (libc glibc))
+  (not (eq? (native-libc target libc) libc)))
 
 
 ;;; Concrete cross tool chains are instantiated like this:

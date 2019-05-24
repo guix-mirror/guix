@@ -49,6 +49,7 @@
                   #:title (G_ "Partition scheme")
                   #:listbox-items items
                   #:listbox-item->text cdr
+                  #:listbox-height 4
                   #:sort-listbox-items? #f       ;keep the 'root' option first
                   #:button-text (G_ "Exit")
                   #:button-callback-procedure button-exit-action)))
@@ -78,6 +79,7 @@ DEVICES list."
                   #:title (G_ "Disk")
                   #:listbox-items (device-items)
                   #:listbox-item->text cdr
+                  #:listbox-height 10
                   #:button-text (G_ "Exit")
                   #:button-callback-procedure button-exit-action))
          (device (car result)))
@@ -118,7 +120,7 @@ Be careful, all data on the disk will be lost.")
   (run-listbox-selection-page
    #:info-text (G_ "Please select the file-system type for this partition.")
    #:title (G_ "File-system type")
-   #:listbox-items '(ext4 btrfs fat32 swap)
+   #:listbox-items '(ext4 btrfs fat16 fat32 swap)
    #:listbox-item->text user-fs-type-name
    #:sort-listbox-items? #f
    #:button-text (G_ "Exit")
@@ -153,21 +155,18 @@ USER-PARTITIONS list. Return this list with password fields filled-in."
                 (file-name (user-partition-file-name user-part))
                 (password-page
                  (lambda ()
-                   ;; Note: Don't use FLAG-PASSWORD here because this is the
-                   ;; first bit of text that the user types in, so it's
-                   ;; probably safer if they can see that the keyboard layout
-                   ;; they chose is in effect.
                    (run-input-page
                     (format #f (G_ "Please enter the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
-                    (G_ "Password required"))))
+                    (G_ "Password required")
+                    #:input-hide-checkbox? #t)))
                 (password-confirm-page
                  (lambda ()
                    (run-input-page
                     (format #f (G_ "Please confirm the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
                     (G_ "Password confirmation required")
-                    #:input-flags FLAG-PASSWORD))))
+                    #:input-hide-checkbox? #t))))
            (if crypt-label
                (let loop ()
                  (let ((password (password-page))
@@ -732,8 +731,10 @@ by pressing the Exit button.~%~%")))
            (result (run-listbox-selection-page
                     #:info-text (G_ "Please select a partitioning method.")
                     #:title (G_ "Partitioning method")
+                    #:listbox-height (+ (length items) 2)
                     #:listbox-items items
                     #:listbox-item->text cdr
+                    #:sort-listbox-items? #f
                     #:button-text (G_ "Exit")
                     #:button-callback-procedure button-exit-action))
            (method (car result)))
@@ -751,10 +752,7 @@ by pressing the Exit button.~%~%")))
                             (disk-commit disk)
                             disk)))
                 (scheme (symbol-append method '- (run-scheme-page)))
-                (user-partitions (append
-                                  (auto-partition disk #:scheme scheme)
-                                  (create-special-user-partitions
-                                   (disk-partitions disk)))))
+                (user-partitions (auto-partition! disk #:scheme scheme)))
            (run-disk-page (list disk) user-partitions
                           #:guided? #t)))
        ((eq? method 'manual)

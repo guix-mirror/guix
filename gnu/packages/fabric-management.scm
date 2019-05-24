@@ -136,7 +136,7 @@ running the opensm daemon.")
                (rename-file perlin perlout)
                #t))))))
     (home-page "https://github.com/linux-rdma/infiniband-diags")
-    (synopsis "Infiniband diagnotic tools")
+    (synopsis "Infiniband diagnostic tools")
     (description "This is a set of command-line utilities to help configure,
 debug, and maintain Infiniband (IB) fabrics.
 

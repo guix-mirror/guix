@@ -876,7 +876,7 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
     (synopsis "JSON pretty-printing library and command-line tool")
     (description
      "This package provides a JSON pretty-printing library compatible with aeson
-as well as a command-line tool to improve readabilty of streams of JSON data.
+as well as a command-line tool to improve readability of streams of JSON data.
 The library provides the function @code{encodePretty}.  It is a drop-in
 replacement for aeson's @code{encode} function, producing JSON-ByteStrings for
 human readers.  The command-line tool reads JSON from stdin and writes

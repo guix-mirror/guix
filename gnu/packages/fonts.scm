@@ -18,12 +18,14 @@
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1018,13 +1020,13 @@ vector graphics.")
     (home-page "https://github.com/sunaku/tamzen-font")
     (synopsis "Monospaced bitmap font for console and X11")
     (description
-     "Tamzen is a fork of the @code{Tamsyn} font.  It is programatically forked
+     "Tamzen is a fork of the @code{Tamsyn} font.  It is programmatically forked
 from @code{Tamsyn} version 1.11, backporting glyphs from older versions while
 deleting deliberately empty glyphs (which are marked as unimplemented) to
 allow secondary/fallback fonts to provide real glyphs at those codepoints.
 
 The @code{TamzenForPowerline} fonts provide additional @code{Powerline} symbols,
-which are programatically injected with @code{bitmap-font-patcher} and
+which are programmatically injected with @code{bitmap-font-patcher} and
 later hand-tweaked with the gbdfed(1) editor:
 
 @enumerate
@@ -1353,6 +1355,29 @@ italics shapes.  This package provides only TrueType files (TTF).")
     (home-page "https://software.sil.org/gentium/")
     (license license:silofl1.1)))
 
+(define-public font-sil-andika
+  (package
+    (name "font-sil-andika")
+    (version "5.000")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://software.sil.org/downloads/r/andika/Andika-"
+                    version ".zip"))
+              (sha256
+               (base32
+                "01zm7p32gxfwmv7h3cfj2vx59846w2y6rxqy67grn2dyjh8pljv0"))))
+    ;; As for Gentium (see above), the TTF files are considered source.
+    (build-system font-build-system)
+    (synopsis "Sans serif font designed especially for literacy use")
+    (description
+     "Andika SIL is a sans serif, Unicode-compliant font designed especially
+for literacy use, taking into account the needs of beginning readers.  The
+focus is on clear, easy-to-perceive letterforms that will not be readily
+confused with one another.  This package provides only TrueType files (TTF).")
+    (home-page "https://software.sil.org/andika/")
+    (license license:silofl1.1)))
+
 (define-public font-sil-charis
   (package
     (name "font-sil-charis")
@@ -1423,4 +1448,31 @@ formatting.")
     (description
      "Public Sans is a strong, neutral, sans-serif typeface for text or
 display based on Libre Franklin.")
+    (license license:silofl1.1)))
+
+(define-public font-hermit
+  (package
+    (name "font-hermit")
+    (version "2.0")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append "https://pcaro.es/d/otf-hermit-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "09rmy3sbf1j1hr8zidighjgqc8kp0wsra115y27vrnlf10ml6jy0"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:tests? #f))
+    (home-page "https://pcaro.es/p/hermit/")
+    (synopsis "Monospace font")
+    (description
+     "Hermit is a monospace font designed to be clear, pragmatic and very
+readable.  Its creation has been focused on programming.  Every glyph was
+carefully planned and calculated, according to defined principles and rules.
+For this reason, Hermit is coherent and regular.
+
+Symbols stand out from common text.  Dots and commas are easily seen, and
+operators are clear even when not surrounded by spaces.  Similar characters
+have been designed to be very distinguishable from each other.")
     (license license:silofl1.1)))

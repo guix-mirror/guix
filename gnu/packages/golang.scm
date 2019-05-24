@@ -226,7 +226,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.11.6")
+    (version "1.11.10")
     (source
      (origin
        (method url-fetch)
@@ -234,7 +234,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "0cz1sdhxf9283p1p4jxb020pym0ncd0qlfh36r3hkv6bbm1a2vd9"))))
+         "06rw962xigbrxblp942jbh7k133blpxg2xfrxi32qdhxkmmfj9yz"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -742,7 +742,7 @@ per-goroutine.")
     (synopsis "Go implementation of docopt")
     (description
      "This library allows the user to define a command-line interface from a
-program's help message rather than specifying it programatically with
+program's help message rather than specifying it programmatically with
 command-line parsers.")
     (home-page "https://github.com/tj/docopt")
     (license license:expat)))
@@ -830,7 +830,7 @@ derivation function.")))
      `(#:import-path "golang.org/x/crypto/tea"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Tiny Encryption Algorithm (TEA) in Go")
-    (description "This packages a Go implementation of the Tiny Encryption
+    (description "This package provides a Go implementation of the Tiny Encryption
 Algorithm (TEA) block cipher.")))
 
 (define-public go-golang-org-x-crypto-salsa20
@@ -841,7 +841,7 @@ Algorithm (TEA) block cipher.")))
      `(#:import-path "golang.org/x/crypto/salsa20"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Salsa20 in Go")
-    (description "This packages provides a Go implementation of the Salsa20
+    (description "This package provides a Go implementation of the Salsa20
 stream cipher.")))
 
 (define-public go-golang-org-x-crypto-cast5
@@ -852,7 +852,7 @@ stream cipher.")))
      `(#:import-path "golang.org/x/crypto/cast5"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Cast5 in Go")
-    (description "This packages provides a Go implementation of the Cast5
+    (description "This package provides a Go implementation of the Cast5
 symmetric-key block cipher.")))
 
 (define-public go-golang-org-x-crypto-twofish
@@ -863,7 +863,7 @@ symmetric-key block cipher.")))
      `(#:import-path "golang.org/x/crypto/twofish"
        #:unpack-path "golang.org/x/crypto"))
     (synopsis "Twofish in Go")
-    (description "This packages provides a Go implementation of the Twofish
+    (description "This package provides a Go implementation of the Twofish
 symmetric-key block cipher.")))
 
 (define-public go-golang-org-x-crypto-xtea
@@ -984,7 +984,7 @@ socket options for the Internet Protocol version 4.")
        `(#:import-path "golang.org/x/net/bpf"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Berkeley Packet Filters (BPF) in Go")
-      (description "This packages provides a Go implementation of the Berkeley
+      (description "This package provides a Go implementation of the Berkeley
 Packet Filter (BPF) virtual machine.")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
@@ -1010,8 +1010,8 @@ Packet Filter (BPF) virtual machine.")
        `(#:import-path "golang.org/x/net/context"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Golang Context type")
-      (description "This packages provides @code{context}, which defines the
-Context type, which carries deadlines, cancelation signals, and other
+      (description "This package provides @code{context}, which defines the
+Context type, which carries deadlines, cancellation signals, and other
 request-scoped values across API boundaries and between processes.")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
@@ -1087,7 +1087,7 @@ request-scoped values across API boundaries and between processes.")
        `(#:import-path "golang.org/x/net/internal/iana"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Go support for assigned numbers (IANA)")
-      (description "This packages provides @code{iana}, which provides protocol
+      (description "This package provides @code{iana}, which provides protocol
 number resources managed by the Internet Assigned Numbers Authority (IANA).")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
@@ -1113,7 +1113,7 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
        `(#:import-path "golang.org/x/net/ipv6"
          #:unpack-path "golang.org/x/net"))
       (synopsis "Go IPv6 support")
-      (description "This packages provides @code{ipv6}, which implements
+      (description "This package provides @code{ipv6}, which implements
 IP-level socket options for the Internet Protocol version 6.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
@@ -1139,7 +1139,7 @@ IP-level socket options for the Internet Protocol version 6.")
        `(#:import-path "golang.org/x/net/proxy"
          #:unpack-path "golang.org/x/net/"))
       (synopsis "Go support for network proxies")
-      (description "This packages provides @code{proxy}, which provides support
+      (description "This package provides @code{proxy}, which provides support
 for a variety of protocols to proxy network data.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
@@ -1512,7 +1512,7 @@ with the HTTP protocol definition.")
       (home-page "https://github.com/google/cadvisor")
       (synopsis "Analyze resource usage of running containers")
       (description "The package provides @code{cadvisor}, which provides
-information about the resource usage and preformance characteristics of running
+information about the resource usage and performance characteristics of running
 containers.")
       (license license:asl2.0))))
 
@@ -1775,11 +1775,11 @@ SysVinit, and more.")
                #t)))))
       (home-page
        "https://github.com/docker/distribution")
-      (synopsis "This package is Docker toolset to pack, ship, store, and
+      (synopsis "This package is a Docker toolset to pack, ship, store, and
 deliver content")
-      (description "Docker Distribution is Docker toolset to pack, ship,
-store, and deliver content.  It's containe Docker Registry 2.0 and libraries
-to interacting with distribution components.")
+      (description "Docker Distribution is a Docker toolset to pack, ship,
+store, and deliver content.  It contains Docker Registry 2.0 and libraries
+to interact with distribution components.")
       (license license:asl2.0))))
 
 (define-public go-github-com-docker-go-connections
@@ -1804,7 +1804,7 @@ to interacting with distribution components.")
       (home-page "https://github.com/docker/go-connections")
       (synopsis "Networking library for Go")
       (description
-       "This packages provides a library to work with network connections in
+       "This package provides a library to work with network connections in
 the Go language.  In particular it provides tools to deal with network address
 translation (NAT), proxies, sockets, and transport layer security (TLS).")
       (license license:asl2.0))))
@@ -2519,7 +2519,7 @@ designed so that it may be used with the standard crypto/ecdsa packages
 provided with Go.  A comprehensive suite of test is provided to ensure proper
 functionality.  Package @command{btcec} was originally based on work from
 ThePiachu which is licensed under the same terms as Go, but it has
-signficantly diverged since then.  The @command{btcsuite} developers original
+significantly diverged since then.  The @command{btcsuite} developers original
 is licensed under the liberal ISC license.
 
 Although this package was primarily written for btcd, it has intentionally

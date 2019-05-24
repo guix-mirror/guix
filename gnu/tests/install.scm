@@ -123,17 +123,6 @@
                                     (inherit config)
                                     (guix (current-guix))))))))
 
-(define (operating-system-with-gc-roots os roots)
-  "Return a variant of OS where ROOTS are registered as GC roots."
-  (operating-system
-    (inherit os)
-
-    ;; We use this procedure for the installation OS, which already defines GC
-    ;; roots.  Add ROOTS to those.
-    (services (cons (simple-service 'extra-root
-                                    gc-root-service-type roots)
-                    (operating-system-user-services os)))))
-
 
 (define MiB (expt 2 20))
 

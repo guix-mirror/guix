@@ -23,7 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tmux)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -58,7 +58,7 @@
 windows), each running a separate program, to be created, accessed, and
 controlled from a single screen.  tmux may be detached from a screen and
 continue running in the background, then later reattached.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public tmux-themepack
   (let ((commit "03a372866f7677f7fe63bcee140b48b9fd372c48")
@@ -90,8 +90,7 @@ continue running in the background, then later reattached.")
       (home-page "https://github.com/jimeh/tmux-themepack")
       (synopsis "Collection of themes for Tmux")
       (description "A collection of various themes for Tmux.")
-      (license
-       (non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+      (license license:wtfpl2))))
 
 (define-public tmuxifier
   (package
@@ -136,7 +135,7 @@ continue running in the background, then later reattached.")
 @code{layout} files, which are simple shell scripts where you use the tmux
 command and helper commands provided by tmuxifier to manage Tmux sessions and
 windows.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public tmux-xpanes
   (package
@@ -183,4 +182,4 @@ following features:
 @item Display pane title on each pane.
 @item Generate command lines from standard input (Pipe mode).
 @end itemize")
-    (license expat)))
+    (license license:expat)))

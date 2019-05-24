@@ -775,7 +775,7 @@ This package provides the library for GLib applications.")
                 "#include <errno.h>\n#include <unistd.h>")))))))
     (synopsis "D-Bus API for C++")
     (description "This package provides D-Bus client API bindings for the C++
-programming langauage.  It also contains the utility
+programming language.  It also contains the utility
 @command{dbuscxx-xml2cpp}.")
     (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
     (license license:lgpl2.1+)))

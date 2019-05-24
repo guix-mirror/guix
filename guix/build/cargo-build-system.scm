@@ -131,7 +131,7 @@ directory = '" port)
     ;; to store paths.
     (copy-recursively "." rsrc)
     (touch (string-append rsrc "/.cargo-ok"))
-    (generate-checksums rsrc "/dev/null")
+    (generate-checksums rsrc)
     (install-file "Cargo.toml" rsrc)
     #t))
 

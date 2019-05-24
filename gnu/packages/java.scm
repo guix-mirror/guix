@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -879,6 +879,11 @@ machine.")))
                      (string-append (assoc-ref inputs "freetype")
                                     "/lib"))
              #t))
+         (add-before 'build 'disable-os-version-check
+           ;; allow build on linux major version change
+           (lambda _
+             (setenv "DISABLE_HOTSPOT_OS_VERSION_CHECK" "ok")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((doc (string-append (assoc-ref outputs "doc")
@@ -1230,6 +1235,11 @@ bootstrapping purposes.")
                        (string-append (assoc-ref inputs "freetype")
                                       "/lib"))
                #t))
+           (add-before 'build 'disable-os-version-check
+           ;; allow build on linux major version change
+           (lambda _
+             (setenv "DISABLE_HOTSPOT_OS_VERSION_CHECK" "ok")
+             #t))
            (add-before 'check 'fix-test-framework
              (lambda _
                ;; Fix PATH in test environment
@@ -1903,6 +1913,7 @@ new Date();"))
          "--with-lcms=system"
          "--with-libjpeg=system"
          "--with-libpng=system"
+         "--with-version-pre="
          ;; allow the build system to locate the system freetype
          ,(string-append "--with-freetype-include="
                          (assoc-ref %build-inputs "freetype") "/include")
@@ -7720,7 +7731,7 @@ it manages project dependencies, gives diffs jars, and much more.")
     (home-page "https://ops4j1.jira.com/wiki/spaces/ops4j/pages/12060312/Tinybundles")
     (synopsis "Java APIs to create OSGi related artifacts")
     (description "Tinybundles is all about creating OSGi related artifacts like
-Bundles, Fragments and Deployment Packages with Java Api.  It is very convinient
+Bundles, Fragments and Deployment Packages with Java Api.  It is very convenient
 to create such artifacts on-the-fly inside Tests (like in Pax Exam).  On the
 other hand, this library can be a foundation of real end user tools that need
 to create those artifacts.")

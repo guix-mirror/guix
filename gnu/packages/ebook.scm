@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2017, 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -42,6 +42,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
@@ -78,7 +79,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.35.0")
+    (version "3.42.0")
     (source
       (origin
         (method url-fetch)
@@ -87,40 +88,40 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "1gd15wjz4fhcra6d44xiy3hwbyk0miwb66a1pq5yldyy0hlb271z"))
-        ;; Remove non-free or doubtful code, see
+          "0ymdhws3cb44p3fb24vln1wx6s7qnb8rr241jvm6qbj5rnp984dm"))
+        ;; Unbundle python2-odfpy. 
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
         (snippet
           '(begin
-            (delete-file-recursively "src/calibre/ebooks/markdown")
-            (delete-file "src/odf/thumbnail.py")
-            (delete-file-recursively "resources/fonts/liberation")
-            (substitute* (find-files "." "\\.py")
-              (("calibre\\.ebooks\\.markdown") "markdown"))
-            #t))
-        (patches (search-patches "calibre-use-packaged-feedparser.patch"
-                                 "calibre-no-updates-dialog.patch"))))
+             (delete-file-recursively "src/odf")
+             (delete-file "resources/viewer.js")
+             (delete-file "resources/viewer.html")
+             (delete-file "resources/mozilla-ca-certs.pem")
+             (delete-file "resources/calibre-portable.bat")
+             (delete-file "resources/calibre-portable.sh")
+             #t))
+        (patches (search-patches "calibre-no-updates-dialog.patch"
+                                 "calibre-remove-test-bs4.patch" ; TODO: fix test.
+                                 "calibre-remove-test-sqlite.patch" ; TODO: fix test.
+                                 "calibre-remove-test-unrar.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("font-liberation" ,font-liberation)
        ("qtbase" ,qtbase) ; for qmake
-       ;; xdg-utils is supposed to be used for desktop integration, but it
-       ;; also creates lots of messages
-       ;; mkdir: cannot create directory '/homeless-shelter': Permission denied
        ("python2-flake8" ,python2-flake8)
        ("xdg-utils" ,xdg-utils)))
     ;; Beautifulsoup3 is bundled but obsolete and not packaged, so just leave it bundled.
     (inputs
      `(("chmlib" ,chmlib)
        ("fontconfig" ,fontconfig)
+       ("font-liberation" ,font-liberation)
        ("glib" ,glib)
        ("icu4c" ,icu4c)
+       ("js-mathjax" ,js-mathjax)
        ("libmtp" ,libmtp)
        ("libpng" ,libpng)
        ("libusb" ,libusb)
-       ("libxrender" ,libxrender)
        ("openssl" ,openssl)
        ("optipng" ,optipng)
        ("podofo" ,podofo)
@@ -129,32 +130,31 @@
        ("python2-apsw" ,python2-apsw)
        ("python2-chardet" ,python2-chardet)
        ("python2-cssselect" ,python2-cssselect)
-       ("python2-cssutils" ,python2-cssutils)
+       ("python2-css-parser" ,python2-css-parser)
        ("python2-dateutil" ,python2-dateutil)
        ("python2-dbus" ,python2-dbus)
        ("python2-dnspython" ,python2-dnspython)
        ("python2-dukpy" ,python2-dukpy)
        ("python2-feedparser" ,python2-feedparser)
+       ("python2-html2text" ,python2-html2text)
        ("python2-html5-parser" ,python2-html5-parser)
+       ("python2-html5lib" ,python2-html5lib)
        ("python2-lxml" ,python2-lxml)
        ("python2-markdown" ,python2-markdown)
        ("python2-mechanize" ,python2-mechanize)
        ;; python2-msgpack is needed for the network content server to work.
        ("python2-msgpack" ,python2-msgpack)
        ("python2-netifaces" ,python2-netifaces)
+       ("python2-odfpy" ,python2-odfpy)
        ("python2-pillow" ,python2-pillow)
+       ("python2-psutil" ,python2-psutil)
        ("python2-pygments" ,python2-pygments)
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
        ("python2-regex" ,python2-regex)
-       ;; python2-unrardll is needed for decompressing RAR files.
-       ;; A program called 'pdf2html' is needed for reading PDF books
-       ;; in the web interface.
        ("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2
-       #:test-target "check"
-       #:tests? #f ; FIXME: enable once flake8 is packaged
        ;; Calibre is using setuptools by itself, but the setup.py is not
        ;; compatible with the shim wrapper (taken from pip) we are using.
        #:use-setuptools? #f
@@ -173,33 +173,57 @@
                 "href=\"favicon.ico\""))
              #t))
          (add-before 'build 'configure
-          (lambda* (#:key inputs #:allow-other-keys)
+          (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((podofo (assoc-ref inputs "podofo"))
-                  (pyqt (assoc-ref inputs "python2-pyqt")))
+                  (pyqt (assoc-ref inputs "python2-pyqt"))
+                  (out (assoc-ref outputs "out")))
               (substitute* "setup/build_environment.py"
                 (("sys.prefix") (string-append "'" pyqt "'")))
               (substitute* "src/calibre/ebooks/pdf/pdftohtml.py"
                 (("PDFTOHTML = 'pdftohtml'")
                  (string-append "PDFTOHTML = \"" (assoc-ref inputs "poppler")
-                  "/bin/pdftohtml\"")))
+                                "/bin/pdftohtml\"")))
+
+              ;; Calibre thinks we are installing desktop files into a home
+              ;; directory, but here we butcher the script in to installing
+              ;; to calibres /share directory.
+              (setenv "XDG_DATA_HOME" (string-append out "/share"))
+              (substitute* "src/calibre/linux.py"
+                (("'~/.local/share'") "''"))
+
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
+              ;; This informs the tests we are a continuous integration
+              ;; environment and thus have no networking.
+              (setenv "CI" "true")
+              ;; The Qt test complains about being unable to load all image plugins, and I
+              ;; notice the available plugins list it shows lacks 'svg'. Adding qtsvg doesn't
+              ;; fix it, so I'm not sure how to fix it.  TODO: Fix test and remove this.
+              (setenv "SKIP_QT_BUILD_TEST" "true")
               #t)))
-         (add-after 'install 'install-font-liberation
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (for-each (lambda (file)
-                         (install-file file (string-append
-                                             (assoc-ref outputs "out")
-                                             "/share/calibre/fonts/liberation")))
-                       (find-files (string-append
-                                    (assoc-ref inputs "font-liberation")
-                                    "/share/fonts/truetype")))
-             #t))
-         (add-after 'install-font-liberation 'install-mimetypes
+         (add-after 'build 'build-extra
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "python2" "setup.py" "mathjax""--system-mathjax"
+                     "--path-to-mathjax" (string-append
+                                          (assoc-ref inputs "js-mathjax")
+                                          "/share/javascript/mathjax"))
+             (invoke "python2" "setup.py" "rapydscript")))
+         (add-after 'install 'install-man-pages
            (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "resources/calibre-mimetypes.xml"
-                           (string-append (assoc-ref outputs "out")
-                                          "/share/mime/packages"))
+             (copy-recursively
+              "man-pages"
+              (string-append (assoc-ref outputs "out") "/share/man"))
+             #t))
+         ;; The font TTF files are used in some miscellaneous tests, so we
+         ;; unbundle them here to avoid patching the tests.
+         (add-after 'install 'unbundle-font-liberation
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((font-dest (string-append (assoc-ref outputs "out")
+                                             "/share/calibre/fonts/liberation"))
+                   (font-src (string-append (assoc-ref inputs "font-liberation")
+                                            "/share/fonts/truetype")))
+               (delete-file-recursively font-dest)
+               (symlink font-src font-dest))
              #t)))))
     (home-page "http://calibre-ebook.com/")
     (synopsis "E-book library management software")

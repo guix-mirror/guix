@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -474,15 +474,15 @@ things in between.")
 (define-public libshout
   (package
     (name "libshout")
-    (version "2.4.1")
+    (version "2.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://downloads.xiph.org/releases/libshout/"
-                    name "-" version ".tar.gz"))
+                    "libshout-" version ".tar.gz"))
               (sha256
                (base32
-                "0kgjpf8jkgyclw11nilxi8vyjk4s8878x23qyxnvybbgqbgbib7k"))))
+                "0qgwarqp2p6jy3zadds6dzj8z1jfb2mbwc3lsdlidf527h0a86ym"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

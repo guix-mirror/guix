@@ -29,14 +29,14 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.8.0.1")
+    (version "2.8.1.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://skarnet.org/software/skalibs/skalibs-"
                           version ".tar.gz"))
       (sha256
-       (base32 "00mh15jx3p4xzhkslxzpgi1c0xglywck1ik7ffi0hfwcq092wla7"))))
+       (base32 "1fk6n402ywn4kpy6ng7sfnnqcg0mp6wq2hrv8sv3kxd0nh3na723"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests exist
@@ -103,14 +103,14 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.8.0.0")
+   (version "2.8.0.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://skarnet.org/software/s6/s6-"
                          version ".tar.gz"))
      (sha256
-      (base32 "01milx5shixvniaxxmanfzz54vcymjfi86433w62rk5ypvc94ir8"))))
+      (base32 "1n1i3jm3kp9ii54cxj1sgh89m6nyna7vhy8714ma6py1frdqzq6v"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))

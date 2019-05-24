@@ -894,7 +894,7 @@ features, and more.")
 (define-public xtensor
   (package
     (name "xtensor")
-    (version "0.17.1")
+    (version "0.20.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -902,7 +902,7 @@ features, and more.")
                     (commit version)))
               (sha256
                (base32
-                "0w40v5lp0hp8ihf8nnvak373sb5xx0768pxgiqh3nzn57wf8px4r"))
+                "0kkc4ar7p2d94jnclmrh46dwv7ldy9lx630vm9gci3pp4hnhbj9f"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs

@@ -806,8 +806,8 @@ standard facilities are supported.")
    "Log unsuccessful authentication attempts and the reasons why they
 failed.")
 
-  (auth-verbose-passwords?
-   (boolean #f)
+  (auth-verbose-passwords
+   (string "no")
    "In case of password mismatches, log the attempted password.  Valid
 values are no, plain and sha1.  sha1 can be useful for detecting brute
 force password attempts vs.  user simply trying the same password over

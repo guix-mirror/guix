@@ -44,7 +44,7 @@
 ;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
-;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2017, 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
@@ -59,6 +59,7 @@
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
+;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,6 +125,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages search)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages tex)
@@ -2503,174 +2505,6 @@ reStructuredText.")
 (define-public python2-pygments
   (package-with-python2 python-pygments))
 
-(define-public python-sphinxcontrib-websupport
-  (package
-    (name "python-sphinxcontrib-websupport")
-    (version "1.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "sphinxcontrib-websupport" version))
-              (sha256
-               (base32
-                "1ff3ix76xi1y6m99qxhaq5161ix9swwzydilvdya07mgbcvpzr4x"))))
-    (build-system python-build-system)
-    (arguments
-     ;; FIXME: Tests depend on Sphinx, which depends on this.
-     `(#:tests? #f))
-    (home-page "http://sphinx-doc.org/")
-    (synopsis "Sphinx API for web applications")
-    (description "This package provides a Python API to easily integrate
-Sphinx documentation into your web application.  It provides tools to
-integrate Sphinx documents in web templates and to handle searches.")
-    (license license:bsd-3)))
-
-(define-public python2-sphinxcontrib-websupport
-  (package-with-python2 python-sphinxcontrib-websupport))
-
-(define-public python-sphinx
-  (package
-    (name "python-sphinx")
-    (version "1.7.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "Sphinx" version))
-       (sha256
-        (base32
-         "0pkkbfj7cl157q550gcs45am5y78ps0h7q6455d64s1zmw01jlvi"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             ;; Requires Internet access.
-             (delete-file "tests/test_build_linkcheck.py")
-             (substitute* "tests/test_build_latex.py"
-               (("@pytest.mark.sphinx\\('latex', testroot='images'\\)")
-                "@pytest.mark.skip()"))
-             (when (which "python")
-               ;; XXX: These tests are broken when using Python2:
-               ;; <https://github.com/sphinx-doc/sphinx/issues/4710>.
-               (delete-file "tests/test_api_translator.py")
-               (delete-file "tests/test_setup_command.py"))
-             (invoke "make" "test"))))))
-    (propagated-inputs
-     `(("python-imagesize" ,python-imagesize)
-       ("python-sphinx-alabaster-theme"
-        ,python-sphinx-alabaster-theme)
-       ("python-babel" ,python-babel)
-       ("python-snowballstemmer" ,python-snowballstemmer)
-       ("python-docutils" ,python-docutils)
-       ("python-jinja2" ,python-jinja2)
-       ("python-packaging" ,python-packaging)
-       ("python-pygments" ,python-pygments)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)
-       ("python-sphinxcontrib-websupport" ,python-sphinxcontrib-websupport)))
-    (native-inputs
-     `(("graphviz" ,graphviz)
-       ("imagemagick" ,imagemagick)                    ;for "convert"
-       ("python-html5lib" ,python-html5lib)
-       ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-pytest" ,python-pytest)))
-    (home-page "http://sphinx-doc.org/")
-    (synopsis "Python documentation generator")
-    (description "Sphinx is a tool that makes it easy to create documentation
-for Python projects or other documents consisting of multiple reStructuredText
-sources.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-sphinx))))))
-
-(define-public python2-sphinx
-  (let ((base (package-with-python2 (strip-python2-variant python-sphinx))))
-    (package
-      (inherit base)
-      (native-inputs `(("python2-mock" ,python2-mock)
-                       ("python2-enum34" ,python2-enum34)
-                       ,@(package-native-inputs base)))
-      (propagated-inputs `(("python2-pytz" ,python2-pytz)
-                           ("python2-typing" ,python2-typing)
-                       ,@(package-propagated-inputs base))))))
-
-(define-public python-sphinx-gallery
-  (package
-    (name "python-sphinx-gallery")
-    (version "0.1.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sphinx-gallery/sphinx-gallery"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "03fs99mcb1r7qp0xixqv07vcz98sk21yq19ffdysi0infdcpzfkd"))))
-    (build-system python-build-system)
-    (arguments
-     ;; FIXME: Tests attempt to download <https://docs.python.org/3/objects.inv>,
-     ;; <https://docs.scipy.org/doc/numpy/objects.inv>, and
-     ;; <https://matplotlib.org/objects.inv>.
-     `(#:tests? #f))
-    (native-inputs
-     `(("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "https://sphinx-gallery.github.io/")
-    (synopsis "Generate an examples gallery automatically")
-    (description
-     "@code{sphinx_gallery} is a Sphinx extension that builds an HTML version
-from any set of Python scripts and puts it into an examples gallery.")
-    (license license:bsd-3)))
-
-(define-public python2-sphinx-gallery
-  (package-with-python2 python-sphinx-gallery))
-
-(define-public python-sphinx-rtd-theme
-  (package
-    (name "python-sphinx-rtd-theme")
-    (version "0.2.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "sphinx_rtd_theme" version))
-       (sha256
-        (base32
-         "05rlhjzdyapr2w74jjs7mrm8hi69qskcr5vya9f9drpsys7lpxrd"))))
-    (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; No tests.
-    (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
-    (home-page "https://github.com/snide/sphinx_rtd_theme/")
-    (synopsis "ReadTheDocs.org theme for Sphinx")
-    (description "A theme for Sphinx used by ReadTheDocs.org.")
-    (license license:expat)))
-
-(define-public python2-sphinx-rtd-theme
-  (package-with-python2 python-sphinx-rtd-theme))
-
-(define-public python-guzzle-sphinx-theme
-  (package
-    (name "python-guzzle-sphinx-theme")
-    (version "0.7.11")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "guzzle_sphinx_theme" version))
-        (sha256
-         (base32
-          "1rnkzrrsbnifn3vsb4pfaia3nlvgvw6ndpxp7lzjrh23qcwid34v"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
-    (home-page "https://github.com/guzzle/guzzle_sphinx_theme")
-    (synopsis "Sphinx theme used by Guzzle")
-    (description "This package provides guzzle_sphinx_theme, a theme for the
-Sphinx documentation system, used by @uref{http://docs.guzzlephp.org, Guzzle}
-and several other projects.")
-    (license license:expat)))
-
-(define-public python2-guzzle-sphinx-theme
-  (package-with-python2 python-guzzle-sphinx-theme))
-
 (define-public python-bumpversion
   (package
     (name "python-bumpversion")
@@ -3062,7 +2896,7 @@ Language (TOML) configuration files.")
      "https://github.com/palantir/python-jsonrpc-server")
     (synopsis "JSON RPC 2.0 server library")
     (description
-     "This packages provides a JSON RPC 2.0 server library for Python.")
+     "This package provides a JSON RPC 2.0 server library for Python.")
     (license license:expat)))
 
 (define-public python-pydocstyle
@@ -3223,6 +3057,32 @@ interested parties to subscribe to events, or \"signals\".")
 Markdown input files, and more.  Pelican uses Jinja2 for templating
 and is very extensible.")
     (license license:agpl3+)))
+
+(define-public mallard-ducktype
+  (package
+    (name "mallard-ducktype")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       ;; git-reference because a proper source tarball is not available
+       ;; https://lists.gnu.org/archive/html/guix-devel/2019-05/msg00209.html
+       (uri (git-reference
+             (url "https://github.com/projectmallard/mallard-ducktype.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0crland0kmpsyjfmnflcw7gaqy5b87b6ah17cmr9d5z1kyazf54n"))))
+    (build-system python-build-system)
+    (home-page "http://projectmallard.org")
+    (synopsis "Convert Ducktype to Mallard documentation markup")
+    (description
+     "Ducktype is a lightweight syntax that can represent all the semantics
+of the Mallard XML documentation system.  Ducktype files can be converted to
+Mallard using the @command{ducktype} tool.  The yelp-tools package
+provides additional functionality on the produced Mallard documents.")
+    (license license:expat)))
 
 (define-public python-scikit-image
   (package
@@ -4835,7 +4695,7 @@ cluster without needing to write any wrapper code yourself.")
     (synopsis "Manage Procfile-based applications")
     (description
       "A Procfile is a file which describes how to run an application
-consisting of serveral processes. honcho starts all listed processes.
+consisting of several processes. honcho starts all listed processes.
 The output of all running processes is collected by honcho and
 displayed.")
     (license license:expat)))
@@ -5559,6 +5419,39 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
               (strip-python2-variant python-beautifulsoup4)))
     (arguments `(#:python ,python-2))))
 
+(define-public python-soupsieve
+  (package
+    (name "python-soupsieve")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "soupsieve" version))
+       (sha256
+        (base32
+         "1jnzkiwmjl6yvqckc9mf689g87b6yz07sv868hap2aa5arggy3mj"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    ;;XXX: 2 tests fail currently despite claming they were to be
+    ;;skipped. Also, beautifulsoup4 may depend on this in the future, so we
+    ;;don't want to create a circular dependency.
+    (home-page "https://github.com/facelessuser/soupsieve")
+    (synopsis "CSS selector library")
+    (description
+     "Soup Sieve is a CSS selector library designed to be used with Beautiful
+Soup 4.  It aims to provide selecting, matching, and filtering using modern
+CSS selectors.  Soup Sieve currently provides selectors from the CSS level 1
+specifications up through the latest CSS level 4 drafts and beyond (though
+some are not yet implemented).")
+    (license license:expat)))
+
+(define-public python2-soupsieve
+  (let ((base (package-with-python2 python-soupsieve)))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python2-backports-functools-lru-cache" ,python2-backports-functools-lru-cache))))))
+
 (define-public python-netifaces
   (package
     (name "python-netifaces")
@@ -5814,7 +5707,7 @@ more advanced mathematics.")
     (home-page "https://github.com/mdickinson/bigfloat")
     (synopsis "Arbitrary precision floating-point arithmetic for Python")
     (description
-     "This packages provides a Python interface to the MPFR library for
+     "This package provides a Python interface to the MPFR library for
 multiprecision arithmetic.")
     (license license:lgpl3+)))
 
@@ -6390,14 +6283,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "3.1")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "0l62x154r9mgdvfap06gf0nkrmjd7xixlfshsxcdif2nlrlnyjpw"))))
+         "0yhylk4ffqqs7x086fav4pnfsl1021v7lghznzkififprmmqfl1f"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -6771,7 +6664,7 @@ and MAC network addresses.")
     (native-inputs `(("python-nose"       ,python-nose)))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
-    (description "This packages provides a library to extract data from
+    (description "This package provides a library to extract data from
 spreadsheets using Microsoft Excel proprietary file formats @samp{.xls} and
 @samp{.xlsx} (versions 2.0 onwards).  It has support for Excel dates and is
 Unicode-aware.  It is not intended as an end-user tool.")
@@ -7685,7 +7578,7 @@ automatically detect a wide range of file encodings.")
     (synopsis "Command-line interface description language for Python")
     (description "This library allows the user to define a command-line
 interface from a program's help message rather than specifying it
-programatically with command-line parsers like @code{getopt} and
+programmatically with command-line parsers like @code{getopt} and
 @code{argparse}.")
     (license license:expat)))
 
@@ -8006,26 +7899,6 @@ minimal and fast API targeting the following uses:
     (description "The icalendar package is a parser/generator of iCalendar
 files for use with Python.")
     (home-page "https://github.com/collective/icalendar")
-    (license license:bsd-2)))
-
-(define-public python-sphinxcontrib-newsfeed
-  (package
-    (name "python-sphinxcontrib-newsfeed")
-    (version "0.1.4")
-    (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "sphinxcontrib-newsfeed" version))
-             (sha256
-              (base32
-               "1d7gam3mn8v4in4p16yn3v10vps7nnaz6ilw99j4klij39dqd37p"))))
-    (arguments '(#:tests? #f)) ; No tests.
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
-    (synopsis "News Feed extension for Sphinx")
-    (description "Sphinxcontrib-newsfeed is an extension for adding a simple
-Blog, News or Announcements section to a Sphinx website.")
-    (home-page "https://bitbucket.org/prometheus/sphinxcontrib-newsfeed")
     (license license:bsd-2)))
 
 (define-public python-args
@@ -8827,56 +8700,6 @@ programmatically interfacing with your system's $EDITOR.")
 (define-public python2-editor
   (package-with-python2 python-editor))
 
-(define-public python-sphinxcontrib-programoutput
-  (package
-    (name "python-sphinxcontrib-programoutput")
-    (version "0.10")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "sphinxcontrib-programoutput" version))
-              (sha256
-               (base32
-                "153hhnlbx4688zj9wd64819ps5znc2jlyp5crkgzvn5hxgy99vpx"))))
-    (build-system python-build-system)
-    (arguments
-     ;; FIXME: Many tests are failing and the upstream is gone.
-     '(#:tests? #f))
-    (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
-    (synopsis "Sphinx extension to include program output")
-    (description "A Sphinx extension to literally insert the output of arbitrary
-commands into documents, helping you to keep your command examples up to date.")
-    (home-page "https://github.com/lunaryorn/sphinxcontrib-programoutput")
-    (license license:bsd-2)))
-
-(define-public python2-sphinxcontrib-programoutput
-  (package-with-python2 python-sphinxcontrib-programoutput))
-
-(define-public python-sphinx-repoze-autointerface
-  (package
-    (name "python-sphinx-repoze-autointerface")
-    (version "0.8")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "repoze.sphinx.autointerface" version))
-              (sha256
-               (base32
-                "08ycivzf7bh4a1zcyp31hbyqs1b2c9r26raa3vxjwwmbfqr3iw4f"))))
-    (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; No tests.
-    (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)
-       ("python-zope-interface" ,python-zope-interface)))
-    (synopsis "Auto-generate Sphinx API docs from Zope interfaces")
-    (description "This package defines an extension for the Sphinx documentation
-system.  The extension allows generation of API documentation by
-introspection of @code{zope.interface} instances in code.")
-    (home-page "https://github.com/repoze/repoze.sphinx.autointerface")
-    (license license:repoze)))
-
-(define-public python2-sphinx-repoze-autointerface
-  (package-with-python2 python-sphinx-repoze-autointerface))
-
 (define-public python-vobject
   (package
     (name "python-vobject")
@@ -9299,14 +9122,14 @@ development version of CPython that are not available in older releases.")
 (define-public python-future
   (package
     (name "python-future")
-    (version "0.16.0")
+    (version "0.17.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "future" version))
        (sha256
         (base32
-         "1nzy1k4m9966sikp0qka7lirh8sqrsyainyf8rk97db7nwdfv773"))))
+         "1f2rlqn9rh7adgir52dlbqz69gsab44x0mlm8gf1cs7xvhv54137"))))
     (build-system python-build-system)
     ;; Many tests connect to the network or are otherwise flawed.
     ;; https://github.com/PythonCharmers/python-future/issues/210
@@ -10167,7 +9990,7 @@ addresses, and phone numbers.")
     (description
      "pyaml is a PyYAML based python module to produce pretty and readable
 YAML-serialized data.")
-    (license (license:non-copyleft "http://www.wtfpl.net/txt/copying/"))))
+    (license license:wtfpl2)))
 
 (define-public python2-pyaml
   (package-with-python2 python-pyaml))
@@ -10257,17 +10080,17 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
         (base32
-         "1za944msp0f8x36qa8l309jhv0kzlsdh7r9nj3z12y8npnsh45sp"))))
+         "0nsrjlb57njqppxmi8wjsb1dkad7qa7svx67jbkhixq66lz61c1b"))))
     (build-system python-build-system)
     (arguments
-     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.2 (see:
+     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.3 (see:
         ;; https://github.com/davidhalter/jedi/issues/1263)
        #:tests? #f
        #:phases
@@ -10293,7 +10116,11 @@ well.")
     (license license:expat)))
 
 (define-public python2-jedi
-  (package-with-python2 python-jedi))
+  (let ((base (package-with-python2 (strip-python2-variant python-jedi))))
+    (package
+      (inherit base)
+      (arguments (substitute-keyword-arguments (package-arguments base)
+                   ((#:tests? _) #t))))))
 
 (define-public ptpython
   (package
@@ -10861,52 +10688,6 @@ English stemmer.")
 
 (define-public python2-snowballstemmer
   (package-with-python2 python-snowballstemmer))
-
-(define-public python-sphinx-cloud-sptheme
-  (package
-    (name "python-sphinx-cloud-sptheme")
-    (version "1.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "cloud_sptheme" version))
-              (sha256
-               (base32
-                "1dniqb6a39yh786f86c4jn666rwnyi1jvzn4616zhcchb7sfdshd"))))
-    (build-system python-build-system)
-    ;; FIXME: The 'pypi' release archive does not contain tests.
-    (arguments '(#:tests? #f))
-    (native-inputs
-     `(("python-sphinx" ,python-sphinx)))
-    (home-page "https://bitbucket.org/ecollins/cloud_sptheme")
-    (synopsis "'Cloud' theme for Sphinx documenter")
-    (description "This package contains the \"Cloud\" theme for Sphinx and some
-related extensions.")
-    (license license:bsd-3)))
-
-(define-public python2-sphinx-cloud-sptheme
-  (package-with-python2 python-sphinx-cloud-sptheme))
-
-(define-public python-sphinx-alabaster-theme
-  (package
-    (name "python-sphinx-alabaster-theme")
-    (version "0.7.12")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "alabaster" version))
-              (sha256
-               (base32
-                "00nwwjj2d2ym4s2kk217x7jkx1hnczc3fvm8yxbqmsp6b0nxfqd6"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pygments" ,python-pygments)))
-    (home-page "https://alabaster.readthedocs.io/")
-    (synopsis "Configurable sidebar-enabled Sphinx theme")
-    (description "Alabaster is a visually (c)lean, responsive, configurable
-theme for the Sphinx documentation system.  It's the default theme of Sphinx.")
-    (license license:bsd-3)))
-
-(define-public python2-sphinx-alabaster-theme
-  (package-with-python2 python-sphinx-alabaster-theme))
 
 (define-public python-setproctitle
 (package
@@ -12212,30 +11993,6 @@ make common patterns shorter and easier.")
 (define-public python2-utils
   (package-with-python2 python-utils))
 
-(define-public python-sphinx-me
-  (package
-    (name "python-sphinx-me")
-    (version "0.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "sphinx-me" version))
-       (sha256
-        (base32
-         "06jzgp213zihnvpcy2y5jy3ykid3apc2ncp2pg6a2g05lhiziglq"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/stephenmcd/sphinx-me")
-    (synopsis "Create a Sphinx documentation shell")
-    (description
-      "Create a Sphinx documentation shell for your project and include the
-README file as the documentation index.  It handles extracting the required
-meta data such as the project name, author and version from your project for
-use in your Sphinx docs.")
-    (license license:bsd-2)))
-
-(define-public python2-sphinx-me
-  (package-with-python2 python-sphinx-me))
-
 (define-public python-diff-match-patch
   (package
     (name "python-diff-match-patch")
@@ -13061,13 +12818,15 @@ window memory map manager.")
 (define-public python-regex
   (package
     (name "python-regex")
-    (version "2017.06.07")
+    (version "2019.04.14")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "regex" version))
               (sha256
                (base32
-                "06r6b7yigikbj3a72whl85r2b64pj1r0ypmw9yalmkm0wnxq8mz4"))))
+                "1a6hhfs6l6snr1z654ay6wzbmwdkmv282fzfkd5hk2d1n73y8v6m"))))
+    ;; TODO: Fix and enable regex_test.py tests that complain about the
+    ;; test.support module not existing.
     (build-system python-build-system)
     (home-page "https://bitbucket.org/mrabarnett/mrab-regex")
     (synopsis "Alternative regular expression module")
@@ -15612,21 +15371,23 @@ file-based data structures that are @code{mmap}ped into memory so that many
 processes may share the same data.")
     (license license:asl2.0)))
 
-(define-public python-sphinxcontrib-svg2pdfconverter
+(define-public python-pylzma
   (package
-    (name "python-sphinxcontrib-svg2pdfconverter")
-    (version "0.1.0")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "sphinxcontrib-svg2pdfconverter" version))
-              (sha256
-               (base32
-                "1abvbgkkii13q8nsb10r0gc5lm0p9iq1iwhfhakn5ifn6asa0183"))))
+    (name "python-pylzma")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pylzma" version))
+        (sha256
+          (base32
+            "074anvhyjgsv2iby2ql1ixfvjgmhnvcwjbdz8gk70xzkzcm1fx5q"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-sphinx" ,python-sphinx)))
-    (home-page "https://github.com/missinglinkelectronics/sphinxcontrib-svg2pdfconverter/releases")
-    (synopsis "Sphinx SVG to PDF converter extension")
-    (description "A Sphinx extension to convert SVG images to PDF in case the builder does not support
-SVG images natively (e.g. LaTeX).")
-    (license license:bsd-3)))
+    (home-page "http://www.joachim-bauch.de/projects/pylzma/")
+    (synopsis "Python bindings for the LZMA library by Igor Pavlov.")
+    (description "This package provides Python bindings for the LZMA library
+by Igor Pavlov.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pylzma
+  (package-with-python2 python-pylzma))

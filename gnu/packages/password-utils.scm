@@ -108,7 +108,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.3.4")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
@@ -117,12 +117,13 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "02kq0a7a7hpw824n03apma00yq1c6dds224g15mrnnqqjn4af90c"))))
+         "1aw9airx9z846p0xc0qjgy5hg35b8cxp57rvlq39n6wx4z8ppa8d"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
                            "-DWITH_XC_BROWSER=YES"
-                           "-DWITH_XC_SSHAGENT=YES")))
+                           "-DWITH_XC_SSHAGENT=YES"
+                           "-DWITH_XC_UPDATECHECK=NO")))
     (inputs
      `(("argon2" ,argon2)
        ("curl" ,curl)                   ; XC_NETWORKING
@@ -130,7 +131,9 @@ human.")
        ("libsodium" ,libsodium)         ; XC_BROWSER
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
+       ("qrencode" ,qrencode)
        ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
        ("zlib" ,zlib)))
     (native-inputs

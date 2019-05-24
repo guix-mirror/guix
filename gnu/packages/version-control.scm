@@ -24,6 +24,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +94,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages sync)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
@@ -522,7 +524,7 @@ everything from small to very large projects with speed and efficiency.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.28.1")
+    (version "0.28.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -531,7 +533,7 @@ everything from small to very large projects with speed and efficiency.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j5p0hhz2wizvgkf0nbpd8g32mb5bg1vp8ckpbhb0pq38ja4h43r"))
+                "0cm8fvs05rj0baigs2133q5a0sm3pa234y8h6hmwhl2bz9xq3k4b"))
               (patches (search-patches "libgit2-avoid-python.patch"
                                        "libgit2-mtime-0.patch"))
 
@@ -1221,14 +1223,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "4.7.2")
+    (version "5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "1yq9r8s9jzj8hk2yizjk25s4w16yx9b8mbdj6wp8ld7j2r15kw4p"))))
+               "0akivl76sb4q2s42zncrm8jcsn86718wdcngfcw8i6wd2fh7dv2l"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -1524,14 +1526,14 @@ reviewing large, complex patch files.")
 (define-public cssc
   (package
     (name "cssc")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/" name "/CSSC-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15191dh8hr46cvssmv4v52gymiiyk6ca9j1bfimlqakcqab6y51h"))))
+                "1vsisqq573xjr2qpn19iwmpqgl3mq03m790akpa4rvj60b4d1gni"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1868,6 +1870,48 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
 repository\" with git-annex.")
     (license license:gpl3+)))
 
+(define-public git-annex-remote-rclone
+  (package
+    (name "git-annex-remote-rclone")
+    (version "0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DanielDent/git-annex-remote-rclone.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j0hlxji8d974fq7zd4xc02n0jpi31ylhxc7z4zp8iiwad5mkpxp"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((bash (string-append (assoc-ref %build-inputs "bash")
+                                    "/bin/bash"))
+               (rclone (string-append (assoc-ref %build-inputs "rclone")
+                                      "/bin/rclone")))
+           (copy-file (string-append (assoc-ref %build-inputs "source")
+                                     "/git-annex-remote-rclone")
+                      "git-annex-remote-rclone")
+           (substitute* "git-annex-remote-rclone"
+             (("/bin/bash") bash)
+             (("runcmd rclone") (string-append "runcmd " rclone)))
+           (install-file "git-annex-remote-rclone"
+                         (string-append %output "/bin"))
+           #t))))
+    (inputs
+     `(("bash" ,bash)
+       ("rclone" ,rclone)))
+    (home-page "https://github.com/DanielDent/git-annex-remote-rclone")
+    (synopsis "Use rclone-supported cloud storage providers with git-annex")
+    (description "This wrapper around rclone makes any destination supported
+by rclone usable with git-annex.")
+    (license license:gpl3+)))
+
 (define-public fossil
   (package
     (name "fossil")
@@ -2150,7 +2194,7 @@ interrupted, published, and collaborated on while in progress.")
 (define-public git-lfs
   (package
     (name "git-lfs")
-    (version "2.7.1")
+    (version "2.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2159,7 +2203,7 @@ interrupted, published, and collaborated on while in progress.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10v38w8qfz0x8750kv31n8gg2dimvq4wz40m374pd1xaypfs9670"))))
+                "1nf40rbdz901vsahg5cm09pznpina6wimmxl0lmh8pn0mi51yzvc"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/git-lfs/git-lfs"))

@@ -78,6 +78,7 @@ MODULES =					\
   guix/modules.scm				\
   guix/download.scm				\
   guix/discovery.scm				\
+  guix/bzr-download.scm            		\
   guix/git-download.scm				\
   guix/hg-download.scm				\
   guix/swh.scm					\
@@ -103,6 +104,7 @@ MODULES =					\
   guix/cve.scm					\
   guix/workers.scm				\
   guix/zlib.scm					\
+  guix/lzlib.scm				\
   guix/build-system.scm				\
   guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
@@ -159,6 +161,7 @@ MODULES =					\
   guix/build/font-build-system.scm		\
   guix/build/go-build-system.scm		\
   guix/build/asdf-build-system.scm		\
+  guix/build/bzr.scm				\
   guix/build/git.scm				\
   guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\
@@ -296,12 +299,12 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/5.0-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-arm-veyron.conf       \
+  gnu/packages/aux-files/linux-libre/5.1-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-i686.conf	\
+  gnu/packages/aux-files/linux-libre/5.1-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.0-arm-veyron.conf       \
   gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.19-x86_64.conf	\
@@ -321,6 +324,7 @@ EXAMPLES =					\
   gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\
   gnu/system/examples/lightweight-desktop.tmpl	\
+  gnu/system/examples/docker-image.tmpl		\
   gnu/system/examples/vm-image.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
@@ -404,6 +408,7 @@ SCM_TESTS =					\
   tests/cve.scm					\
   tests/workers.scm				\
   tests/zlib.scm				\
+  tests/lzlib.scm				\
   tests/file-systems.scm			\
   tests/uuid.scm				\
   tests/system.scm				\

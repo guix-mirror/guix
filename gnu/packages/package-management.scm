@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@reproducible-builds.org>
+;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,8 +110,8 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "1.0.0")
-        (commit "326dcbf1b3c30aa525185fda435c34cb9495dd04")
+  (let ((version "1.0.1")
+        (commit "820429517f9cc8333704a839b4346ac4b02468c4")
         (revision 1))
     (package
       (name "guix")
@@ -127,7 +128,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0k9v9lh69q353x055id1sq1gx4p8idg8ifrgidv5s73wdil2cflm"))
+                  "1vfp7ps1k1cwn8p0gsgarlxcy982hzyvb7zqnj66jqd258a1qfgh"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -493,7 +494,7 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.14.2")
+    (version "4.14.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.rpm.org/releases/rpm-"
@@ -501,7 +502,7 @@ symlinks to the files in a common directory such as /usr/local.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0armd7dqr8bl0isx8l4xlylm7dikasmxhhcbz336fkp2x30w5jw0"))))
+                "1nmck2fq9h85fgs3zhh6w1avlw5y16cbz5khd459ry3jfd5w4f8i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
@@ -518,7 +519,7 @@ symlinks to the files in a common directory such as /usr/local.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python-2)
+     `(("python" ,python)
        ("xz" ,xz)
        ("bdb" ,bdb)
        ("popt" ,popt)
@@ -530,7 +531,7 @@ symlinks to the files in a common directory such as /usr/local.")
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
        ("cpio" ,cpio)))
-    (home-page "http://rpm.org/")
+    (home-page "https://rpm.org/")
     (synopsis "The RPM Package Manager")
     (description
      "The RPM Package Manager (RPM) is a command-line driven package

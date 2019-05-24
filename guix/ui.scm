@@ -11,6 +11,8 @@
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1370,9 +1372,9 @@ WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
 (define (relevance obj regexps metrics)
   "Compute a \"relevance score\" for OBJ as a function of its number of
 matches of REGEXPS and accordingly to METRICS.  METRICS is list of
-field/weight pairs, where FIELD is a procedure that returns a string
-describing OBJ, and WEIGHT is a positive integer denoting the weight of this
-field in the final score.
+field/weight pairs, where FIELD is a procedure that returns a string or list
+of strings describing OBJ, and WEIGHT is a positive integer denoting the
+weight of this field in the final score.
 
 A score of zero means that OBJ does not match any of REGEXPS.  The higher the
 score, the more relevant OBJ is to REGEXPS."
@@ -1394,8 +1396,10 @@ score, the more relevant OBJ is to REGEXPS."
             ((field . weight)
              (match (field obj)
                (#f  relevance)
-               (str (+ relevance
-                       (* (score str) weight)))))))
+               ((? string? str)
+                (+ relevance (* (score str) weight)))
+               ((lst ...)
+                (+ relevance (* weight (apply + (map score lst)))))))))
         0
         metrics))
 
@@ -1403,6 +1407,15 @@ score, the more relevant OBJ is to REGEXPS."
   ;; Metrics used to compute the "relevance score" of a package against a set
   ;; of regexps.
   `((,package-name . 4)
+
+    ;; Match against uncommon outputs.
+    (,(lambda (package)
+        (filter (lambda (output)
+                  (not (member output
+                               ;; Some common outpus shared by many packages.
+                               '("out" "doc" "debug" "lib" "include" "bin"))))
+                (package-outputs package)))
+     . 1)
 
     ;; Match regexps on the raw Texinfo since formatting it is quite expensive
     ;; and doesn't have much of an effect on search results.

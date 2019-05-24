@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -774,14 +775,25 @@ incompatible with HDF5.")
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("perl" ,perl)))                 ;part of the test machinery needs Perl
     (outputs '("out"       ; core library
                "fortran")) ; fortran interface
     (arguments
      `(;; Some of the users, notably Flann, need the C++ interface.
        #:configure-flags '("--enable-cxx"
                            "--enable-fortran"
-                           "--enable-fortran2003")
+                           "--enable-fortran2003"
+
+                           ;; Build a thread-safe library.  Unfortunately,
+                           ;; 'configure' invites you to either turn off C++,
+                           ;; Fortran, and the high-level interface (HL), or
+                           ;; to pass '--enable-unsupported'.  Debian
+                           ;; packagers chose to pass '--enable-unsupported'
+                           ;; and we follow their lead here.
+                           "--enable-threadsafe"
+                           "--with-pthread"
+                           "--enable-unsupported")
        ;; Use -fPIC to allow the R bindings to link with the static libraries
        #:make-flags (list "CFLAGS=-fPIC"
                           "CXXFLAGS=-fPIC")
@@ -1093,7 +1105,9 @@ Swath).")
     (arguments
      (substitute-keyword-arguments (package-arguments hdf5)
        ((#:configure-flags flags)
-        ``("--enable-parallel" ,@(delete "--enable-cxx" ,flags)))
+        ``("--enable-parallel"
+           ,@(delete "--enable-cxx"
+                     (delete "--enable-threadsafe" ,flags))))
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'build 'mpi-setup
@@ -1102,7 +1116,7 @@ Swath).")
              (lambda _
                ;; OpenMPI's mpirun will exit with non-zero status if it
                ;; detects an "abnormal termination", i.e. any process not
-               ;; calling MPI_Finalize().  Since the test is explicitely
+               ;; calling MPI_Finalize().  Since the test is explicitly
                ;; avoiding MPI_Finalize so as not to have at_exit and thus
                ;; H5C_flush_cache from being called, mpirun will always
                ;; complain, so turn this test off.
@@ -2168,7 +2182,7 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
     (synopsis "Multifrontal sparse direct solver")
     (description
      "MUMPS (MUltifrontal Massively Parallel sparse direct Solver) solves a
-sparse system of linear equations A x = b using Guassian elimination.")
+sparse system of linear equations A x = b using Gaussian elimination.")
     (license license:cecill-c)))
 
 (define-public mumps-metis
@@ -2206,14 +2220,14 @@ sparse system of linear equations A x = b using Guassian elimination.")
 (define-public r-quadprog
   (package
     (name "r-quadprog")
-    (version "1.5-6")
+    (version "1.5-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quadprog" version))
        (sha256
         (base32
-         "1fnwaz70dhiq4av8apc4wr3yrrpwc2i6lksf8pfi6jw8vzzyahql"))))
+         "0vg7i9p241bwvfdspjbydjrsvgipl6nsb8bjigp0hbbgvxbixx0s"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -4868,13 +4882,12 @@ built on top of DUNE, the Distributed and Unified Numerics Environment.")
        (uri (string-append
              "https://mersenneforum.org/mayer/src/C/mlucas_v" version ".txz"))
        (sha256
-        (base32
-         "1ax12qj9lyvnx4vs3gx7l8r3wx5gjbsdswp5f00ik9z0wz7xf297"))))
+        (base32 "0h4xj6pyyac79ka5ibqjilfa3s9j3yxnzgpwc57b54kfh2bj3447"))))
     (build-system gnu-build-system)
     (inputs
      `(("python2" ,python-2)))
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -4908,3 +4921,72 @@ coordinated fashion, as part of the Great Internet Mersenne Prime
 Search (GIMPS).  Mlucas also includes a simple Python script for assignment
 management via the GIMPS project's Primenet server.")
     (license license:gpl2+)))
+
+(define-public nauty
+  (package
+    (name "nauty")
+    (version "2.6r11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pallini.di.uniroma1.it/"
+                    "nauty" (string-join (string-split version #\.) "")
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "05z6mk7c31j70md83396cdjmvzzip1hqb88pfszzc6k4gy8h3m2y"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "lib"))
+    (arguments
+     `(#:test-target "checks"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Default make target does not build all available
+         ;; executables.  Create them now.
+         (add-after 'build 'build-extra-programs
+           (lambda _
+             (for-each (lambda (target) (invoke "make" target))
+                       '("blisstog" "bliss2dre" "checks6" "sumlines"))
+             #t))
+         ;; Upstream does not provide any install target.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib-output (assoc-ref outputs "lib"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/nauty/"))
+                    (include (string-append lib-output "/include/nauty"))
+                    (lib (string-append lib-output "/lib/nauty")))
+               (for-each (lambda (f) (install-file f bin))
+                         '("dreadnaut" "NRswitchg" "addedgeg" "amtog" "biplabg"
+                           "blisstog" "bliss2dre" "catg" "checks6" "complg"
+                           "converseg" "copyg" "countg" "cubhamg" "deledgeg"
+                           "delptg" "directg" "dretodot" "dretog" "genbg"
+                           "genbgL" "geng" "genquarticg" "genrang" "genspecialg"
+                           "gentourng" "gentreeg" "hamheuristic" "labelg"
+                           "linegraphg" "listg" "multig" "newedgeg" "pickg"
+                           "planarg" "ranlabg" "shortg" "showg" "subdivideg"
+                           "sumlines" "twohamg" "vcolg" "watercluster2"))
+               (for-each (lambda (f) (install-file f include))
+                         (find-files "." "\\.h$"))
+               (for-each (lambda (f) (install-file f lib))
+                         (find-files "." "\\.a$"))
+               (for-each (lambda (f) (install-file f doc))
+                         (append '("formats.txt" "README" "schreier.txt")
+                                 (find-files "." "\\.pdf$")))))))))
+    (inputs
+     `(("gmp" ,gmp)))                   ;for sumlines
+    (home-page "https://pallini.di.uniroma1.it/")
+    (synopsis "Library for graph automorphisms")
+    (description "@code{nauty} (No AUTomorphisms, Yes?) is a set of
+procedures for computing automorphism groups of graphs and digraphs.
+
+@code{nauty} computes graph information in the form of a set of
+generators, the size of the group, and the orbits of the group; it can
+also produce a canonical label.  The @code{nauty} suite is written in
+C and comes with a command-line interface, a collection of
+command-line tools, and an Application Programming Interface (API).
+
+This package provides the static libraries required to run programs
+compiled against the nauty library.")
+    (license license:asl2.0)))

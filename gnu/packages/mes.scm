@@ -60,46 +60,48 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (license (list gpl3+ lgpl3+))))
 
 (define-public mes
-  (let ((triplet "i686-unknown-linux-gnu"))
-    (package
-      (name "mes")
-      (version "0.19")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append "mirror://gnu/mes/"
-                                    "mes-" version ".tar.gz"))
-                (sha256
-                 (base32
-                  "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
-      (build-system gnu-build-system)
-      (supported-systems '("i686-linux" "x86_64-linux"))
-      (propagated-inputs
-       `(("mescc-tools" ,mescc-tools)
-         ("nyacc" ,nyacc)))
-      (native-inputs
-       `(("guile" ,guile-2.2)
-         ,@(if (not (string-prefix? "i686-linux" (or (%current-target-system)
-                                                     (%current-system))))
-               ;; Use cross-compiler rather than #:system "i686-linux" to get
-               ;; MesCC 64 bit .go files installed ready for use with Guile.
-               `(("i686-linux-binutils" ,(cross-binutils triplet))
-                 ("i686-linux-gcc" ,(cross-gcc triplet)))
-               '())
-         ("graphviz" ,graphviz)
-         ("help2man" ,help2man)
-         ("perl" ,perl)                 ; build-aux/gitlog-to-changelog
-         ("texinfo" ,texinfo)))
-      (arguments
-       `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
-      (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
-      (description
-       "GNU Mes--Maxwell Equations of Software--brings the Reduced Binary Seed
+  (package
+    (name "mes")
+    (version "0.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mes/"
+                                  "mes-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
+    (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (propagated-inputs
+     `(("mescc-tools" ,mescc-tools)
+       ("nyacc" ,nyacc)))
+    (native-inputs
+     `(("guile" ,guile-2.2)
+       ,@(let ((target-system (or (%current-target-system)
+                                  (%current-system))))
+           (cond
+            ((string-prefix? "x86_64-linux" target-system)
+             ;; Use cross-compiler rather than #:system "i686-linux" to get
+             ;; MesCC 64 bit .go files installed ready for use with Guile.
+             `(("i686-linux-binutils" ,(cross-binutils "i686-unknown-linux-gnu"))
+               ("i686-linux-gcc" ,(cross-gcc "i686-unknown-linux-gnu"))))
+            (else
+             '())))
+       ("graphviz" ,graphviz)
+       ("help2man" ,help2man)
+       ("perl" ,perl)                 ; build-aux/gitlog-to-changelog
+       ("texinfo" ,texinfo)))
+    (arguments
+     `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
+    (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
+    (description
+     "GNU Mes--Maxwell Equations of Software--brings the Reduced Binary Seed
 bootstrap to Guix and aims to help create full source bootstrapping for
 GNU/Linux distributions.  It consists of a mutual self-hosting Scheme
 interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
 Guile.")
-      (home-page "https://gnu.org/software/mes")
-      (license gpl3+))))
+    (home-page "https://gnu.org/software/mes")
+    (license gpl3+)))
 
 (define-public mescc-tools
   (package

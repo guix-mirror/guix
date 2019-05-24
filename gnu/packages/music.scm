@@ -427,7 +427,7 @@ many input formats and provides a customisable Vi-style user interface.")
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("gtk-doc" ,gtk-doc)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-3)
        ("guile" ,guile-2.0)
        ("intltool" ,intltool)
        ("librsvg" ,librsvg)
@@ -2545,7 +2545,7 @@ event-based scripts for scrobbling, notifications, etc.")
 (define-public picard
   (package
     (name "picard")
-    (version "2.0.4")
+    (version "2.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2553,10 +2553,15 @@ event-based scripts for scrobbling, notifications, etc.")
                     "picard/picard-" version ".tar.gz"))
               (sha256
                (base32
-                "0ds3ylpqn717fnzcjrfn05v5xram01bj6n3hwn9igmkd1jgf8vhc"))))
+                "19w5k3bf4886gdycxjds9nkjvir0gwy2r5cqkz0lbls4ikk4y14f"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
+     '(#:use-setuptools? #f
+       #:configure-flags
+       (list "--root=/"
+             ;; Don't phone home or show ‘Check for Update…’ in the Help menu.
+             "--disable-autoupdate")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
@@ -2564,16 +2569,13 @@ event-based scripts for scrobbling, notifications, etc.")
                (("pyfpcalc")
                 (string-append
                  "pyfpcalc', '"
-                 (assoc-ref inputs "chromaprint") "/bin/fpcalc")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "python" "setup.py" "install"
-                     (string-append "--prefix=" (assoc-ref outputs "out"))
-                     "--root=/"))))))
+                 (assoc-ref inputs "chromaprint") "/bin/fpcalc")))
+             #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
     (inputs
      `(("chromaprint" ,chromaprint)
+       ("python-discid" ,python-discid)
        ("python-pyqt" ,python-pyqt)
        ("python-mutagen" ,python-mutagen)))
     (home-page "https://picard.musicbrainz.org/")

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 match)
   #:use-module (newt)
   #:export (run-network-page))
 
@@ -53,32 +55,38 @@ Internet and return the selected technology. For now, only technologies with
                  (string=? type "wifi"))))
             (connman-technologies)))
 
-  (let ((items (technology-items)))
-    (if (null? items)
-        (case (choice-window
-               (G_ "Internet access")
-               (G_ "Continue")
-               (G_ "Exit")
-               (G_ "The install process requires Internet access but no \
+  (match (technology-items)
+    (()
+     (case (choice-window
+            (G_ "Internet access")
+            (G_ "Continue")
+            (G_ "Exit")
+            (G_ "The install process requires Internet access but no \
 network device were found. Do you want to continue anyway?"))
-          ((1) (raise
-                (condition
-                 (&installer-step-break))))
-          ((2) (raise
-                (condition
-                 (&installer-step-abort)))))
-        (run-listbox-selection-page
-         #:info-text (G_ "The install process requires Internet access.\
+       ((1) (raise
+             (condition
+              (&installer-step-break))))
+       ((2) (raise
+             (condition
+              (&installer-step-abort))))))
+    ((technology)
+     ;; Since there's only one technology available, skip the selection
+     ;; screen.
+     technology)
+    ((items ...)
+     (run-listbox-selection-page
+      #:info-text (G_ "The install process requires Internet access.\
  Please select a network device.")
-         #:title (G_ "Internet access")
-         #:listbox-items items
-         #:listbox-item->text technology->text
-         #:button-text (G_ "Exit")
-         #:button-callback-procedure
-         (lambda _
-           (raise
-            (condition
-             (&installer-step-abort))))))))
+      #:title (G_ "Internet access")
+      #:listbox-items items
+      #:listbox-item->text technology->text
+      #:listbox-height (min (+ (length items) 2) 10)
+      #:button-text (G_ "Exit")
+      #:button-callback-procedure
+      (lambda _
+        (raise
+         (condition
+          (&installer-step-abort))))))))
 
 (define (find-technology-by-type technologies type)
   "Find and return a technology with the given TYPE in TECHNOLOGIES list."

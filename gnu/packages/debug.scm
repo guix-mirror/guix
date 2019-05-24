@@ -313,7 +313,7 @@ down the road.")
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description
-       "Stress Make is a customized GNU Make that explicitely manages the order
+       "Stress Make is a customized GNU Make that explicitly manages the order
 in which concurrent jobs are run to provoke erroneous behavior into becoming
 manifest.  It can run jobs in the order in which they're launched, in backwards
 order, or in random order.  The thought is that if code builds correctly with

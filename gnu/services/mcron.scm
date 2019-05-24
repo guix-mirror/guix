@@ -121,7 +121,9 @@ files."
                         (cons* "GUILE_AUTO_COMPILE=0"
                                "PATH=/run/current-system/profile/bin"
                                (remove (cut string-prefix? "PATH=" <>)
-                                       (environ)))))
+                                       (environ)))
+
+                        #:log-file "/var/log/mcron.log"))
               (stop #~(make-kill-destructor))
 
               (actions

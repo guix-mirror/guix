@@ -368,7 +368,7 @@ driven and does not detract you from your daily work.")
 (define-public next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -377,7 +377,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0a066f56hnb9znbwnv1blm31j0ysv05n4wzlkli0zgw087c9047x"))
+         "1bif1k738knhifxhkn0d2x1m521zkx40pri44vyjqncp9r95hkbk"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -399,7 +399,7 @@ driven and does not detract you from your daily work.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("webkitgtk" ,webkitgtk-2.24)))
     (native-inputs
-     `(("gcc-7" ,gcc-7) ; needed because webkitgtk-2.22 is compiled with gcc-7
+     `(("gcc-7" ,gcc-7) ; needed because webkitgtk-2.22 and above are compiled with gcc-7
        ("pkg-config" ,pkg-config)))
     (home-page "https://next.atlas.engineer")
     (synopsis "Infinitely extensible web-browser (user interface only)")
@@ -459,6 +459,10 @@ features for productive professionals.")
        ;; Lisp libraries:
        ("trivial-features" ,sbcl-trivial-features)
        ("alexandria" ,sbcl-alexandria)
+       ("anaphora" ,sbcl-anaphora)
+       ("closer-mop" ,sbcl-closer-mop)
+       ("log4cl" ,sbcl-log4cl)
+       ("find-port" ,sbcl-find-port)
        ("cl-strings" ,sbcl-cl-strings)
        ("cl-string-match" ,sbcl-cl-string-match)
        ("puri" ,sbcl-puri)

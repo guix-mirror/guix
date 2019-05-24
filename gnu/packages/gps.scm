@@ -106,7 +106,7 @@ manipulate maps.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/freefoote/gpscorrelate")
+                      (url "https://github.com/dfandrich/gpscorrelate")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -134,7 +134,7 @@ manipulate maps.")
          ("docbook-xml" ,docbook-xml)
          ("docbook-xsl" ,docbook-xsl)
          ("libxslt" ,libxslt)))
-      (home-page "http://freefoote.dview.net/linux/gpscorrelate")
+      (home-page "https://dfandrich.github.io/gpscorrelate/")
       (synopsis "GPS photo correlation tool to geo-localize images")
       (description
        "GPS Correlate is a program to match a recorded GPS track with the EXIF

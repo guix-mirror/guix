@@ -1060,9 +1060,15 @@ dispatches events from it.")))
          ;; them.
          (simple-service 'mtp udev-service-type (list libmtp))
 
-         ;; The D-Bus clique.
+         ;; NetworkManager and its applet.
          (service network-manager-service-type)
          (service wpa-supplicant-service-type)    ;needed by NetworkManager
+         (simple-service 'network-manager-applet
+                         profile-service-type
+                         (list network-manager-applet))
+         (service modem-manager-service-type)
+
+         ;; The D-Bus clique.
          (service avahi-service-type)
          (udisks-service)
          (service upower-service-type)
