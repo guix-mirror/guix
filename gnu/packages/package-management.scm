@@ -272,6 +272,7 @@
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
          ("zlib" ,zlib)                           ;for 'guix publish'
+         ("lzlib" ,lzlib)            ;for 'guix publish' and 'guix substitute'
 
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
