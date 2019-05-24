@@ -556,16 +556,15 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.32.0")
+   (version "2.32.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version)  "/"
                                 name "-" version ".tar.xz"))
-            (patches (search-patches "at-spi2-core-meson-compat.patch"))
             (sha256
              (base32
-              "083j1v7kdjrpjsv1b9dl3d8xqj39jyp4cfn8i9gbbm7q2g93b923"))))
+              "0lqd7gsl471v6538iighkvb21gjglcb9pklvas32rjpsxcvsjaiw"))))
    (build-system meson-build-system)
    (outputs '("out" "doc"))
    (arguments
