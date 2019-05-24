@@ -494,29 +494,28 @@ perhaps not yet read."
 
 
 ;; High level functions.
-(define* (lzread! decoder file-port bv
+
+(define* (lzread! decoder port bv
                   #:optional (start 0) (count (bytevector-length bv)))
-  "Read up to COUNT bytes from FILE-PORT into BV at offset START.  Return the
+  "Read up to COUNT bytes from PORT into BV at offset START.  Return the
 number of uncompressed bytes actually read; it is zero if COUNT is zero or if
 the end-of-stream has been reached."
-  ;; WARNING: Because we don't alternate between lz-reads and lz-writes, we can't
-  ;; process more than lz-decompress-write-size from the file-port.
-  (when (> count (lz-decompress-write-size decoder))
-    (set! count (lz-decompress-write-size decoder)))
-  (let ((file-bv (get-bytevector-n file-port count)))
-    (unless (eof-object? file-bv)
-      (lz-decompress-write decoder file-bv 0 (bytevector-length file-bv))))
-  (let ((read 0))
-    (let loop ((rd 0))
-      (if (< start (bytevector-length bv))
-          (begin
-            (set! rd (lz-decompress-read decoder bv start (- (bytevector-length bv) start)))
-            (set! start (+ start rd))
-            (set! read (+ read rd)))
-          (set! rd 0))
-      (unless (= rd 0)
-        (loop rd)))
-    read))
+  (define (feed-decoder! decoder)
+    ;; Feed DECODER with data read from PORT.
+    (match (get-bytevector-n port (lz-decompress-write-size decoder))
+      ((? eof-object? eof) eof)
+      (bv (lz-decompress-write decoder bv))))
+
+  (let loop ((read 0)
+             (start start))
+    (cond ((< read count)
+           (match (lz-decompress-read decoder bv start (- count read))
+             (0 (if (eof-object? (feed-decoder! decoder))
+                    read
+                    (loop read start)))
+             (n (loop (+ read n) (+ start n)))))
+          (else
+           read))))
 
 (define (lzwrite! encoder source source-offset source-count
                   target target-offset target-count)
