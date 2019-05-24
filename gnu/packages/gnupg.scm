@@ -85,7 +85,16 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0z696dmhfxm2n6pmr8b857wwljq9h633yi99bhbn7h88f91rigds"))))
+        "0z696dmhfxm2n6pmr8b857wwljq9h633yi99bhbn7h88f91rigds"))
+      (patches (search-patches "libgpg-error-gawk-compat.patch"))
+      ;; XXX: Remove this snippet with the gawk patch above.  It avoids having
+      ;; to call autoreconf for the Makefile.am change to take effect.
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          (substitute* "src/Makefile.in"
+            (("namespace=errnos") "pkg_namespace=errnos"))
+          #t))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")

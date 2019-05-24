@@ -994,6 +994,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
+  %D%/packages/patches/libgpg-error-gawk-compat.patch		\
   %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgdata-fix-tests.patch			\
