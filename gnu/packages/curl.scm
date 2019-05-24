@@ -51,15 +51,14 @@
 (define-public curl
   (package
    (name "curl")
-   (replacement curl-7.65.0)
-   (version "7.64.1")
+   (version "7.65.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1cwg2skp953cqxbwn9ychy0lv4p3l38bsy3zz9xy6747gwm36llj"))))
+              "1kb6p510m0n0y1c8fjxbcs6dyaqgm8i54pjvj29zc14lj9ix4rkp"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -143,19 +142,6 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
-
-(define-public curl-7.65.0
-  (package
-    (inherit curl)
-    (version "7.65.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://curl.haxx.se/download/curl-"
-                            version ".tar.xz"))
-        (sha256
-         (base32
-          "1kb6p510m0n0y1c8fjxbcs6dyaqgm8i54pjvj29zc14lj9ix4rkp"))))))
 
 (define-public kurly
   (package
