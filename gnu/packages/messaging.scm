@@ -376,7 +376,7 @@ authentication.")
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pidgin/Pidgin/"
-                           version "/" name "-" version ".tar.bz2"))
+                           version "/pidgin-" version ".tar.bz2"))
        (sha256
         (base32
          "1y5p2mq3bfw35b66jsafmbva0w5gg1k99y9z8fyp3jfksqv3agcc"))
