@@ -145,8 +145,8 @@ Call (PROC MODULE RESULT) for each module that is found."
   "Return the list of package modules found in PATH, a list of directories to
 search.  Entries in PATH can be directory names (strings) or (DIRECTORY
 . SUB-DIRECTORY) pairs, in which case modules are searched for beneath
-SUB-DIRECTORY."
-  (fold-modules cons '() path #:warn warn))
+SUB-DIRECTORY. Modules are listed in the order they appear on the path."
+  (reverse (fold-modules cons '() path #:warn warn)))
 
 (define (fold-module-public-variables* proc init modules)
   "Call (PROC MODULE SYMBOL VARIABLE) for each variable exported by one of MODULES,
