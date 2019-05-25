@@ -193,14 +193,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-shapely
   (package
     (name "python-shapely")
-    (version "1.6.3")
+    (version "1.6.4.post2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Shapely" version))
        (sha256
         (base32
-         "0svc58dzcw9gj92b4sgq35sdxkf85z0qwlzxarkzq4bp3h8jy58l"))))
+         "03r42fmd9alp6r3q95ad6rldq2f7n1wimrw53zy5kpn33yv7pf64"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
