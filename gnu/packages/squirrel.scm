@@ -19,7 +19,7 @@
 (define-module (gnu packages squirrel)
   #:use-module (gnu packages)
   #:use-module (gnu packages cmake)
-  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (guix build-system cmake)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
