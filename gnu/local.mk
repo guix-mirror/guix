@@ -1283,6 +1283,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
+  %D%/packages/patches/supertux-fix-build-with-gcc5.patch	\
+  %D%/packages/patches/supertux-unbundle-squirrel.patch		\
   %D%/packages/patches/swig-guile-gc.patch			\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
