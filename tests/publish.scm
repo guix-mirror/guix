@@ -469,6 +469,35 @@ FileSize: ~a~%"
                          (assoc-ref narinfo "FileSize"))
                         (response-code compressed))))))))))
 
+(test-equal "with cache, vanishing item"         ;<https://bugs.gnu.org/33897>
+  200
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6795"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6795)
+
+       ;; Make sure that, even if ITEM disappears, we're still able to fetch
+       ;; it.
+       (let* ((base     "http://localhost:6795/")
+              (item     (add-text-to-store %store "random" (random-text)))
+              (part     (store-path-hash-part item))
+              (url      (string-append base part ".narinfo"))
+              (cached   (string-append cache
+                                       (if (zlib-available?)
+                                           "/gzip/" "/none/")
+                                       (basename item)
+                                       ".narinfo"))
+              (response (http-get url)))
+         (and (= 404 (response-code response))
+              (wait-for-file cached)
+              (begin
+                (delete-paths %store (list item))
+                (response-code (pk 'response (http-get url))))))))))
+
 (test-equal "/log/NAME"
   `(200 #t application/x-bzip2)
   (let ((drv (run-with-store %store

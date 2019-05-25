@@ -350,6 +350,9 @@ appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
                  "/" (basename item)
                  ".narinfo"))
 
+(define (hash-part-mapping-cache-file directory hash)
+  (string-append directory "/hashes/" hash))
+
 (define run-single-baker
   (let ((baking (make-weak-value-hash-table))
         (mutex  (make-mutex)))
@@ -403,6 +406,27 @@ items.  Failing that, we could eventually have to recompute them and return
             +inf.0
             (expiration-time file))))))
 
+(define (hash-part->path* store hash cache)
+  "Like 'hash-part->path' but cached results under CACHE.  This ensures we can
+still map HASH to the corresponding store file name, even if said store item
+vanished from the store in the meantime."
+  (let ((cached (hash-part-mapping-cache-file cache hash)))
+    (catch 'system-error
+      (lambda ()
+        (call-with-input-file cached read-string))
+      (lambda args
+        (if (= ENOENT (system-error-errno args))
+            (match (hash-part->path store hash)
+              ("" "")
+              (result
+               (mkdir-p (dirname cached))
+               (call-with-output-file (string-append cached ".tmp")
+                 (lambda (port)
+                   (display result port)))
+               (rename-file (string-append cached ".tmp") cached)
+               result))
+            (apply throw args))))))
+
 (define* (render-narinfo/cached store request hash
                                 #:key ttl (compression %no-compression)
                                 (nar-path "nar")
@@ -412,13 +436,17 @@ CACHE, then send it; otherwise, return 404 and \"bake\" that nar and narinfo
 requested using POOL."
   (define (delete-entry narinfo)
     ;; Delete NARINFO and the corresponding nar from CACHE.
-    (let ((nar (string-append (string-drop-right narinfo
-                                                 (string-length ".narinfo"))
-                              ".nar")))
+    (let* ((nar     (string-append (string-drop-right narinfo
+                                                      (string-length ".narinfo"))
+                                   ".nar"))
+           (base    (basename narinfo ".narinfo"))
+           (hash    (string-take base (string-index base #\-)))
+           (mapping (hash-part-mapping-cache-file cache hash)))
       (delete-file* narinfo)
-      (delete-file* nar)))
+      (delete-file* nar)
+      (delete-file* mapping)))
 
-  (let* ((item        (hash-part->path store hash))
+  (let* ((item        (hash-part->path* store hash cache))
          (compression (actual-compression item compression))
          (cached      (and (not (string-null? item))
                            (narinfo-cache-file cache item
