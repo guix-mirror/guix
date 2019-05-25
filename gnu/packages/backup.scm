@@ -73,7 +73,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.18.2")
+    (version "0.7.19")
     (source
      (origin
       (method url-fetch)
@@ -82,7 +82,7 @@
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256
-       (base32 "0j37dgyji36hvb5dbzlmh5rj83jwhni02yq16g6rd3hj8f7qhdn2"))))
+       (base32 "0ag9dknslxlasslwfjhqgcqbkb1mvzzx93ry7lch2lfzcdd91am6"))))
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)       ; setsid command, for the tests
