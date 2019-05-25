@@ -4560,37 +4560,35 @@ navigate code in a tree-like fashion.")
       (license license:gpl3+))))
 
 (define-public emacs-lispy
-  ;; Release 0.26.0 was almost 3 years ago, and there have been ~772 commits
-  ;; since.
-  (let ((commit "f94cfc6b8f9c3afe7d028c366928049c011023de")
-        (revision "1"))
-    (package
-      (name "emacs-lispy")
-      (version (git-version "0.26.0" revision commit))
-      (home-page "https://github.com/abo-abo/lispy")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (sha256
-                 (base32
-                  "1bm2cpwizg1qfpm377gpx1af1hm5maw69if1csnk5vwaphmv8c4g"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-ace-window" ,emacs-ace-window)
-         ("emacs-iedit" ,emacs-iedit)
-         ("emacs-ivy" ,emacs-ivy)
-         ("emacs-hydra" ,emacs-hydra)
-         ("emacs-zoutline" ,emacs-zoutline)))
-      (synopsis "Modal S-expression editing")
-      (description
-       "Due to the structure of Lisp syntax it's very rare for the programmer
+  (package
+    (name "emacs-lispy")
+    (version "0.27.0")
+    (home-page "https://github.com/abo-abo/lispy")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/abo-abo/lispy")
+                    (commit version)))
+              (sha256
+               (base32
+                "1cm7f4pyl73f3vhkb7ah6bbbrj2sa7n0p31g09k7dy4zgx04bgw6"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ace-window" ,emacs-ace-window)
+       ("emacs-iedit" ,emacs-iedit)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-hydra" ,emacs-hydra)
+       ("emacs-zoutline" ,emacs-zoutline)))
+    (synopsis "Modal S-expression editing")
+    (description
+     "Due to the structure of Lisp syntax it's very rare for the programmer
 to want to insert characters right before \"(\" or right after \")\".  Thus
 unprefixed printable characters can be used to call commands when the point is
 at one of these special locations.  Lispy provides unprefixed keybindings for
 S-expression editing when point is at the beginning or end of an
 S-expression.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-lispyville
   (let ((commit "d28b937f0cabd8ce61e2020fe9a733ca80d82c74")
