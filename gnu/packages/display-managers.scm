@@ -75,6 +75,15 @@
        ("linux-pam" ,linux-pam)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+
+       ;; Some user-defined themes use QtQuick components internally.  Adding
+       ;; QtQuick & co. here; they end up in QML2_IMPORT_PATH thanks to
+       ;; 'wrap-qt-program'.
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
+
        ("shadow" ,shadow)
        ("wayland" ,wayland)))
     (arguments
