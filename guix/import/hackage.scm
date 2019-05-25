@@ -51,34 +51,35 @@
             hackage-package?))
 
 (define ghc-standard-libraries
-  ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as
-  ;; some packages list it.
-  '("array"
-    "base"
-    "bin-package-db"
-    "binary"
-    "bytestring"
+  ;; List of libraries distributed with ghc (8.4.3).
+  ;; https://downloads.haskell.org/~ghc/8.4.3/docs/html/users_guide/8.4.3-notes.html
+  '("ghc"
     "cabal" ;; in the output of `ghc-pkg list` Cabal is uppercased, but
             ;; hackage-name->package-name takes this into account.
+    "win32" ;; similarly uppercased
+    "array"
+    "base"
+    "binary"
+    "bytestring"
     "containers"
     "deepseq"
     "directory"
     "filepath"
-    "ghc"
+    "ghc-boot"
+    "ghc-compact"
     "ghc-prim"
+    "ghci"
     "haskeline"
-    "hoopl"
     "hpc"
     "integer-gmp"
-    "pretty"
+    "mtl"
+    "parsec"
     "process"
-    "rts"
     "template-haskell"
-    "terminfo"
+    "text"
     "time"
     "transformers"
     "unix"
-    "win32"
     "xhtml"))
 
 (define package-name-prefix "ghc-")
