@@ -157,14 +157,14 @@
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.4.3")
+    (version "5.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "063v69x7spyclyaxrd3gmzj3p16q5ayg97xqhwb1kyn22a9pwip2"))))
+         "1v95vb5385qscfdvphv8l2w22bmir3d7yhpi02n58v3mlqy1r3l2"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests does not return and times out.
