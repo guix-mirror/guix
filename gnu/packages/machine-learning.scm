@@ -576,12 +576,13 @@ in terms of new algorithms.")
     (version "4.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ReactiveX/RxCpp/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ReactiveX/RxCpp.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "1smxrcm0s6bz05185dx1i2xjgn47rq7m247pblil6p3bmk3lkfyk"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1rdpa3jlc181jd08nk437aar085h28i45s6nzrv65apb3xyyz0ij"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
