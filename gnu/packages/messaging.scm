@@ -371,15 +371,14 @@ authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.12.0")
+    (version "2.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pidgin/Pidgin/"
                            version "/pidgin-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1y5p2mq3bfw35b66jsafmbva0w5gg1k99y9z8fyp3jfksqv3agcc"))
+        (base32 "13vdqj70315p9rzgnbxjp9c51mdzf1l4jg1kvnylc4bidw61air7"))
        (patches (search-patches "pidgin-add-search-path.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
