@@ -431,7 +431,7 @@ authentication.")
             (files (list (string-append "lib/purple-"
                                         (version-major version))
                          "lib/pidgin")))))
-    (home-page "http://www.pidgin.im/")
+    (home-page "https://www.pidgin.im/")
     (synopsis "Graphical multi-protocol instant messaging client")
     (description
      "Pidgin is a modular instant messaging client that supports many popular
