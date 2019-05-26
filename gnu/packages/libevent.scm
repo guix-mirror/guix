@@ -150,19 +150,6 @@ resolution, asynchronous file system operations, and threading primitives.")
     ;; details.  Documentation is CC-BY 4.0 as of 1.12.0; see 'LICENSE-docs'.
     (license (list expat cc-by4.0))))
 
-;; This version is required for Node versions < 10.
-(define-public libuv-1.19
-  (package
-    (inherit libuv)
-    (version "1.19.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dist.libuv.org/dist/v" version
-                                  "/libuv-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1msk9ac1z69whww88ibrwjqkd1apdla6l77cm2fwy5kigq0z5g3w"))))))
-
 (define-public perl-anyevent
   (package
     (name "perl-anyevent")
