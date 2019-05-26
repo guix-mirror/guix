@@ -407,7 +407,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.7.1")
+    (version "0.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -416,7 +416,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q0yg2zna7gjbvpaswyykbg3lr9k3c8l8fydqa407xrgq77lahq4"))
+                "0g0xa1mzvan0sl1p5c784j2g5mcw9kd2b7wiahy06gy0c1nmbcnp"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
