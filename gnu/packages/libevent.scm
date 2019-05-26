@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -41,7 +41,7 @@
 (define-public libevent
   (package
     (name "libevent")
-    (version "2.1.8")
+    (version "2.1.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -49,11 +49,7 @@
                    version "-stable/libevent-" version "-stable.tar.gz"))
              (sha256
               (base32
-               "1hhxnxlr0fsdv7bdmzsnhdz16fxf3jg2r6vyljcl3kj6pflcap4n"))
-             (patches (search-patches "libevent-2.1-dns-tests.patch"
-                                      ;; XXX: Try removing this for > 2.1.8.
-                                      ;; https://github.com/libevent/libevent/issues/452
-                                      "libevent-2.1-skip-failing-test.patch"))))
+               "1c25928gdv495clxk2v1d4gkr5py7ack4gx2n7d13frnld0syr78"))))
     (build-system gnu-build-system)
     (arguments
       ;; This skips some of the tests which fail on armhf and aarch64.
