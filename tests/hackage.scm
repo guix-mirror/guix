@@ -207,8 +207,41 @@ library
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
 (test-assert "hackage->guix-package test 6"
-  (eval-test-with-cabal test-cabal-6
-                        #:cabal-environment '(("impl" . "ghc-7.8"))))
+  (mock
+   ((guix import hackage) hackage-fetch
+    (lambda (name-version)
+      (call-with-input-string test-cabal-6
+        read-cabal)))
+   (match (hackage->guix-package "foo")
+     (('package
+        ('name "ghc-foo")
+        ('version "1.0.0")
+        ('source
+         ('origin
+           ('method 'url-fetch)
+           ('uri ('string-append
+                  "https://hackage.haskell.org/package/foo/foo-"
+                  'version
+                  ".tar.gz"))
+           ('sha256
+            ('base32
+             (? string? hash)))))
+        ('build-system 'haskell-build-system)
+        ('inputs
+         ('quasiquote
+          (("ghc-b" ('unquote 'ghc-b))
+           ("ghc-http" ('unquote 'ghc-http))
+           ("ghc-mtl" ('unquote 'ghc-mtl)))))
+        ('native-inputs
+         ('quasiquote
+          (("ghc-haskell-gi" ('unquote 'ghc-haskell-gi)))))
+        ('home-page "http://test.org")
+        ('synopsis (? string?))
+        ('description (? string?))
+        ('license 'bsd-3))
+      #t)
+     (x
+      (pk 'fail x #f)))))
 
 (test-assert "read-cabal test 1"
   (match (call-with-input-string test-read-cabal-1 read-cabal)

@@ -279,13 +279,11 @@ representation of a Cabal file as produced by 'read-cabal'."
         (license ,(string->license (cabal-package-license cabal))))
      (append hackage-dependencies hackage-native-dependencies))))
 
-(define hackage->guix-package
-  (memoize
-   (lambda* (package-name #:key
-                          (include-test-dependencies? #t)
-                          (port #f)
-                          (cabal-environment '()))
-     "Fetch the Cabal file for PACKAGE-NAME from hackage.haskell.org, or, if the
+(define* (hackage->guix-package package-name #:key
+                                (include-test-dependencies? #t)
+                                (port #f)
+                                (cabal-environment '()))
+  "Fetch the Cabal file for PACKAGE-NAME from hackage.haskell.org, or, if the
 called with keyword parameter PORT, from PORT.  Return the `package'
 S-expression corresponding to that package, or #f on failure.
 CABAL-ENVIRONMENT is an alist defining the environment in which the Cabal
@@ -295,18 +293,22 @@ symbol 'true' or 'false'.  The value associated with other keys has to conform
 to the Cabal file format definition.  The default value associated with the
 keys \"os\", \"arch\" and \"impl\" is \"linux\", \"x86_64\" and \"ghc\"
 respectively."
-     (let ((cabal-meta (if port
-                           (read-cabal (canonical-newline-port port))
-                           (hackage-fetch package-name))))
-       (and=> cabal-meta (compose (cut hackage-module->sexp <>
-                                       #:include-test-dependencies?
-                                       include-test-dependencies?)
-                                  (cut eval-cabal <> cabal-environment)))))))
+  (let ((cabal-meta (if port
+                        (read-cabal (canonical-newline-port port))
+                        (hackage-fetch package-name))))
+    (and=> cabal-meta (compose (cut hackage-module->sexp <>
+                                    #:include-test-dependencies?
+                                    include-test-dependencies?)
+                               (cut eval-cabal <> cabal-environment)))))
+
+(define hackage->guix-package/m                   ;memoized variant
+  (memoize hackage->guix-package))
 
 (define* (hackage-recursive-import package-name . args)
   (recursive-import package-name #f
                     #:repo->guix-package (lambda (name repo)
-                                           (apply hackage->guix-package (cons name args)))
+                                           (apply hackage->guix-package/m
+                                                  (cons name args)))
                     #:guix-name hackage-name->package-name))
 
 (define (hackage-package? package)
