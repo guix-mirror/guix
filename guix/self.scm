@@ -603,7 +603,21 @@ Info manual."
   (define (wrap daemon)
     (program-file "guix-daemon"
                   #~(begin
+                      ;; Refer to the right 'guix' command for 'guix
+                      ;; substitute' & co.
                       (setenv "GUIX" #$command)
+
+                      ;; Honor the user's settings rather than those hardcoded
+                      ;; in the 'guix-daemon' package.
+                      (unless (getenv "GUIX_STATE_DIRECTORY")
+                        (setenv "GUIX_STATE_DIRECTORY"
+                                #$(string-append %localstatedir "/guix")))
+                      (unless (getenv "GUIX_CONFIGURATION_DIRECTORY")
+                        (setenv "GUIX_CONFIGURATION_DIRECTORY"
+                                #$(string-append %sysconfdir "/guix")))
+                      (unless (getenv "NIX_STORE_DIR")
+                        (setenv "NIX_STORE_DIR" %storedir))
+
                       (apply execl #$(file-append daemon "/bin/guix-daemon")
                              "guix-daemon" (cdr (command-line))))))
 
