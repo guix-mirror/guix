@@ -402,13 +402,13 @@ authentication.")
        ;; TODO: gstreamer: patches needed to support gstreamer-1.0 or later
        ;; TODO: farstream
        ;; TODO: meanwhile
-       ;; TODO: network-manager
        ;; TODO: gtkspell
        ;; TODO: libxephyr
        ;; TODO: libgadu
        ("libxslt" ,libxslt)
        ("avahi" ,avahi)
        ("ncurses" ,ncurses)
+       ("network-manager" ,network-manager)
        ("sqlite" ,sqlite)
        ("libice" ,libice)
        ("libsm" ,libsm)
@@ -419,7 +419,6 @@ authentication.")
        (list "--disable-gtkspell"
              "--disable-tcl"
              "--disable-meanwhile"
-             "--disable-nm"  ; XXX remove when we have network-manager
              "--disable-vv"  ; XXX remove when we have farstream and gstreamer
              "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
              "--enable-cyrus-sasl"
