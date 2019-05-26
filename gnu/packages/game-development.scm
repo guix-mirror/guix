@@ -1521,5 +1521,4 @@ the original, ioquake3 has been cleaned up, bugs have been fixed and features
 added.  The permanent goal is to create the open source Quake 3 distribution
 upon which people base their games, ports to new platforms, and other
 projects.")
-      (supported-systems '("x86_64-linux" "i686-linux"))
       (license license:gpl2))))
