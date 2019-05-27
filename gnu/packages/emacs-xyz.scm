@@ -9072,15 +9072,12 @@ It should enable you to implement low-level X11 applications.")
                ;; Add a .desktop file to xsessions
                (mkdir-p xsessions)
                (mkdir-p bin)
-               (with-output-to-file
-                   (string-append xsessions "/exwm.desktop")
-                 (lambda _
-                   (format #t "[Desktop Entry]~@
-                     Name=~a~@
-                     Comment=~a~@
-                     Exec=~a~@
-                     TryExec=~:*~a~@
-                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               (make-desktop-entry-file
+                (string-append xsessions "/exwm.desktop")
+                #:name ,name
+                #:comment ,synopsis
+                #:exec exwm-executable
+                #:try-exec exwm-executable)
                ;; Add a shell wrapper to bin
                (with-output-to-file exwm-executable
                  (lambda _
