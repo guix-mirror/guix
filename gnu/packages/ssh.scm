@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -741,3 +741,37 @@ optimized execution algorithms, as well as gathering results and merging
 identical outputs, or retrieving return codes.  ClusterShell takes advantage
 of existing remote shell facilities such as SSH.")
     (license license:lgpl2.1+)))
+
+(define-public endlessh
+  (package
+    (name "endlessh")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/skeeto/endlessh/releases/"
+                            "download/" version "/endlessh-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0hhsr65hzrcb7ylskmxyr92svzndhks8hqzn8hvg7f7j89rkvq5k"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "CC=gcc")
+       #:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no configure script
+    (home-page "https://github.com/skeeto/endlessh")
+    (synopsis "SSH tarpit that slowly sends an endless banner")
+    (description
+     "Endlessh is an SSH tarpit that very slowly sends an endless, random SSH
+banner.  It keeps SSH clients locked up for hours or even days at a time.  The
+purpose is to put your real SSH server on another port and then let the script
+kiddies get stuck in this tarpit instead of bothering a real server.
+
+Since the tarpit is in the banner before any cryptographic exchange occurs, this
+program doesn't depend on any cryptographic libraries.  It's a simple,
+single-threaded, standalone C program.  It uses @code{poll()} to trap multiple
+clients at a time.")
+    (license license:unlicense)))
