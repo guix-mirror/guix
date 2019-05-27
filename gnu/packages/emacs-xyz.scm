@@ -807,7 +807,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
@@ -815,7 +815,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
              "https://elpa.gnu.org/packages/relint-" version ".el"))
        (sha256
         (base32
-         "0h9nc84yv5lmbaa8any6i3bqcn6xn1gy6cv6kqaywn0nnqrm17i1"))))
+         "1bl6m2h7131acbmr0kqfnjjpv2syiv2mxfnm61g874ynnvkmmkm3"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
