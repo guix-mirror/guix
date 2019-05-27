@@ -168,7 +168,7 @@ so use it only when needed. "
   (let ((proc (lzlib-procedure int "LZ_compress_read" (list '* '* int))))
     (lambda* (encoder lzfile-bv #:optional (start 0) (count (bytevector-length lzfile-bv)))
       "Read up to COUNT bytes from the encoder stream, storing the results in LZFILE-BV.
-Return the number of uncompressed bytes written, a strictly positive integer."
+Return the number of uncompressed bytes written, a positive integer."
       (let ((ret (proc (lz-encoder->pointer encoder)
                        (bytevector->pointer lzfile-bv start)
                        count)))
