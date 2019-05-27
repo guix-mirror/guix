@@ -260,7 +260,7 @@ given Haskell package."
   #t)
 
 (define* (haddock #:key outputs haddock? haddock-flags #:allow-other-keys)
-  "Run the test suite of a given Haskell package."
+  "Generate the Haddock documentation of a given Haskell package."
   (when haddock?
     (run-setuphs "haddock" haddock-flags))
   #t)
