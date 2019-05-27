@@ -7556,22 +7556,18 @@ on items and player adaptability for character progression.")
            ;; game, so we borrow SCUMMVM's.
            (let ((apps (string-append out "/share/applications")))
              (mkdir-p apps)
-             (with-output-to-file (string-append apps "/drascula.desktop")
-               (lambda _
-                 (format #t
-                         "[Desktop Entry]~@
-                     Name=Drascula: The Vampire Strikes Back~@
-                     GenericName=Drascula~@
-                     Exec=~a/bin/drascula~@
-                     Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
-                     Categories=AdventureGame;Game;RolePlaying;~@
-                     Keywords=game;adventure;roleplaying;2D,fantasy;~@
-                     Comment=Classic 2D point and click adventure game~@
-                     Comment[de]=klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier~@
-                     Comment[fr]=Jeux classique d'aventure pointer-et-cliquer en 2D~@
-                     Comment[it]=Gioco classico di avventura punta e clicca 2D~@
-                     Type=Application~%"
-                         out scummvm))))
+             (make-desktop-entry-file
+              (string-append apps "/drascula.desktop")
+              #:name "Drascula: The Vampire Strikes Back"
+              #:generic-name "Drascula"
+              #:exec (string-append out "/bin/drascula")
+              #:icon (string-append scummvm "/share/icons/hicolor/scalable/apps/scummvm.svg")
+              #:categories '("AdventureGame" "Game" "RolePlaying")
+              #:keywords '("game" "adventure" "roleplaying" "2D" "fantasy")
+              #:comment '((#f "Classic 2D point and click adventure game")
+                          ("de" "Klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier")
+                          ("fr" "Jeu classique d'aventure pointer-et-cliquer en 2D")
+                          ("it" "Gioco classico di avventura punta e clicca 2D"))))
            #t))))
     (native-inputs
      `(("bash" ,bash)
