@@ -9277,16 +9277,16 @@ functionality is inherited from @code{hcl-mode}.")
 (define-public emacs-exec-path-from-shell
   (package
     (name "emacs-exec-path-from-shell")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://stable.melpa.org/packages/exec-path-from-shell-"
-             version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/exec-path-from-shell")
+             (commit version)))
        (sha256
         (base32
-         "03qjgb81cq1l3j54lvlf98r75vmmgd06mj6qh5wa6mz4xzp4w26r"))))
+         "1ga8bpxngd3ph2hdiik92c612ki71qxw818i6rgx6f6a5r0sbf3p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/exec-path-from-shell")
     (synopsis "Get environment variables such as @var{PATH} from the shell")
