@@ -5259,19 +5259,13 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                         (copy-recursively "game" (string-append data "/game"))
                         ;; launcher
                         (mkdir-p applications)
-                        (with-output-to-file (string-append applications "/"
-                                                            ,name ".desktop")
-                          (lambda ()
-                            (display
-                             (string-append
-                              "[Desktop Entry]
-Name=ToME4
-Comment=" ,synopsis "\n"
-"Exec=" ,name "\n"
-"Icon=" icon "\n"
-"Terminal=false
-Type=Application
-Categories=Game;RolePlaying;\n")))))
+                        (make-desktop-entry-file
+                         (string-append applications "/" ,name ".desktop")
+                         #:name "ToME4"
+                         #:comment ,synopsis
+                         #:exec ,name
+                         #:icon icon
+                         #:categories '("Game" "RolePlaying")))
                       #t)))))
     (home-page "https://te4.org")
     (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
