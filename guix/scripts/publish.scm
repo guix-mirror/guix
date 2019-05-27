@@ -987,10 +987,15 @@ consider using the '--user' option!~%")))
 
       (parameterize ((%public-key public-key)
                      (%private-key private-key))
-        (format #t (G_ "publishing ~a on ~a, port ~d~%")
-                %store-directory
-                (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
-                (sockaddr:port address))
+        (info (G_ "publishing ~a on ~a, port ~d~%")
+              %store-directory
+              (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
+              (sockaddr:port address))
+
+        (when compression
+          (info (G_ "using '~a' compression method, level ~a~%")
+                (compression-type compression) (compression-level compression)))
+
         (when repl-port
           (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
 
