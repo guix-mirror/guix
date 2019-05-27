@@ -777,7 +777,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -785,7 +785,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
              "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
         (base32
-         "0xwfs2mkmgf63sfp5jwmw0ybc8pa0rlxh5aqwb348ddgmclv322f"))))
+         "1vv87h0h8ldc1mbsn45w5z1m6jq8j2js4xz23a9ixdby06g60y3g"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
