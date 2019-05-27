@@ -738,6 +738,8 @@ and vice-versa.")
        ("js-strftime" ,js-strftime)
        ("js-highlight" ,js-highlight)
        ("js-es5-shim" ,js-es5-shim)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)))
     (home-page "http://shiny.rstudio.com")
     (synopsis "Easy interactive web applications with R")
     (description
