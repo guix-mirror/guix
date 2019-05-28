@@ -4968,14 +4968,14 @@ of the points.")
 (define-public r-fpc
   (package
     (name "r-fpc")
-    (version "2.1-11.2")
+    (version "2.2-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fpc" version))
        (sha256
         (base32
-         "0wjjp9xn283acfg6cm1wa6fsi7pf0z97227hrnlpmprks3mbj8kr"))))
+         "183awn9fbigsy3rwmg5l39zpfg2zpbb94hkx7k99v2dir8dpdy85"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -4987,8 +4987,7 @@ of the points.")
        ("r-mclust" ,r-mclust)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-prabclus" ,r-prabclus)
-       ("r-robustbase" ,r-robustbase)
-       ("r-trimcluster" ,r-trimcluster)))
+       ("r-robustbase" ,r-robustbase)))
     (home-page "https://cran.r-project.org/web/packages/fpc")
     (synopsis "Flexible procedures for clustering")
     (description
