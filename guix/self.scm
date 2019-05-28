@@ -617,7 +617,7 @@ Info manual."
                         (setenv "GUIX_CONFIGURATION_DIRECTORY"
                                 #$(string-append %sysconfdir "/guix")))
                       (unless (getenv "NIX_STORE_DIR")
-                        (setenv "NIX_STORE_DIR" %storedir))
+                        (setenv "NIX_STORE_DIR" #$%storedir))
 
                       (apply execl #$(file-append daemon "/bin/guix-daemon")
                              "guix-daemon" (cdr (command-line))))))
