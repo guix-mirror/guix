@@ -12946,14 +12946,14 @@ that accept short and long options.")
 (define-public r-wgcna
   (package
     (name "r-wgcna")
-    (version "1.67")
+    (version "1.68")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "WGCNA" version))
        (sha256
         (base32
-         "09387w85lxvwr8ax2i2h602b4dgfv4wbvsl9aj1q0b1vfs4rkk69"))))
+         "1s7gy5vd7x67hpgli8r7ba2z99w3psiyv5hqmrh94zw141dg210a"))))
     (properties `((upstream-name . "WGCNA")))
     (build-system r-build-system)
     (propagated-inputs
