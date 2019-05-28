@@ -313,7 +313,9 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
          (tarball    (download source-url))
          (sysdepends (append
                       (if (needs-zlib? tarball) '("zlib") '())
-                      (map string-downcase (listify meta "SystemRequirements"))))
+                      (filter (lambda (name)
+                                (not (member name invalid-packages)))
+                              (map string-downcase (listify meta "SystemRequirements")))))
          (propagate  (filter (lambda (name)
                                (not (member name (append default-r-packages
                                                          invalid-packages))))
