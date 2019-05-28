@@ -3496,14 +3496,14 @@ timeout.  It can also poll several processes at once.")
 (define-public r-tsp
   (package
     (name "r-tsp")
-    (version "1.1-6")
+    (version "1.1-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TSP" version))
        (sha256
         (base32
-         "1ym97xl2icjpfkrici0wig29w06bb704hp51v7h5liygjlwpkhlc"))))
+         "0rxxhvqi55869dg2p82hzg5kvgcqf9h60cjcg00k3pv9aw4x07kb"))))
     (properties `((upstream-name . "TSP")))
     (build-system r-build-system)
     (propagated-inputs `(("r-foreach" ,r-foreach)))
