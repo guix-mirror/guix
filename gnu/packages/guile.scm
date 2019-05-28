@@ -228,6 +228,8 @@ without requiring the source code to be rewritten.")
                (base32
                 "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))
               (modules '((guix build utils)))
+              (patches (search-patches
+                        "guile-2.2-skip-oom-test.patch"))
 
               ;; Remove the pre-built object files.  Instead, build everything
               ;; from source, at the expense of significantly longer build

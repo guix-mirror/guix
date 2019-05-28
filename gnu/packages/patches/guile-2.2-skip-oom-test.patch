@@ -1,0 +1,25 @@
+Skip 'test-out-of-memory', which is unreliable in Guile 2.2.4:
+
+  https://bugs.gnu.org/34155
+
+--- a/test-suite/standalone/Makefile.in	1969-12-31 19:00:00.000000000 -0500
++++ b/test-suite/standalone/Makefile.in	2019-05-27 16:44:32.302355990 -0400
+@@ -103,7 +103,7 @@
+ 	test-scm-c-bind-keyword-arguments$(EXEEXT) \
+ 	test-srfi-4$(EXEEXT) $(am__append_6) $(am__EXEEXT_1) \
+ 	test-smob-mark$(EXEEXT) test-smob-mark-race$(EXEEXT) \
+-	test-stack-overflow test-out-of-memory
++	test-stack-overflow
+ check_PROGRAMS = test-num2integral$(EXEEXT) test-round$(EXEEXT) \
+ 	test-foreign-object-c$(EXEEXT) test-list$(EXEEXT) \
+ 	test-unwind$(EXEEXT) test-conversion$(EXEEXT) \
+@@ -1938,8 +1938,7 @@
+ 	test-command-line-encoding test-command-line-encoding2 \
+ 	test-language test-guild-compile $(am__append_3) \
+ 	test-foreign-object-scm test-fast-slot-ref test-mb-regexp \
+-	test-use-srfi $(am__append_5) test-stack-overflow \
+-	test-out-of-memory
++	test-use-srfi $(am__append_5) test-stack-overflow
+ BUILT_SOURCES = $(am__append_2)
+ EXTRA_DIST = test-import-order-a.scm test-import-order-b.scm \
+ 	test-import-order-c.scm test-import-order-d.scm \
