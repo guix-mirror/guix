@@ -14403,14 +14403,14 @@ includes data sets from oceanography.")
 (define-public r-ggfortify
   (package
     (name "r-ggfortify")
-    (version "0.4.6")
+    (version "0.4.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggfortify" version))
        (sha256
         (base32
-         "1clyha9f9ygma64xbgi78lxsp1203f2ashqhhdpm71nr6w91bm88"))))
+         "1wk9j0xg5hj9i1vf62qjiphv8cbsgq7y6baay3pfl3wyb2dwgci0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
