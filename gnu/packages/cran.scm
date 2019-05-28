@@ -11160,14 +11160,14 @@ algorithms) can be computed and partitioned matrices can be plotted.")
 (define-public r-upsetr
   (package
     (name "r-upsetr")
-    (version "1.3.3")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "UpSetR" version))
        (sha256
         (base32
-         "08vj7l92b8fpqyqwxshll2mhk3yhgyr74axvr2lf29z78bapymhz"))))
+         "007i0njnjjy7vbrxabwav7a1kk2n0hn2mkvqsdzzfk10ckp5y7im"))))
     (properties `((upstream-name . "UpSetR")))
     (build-system r-build-system)
     (propagated-inputs
