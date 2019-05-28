@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -429,3 +430,50 @@ imaging.  It supports several HDR and LDR image formats, and it can:
 a comic and manga reader.  It supports a variety of container formats
 including CBZ, CB7, CBT, LHA.")
     (license license:gpl2+)))
+
+(define-public qview
+  (package
+    (name "qview")
+    (version "2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jurplel/qView.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1s29hz44rb5dwzq8d4i4bfg77dr0v3ywpvidpa6xzg7hnnv3mhi5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (invoke "qmake")))
+         ;; Installation process hard-codes "/usr/bin", possibly
+         ;; prefixed.
+         (add-after 'configure 'fix-install-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("\\$\\(INSTALL_ROOT\\)/usr") out))
+               #t)))
+         ;; Don't phone home or show "Checking for updates..." in the
+         ;; About menu.
+         (add-before 'build 'disable-auto-update
+           (lambda _
+             (substitute* "src/qvaboutdialog.cpp"
+               (("ui->updateLabel->setText\\(updateText\\);") "")
+               (("requestUpdates\\(\\);") ""))
+             #t)))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtimageformats" ,qtimageformats)))
+    (home-page "https://interversehq.com/qview/")
+    (synopsis "Convenient and minimal image viewer")
+    (description "qView is a Qt image viewer designed with visually
+minimalism and usability in mind.  Its features include animated GIF
+controls, file history, rotation/mirroring, and multithreaded
+preloading.")
+    (license license:gpl3+)))
