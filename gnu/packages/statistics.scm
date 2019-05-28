@@ -2695,14 +2695,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.12")
+    (version "1.13")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0milpdaf4nd36kq6sci9wc5dhwswl4w9c9fychfbppgjsgfp6kfv"))))
+            "1vv3b8nlw8ra19492rjg3na42lwh3xr5a2jy2ia81fvvs846pywn"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2714,6 +2714,7 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-mime" ,r-mime)
        ("r-stringr" ,r-stringr)
        ("r-tinytex" ,r-tinytex)
+       ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)
        ("ghc-pandoc" ,ghc-pandoc)))
     (home-page "http://rmarkdown.rstudio.com")
