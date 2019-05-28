@@ -1325,6 +1325,16 @@ postfix notation.  For more information on stack based languages, see
         (base32
          "138xpxdb7x62lpmgmb6b3v3vgdqqvqn4273jaap3mjmc2gla709y"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-test-issue93
+           (lambda _
+             ;; Tests run out of memory on a system with 2GB of available RAM,
+             ;; in 'issue93.a.hs' and 'issue93.n.hs'.
+             (substitute* "tests/Makefile"
+               ((" issue93.y ") " "))
+             #t)))))
     (home-page "https://hackage.haskell.org/package/happy")
     (synopsis "Parser generator for Haskell")
     (description "Happy is a parser generator for Haskell.  Given a grammar
