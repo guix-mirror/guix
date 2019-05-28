@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,8 +46,10 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ed)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
@@ -5321,3 +5324,48 @@ port within a range.")
 
 (define-public ecl-find-port
   (sbcl-package->ecl-package sbcl-find-port))
+
+(define-public txr
+  (package
+    (name "txr")
+    (version "216")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.kylheku.com/cgit/txr/snapshot/txr-"
+                           version
+                           ".tar.bz2"))
+       (patches (search-patches "txr-shell.patch"))
+       (sha256
+        (base32
+         "07cxdpc9zsqd0c2668g00dqjpd6zc4mfdn74aarr6d2hpzdhh937"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("cc=gcc")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'configure 'fix-tests
+                    (lambda _
+                      (substitute* "tests/017/realpath.tl"
+                        (("/usr/bin") "/"))
+                      (substitute* "tests/017/realpath.expected"
+                        (("/usr/bin") "/"))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (zero? (system* "make" "tests")))))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("libffi" ,libffi)))
+    (synopsis "General-purpose, multi-paradigm programming language")
+    (description
+     "TXR is a general-purpose, multi-paradigm programming language.  It
+comprises two languages integrated into a single tool: a text scanning and
+extraction language referred to as the TXR Pattern Language (sometimes just
+\"TXR\"), and a general-purpose dialect of Lisp called TXR Lisp.  TXR can be
+used for everything from \"one liner\" data transformation tasks at the
+command line, to data scanning and extracting scripts, to full application
+development in a wide-range of areas.")
+    (home-page "https://nongnu.org/txr/")
+    (license license:bsd-2)))
