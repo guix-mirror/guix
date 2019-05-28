@@ -4444,7 +4444,7 @@ principles are simplicity and standards compliance.")
 (define-public d-feet
   (package
     (name "d-feet")
-    (version "0.3.11")
+    (version "0.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4452,7 +4452,7 @@ principles are simplicity and standards compliance.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hmrijm4d9vwzx2r8qzzsy8ccpj79l1y6cc569n9jjzqcq699p53"))))
+                "1m8lwiwl5jhi0x7y6x5zmd3hjplgvdjrb8a8jg74rvkygslj1p7f"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:out-of-source? #f ; tests need to run in the source directory.
@@ -4491,6 +4491,7 @@ principles are simplicity and standards compliance.")
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
        ("python" ,python-wrapper)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("python-pygobject" ,python-pygobject)))
     (home-page "https://wiki.gnome.org/Apps/DFeet")
     (synopsis "D-Bus debugger")
