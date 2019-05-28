@@ -144,6 +144,7 @@
           ((string-prefix? "alpha" arch) "alpha")
           ((string-prefix? "powerpc" arch) "powerpc") ;including "powerpc64le"
           ((string-prefix? "s390" arch) "s390")
+          ((string-prefix? "riscv" arch) "riscv")
           (else arch))))
 
 (define-public (system->defconfig system)
