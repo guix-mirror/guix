@@ -5758,3 +5758,13 @@ the standard Common Lisp library.  It contains a socket library, a DNS
 resolver, an I/O multiplexer(which supports @code{select(2)}, @code{epoll(4)}
 and @code{kqueue(2)}), a pathname library and file-system utilities.")
       (license license:expat))))
+
+(define-public sbcl-iolib.conf
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib.conf")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)))
+    (arguments
+     '(#:asd-file "iolib.conf.asd"))
+    (synopsis "Compile-time configuration for IOLib, a Common Lisp I/O library")))
