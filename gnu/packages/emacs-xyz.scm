@@ -7073,26 +7073,27 @@ actually changing the buffer's text.")
     (license license:gpl3+)))
 
 (define-public emacs-diff-hl
- (package
-  (name "emacs-diff-hl")
-  (version "1.8.5")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://elpa.gnu.org/packages/diff-hl-"
-                          version ".tar"))
-      (sha256
+  (package
+    (name "emacs-diff-hl")
+    (version "1.8.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dgutov/diff-hl")
+             (commit version)))
+       (sha256
         (base32
-          "1vxc7z7c2qs0mx7l5sa4sybi5qbzv0s79flj74p1ynw8dl3qxg3d"))))
-  (build-system emacs-build-system)
-  (home-page "https://github.com/dgutov/diff-hl")
-  (synopsis
-    "Highlight uncommitted changes using VC")
-  (description
-    "@code{diff-hl-mode} highlights uncommitted changes on the side of the
+         "1xlsg728mz3cwhrsqvisa0aidic67nymd9g7h4c1h3q63j39yb2s"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dgutov/diff-hl")
+    (synopsis
+     "Highlight uncommitted changes using VC")
+    (description
+     "@code{diff-hl-mode} highlights uncommitted changes on the side of the
 window (using the fringe, by default), allows you to jump between
 the hunks and revert them selectively.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-diminish
   (package
