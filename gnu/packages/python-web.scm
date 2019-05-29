@@ -57,6 +57,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1541,6 +1542,19 @@ supports url redirection and retries, and also gzip and deflate decoding.")
       (base32
        "0sispclx263lybbk19zp1n9yhg8xxx4jddypzgi24vpjaqnsbwlc"))))
    (build-system python-build-system)
+   (arguments
+    ;; FIXME: The 'pypi' release does not contain tests.
+    '(#:tests? #f
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'fix-reference-to-groff
+          (lambda _
+            (substitute* "awscli/help.py"
+              (("if not self._exists_on_path\\('groff'\\):") "")
+              (("raise ExecutableNotFoundError\\('groff'\\)") "")
+              (("cmdline = \\['groff'")
+               (string-append "cmdline = ['" (which "groff") "'")))
+            #t)))))
    (propagated-inputs
     `(("python-colorama" ,python-colorama)
       ("python-botocore" ,python-botocore)
@@ -1548,9 +1562,8 @@ supports url redirection and retries, and also gzip and deflate decoding.")
       ("python-docutils" ,python-docutils)
       ("python-pyyaml" ,python-pyyaml)
       ("python-rsa" ,python-rsa)))
-   (arguments
-    ;; FIXME: The 'pypi' release does not contain tests.
-    '(#:tests? #f))
+   (inputs
+    `(("groff" ,groff)))
    (home-page "https://aws.amazon.com/cli/")
    (synopsis "Command line client for AWS")
    (description "AWS CLI provides a unified command line interface to the
