@@ -171,18 +171,20 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
          "mirror://gnu/linux-libre/" version "-gnu/linux-libre-"
          version "-gnu.tar.xz")))
 
-(define-public linux-libre-headers
+(define (make-linux-libre-headers version hash)
   (package
     (name "linux-libre-headers")
-    (version "4.14.67")
+    (version version)
     (source (origin
              (method url-fetch)
              (uri (linux-libre-urls version))
-             (sha256
-              (base32
-               "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))))
+             (sha256 (base32 hash))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ,@(if (version>=? version "4.16")
+                           `(("flex" ,flex)
+                             ("bison" ,bison))
+                           '())))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -435,12 +437,16 @@ It has been modified to remove all non-free binary blobs.")
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
-(define-public linux-libre
+(define-public linux-libre-5.1
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config))
+
+(define-public linux-libre-headers-5.1
+  (make-linux-libre-headers %linux-libre-version
+                            %linux-libre-hash))
 
 (define %linux-libre-4.19-version "4.19.46")
 (define %linux-libre-4.19-hash "17yy3h064kr7zck07wdrw3fmmmnfk15m17xvkpkc4yv5vxxi76vh")
@@ -456,6 +462,24 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
+(define-public linux-libre-headers-4.19
+  (make-linux-libre-headers %linux-libre-4.19-version
+                            %linux-libre-4.19-hash))
+
+(define %linux-libre-4.15-version "4.15.18")
+(define %linux-libre-4.15-hash "0f0s4drx888ydlwjcm9qcxqian4850yiv2vamyw9bbjf83frwxyw")
+
+(define-public linux-libre-4.15
+  (make-linux-libre %linux-libre-4.15-version
+                    %linux-libre-4.15-hash
+                    '("x86_64-linux" "i686-linux" "armhf-linux")
+                    #:configuration-file kernel-config))
+
+(define-public linux-libre-headers-4.15
+  (make-linux-libre-headers %linux-libre-4.15-version
+                            %linux-libre-4.15-hash))
+
+
 (define %linux-libre-4.14-version "4.14.122")
 (define %linux-libre-4.14-hash "0923m61b3gwm69w6m9zhb8az57lrwn7igdysf8wb7ld9z4hzpag8")
 
@@ -464,6 +488,10 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-libre-4.14-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux")
                     #:configuration-file kernel-config))
+
+(define-public linux-libre-headers-4.14
+  (make-linux-libre-headers %linux-libre-4.14-version
+                            %linux-libre-4.14-hash))
 
 (define-public linux-libre-4.9
   (make-linux-libre "4.9.179"
@@ -490,6 +518,13 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config-veyron
                     #:extra-version "arm-veyron"))
+
+(define-public linux-libre-headers-4.14.67
+  (make-linux-libre-headers "4.14.67"
+                            "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))
+
+(define-public linux-libre-headers linux-libre-headers-4.14.67)
+(define-public linux-libre linux-libre-5.1)
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
