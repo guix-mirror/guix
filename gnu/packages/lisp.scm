@@ -5663,3 +5663,32 @@ basic everyday functions and macros.")
 
 (define-public ecl-fare-utils
   (sbcl-package->ecl-package sbcl-fare-utils))
+
+(define-public sbcl-idna
+  (package
+    (name "sbcl-idna")
+    (build-system asdf-build-system/sbcl)
+    (version "0.2.2")
+    (home-page "https://github.com/antifuchs/idna")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "00nbr3mffxhlq14gg9d16pa6691s4qh35inyw76v906s77khm5a2"))))
+    (inputs
+     `(("split-sequence" ,sbcl-split-sequence)))
+    (synopsis "IDNA string encoding and decoding routines for Common Lisp")
+    (description "This Common Lisp library provides string encoding and
+decoding routines for IDNA, the International Domain Names in Applications.")
+    (license license:expat)))
+
+(define-public cl-idna
+  (sbcl-package->cl-source-package sbcl-idna))
+
+(define-public ecl-idna
+  (sbcl-package->ecl-package sbcl-idna))
