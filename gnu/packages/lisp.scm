@@ -5728,3 +5728,33 @@ formats.")
 
 (define-public ecl-swap-bytes
   (sbcl-package->ecl-package sbcl-swap-bytes))
+
+(define-public sbcl-iolib.asdf
+  ;; Latest release is from June 2017.
+  (let ((commit "81e20614c0d27f9605bf9766214e236fd31b99b4")
+        (revision "1"))
+    (package
+      (name "sbcl-iolib.asdf")
+      (build-system asdf-build-system/sbcl)
+      (version "0.8.3")
+      (home-page "https://github.com/sionescu/iolib")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1j81r0wm7nfbwl991f26s4npcy7kybzybd3m47rbxy31h0cfcmdm"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (arguments
+       '(#:asd-file "iolib.asdf.asd"))
+      (synopsis "ASDF component classes for IOLib, a Common Lisp I/O library")
+      (description "IOlib is to be a better and more modern I/O library than
+the standard Common Lisp library.  It contains a socket library, a DNS
+resolver, an I/O multiplexer(which supports @code{select(2)}, @code{epoll(4)}
+and @code{kqueue(2)}), a pathname library and file-system utilities.")
+      (license license:expat))))
