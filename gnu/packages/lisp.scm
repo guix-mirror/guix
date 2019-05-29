@@ -5792,3 +5792,25 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (arguments
      '(#:asd-file "iolib.base.asd"))
     (synopsis "Base package for IOLib, a Common Lisp I/O library")))
+
+(define-public sbcl-iolib.grovel
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib.grovel")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)
+       ("iolib.conf" ,sbcl-iolib.conf)
+       ("iolib.base", sbcl-iolib.base)
+       ("cffi", sbcl-cffi)))
+    (arguments
+     '(#:asd-file "iolib.grovel.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-header
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This header is required by sbcl-iolib.
+             (install-file "src/grovel/grovel-common.h"
+                           (string-append (assoc-ref outputs "out")
+                                          "/lib/sbcl"))
+             #t)))))
+    (synopsis "CFFI Groveller for IOLib, a Common Lisp I/O library")))
