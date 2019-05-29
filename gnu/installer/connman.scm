@@ -108,7 +108,7 @@
 (define-record-type* <service>
   service make-service
   service?
-  (name            service-name) ; string
+  (name            service-name) ; string or #f
   (type            service-type) ; string
   (path            service-path) ; string
   (strength        service-strength) ; integer
