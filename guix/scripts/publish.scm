@@ -505,6 +505,35 @@ requested using POOL."
           (else
            (not-found request #:phrase "")))))
 
+(define (compress-nar cache item compression)
+  "Save in directory CACHE the nar for ITEM compressed with COMPRESSION."
+  (define nar
+    (nar-cache-file cache item #:compression compression))
+
+  (mkdir-p (dirname nar))
+  (match (compression-type compression)
+    ('gzip
+     ;; Note: the file port gets closed along with the gzip port.
+     (call-with-gzip-output-port (open-output-file (string-append nar ".tmp"))
+       (lambda (port)
+         (write-file item port))
+       #:level (compression-level compression)
+       #:buffer-size (* 128 1024))
+     (rename-file (string-append nar ".tmp") nar))
+    ('lzip
+     ;; Note: the file port gets closed along with the lzip port.
+     (call-with-lzip-output-port (open-output-file (string-append nar ".tmp"))
+       (lambda (port)
+         (write-file item port))
+       #:level (compression-level compression))
+     (rename-file (string-append nar ".tmp") nar))
+    ('none
+     ;; Cache nars even when compression is disabled so that we can
+     ;; guarantee the TTL (see <https://bugs.gnu.org/28664>.)
+     (with-atomic-file-output nar
+       (lambda (port)
+         (write-file item port))))))
+
 (define* (bake-narinfo+nar cache item
                            #:key ttl (compression %no-compression)
                            (nar-path "/nar"))
@@ -514,30 +543,7 @@ requested using POOL."
                                       #:compression compression))
          (narinfo     (narinfo-cache-file cache item
                                           #:compression compression)))
-
-    (mkdir-p (dirname nar))
-    (match (compression-type compression)
-      ('gzip
-       ;; Note: the file port gets closed along with the gzip port.
-       (call-with-gzip-output-port (open-output-file (string-append nar ".tmp"))
-         (lambda (port)
-           (write-file item port))
-         #:level (compression-level compression)
-         #:buffer-size (* 128 1024))
-       (rename-file (string-append nar ".tmp") nar))
-      ('lzip
-       ;; Note: the file port gets closed along with the lzip port.
-       (call-with-lzip-output-port (open-output-file (string-append nar ".tmp"))
-         (lambda (port)
-           (write-file item port))
-         #:level (compression-level compression))
-       (rename-file (string-append nar ".tmp") nar))
-      ('none
-       ;; Cache nars even when compression is disabled so that we can
-       ;; guarantee the TTL (see <https://bugs.gnu.org/28664>.)
-       (with-atomic-file-output nar
-         (lambda (port)
-           (write-file item port)))))
+    (compress-nar cache item compression)
 
     (mkdir-p (dirname narinfo))
     (with-atomic-file-output narinfo
