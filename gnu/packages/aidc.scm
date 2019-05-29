@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,8 +27,15 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages video)
   #:use-module (guix build-system gnu))
 
 
@@ -102,3 +110,48 @@ characters, and is highly robust.")
 barcodes of the modern ECC200 variety.  libdmtx is a shared library, allowing
 C/C++ programs to use its capabilities without restrictions or overhead.")
     (license license:bsd-3)))
+
+(define-public zbar
+  (package
+    (name "zbar")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://linuxtv.org/downloads/zbar/zbar-"
+                           version
+                           ".tar.bz2"))
+       (sha256
+        (base32
+         "0bmd93a15qpgbsq9c9j33qms18rdrgz6gbc48zi6z9w5pvrvi7z9"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list "--with-gtk=auto"
+                               "--with-python=auto"
+                               (string-append "--with-dbusconfdir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc")
+                               "CXXFLAGS=-std=c++11")))
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("imagemagick" ,imagemagick)
+       ("libjpeg" ,libjpeg-turbo)
+       ("python" ,python)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("v4l-utils" ,v4l-utils)))
+    (synopsis "Bar code reader")
+    (description
+     "ZBar can read barcodes from various sources, such as video streams,
+image files, and raw intensity sensors.  It supports EAN-13/UPC-A, UPC-E,
+EAN-8, Code 128, Code 93, Code 39, Codabar, Interleaved 2 of 5, QR Code and SQ
+Code.  Included with the library are basic applications for decoding captured
+bar code images and using a video device (e.g. webcam) as a bar code scanner.
+For application developers, language bindings are included for C, C++ and
+Python as well as GUI widgets for GTK and Qt.")
+    (home-page "https://github.com/mchehab/zbar")
+    (license license:lgpl2.1+)))
