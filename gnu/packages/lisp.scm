@@ -5779,3 +5779,16 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (arguments
      '(#:asd-file "iolib.common-lisp.asd"))
     (synopsis "Slightly modified Common Lisp for IOLib, a Common Lisp I/O library")))
+
+(define-public sbcl-iolib.base
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib.base")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)
+       ("iolib.conf" ,sbcl-iolib.conf)
+       ("iolib.common-lisp" ,sbcl-iolib.common-lisp)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     '(#:asd-file "iolib.base.asd"))
+    (synopsis "Base package for IOLib, a Common Lisp I/O library")))
