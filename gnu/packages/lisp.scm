@@ -47,6 +47,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
@@ -5814,3 +5815,37 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
                                           "/lib/sbcl"))
              #t)))))
     (synopsis "CFFI Groveller for IOLib, a Common Lisp I/O library")))
+
+(define-public sbcl-iolib
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)
+       ("iolib.conf" ,sbcl-iolib.conf)
+       ("iolib.grovel" ,sbcl-iolib.grovel)
+       ("iolib.base", sbcl-iolib.base)
+       ("bordeaux-threads", sbcl-bordeaux-threads)
+       ("idna", sbcl-idna)
+       ("swap-bytes", sbcl-swap-bytes)
+       ("libfixposix", libfixposix)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (arguments
+     '(#:asd-file "iolib.asd"
+       #:asd-system-name "iolib"
+       #:test-asd-file "iolib.tests.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/syscalls/ffi-functions-unix.lisp"
+               (("\\(:default \"libfixposix\"\\)")
+                (string-append
+                 "(:default \""
+                 (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
+             ;; Socket tests need Internet access, disable them.
+             (substitute* "iolib.tests.asd"
+               (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
+                "")))))))
+    (synopsis "Common Lisp I/O library")))
