@@ -848,8 +848,6 @@ blocking."
            (render-home-page request))
           ;; /<hash>.narinfo
           (((= extract-narinfo-hash (? string? hash)))
-           ;; TODO: Register roots for HASH that will somehow remain for
-           ;; NARINFO-TTL.
            (if cache
                (render-narinfo/cached store request hash
                                       #:cache cache
