@@ -548,13 +548,16 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "114")
+    (version (git-version "115" "1" "7f3416ffd12572b42c814e43ac15cee44ef48155"))
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri name version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
+                    (commit "7f3416ffd12572b42c814e43ac15cee44ef48155")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "07sma4izcqxdv0zi1s5fnsybvkc47c3vbpm372sg83q8l7rhizzp"))))
+                "1pn2rwlz5shdx7s63798wx2v7029bl5if6dlq3i2r6zsnpp0laki"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -590,7 +593,8 @@ transactions from C or Python.")
                       #t))
                   (add-before 'check 'delete-failing-test
                     (lambda _
-                      (delete-file "tests/test_tools.py") ;this requires /sbin to be on the path
+                      ;; this requires /sbin to be on the path
+                      (delete-file "tests/test_tools.py")
                       #t)))))
     (inputs `(("rpm" ,rpm)                        ;for rpm-python
               ("python-file" ,python-file)
@@ -599,11 +603,10 @@ transactions from C or Python.")
               ("python-tlsh" ,python-tlsh)
               ("acl" ,acl)                        ;for getfacl
               ("colordiff" ,colordiff)
-              ("xxd" ,xxd)
-
-              ;; Below are modules used for tests.
-              ("python-pytest" ,python-pytest)
-              ("python-chardet" ,python-chardet)))
+              ("xxd" ,xxd)))
+    ;; Below are modules used for tests.
+    (native-inputs `(("python-pytest" ,python-pytest)
+                     ("python-chardet" ,python-chardet)))
     (home-page "https://diffoscope.org/")
     (synopsis "Compare files, archives, and directories in depth")
     (description
