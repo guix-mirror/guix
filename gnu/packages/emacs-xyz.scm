@@ -804,6 +804,29 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
 
+(define-public emacs-reformatter
+  (package
+    (name "emacs-reformatter")
+    (version "0.4")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/purcell/reformatter.el.git")
+            (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0hhy6x1bkwlhdlarsgm06g3am4yh02yqv8qs34szpzgy53x84qah"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/reformatter.el")
+    (synopsis "Define commands which run reformatters on the current buffer")
+    (description
+     "This library lets elisp authors easily define an idiomatic command to
+reformat the current buffer using a command-line program, together with an
+optional minor mode which can apply this command automatically on save.")
+    (license license:gpl3+)))
+
 (define-public emacs-relint
   (package
     (name "emacs-relint")
