@@ -985,11 +985,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libcroco-CVE-2017-7960.patch		\
   %D%/packages/patches/libcroco-CVE-2017-7961.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
-  %D%/packages/patches/libevent-dns-tests.patch			\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10195.patch	\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10196.patch	\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10197.patch	\
-  %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libgcrypt-make-yat2m-reproducible.patch	\

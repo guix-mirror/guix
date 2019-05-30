@@ -72,27 +72,6 @@ then add or remove events dynamically without having to change the event
 loop.")
     (license bsd-3)))
 
-(define-public libevent-2.0
-  (package
-    (inherit libevent)
-    (version "2.0.22")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/libevent/libevent/releases/download/release-"
-                    version "-stable/libevent-" version "-stable.tar.gz"))
-              (sha256
-               (base32
-                "18qz9qfwrkakmazdlwxvjmw8p76g70n3faikwvdwznns1agw9hki"))
-              (patches
-               (search-patches
-                "libevent-dns-tests.patch"
-                "libevent-2.0-CVE-2016-10195.patch"
-                "libevent-2.0-CVE-2016-10196.patch"
-                "libevent-2.0-CVE-2016-10197.patch"
-                "libevent-2.0-evbuffer-add-use-last-with-datap.patch"))))
-    (arguments '())))
-
 (define-public libev
   (package
     (name "libev")
