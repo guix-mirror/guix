@@ -7974,3 +7974,50 @@ functionality.")
     (license (list license:lgpl2.1 license:lgpl3 ; either one of these
                    license:openldap2.8 ; addressbook/gui/component/openldap-extract.h
                    license:lgpl2.1+))))  ; smime/lib/*
+
+(define-public gthumb
+  (package
+    (name "gthumb")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gthumb/"
+                                  (version-major+minor version) "/"
+                                  "gthumb-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1l2s1facq1r6yvqjqc34aqfzlvb3nhkhn79xisxbbdlgrrxdq52f"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       ;; Ensure the RUNPATH contains all installed library locations.
+       (list (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gthumb/extensions")
+             (string-append "-Dcpp_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gthumb/extensions"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")                   ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("exiv2" ,exiv2)
+       ("gtk" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("clutter" ,clutter)
+       ("clutter-gst" ,clutter-gst)
+       ("clutter-gtk" ,clutter-gtk)
+       ("libjpeg" ,libjpeg)
+       ("libtiff" ,libtiff)
+       ("libraw" ,libraw)))
+    (home-page "https://wiki.gnome.org/Apps/Gthumb")
+    (synopsis "GNOME image viewer and browser")
+    (description "GThumb is an image viewer, browser, organizer, editor and
+advanced image management tool")
+    (license license:gpl2+)))
