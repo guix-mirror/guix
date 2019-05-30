@@ -54,7 +54,7 @@
   ;; directory.
   (package
     (name "gnucash")
-    (version "3.4")
+    (version "3.5")
     (source
      (origin
        (method url-fetch)
@@ -62,8 +62,7 @@
                            version "/gnucash-" version ".tar.bz2"))
        (sha256
         (base32
-         "1ms2wg4sh5gq3rpjmmnp85rh5nc9ahca1imxkvhz4d3yiwy8hm52"))
-       (patches (search-patches "gnucash-fix-test-transaction-failure.patch"))))
+         "0ibp7g6aknvnkwkin97kv04ipksy3l18dsz9qysjb7h2nr8hnvbp"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
