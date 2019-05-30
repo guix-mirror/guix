@@ -196,7 +196,7 @@ installed as well as Yelp, the Gnome help browser.")
 ;; This package is not public, since we use it to build the "doc" output of
 ;; the gnucash package (see above).  It would be confusing if it were public.
 (define gnucash-docs
-  (let ((revision "a"))              ;set to the empty string when no revision
+  (let ((revision ""))              ;set to the empty string when no revision
     (package
       (name "gnucash-docs")
       (version (package-version gnucash))
@@ -207,7 +207,7 @@ installed as well as Yelp, the Gnome help browser.")
                              version "/gnucash-docs-" version revision ".tar.gz"))
          (sha256
           (base32
-           "0bgjxpxgk7hy8ihn1kvd8p6vv191q5md2hz6jb9mqc4aykpvdlq7"))))
+           "0gjndyms413vilf5nqh39frs1691sxib8l7y9mbvcyirj1f8285k"))))
       (build-system gnu-build-system)
       ;; These are native-inputs because they are only required for building the
       ;; documentation.
