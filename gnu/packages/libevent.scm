@@ -58,7 +58,7 @@
      `(("python" ,python-2)))           ; for 'event_rpcgen.py'
     (native-inputs
      `(("which" ,which)))
-    (home-page "http://libevent.org/")
+    (home-page "https://libevent.org/")
     (synopsis "Event notification library")
     (description
      "The libevent API provides a mechanism to execute a callback
