@@ -9685,6 +9685,11 @@ run @command{guix publish} behind a caching proxy, or to use
 allows @command{guix publish} to add @code{Content-Length} HTTP header
 to its responses.
 
+This option can be repeated, in which case every substitute gets compressed
+using all the selected methods, and all of them are advertised.  This is
+useful when users may not support all the compression methods: they can select
+the one they support.
+
 @item --cache=@var{directory}
 @itemx -c @var{directory}
 Cache archives and meta-data (@code{.narinfo} URLs) to @var{directory}

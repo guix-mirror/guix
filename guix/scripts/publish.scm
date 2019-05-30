@@ -125,11 +125,11 @@ Publish ~a over HTTP.\n") %store-directory)
 (define (default-compression type)
   (compression type 3))
 
-(define (actual-compression item requested)
-  "Return the actual compression used for ITEM, which may be %NO-COMPRESSION
+(define (actual-compressions item requested)
+  "Return the actual compressions used for ITEM, which may be %NO-COMPRESSION
 if ITEM is already compressed."
   (if (compressed-file? item)
-      %no-compression
+      (list %no-compression)
       requested))
 
 (define %options
@@ -217,11 +217,6 @@ if ITEM is already compressed."
     (public-key-file . ,%public-key-file)
     (private-key-file . ,%private-key-file)
 
-    ;; Default to fast & low compression.
-    (compression . ,(if (zlib-available?)
-                        %default-gzip-compression
-                        %no-compression))
-
     ;; Default number of workers when caching is enabled.
     (workers . ,(current-processor-count))
 
@@ -249,29 +244,40 @@ if ITEM is already compressed."
 (define base64-encode-string
   (compose base64-encode string->utf8))
 
+(define* (store-item->recutils store-item
+                               #:key
+                               (nar-path "nar")
+                               (compression %no-compression)
+                               file-size)
+  "Return the 'Compression' and 'URL' fields of the narinfo for STORE-ITEM,
+with COMPRESSION, starting at NAR-PATH."
+  (let ((url (encode-and-join-uri-path
+              `(,@(split-and-decode-uri-path nar-path)
+                ,@(match compression
+                    (($ <compression> 'none)
+                     '())
+                    (($ <compression> type)
+                     (list (symbol->string type))))
+                ,(basename store-item)))))
+    (format #f "URL: ~a~%Compression: ~a~%~@[FileSize: ~a~%~]"
+            url (compression-type compression) file-size)))
+
 (define* (narinfo-string store store-path key
-                         #:key (compression %no-compression)
-                         (nar-path "nar") file-size)
+                         #:key (compressions (list %no-compression))
+                         (nar-path "nar") (file-sizes '()))
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
 if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
 narinfo is signed with KEY.  NAR-PATH specifies the prefix for nar URLs.
-Optionally, FILE-SIZE can specify the size in bytes of the compressed NAR; it
-informs the client of how much needs to be downloaded."
+
+Optionally, FILE-SIZES is a list of compression/integer pairs, where the
+integer is size in bytes of the compressed NAR; it informs the client of how
+much needs to be downloaded."
   (let* ((path-info  (query-path-info store store-path))
-         (compression (actual-compression store-path compression))
-         (url        (encode-and-join-uri-path
-                      `(,@(split-and-decode-uri-path nar-path)
-                        ,@(match compression
-                            (($ <compression> 'none)
-                             '())
-                            (($ <compression> type)
-                             (list (symbol->string type))))
-                        ,(basename store-path))))
+         (compressions (actual-compressions store-path compressions))
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
-         (file-size  (or file-size
-                         (and (eq? compression %no-compression) size)))
+         (file-sizes `((,%no-compression . ,size) ,@file-sizes))
          (references (string-join
                       (map basename (path-info-references path-info))
                       " "))
@@ -279,17 +285,21 @@ informs the client of how much needs to be downloaded."
          (base-info  (format #f
                              "\
 StorePath: ~a
-URL: ~a
-Compression: ~a
+~{~a~}\
 NarHash: sha256:~a
 NarSize: ~d
-References: ~a~%~a"
-                             store-path url
-                             (compression-type compression)
-                             hash size references
-                             (if file-size
-                                 (format #f "FileSize: ~a~%" file-size)
-                                 "")))
+References: ~a~%"
+                             store-path
+                             (map (lambda (compression)
+                                    (let ((size (assoc-ref file-sizes
+                                                           compression)))
+                                      (store-item->recutils store-path
+                                                            #:file-size size
+                                                            #:nar-path nar-path
+                                                            #:compression
+                                                            compression)))
+                                  compressions)
+                             hash size references))
          ;; Do not render a "Deriver" or "System" line if we are rendering
          ;; info for a derivation.
          (info       (if (not deriver)
@@ -332,7 +342,7 @@ References: ~a~%~a"
                       %nix-cache-info))))
 
 (define* (render-narinfo store request hash
-                         #:key ttl (compression %no-compression)
+                         #:key ttl (compressions (list %no-compression))
                          (nar-path "nar"))
   "Render metadata for the store path corresponding to HASH.  If TTL is true,
 advertise it as the maximum validity period (in seconds) via the
@@ -348,7 +358,7 @@ appropriate duration.  NAR-PATH specifies the prefix for nar URLs."
                 (cut display
                   (narinfo-string store store-path (%private-key)
                                   #:nar-path nar-path
-                                  #:compression compression)
+                                  #:compressions compressions)
                   <>)))))
 
 (define* (nar-cache-file directory item
@@ -442,7 +452,7 @@ vanished from the store in the meantime."
             (apply throw args))))))
 
 (define* (render-narinfo/cached store request hash
-                                #:key ttl (compression %no-compression)
+                                #:key ttl (compressions (list %no-compression))
                                 (nar-path "nar")
                                 cache pool)
   "Respond to the narinfo request for REQUEST.  If the narinfo is available in
@@ -460,11 +470,12 @@ requested using POOL."
       (delete-file* nar)
       (delete-file* mapping)))
 
-  (let* ((item        (hash-part->path* store hash cache))
-         (compression (actual-compression item compression))
-         (cached      (and (not (string-null? item))
-                           (narinfo-cache-file cache item
-                                               #:compression compression))))
+  (let* ((item         (hash-part->path* store hash cache))
+         (compressions (actual-compressions item compressions))
+         (cached       (and (not (string-null? item))
+                            (narinfo-cache-file cache item
+                                                #:compression
+                                                (first compressions)))))
     (cond ((string-null? item)
            (not-found request))
           ((file-exists? cached)
@@ -488,7 +499,7 @@ requested using POOL."
                  ;; (format #t "baking ~s~%" item)
                  (bake-narinfo+nar cache item
                                    #:ttl ttl
-                                   #:compression compression
+                                   #:compressions compressions
                                    #:nar-path nar-path)))
 
              (when ttl
@@ -535,30 +546,45 @@ requested using POOL."
          (write-file item port))))))
 
 (define* (bake-narinfo+nar cache item
-                           #:key ttl (compression %no-compression)
+                           #:key ttl (compressions (list %no-compression))
                            (nar-path "/nar"))
   "Write the narinfo and nar for ITEM to CACHE."
-  (let* ((compression (actual-compression item compression))
-         (nar         (nar-cache-file cache item
-                                      #:compression compression))
-         (narinfo     (narinfo-cache-file cache item
-                                          #:compression compression)))
-    (compress-nar cache item compression)
+  (define (compressed-nar-size compression)
+    (let* ((nar  (nar-cache-file cache item #:compression compression))
+           (stat (stat nar #f)))
+      (and stat
+           (cons compression (stat:size stat)))))
 
-    (mkdir-p (dirname narinfo))
-    (with-atomic-file-output narinfo
-      (lambda (port)
-        ;; Open a new connection to the store.  We cannot reuse the main
-        ;; thread's connection to the store since we would end up sending
-        ;; stuff concurrently on the same channel.
-        (with-store store
-          (display (narinfo-string store item
-                                   (%private-key)
-                                   #:nar-path nar-path
-                                   #:compression compression
-                                   #:file-size (and=> (stat nar #f)
-                                                      stat:size))
-                   port))))))
+  (let ((compression (actual-compressions item compressions)))
+
+    (for-each (cut compress-nar cache item <>) compressions)
+
+    (match compressions
+      ((main others ...)
+       (let ((narinfo (narinfo-cache-file cache item
+                                          #:compression main)))
+         (with-atomic-file-output narinfo
+           (lambda (port)
+             ;; Open a new connection to the store.  We cannot reuse the main
+             ;; thread's connection to the store since we would end up sending
+             ;; stuff concurrently on the same channel.
+             (with-store store
+               (let ((sizes (filter-map compressed-nar-size compression)))
+                 (display (narinfo-string store item
+                                          (%private-key)
+                                          #:nar-path nar-path
+                                          #:compressions compressions
+                                          #:file-sizes sizes)
+                          port)))))
+
+         ;; Make narinfo files for OTHERS hard links to NARINFO such that the
+         ;; atime-based cache eviction considers either all the nars or none
+         ;; of them as candidates.
+         (for-each (lambda (other)
+                     (let ((other (narinfo-cache-file cache item
+                                                      #:compression other)))
+                       (link narinfo other)))
+                   others))))))
 
 ;; XXX: Declare the 'X-Nar-Compression' HTTP header, which is in fact for
 ;; internal consumption: it allows us to pass the compression info to
@@ -827,12 +853,22 @@ blocking."
     ("lzip" (and (lzlib-available?) 'lzip))
     (_      #f)))
 
+(define (effective-compression requested-type compressions)
+  "Given the REQUESTED-TYPE for compression and the set of chosen COMPRESSION
+methods, return the applicable compression."
+  (or (find (match-lambda
+              (($ <compression> type)
+               (and (eq? type requested-type)
+                    compression)))
+            compressions)
+      (default-compression requested-type)))
+
 (define* (make-request-handler store
                                #:key
                                cache pool
                                narinfo-ttl
                                (nar-path "nar")
-                               (compression %no-compression))
+                               (compressions (list %no-compression)))
   (define compression-type?
     string->compression-type)
 
@@ -860,11 +896,11 @@ blocking."
                                       #:pool pool
                                       #:ttl narinfo-ttl
                                       #:nar-path nar-path
-                                      #:compression compression)
+                                      #:compressions compressions)
                (render-narinfo store request hash
                                #:ttl narinfo-ttl
                                #:nar-path nar-path
-                               #:compression compression)))
+                               #:compressions compressions)))
           ;; /nar/file/NAME/sha256/HASH
           (("file" name "sha256" hash)
            (guard (c ((invalid-base32-character? c)
@@ -885,15 +921,8 @@ blocking."
           ((components ... (? compression-type? type) store-item)
            (if (nar-path? components)
                (let* ((compression-type (string->compression-type type))
-                      (compression (match compression
-                                     (($ <compression> type)
-                                      (if (eq? type compression-type)
-                                          compression
-                                          (default-compression
-                                            compression-type)))
-                                     (_
-                                      (default-compression
-                                        compression-type)))))
+                      (compression (effective-compression compression-type
+                                                          compressions)))
                  (if cache
                      (render-nar/cached store cache request store-item
                                         #:ttl narinfo-ttl
@@ -917,7 +946,8 @@ blocking."
         (not-found request))))
 
 (define* (run-publish-server socket store
-                             #:key (compression %no-compression)
+                             #:key
+                             (compressions (list %no-compression))
                              (nar-path "nar") narinfo-ttl
                              cache pool)
   (run-server (make-request-handler store
@@ -925,7 +955,7 @@ blocking."
                                     #:pool pool
                                     #:nar-path nar-path
                                     #:narinfo-ttl narinfo-ttl
-                                    #:compression compression)
+                                    #:compressions compressions)
               concurrent-http-server
               `(#:socket ,socket)))
 
@@ -964,7 +994,17 @@ blocking."
            (user    (assoc-ref opts 'user))
            (port    (assoc-ref opts 'port))
            (ttl     (assoc-ref opts 'narinfo-ttl))
-           (compression (assoc-ref opts 'compression))
+           (compressions (match (filter-map (match-lambda
+                                              (('compression . compression)
+                                               compression)
+                                              (_ #f))
+                                            opts)
+                           (()
+                            ;; Default to fast & low compression.
+                            (list (if (zlib-available?)
+                                      %default-gzip-compression
+                                      %no-compression)))
+                           (lst (reverse lst))))
            (address (let ((addr (assoc-ref opts 'address)))
                       (make-socket-address (sockaddr:fam addr)
                                            (sockaddr:addr addr)
@@ -996,9 +1036,11 @@ consider using the '--user' option!~%")))
               (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
               (sockaddr:port address))
 
-        (when compression
-          (info (G_ "using '~a' compression method, level ~a~%")
-                (compression-type compression) (compression-level compression)))
+        (for-each (lambda (compression)
+                    (info (G_ "using '~a' compression method, level ~a~%")
+                          (compression-type compression)
+                          (compression-level compression)))
+                  compressions)
 
         (when repl-port
           (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
@@ -1013,7 +1055,7 @@ consider using the '--user' option!~%")))
                                                            #:thread-name
                                                            "publish worker"))
                               #:nar-path nar-path
-                              #:compression compression
+                              #:compressions compressions
                               #:narinfo-ttl ttl))))))
 
 ;;; Local Variables:
