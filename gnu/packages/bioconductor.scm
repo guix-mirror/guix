@@ -4548,3 +4548,32 @@ high-throughput sequencing data.  It performs parallel processing of entire
 files and produces a report which contains a set of high-resolution
 graphics.")
     (license license:gpl2+)))
+
+(define-public r-birewire
+  (package
+    (name "r-birewire")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiRewire" version))
+       (sha256
+        (base32
+         "1gjb18l3gq3w8zl6r5d49hw0r1kfh9f7ghv9hz6y86aniprvb518"))))
+    (properties `((upstream-name . "BiRewire")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)
+       ("r-slam" ,r-slam)
+       ("r-tsne" ,r-tsne)))
+    (home-page "https://bioconductor.org/packages/release/bioc/html/BiRewire.html")
+    (synopsis "Tools for randomization of bipartite graphs")
+    (description
+     "This package provides functions for bipartite network rewiring through N
+consecutive switching steps and for the computation of the minimal number of
+switching steps to be performed in order to maximise the dissimilarity with
+respect to the original network.  It includes functions for the analysis of
+the introduced randomness across the switching steps and several other
+routines to analyse the resulting networks and their natural projections.")
+    (license license:gpl3)))
