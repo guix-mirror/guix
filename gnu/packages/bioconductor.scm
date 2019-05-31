@@ -4577,3 +4577,32 @@ respect to the original network.  It includes functions for the analysis of
 the introduced randomness across the switching steps and several other
 routines to analyse the resulting networks and their natural projections.")
     (license license:gpl3)))
+
+(define-public r-birta
+  (package
+    (name "r-birta")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "birta" version))
+       (sha256
+        (base32
+         "12xjyvgmh4h0b7hi4qg50kcpb9003gnh2xyfgncb8l9mzvsbkxc2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)))
+    (home-page "https://bioconductor.org/packages/birta")
+    (synopsis "Bayesian inference of regulation of transcriptional activity")
+    (description
+     "Expression levels of mRNA molecules are regulated by different
+processes, comprising inhibition or activation by transcription factors and
+post-transcriptional degradation by microRNAs.  @dfn{birta} (Bayesian
+Inference of Regulation of Transcriptional Activity) uses the regulatory
+networks of transcription factors and miRNAs together with mRNA and miRNA
+expression data to predict switches in regulatory activity between two
+conditions.  A Bayesian network is used to model the regulatory structure and
+Markov-Chain-Monte-Carlo is applied to sample the activity states.")
+    (license license:gpl2+)))
