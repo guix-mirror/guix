@@ -1845,7 +1845,11 @@ scientific applications modeled by partial differential equations.")
         ``("--with-mpiexec=mpirun"
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
-           ,@(delete "--with-mpi=0" ,cf)))))
+           ,@(delete "--with-mpi=0" ,cf)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'mpi-setup
+             ,%openmpi-setup)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
 (define-public python-petsc4py
