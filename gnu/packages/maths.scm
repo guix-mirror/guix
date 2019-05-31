@@ -1914,7 +1914,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.10.1")
+    (version "3.11.1")
     (source
      (origin
        (method url-fetch)
@@ -1922,10 +1922,11 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "188j1a133q91h8pivpnzwcf78kz8dvz2nzf6ndnjygdbqb48fizn"))))
+         "1yq84q9wannc8xwapxpay4ypdd675picwi395hhsdvng9q6hf5j8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)))
+     `(("python" ,python-2)
+       ("petsc:examples" ,petsc "examples"))) ;for gmakegen.py script
     (inputs
      `(("arpack" ,arpack-ng)
        ("gfortran" ,gfortran)))
@@ -1937,7 +1938,10 @@ savings are consistently > 5x.")
        `(,(string-append "--with-arpack-dir="
                          (assoc-ref %build-inputs "arpack") "/lib"))
        #:make-flags                     ;honor (parallel-job-count)
-       `(,(format #f "MAKE_NP=~a" (parallel-job-count)))
+       `(,(format #f "MAKE_NP=~a" (parallel-job-count))
+         ,(string-append "PETSCCONFIGDIR="
+                         (assoc-ref %build-inputs "petsc:examples")
+                         "/share/petsc/examples/config"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
