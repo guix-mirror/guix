@@ -1,0 +1,33 @@
+From fc401acb15f15d487c942437b6fb429289dd3c67 Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Fri, 31 May 2019 13:22:25 +0200
+Subject: [PATCH] Add installation directory as a default directory.
+
+In Guix, this library is installed in a separate directory in the store,
+and it's typically not installed system-wide in a fixed directory. Add
+the store path to the set of default directories so dependents can find
+default langs and source highlighting scheme.
+---
+ gtksourceview/gtksourceview-utils.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/gtksourceview/gtksourceview-utils.c b/gtksourceview/gtksourceview-utils.c
+index 6f06bab..c3467d5 100644
+--- a/gtksourceview/gtksourceview-utils.c
++++ b/gtksourceview/gtksourceview-utils.c
+@@ -66,6 +66,12 @@ _gtk_source_view_get_default_dirs (const char *basename,
+ 							 basename,
+ 							 NULL));
+ 
++    /* installed dir */
++    g_ptr_array_add (dirs, g_build_filename (DATADIR,
++						 SOURCEVIEW_DIR,
++						 basename,
++						 NULL));
++
+ 	g_ptr_array_add (dirs, NULL);
+ 
+ 	return (gchar**) g_ptr_array_free (dirs, FALSE);
+-- 
+2.21.0
+

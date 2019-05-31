@@ -348,7 +348,10 @@ diagrams.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "07hrabhpl6n8ajz10s0d960jdwndxs87szxyn428mpxi8cvpg1f5"))))
+                "07hrabhpl6n8ajz10s0d960jdwndxs87szxyn428mpxi8cvpg1f5"))
+              (patches
+                (search-patches
+                  "gtksourceview-2-add-default-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
