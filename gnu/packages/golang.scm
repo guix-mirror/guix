@@ -62,7 +62,7 @@
 (define-public go-1.4
   (package
     (name "go")
-    ;; The C-langauge bootstrap of Go:
+    ;; The C-language bootstrap of Go:
     ;; https://golang.org/doc/install/source#go14
     (version "1.4-bootstrap-20171003")
     (source (origin
