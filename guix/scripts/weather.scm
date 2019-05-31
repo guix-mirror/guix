@@ -175,7 +175,10 @@ about the derivations queued, as is the case with Hydra."
           (requested (length items))
           (missing   (lset-difference string=?
                                       items (map narinfo-path narinfos)))
-          (sizes     (filter-map narinfo-file-size narinfos))
+          (sizes     (append-map (lambda (narinfo)
+                                   (filter integer?
+                                           (narinfo-file-sizes narinfo)))
+                                 narinfos))
           (time      (+ (time-second time)
                         (/ (time-nanosecond time) 1e9))))
       (format #t (G_ "  ~2,1f% substitutes available (~h out of ~h)~%")

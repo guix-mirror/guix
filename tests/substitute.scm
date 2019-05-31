@@ -28,8 +28,10 @@
   #:use-module (guix base32)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module ((guix ui) #:select (guix-warning-port))
+  #:use-module ((guix utils) #:select (call-with-compressed-output-port))
+  #:use-module ((guix lzlib) #:select (lzlib-available?))
   #:use-module ((guix build utils)
-                #:select (mkdir-p delete-file-recursively))
+                #:select (mkdir-p delete-file-recursively dump-port))
   #:use-module (guix tests http)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
@@ -474,6 +476,53 @@ System: mips64el-linux\n")
                        (string-append (%store-prefix)
                                       "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
                        "substitute-retrieved"))))
+
+(test-equal "substitute, narinfo with several URLs"
+  "Substitutable data."
+  (let ((narinfo (string-append "StorePath: " (%store-prefix)
+                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo
+URL: example.nar.gz
+Compression: gzip
+URL: example.nar.lz
+Compression: lzip
+URL: example.nar
+Compression: none
+NarHash: sha256:" (bytevector->nix-base32-string
+                   (sha256 (string->utf8 "Substitutable data."))) "
+NarSize: 42
+References: bar baz
+Deriver: " (%store-prefix) "/foo.drv
+System: mips64el-linux\n")))
+    (with-narinfo (string-append narinfo "Signature: "
+                                 (signature-field narinfo))
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          (define (compress input output compression)
+            (call-with-output-file output
+              (lambda (port)
+                (call-with-compressed-output-port compression port
+                  (lambda (port)
+                    (call-with-input-file input
+                      (lambda (input)
+                        (dump-port input port))))))))
+
+          (let ((nar (string-append %main-substitute-directory
+                                    "/example.nar")))
+            (compress nar (string-append nar ".gz") 'gzip)
+            (when (lzlib-available?)
+              (compress nar (string-append nar ".lz") 'lzip)))
+
+          (parameterize ((substitute-urls
+                          (list (string-append "file://"
+                                               %main-substitute-directory))))
+            (guix-substitute "--substitute"
+                             (string-append (%store-prefix)
+                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                             "substitute-retrieved"))
+          (call-with-input-file "substitute-retrieved" get-string-all))
+        (lambda ()
+          (false-if-exception (delete-file "substitute-retrieved")))))))
 
 (test-end "substitute")
 

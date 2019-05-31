@@ -42,6 +42,7 @@
   #:use-module (guix progress)
   #:use-module ((guix build syscalls)
                 #:select (set-thread-name))
+  #:autoload   (guix lzlib) (lzlib-available?)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
@@ -66,11 +67,11 @@
 
             narinfo?
             narinfo-path
-            narinfo-uri
+            narinfo-uris
             narinfo-uri-base
-            narinfo-compression
-            narinfo-file-hash
-            narinfo-file-size
+            narinfo-compressions
+            narinfo-file-hashes
+            narinfo-file-sizes
             narinfo-hash
             narinfo-size
             narinfo-references
@@ -280,15 +281,16 @@ failure, return #f and #f."
 
 
 (define-record-type <narinfo>
-  (%make-narinfo path uri uri-base compression file-hash file-size nar-hash nar-size
-                 references deriver system signature contents)
+  (%make-narinfo path uri-base uris compressions file-sizes file-hashes
+                 nar-hash nar-size references deriver system
+                 signature contents)
   narinfo?
   (path         narinfo-path)
-  (uri          narinfo-uri)
-  (uri-base     narinfo-uri-base)        ; URI of the cache it originates from
-  (compression  narinfo-compression)
-  (file-hash    narinfo-file-hash)
-  (file-size    narinfo-file-size)
+  (uri-base     narinfo-uri-base)        ;URI of the cache it originates from
+  (uris         narinfo-uris)            ;list of strings
+  (compressions narinfo-compressions)    ;list of strings
+  (file-sizes   narinfo-file-sizes)      ;list of (integers | #f)
+  (file-hashes  narinfo-file-hashes)
   (nar-hash     narinfo-hash)
   (nar-size     narinfo-size)
   (references   narinfo-references)
@@ -334,17 +336,25 @@ s-expression: ~s~%")
 (define (narinfo-maker str cache-url)
   "Return a narinfo constructor for narinfos originating from CACHE-URL.  STR
 must contain the original contents of a narinfo file."
-  (lambda (path url compression file-hash file-size nar-hash nar-size
-                references deriver system signature)
+  (lambda (path urls compressions file-hashes file-sizes
+                nar-hash nar-size references deriver system
+                signature)
     "Return a new <narinfo> object."
-    (%make-narinfo path
+    (define len (length urls))
+    (%make-narinfo path cache-url
                    ;; Handle the case where URL is a relative URL.
-                   (or (string->uri url)
-                       (string->uri (string-append cache-url "/" url)))
-                   cache-url
-
-                   compression file-hash
-                   (and=> file-size string->number)
+                   (map (lambda (url)
+                          (or (string->uri url)
+                              (string->uri
+                               (string-append cache-url "/" url))))
+                        urls)
+                   compressions
+                   (match file-sizes
+                     (()        (make-list len #f))
+                     ((lst ...) (map string->number lst)))
+                   (match file-hashes
+                     (()        (make-list len #f))
+                     ((lst ...) (map string->number lst)))
                    nar-hash
                    (and=> nar-size string->number)
                    (string-tokenize references)
@@ -360,7 +370,7 @@ must contain the original contents of a narinfo file."
                                  #:optional (acl (current-acl)))
   "Bail out if SIGNATURE, a canonical sexp representing the signature of
 NARINFO, doesn't match HASH, a bytevector containing the hash of NARINFO."
-  (let ((uri (uri->string (narinfo-uri narinfo))))
+  (let ((uri (uri->string (first (narinfo-uris narinfo)))))
     (signature-case (signature hash acl)
       (valid-signature #t)
       (invalid-signature
@@ -387,7 +397,8 @@ No authentication and authorization checks are performed here!"
                    '("StorePath" "URL" "Compression"
                      "FileHash" "FileSize" "NarHash" "NarSize"
                      "References" "Deriver" "System"
-                     "Signature"))))
+                     "Signature")
+                   '("URL" "Compression" "FileSize" "FileHash"))))
 
 (define (narinfo-sha256 narinfo)
   "Return the sha256 hash of NARINFO as a bytevector, or #f if NARINFO lacks a
@@ -414,7 +425,7 @@ No authentication and authorization checks are performed here!"
   (or %allow-unauthenticated-substitutes?
       (let ((hash      (narinfo-sha256 narinfo))
             (signature (narinfo-signature narinfo))
-            (uri       (uri->string (narinfo-uri narinfo))))
+            (uri       (uri->string (first (narinfo-uris narinfo)))))
         (and hash signature
              (signature-case (signature hash acl)
                (valid-signature #t)
@@ -919,9 +930,11 @@ expected by the daemon."
           (length (narinfo-references narinfo)))
   (for-each (cute format #t "~a/~a~%" (%store-prefix) <>)
             (narinfo-references narinfo))
-  (format #t "~a\n~a\n"
-          (or (narinfo-file-size narinfo) 0)
-          (or (narinfo-size narinfo) 0)))
+
+  (let-values (((uri compression file-size) (select-uri narinfo)))
+    (format #t "~a\n~a\n"
+            (or file-size 0)
+            (or (narinfo-size narinfo) 0))))
 
 (define* (process-query command
                         #:key cache-urls acl)
@@ -947,17 +960,73 @@ authorized substitutes."
     (wtf
      (error "unknown `--query' command" wtf))))
 
+(define %compression-methods
+  ;; Known compression methods and a thunk to determine whether they're
+  ;; supported.  See 'decompressed-port' in (guix utils).
+  `(("gzip"  . ,(const #t))
+    ("lzip"  . ,lzlib-available?)
+    ("xz"    . ,(const #t))
+    ("bzip2" . ,(const #t))
+    ("none"  . ,(const #t))))
+
+(define (supported-compression? compression)
+  "Return true if COMPRESSION, a string, denotes a supported compression
+method."
+  (match (assoc-ref %compression-methods compression)
+    (#f         #f)
+    (supported? (supported?))))
+
+(define (compresses-better? compression1 compression2)
+  "Return true if COMPRESSION1 generally compresses better than COMPRESSION2;
+this is a rough approximation."
+  (match compression1
+    ("none" #f)
+    ("gzip" (string=? compression2 "none"))
+    (_      (or (string=? compression2 "none")
+                (string=? compression2 "gzip")))))
+
+(define (select-uri narinfo)
+  "Select the \"best\" URI to download NARINFO's nar, and return three values:
+the URI, its compression method (a string), and the compressed file size."
+  (define choices
+    (filter (match-lambda
+              ((uri compression file-size)
+               (supported-compression? compression)))
+            (zip (narinfo-uris narinfo)
+                 (narinfo-compressions narinfo)
+                 (narinfo-file-sizes narinfo))))
+
+  (define (file-size<? c1 c2)
+    (match c1
+      ((uri1 compression1 (? integer? file-size1))
+       (match c2
+         ((uri2 compression2 (? integer? file-size2))
+          (< file-size1 file-size2))
+         (_ #t)))
+      ((uri compression1 #f)
+       (match c2
+         ((uri2 compression2 _)
+          (compresses-better? compression1 compression2))))
+      (_ #f)))                                    ;we can't tell
+
+  (match (sort choices file-size<?)
+    (((uri compression file-size) _ ...)
+     (values uri compression file-size))))
+
 (define* (process-substitution store-item destination
                                #:key cache-urls acl print-build-trace?)
   "Substitute STORE-ITEM (a store file name) from CACHE-URLS, and write it to
 DESTINATION as a nar file.  Verify the substitute against ACL."
-  (let* ((narinfo (lookup-narinfo cache-urls store-item
-                                  (cut valid-narinfo? <> acl)))
-         (uri     (and=> narinfo narinfo-uri)))
-    (unless uri
-      (leave (G_ "no valid substitute for '~a'~%")
-             store-item))
+  (define narinfo
+    (lookup-narinfo cache-urls store-item
+                    (cut valid-narinfo? <> acl)))
 
+  (unless narinfo
+    (leave (G_ "no valid substitute for '~a'~%")
+           store-item))
+
+  (let-values (((uri compression file-size)
+                (select-uri narinfo)))
     ;; Tell the daemon what the expected hash of the Nar itself is.
     (format #t "~a~%" (narinfo-hash narinfo))
 
@@ -971,9 +1040,8 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                    ;; DOWNLOAD-SIZE is #f in practice.
                    (fetch uri #:buffered? #f #:timeout? #f))
                   ((progress)
-                   (let* ((comp     (narinfo-compression narinfo))
-                          (dl-size  (or download-size
-                                        (and (equal? comp "none")
+                   (let* ((dl-size  (or download-size
+                                        (and (equal? compression "none")
                                              (narinfo-size narinfo))))
                           (reporter (if print-build-trace?
                                         (progress-reporter/trace
@@ -989,8 +1057,7 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                    ;; NOTE: This 'progress' port of current process will be
                    ;; closed here, while the child process doing the
                    ;; reporting will close it upon exit.
-                   (decompressed-port (and=> (narinfo-compression narinfo)
-                                             string->symbol)
+                   (decompressed-port (string->symbol compression)
                                       progress)))
       ;; Unpack the Nar at INPUT into DESTINATION.
       (restore-file input destination)
