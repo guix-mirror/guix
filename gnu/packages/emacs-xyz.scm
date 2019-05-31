@@ -4403,6 +4403,33 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-pass
+  (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-pass")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ecraven/ivy-pass.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "18crb4zh2pjf0cmv3b913m9vfng27girjwfqc3mk7vqd1r5a49yk"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-password-store" ,emacs-password-store)
+         ("password-store" ,password-store)))
+      (home-page "https://github.com/ecraven/ivy-pass")
+      (synopsis "Ivy interface for password store (pass)")
+      (description "This package provides an Ivy interface for working with
+the password store @code{pass}.")
+      (license license:gpl3))))
+
 (define-public emacs-ivy-yasnippet
   (let ((commit "32580b4fd23ebf9ca7dde96704f7d53df6e253cd")
         (revision "2"))
