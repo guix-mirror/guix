@@ -186,12 +186,8 @@ library
     ('license 'bsd-3)))
 
 (define* (eval-test-with-cabal test-cabal matcher #:key (cabal-environment '()))
-  (mock
-   ((guix import hackage) hackage-fetch
-    (lambda (name-version)
-      (call-with-input-string test-cabal
-        read-cabal)))
-   (matcher (hackage->guix-package "foo" #:cabal-environment cabal-environment))))
+  (define port (open-input-string test-cabal))
+  (matcher (hackage->guix-package "foo" #:port port #:cabal-environment cabal-environment)))
 
 (test-assert "hackage->guix-package test 1"
   (eval-test-with-cabal test-cabal-1 match-ghc-foo))
