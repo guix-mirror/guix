@@ -155,93 +155,92 @@ library
 
 (test-begin "hackage")
 
-(define* (eval-test-with-cabal test-cabal #:key (cabal-environment '()))
+(define-syntax-rule (define-package-matcher name pattern)
+  (define* (name obj)
+    (match obj
+      (pattern #t)
+      (x       (pk 'fail x #f)))))
+
+(define-package-matcher match-ghc-foo
+  ('package
+    ('name "ghc-foo")
+    ('version "1.0.0")
+    ('source
+     ('origin
+       ('method 'url-fetch)
+       ('uri ('string-append
+              "https://hackage.haskell.org/package/foo/foo-"
+              'version
+              ".tar.gz"))
+       ('sha256
+        ('base32
+         (? string? hash)))))
+    ('build-system 'haskell-build-system)
+    ('inputs
+     ('quasiquote
+      (("ghc-http" ('unquote 'ghc-http))
+       ("ghc-mtl" ('unquote 'ghc-mtl)))))
+    ('home-page "http://test.org")
+    ('synopsis (? string?))
+    ('description (? string?))
+    ('license 'bsd-3)))
+
+(define* (eval-test-with-cabal test-cabal matcher #:key (cabal-environment '()))
   (mock
    ((guix import hackage) hackage-fetch
     (lambda (name-version)
       (call-with-input-string test-cabal
         read-cabal)))
-   (match (hackage->guix-package "foo" #:cabal-environment cabal-environment)
-     (('package
-        ('name "ghc-foo")
-        ('version "1.0.0")
-        ('source
-         ('origin
-           ('method 'url-fetch)
-           ('uri ('string-append
-                  "https://hackage.haskell.org/package/foo/foo-"
-                  'version
-                  ".tar.gz"))
-           ('sha256
-            ('base32
-             (? string? hash)))))
-        ('build-system 'haskell-build-system)
-        ('inputs
-         ('quasiquote
-          (("ghc-http" ('unquote 'ghc-http))
-           ("ghc-mtl" ('unquote 'ghc-mtl)))))
-        ('home-page "http://test.org")
-        ('synopsis (? string?))
-        ('description (? string?))
-        ('license 'bsd-3))
-      #t)
-     (x
-      (pk 'fail x #f)))))
+   (matcher (hackage->guix-package "foo" #:cabal-environment cabal-environment))))
 
 (test-assert "hackage->guix-package test 1"
-  (eval-test-with-cabal test-cabal-1))
+  (eval-test-with-cabal test-cabal-1 match-ghc-foo))
 
 (test-assert "hackage->guix-package test 2"
-  (eval-test-with-cabal test-cabal-2))
+  (eval-test-with-cabal test-cabal-2 match-ghc-foo))
 
 (test-assert "hackage->guix-package test 3"
-  (eval-test-with-cabal test-cabal-3
+  (eval-test-with-cabal test-cabal-3 match-ghc-foo
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
 (test-assert "hackage->guix-package test 4"
-  (eval-test-with-cabal test-cabal-4
+  (eval-test-with-cabal test-cabal-4 match-ghc-foo
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
 (test-assert "hackage->guix-package test 5"
-  (eval-test-with-cabal test-cabal-5
+  (eval-test-with-cabal test-cabal-5 match-ghc-foo
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
+(define-package-matcher match-ghc-foo-6
+  ('package
+    ('name "ghc-foo")
+    ('version "1.0.0")
+    ('source
+     ('origin
+       ('method 'url-fetch)
+       ('uri ('string-append
+              "https://hackage.haskell.org/package/foo/foo-"
+              'version
+              ".tar.gz"))
+       ('sha256
+        ('base32
+         (? string? hash)))))
+    ('build-system 'haskell-build-system)
+    ('inputs
+     ('quasiquote
+      (("ghc-b" ('unquote 'ghc-b))
+       ("ghc-http" ('unquote 'ghc-http))
+       ("ghc-mtl" ('unquote 'ghc-mtl)))))
+    ('native-inputs
+     ('quasiquote
+      (("ghc-haskell-gi" ('unquote 'ghc-haskell-gi)))))
+    ('home-page "http://test.org")
+    ('synopsis (? string?))
+    ('description (? string?))
+    ('license 'bsd-3)))
+
 (test-assert "hackage->guix-package test 6"
-  (mock
-   ((guix import hackage) hackage-fetch
-    (lambda (name-version)
-      (call-with-input-string test-cabal-6
-        read-cabal)))
-   (match (hackage->guix-package "foo")
-     (('package
-        ('name "ghc-foo")
-        ('version "1.0.0")
-        ('source
-         ('origin
-           ('method 'url-fetch)
-           ('uri ('string-append
-                  "https://hackage.haskell.org/package/foo/foo-"
-                  'version
-                  ".tar.gz"))
-           ('sha256
-            ('base32
-             (? string? hash)))))
-        ('build-system 'haskell-build-system)
-        ('inputs
-         ('quasiquote
-          (("ghc-b" ('unquote 'ghc-b))
-           ("ghc-http" ('unquote 'ghc-http))
-           ("ghc-mtl" ('unquote 'ghc-mtl)))))
-        ('native-inputs
-         ('quasiquote
-          (("ghc-haskell-gi" ('unquote 'ghc-haskell-gi)))))
-        ('home-page "http://test.org")
-        ('synopsis (? string?))
-        ('description (? string?))
-        ('license 'bsd-3))
-      #t)
-     (x
-      (pk 'fail x #f)))))
+  (eval-test-with-cabal test-cabal-6 match-ghc-foo-6))
 
 (test-assert "read-cabal test 1"
   (match (call-with-input-string test-read-cabal-1 read-cabal)
