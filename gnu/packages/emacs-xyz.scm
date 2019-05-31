@@ -8534,29 +8534,32 @@ key.  Optionally, a mouse pop-up can be added by binding
     (license license:gpl3+)))
 
 (define-public emacs-idris-mode
-  (package
-    (name "emacs-idris-mode")
-    (version "0.9.19")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://stable.melpa.org/packages/idris-mode-"
-             version ".tar"))
-       (sha256
-        (base32
-         "16hl2s22l3wc9drnwzw6hn7xrm49ml9lii0s6k218dgahdgsncmf"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-prop-menu" ,emacs-prop-menu)))
-    (home-page
-     "https://github.com/idris-hackers/idris-mode")
-    (synopsis "Major mode for editing Idris code")
-    (description
-     "This is an Emacs mode for editing Idris code.  It requires the latest
+  (let ((commit "acc8835449475d7cd205aba213fdd3d41c38ba40")
+        (revision "0"))
+    (package
+      (name "emacs-idris-mode")
+      (version (git-version "0.9.19" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/idris-hackers/idris-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "0n9xbknc68id0mf8hbfmawi8qpvrs47ix807sk9ffv2g3ik32kk6"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-prop-menu" ,emacs-prop-menu)))
+      (home-page
+       "https://github.com/idris-hackers/idris-mode")
+      (synopsis "Major mode for editing Idris code")
+      (description
+       "This is an Emacs mode for editing Idris code.  It requires the latest
 version of Idris, and some features may rely on the latest Git version of
 Idris.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-browse-at-remote
   (package
