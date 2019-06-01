@@ -162,6 +162,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -8021,3 +8022,48 @@ functionality.")
     (description "GThumb is an image viewer, browser, organizer, editor and
 advanced image management tool")
     (license license:gpl2+)))
+
+(define-public terminator
+  (package
+    (name "terminator")
+    (version "1.91")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/" name "/"
+                                  "gtk3/" version "/" "+download/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sdyqwydmdnh7j6mn74vrywz35m416kqsbxbrqcnv5ak08y6xxwm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python2-pycairo" ,python2-pycairo)
+       ("python2-pygobject" ,python2-pygobject)
+       ("python2-psutil" ,python2-psutil)
+       ("vte" ,vte)))
+    (arguments
+     `(#:python ,python-2                          ;Python 3 not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/terminator")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
+    (home-page "https://gnometerminator.blogspot.com/")
+    (synopsis "Store and run multiple GNOME terminals in one window")
+    (description
+     "Terminator allows you to run multiple GNOME terminals in a grid and
++tabs, and it supports drag and drop re-ordering of terminals.")
+    (license license:gpl2)))
