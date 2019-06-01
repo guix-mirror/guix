@@ -237,7 +237,7 @@ library
   (eval-test-with-cabal test-cabal-6 match-ghc-foo-6))
 
 ;; Check multi-line layouted description
-(define test-cabal-multiline-desc
+(define test-cabal-multiline-layout
   "name: foo
 version: 1.0.0
 homepage: http://test.org
@@ -251,9 +251,28 @@ executable cabal
     mtl        >= 2.0      && < 3
 ")
 
-(test-assert "hackage->guix-package test multiline desc"
-  (eval-test-with-cabal test-cabal-multiline-desc match-ghc-foo))
+(test-assert "hackage->guix-package test multiline desc (layout)"
+  (eval-test-with-cabal test-cabal-multiline-layout match-ghc-foo))
 
+;; Check multi-line braced description
+(define test-cabal-multiline-braced
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: {
+first line
+second line
+}
+license: BSD3
+executable cabal
+  build-depends:
+    HTTP       >= 4000.2.5 && < 4000.3,
+    mtl        >= 2.0      && < 3
+")
+
+(test-assert "hackage->guix-package test multiline desc (braced)"
+  (eval-test-with-cabal test-cabal-multiline-braced match-ghc-foo))
 
 (test-assert "read-cabal test 1"
   (match (call-with-input-string test-read-cabal-1 read-cabal)
