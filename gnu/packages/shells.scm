@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages ncurses)
@@ -789,3 +791,27 @@ is commonly written.")
     (home-page "https://www.oilshell.org/")
     (license (list psfl ; The Oil sources include a patched Python 2 source tree
                    asl2.0))))
+
+(define-public gash
+  (package
+    (name "gash")
+    (version "0.1")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "mirror://savannah/gash/gash-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "00m3lif64zyxd41cnk208kc81nl6qz659676qgiaqgwrw0brzrid"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (home-page "https://savannah.nongnu.org/projects/gash/")
+    (synopsis "POSIX-compatible shell written in Guile Scheme")
+    (description "Gash is a POSIX-compatible shell written in Guile
+Scheme.  It provides both the shell interface, as well as a Guile
+library for parsing shell scripts.  Gash is designed to bootstrap Bash
+as part of the Guix bootstrap process.")
+    (license gpl3+)))
