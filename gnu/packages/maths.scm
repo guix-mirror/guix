@@ -3561,6 +3561,7 @@ in finite element programs.")
     (inputs
      `(("mpi" ,openmpi)
        ;;Supported only with MPI:
+       ("hdf5" ,hdf5-parallel-openmpi)  ;TODO: have petsc-openmpi propagate?
        ("p4est" ,p4est-openmpi)
        ("petsc" ,petsc-openmpi)
        ("slepc" ,slepc-openmpi)
