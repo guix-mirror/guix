@@ -7245,18 +7245,19 @@ Bioconductor, CRAN, and Github.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.52.1")
+    (version "1.52.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "1685gdcvsmdjp1g5hm882jyyjdgqq77zh9xl2japhj285s8bm12y"))))
+                "0qwrsd9fcpkv7hhzy1scnj7ahdxi6cjary28kqk6b36gkzmnrw4r"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-graph" ,r-graph)
        ("r-rbgl" ,r-rbgl)
        ("r-rcurl" ,r-rcurl)
