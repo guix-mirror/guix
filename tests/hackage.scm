@@ -236,6 +236,25 @@ library
 (test-assert "hackage->guix-package test 6"
   (eval-test-with-cabal test-cabal-6 match-ghc-foo-6))
 
+;; Check multi-line layouted description
+(define test-cabal-multiline-desc
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description:   first line
+               second line
+license: BSD3
+executable cabal
+  build-depends:
+    HTTP       >= 4000.2.5 && < 4000.3,
+    mtl        >= 2.0      && < 3
+")
+
+(test-assert "hackage->guix-package test multiline desc"
+  (eval-test-with-cabal test-cabal-multiline-desc match-ghc-foo))
+
+
 (test-assert "read-cabal test 1"
   (match (call-with-input-string test-read-cabal-1 read-cabal)
     ((("name" ("test-me"))
