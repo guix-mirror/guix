@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -50,6 +52,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
@@ -499,3 +502,69 @@ open than with many editors: Scintilla lets you use proportional
 fonts, bold and italics, multiple foreground and background colours,
 and multiple fonts.")
     (license license:hpnd)))
+
+(define-public geany
+  (package
+    (name "geany")
+    (version "1.35")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.geany.org/"
+                                  "geany-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "179xfnvhcxsv54v2mlrhykqv2j7klniln5sffvqqpjmdvwyivvim"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          (delete-file-recursively "scintilla")
+                          #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python-docutils" ,python-docutils))) ;for rst2html
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("scintilla" ,scintilla)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-scintilla-shared-library
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("scintilla/Makefile") "")
+               (("scintilla/include/Makefile") ""))
+             (substitute* "Makefile.am"
+               (("scintilla ") ""))
+             (substitute* "src/Makefile.am"
+               (("\\$\\(top_builddir\\)/scintilla/libscintilla.la") "")
+               (("geany_LDFLAGS =" all) (string-append all " -lscintilla")))
+             (substitute* "doc/Makefile.am"
+               (("\\$\\(INSTALL_DATA\\) \\$\\(top_srcdir\\)/scintilla/License.txt \\$\\(DOCDIR\\)/ScintillaLicense.txt") ""))
+             (for-each delete-file (list "autogen.sh" "configure" "Makefile.in"))
+             #t)))))
+    (home-page "https://www.geany.org")
+    (synopsis "Fast and lightweight IDE")
+    (description "Geany is a small and fast Integrated Development
+Environment (IDE) that only has a few dependencies on other packages and is as
+independent as possible from special desktop environments like KDE or GNOME.
+
+The basic features of Geany are:
+@itemize
+@item syntax highlighting
+@item code completion
+@item auto completion of often constructed constructs like if, for and while
+@item auto completion of XML and HTML tags
+@item call tips
+@item folding
+@item many supported filetypes like C, Java, PHP, HTML, Python, Perl, Pascal
+@item symbol lists
+@item embedded terminal emulation
+@item extensibility through plugins
+@end itemize")
+    (license license:gpl2+)))
