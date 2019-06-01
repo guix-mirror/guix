@@ -7385,3 +7385,73 @@ full of enemies that can hurt it, obstacles and food to be eaten.  The goal of
 the game is to stay alive and collect prizes.  The robot program conveniently
 may be written in a plain text file in the Scheme programming language.")
     (license license:gpl3+)))
+
+(define-public ri-li
+  (package
+    (name "ri-li")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ri-li/"
+                                  "Ri-li%20Linux_Unix/Ri-li%20V" version "/"
+                                  "Ri-li-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1gcdsgnnbbn1mb1hkpwniv3fhkaj1nn8gq33v5c16q3wqchcq77p"))
+              ;; Taken from
+              ;; <https://github.com/NixOS/nixpkgs/blob/master/pkgs/games/rili/moderinze_cpp.patch>.
+              ;; It doesn't build otherwise.
+              (patches (search-patches "ri-li-modernize_cpp.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Remove "gentoo" subdirectory from Makefile, as it is
+         ;; missing a make file and generates a build failure.
+         (add-after 'configure 'fix-build
+           (lambda _
+             (substitute* "Makefile"
+               ((" gentoo") ""))
+             #t))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps")))
+               (for-each (lambda (f) (install-file f pixmaps))
+                         (find-files "data" "\\.(png|ico)$"))
+               (mkdir-p apps)
+               (with-output-to-file (string-append apps "/ri-li.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=Ri-li~@
+                     Exec=~a/bin/Ri_li~@
+                     Icon=~a/Ri-li-icon-32x32.png~@
+                     Categories=Game;ArcadeGame;~@
+                     Keywords=toy;train;wooden;snake-like;engine;~@
+                     Comment=a toy simulator game~@
+                     Comment[de]=Ein Spiel mit einem kleinen Zug~@
+                     Comment[fr]=un jeu de petit train~@
+                     Comment[ro_RO]=un joc cu un tren de jucărie~@
+                     Terminal=false~@
+                     Type=Application~%"
+                           out pixmaps))))
+             #t))
+         (add-after 'install-desktop-file 'remove-spurious-files
+           ;; Delete redundant files already installed somewhere else.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each delete-file
+                         (find-files (string-append out "/share/Ri-li")
+                                     "\\.(png|ico)|COPYING"))
+               #t))))))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-mixer)))))
+    (home-page "http://www.ri-li.org")
+    (synopsis "Toy train simulation game")
+    (description "Ri-li is a game in which you drive a wooden toy
+steam locomotive across many levels and collect all the coaches to
+win.")
+    ;; The project is dual-licensed GPL2+ and GPL3+.
+    (license (list license:gpl2+ license:gpl3+))))
