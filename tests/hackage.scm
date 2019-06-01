@@ -178,8 +178,7 @@ library
     ('build-system 'haskell-build-system)
     ('inputs
      ('quasiquote
-      (("ghc-http" ('unquote 'ghc-http))
-       ("ghc-mtl" ('unquote 'ghc-mtl)))))
+      (("ghc-http" ('unquote 'ghc-http)))))
     ('home-page "http://test.org")
     ('synopsis (? string?))
     ('description (? string?))
@@ -225,8 +224,7 @@ library
     ('inputs
      ('quasiquote
       (("ghc-b" ('unquote 'ghc-b))
-       ("ghc-http" ('unquote 'ghc-http))
-       ("ghc-mtl" ('unquote 'ghc-mtl)))))
+       ("ghc-http" ('unquote 'ghc-http)))))
     ('native-inputs
      ('quasiquote
       (("ghc-haskell-gi" ('unquote 'ghc-haskell-gi)))))
