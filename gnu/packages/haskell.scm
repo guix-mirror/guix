@@ -17,6 +17,7 @@
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6951,7 +6952,7 @@ upon it.")
 (define-public ghc-conduit-extra
   (package
     (name "ghc-conduit-extra")
-    (version "1.3.0")
+    (version "1.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -6960,7 +6961,7 @@ upon it.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1bi2b6kdzy5f9glq46jzsk02has95jkxqz0cchpbmnakzhjwjh9c"))))
+         "0jaj350vv6mbb26gdwcqz4gwzfzrjydv5pis2da49wz1npbakcfw"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
