@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,6 +131,14 @@ dictionaries, including personal ones.")
     (license gpl2+)
     (home-page "http://aspell.net/")))
 
+
+(define-public aspell-dict-ar
+  (aspell-dictionary "ar" "Arabic"
+                     #:version "1.2-0"
+		     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1avw40bp8yi5bnkq64ihm2rldgw34lk89yz281q9bmndh95a47h4")))
 
 (define-public aspell-dict-ca
   (aspell-dictionary "ca" "Catalan"
