@@ -510,9 +510,13 @@ the end-of-stream has been reached."
              (start start))
     (cond ((< read count)
            (match (lz-decompress-read decoder bv start (- count read))
-             (0 (if (eof-object? (feed-decoder! decoder))
-                    read
-                    (loop read start)))
+             (0 (cond ((lz-decompress-finished? decoder)
+                       read)
+                      ((eof-object? (feed-decoder! decoder))
+                       (lz-decompress-finish decoder)
+                       (loop read start))
+                      (else                       ;read again
+                       (loop read start))))
              (n (loop (+ read n) (+ start n)))))
           (else
            read))))
