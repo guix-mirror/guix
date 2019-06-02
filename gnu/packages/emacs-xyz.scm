@@ -33,7 +33,7 @@
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
-;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
@@ -12522,16 +12522,17 @@ the GIF result.")
 (define-public emacs-google-translate
   (package
     (name "emacs-google-translate")
-    (version "0.11.16")
+    (version "0.11.17")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/atykhonov/google-translate/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atykhonov/google-translate/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01n9spj1d0gjfj39x526rl3m9c28wnx9afipmf5s8y77cx3mfwhl"))))
+         "05ljjw7kbnszygw3w085kv57swfiiqxri2b5xvsf5dw3pc3g7j3c"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/atykhonov/google-translate")
     (synopsis "Emacs interface to Google Translate")
