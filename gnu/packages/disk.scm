@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -341,32 +342,31 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "0.33.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "1ml1ky3s75lbxr91p608q3prsdh9x899mw7nbgk252pqhg4vh8sh"))))
+        (base32
+         "0mdvn85jvy72ff7nds3dakx9kzknh8gx1z8i0w2sf970q03qp2z4"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; tests require a network connection
-       #:configure-flags '("--disable-scrollkeeper")))
+      ;; Tests require access to paths outside the build container, such
+      ;; as '/dev/disk/by-id'
+     `(#:tests? #f))
     (inputs
      `(("util-linux" ,util-linux)
        ("parted" ,parted)
        ("glib" ,glib)
-       ("gtkmm" ,gtkmm-2)
+       ("gtkmm" ,gtkmm)
        ("libxml2" ,libxml2)
-       ("libxslt" ,libxslt)
-       ("gnome-doc-utils" ,gnome-doc-utils)
-       ("docbook-xml" ,docbook-xml-4.2)
-       ("python" ,python-2)
-       ("python-libxml2" ,python2-libxml2)
-       ("which" ,which)))
+       ("yelp-tools" ,yelp-tools)
+       ("itstool" ,itstool)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("lvm2" ,lvm2) ; for tests
        ("pkg-config" ,pkg-config)))
     (home-page "https://gparted.org/")
     (synopsis "Partition editor to graphically manage disk partitions")
