@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,11 +74,19 @@ Raise an error if one of the processes exit with non-zero."
   (define total
     (length commands))
 
+  (define processes
+    (make-hash-table))
+
   (define (wait-for-one-process)
     (match (waitpid WAIT_ANY)
-      ((_ . status)
-       (unless (zero? (status:exit-val status))
-         (error "process failed" status)))))
+      ((pid . status)
+       (let ((command (hashv-ref processes pid)))
+         (hashv-remove! processes command)
+         (unless (zero? (status:exit-val status))
+           (format (current-error-port)
+                   "process '~{~a ~}' failed with status ~a~%"
+                   command status)
+           (exit 1))))))
 
   (define (fork-and-run-command command)
     (match (primitive-fork)
@@ -90,6 +98,7 @@ Raise an error if one of the processes exit with non-zero."
          (lambda ()
            (primitive-exit 127))))
       (pid
+       (hashv-set! processes pid command)
        #t)))
 
   (let loop ((commands  commands)
