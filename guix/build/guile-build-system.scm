@@ -19,10 +19,12 @@
 (define-module (guix build guile-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
   #:use-module (guix build utils)
   #:export (target-guile-effective-version
             %standard-phases
@@ -134,9 +136,12 @@ Raise an error if one of the processes exit with non-zero."
                 (source-directory ".")
                 (compile-flags '())
                 (scheme-file-regexp %scheme-file-regexp)
+                (not-compiled-file-regexp #f)
                 target
                 #:allow-other-keys)
-  "Build files in SOURCE-DIRECTORY that match SCHEME-FILE-REGEXP."
+  "Build files in SOURCE-DIRECTORY that match SCHEME-FILE-REGEXP.  Files
+matching NOT-COMPILED-FILE-REGEXP, if true, are not compiled but are
+installed; this is useful for files that are meant to be included."
   (let* ((out        (assoc-ref outputs "out"))
          (guile      (assoc-ref (or native-inputs inputs) "guile"))
          (effective  (target-guile-effective-version guile))
@@ -171,16 +176,19 @@ Raise an error if one of the processes exit with non-zero."
            (with-directory-excursion source-directory
              (find-files "." scheme-file-regexp))))
     (invoke-each
-     (map (lambda (file)
-            (cons* guild
-                   "guild" "compile"
-                   "-L" source-directory
-                   "-o" (string-append go-dir
-                                       (file-sans-extension file)
-                                       ".go")
-                   (string-append source-directory "/" file)
-                   flags))
-          source-files)
+     (filter-map (lambda (file)
+                   (and (or (not not-compiled-file-regexp)
+                            (not (string-match not-compiled-file-regexp
+                                               file)))
+                        (cons* guild
+                               "guild" "compile"
+                               "-L" source-directory
+                               "-o" (string-append go-dir
+                                                   (file-sans-extension file)
+                                                   ".go")
+                               (string-append source-directory "/" file)
+                               flags)))
+                 source-files)
      #:max-processes (parallel-job-count)
      #:report-progress report-build-progress)
 

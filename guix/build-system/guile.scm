@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,6 +75,7 @@
                       (search-paths '())
                       (system (%current-system))
                       (source-directory ".")
+                      not-compiled-file-regexp
                       (compile-flags %compile-flags)
                       (imported-modules %guile-build-system-modules)
                       (modules '((guix build guile-build-system)
@@ -92,6 +93,7 @@
                                 (source
                                  source))
                     #:source-directory ,source-directory
+                    #:not-compiled-file-regexp ,not-compiled-file-regexp
                     #:compile-flags ,compile-flags
                     #:phases ,phases
                     #:system ,system
@@ -128,6 +130,7 @@
 
                             (phases '%standard-phases)
                             (source-directory ".")
+                            not-compiled-file-regexp
                             (compile-flags %compile-flags)
                             (imported-modules %guile-build-system-modules)
                             (modules '((guix build guile-build-system)
@@ -168,6 +171,7 @@
                       #:target ,target
                       #:outputs %outputs
                       #:source-directory ,source-directory
+                      #:not-compiled-file-regexp ,not-compiled-file-regexp
                       #:compile-flags ,compile-flags
                       #:inputs %build-target-inputs
                       #:native-inputs %build-host-inputs
