@@ -5881,6 +5881,9 @@ devices using the GNOME desktop.")
                  (("\"nm-connection-editor")
                   (string-append "\"" nm-applet
                                  "/bin/nm-connection-editor")))
+               (substitute* '("panels/user-accounts/run-passwd.c")
+                 (("/usr/bin/passwd")
+                  "/run/setuid-programs/passwd"))
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
