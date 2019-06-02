@@ -25,6 +25,7 @@
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 format)
   #:use-module (guix build utils)
   #:export (target-guile-effective-version
             %standard-phases
@@ -128,8 +129,8 @@ Raise an error if one of the processes exit with non-zero."
 (define* (report-build-progress total completed
                                 #:optional (log-port (current-error-port)))
   "Report that COMPLETED out of TOTAL files have been completed."
-  (format log-port "compiling...\t~5,1f% of ~d files~%" ;FIXME: i18n
-          (* 100. (/ completed total)) total)
+  (format log-port "[~2d/~2d] Compiling...~%"
+          completed total)
   (force-output log-port))
 
 (define* (build #:key outputs inputs native-inputs
