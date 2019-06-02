@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Benjamin Slade <slade@jnanam.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -111,14 +112,14 @@ backend of Sawfish.")
 (define-public sawfish
   (package
     (name "sawfish")
-    (version "1.11")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.tuxfamily.org/sawfish/"
+              (uri (string-append "https://download.tuxfamily.org/sawfish/"
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "0wp4m0p836a0rysbcdqb6z5hxlxqj3rgdbks3bs44rlssx0mcvyg"))
+                "1z7awzgw8d15aw17kpbj460pcxq8l2rhkaxk47w7yg9qrmg0xja4"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -172,7 +173,7 @@ backend of Sawfish.")
        ("libxrandr"   ,libxrandr)
        ("libxtst"     ,libxtst)
        ("rep-gtk"     ,rep-gtk)))
-    (home-page "http://sawfish.wikia.com/wiki/Main_Page")
+    (home-page "https://sawfish.tuxfamily.org")
     (synopsis "Configurable window manager")
     (description
      "Sawfish is an extensible window manager using a Lisp-based scripting
