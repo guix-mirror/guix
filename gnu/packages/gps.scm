@@ -175,7 +175,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
 (define-public gpxsee
   (package
     (name "gpxsee")
-    (version "4.19")
+    (version "7.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -184,7 +184,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00j0gjldw1kn3i45dppld1pz8r4s1g7lw89k7gfvvqbjjyjih1wg"))))
+                "1k9nbs3knl6s0s4bf1rgrc9lwczawnzm7629igw0zmxb5yka7d9v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -195,27 +195,16 @@ coordinates as well as partial support for adjustments in global coordinate syst
              (for-each (lambda (file)
                          (invoke "lrelease" file))
                        (find-files "lang" "\\.ts"))
-             (substitute* "src/config.h"
-               (("/usr/share/gpxsee")
-                (string-append
-                 (assoc-ref outputs "out") "/share/gpxsee")))
              (invoke "qmake"
                      (string-append "PREFIX="
-                                    (assoc-ref outputs "out")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share/gpxsee/")))
-               (install-file "GPXSee" (string-append out "/bin/GPXSee"))
-               (install-file "pkg/maps.txt" share))
-             #t)))))
+                                    (assoc-ref outputs "out"))))))))
     (inputs
      `(("qtbase" ,qtbase)))
     (native-inputs
      `(("qttools" ,qttools)))
-    (home-page "http://www.gpxsee.org")
-    (synopsis "GPX file viewer and analyzer")
+    (home-page "https://www.gpxsee.org")
+    (synopsis "GPS log file viewer and analyzer")
     (description
-     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports GPX,
-TCX, KML, FIT, IGC and NMEA files.")
+     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports
+all common GPS log file formats.")
     (license license:gpl3)))
