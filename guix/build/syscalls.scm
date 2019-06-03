@@ -1084,13 +1084,24 @@ exception if it's already taken."
   #t)
 
 (define (call-with-file-lock file thunk)
-  (let ((port (lock-file file)))
+  (let ((port (catch 'system-error
+                (lambda ()
+                  (lock-file file))
+                (lambda args
+                  ;; When using the statically-linked Guile in the initrd,
+                  ;; 'fcntl-flock' returns ENOSYS unconditionally.  Ignore
+                  ;; that error since we're typically the only process running
+                  ;; at this point.
+                  (if (= ENOSYS (system-error-errno args))
+                      #f
+                      (apply throw args))))))
     (dynamic-wind
       (lambda ()
         #t)
       thunk
       (lambda ()
-        (unlock-file port)))))
+        (when port
+          (unlock-file port))))))
 
 (define-syntax-rule (with-file-lock file exp ...)
   "Wait to acquire a lock on FILE and evaluate EXP in that context."
