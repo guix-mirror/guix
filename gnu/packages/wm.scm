@@ -1185,7 +1185,7 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
-    (version "1.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -1194,7 +1194,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09cndc2nl39d3l7g5634xp0pxcz60pvc5277mfw89r22mh0j78rx"))))
+        (base32 "0yhn9zdg9mzfhn97c440lk3pw6122nrhx0is5sqmvgr6p814f776"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
