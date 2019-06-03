@@ -51,6 +51,7 @@
             group-entry-gid
             group-entry-members
 
+            %password-lock-file
             write-group
             write-passwd
             write-shadow
@@ -223,6 +224,11 @@ each field."
   (members         group-entry-members
                    (serialization list->comma-separated comma-separated->list)
                    (default '())))
+
+(define %password-lock-file
+  ;; The password database lock file used by libc's 'lckpwdf'.  Users should
+  ;; grab this lock with 'with-file-lock' when they access the databases.
+  "/etc/.pwd.lock")
 
 (define (database-writer file mode entry->string)
   (lambda* (entries #:optional (file-or-port file))
