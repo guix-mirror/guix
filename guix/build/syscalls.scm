@@ -81,7 +81,11 @@
             fdatasync
             pivot-root
             scandir*
+
             fcntl-flock
+            lock-file
+            unlock-file
+            with-file-lock
 
             set-thread-name
             thread-name
@@ -1066,6 +1070,29 @@ exception if it's already taken."
         (unless (zero? ret)
           ;; Presumably we got EAGAIN or so.
           (throw 'flock-error err))))))
+
+(define (lock-file file)
+  "Wait and acquire an exclusive lock on FILE.  Return an open port."
+  (let ((port (open-file file "w0")))
+    (fcntl-flock port 'write-lock)
+    port))
+
+(define (unlock-file port)
+  "Unlock PORT, a port returned by 'lock-file'."
+  (fcntl-flock port 'unlock)
+  (close-port port)
+  #t)
+
+(define-syntax-rule (with-file-lock file exp ...)
+  "Wait to acquire a lock on FILE and evaluate EXP in that context."
+  (let ((port (lock-file file)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        exp ...)
+      (lambda ()
+        (unlock-file port)))))
 
 
 ;;;

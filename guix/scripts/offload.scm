@@ -236,30 +236,6 @@ instead of '~a' of type '~a'~%")
 ;;; Synchronization.
 ;;;
 
-(define (lock-file file)
-  "Wait and acquire an exclusive lock on FILE.  Return an open port."
-  (mkdir-p (dirname file))
-  (let ((port (open-file file "w0")))
-    (fcntl-flock port 'write-lock)
-    port))
-
-(define (unlock-file lock)
-  "Unlock LOCK."
-  (fcntl-flock lock 'unlock)
-  (close-port lock)
-  #t)
-
-(define-syntax-rule (with-file-lock file exp ...)
-  "Wait to acquire a lock on FILE and evaluate EXP in that context."
-  (let ((port (lock-file file)))
-    (dynamic-wind
-      (lambda ()
-        #t)
-      (lambda ()
-        exp ...)
-      (lambda ()
-        (unlock-file port)))))
-
 (define (machine-slot-file machine slot)
   "Return the file name of MACHINE's file for SLOT."
   ;; For each machine we have a bunch of files representing each build slot.
@@ -829,7 +805,6 @@ This tool is meant to be used internally by 'guix-daemon'.\n"))
      (leave (G_ "invalid arguments: ~{~s ~}~%") x))))
 
 ;;; Local Variables:
-;;; eval: (put 'with-file-lock 'scheme-indent-function 1)
 ;;; eval: (put 'with-error-to-port 'scheme-indent-function 1)
 ;;; eval: (put 'with-timeout 'scheme-indent-function 2)
 ;;; End:

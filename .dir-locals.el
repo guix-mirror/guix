@@ -34,6 +34,8 @@
 
    (eval . (put 'modify-services 'scheme-indent-function 1))
    (eval . (put 'with-directory-excursion 'scheme-indent-function 1))
+   (eval . (put 'with-file-lock 'scheme-indent-function 1))
+
    (eval . (put 'package 'scheme-indent-function 0))
    (eval . (put 'origin 'scheme-indent-function 0))
    (eval . (put 'build-system 'scheme-indent-function 0))
