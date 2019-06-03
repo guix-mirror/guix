@@ -8355,6 +8355,33 @@ equivalent continuation-passing code, as well as miscellaneous utility
 functions written in continuation-passing style.")
     (license license:gpl3+)))
 
+(define-public emacs-attrap
+  (let ((commit "3b092bb8f6755a97e6ecb7623b9d2dde58beba4a")
+        (revision "1"))
+    (package
+      (name "emacs-attrap")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jyp/attrap")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "05d32980saji8ja1pcv65l0s3dq7w0n5hpikbf246hciy1x067pp"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/jyp/attrap")
+      (synopsis "Fix coding error at point")
+      (description "This package provides a command to fix the Flycheck error
+at point.")
+      (license license:gpl3+))))
+
 (define-public emacs-git-messenger
   (package
     (name "emacs-git-messenger")
