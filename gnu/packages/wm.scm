@@ -1279,3 +1279,29 @@ modules for building a Wayland compositor.")
     (synopsis "Screen locking utility for Wayland compositors")
     (description "Swaylock is a screen locking utility for Wayland compositors.")
     (license license:expat))) ; MIT license
+
+(define-public swaybg
+  (package
+    (name "swaybg")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/swaybg.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lmqz5bmig90gq2m7lwf02d2g7z4hzf8fhqz78c8vk92c6p4xwbc"))))
+    (build-system meson-build-system)
+    (inputs `(("cairo" ,cairo)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("wayland" ,wayland)))
+    (native-inputs `(("git" ,git)
+                     ("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Screen wallpaper utility for Wayland compositors")
+    (description "Swaybg is a wallpaper utility for Wayland compositors.")
+    (license license:expat))) ; MIT license
