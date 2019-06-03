@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -76,16 +76,6 @@
 ;; most of the daemon is in Scheme :-)).  But note that we do use a couple of
 ;; RPCs for functionality not available otherwise, like 'valid-path?'.
 
-(define (lock-store-file file)
-  "Acquire exclusive access to FILE, a store file."
-  (call-with-output-file (string-append file ".lock")
-    (cut fcntl-flock <> 'write-lock)))
-
-(define (unlock-store-file file)
-  "Release access to FILE."
-  (call-with-input-file (string-append file ".lock")
-    (cut fcntl-flock <> 'unlock)))
-
 (define* (finalize-store-file source target
                               #:key (references '()) deriver (lock? #t))
   "Rename SOURCE to TARGET and register TARGET as a valid store item, with
@@ -94,25 +84,25 @@ before attempting to register it; otherwise, assume TARGET's locks are already
 held."
   (with-database %default-database-file db
     (unless (path-id db target)
-      (when lock?
-        (lock-store-file target))
+      (let ((lock (and lock?
+                       (lock-file (string-append target ".lock")))))
 
-      (unless (path-id db target)
-        ;; If FILE already exists, delete it (it's invalid anyway.)
-        (when (file-exists? target)
-          (delete-file-recursively target))
+        (unless (path-id db target)
+          ;; If FILE already exists, delete it (it's invalid anyway.)
+          (when (file-exists? target)
+            (delete-file-recursively target))
 
-        ;; Install the new TARGET.
-        (rename-file source target)
+          ;; Install the new TARGET.
+          (rename-file source target)
 
-        ;; Register TARGET.  As a side effect, it resets the timestamps of all
-        ;; its files, recursively, and runs a deduplication pass.
-        (register-path target
-                       #:references references
-                       #:deriver deriver))
+          ;; Register TARGET.  As a side effect, it resets the timestamps of all
+          ;; its files, recursively, and runs a deduplication pass.
+          (register-path target
+                         #:references references
+                         #:deriver deriver))
 
-      (when lock?
-        (unlock-store-file target)))))
+        (when lock?
+          (unlock-file lock))))))
 
 (define (temporary-store-file)
   "Return the file name of a temporary file created in the store."
