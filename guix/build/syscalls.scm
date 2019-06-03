@@ -1083,16 +1083,18 @@ exception if it's already taken."
   (close-port port)
   #t)
 
-(define-syntax-rule (with-file-lock file exp ...)
-  "Wait to acquire a lock on FILE and evaluate EXP in that context."
+(define (call-with-file-lock file thunk)
   (let ((port (lock-file file)))
     (dynamic-wind
       (lambda ()
         #t)
-      (lambda ()
-        exp ...)
+      thunk
       (lambda ()
         (unlock-file port)))))
+
+(define-syntax-rule (with-file-lock file exp ...)
+  "Wait to acquire a lock on FILE and evaluate EXP in that context."
+  (call-with-file-lock file (lambda () exp ...)))
 
 
 ;;;
