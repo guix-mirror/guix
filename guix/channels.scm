@@ -27,7 +27,7 @@
   #:use-module (guix profiles)
   #:use-module (guix derivations)
   #:use-module (guix combinators)
-  #:use-module (guix deprecation)
+  #:use-module (guix diagnostics)
   #:use-module (guix store)
   #:use-module (guix i18n)
   #:use-module ((guix utils)
@@ -280,7 +280,7 @@ package modules under SOURCE using CORE, an instance of Guix."
                       ;; Disable deprecation warnings; it's OK for SCRIPT to
                       ;; use deprecated APIs and the user doesn't have to know
                       ;; about it.
-                      (parameterize ((deprecation-warning-port
+                      (parameterize ((guix-warning-port
                                       (%make-void-port "w")))
                         (primitive-load script))))))
         ;; BUILD must be a monadic procedure of at least one argument: the
