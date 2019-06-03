@@ -12232,10 +12232,19 @@ The TCP port to listen for connections.
 The host (and thus, network interface) to listen to.  Use
 @code{"0.0.0.0"} to listen on all the network interfaces.
 
-@item @code{compression-level} (default: @code{3})
-The gzip compression level at which substitutes are compressed.  Use
-@code{0} to disable compression altogether, and @code{9} to get the best
-compression ratio at the expense of increased CPU usage.
+@item @code{compression} (default: @code{'(("gzip" 3))})
+This is a list of compression method/level tuple used when compressing
+substitutes.  For example, to compress all substitutes with @emph{both} lzip
+at level 7 and gzip at level 9, write:
+
+@example
+'(("lzip" 7) ("gzip" 9))
+@end example
+
+Level 9 achieves the best compression ratio at the expense of increased CPU
+usage, whereas level 1 achieves fast compression.
+
+An empty list disables compression altogether.
 
 @item @code{nar-path} (default: @code{"nar"})
 The URL path at which ``nars'' can be fetched.  @xref{Invoking guix

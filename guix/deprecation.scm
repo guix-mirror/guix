@@ -21,6 +21,7 @@
   #:use-module (ice-9 format)
   #:export (define-deprecated
             define-deprecated/alias
+            warn-about-deprecation
             deprecation-warning-port))
 
 ;;; Commentary:
