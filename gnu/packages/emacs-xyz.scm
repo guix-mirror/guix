@@ -8046,6 +8046,30 @@ from within Emacs.  Restclient runs queries from a plan-text query sheet,
 displays results pretty-printed in XML or JSON with @code{restclient-mode}")
       (license license:public-domain))))
 
+(define-public emacs-whitespace-cleanup-mode
+  (let ((commit "72427144b054b0238a86e1348c45d986b8830d9d")
+        (revision "1"))
+    (package
+      (name "emacs-whitespace-cleanup-mode")
+      (version (git-version "0.10" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/purcell/whitespace-cleanup-mode")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1zlk534jbwrsabcg3kqlzk4h4hwya60lh6q2n1v4yn4rpf5ghsag"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/purcell/whitespace-cleanup-mode")
+      (synopsis "Intelligently call @code{whitespace-cleanup} on save")
+      (description
+       "This package provides a minor mode that calls
+@code{whitespace-cleanup} before saving the current buffer only if the
+whitespace in the buffer was initially clean.")
+      (license license:gpl3+))))
+
 (define-public emacs-eimp
   (let ((version "1.4.0")
         (commit "2e7536fe6d8f7faf1bad7a8ae37faba0162c3b4f")
