@@ -3163,7 +3163,7 @@ provides additional functionality on the produced Mallard documents.")
          (replace 'check
            (lambda _
              (invoke "python" "runtests.py" "-vv"))))))
-    (home-page "http://cython.org/")
+    (home-page "https://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
 programming language and the extended Cython programming language.  It makes
