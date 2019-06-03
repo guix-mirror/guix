@@ -162,6 +162,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -4444,7 +4445,7 @@ principles are simplicity and standards compliance.")
 (define-public d-feet
   (package
     (name "d-feet")
-    (version "0.3.11")
+    (version "0.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4452,7 +4453,7 @@ principles are simplicity and standards compliance.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hmrijm4d9vwzx2r8qzzsy8ccpj79l1y6cc569n9jjzqcq699p53"))))
+                "1m8lwiwl5jhi0x7y6x5zmd3hjplgvdjrb8a8jg74rvkygslj1p7f"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:out-of-source? #f ; tests need to run in the source directory.
@@ -4491,6 +4492,7 @@ principles are simplicity and standards compliance.")
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
        ("python" ,python-wrapper)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("python-pygobject" ,python-pygobject)))
     (home-page "https://wiki.gnome.org/Apps/DFeet")
     (synopsis "D-Bus debugger")
@@ -7973,3 +7975,95 @@ functionality.")
     (license (list license:lgpl2.1 license:lgpl3 ; either one of these
                    license:openldap2.8 ; addressbook/gui/component/openldap-extract.h
                    license:lgpl2.1+))))  ; smime/lib/*
+
+(define-public gthumb
+  (package
+    (name "gthumb")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gthumb/"
+                                  (version-major+minor version) "/"
+                                  "gthumb-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1l2s1facq1r6yvqjqc34aqfzlvb3nhkhn79xisxbbdlgrrxdq52f"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       ;; Ensure the RUNPATH contains all installed library locations.
+       (list (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gthumb/extensions")
+             (string-append "-Dcpp_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gthumb/extensions"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")                   ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("exiv2" ,exiv2)
+       ("gtk" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("clutter" ,clutter)
+       ("clutter-gst" ,clutter-gst)
+       ("clutter-gtk" ,clutter-gtk)
+       ("libjpeg" ,libjpeg)
+       ("libtiff" ,libtiff)
+       ("libraw" ,libraw)))
+    (home-page "https://wiki.gnome.org/Apps/Gthumb")
+    (synopsis "GNOME image viewer and browser")
+    (description "GThumb is an image viewer, browser, organizer, editor and
+advanced image management tool")
+    (license license:gpl2+)))
+
+(define-public terminator
+  (package
+    (name "terminator")
+    (version "1.91")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/" name "/"
+                                  "gtk3/" version "/" "+download/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sdyqwydmdnh7j6mn74vrywz35m416kqsbxbrqcnv5ak08y6xxwm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python2-pycairo" ,python2-pycairo)
+       ("python2-pygobject" ,python2-pygobject)
+       ("python2-psutil" ,python2-psutil)
+       ("vte" ,vte)))
+    (arguments
+     `(#:python ,python-2                          ;Python 3 not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/terminator")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
+    (home-page "https://gnometerminator.blogspot.com/")
+    (synopsis "Store and run multiple GNOME terminals in one window")
+    (description
+     "Terminator allows you to run multiple GNOME terminals in a grid and
++tabs, and it supports drag and drop re-ordering of terminals.")
+    (license license:gpl2)))

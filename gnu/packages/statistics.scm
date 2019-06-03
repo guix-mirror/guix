@@ -1327,13 +1327,13 @@ for template use among CRAN packages.")
 (define-public r-evaluate
   (package
     (name "r-evaluate")
-    (version "0.13")
+    (version "0.14")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "evaluate" version))
               (sha256
                (base32
-                "0igvc27rsqxcswjb9slnpi5d509rffxn1y5d82hgqvv970nl3p2q"))))
+                "0a2y7j534gbgixkwj9r1z76l2vssw4g1hznzbpclc076wkdqpj58"))))
     (build-system r-build-system)
     (home-page "https://github.com/hadley/evaluate")
     (synopsis "Parsing and evaluation tools for R")
@@ -1670,14 +1670,14 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "111jl0hdjhh7hkydxvsr5l19gb0ylxq7xrkc28awnc9pzglpgis5"))))
+         "1sb5j6k8hp7yf7grjjhn45hhc163fcndiw9zw976zc74f1856kpj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
@@ -2333,14 +2333,14 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "1gx4mk7js1irzkql5rgk48ja9c6mm28ccxz483ngbhdd57az90qw"))))
+         "0mh4xwb9wnn5j2n1zzmjldqjqv2nn4wdidiixxciaqrqsi0l9834"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
@@ -2695,14 +2695,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.12")
+    (version "1.13")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0milpdaf4nd36kq6sci9wc5dhwswl4w9c9fychfbppgjsgfp6kfv"))))
+            "1vv3b8nlw8ra19492rjg3na42lwh3xr5a2jy2ia81fvvs846pywn"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2714,6 +2714,7 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-mime" ,r-mime)
        ("r-stringr" ,r-stringr)
        ("r-tinytex" ,r-tinytex)
+       ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)
        ("ghc-pandoc" ,ghc-pandoc)))
     (home-page "http://rmarkdown.rstudio.com")
@@ -4314,13 +4315,13 @@ mechanism.")
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.8-5")
+    (version "1.8-6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "09p8gmd5ifz80ahnhiianarsr5xx3nz76jzp90d7v3fjffcrcww7"))))
+                "1k1pmzr9nfwbxq1xf0jzn3nawv4sgnkxkgzxnm1i887jcbrs85r2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -4470,13 +4471,13 @@ Wall Street Journal, among others.  This package also provides
 (define-public r-statmod
   (package
     (name "r-statmod")
-    (version "1.4.30")
+    (version "1.4.32")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "statmod" version))
               (sha256
                (base32
-                "07v4x8af60alcw6vbiwf5fp25bhra61kvxz9kqx64lszm0i1fb4x"))))
+                "083yyp84xj85zg4bhz7i90bqzl3p6155ch4abwsfc9k1lv7s2rrg"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/statmod")
     (native-inputs
@@ -4771,14 +4772,14 @@ and resampling-based inference.")
 (define-public r-prabclus
   (package
     (name "r-prabclus")
-    (version "2.2-7")
+    (version "2.2-7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "prabclus" version))
        (sha256
         (base32
-         "0h2nml8ri27mhfs2p6ngb6kfd6lyq30sc6813yybpskkrb6gs1pb"))))
+         "0x998nidd7abq5nqynyr8q79z056qbli23mvad6f09fjn2xz6nrc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
@@ -4967,14 +4968,14 @@ of the points.")
 (define-public r-fpc
   (package
     (name "r-fpc")
-    (version "2.1-11.2")
+    (version "2.2-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fpc" version))
        (sha256
         (base32
-         "0wjjp9xn283acfg6cm1wa6fsi7pf0z97227hrnlpmprks3mbj8kr"))))
+         "183awn9fbigsy3rwmg5l39zpfg2zpbb94hkx7k99v2dir8dpdy85"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -4986,8 +4987,7 @@ of the points.")
        ("r-mclust" ,r-mclust)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-prabclus" ,r-prabclus)
-       ("r-robustbase" ,r-robustbase)
-       ("r-trimcluster" ,r-trimcluster)))
+       ("r-robustbase" ,r-robustbase)))
     (home-page "https://cran.r-project.org/web/packages/fpc")
     (synopsis "Flexible procedures for clustering")
     (description
@@ -5270,14 +5270,14 @@ Companion to Applied Regression, Third Edition, Sage.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "3.0-2")
+    (version "3.0-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
         (base32
-         "0l3wyc9ia0ypcbap2p39slazfpbl84mjzydqvpsywrzdiyxajnfz"))))
+         "0vy3g3bjljd2al8xb9qr45f98is7yppc9jilqn7b6zvf5yqpr07s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)

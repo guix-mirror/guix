@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -840,3 +842,30 @@ map, geocoding with Nominatim, or general analysis.")
 the texture and density of features is visible at every zoom level, instead of
 dropping features at lower levels.")
     (license license:bsd-2)))
+
+(define-public osmctools
+  (package
+    (name "osmctools")
+    (version "0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/osm-c-tools/osmctools")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m8d3r1q1v05pkr8k9czrmb4xjszw6hvgsf3kn9pf0v14gpn4r8f"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://gitlab.com/osm-c-tools/osmctools")
+    (synopsis "Tools to convert, filter and update OpenStreetMap data files")
+    (description "This project contains a few tools which are used in the
+OpenStreetMap project.  They can be used to convert, filter and update
+OpenStreetMap data files.")
+    (license license:agpl3)))

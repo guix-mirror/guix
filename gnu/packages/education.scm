@@ -27,7 +27,10 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -373,3 +376,107 @@ keyboard is also available if the child does not have any other
 specialized device.")
     (home-page "https://bipede.fr/contrib/")
     (license license:gpl3)))
+
+(define-public childsplay
+  (package
+    (name "childsplay")
+    (version "3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/schoolsplay/"
+                    "childsplay-" version ".tgz"))
+              (sha256
+               (base32
+                "0z7yp2swjnbz51vn2zyfnjn40jq38l5mbh15yafmx1z3vn2z1m77"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-dejavu-font
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((dejavu-dir
+                     (string-append (assoc-ref inputs "font-dejavu")
+                                    "/share/fonts/truetype"))
+                    (dejavu-font
+                     (string-append dejavu-dir
+                                    "/DejaVuSansCondensed-Bold.ttf")))
+               (substitute* "SPConstants.py"
+                 (("^(TTF(BOLD)? = ).*" _ prefix)
+                  (string-append prefix "'" dejavu-font "'\n")))
+               (for-each (lambda (f) (delete-file f))
+                         (find-files "lib/SPData" "DejaVu"))
+               #t)))
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pixmaps (string-append out "/share/pixmaps"))
+                    (share (string-append out "/share/childsplay"))
+                    (doc (string-append out "/share/doc/" ,name "-",version)))
+               ;; Install icon.
+               (install-file "lib/SPData/themes/childsplay/logo_cp.svg" pixmaps)
+               ;; Install data.
+               (mkdir-p share)
+               (for-each (lambda (f)
+                           (copy-recursively f (string-append share "/" f)))
+                         '("alphabet-sounds" "lib" "locale" "SPWidgets"))
+               (for-each (lambda (f) (install-file f share))
+                         (find-files "." "\\.(py|dev|db)$"))
+               ;; Install documentation.
+               (mkdir-p doc)
+               (copy-recursively "docs" doc)
+               #t)))
+         (add-after 'install 'create-executable
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((python (string-append (assoc-ref inputs "python")
+                                           "/bin/python"))
+                    (out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (executable (string-append bin "/childsplay")))
+               (mkdir-p bin)
+               (call-with-output-file executable
+                 (lambda (file)
+                   (format file
+                           "~a ~a"
+                           python
+                           (string-append out "/share/childsplay/childsplay.py"))))
+               (chmod executable #o555)
+               #t)))
+         (add-after 'install 'create-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (applications (string-append out "/share/applications")))
+               (mkdir-p applications)
+               (call-with-output-file
+                   (string-append applications "/childsplay.desktop")
+                 (lambda (file)
+                   (format file
+                           "[Desktop Entry]~@
+                            Name=Childsplay~@
+                            Comment=Suite of educational games for young children~@
+                            Comment[ca]=Conjunt de jocs educatius per a xiquets~@
+                            Comment[es]=Conjunto de juegos educativos para niños~@
+                            Comment[de]=Sammlung mit lehrreichen Spielen für kleine Kinder~@
+                            Exec=~a/bin/childsplay.py~@
+                            Terminal=false~@
+                            Icon=logo_cp.svg~@
+                            Type=Application~@
+                            Categories=Application;Game;Education;KidsGame;~@
+                            Keywords=suite;children;games;young;educational;~%"
+                           out)))
+               #t))))))
+    (inputs
+     `(("font-dejavu" ,font-dejavu)
+       ("pygame" ,python2-pygame)
+       ("sqlalchemy" ,python2-sqlalchemy)))
+    (synopsis "Suite of educational games for young children")
+    (description "Childsplay is a collection of educational activities
+for young children.  Childsplay can be used at home, kindergartens and
+pre-schools.  Childsplay is a fun and safe way to let young children
+use the computer and at the same time teach them a little math,
+letters of the alphabet, spelling, eye-hand coordination, etc.")
+    (home-page "http://www.schoolsplay.org")
+    (license license:gpl3+)))

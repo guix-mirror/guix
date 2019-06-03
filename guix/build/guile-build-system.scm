@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,10 +19,13 @@
 (define-module (guix build guile-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 format)
   #:use-module (guix build utils)
   #:export (target-guile-effective-version
             %standard-phases
@@ -74,11 +77,19 @@ Raise an error if one of the processes exit with non-zero."
   (define total
     (length commands))
 
+  (define processes
+    (make-hash-table))
+
   (define (wait-for-one-process)
     (match (waitpid WAIT_ANY)
-      ((_ . status)
-       (unless (zero? (status:exit-val status))
-         (error "process failed" status)))))
+      ((pid . status)
+       (let ((command (hashv-ref processes pid)))
+         (hashv-remove! processes command)
+         (unless (zero? (status:exit-val status))
+           (format (current-error-port)
+                   "process '~{~a ~}' failed with status ~a~%"
+                   command status)
+           (exit 1))))))
 
   (define (fork-and-run-command command)
     (match (primitive-fork)
@@ -90,6 +101,7 @@ Raise an error if one of the processes exit with non-zero."
          (lambda ()
            (primitive-exit 127))))
       (pid
+       (hashv-set! processes pid command)
        #t)))
 
   (let loop ((commands  commands)
@@ -117,17 +129,20 @@ Raise an error if one of the processes exit with non-zero."
 (define* (report-build-progress total completed
                                 #:optional (log-port (current-error-port)))
   "Report that COMPLETED out of TOTAL files have been completed."
-  (format log-port "compiling...\t~5,1f% of ~d files~%" ;FIXME: i18n
-          (* 100. (/ completed total)) total)
+  (format log-port "[~2d/~2d] Compiling...~%"
+          completed total)
   (force-output log-port))
 
 (define* (build #:key outputs inputs native-inputs
                 (source-directory ".")
                 (compile-flags '())
                 (scheme-file-regexp %scheme-file-regexp)
+                (not-compiled-file-regexp #f)
                 target
                 #:allow-other-keys)
-  "Build files in SOURCE-DIRECTORY that match SCHEME-FILE-REGEXP."
+  "Build files in SOURCE-DIRECTORY that match SCHEME-FILE-REGEXP.  Files
+matching NOT-COMPILED-FILE-REGEXP, if true, are not compiled but are
+installed; this is useful for files that are meant to be included."
   (let* ((out        (assoc-ref outputs "out"))
          (guile      (assoc-ref (or native-inputs inputs) "guile"))
          (effective  (target-guile-effective-version guile))
@@ -162,16 +177,19 @@ Raise an error if one of the processes exit with non-zero."
            (with-directory-excursion source-directory
              (find-files "." scheme-file-regexp))))
     (invoke-each
-     (map (lambda (file)
-            (cons* guild
-                   "guild" "compile"
-                   "-L" source-directory
-                   "-o" (string-append go-dir
-                                       (file-sans-extension file)
-                                       ".go")
-                   (string-append source-directory "/" file)
-                   flags))
-          source-files)
+     (filter-map (lambda (file)
+                   (and (or (not not-compiled-file-regexp)
+                            (not (string-match not-compiled-file-regexp
+                                               file)))
+                        (cons* guild
+                               "guild" "compile"
+                               "-L" source-directory
+                               "-o" (string-append go-dir
+                                                   (file-sans-extension file)
+                                                   ".go")
+                               (string-append source-directory "/" file)
+                               flags)))
+                 source-files)
      #:max-processes (parallel-job-count)
      #:report-progress report-build-progress)
 

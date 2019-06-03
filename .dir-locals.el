@@ -53,6 +53,8 @@
    (eval . (put 'call-with-decompressed-port 'scheme-indent-function 2))
    (eval . (put 'call-with-gzip-input-port 'scheme-indent-function 1))
    (eval . (put 'call-with-gzip-output-port 'scheme-indent-function 1))
+   (eval . (put 'call-with-lzip-input-port 'scheme-indent-function 1))
+   (eval . (put 'call-with-lzip-output-port 'scheme-indent-function 1))
    (eval . (put 'signature-case 'scheme-indent-function 1))
    (eval . (put 'emacs-batch-eval 'scheme-indent-function 0))
    (eval . (put 'emacs-batch-edit-file 'scheme-indent-function 1))

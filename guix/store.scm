@@ -980,7 +980,7 @@ store directory (/gnu/store)."
                     store-path)))
    (lambda (server hash-part)
      "Return the store path whose hash part is HASH-PART (a nix-base32
-string).  Raise an error if no such path exists."
+string).  Return the empty string if no such path exists."
      ;; This RPC is primarily used by Hydra to reply to HTTP GETs of
      ;; /HASH.narinfo.
      (query-path-from-hash-part server hash-part))))

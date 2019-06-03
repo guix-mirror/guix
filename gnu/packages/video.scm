@@ -1446,7 +1446,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.05.11")
+    (version "2019.05.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1454,7 +1454,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1y272jgdqwhf2njzqfln80zb2pmw83rvp6lxza6wghb7cld249j1"))))
+                "18xwdfvpkqrnj0kb8xj8hgwhgiqpv7x7x7zzr4x3vynb9grcv9m8"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1565,7 +1565,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1270")
+    (version "0.4.1302")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1574,7 +1574,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "123g6x8sh32v4yn4ss55lfw7j79hgl3l6aiwgrk4ndq7dzhnz46q"))))
+                "1fwwzslv1vpjr8q0fq10dbngr8zai1n3d6na700cgpky4j9y0y99"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos

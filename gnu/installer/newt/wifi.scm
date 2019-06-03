@@ -144,6 +144,7 @@ of <service-item> records present in LISTBOX."
   (let ((services (connman-services)))
     (filter (lambda (service)
               (and (string=? (service-type service) "wifi")
+                   (service-name service)
                    (not (string-null? (service-name service)))))
             services)))
 

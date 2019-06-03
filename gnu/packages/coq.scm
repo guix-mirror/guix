@@ -499,7 +499,7 @@ uses Ltac to synthesize the substitution operation.")
 (define-public coq-equations
   (package
     (name "coq-equations")
-    (version "1.2-beta2")
+    (version "1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -508,7 +508,7 @@ uses Ltac to synthesize the substitution operation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0y2zwv7jxs1crprj5qvg46h0v9wyfn99ln40yskq91y9h1lj5h3j"))))
+                "1q3wvicr43bgy7xn1diwh4j43mnrhprrc2xd22qlbz9cl6bhf8bj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml"  ,ocaml)

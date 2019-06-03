@@ -1692,7 +1692,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.10.4")
+    (version "3.11.2")
     (source
      (origin
       (method url-fetch)
@@ -1700,7 +1700,7 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0fk16944zh3473ra198kdkxdn08rq7b6ap838hxy1mh1i0hb488r"))))
+       (base32 "1645nwwcp9bcnfnxikk480mhbbacdvhsay2c401818hk97dqj5nx"))))
     (outputs '("out"                    ; libraries and headers
                "examples"))             ; ~30MiB of examples
     (build-system gnu-build-system)
@@ -1845,7 +1845,11 @@ scientific applications modeled by partial differential equations.")
         ``("--with-mpiexec=mpirun"
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
-           ,@(delete "--with-mpi=0" ,cf)))))
+           ,@(delete "--with-mpi=0" ,cf)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'mpi-setup
+             ,%openmpi-setup)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
 (define-public python-petsc4py
@@ -1910,7 +1914,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.10.1")
+    (version "3.11.1")
     (source
      (origin
        (method url-fetch)
@@ -1918,10 +1922,11 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "188j1a133q91h8pivpnzwcf78kz8dvz2nzf6ndnjygdbqb48fizn"))))
+         "1yq84q9wannc8xwapxpay4ypdd675picwi395hhsdvng9q6hf5j8"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)))
+     `(("python" ,python-2)
+       ("petsc:examples" ,petsc "examples"))) ;for gmakegen.py script
     (inputs
      `(("arpack" ,arpack-ng)
        ("gfortran" ,gfortran)))
@@ -1933,7 +1938,10 @@ savings are consistently > 5x.")
        `(,(string-append "--with-arpack-dir="
                          (assoc-ref %build-inputs "arpack") "/lib"))
        #:make-flags                     ;honor (parallel-job-count)
-       `(,(format #f "MAKE_NP=~a" (parallel-job-count)))
+       `(,(format #f "MAKE_NP=~a" (parallel-job-count))
+         ,(string-append "PETSCCONFIGDIR="
+                         (assoc-ref %build-inputs "petsc:examples")
+                         "/share/petsc/examples/config"))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -3553,6 +3561,7 @@ in finite element programs.")
     (inputs
      `(("mpi" ,openmpi)
        ;;Supported only with MPI:
+       ("hdf5" ,hdf5-parallel-openmpi)  ;TODO: have petsc-openmpi propagate?
        ("p4est" ,p4est-openmpi)
        ("petsc" ,petsc-openmpi)
        ("slepc" ,slepc-openmpi)

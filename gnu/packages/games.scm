@@ -141,6 +141,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages squirrel)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
@@ -3495,19 +3496,36 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.5.1")
+   (version "0.6.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
                                 "releases/download/v" version "/SuperTux-v"
                                 version "-Source.tar.gz"))
+            (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "1i8avad7w7ikj870z519j383ldy29r6f956bs38cbr8wk513pp69"))))
+              "1h1s4abirkdv4ag22zvyk6zkk64skqbjmcnnba67ps4hdzxfbhy4"))
+            (patches
+             (search-patches "supertux-fix-build-with-gcc5.patch"
+                             "supertux-unbundle-squirrel.patch"))))
    (arguments
     '(#:tests? #f
       #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
-                          "-DENABLE_BOOST_STATIC_LIBS=OFF")))
+                          "-DENABLE_BOOST_STATIC_LIBS=OFF"
+                          "-DUSE_SYSTEM_PHYSFS=ON")
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'patch-squirrel-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((squirrel (assoc-ref inputs "squirrel")))
+              (substitute* "CMakeLists.txt"
+                (("set\\(SQUIRREL_PREFIX.*")
+                 (string-append "set(SQUIRREL_PREFIX " squirrel ")"))
+                (("add_dependencies\\(supertux2_lib squirrel\\)") "")
+                (("\\$\\{SQUIRREL_PREFIX\\}/include")
+                 (string-append "${SQUIRREL_PREFIX}/include/squirrel"))))
+            #t)))))
    (build-system cmake-build-system)
    (inputs `(("sdl2" ,sdl2)
              ("sdl2-image" ,sdl2-image)
@@ -3519,7 +3537,9 @@ with the \"Stamp\" tool within Tux Paint.")
              ("libogg" ,libogg)
              ("physfs" ,physfs)
              ("curl" ,curl)
-             ("boost" ,boost)))
+             ("boost" ,boost)
+             ("freetype" ,freetype)
+             ("squirrel" ,squirrel)))
    (native-inputs `(("pkg-config" ,pkg-config)))
    (synopsis "2D platformer game")
    (description "SuperTux is a free classic 2D jump'n run sidescroller game

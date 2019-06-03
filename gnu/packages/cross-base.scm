@@ -39,7 +39,8 @@
   #:export (cross-binutils
             cross-libc
             cross-gcc
-            cross-newlib?))
+            cross-newlib?
+            cross-kernel-headers))
 
 (define-syntax %xgcc
   ;; GCC package used as the basis for cross-compilation.  It doesn't have to
@@ -276,18 +277,19 @@ target that libc."
 
 (define* (cross-kernel-headers target
                                #:optional
+                               (linux-headers linux-libre-headers)
                                (xgcc (cross-gcc target))
                                (xbinutils (cross-binutils target)))
   "Return headers depending on TARGET."
 
   (define xlinux-headers
-    (package (inherit linux-libre-headers)
-      (name (string-append (package-name linux-libre-headers)
+    (package (inherit linux-headers)
+      (name (string-append (package-name linux-headers)
                            "-cross-" target))
       (arguments
        (substitute-keyword-arguments
            `(#:implicit-cross-inputs? #f
-             ,@(package-arguments linux-libre-headers))
+             ,@(package-arguments linux-headers))
          ((#:phases phases)
           `(alist-replace
             'build
@@ -300,7 +302,7 @@ target that libc."
             ,phases))))
       (native-inputs `(("cross-gcc" ,xgcc)
                        ("cross-binutils" ,xbinutils)
-                       ,@(package-native-inputs linux-libre-headers)))))
+                       ,@(package-native-inputs linux-headers)))))
 
   (define xgnumach-headers
     (package (inherit gnumach-headers)

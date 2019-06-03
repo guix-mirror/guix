@@ -157,14 +157,14 @@
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.4.3")
+    (version "5.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "063v69x7spyclyaxrd3gmzj3p16q5ayg97xqhwb1kyn22a9pwip2"))))
+         "1v95vb5385qscfdvphv8l2w22bmir3d7yhpi02n58v3mlqy1r3l2"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests does not return and times out.
@@ -193,14 +193,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-shapely
   (package
     (name "python-shapely")
-    (version "1.6.3")
+    (version "1.6.4.post2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Shapely" version))
        (sha256
         (base32
-         "0svc58dzcw9gj92b4sgq35sdxkf85z0qwlzxarkzq4bp3h8jy58l"))))
+         "03r42fmd9alp6r3q95ad6rldq2f7n1wimrw53zy5kpn33yv7pf64"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
@@ -11474,13 +11474,13 @@ and bit flag values.")
 (define-public python-attrs
   (package
     (name "python-attrs")
-    (version "18.2.0")
+    (version "19.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "attrs" version))
               (sha256
                (base32
-                "0s9ydh058wmmf5v391pym877x4ahxg45dw6a0w4c7s5wgpigdjqh"))))
+                "16g33zr5f449lqc5wgvzpknxryfzrfsxcr6kpgxwn7l5fkv71f7h"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)

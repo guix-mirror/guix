@@ -175,7 +175,7 @@ Relogin="              (if (sddm-configuration-relogin? config)
 (define (sddm-etc-service config)
   (list `("sddm.conf" ,(sddm-configuration-file config))))
 
-(define (sddm-pam-service)
+(define (sddm-pam-service config)
   "Return a PAM service for @command{sddm}."
   (pam-service
    (name "sddm")
@@ -190,7 +190,9 @@ Relogin="              (if (sddm-configuration-relogin? config)
      (pam-entry
       (control "required")
       (module "pam_succeed_if.so")
-      (arguments (list "uid >= 1000" "quiet")))
+      (arguments (list (string-append "uid >= "
+                                      (number->string (sddm-configuration-minimum-uid config)))
+                       "quiet")))
      ;; should be factored out into system-auth
      (pam-entry
       (control "required")
@@ -249,7 +251,7 @@ Relogin="              (if (sddm-configuration-relogin? config)
       (control "required")
       (module "pam_unix.so"))))))
 
-(define (sddm-autologin-pam-service)
+(define (sddm-autologin-pam-service config)
   "Return a PAM service for @command{sddm-autologin}"
   (pam-service
    (name "sddm-autologin")
@@ -261,7 +263,9 @@ Relogin="              (if (sddm-configuration-relogin? config)
      (pam-entry
       (control "required")
       (module "pam_succeed_if.so")
-      (arguments (list "uid >= 1000" "quiet")))
+      (arguments (list (string-append "uid >= "
+                                      (number->string (sddm-configuration-minimum-uid config)))
+                       "quiet")))
      (pam-entry
       (control "required")
       (module "pam_permit.so"))))
@@ -282,9 +286,9 @@ Relogin="              (if (sddm-configuration-relogin? config)
       (module "sddm"))))))
 
 (define (sddm-pam-services config)
-  (list (sddm-pam-service)
+  (list (sddm-pam-service config)
         (sddm-greeter-pam-service)
-        (sddm-autologin-pam-service)))
+        (sddm-autologin-pam-service config)))
 
 (define %sddm-accounts
   (list (user-group (name "sddm") (system? #t))

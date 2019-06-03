@@ -1153,14 +1153,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.18.0")
+    (version "3.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "089v16mm5m0rlyyyd0d6rz8gwb852zf3bcdrrw70wanlfjn258q7"))))
+         "1mwi5s600c3jxy8f1azfrndc3g06qvhbmrp9wqac9nwjbfx1kfji"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2086,14 +2086,14 @@ independent of the p-value under the null hypothesis.")
 (define-public r-icobra
   (package
     (name "r-icobra")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "iCOBRA" version))
        (sha256
         (base32
-         "1w9frnczgypzc2czbwrvlizqcqhbp6cdpyws7vkmnn9k0ggzxvfc"))))
+         "1wj0vqyb6h4rddmn4va3182yap9bv4m1r1jlzyjfyrqxhl2sqb1q"))))
     (properties `((upstream-name . "iCOBRA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2886,14 +2886,14 @@ to multiple hypothesis correction.")
 (define-public r-dose
   (package
     (name "r-dose")
-    (version "3.10.0")
+    (version "3.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DOSE" version))
        (sha256
         (base32
-         "0dvhnfhzhhzcxm8zhdwrkif7sak4p888sjqfd3a0p77h0hs6g8pv"))))
+         "0ab7mgj42fg6608qkciyqivr1n8s8r5ibvp0z3jfclrnyx6cl0w1"))))
     (properties `((upstream-name . "DOSE")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3408,14 +3408,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "03f130vcd6hd3fv2pg60id0ddd6qkwsyx73gm907xaayf42ar2pj"))))
+         "0h5j3724hnd86w22vy3whqx6gkf0nf2dxd2clgzdvjzblbcd5s69"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4547,4 +4547,62 @@ quantification of genomic regions of interest.")
 high-throughput sequencing data.  It performs parallel processing of entire
 files and produces a report which contains a set of high-resolution
 graphics.")
+    (license license:gpl2+)))
+
+(define-public r-birewire
+  (package
+    (name "r-birewire")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiRewire" version))
+       (sha256
+        (base32
+         "1gjb18l3gq3w8zl6r5d49hw0r1kfh9f7ghv9hz6y86aniprvb518"))))
+    (properties `((upstream-name . "BiRewire")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)
+       ("r-slam" ,r-slam)
+       ("r-tsne" ,r-tsne)))
+    (home-page "https://bioconductor.org/packages/release/bioc/html/BiRewire.html")
+    (synopsis "Tools for randomization of bipartite graphs")
+    (description
+     "This package provides functions for bipartite network rewiring through N
+consecutive switching steps and for the computation of the minimal number of
+switching steps to be performed in order to maximise the dissimilarity with
+respect to the original network.  It includes functions for the analysis of
+the introduced randomness across the switching steps and several other
+routines to analyse the resulting networks and their natural projections.")
+    (license license:gpl3)))
+
+(define-public r-birta
+  (package
+    (name "r-birta")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "birta" version))
+       (sha256
+        (base32
+         "12xjyvgmh4h0b7hi4qg50kcpb9003gnh2xyfgncb8l9mzvsbkxc2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)))
+    (home-page "https://bioconductor.org/packages/birta")
+    (synopsis "Bayesian inference of regulation of transcriptional activity")
+    (description
+     "Expression levels of mRNA molecules are regulated by different
+processes, comprising inhibition or activation by transcription factors and
+post-transcriptional degradation by microRNAs.  @dfn{birta} (Bayesian
+Inference of Regulation of Transcriptional Activity) uses the regulatory
+networks of transcription factors and miRNAs together with mRNA and miRNA
+expression data to predict switches in regulatory activity between two
+conditions.  A Bayesian network is used to model the regulatory structure and
+Markov-Chain-Monte-Carlo is applied to sample the activity states.")
     (license license:gpl2+)))

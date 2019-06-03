@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -28,15 +28,29 @@
   #:use-module (gnu system vm)
   #:use-module (gnu services)
   #:use-module (gnu services web)
+  #:use-module (gnu services databases)
+  #:use-module (gnu services getmail)
   #:use-module (gnu services networking)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu services mail)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages patchutils)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages web)
+  #:use-module (guix packages)
+  #:use-module (guix modules)
+  #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (guix utils)
+  #:use-module (ice-9 match)
   #:export (%test-httpd
             %test-nginx
             %test-varnish
             %test-php-fpm
             %test-hpcguix-web
-            %test-tailon))
+            %test-tailon
+            %test-patchwork))
 
 (define %index.html-contents
   ;; Contents of the /index.html file.
@@ -498,3 +512,149 @@ HTTP-PORT."
    (name "tailon")
    (description "Connect to a running Tailon server.")
    (value (run-tailon-test))))
+
+
+;;;
+;;; Patchwork
+;;;
+
+(define patchwork-initial-database-setup-service
+  (match-lambda
+    (($ <patchwork-database-configuration>
+        engine name user password host port)
+
+     (define start-gexp
+       #~(lambda ()
+           (let ((pid (primitive-fork))
+                 (postgres (getpwnam "postgres")))
+             (if (eq? pid 0)
+                 (dynamic-wind
+                   (const #t)
+                   (lambda ()
+                     (setgid (passwd:gid postgres))
+                     (setuid (passwd:uid postgres))
+                     (primitive-exit
+                      (if (and
+                           (zero?
+                            (system* #$(file-append postgresql "/bin/createuser")
+                                     #$user))
+                           (zero?
+                            (system* #$(file-append postgresql "/bin/createdb")
+                                     "-O" #$user #$name)))
+                          0
+                          1)))
+                   (lambda ()
+                     (primitive-exit 1)))
+                 (zero? (cdr (waitpid pid)))))))
+
+     (shepherd-service
+      (requirement '(postgres))
+      (provision '(patchwork-postgresql-user-and-database))
+      (start start-gexp)
+      (stop #~(const #f))
+      (respawn? #f)
+      (documentation "Setup patchwork database.")))))
+
+(define (patchwork-os patchwork)
+  (simple-operating-system
+   (service dhcp-client-service-type)
+   (service httpd-service-type
+            (httpd-configuration
+             (config
+              (httpd-config-file
+               (listen '("8080"))))))
+   (service postgresql-service-type)
+   (service patchwork-service-type
+            (patchwork-configuration
+             (patchwork patchwork)
+             (domain "localhost")
+             (settings-module
+              (patchwork-settings-module
+               (allowed-hosts (list domain))
+               (default-from-email "")))
+             (getmail-retriever-config
+              (getmail-retriever-configuration
+               (type "SimpleIMAPSSLRetriever")
+               (server "imap.example.com")
+               (port 993)
+               (username "username")
+               (password "password")
+               (extra-parameters
+                '((mailboxes . ("INBOX"))))))))
+   (simple-service 'patchwork-database-setup
+                   shepherd-root-service-type
+                   (list
+                    (patchwork-initial-database-setup-service
+                     (patchwork-database-configuration))))))
+
+(define (run-patchwork-test patchwork)
+  "Run tests in %NGINX-OS, which has nginx running and listening on
+HTTP-PORT."
+  (define os
+    (marionette-operating-system
+     (patchwork-os patchwork)
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define forwarded-port 8080)
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings `((8080 . ,forwarded-port)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (gnu build marionette)
+                       (web uri)
+                       (web client)
+                       (web response))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "patchwork")
+
+          (test-assert "patchwork-postgresql-user-and-service started"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (match (start-service 'patchwork-postgresql-user-and-database)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((#t) #t)
+                     ((pid) (number? pid))))))
+             marionette))
+
+          (test-assert "httpd running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'httpd))
+             marionette))
+
+          (test-equal "http-get"
+            200
+            (let-values
+                (((response text)
+                  (http-get #$(simple-format
+                               #f "http://localhost:~A/" forwarded-port)
+                            #:decode-body? #t)))
+              (response-code response)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "patchwork-test" test))
+
+(define %test-patchwork
+  (system-test
+   (name "patchwork")
+   (description "Connect to a running Patchwork service.")
+   (value (run-patchwork-test patchwork))))

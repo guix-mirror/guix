@@ -573,16 +573,16 @@ in terms of new algorithms.")
 (define-public rxcpp
   (package
     (name "rxcpp")
-    (version "4.0.0")
+    (version "4.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ReactiveX/RxCpp/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ReactiveX/RxCpp.git")
+             (commit (string-append "v" version))))
        (sha256
-        (base32
-         "0y2isr8dy2n1yjr9c5570kpc9lvdlch6jv0jvw000amwn5d3krsh"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1rdpa3jlc181jd08nk437aar085h28i45s6nzrv65apb3xyyz0ij"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

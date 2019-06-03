@@ -7245,18 +7245,19 @@ Bioconductor, CRAN, and Github.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.52.0")
+    (version "1.52.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "1wc7a953n6qrlh9azzg1q68rk99h3xkbs82wq0yk6h2vb2c5r3zk"))))
+                "0qwrsd9fcpkv7hhzy1scnj7ahdxi6cjary28kqk6b36gkzmnrw4r"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-graph" ,r-graph)
        ("r-rbgl" ,r-rbgl)
        ("r-rcurl" ,r-rcurl)
@@ -7452,13 +7453,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.26.3")
+    (version "3.26.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "12889lwcray2cw0skzy1xp1y3siiz6n5cwx8ni86m7r671p6zmb2"))))
+                "013glavk6a1wpyq3q35k343bdp6rf27w30q59i4kf47rp3i37g15"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7480,13 +7481,13 @@ CAGE.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.30.0")
+    (version "1.30.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "1sd01yv1hnwc16412ilncrrph4gxsr9ds0nqg1czl69fqaixjn1i"))))
+                "144x3d3b9a3q5jy4aqrk1nf2yavwjhwlf71s7qyr4x3ms3wmvf8i"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
@@ -7924,13 +7925,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.36.0")
+    (version "1.36.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "17jy7lrpdaafd8g5v6j70xsypi0lqljdqmhv9f2r1xpyg3yjd84p"))))
+                "02psq3jfgghdydwbydb1j792lvfg44l5npb44mx8d54ckr8658dd"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -9040,14 +9041,14 @@ TAB-Seq.")
 (define-public r-sva
   (package
     (name "r-sva")
-    (version "3.32.0")
+    (version "3.32.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "sva" version))
        (sha256
         (base32
-         "100jwi43y4xdqb5lldx1ld58jg9icdjgz6c7ylx95gspipnkbgjp"))))
+         "0jj6klfha5v5qmx2sjblf1an6s2zqd7mmgsp7sfmh4k2jpqi3jm9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-genefilter" ,r-genefilter)
@@ -10568,13 +10569,13 @@ libraries.")
 (define-public r-scater
   (package
     (name "r-scater")
-    (version "1.12.1")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "scater" version))
               (sha256
                (base32
-                "0k4jc0xc2n49saylcjrg7laxq4mchg4nv06nrbc6cp4vzpf33jh5"))))
+                "16a17161xlhh6qpna9qxph3anlc7ydgyrczmy4alfiw8si7pzmxa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -10603,14 +10604,14 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "19cyjjzgmhswni6js4bhbj5djp976sl9n648kk7viazgkspql884"))))
+         "17mknpkvs7mgnlbf2hv9k7rwbx2vlg60yrwfyb8nn3nxsb6vm7yn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -12603,7 +12604,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.40")
+    (version "0.0.41")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12611,7 +12612,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0y9x62cfwzhsp82imnawyamxp58bcb00yjxdy44spylqnjdlsaj8"))))
+                "0akbxdmsjsq5fzbwaap04hqjpsfgv1l6yrc2pwgbya1xgqvcq6vy"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))

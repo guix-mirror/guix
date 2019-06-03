@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -53,8 +53,10 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages image)
@@ -76,11 +78,13 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix utils)
@@ -2232,3 +2236,72 @@ slashes are present and accounted for, resolving @code{.} and @code{..}, etc).
 Inevitably, you have to break the string up into chunks and operate on that
 list of components.  This module takes care of that for you.")
     (license license:lgpl3+)))
+
+(define-public guile-gi
+  (let ((commit "91753258892c4a1fbf7ed43ff793a00ac0f77cf6")
+        (revision "0"))
+    (package
+      (name "guile-gi")
+      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/janneke/guile-gi.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "1i76jfs90p8pbx0bfrjd4sias9380pmjb9x387rx7hav4kvnsd1b"))))
+      (build-system gnu-build-system)
+      (native-inputs `(("autoconf" ,autoconf)
+                       ("automake" ,automake)
+                       ("gettext" ,gnu-gettext)
+                       ("libtool" ,libtool)
+                       ("pkg-config" ,pkg-config)
+                       ("texinfo" ,texinfo)))
+      (propagated-inputs `(("glib" ,glib)
+                           ("gobject-introspection" ,gobject-introspection)
+                           ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+                           ("gtk+" ,gtk+)
+                           ("guile-lib" ,guile-lib)
+                           ("webkitgtk" ,webkitgtk)))
+      (inputs `(("guile" ,guile-2.2)))
+      (arguments
+       `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
+      (home-page "https://github.com/spk121/guile-gi")
+      (synopsis "GObject bindings for Guile")
+      (description
+       "Guile-GI is a library for Guile that allows using GObject-based
+libraries, such as GTK+3.  Its README comes with the disclaimer: This is
+pre-alpha code.")
+      (license license:gpl3+))))
+
+(define-public guile-srfi-159
+  (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
+        (revision "0"))
+    (package
+      (name "guile-srfi-159")
+      (version (git-version "0" revision commit))
+      (home-page "https://bitbucket.org/bjoli/guile-srfi-159")
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference (changeset commit)
+                                   (url home-page)))
+                (sha256
+                 (base32
+                  "1zw6cmcy7xdbfiz3nz9arqnn7l2daidaps6ixkcrc9b6k51fdv3p"))
+                (file-name (git-file-name name version))))
+      (build-system guile-build-system)
+      (arguments
+       ;; The *-impl.scm files are actually included from module files; they
+       ;; should not be compiled separately, but they must be installed.
+       '(#:not-compiled-file-regexp "-impl\\.scm$"))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (synopsis "Formatting combinators for Guile")
+      (description
+       "The @code{(srfi-159)} module and its sub-modules implement the
+formatting combinators specified by
+@uref{https://srfi.schemers.org/srfi-159/srfi-159.html, SRFI-159}.  These are
+more expressive and flexible than the traditional @code{format} procedure.")
+      (license license:bsd-3))))

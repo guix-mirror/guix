@@ -270,6 +270,10 @@ following lines with indentation larger than MIN-INDENT."
                 (peek-next-line-indent port)))
         val)))
 
+(define* (read-braced-value port)
+  "Read up to a closing brace."
+  (string-trim-both (read-delimited "}" port 'trim)))
+
 (define (lex-white-space port bol)
   "Consume white spaces and comment lines on PORT.  If a new line is started return #t,
 otherwise return BOL (beginning-of-line)."
@@ -343,8 +347,11 @@ matching a string against the created regexp."
                 (make-regexp pat))))
     (cut regexp-exec rx <>)))
 
-(define is-property (make-rx-matcher "([a-z0-9-]+)[ \t]*:[ \t]*(\\w?.*)$"
-                                     regexp/icase))
+(define is-layout-property (make-rx-matcher "([a-z0-9-]+)[ \t]*:[ \t]*(\\w?[^{}]*)$"
+                                            regexp/icase))
+
+(define is-braced-property (make-rx-matcher "([a-z0-9-]+)[ \t]*:[ \t]*\\{[ \t]*$"
+                                            regexp/icase))
 
 (define is-flag (make-rx-matcher "^flag +([a-z0-9_-]+)"
                                  regexp/icase))
@@ -435,12 +442,18 @@ string with the read characters."
                  (begin (unread-char c) (list->string res)))))
           (else (list->string res)))))
 
-(define (lex-property k-v-rx-res loc port)
+(define (lex-layout-property k-v-rx-res loc port)
   (let ((key (string-downcase (match:substring k-v-rx-res 1)))
         (value (match:substring k-v-rx-res 2)))
     (make-lexical-token
      'PROPERTY loc
      (list key `(,(read-value port value (current-indentation)))))))
+
+(define (lex-braced-property k-rx-res loc port)
+  (let ((key (string-downcase (match:substring k-rx-res 1))))
+    (make-lexical-token
+     'PROPERTY loc
+     (list key `(,(read-braced-value port))))))
 
 (define (lex-rx-res rx-res token loc)
   (let ((name (string-downcase (match:substring rx-res 1))))
@@ -552,7 +565,6 @@ LOC is the current port location."
 the current port location."
   (let* ((s (read-delimited "\n{}" port 'peek)))
     (cond
-     ((is-property s) => (cut lex-property <> loc port))
      ((is-flag s) => (cut lex-flag <> loc))
      ((is-src-repo s) => (cut lex-src-repo <> loc))
      ((is-exec s) => (cut lex-exec <> loc))
@@ -561,13 +573,22 @@ the current port location."
      ((is-benchmark s) => (cut lex-benchmark <> loc))
      ((is-lib s) (lex-lib loc))
      ((is-else s) (lex-else loc))
-     (else
-      #f))))
+     (else (unread-string s port) #f))))
+
+(define (lex-property port loc)
+  (let* ((s (read-delimited "\n" port 'peek)))
+    (cond
+      ((is-braced-property s) => (cut lex-braced-property <> loc port))
+      ((is-layout-property s) => (cut lex-layout-property <> loc port))
+      (else #f))))
 
 (define (lex-token port)
   (let* ((loc (make-source-location (cabal-file-name) (port-line port)
                                     (port-column port) -1 -1)))
-    (or (lex-single-char port loc) (lex-word port loc) (lex-line port loc))))
+    (or (lex-single-char port loc)
+        (lex-word port loc)
+        (lex-line port loc)
+        (lex-property port loc))))
 
 ;; Lexer- and error-function generators
 

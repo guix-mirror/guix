@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -229,7 +229,7 @@ throughput."
 
 (define %progress-interval
   ;; Default interval between subsequent outputs for rate-limited displays.
-  (make-time time-monotonic 200000000 0))
+  (make-time time-duration 200000000 0))
 
 (define* (progress-reporter/file file size
                                  #:optional (log-port (current-output-port))

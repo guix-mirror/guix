@@ -1023,3 +1023,45 @@ the libburnia libraries.  It can blank CD/DVD/BD(-RW)s, burn and
 create iso images, audio CDs, as well as burn personal compositions
 of data to either CD/DVD/BD.")
     (license gpl2+)))
+
+(define-public mousepad
+  (package
+    (name "mousepad")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/mousepad/"
+                                  (version-major+minor version) "/mousepad-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "12si6fvhp68wz4scr339c23jxqq5ywn5nf4w55jld5lxjadkg9rr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-gtk3"
+                           ;; Use the GSettings keyfile backend rather than
+                           ;; DConf.
+                           "--enable-keyfile-settings")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gtksourceview (assoc-ref inputs "gtksourceview")))
+              (wrap-program (string-append out "/bin/mousepad")
+                ;; For language-specs.
+                `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
+                                                              "/share")))))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("glib" ,glib "bin") ; for glib-compile-schemas.
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview-3)))
+    (home-page "https://git.xfce.org/apps/mousepad/")
+    (synopsis "Simple text editor for Xfce")
+    (description
+     "Mousepad is a graphical text editor for Xfce based on Leafpad.")
+    (license gpl2+)))

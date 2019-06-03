@@ -516,6 +516,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
+  %D%/services/getmail.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
@@ -864,7 +865,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
-  %D%/packages/patches/gnucash-fix-test-transaction-failure.patch \
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
@@ -895,6 +895,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
+  %D%/packages/patches/gtksourceview-2-add-default-directory.patch \
   %D%/packages/patches/gzdoom-search-in-installed-share.patch	\
   %D%/packages/patches/haskell-mode-unused-variables.patch	\
   %D%/packages/patches/haskell-mode-make-check.patch		\
@@ -987,8 +988,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.0-CVE-2016-10196.patch	\
   %D%/packages/patches/libevent-2.0-CVE-2016-10197.patch	\
   %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
-  %D%/packages/patches/libevent-2.1-dns-tests.patch		\
-  %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libgcrypt-make-yat2m-reproducible.patch	\
@@ -1281,6 +1280,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
+  %D%/packages/patches/supertux-fix-build-with-gcc5.patch	\
+  %D%/packages/patches/supertux-unbundle-squirrel.patch		\
   %D%/packages/patches/swig-guile-gc.patch			\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
@@ -1315,6 +1316,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
+  %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\

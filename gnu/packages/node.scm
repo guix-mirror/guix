@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,14 +45,14 @@
 (define-public node
   (package
     (name "node")
-    (version "9.11.1")
+    (version "10.15.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
-                                  "/node-v" version ".tar.gz"))
+                                  "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "1vjh9zvw7wkdz6b0l99ya7mqjk0l8lbg9isr1q8rxwp400dhkk32"))
+                "1mcijznh481s44i59p571a38bfvcxm9f8x2l0l1005aly0kdj8jf"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -83,17 +83,13 @@
                            "--shared-zlib"
                            "--without-snapshot"
                            "--with-intl=system-icu")
+       ;; Run only the CI tests.  The default test target requires additional
+       ;; add-ons from NPM that are not distributed with the source.
+       #:test-target "test-ci-js"
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-files
            (lambda* (#:key inputs #:allow-other-keys)
-
-             ;; This phase is inherited by Node LTS, which does not have all
-             ;; the files listed here.  Use this helper for convenience.
-             (define (delete-if-exists file)
-               (if (file-exists? file)
-                   (delete-file file)
-                   '()))
 
              ;; Fix hardcoded /bin/sh references.
              (substitute* '("lib/child_process.js"
@@ -110,17 +106,9 @@
                (("'/usr/bin/env'")
                 (string-append "'" (which "env") "'")))
 
-             ;; FIXME: These tests depend on being able to install eslint.
-             ;; See https://github.com/nodejs/node/issues/17098.
-             (for-each delete-if-exists
-                       '("test/parallel/test-eslint-alphabetize-errors.js"
-                         "test/parallel/test-eslint-buffer-constructor.js"
-                         "test/parallel/test-eslint-documented-errors.js"
-                         "test/parallel/test-eslint-inspector-check.js"))
-
              ;; FIXME: These tests fail in the build container, but they don't
              ;; seem to be indicative of real problems in practice.
-             (for-each delete-if-exists
+             (for-each delete-file
                        '("test/async-hooks/test-ttywrap.readstream.js"
                          "test/parallel/test-util-inspect.js"
                          "test/parallel/test-v8-serdes.js"
@@ -132,14 +120,13 @@
                          "test/parallel/test-net-listen-after-destroying-stdin.js"
                          "test/parallel/test-npm-install.js"
                          "test/sequential/test-child-process-emfile.js"
-                         "test/sequential/test-benchmark-child-process.js"
                          "test/sequential/test-http-regr-gh-2928.js"))
 
              ;; These tests have an expiry date: they depend on the validity of
              ;; TLS certificates that are bundled with the source.  We want this
              ;; package to be reproducible forever, so remove those.
              ;; TODO: Regenerate certs instead.
-             (for-each delete-if-exists
+             (for-each delete-file
                        '("test/parallel/test-tls-passphrase.js"
                          "test/parallel/test-tls-server-verify.js"))
              #t))
@@ -184,9 +171,9 @@
      `(("c-ares" ,c-ares)
        ("http-parser" ,http-parser)
        ("icu4c" ,icu4c)
-       ("libuv" ,libuv-1.19)
+       ("libuv" ,libuv)
        ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-next)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime
@@ -197,16 +184,3 @@ devices.")
     (home-page "https://nodejs.org/")
     (license expat)
     (properties '((timeout . 3600))))) ; 1 h
-
-(define-public node-lts
-  (package
-    (inherit node)
-    (name "node-lts")
-    (version "8.12.0")
-    (source (origin
-              (inherit (package-source node))
-              (uri (string-append "https://nodejs.org/dist/v" version
-                                  "/node-v" version ".tar.xz"))
-              (sha256
-               (base32
-                "16j1rrxkhmvpcw689ndw1raql1gz4jqn7n82z55zn63c05cgz7as"))))))

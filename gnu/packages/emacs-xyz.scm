@@ -33,7 +33,7 @@
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
-;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
@@ -777,7 +777,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -785,7 +785,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
              "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
         (base32
-         "0xwfs2mkmgf63sfp5jwmw0ybc8pa0rlxh5aqwb348ddgmclv322f"))))
+         "1vv87h0h8ldc1mbsn45w5z1m6jq8j2js4xz23a9ixdby06g60y3g"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -804,10 +804,33 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
 
+(define-public emacs-reformatter
+  (package
+    (name "emacs-reformatter")
+    (version "0.4")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/purcell/reformatter.el.git")
+            (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0hhy6x1bkwlhdlarsgm06g3am4yh02yqv8qs34szpzgy53x84qah"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/reformatter.el")
+    (synopsis "Define commands which run reformatters on the current buffer")
+    (description
+     "This library lets elisp authors easily define an idiomatic command to
+reformat the current buffer using a command-line program, together with an
+optional minor mode which can apply this command automatically on save.")
+    (license license:gpl3+)))
+
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
@@ -815,7 +838,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
              "https://elpa.gnu.org/packages/relint-" version ".el"))
        (sha256
         (base32
-         "0h9nc84yv5lmbaa8any6i3bqcn6xn1gy6cv6kqaywn0nnqrm17i1"))))
+         "1bl6m2h7131acbmr0kqfnjjpv2syiv2mxfnm61g874ynnvkmmkm3"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -4074,23 +4097,29 @@ well as completely new features.")
     (license license:gpl3+)))
 
 (define-public emacs-highlight-symbol
-  (package
-    (name "emacs-highlight-symbol")
-    (version "1.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/nschum/highlight-symbol.el.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "09z13kv2g21kjjkkm3iyaz93sdjmdy2d563r8n7r7ng94acrn7f6"))))
-    (build-system emacs-build-system)
-    (home-page "https://nschum.de/src/emacs/highlight-symbol")
-    (synopsis "Automatic and manual symbol highlighting for Emacs")
-    (description
-     "Use @code{highlight-symbol} to toggle highlighting of the symbol at
+  ;; We prefer a more recent commit that provides an option to squelch
+  ;; echo-area alerts that can drown out useful information like eldoc
+  ;; messages.
+  (let ((commit "7a789c779648c55b16e43278e51be5898c121b3a")
+        (version "1.3")
+        (revision "1"))
+    (package
+      (name "emacs-highlight-symbol")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nschum/highlight-symbol.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19cgyk0sh8nsmf3jbi92i8qsdx4l4yilfq5jj9zfdbj9p5gvwx96"))))
+      (build-system emacs-build-system)
+      (home-page "https://nschum.de/src/emacs/highlight-symbol/")
+      (synopsis "Automatic and manual symbol highlighting for Emacs")
+      (description
+       "Use @code{highlight-symbol} to toggle highlighting of the symbol at
 point throughout the current buffer.  Use @code{highlight-symbol-mode} to keep
 the symbol at point highlighted.
 
@@ -4103,7 +4132,7 @@ bindings @code{M-p} and @code{M-p} for navigation.  When
 regardless of @code{highlight-symbol-idle-delay}.
 
 @code{highlight-symbol-query-replace} can be used to replace the symbol. ")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-hl-todo
   (package
@@ -4397,6 +4426,33 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-pass
+  (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-pass")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ecraven/ivy-pass.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "18crb4zh2pjf0cmv3b913m9vfng27girjwfqc3mk7vqd1r5a49yk"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-password-store" ,emacs-password-store)
+         ("password-store" ,password-store)))
+      (home-page "https://github.com/ecraven/ivy-pass")
+      (synopsis "Ivy interface for password store (pass)")
+      (description "This package provides an Ivy interface for working with
+the password store @code{pass}.")
+      (license license:gpl3))))
+
 (define-public emacs-ivy-yasnippet
   (let ((commit "32580b4fd23ebf9ca7dde96704f7d53df6e253cd")
         (revision "2"))
@@ -4455,7 +4511,7 @@ show icons as well.")
 (define-public emacs-avy
   (package
     (name "emacs-avy")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -4464,7 +4520,7 @@ show icons as well.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rq9ab264565z83cly743nbhrd9m967apmnlhqr1gy8dm4hcy7nm"))))
+        (base32 "09qdni1s74i5pv8741szl5g4ynj8fxn0x65qmwa9rmfkbimnc0fs"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/avy")
     (synopsis "Tree-based completion for Emacs")
@@ -4554,37 +4610,35 @@ navigate code in a tree-like fashion.")
       (license license:gpl3+))))
 
 (define-public emacs-lispy
-  ;; Release 0.26.0 was almost 3 years ago, and there have been ~772 commits
-  ;; since.
-  (let ((commit "f94cfc6b8f9c3afe7d028c366928049c011023de")
-        (revision "1"))
-    (package
-      (name "emacs-lispy")
-      (version (git-version "0.26.0" revision commit))
-      (home-page "https://github.com/abo-abo/lispy")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (sha256
-                 (base32
-                  "1bm2cpwizg1qfpm377gpx1af1hm5maw69if1csnk5vwaphmv8c4g"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-ace-window" ,emacs-ace-window)
-         ("emacs-iedit" ,emacs-iedit)
-         ("emacs-ivy" ,emacs-ivy)
-         ("emacs-hydra" ,emacs-hydra)
-         ("emacs-zoutline" ,emacs-zoutline)))
-      (synopsis "Modal S-expression editing")
-      (description
-       "Due to the structure of Lisp syntax it's very rare for the programmer
+  (package
+    (name "emacs-lispy")
+    (version "0.27.0")
+    (home-page "https://github.com/abo-abo/lispy")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/abo-abo/lispy")
+                    (commit version)))
+              (sha256
+               (base32
+                "1cm7f4pyl73f3vhkb7ah6bbbrj2sa7n0p31g09k7dy4zgx04bgw6"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ace-window" ,emacs-ace-window)
+       ("emacs-iedit" ,emacs-iedit)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-hydra" ,emacs-hydra)
+       ("emacs-zoutline" ,emacs-zoutline)))
+    (synopsis "Modal S-expression editing")
+    (description
+     "Due to the structure of Lisp syntax it's very rare for the programmer
 to want to insert characters right before \"(\" or right after \")\".  Thus
 unprefixed printable characters can be used to call commands when the point is
 at one of these special locations.  Lispy provides unprefixed keybindings for
 S-expression editing when point is at the beginning or end of an
 S-expression.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-lispyville
   (let ((commit "d28b937f0cabd8ce61e2020fe9a733ca80d82c74")
@@ -5554,7 +5608,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.1")
+    (version "3.2")
     (source
      (origin
        (method git-fetch)
@@ -5563,7 +5617,7 @@ ack, ag, helm and pt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x3nv8zvp8vvl30bm2d83hd7zxb0ca64pc8kwb81ml9al6r3mm01"))))
+        (base32 "12yyprpgh2by2pd41i4z9gz55fxg0f90x03bfrsf791xwbhf6931"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -7019,26 +7073,27 @@ actually changing the buffer's text.")
     (license license:gpl3+)))
 
 (define-public emacs-diff-hl
- (package
-  (name "emacs-diff-hl")
-  (version "1.8.5")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://elpa.gnu.org/packages/diff-hl-"
-                          version ".tar"))
-      (sha256
+  (package
+    (name "emacs-diff-hl")
+    (version "1.8.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dgutov/diff-hl")
+             (commit version)))
+       (sha256
         (base32
-          "1vxc7z7c2qs0mx7l5sa4sybi5qbzv0s79flj74p1ynw8dl3qxg3d"))))
-  (build-system emacs-build-system)
-  (home-page "https://github.com/dgutov/diff-hl")
-  (synopsis
-    "Highlight uncommitted changes using VC")
-  (description
-    "@code{diff-hl-mode} highlights uncommitted changes on the side of the
+         "1xlsg728mz3cwhrsqvisa0aidic67nymd9g7h4c1h3q63j39yb2s"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dgutov/diff-hl")
+    (synopsis
+     "Highlight uncommitted changes using VC")
+    (description
+     "@code{diff-hl-mode} highlights uncommitted changes on the side of the
 window (using the fringe, by default), allows you to jump between
 the hunks and revert them selectively.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-diminish
   (package
@@ -9223,16 +9278,16 @@ functionality is inherited from @code{hcl-mode}.")
 (define-public emacs-exec-path-from-shell
   (package
     (name "emacs-exec-path-from-shell")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://stable.melpa.org/packages/exec-path-from-shell-"
-             version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/exec-path-from-shell")
+             (commit version)))
        (sha256
         (base32
-         "03qjgb81cq1l3j54lvlf98r75vmmgd06mj6qh5wa6mz4xzp4w26r"))))
+         "1ga8bpxngd3ph2hdiik92c612ki71qxw818i6rgx6f6a5r0sbf3p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/exec-path-from-shell")
     (synopsis "Get environment variables such as @var{PATH} from the shell")
@@ -12467,16 +12522,17 @@ the GIF result.")
 (define-public emacs-google-translate
   (package
     (name "emacs-google-translate")
-    (version "0.11.16")
+    (version "0.11.17")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/atykhonov/google-translate/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atykhonov/google-translate/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01n9spj1d0gjfj39x526rl3m9c28wnx9afipmf5s8y77cx3mfwhl"))))
+         "05ljjw7kbnszygw3w085kv57swfiiqxri2b5xvsf5dw3pc3g7j3c"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/atykhonov/google-translate")
     (synopsis "Emacs interface to Google Translate")
@@ -13405,7 +13461,7 @@ backends, including the @command{wordnet} offline backend.")
 (define-public emacs-editorconfig
   (package
     (name "emacs-editorconfig")
-    (version "0.7.14")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
@@ -13415,7 +13471,7 @@ backends, including the @command{wordnet} offline backend.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "19j2428ij7sqvrqs7rqg1mcnv9109y6drqba40dkv3vrkk5d2yia"))))
+         "1b2cpqz75pivl323bs60j5rszwi787x6vy68csycikqz9mhpmjn9"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/editorconfig/editorconfig-emacs")
     (synopsis "Define and maintain consistent coding styles between different
@@ -15346,7 +15402,7 @@ well as an option for visually flashing evaluated s-expressions.")
 (define-public emacs-counsel-tramp
   (package
     (name "emacs-counsel-tramp")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method git-fetch)
@@ -15356,7 +15412,7 @@ well as an option for visually flashing evaluated s-expressions.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nz0733x2b9b5nkwivvhv5c8747dng451na1sdfbkx5x9fjs5gc7"))))
+         "1qy9lf7cyv6hp9mmpwh92cpdcffbxzyzchx6878d5pmk9qh6xy92"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))

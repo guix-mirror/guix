@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -192,7 +192,7 @@ inconclusive reports."
         (report (G_ "  no local build for '~a'~%") item))
     (for-each (lambda (narinfo)
                 (report (G_ "  ~50a: ~a~%")
-                        (uri->string (narinfo-uri narinfo))
+                        (uri->string (first (narinfo-uris narinfo)))
                         (hash->string
                          (narinfo-hash->sha256 (narinfo-hash narinfo)))))
               narinfos))

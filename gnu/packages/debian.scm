@@ -32,7 +32,7 @@
 (define-public debian-archive-keyring
   (package
     (name "debian-archive-keyring")
-    (version "2018.1")
+    (version "2019.1")
     (source
       (origin
         (method git-fetch)
@@ -42,7 +42,7 @@
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "136vr5dj7w0dz563qdghsndcfcqm2m8d4j1dyiq9dzx5vd0rcpcw"))))
+          "0bphwji3ywk1zi5bq8bhqk7l51fwjy1idwsw7zfqnxca8m5wvw1g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "verify-results"
@@ -117,7 +117,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.111")
+    (version "1.0.114")
     (source
       (origin
         (method git-fetch)
@@ -127,7 +127,7 @@ contains the archive keys used for that.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1b8s00a2kvaajqhjlms3q2dk3gqv6g4yq9h843jal1pm66zsx19n"))))
+          "147308flz9y8g6f972izi3szmsywf5f8xm64z2smy1cayd340i63"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

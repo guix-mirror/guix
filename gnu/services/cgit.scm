@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -581,7 +582,7 @@ removed for the URL and name.")
   (root-readme
    (string "")
    "The content of the file specified with this option will be included
-verbatim below thef \"about\" link on the repository index page.")
+verbatim below the \"about\" link on the repository index page.")
   (root-title
    (string "")
    "Text printed as heading on the repository index page.")
