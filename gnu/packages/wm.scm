@@ -1231,7 +1231,7 @@ modules for building a Wayland compositor.")
 (define-public swayidle
   (package
     (name "swayidle")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -1240,7 +1240,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0b65flajwn2i6k2kdxxgw25w7ikzzmm595f4j5x1wac1rb0yah9w"))))
+        (base32 "04agcbhc473jkk7npb40i94ny8naykxzpjcw2lvl05kxv65y5d9v"))))
     (build-system meson-build-system)
     (inputs `(("wayland" ,wayland)))
     (native-inputs `(("pkg-config" ,pkg-config)
