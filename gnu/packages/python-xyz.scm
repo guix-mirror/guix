@@ -5381,14 +5381,14 @@ libxml2 and libxslt.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.6.3")
+    (version "4.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "041dhalzjciw6qyzzq7a2k4h1yvyk76xigp35hv5ibnn448ydy4h"))))
+         "0j2kycz2dxgx68xzjm7rxg5xn6v61gq5ifvxyg99slmqkybnal4l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5400,6 +5400,8 @@ libxml2 and libxslt.")
          ;; distribution.
          (replace 'check
            (lambda _ (invoke "./convert-py3k"))))))
+    (native-inputs
+     `(("python-soupsieve" ,python-soupsieve)))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
