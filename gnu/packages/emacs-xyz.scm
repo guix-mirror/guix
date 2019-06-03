@@ -8301,6 +8301,29 @@ multiplexer.")
 editing RPM spec files.")
     (license license:gpl2+)))
 
+(define-public emacs-lcr
+  (package
+    (name "emacs-lcr")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jyp/lcr")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mc55icihxqpf8b05990q1lc2nj2792wcgyr73xsiqx0963sjaj8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/jyp/lcr")
+    (synopsis "Lightweight coroutines in Emacs Lisp")
+    (description "This package provides macros that can translate code into
+equivalent continuation-passing code, as well as miscellaneous utility
+functions written in continuation-passing style.")
+    (license license:gpl3+)))
+
 (define-public emacs-git-messenger
   (package
     (name "emacs-git-messenger")
