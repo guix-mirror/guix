@@ -12185,7 +12185,7 @@ current test, while only declaring the test-specific fields")
      ;; 'parse_funcs'
      ;; during test setup.
      `(#:tests? #f))
-    (home-page "http://toolkit.translatehouse.org")
+    (home-page "https://toolkit.translatehouse.org")
     (synopsis "Tools and API for translation and localization engineering")
     (description
      "Tools and API for translation and localization engineering.  It contains
