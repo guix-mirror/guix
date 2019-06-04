@@ -501,6 +501,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services.scm				\
   %D%/services/admin.scm			\
   %D%/services/audio.scm                        \
+  %D%/services/auditd.scm			\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/certbot.scm			\

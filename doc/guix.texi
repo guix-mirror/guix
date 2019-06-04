@@ -24114,6 +24114,55 @@ The Containerd package to use.
 @end table
 @end deftp
 
+@cindex Audit
+@subsubheading Auditd Service
+
+The @code{(gnu services auditd)} module provides the following service.
+
+@defvr {Scheme Variable} auditd-service-type
+
+This is the type of the service that runs
+@url{https://people.redhat.com/sgrubb/audit/,auditd},
+a daemon that tracks security-relevant information on your system.
+
+Examples of things that can be tracked:
+
+@enumerate
+@item
+File accesses
+@item
+System calls
+@item
+Invoked commands
+@item
+Failed login attempts
+@item
+Firewall filtering
+@item
+Network access
+@end enumerate
+
+@command{auditctl} from the @code{audit} package can be used in order
+to add or remove events to be tracked (until the next reboot).
+In order to permanently track events, put the command line arguments
+of auditctl into @file{/etc/audit/audit.rules}.
+@command{aureport} from the @code{audit} package can be used in order
+to view a report of all recorded events.
+The audit daemon usually logs into the directory @file{/var/log/audit}.
+
+@end defvr
+
+@deftp {Data Type} auditd-configuration
+This is the data type representing the configuration of auditd.
+
+@table @asis
+
+@item @code{audit} (default: @code{audit})
+The audit package to use.
+
+@end table
+@end deftp
+
 @node Setuid Programs
 @section Setuid Programs
 
