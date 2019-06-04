@@ -1914,7 +1914,7 @@ values.")
 (define-public go-github-com-mattn-go-isatty
   (package
     (name "go-github-com-mattn-go-isatty")
-    (version "0.0.4")
+    (version "0.0.7")
     (source
      (origin
        (method git-fetch)
@@ -1924,8 +1924,10 @@ values.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zs92j2cqaw9j8qx1sdxpv3ap0rgbs0vrvi72m40mg8aa36gd39w"))))
+         "1i77aq4gf9as03m8fpfh8fq49n4z9j7548blrcsidm1xhslzk5xd"))))
     (build-system go-build-system)
+    (propagated-inputs
+     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
     (arguments
      '(#:import-path "github.com/mattn/go-isatty"))
     (home-page "https://github.com/mattn/go-isatty")
