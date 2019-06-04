@@ -4866,6 +4866,29 @@ advantage to work without requiring special kernel support, but it incurs
 run-time overhead every time a system call is made.
 @end quotation
 
+@cindex entry point, for Docker images
+@item --entry-point=@var{command}
+Use @var{command} as the @dfn{entry point} of the resulting pack, if the pack
+format supports it---currently @code{docker} and @code{squashfs} (Singularity)
+support it.  @var{command} must be relative to the profile contained in the
+pack.
+
+The entry point specifies the command that tools like @code{docker run} or
+@code{singularity run} automatically start by default.  For example, you can
+do:
+
+@example
+guix pack -f docker --entry-point=bin/guile guile
+@end example
+
+The resulting pack can easily be loaded and @code{docker run} with no extra
+arguments will spawn @code{bin/guile}:
+
+@example
+docker load -i pack.tar.gz
+docker run @var{image-id}
+@end example
+
 @item --expression=@var{expr}
 @itemx -e @var{expr}
 Consider the package @var{expr} evaluates to.

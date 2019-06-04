@@ -103,6 +103,14 @@
                    (cdr (waitpid pid)))))
              marionette))
 
+          (test-equal "singularity run"           ;test the entry point
+            42
+            (marionette-eval
+             `(status:exit-val
+               (system* #$(file-append singularity "/bin/singularity")
+                        "run" #$image "-c" "(exit 42)"))
+             marionette))
+
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
@@ -118,6 +126,7 @@
                                      #:hooks '()
                                      #:locales? #f))
        (tarball  (squashfs-image "singularity-pack" profile
+                                 #:entry-point "bin/guile"
                                  #:symlinks '(("/bin" -> "bin")))))
     (run-singularity-test tarball)))
 
