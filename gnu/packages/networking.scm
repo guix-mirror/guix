@@ -1489,7 +1489,7 @@ procedure calls (RPCs).")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://openvswitch.org/releases/openvswitch-"
+                    "https://www.openvswitch.org/releases/openvswitch-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -1529,7 +1529,7 @@ procedure calls (RPCs).")
      `(("libcap-ng" ,libcap-ng)
        ("openssl" ,openssl)))
     (synopsis "Virtual network switch")
-    (home-page "http://www.openvswitch.org/")
+    (home-page "https://www.openvswitch.org/")
     (description
      "Open vSwitch is a multilayer virtual switch.  It is designed to enable
 massive network automation through programmatic extension, while still
