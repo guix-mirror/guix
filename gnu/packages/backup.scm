@@ -511,15 +511,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.9")
+    (version "1.1.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32
-         "0x95nhv4h34m8cxycbwc4xdz350saaxlgh727b23bgn4ci7gh3vx"))
-       (patches (search-patches "borg-fix-hard-link-preloading.patch"))
+        (base32 "1pp70p4n5kamvcbl4d8021ggrxhyykmg9isjg4yd3wags8b19d7g"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -541,7 +539,12 @@ detection, and lossless compression.")
            ;; Remove bundled shared libraries.
            (with-directory-excursion "src/borg/algorithms"
              (for-each delete-file-recursively
-                       (list "blake2" "lz4" "zstd")))
+                       (list "blake2" "lz4" "msgpack" "zstd")))
+           ;; Purge some msgpack references from setup.py or the resulting
+           ;; sources will be unbuildable.
+           (substitute* "setup.py"
+             ((".*Extension\\('borg\\.algorithms\\.msgpack\\..*") "")
+             (("msgpack_packer_source, msgpack_unpacker_source") ""))
            #t))))
     (build-system python-build-system)
     (arguments
@@ -565,6 +568,12 @@ detection, and lossless compression.")
                ;; HOME=/homeless-shelter.
                (setenv "HOME" "/tmp")
                #t)))
+         (add-after 'unpack 'use-system-msgpack
+           (lambda _
+             (substitute* "src/borg/helpers.py"
+               (("prefer_system_msgpack = False")
+                "prefer_system_msgpack = True"))
+             #t))
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
