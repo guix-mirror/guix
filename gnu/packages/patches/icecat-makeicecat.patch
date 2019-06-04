@@ -3,10 +3,10 @@ in a snippet without network access.  After this patch is applied, some
 additional changes will be made using 'substitute*'.
 
 diff --git a/makeicecat b/makeicecat
-index aa46b94..db27a86 100644
+index 5a4390b..fcfa143 100644
 --- a/makeicecat
 +++ b/makeicecat
-@@ -36,75 +36,75 @@ export DEBFULLNAME="Ruben Rodriguez"
+@@ -29,55 +29,55 @@ SOURCEDIR=icecat-$FFVERSION
  
  DATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/data
  
@@ -25,6 +25,7 @@ index aa46b94..db27a86 100644
 -wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
 -gpg --recv-keys --keyserver keyserver.ubuntu.com 24C6F355
 -gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
+-echo -n 0a5f0c1d8d1e9443d85083d37fec32e5cc15c1001ea992d49745490065b4a023 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 -
 -echo Extracting Firefox tarball
 -tar -xf firefox-${FFVERSION}esr.source.tar.xz
@@ -36,48 +37,12 @@ index aa46b94..db27a86 100644
 +# wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
 +# gpg --recv-keys --keyserver keyserver.ubuntu.com 24C6F355
 +# gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
++# echo -n 0a5f0c1d8d1e9443d85083d37fec32e5cc15c1001ea992d49745490065b4a023 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 +# 
 +# echo Extracting Firefox tarball
 +# tar -xf firefox-${FFVERSION}esr.source.tar.xz
 +# 
 +# mv firefox-${FFVERSION} $SOURCEDIR
- 
- ###############################################################################
- # Retrieve /debian from Ubuntu
- ###############################################################################
- 
--rm -rf firefox.$CODENAME
--bzr branch https://code.launchpad.net/~mozillateam/firefox/firefox.$CODENAME
--cd firefox.$CODENAME
--bzr revert -r$REVISION
--echo '3.0 (native)' > debian/source/format
--
--for PATCH in ubuntu-bookmarks.patch ubuntu-ua-string-changes.patch unity-menubar.patch ubuntu-search-defaults.patch fix-make-package-tests-without-webrtc.patch revert-upstream-search-engine-changes.patch
--do
--  rm debian/patches/$PATCH
--  sed "/$PATCH/d" -i debian/patches/series
--done
--sed "/test-/d" -i debian/patches/series
--cd ..
--
--mv firefox.$CODENAME/debian $SOURCEDIR
--rm -rf firefox.$CODENAME
-+# rm -rf firefox.$CODENAME
-+# bzr branch https://code.launchpad.net/~mozillateam/firefox/firefox.$CODENAME
-+# cd firefox.$CODENAME
-+# bzr revert -r$REVISION
-+# echo '3.0 (native)' > debian/source/format
-+# 
-+# for PATCH in ubuntu-bookmarks.patch ubuntu-ua-string-changes.patch unity-menubar.patch ubuntu-search-defaults.patch fix-make-package-tests-without-webrtc.patch revert-upstream-search-engine-changes.patch
-+# do
-+#   rm debian/patches/$PATCH
-+#   sed "/$PATCH/d" -i debian/patches/series
-+# done
-+# sed "/test-/d" -i debian/patches/series
-+# cd ..
-+# 
-+# mv firefox.$CODENAME/debian $SOURCEDIR
-+# rm -rf firefox.$CODENAME
  
  ###############################################################################
  # Retrieve l10n
@@ -133,18 +98,9 @@ index aa46b94..db27a86 100644
  
  #for patch in $DATA/patches/*; do
  #    echo Patching with file: $patch
-@@ -720,7 +720,7 @@ debian/rules debian/control
- touch -d "yesterday" debian/control
- debian/rules debian/control
- 
--echo | dch -b -D stable -v "$ICECATVERSION"  "Converted into IceCat (http://www.gnu.org/software/gnuzilla/)"
-+# echo | dch -b -D stable -v "$ICECATVERSION"  "Converted into IceCat (http://www.gnu.org/software/gnuzilla/)"
- sed "1s/firefox/icecat/" -i debian/changelog
- 
- touch configure js/src/configure
-@@ -734,6 +734,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
+@@ -590,6 +590,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
+ # Fix CVE-2012-3386
  /bin/sed 's/chmod a+w/chmod u+w/' -i ./js/src/ctypes/libffi/Makefile.in ./toolkit/crashreporter/google-breakpad/Makefile.in ./toolkit/crashreporter/google-breakpad/src/third_party/glog/Makefile.in || true
- 
  
 -cd ..
 -echo Packaging tarball
