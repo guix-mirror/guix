@@ -1485,7 +1485,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.10.1")
+    (version "2.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1493,7 +1493,7 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "103wi6k8xal0z1pyy680gms56skagh6jawa2ja588ljr55jcg4sg"))))
+                "1p5mv44jaslvrr1ym15smqna19y0gi4vqcsyj58625vv9bj6laf1"))))
     (build-system gnu-build-system)
     (arguments
      '(;; FIXME: many tests fail with:
