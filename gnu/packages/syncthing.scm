@@ -443,7 +443,7 @@ database/sql package.")
 (define-public go-github-com-oschwald-geoip2-golang
   (package
     (name "go-github-com-oschwald-geoip2-golang")
-    (version "1.1.0")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ database/sql package.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v698bzs8lb59cqpsa9cf4sl8rdsvnnmaravhbfn6g6i511ppclr"))))
+                "0jivzl15jb8n16rm1b2w97kf7vna5dd3kcz865wfi233qay075j2"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-oschwald-maxminddb-golang"
