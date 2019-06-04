@@ -5400,7 +5400,7 @@ libxml2 and libxslt.")
          ;; distribution.
          (replace 'check
            (lambda _ (invoke "./convert-py3k"))))))
-    (native-inputs
+    (propagated-inputs
      `(("python-soupsieve" ,python-soupsieve)))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
