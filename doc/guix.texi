@@ -24090,7 +24090,7 @@ The following is an example @code{dicod-service} configuration.
 @cindex Docker
 @subsubheading Docker Service
 
-The @code{(gnu services docker)} module provides the following service.
+The @code{(gnu services docker)} module provides the following services.
 
 @defvr {Scheme Variable} docker-service-type
 
@@ -24162,6 +24162,17 @@ The audit package to use.
 
 @end table
 @end deftp
+
+@defvr {Scheme Variable} singularity-service-type
+This is the type of the service that allows you to run
+@url{https://www.sylabs.io/singularity/, Singularity}, a Docker-style tool to
+create and run application bundles (aka. ``containers'').  The value for this
+service is the Singularity package to use.
+
+The service does not install a daemon; instead, it installs helper programs as
+setuid-root (@pxref{Setuid Programs}) such that unprivileged users can invoke
+@command{singularity run} and similar commands.
+@end defvr
 
 @node Setuid Programs
 @section Setuid Programs

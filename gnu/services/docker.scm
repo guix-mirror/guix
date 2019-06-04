@@ -24,12 +24,14 @@
   #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages docker)
+  #:use-module (gnu packages linux)               ;singularity
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix packages)
 
   #:export (docker-configuration
-            docker-service-type))
+            docker-service-type
+            singularity-service-type))
 
 ;;; We're not using serialize-configuration, but we must define this because
 ;;; the define-configuration macro validates it exists.
@@ -120,3 +122,60 @@ bundles in Docker containers.")
                   (service-extension account-service-type
                                      (const %docker-accounts))))
                 (default-value (docker-configuration))))
+
+
+;;;
+;;; Singularity.
+;;;
+
+(define %singularity-activation
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (define %mount-directory
+          "/var/singularity/mnt/")
+
+        ;; Create the directories that Singularity 2.6 expects to find.  Make
+        ;; them #o755 like the 'install-data-hook' rule in 'Makefile.am' of
+        ;; Singularity 2.6.1.
+        (for-each (lambda (directory)
+                    (let ((directory (string-append %mount-directory
+                                                    directory)))
+                      (mkdir-p directory)
+                      (chmod directory #o755)))
+                  '("container" "final" "overlay" "session"))
+        (chmod %mount-directory #o755))))
+
+(define (singularity-setuid-programs singularity)
+  "Return the setuid-root programs that SINGULARITY needs."
+  (define helpers
+    ;; The helpers, under a meaningful name.
+    (computed-file "singularity-setuid-helpers"
+                   #~(begin
+                       (mkdir #$output)
+                       (for-each (lambda (program)
+                                   (symlink (string-append #$singularity
+                                                           "/libexec/singularity"
+                                                           "/bin/"
+                                                           program "-suid")
+                                            (string-append #$output
+                                                           "/singularity-"
+                                                           program
+                                                           "-helper")))
+                                 '("action" "mount" "start")))))
+
+  (list (file-append helpers "/singularity-action-helper")
+        (file-append helpers "/singularity-mount-helper")
+        (file-append helpers "/singularity-start-helper")))
+
+(define singularity-service-type
+  (service-type (name 'singularity)
+                (description
+                 "Install the Singularity application bundle tool.")
+                (extensions
+                 (list (service-extension setuid-program-service-type
+                                          singularity-setuid-programs)
+                       (service-extension activation-service-type
+                                          (const %singularity-activation))))
+                (default-value singularity)))

@@ -2899,12 +2899,16 @@ thanks to the use of namespaces.")
                   (substitute* "bin/singularity.in"
                     (("^PATH=.*" all)
                      (string-append "#" all "\n")))
+
+                  (substitute* (find-files "libexec/cli" "\\.exec$")
+                    (("\\$SINGULARITY_libexecdir/singularity/bin/([a-z]+)-suid"
+                      _ program)
+                     (string-append "/run/setuid-programs/singularity-"
+                                    program "-helper")))
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--disable-suid"
-             "--localstatedir=/var")
+     `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-reference-to-squashfs-tools
