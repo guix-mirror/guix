@@ -6969,7 +6969,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "49.0")
+    (version "50.0")
     (source
      (origin
        (method url-fetch)
@@ -6978,7 +6978,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "1smf26m7201z0bk49lzbw9zhbjfi6wylidfjixb8ylp6g0wnh8dx"))))
+         "0rsj7rzfyqmyidfsjrhjnxi2d43axx6r3gac1fhv5xkkbiiqzqkb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -6986,13 +6986,10 @@ highlights quasi-quoted expressions.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lisp (string-append out
-                                         "/share/emacs/site-lisp/emacspeak")))
-               (setenv "SHELL" (which "sh"))
-               ;; Configure Emacspeak according to etc/install.org.
-               (invoke "make" "config"))))
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             ;; Configure Emacspeak according to etc/install.org.
+             (invoke "make" "config")))
          (add-after 'build 'build-espeak
            (lambda _
              (invoke "make" "espeak")))
@@ -7009,7 +7006,7 @@ highlights quasi-quoted expressions.")
                (for-each
                 (lambda (file)
                   (copy-recursively file (string-append lisp "/" file)))
-                '("etc" "info" "js" "lisp" "media" "scapes" "servers" "sounds"
+                '("etc" "info" "js" "lisp" "media" "servers" "sounds"
                   "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
                (substitute* "etc/emacspeak.sh"
