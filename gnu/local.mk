@@ -1163,7 +1163,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/podofo-cmake-3.12.patch			\
-  %D%/packages/patches/polkit-CVE-2018-19788.patch		\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/postgresql-disable-resolve_symlinks.patch	\
