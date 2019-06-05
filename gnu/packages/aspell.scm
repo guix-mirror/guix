@@ -199,6 +199,14 @@ dictionaries, including personal ones.")
                      (base32
                       "1k5g328ac1hdpp6fsg57d8md6i0aqcwlszp3gbmp5706wyhpydmd")))
 
+(define-public aspell-dict-fi
+  (aspell-dictionary "fi" "Finnish"
+                     #:version "0.7-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "07d5s08ba4dd89cmwy9icc01i6fjdykxlb9ravmhdrhi8mxz1mzq")))
+
 (define-public aspell-dict-fr
   (aspell-dictionary "fr" "French"
                      #:version "0.50-3"
