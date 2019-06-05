@@ -273,6 +273,13 @@ dictionaries, including personal ones.")
                      (base32
                       "0ffb87yjsh211hllpc4b9khqqrblial4pzi1h9r3v465z1yhn3j4")))
 
+(define-public aspell-dict-nn
+  (aspell-dictionary "nn" "Norwegian Nynorsk"
+                     #:version "0.50.1-1"
+                     #:sha256
+                     (base32
+                      "0w2k5l5rbqpliripgqwiqixz5ghnjf7i9ggbrc4ly4vy1ia10rmc")))
+
 (define-public aspell-dict-pt-br
   (aspell-dictionary "pt-br" "Brazilian Portuguese"
                      #:version "20090702-0"
