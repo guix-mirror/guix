@@ -2554,6 +2554,28 @@ evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
 
+(define-public emacs-litable
+  (let ((commit "b0278f3f8dcff424bfbdfdefb545b1fbff33206f"))
+    (package
+      (name "emacs-litable")
+      (version (git-version "0.1" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Fuco1/litable.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0bny40hv9a024n01clxns351cs4j4ifhgcc7m4743xncqf612p7g"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/Fuco1/litable/")
+      (synopsis "Dynamic evaluation replacement with Emacs")
+      (description "This packages provides dynamic evaluation in Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-string-inflection
   (package
     (name "emacs-string-inflection")
