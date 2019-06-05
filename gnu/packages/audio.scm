@@ -174,14 +174,14 @@ Filter) modules follow the convention of 1V / Octave.")
         "--enable-jack"
         "--enable-sndfile"
         "--enable-samplerate"
-        ;; TODO: enable compilation with avcodec once available.
-        "--disable-avcodec")
+        "--enable-avcodec")
        #:python ,python-2))
     (inputs
      `(("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
-       ("fftwf" ,fftwf)))
+       ("fftwf" ,fftwf)
+       ("ffmpeg" ,ffmpeg))) ; for libavcodec
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://aubio.org/")
