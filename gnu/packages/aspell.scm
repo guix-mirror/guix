@@ -288,6 +288,14 @@ dictionaries, including personal ones.")
                      (base32
                       "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
 
+(define-public aspell-dict-pt-pt
+  (aspell-dictionary "pt-pt" "Portuguese"
+                     #:version "20070510-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1mnr994cwlag6shy8865ky99lymysiln07mbldcncahg90dagdxq")))
+
 (define-public aspell-dict-ru
   (aspell-dictionary "ru" "Russian"
                      #:version "0.99f7-1"
