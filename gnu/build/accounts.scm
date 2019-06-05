@@ -249,9 +249,11 @@ to it atomically and set the appropriate permissions."
             (lambda ()
               (chmod port mode)
               (write-entries port)
+              (close-port port)
               (rename-file template file-or-port))
             (lambda ()
-              (close-port port)
+              (unless (port-closed? port)
+                (close-port port))
               (when (file-exists? template)
                 (delete-file template))))))))
 
