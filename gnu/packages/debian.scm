@@ -154,6 +154,11 @@ contains the archive keys used for that.")
                  (("/usr") ubuntu))
                (substitute* "debootstrap"
                  (("=/usr") (string-append "=" out)))
+               ;; Ensure PATH works both in guix and within the debian chroot
+               ;; workaround for: https://bugs.debian.org/929889
+               (substitute* "functions"
+                 (("PATH=/sbin:/usr/sbin:/bin:/usr/bin")
+                  "PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin"))
                (substitute* (find-files "scripts" ".")
                  (("/usr/share/zoneinfo") (string-append tzdata "/share/zoneinfo")))
                #t)))
@@ -184,9 +189,5 @@ contains the archive keys used for that.")
     (description "Debootstrap is used to create a Debian base system from
 scratch, without requiring the availability of @code{dpkg} or @code{apt}.
 It does this by downloading .deb files from a mirror site, and carefully
-unpacking them into a directory which can eventually be chrooted into.
-
-It is recommended to run @code{debootstrap --foreign --arch=...} and then
-@code{chroot} into the directory, set the PATH and run @code{debootstrap
---second-stage} after.")
+unpacking them into a directory which can eventually be chrooted into.")
     (license license:gpl2)))

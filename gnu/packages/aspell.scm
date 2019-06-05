@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Christopher Andersson <christopher@8bits.nu>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,6 +132,22 @@ dictionaries, including personal ones.")
     (home-page "http://aspell.net/")))
 
 
+(define-public aspell-dict-ar
+  (aspell-dictionary "ar" "Arabic"
+                     #:version "1.2-0"
+		     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1avw40bp8yi5bnkq64ihm2rldgw34lk89yz281q9bmndh95a47h4")))
+
+(define-public aspell-dict-be
+  (aspell-dictionary "be" "Belarusian"
+                     #:version "0.01"
+                     #:prefix "aspell5-"
+                     #:sha256
+                     (base32
+                      "1svls9p7rsfi3hs0afh0cssj006qb4v1ik2yzqgj8hm10c6as2sm")))
+
 (define-public aspell-dict-ca
   (aspell-dictionary "ca" "Catalan"
                      #:version "2.1.5-1"
@@ -144,6 +161,14 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "01p92qj66cqb346gk7hjfynaap5sbcn85xz07kjfdq623ghr8v5s")))
+
+(define-public aspell-dict-da
+  (aspell-dictionary "da" "Danish"
+                     #:version "1.4.42-1"
+                     #:prefix "aspell5-"
+                     #:sha256
+                     (base32
+                      "1hfkmiyhgrx5lgrb2mffjbdn1hivrm73wcg7x0iid74p2yb0fjpp")))
 
 (define-public aspell-dict-el
   (aspell-dictionary "el" "Greek"
@@ -174,6 +199,14 @@ dictionaries, including personal ones.")
                      (base32
                       "1k5g328ac1hdpp6fsg57d8md6i0aqcwlszp3gbmp5706wyhpydmd")))
 
+(define-public aspell-dict-fi
+  (aspell-dictionary "fi" "Finnish"
+                     #:version "0.7-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "07d5s08ba4dd89cmwy9icc01i6fjdykxlb9ravmhdrhi8mxz1mzq")))
+
 (define-public aspell-dict-fr
   (aspell-dictionary "fr" "French"
                      #:version "0.50-3"
@@ -196,6 +229,14 @@ dictionaries, including personal ones.")
                      (base32
                       "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))
 
+(define-public aspell-dict-hi
+  (aspell-dictionary "hi" "Hindi"
+                     #:version "0.02-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "0drs374qz4419zx1lf2k281ydxf2750jk5ailafj1x0ncz27h1ys")))
+
 (define-public aspell-dict-it
   (let ((version "2.4-20070901-0")
         (sha256
@@ -217,6 +258,13 @@ dictionaries, including personal ones.")
        (home-page
         "http://linguistico.sourceforge.net/pages/dizionario_italiano.html"))))
 
+(define-public aspell-dict-mi
+  (aspell-dictionary "mi" "Maori"
+                     #:version "0.50-0"
+                     #:sha256
+                     (base32
+                      "12bxplpd348yx8d2q8qvahi9dlp7qf28qmanzhziwc7np8rixvmy")))
+
 (define-public aspell-dict-nl
   (aspell-dictionary "nl" "Dutch"
                      #:version "0.50-2"
@@ -225,6 +273,13 @@ dictionaries, including personal ones.")
                      (base32
                       "0ffb87yjsh211hllpc4b9khqqrblial4pzi1h9r3v465z1yhn3j4")))
 
+(define-public aspell-dict-nn
+  (aspell-dictionary "nn" "Norwegian Nynorsk"
+                     #:version "0.50.1-1"
+                     #:sha256
+                     (base32
+                      "0w2k5l5rbqpliripgqwiqixz5ghnjf7i9ggbrc4ly4vy1ia10rmc")))
+
 (define-public aspell-dict-pt-br
   (aspell-dictionary "pt-br" "Brazilian Portuguese"
                      #:version "20090702-0"
@@ -232,6 +287,14 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
+
+(define-public aspell-dict-pt-pt
+  (aspell-dictionary "pt-pt" "Portuguese"
+                     #:version "20070510-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "1mnr994cwlag6shy8865ky99lymysiln07mbldcncahg90dagdxq")))
 
 (define-public aspell-dict-ru
   (aspell-dictionary "ru" "Russian"
@@ -247,6 +310,13 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "02jwkjhr32kvyibnyzgx3smbnm576jwdzg3avdf6zxwckhy5fw4v")))
+
+(define-public aspell-dict-uk
+  (aspell-dictionary "uk" "Ukrainian"
+                     #:version "1.4.0-0"
+                     #:sha256
+                     (base32
+                      "137i4njvnslab6l4s291s11xijr5jsy75lbdph32f9y183lagy9m")))
 
 
 ;;;

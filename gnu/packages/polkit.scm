@@ -43,16 +43,15 @@
 (define-public polkit
   (package
     (name "polkit")
-    (version "0.115")
+    (version "0.116")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://www.freedesktop.org/software/polkit/releases/"
                    name "-" version ".tar.gz"))
-             (patches (search-patches "polkit-CVE-2018-19788.patch"))
              (sha256
               (base32
-               "0c91y61y4gy6p91cwbzg32dhavw4b7fflg370rimqhdxpzdfr1rg"))
+               "1c9lbpndh5zis22f154vjrhnqw65z8s85nrgl42v738yf6g0q5w8"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -90,7 +89,7 @@
      `(("expat" ,expat)
        ("linux-pam" ,linux-pam)
        ("elogind" ,elogind)
-       ("mozjs" ,mozjs-52)
+       ("mozjs" ,mozjs-60)
        ("nspr" ,nspr)))
     (propagated-inputs
      `(("glib" ,glib))) ; required by polkit-gobject-1.pc
@@ -101,6 +100,9 @@
        ("gobject-introspection" ,gobject-introspection)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
+                           ;; XXX: MozJS 60 requires the C++11 ABI or higher.
+                           ;; Remove when the default compiler is >= GCC 6.
+                           "CXXFLAGS=-std=gnu++11"
                            "--enable-man-pages")
        #:phases
        (modify-phases %standard-phases

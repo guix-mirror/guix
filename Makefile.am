@@ -144,6 +144,7 @@ MODULES =					\
   guix/svn-download.scm				\
   guix/colors.scm				\
   guix/i18n.scm					\
+  guix/diagnostics.scm				\
   guix/ui.scm					\
   guix/status.scm				\
   guix/build/android-ndk-build-system.scm	\

@@ -730,7 +730,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.3.5")
+    (version "0.3.7")
     (source
      (origin
        (method git-fetch)
@@ -740,7 +740,7 @@ are detected, the user is notified.")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "113lrr9gwimvvzlkwlishm4cjqcf30xq9jfxn7vh41ckgnbiwf3w"))))
+         "1j6w5jvq5v7kf7diad91qs1acr427nidnk9s24yyrz0hwdd1c2lh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)

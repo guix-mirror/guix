@@ -447,7 +447,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                '("src/xdemos/glxdemo" "src/xdemos/glxgears"
                  "src/xdemos/glxinfo" "src/xdemos/glxheads"))
               #t))))))
-    (home-page "http://mesa3d.org/")
+    (home-page "https://mesa3d.org/")
     (synopsis "Utility tools for Mesa")
     (description
      "The mesa-utils package contains several utility tools for Mesa: glxdemo,
@@ -619,7 +619,7 @@ OpenGL graphics API.")
      `(("unzip" ,unzip)))
     (inputs
      `(("mesa" ,mesa)))
-    (home-page "http://www.lonesock.net/soil.html")
+    (home-page "https://www.lonesock.net/soil.html")
     (synopsis "OpenGL texture loading library")
     (description
      "SOIL is a tiny C library used primarily for uploading textures into

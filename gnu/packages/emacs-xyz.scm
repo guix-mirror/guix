@@ -667,6 +667,37 @@ programs.")
 (define-public haskell-mode
   (deprecated-package "haskell-mode" emacs-haskell-mode))
 
+(define-public emacs-dante
+  (let ((commit "149dded24ca9cdff09a3d859e4b62638db4aadda")
+        (revision "1"))
+    (package
+      (name "emacs-dante")
+      (version (git-version "1.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jyp/dante")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0i7kj3d6pfys6si9va5f36qzifyac9mahdl0qh40rya9m0syrkla"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-haskell-mode" ,emacs-haskell-mode)
+         ("emacs-s" ,emacs-s)
+         ("emacs-company" ,emacs-company)
+         ("emacs-lcr" ,emacs-lcr)))
+      (home-page "https://github.com/jyp/dante")
+      (synopsis "Minor mode for interactive Haskell")
+      (description
+       "This package provides a minor mode for Haskell development that
+supports type hints, definition-jumping, completion, and more.")
+      (license license:gpl3+))))
+
 (define-public emacs-flycheck
   (package
     (name "emacs-flycheck")
@@ -2522,6 +2553,28 @@ a web browser.  Expressions are sent on-the-fly from an editing buffer to be
 evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
+
+(define-public emacs-litable
+  (let ((commit "b0278f3f8dcff424bfbdfdefb545b1fbff33206f"))
+    (package
+      (name "emacs-litable")
+      (version (git-version "0.1" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Fuco1/litable.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0bny40hv9a024n01clxns351cs4j4ifhgcc7m4743xncqf612p7g"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/Fuco1/litable/")
+      (synopsis "Dynamic evaluation replacement with Emacs")
+      (description "This packages provides dynamic evaluation in Emacs.")
+      (license license:gpl3+))))
 
 (define-public emacs-string-inflection
   (package
@@ -6969,7 +7022,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "49.0")
+    (version "50.0")
     (source
      (origin
        (method url-fetch)
@@ -6978,7 +7031,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "1smf26m7201z0bk49lzbw9zhbjfi6wylidfjixb8ylp6g0wnh8dx"))))
+         "0rsj7rzfyqmyidfsjrhjnxi2d43axx6r3gac1fhv5xkkbiiqzqkb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -6986,13 +7039,10 @@ highlights quasi-quoted expressions.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lisp (string-append out
-                                         "/share/emacs/site-lisp/emacspeak")))
-               (setenv "SHELL" (which "sh"))
-               ;; Configure Emacspeak according to etc/install.org.
-               (invoke "make" "config"))))
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             ;; Configure Emacspeak according to etc/install.org.
+             (invoke "make" "config")))
          (add-after 'build 'build-espeak
            (lambda _
              (invoke "make" "espeak")))
@@ -7009,7 +7059,7 @@ highlights quasi-quoted expressions.")
                (for-each
                 (lambda (file)
                   (copy-recursively file (string-append lisp "/" file)))
-                '("etc" "info" "js" "lisp" "media" "scapes" "servers" "sounds"
+                '("etc" "info" "js" "lisp" "media" "servers" "sounds"
                   "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
                (substitute* "etc/emacspeak.sh"
@@ -8049,6 +8099,30 @@ from within Emacs.  Restclient runs queries from a plan-text query sheet,
 displays results pretty-printed in XML or JSON with @code{restclient-mode}")
       (license license:public-domain))))
 
+(define-public emacs-whitespace-cleanup-mode
+  (let ((commit "72427144b054b0238a86e1348c45d986b8830d9d")
+        (revision "1"))
+    (package
+      (name "emacs-whitespace-cleanup-mode")
+      (version (git-version "0.10" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/purcell/whitespace-cleanup-mode")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1zlk534jbwrsabcg3kqlzk4h4hwya60lh6q2n1v4yn4rpf5ghsag"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/purcell/whitespace-cleanup-mode")
+      (synopsis "Intelligently call @code{whitespace-cleanup} on save")
+      (description
+       "This package provides a minor mode that calls
+@code{whitespace-cleanup} before saving the current buffer only if the
+whitespace in the buffer was initially clean.")
+      (license license:gpl3+))))
+
 (define-public emacs-eimp
   (let ((version "1.4.0")
         (commit "2e7536fe6d8f7faf1bad7a8ae37faba0162c3b4f")
@@ -8279,6 +8353,56 @@ multiplexer.")
     (description "@code{emacs-rpm-spec-mode} provides an Emacs major mode for
 editing RPM spec files.")
     (license license:gpl2+)))
+
+(define-public emacs-lcr
+  (package
+    (name "emacs-lcr")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jyp/lcr")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mc55icihxqpf8b05990q1lc2nj2792wcgyr73xsiqx0963sjaj8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/jyp/lcr")
+    (synopsis "Lightweight coroutines in Emacs Lisp")
+    (description "This package provides macros that can translate code into
+equivalent continuation-passing code, as well as miscellaneous utility
+functions written in continuation-passing style.")
+    (license license:gpl3+)))
+
+(define-public emacs-attrap
+  (let ((commit "3b092bb8f6755a97e6ecb7623b9d2dde58beba4a")
+        (revision "1"))
+    (package
+      (name "emacs-attrap")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jyp/attrap")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "05d32980saji8ja1pcv65l0s3dq7w0n5hpikbf246hciy1x067pp"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/jyp/attrap")
+      (synopsis "Fix coding error at point")
+      (description "This package provides a command to fix the Flycheck error
+at point.")
+      (license license:gpl3+))))
 
 (define-public emacs-git-messenger
   (package

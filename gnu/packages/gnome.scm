@@ -4320,15 +4320,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.60")
+    (version "0.9.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/3b2ceb7eb15860587db6886bfdd8a91e/"
+                                  "uploads/bb4aad19272cc636bd17f2f6602127fe/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1s9gkzxa6457v6bh0q8n1ijq1chd2jwgvhk5kppsnya7kxvsx8qh"))))
+                "06v76hg87fnhw45dil5vvl20myvaa38n1jqsl0lmkkq6af4mk8wx"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -5881,6 +5881,9 @@ devices using the GNOME desktop.")
                  (("\"nm-connection-editor")
                   (string-append "\"" nm-applet
                                  "/bin/nm-connection-editor")))
+               (substitute* '("panels/user-accounts/run-passwd.c")
+                 (("/usr/bin/passwd")
+                  "/run/setuid-programs/passwd"))
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.

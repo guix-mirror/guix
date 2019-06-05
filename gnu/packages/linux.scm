@@ -430,8 +430,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.6")
-(define %linux-libre-hash "0m7yi23wlgrh16z5z9dxb7dd64i2irrkdwxi71i88mradn55iq42")
+(define %linux-libre-version "5.1.7")
+(define %linux-libre-hash "0hr4sbapdpgdkb6xg1f7bpc31242yiqdvy5sfpymsrzfslr8vwy1")
 
 (define %linux-libre-5.1-patches
   (list %boot-logo-patch
@@ -448,8 +448,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
-(define %linux-libre-4.19-version "4.19.47")
-(define %linux-libre-4.19-hash "155rn6f555d2r1bqzi74zdif44ay7gk25xxjgw36s9n26dml8wf7")
+(define %linux-libre-4.19-version "4.19.48")
+(define %linux-libre-4.19-hash "04jwwzc9wbhx33i4bhm3vbs52vxlb8kjdmfjpfild94xbk8m2wy4")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -957,7 +957,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.44.5")
+    (version "1.45.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -966,7 +966,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1ff56h6h1h17sj2zvlddv5c88nmbx46p1fcbh6b0s5k9kl3b6pms"))))
+               "02g0cm72sgz709s9pkg4mvj56m7bgs7rwnyc2cp7cvg3j6pcjlj9"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)

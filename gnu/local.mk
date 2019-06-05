@@ -689,7 +689,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/boost-fix-icu-build.patch		\
-  %D%/packages/patches/borg-fix-hard-link-preloading.patch	\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-remove-test-bs4.patch		\
@@ -983,11 +982,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libcroco-CVE-2017-7960.patch		\
   %D%/packages/patches/libcroco-CVE-2017-7961.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
-  %D%/packages/patches/libevent-dns-tests.patch			\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10195.patch	\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10196.patch	\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10197.patch	\
-  %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libgcrypt-make-yat2m-reproducible.patch	\
@@ -1167,7 +1161,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/podofo-cmake-3.12.patch			\
-  %D%/packages/patches/polkit-CVE-2018-19788.patch		\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/postgresql-disable-resolve_symlinks.patch	\

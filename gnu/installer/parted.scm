@@ -1318,7 +1318,8 @@ USER-PARTITIONS, or return nothing."
     (()
      '())
     ((modules ...)
-     `((initrd-modules ',modules)))))
+     `((initrd-modules (append ',modules
+                               %base-initrd-modules))))))
 
 (define (user-partitions->configuration user-partitions)
   "Return the configuration field for USER-PARTITIONS."

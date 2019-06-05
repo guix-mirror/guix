@@ -1485,15 +1485,15 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.10.1")
+    (version "2.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://openvswitch.org/releases/openvswitch-"
+                    "https://www.openvswitch.org/releases/openvswitch-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "103wi6k8xal0z1pyy680gms56skagh6jawa2ja588ljr55jcg4sg"))))
+                "1p5mv44jaslvrr1ym15smqna19y0gi4vqcsyj58625vv9bj6laf1"))))
     (build-system gnu-build-system)
     (arguments
      '(;; FIXME: many tests fail with:
@@ -1529,7 +1529,7 @@ procedure calls (RPCs).")
      `(("libcap-ng" ,libcap-ng)
        ("openssl" ,openssl)))
     (synopsis "Virtual network switch")
-    (home-page "http://www.openvswitch.org/")
+    (home-page "https://www.openvswitch.org/")
     (description
      "Open vSwitch is a multilayer virtual switch.  It is designed to enable
 massive network automation through programmatic extension, while still

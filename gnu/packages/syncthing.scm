@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.1.2")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0x2203xa4fxadj7ra7l2ac285j3gi1qgghpkssl4hkcq0kjmxqrk"))
+                "0pkb9vdb10lnlk6sgg6hxgkdjnvxx90cfdf8vgrc5sljzm5qhr6l"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -418,7 +418,7 @@ address of the default LAN gateway.")
 (define-public go-github-com-lib-pq
   (package
     (name "go-github-com-lib-pq")
-    (version "1.0.0")
+    (version "1.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -427,7 +427,7 @@ address of the default LAN gateway.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zqnnyczaf00xi6xh53vq758v5bdlf0iz7kf22l02cal4i6px47i"))))
+                "0g64wlg1l1ybq4x44idksl4pgm055s58jxc6r6x4qhqm5q76h0km"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lib/pq"
@@ -443,7 +443,7 @@ database/sql package.")
 (define-public go-github-com-oschwald-geoip2-golang
   (package
     (name "go-github-com-oschwald-geoip2-golang")
-    (version "1.1.0")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -452,7 +452,7 @@ database/sql package.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v698bzs8lb59cqpsa9cf4sl8rdsvnnmaravhbfn6g6i511ppclr"))))
+                "0jivzl15jb8n16rm1b2w97kf7vna5dd3kcz865wfi233qay075j2"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-oschwald-maxminddb-golang"

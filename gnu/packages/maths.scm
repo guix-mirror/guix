@@ -2760,7 +2760,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.42.2")
+    (version "5.43.0")
     (source
      (origin
        (method url-fetch)
@@ -2768,7 +2768,7 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0kdncy6137sg3rradirxzj10mkcvafxd892zlclwhr9sa7b12zhn"))
+         "0xyahp4c6509haxh4n1swiqm3421gplkdisa0zypclh3252sbzfw"))
        (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -2802,11 +2802,18 @@ to BMP, JPEG or PNG image formats.")
              (let* ((sed (string-append (assoc-ref inputs "sed") "/bin/sed"))
                     (coreutils (assoc-ref inputs "coreutils"))
                     (dirname (string-append coreutils "/bin/dirname"))
-                    (head (string-append coreutils "/bin/head")))
+                    (head (string-append coreutils "/bin/head"))
+                    (perl (string-append (assoc-ref inputs "perl") "/bin/perl"))
+                    (python (string-append (assoc-ref inputs "python")
+                                           "/bin/python3")))
                (substitute* "src/maxima.in"
                  (("sed ") (string-append sed " "))
                  (("dirname") dirname)
                  (("head") head))
+               (substitute* "doc/info/Makefile.in"
+                 (("/usr/bin/env perl") perl))
+               (substitute* "doc/info/build_html.sh.in"
+                 (("python") python))
                #t)))
          (add-before 'check 'pre-check
            (lambda _
@@ -2838,9 +2845,6 @@ to BMP, JPEG or PNG image formats.")
                  (mkdir-p "share/emacs")
                  (mkdir-p "share/doc")
                  (symlink
-                  (string-append datadir "/emacs/")
-                  (string-append out "/share/emacs/site-lisp"))
-                 (symlink
                   (string-append datadir "/doc/")
                   (string-append out "/share/doc/maxima"))
                  (with-atomic-file-replacement
@@ -2871,7 +2875,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "19.03.1")
+    (version "19.05.7")
     (source
      (origin
        (method git-fetch)
@@ -2881,7 +2885,7 @@ point numbers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1qkf4jg86xnn3wk3782ffmfz12axb92dkjagcz3ffzw2wi1rclml"))))
+         "0zaz71fh156b9inrxf86scnix247al5pl9v18cxhjxcm0lanqxdp"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))

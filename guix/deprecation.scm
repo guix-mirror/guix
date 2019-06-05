@@ -18,39 +18,26 @@
 
 (define-module (guix deprecation)
   #:use-module (guix i18n)
-  #:use-module (ice-9 format)
+  #:use-module (guix diagnostics)
+  #:autoload   (guix utils) (source-properties->location)
   #:export (define-deprecated
             define-deprecated/alias
-            deprecation-warning-port))
+            warn-about-deprecation))
 
 ;;; Commentary:
 ;;;
 ;;; Provide a mechanism to mark bindings as deprecated.
 ;;;
-;;; We don't reuse (guix ui) mostly to avoid pulling in too many things.
-;;;
 ;;; Code:
-
-(define deprecation-warning-port
-  ;; Port where deprecation warnings go.
-  (make-parameter (current-error-port)))
-
-(define (source-properties->location-string properties)
-  "Return a human-friendly, GNU-standard representation of PROPERTIES, a
-source property alist."
-  (let ((file   (assq-ref properties 'filename))
-        (line   (assq-ref properties 'line))
-        (column (assq-ref properties 'column)))
-    (if (and file line column)
-        (format #f "~a:~a:~a" file (+ 1 line) column)
-        (G_ "<unknown location>"))))
 
 (define* (warn-about-deprecation variable properties
                                  #:key replacement)
-  (format (deprecation-warning-port)
-          (G_ "~a: warning: '~a' is deprecated~@[, use '~a' instead~]~%")
-          (source-properties->location-string properties)
-          variable replacement))
+  (let ((location (and properties (source-properties->location properties))))
+    (if replacement
+        (warning location (G_ "'~a' is deprecated, use '~a' instead~%")
+                 variable replacement)
+        (warning location (G_ "'~a' is deprecated~%")
+                 variable))))
 
 (define-syntax define-deprecated
   (lambda (s)
@@ -59,7 +46,7 @@ source property alist."
   (define-deprecated foo bar 42)
   (define-deprecated (baz x y) qux (qux y x))
 
-This will write a deprecation warning to DEPRECATION-WARNING-PORT."
+This will write a deprecation warning to GUIX-WARNING-PORT."
     (syntax-case s ()
       ((_ (proc formals ...) replacement body ...)
        #'(define-deprecated proc replacement
@@ -96,7 +83,7 @@ these lines:
 
 where 'nix-server?' is the deprecated name for 'store-connection?'.
 
-This will write a deprecation warning to DEPRECATION-WARNING-PORT."
+This will write a deprecation warning to GUIX-WARNING-PORT."
   (define-syntax deprecated
     (lambda (s)
       (warn-about-deprecation 'deprecated (syntax-source s)

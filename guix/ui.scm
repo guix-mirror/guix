@@ -32,6 +32,7 @@
 (define-module (guix ui)
   #:use-module (guix i18n)
   #:use-module (guix colors)
+  #:use-module (guix diagnostics)
   #:use-module (guix gexp)
   #:use-module (guix sets)
   #:use-module (guix utils)
@@ -70,10 +71,14 @@
   #:use-module (texinfo)
   #:use-module (texinfo plain-text)
   #:use-module (texinfo string-utils)
-  #:re-export (G_ N_ P_)                          ;backward compatibility
-  #:export (report-error
-            display-hint
-            leave
+
+  ;; Re-exports for backward compatibility.
+  #:re-export (G_ N_ P_                           ;now in (guix i18n)
+
+               warning info report-error leave    ;now in (guix diagnostics)
+               location->string
+               guix-warning-port program-name)
+  #:export (display-hint
             make-user-module
             load*
             warn-about-load-error
@@ -93,7 +98,6 @@
             read/eval
             read/eval-package-expression
             check-available-space
-            location->string
             fill-paragraph
             %text-width
             texi->plain-text
@@ -115,10 +119,6 @@
             delete-generation*
             run-guix-command
             run-guix
-            program-name
-            guix-warning-port
-            warning
-            info
             guix-main))
 
 ;;; Commentary:
@@ -126,124 +126,6 @@
 ;;; User interface facilities for command-line tools.
 ;;;
 ;;; Code:
-
-(define-syntax highlight-argument
-  (lambda (s)
-    "Given FMT and ARG, expand ARG to a call that highlights it, provided FMT
-is a trivial format string."
-    (define (trivial-format-string? fmt)
-      (define len
-        (string-length fmt))
-
-      (let loop ((start 0))
-        (or (>= (+ 1 start) len)
-            (let ((tilde (string-index fmt #\~ start)))
-              (or (not tilde)
-                  (case (string-ref fmt (+ tilde 1))
-                    ((#\a #\A #\%) (loop (+ tilde 2)))
-                    (else          #f)))))))
-
-    ;; Be conservative: limit format argument highlighting to cases where the
-    ;; format string contains nothing but ~a escapes.  If it contained ~s
-    ;; escapes, this strategy wouldn't work.
-    (syntax-case s ()
-      ((_ "~a~%" arg)                          ;don't highlight whole messages
-       #'arg)
-      ((_ fmt arg)
-       (trivial-format-string? (syntax->datum #'fmt))
-       #'(%highlight-argument arg))
-      ((_ fmt arg)
-       #'arg))))
-
-(define* (%highlight-argument arg #:optional (port (guix-warning-port)))
-  "Highlight ARG, a format string argument, if PORT supports colors."
-  (cond ((string? arg)
-         (highlight arg port))
-        ((symbol? arg)
-         (highlight (symbol->string arg) port))
-        (else arg)))
-
-(define-syntax define-diagnostic
-  (syntax-rules ()
-    "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
-messages."
-    ((_ name (G_ prefix) colors)
-     (define-syntax name
-       (lambda (x)
-         (syntax-case x ()
-           ((name location (underscore fmt) args (... ...))
-            (and (string? (syntax->datum #'fmt))
-                 (free-identifier=? #'underscore #'G_))
-            #'(begin
-                (print-diagnostic-prefix prefix location
-                                         #:colors colors)
-                (format (guix-warning-port) (gettext fmt %gettext-domain)
-                        (highlight-argument fmt args) (... ...))))
-           ((name location (N-underscore singular plural n)
-                  args (... ...))
-            (and (string? (syntax->datum #'singular))
-                 (string? (syntax->datum #'plural))
-                 (free-identifier=? #'N-underscore #'N_))
-            #'(begin
-                (print-diagnostic-prefix prefix location
-                                         #:colors colors)
-                (format (guix-warning-port)
-                        (ngettext singular plural n %gettext-domain)
-                        (highlight-argument singular args) (... ...))))
-           ((name (underscore fmt) args (... ...))
-            (free-identifier=? #'underscore #'G_)
-            #'(name #f (underscore fmt) args (... ...)))
-           ((name (N-underscore singular plural n)
-                  args (... ...))
-            (free-identifier=? #'N-underscore #'N_)
-            #'(name #f (N-underscore singular plural n)
-                    args (... ...)))))))))
-
-;; XXX: This doesn't work well for right-to-left languages.
-;; TRANSLATORS: The goal is to emit "warning:" followed by a short phrase;
-;; "~a" is a placeholder for that phrase.
-(define-diagnostic warning (G_ "warning: ") %warning-color) ;emit a warning
-(define-diagnostic info (G_ "") %info-color)
-(define-diagnostic report-error (G_ "error: ") %error-color)
-
-(define-syntax-rule (leave args ...)
-  "Emit an error message and exit."
-  (begin
-    (report-error args ...)
-    (exit 1)))
-
-(define %warning-color (color BOLD MAGENTA))
-(define %info-color (color BOLD))
-(define %error-color (color BOLD RED))
-(define %hint-color (color BOLD CYAN))
-
-(define* (print-diagnostic-prefix prefix #:optional location
-                                  #:key (colors (color)))
-  "Print PREFIX as a diagnostic line prefix."
-  (define color?
-    (color-output? (guix-warning-port)))
-
-  (define location-color
-    (if color?
-        (cut colorize-string <> (color BOLD))
-        identity))
-
-  (define prefix-color
-    (if color?
-        (lambda (prefix)
-          (colorize-string prefix colors))
-        identity))
-
-  (let ((prefix (if (string-null? prefix)
-                    prefix
-                    (gettext prefix %gettext-domain))))
-    (if location
-        (format (guix-warning-port) "~a: ~a"
-                (location-color (location->string location))
-                (prefix-color prefix))
-        (format (guix-warning-port) "~:[~*~;guix ~a: ~]~a"
-                (program-name) (program-name)
-                (prefix-color prefix)))))
 
 (define (print-unbound-variable-error port key args default-printer)
   ;; Print unbound variable errors more nicely, and in the right language.
@@ -392,6 +274,8 @@ VARIABLE and return it, or #f if none was found."
                 (match (module-name head)
                   (('gnu _ ...) head)             ;must be that one
                   (_ (loop next (cons head suggestions) visited)))))))))))
+
+(define %hint-color (color BOLD CYAN))
 
 (define* (display-hint message #:optional (port (current-error-port)))
   "Display MESSAGE, a l10n message possibly containing Texinfo markup, to
@@ -1192,13 +1076,6 @@ replacement if PORT is not Unicode-capable."
       (lambda ()
         body ...)))))
 
-(define (location->string loc)
-  "Return a human-friendly, GNU-standard representation of LOC."
-  (match loc
-    (#f (G_ "<unknown location>"))
-    (($ <location> file line column)
-     (format #f "~a:~a:~a" file line column))))
-
 (define* (fill-paragraph str width #:optional (column 0))
   "Fill STR such that each line contains at most WIDTH characters, assuming
 that the first character is at COLUMN.
@@ -1720,10 +1597,6 @@ Run COMMAND with ARGS.\n"))
                                  string<?))
   (show-bug-report-information))
 
-(define program-name
-  ;; Name of the command-line program currently executing, or #f.
-  (make-parameter #f))
-
 (define (run-guix-command command . args)
   "Run COMMAND with the given ARGS.  Report an error when COMMAND is not
 found."
@@ -1782,9 +1655,6 @@ and signal handling has already been set up."
      (apply run-guix-command
             (string->symbol command)
             args))))
-
-(define guix-warning-port
-  (make-parameter (current-warning-port)))
 
 (define (guix-main arg0 . args)
   (initialize-guix)

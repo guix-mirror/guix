@@ -426,7 +426,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "60.7.0-guix1")
+(define %icecat-version "60.7.0-guix2")
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -450,7 +450,7 @@ from forcing GEXP-PROMISE."
              (base32
               "08x0nijh0ja5jza95a8y030ibk756bn7zlw3a3c4750yilfhqpqa"))))
 
-         (upstream-icecat-base-version "60.3.0") ; maybe older than base-version
+         (upstream-icecat-base-version "60.7.0") ; maybe older than base-version
          (upstream-icecat-gnu-version "1")
          (upstream-icecat-version (string-append upstream-icecat-base-version
                                                  "-gnu"
@@ -463,7 +463,7 @@ from forcing GEXP-PROMISE."
                   "/icecat-" upstream-icecat-version ".tar.bz2"))
             (sha256
              (base32
-              "0icnl64nxcyf7dprpdpygxhabsvyhps8c3ixysj9bcdlj9q34ib1"))))
+              "09xqdfd8rwbn2n6m7n059qf1psbrj5v5kfzm7gg5xng22ddxawv8"))))
 
          (gnuzilla-commit (string-append "v" upstream-icecat-base-version))
          (gnuzilla-source
@@ -475,7 +475,7 @@ from forcing GEXP-PROMISE."
             (file-name (git-file-name "gnuzilla" upstream-icecat-base-version))
             (sha256
              (base32
-              "19wal7hkbb4wvk40hs6d7a5paal2bfday08hwssm02srcbv48fj0"))))
+              "1vqhb0py28hnwcynbaad304ziciz1kn5bv1qg2q4f7g13js3b1hf"))))
 
          (makeicecat-patch
           (local-file (search-patch "icecat-makeicecat.patch"))))
@@ -545,10 +545,6 @@ from forcing GEXP-PROMISE."
                                     #$upstream-icecat-gnu-version "\n"))
                     (("^DATA=.*")
                      "DATA=/tmp/gnuzilla/data\n")
-                    (("^sed .* debian/" all)
-                     (string-append "echo warning: skipped: " all))
-                    (("^debian/rules " all)
-                     (string-append "echo warning: skipped: " all))
                     (("^find extensions/gnu/ ")
                      "find extensions/gnu/ | sort ")
                     (("/bin/sed")
@@ -560,21 +556,19 @@ from forcing GEXP-PROMISE."
                 (rename-file firefox-dir icecat-dir)
 
                 (with-directory-excursion icecat-dir
-                  (for-each mkdir-p '("l10n" "debian/config"))
-                  (call-with-output-file "debian/control" (const #t))
+                  (mkdir "l10n")
                   (format #t "Running makeicecat script...~%")
                   (force-output)
                   (invoke "bash" "/tmp/gnuzilla/makeicecat")
-                  (for-each delete-file-recursively '("l10n" "debian")))
+                  (delete-file-recursively "l10n"))
 
-                (format #t (string-append "Unpacking l10n/* and debian/* from"
+                (format #t (string-append "Unpacking l10n/* from"
                                           " upstream IceCat tarball...~%"))
                 (force-output)
                 (unless (string=? icecat-dir old-icecat-dir)
                   (symlink icecat-dir old-icecat-dir))
                 (invoke "tar" "xf" #+upstream-icecat-source
-                        (string-append old-icecat-dir "/l10n")
-                        (string-append old-icecat-dir "/debian"))
+                        (string-append old-icecat-dir "/l10n"))
 
                 (format #t "Packing new IceCat tarball...~%")
                 (force-output)
@@ -899,43 +893,16 @@ from forcing GEXP-PROMISE."
          (add-before 'configure 'install-desktop-entry
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the '.desktop' file.
-             (define (swallow-%%-directives input output)
-               ;; Interpret '%%ifdef' directives found in the '.desktop' file.
-               (let loop ((state 'top))
-                 (match (read-line input 'concat)
-                   ((? eof-object?)
-                    #t)
-                   ((? string? line)
-                    (cond ((string-prefix? "%%ifdef" line)
-                           (loop 'ifdef))
-                          ((string-prefix? "%%else" line)
-                           (loop 'else))
-                          ((string-prefix? "%%endif" line)
-                           (loop 'top))
-                          (else
-                           (case state
-                             ((top else)
-                              (display line output)
-                              (loop state))
-                             (else
-                              (loop state)))))))))
-
-             (let* ((out (assoc-ref outputs "out"))
+             (let* ((desktop-file "taskcluster/docker/icecat-snap/icecat.desktop")
+                    (out          (assoc-ref outputs "out"))
                     (applications (string-append out "/share/applications")))
-               (call-with-input-file "debian/icecat.desktop.in"
-                 (lambda (input)
-                   (call-with-output-file "debian/icecat.desktop"
-                     (lambda (output)
-                       (swallow-%%-directives input output)))))
-
-               (substitute* "debian/icecat.desktop"
-                 (("@MOZ_DISPLAY_NAME@")
-                  "GNU IceCat")
-                 (("^Exec=@MOZ_APP_NAME@")
-                  (string-append "Exec=" out "/bin/icecat"))
-                 (("@MOZ_APP_NAME@")
-                  "icecat"))
-               (install-file "debian/icecat.desktop" applications)
+               (substitute* desktop-file
+                 (("^Exec=icecat")     (string-append "Exec=" out "/bin/icecat"))
+                 (("IceCat")           "GNU IceCat")
+                 (("Icon=.*")          "Icon=icecat\n")
+                 (("NewWindow")        "new-window")
+                 (("NewPrivateWindow") "new-private-window"))
+               (install-file desktop-file applications)
                #t)))
          (add-after 'install-desktop-entry 'install-icons
            (lambda* (#:key outputs #:allow-other-keys)

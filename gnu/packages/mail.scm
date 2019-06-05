@@ -351,14 +351,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.11.4")
+    (version "1.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0098pr4anmq2a0id8wfi2vci3cgcfwf9k4q411w22xn8lrz3aldn"))
+               "13zr2fpql33sdbsjsiaa952js5bvphc1x4lqsj36qyzdhj3l84na"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs

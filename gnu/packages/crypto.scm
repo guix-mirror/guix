@@ -75,7 +75,7 @@
 (define-public libsodium
   (package
     (name "libsodium")
-    (version "1.0.17")
+    (version "1.0.18")
     (source (origin
             (method url-fetch)
             (uri (list (string-append
@@ -86,7 +86,7 @@
                         "releases/old/libsodium-" version ".tar.gz")))
             (sha256
              (base32
-              "1cf2d9v1gylz1qcy2zappbf526qfmph6gd6fnn3w2b347vixmhqc"))))
+              "1h9ncvj23qbbni958knzsli8dvybcswcjbx0qjjgi922nf848l3g"))))
     (build-system gnu-build-system)
     (synopsis "Portable NaCl-based crypto library")
     (description

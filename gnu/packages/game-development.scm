@@ -1321,24 +1321,15 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "0jl223dybsj5gvs7z4q60gnafj1b7kgi5mx0kj58m5knrp8qwg5h"))))
+                "1fdicsgls5cp0yffcm5vjmav67gv9bxhz1s3jvdvinspxb485x7l"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-godir
-           (lambda _
-             ;; Install compiled '.go' files into the site directory.
-             (substitute* "Makefile.in"
-               (("/ccache") "/site-ccache")))))))
     (propagated-inputs
      `(("guile-opengl" ,guile-opengl)
        ("guile-sdl2" ,guile-sdl2)))

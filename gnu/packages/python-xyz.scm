@@ -3163,7 +3163,7 @@ provides additional functionality on the produced Mallard documents.")
          (replace 'check
            (lambda _
              (invoke "python" "runtests.py" "-vv"))))))
-    (home-page "http://cython.org/")
+    (home-page "https://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
 programming language and the extended Cython programming language.  It makes
@@ -5381,14 +5381,14 @@ libxml2 and libxslt.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.6.3")
+    (version "4.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "041dhalzjciw6qyzzq7a2k4h1yvyk76xigp35hv5ibnn448ydy4h"))))
+         "0j2kycz2dxgx68xzjm7rxg5xn6v61gq5ifvxyg99slmqkybnal4l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5400,6 +5400,8 @@ libxml2 and libxslt.")
          ;; distribution.
          (replace 'check
            (lambda _ (invoke "./convert-py3k"))))))
+    (propagated-inputs
+     `(("python-soupsieve" ,python-soupsieve)))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
@@ -5443,14 +5445,17 @@ Soup 4.  It aims to provide selecting, matching, and filtering using modern
 CSS selectors.  Soup Sieve currently provides selectors from the CSS level 1
 specifications up through the latest CSS level 4 drafts and beyond (though
 some are not yet implemented).")
+    (properties `((python2-variant . ,(delay python2-soupsieve))))
     (license license:expat)))
 
 (define-public python2-soupsieve
-  (let ((base (package-with-python2 python-soupsieve)))
+  (let ((base (package-with-python2 (strip-python2-variant python-soupsieve))))
     (package
       (inherit base)
       (propagated-inputs
-       `(("python2-backports-functools-lru-cache" ,python2-backports-functools-lru-cache))))))
+       `(("python2-backports-functools-lru-cache"
+          ,python2-backports-functools-lru-cache)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-netifaces
   (package
@@ -12180,7 +12185,7 @@ current test, while only declaring the test-specific fields")
      ;; 'parse_funcs'
      ;; during test setup.
      `(#:tests? #f))
-    (home-page "http://toolkit.translatehouse.org")
+    (home-page "https://toolkit.translatehouse.org")
     (synopsis "Tools and API for translation and localization engineering")
     (description
      "Tools and API for translation and localization engineering.  It contains

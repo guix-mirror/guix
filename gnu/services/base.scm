@@ -142,7 +142,8 @@
             guix-publish-configuration-guix
             guix-publish-configuration-port
             guix-publish-configuration-host
-            guix-publish-configuration-compression-level
+            guix-publish-configuration-compression
+            guix-publish-configuration-compression-level ;deprecated
             guix-publish-configuration-nar-path
             guix-publish-configuration-cache
             guix-publish-configuration-ttl
@@ -1748,8 +1749,12 @@ archive' public keys, with GUIX."
            (default 80))
   (host    guix-publish-configuration-host        ;string
            (default "localhost"))
-  (compression-level guix-publish-configuration-compression-level ;integer
-                     (default 3))
+  (compression       guix-publish-configuration-compression
+                     (thunked)
+                     (default (default-compression this-record
+                                (current-source-location))))
+  (compression-level %guix-publish-configuration-compression-level ;deprecated
+                     (default #f))
   (nar-path    guix-publish-configuration-nar-path ;string
                (default "nar"))
   (cache       guix-publish-configuration-cache   ;#f | string
@@ -1759,42 +1764,68 @@ archive' public keys, with GUIX."
   (ttl         guix-publish-configuration-ttl     ;#f | integer
                (default #f)))
 
-(define guix-publish-shepherd-service
-  (match-lambda
-    (($ <guix-publish-configuration> guix port host compression
-                                     nar-path cache workers ttl)
-     (list (shepherd-service
-            (provision '(guix-publish))
-            (requirement '(guix-daemon))
-            (start #~(make-forkexec-constructor
-                      (list #$(file-append guix "/bin/guix")
-                            "publish" "-u" "guix-publish"
-                            "-p" #$(number->string port)
-                            "-C" #$(number->string compression)
-                            (string-append "--nar-path=" #$nar-path)
-                            (string-append "--listen=" #$host)
-                            #$@(if workers
-                                   #~((string-append "--workers="
-                                                     #$(number->string
-                                                        workers)))
-                                   #~())
-                            #$@(if ttl
-                                   #~((string-append "--ttl="
-                                                     #$(number->string ttl)
-                                                     "s"))
-                                   #~())
-                            #$@(if cache
-                                   #~((string-append "--cache=" #$cache))
-                                   #~()))
+(define-deprecated (guix-publish-configuration-compression-level config)
+  "Return a compression level, the old way."
+  (match (guix-publish-configuration-compression config)
+    (((_ level) _ ...) level)))
 
-                      ;; Make sure we run in a UTF-8 locale so we can produce
-                      ;; nars for packages that contain UTF-8 file names such
-                      ;; as 'nss-certs'.  See <https://bugs.gnu.org/26948>.
-                      #:environment-variables
-                      (list (string-append "GUIX_LOCPATH="
-                                           #$glibc-utf8-locales "/lib/locale")
-                            "LC_ALL=en_US.utf8")))
-            (stop #~(make-kill-destructor)))))))
+(define (default-compression config properties)
+  "Return the default 'guix publish' compression according to CONFIG, and
+raise a deprecation warning if the 'compression-level' field was used."
+  (match (%guix-publish-configuration-compression-level config)
+    (#f
+     '(("gzip" 3)))
+    (level
+     (warn-about-deprecation 'compression-level properties
+                             #:replacement 'compression)
+     `(("gzip" ,level)))))
+
+(define (guix-publish-shepherd-service config)
+  (define (config->compression-options config)
+    (match (guix-publish-configuration-compression config)
+      (()                                   ;empty list means "no compression"
+       '("-C0"))
+      (lst
+       (append-map (match-lambda
+                     ((type level)
+                      `("-C" ,(string-append type ":"
+                                             (number->string level)))))
+                   lst))))
+
+  (match-record config <guix-publish-configuration>
+    (guix port host nar-path cache workers ttl)
+    (list (shepherd-service
+           (provision '(guix-publish))
+           (requirement '(guix-daemon))
+           (start #~(make-forkexec-constructor
+                     (list #$(file-append guix "/bin/guix")
+                           "publish" "-u" "guix-publish"
+                           "-p" #$(number->string port)
+                           #$@(config->compression-options config)
+                           (string-append "--nar-path=" #$nar-path)
+                           (string-append "--listen=" #$host)
+                           #$@(if workers
+                                  #~((string-append "--workers="
+                                                    #$(number->string
+                                                       workers)))
+                                  #~())
+                           #$@(if ttl
+                                  #~((string-append "--ttl="
+                                                    #$(number->string ttl)
+                                                    "s"))
+                                  #~())
+                           #$@(if cache
+                                  #~((string-append "--cache=" #$cache))
+                                  #~()))
+
+                     ;; Make sure we run in a UTF-8 locale so we can produce
+                     ;; nars for packages that contain UTF-8 file names such
+                     ;; as 'nss-certs'.  See <https://bugs.gnu.org/26948>.
+                     #:environment-variables
+                     (list (string-append "GUIX_LOCPATH="
+                                          #$glibc-utf8-locales "/lib/locale")
+                           "LC_ALL=en_US.utf8")))
+           (stop #~(make-kill-destructor))))))
 
 (define %guix-publish-accounts
   (list (user-group (name "guix-publish") (system? #t))

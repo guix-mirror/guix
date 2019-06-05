@@ -310,6 +310,15 @@ and vice versa.")
        (sha256
         (base32 "1rimpjsdnmw8f5b7k558cic41p2qy2n2yrlqp5vh7mp4162hk0py"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-dict
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (begin
+               (chmod (string-append "util/cracklib-format") #o755)
+               (apply invoke "make" "dict" make-flags)
+               #t))))))
     (synopsis "Password checking library")
     (home-page "https://github.com/cracklib/cracklib")
     (description

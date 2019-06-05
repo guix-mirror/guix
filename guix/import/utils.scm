@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -378,57 +379,35 @@ separated by PRED."
                            #:allow-other-keys)
   "Generate a stream of package expressions for PACKAGE-NAME and all its
 dependencies."
-  (receive (package . dependencies)
-      (repo->guix-package package-name repo)
-    (if (not package)
-        stream-null
+  (define (exists? dependency)
+    (not (null? (find-packages-by-name (guix-name dependency)))))
+  (define initial-state (list #f (list package-name) (list)))
+  (define (step state)
+    (match state
+      ((prev (next . rest) done)
+       (define (handle? dep)
+         (and
+           (not (equal? dep next))
+           (not (member dep done))
+           (not (exists? dep))))
+       (receive (package . dependencies) (repo->guix-package next repo)
+         (list
+           (if package package '()) ;; default #f on failure would interrupt
+           (if package
+             (lset-union equal? rest (filter handle? (car dependencies)))
+             rest)
+           (cons next done))))
+      ((prev '() done)
+       (list #f '() done))))
 
-        ;; Generate a lazy stream of package expressions for all unknown
-        ;; dependencies in the graph.
-        (let* ((make-state (lambda (queue done)
-                             (cons queue done)))
-               (next       (match-lambda
-                             (((next . rest) . done) next)))
-               (imported   (match-lambda
-                             ((queue . done) done)))
-               (done?      (match-lambda
-                             ((queue . done)
-                              (zero? (length queue)))))
-               (unknown?   (lambda* (dependency #:optional (done '()))
-                             (and (not (member dependency
-                                               done))
-                                  (null? (find-packages-by-name
-                                          (guix-name dependency))))))
-               (update     (lambda (state new-queue)
-                             (match state
-                               (((head . tail) . done)
-                                (make-state (lset-difference
-                                             equal?
-                                             (lset-union equal? new-queue tail)
-                                             done)
-                                            (cons head done)))))))
-          (stream-cons
-           package
-           (stream-unfold
-            ;; map: produce a stream element
-            (lambda (state)
-              (repo->guix-package (next state) repo))
-
-            ;; predicate
-            (negate done?)
-
-            ;; generator: update the queue
-            (lambda (state)
-              (receive (package . dependencies)
-                  (repo->guix-package (next state) repo)
-                (if package
-                    (update state (filter (cut unknown? <>
-                                               (cons (next state)
-                                                     (imported state)))
-                                          (car dependencies)))
-                    ;; TODO: Try the other archives before giving up
-                    (update state (imported state)))))
-
-            ;; initial state
-            (make-state (filter unknown? (car dependencies))
-                        (list package-name))))))))
+  ;; Generate a lazy stream of package expressions for all unknown
+  ;; dependencies in the graph.
+  (stream-unfold
+    ;; map: produce a stream element
+    (match-lambda ((latest queue done) latest))
+    ;; predicate
+    (match-lambda ((latest queue done) latest))
+    ;; generator: update the queue
+    step
+    ;; initial state
+    (step initial-state)))
