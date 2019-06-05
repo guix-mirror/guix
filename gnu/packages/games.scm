@@ -40,6 +40,7 @@
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7336,3 +7337,51 @@ Unfortunately, Hacker is not aware of Drascula's real ambitions: DOMINATING
 the World and demonstrating that he is even more evil than his brother Vlad.")
     ;; Drascula uses a BSD-like license.
     (license (license:non-copyleft "file:///readme.txt"))))
+
+(define-public gnurobots
+  (package
+    (name "gnurobots")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/gnurobots/gnurobots-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "07gi3lsmbzzsjambgixj6xy79lh22km84z7bnzgwzxdy806lyvwb"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("vte" ,vte/gtk+-2)
+       ("readline" ,readline)
+       ("guile" ,guile-1.8)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:make-flags
+       (list
+        ;; Do not abort build on "deprecated-declarations" warnings.
+        "CFLAGS=-Wno-error=deprecated-declarations"
+        ;; Find readline headers in sub-directory.
+        (string-append "READLINE_CFLAGS=-I"
+                       (assoc-ref %build-inputs "readline")
+                       "/include/readline/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "doc/Robots-HOWTO"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/doc/gnurobots-"
+                                          ,version))
+             #t)))))
+    (home-page "https://www.gnu.org/software/gnurobots/")
+    (synopsis "Program a little robot and watch it explore a world")
+    (description
+     "GNU Robots is a game in which you program a robot to explore a world
+full of enemies that can hurt it, obstacles and food to be eaten.  The goal of
+the game is to stay alive and collect prizes.  The robot program conveniently
+may be written in a plain text file in the Scheme programming language.")
+    (license license:gpl3+)))
