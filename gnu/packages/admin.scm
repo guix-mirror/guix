@@ -2160,7 +2160,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.28")
+    (version "3.29")
     (source
      (origin
        (method git-fetch)
@@ -2169,7 +2169,7 @@ throughput (in the same interval).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "070b2sx8r0b4hry6xg97psxlikxghmz91zicg2cm6kc1yhgz4agc"))
+        (base32 "1qhxwjjgrzpqrqjv7l2847ywpln76lyd6j8bl9gz2r6kl0fx2fqs"))
        (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
