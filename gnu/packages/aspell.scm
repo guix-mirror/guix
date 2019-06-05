@@ -162,6 +162,14 @@ dictionaries, including personal ones.")
                      (base32
                       "01p92qj66cqb346gk7hjfynaap5sbcn85xz07kjfdq623ghr8v5s")))
 
+(define-public aspell-dict-da
+  (aspell-dictionary "da" "Danish"
+                     #:version "1.4.42-1"
+                     #:prefix "aspell5-"
+                     #:sha256
+                     (base32
+                      "1hfkmiyhgrx5lgrb2mffjbdn1hivrm73wcg7x0iid74p2yb0fjpp")))
+
 (define-public aspell-dict-el
   (aspell-dictionary "el" "Greek"
                      #:version "0.08-0"
