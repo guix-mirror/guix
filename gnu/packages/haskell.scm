@@ -1805,7 +1805,7 @@ version 1.3).")
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
-    (version "0.2.1.0")
+    (version "0.2.1.1")
     (source
      (origin
        (method url-fetch)
@@ -1814,7 +1814,7 @@ version 1.3).")
                            version ".tar.gz"))
        (sha256
         (base32
-         "13fn6qmpiggwpn8lczyydgp77cyzfypwds7wxskrwir4i5cgxlfq"))))
+         "1lmyx3wkjsayhy5yilzvy0kf8qwmycwlk26r1d8f3cxbfhkr7s52"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
