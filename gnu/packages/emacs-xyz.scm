@@ -11931,7 +11931,7 @@ Emacs minor mode to escape sequences in code.")
 (define-public emacs-dashboard
   (package
     (name "emacs-dashboard")
-    (version "1.2.4")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -11940,11 +11940,22 @@ Emacs minor mode to escape sequences in code.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hhh1kfsz87qfmh45wjf2r93rz79rq0vbyxlfrsl02092zjbl1zr"))))
+        (base32 "0ihpcagwgc9qy70lf2y3dvx2bm5h9lnqh4sx6643cr8pp06ysbvq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-page-break-lines" ,emacs-page-break-lines)))
-    (arguments '(#:include '("\\.el$" "\\.txt$" "\\.png$")))
+    (arguments
+     '(#:include '("\\.el$" "\\.txt$" "\\.png$")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-dashboard-widgets
+           ;; This phase fixes compilation error.
+           (lambda _
+             (chmod "dashboard-widgets.el" #o666)
+             (emacs-substitute-variables "dashboard-widgets.el"
+               ("dashboard-init-info"
+                '(format "Loaded in %s" (emacs-init-time))))
+             #t)))))
     (home-page "https://github.com/rakanalh/emacs-dashboard")
     (synopsis "Startup screen extracted from Spacemacs")
     (description "This package provides an extensible Emacs dashboard, with
