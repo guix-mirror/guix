@@ -2124,16 +2124,16 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
 (define-public dstat
   (package
     (name "dstat")
-    (version "0.7.3")
+    (version "0.7.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dagwieers/dstat.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
-        (base32 "0sbpna531034gr40w4g9cwz35s2fpf9h654paznsxw9fih91rfa5"))))
+        (base32 "1qnmkhqmjd1m3if05jj29dvr5hn6kayq9bkkkh881w472c0zhp8v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no make check
