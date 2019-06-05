@@ -311,6 +311,13 @@ dictionaries, including personal ones.")
                      (base32
                       "02jwkjhr32kvyibnyzgx3smbnm576jwdzg3avdf6zxwckhy5fw4v")))
 
+(define-public aspell-dict-uk
+  (aspell-dictionary "uk" "Ukrainian"
+                     #:version "1.4.0-0"
+                     #:sha256
+                     (base32
+                      "137i4njvnslab6l4s291s11xijr5jsy75lbdph32f9y183lagy9m")))
+
 
 ;;;
 ;;; Hunspell packages made from the Aspell word lists.
