@@ -57,7 +57,6 @@
   #:export (build-and-use-profile
             delete-generations
             delete-matching-generations
-            display-search-paths
             guix-package
 
             (%options . %package-options)
@@ -169,8 +168,7 @@ hooks\" run when building the profile."
                               "~a packages in profile~%"
                               count)
                        count)
-               (display-search-paths entries (list profile)
-                                     #:kind 'prefix)))
+               (display-search-path-hint entries profile)))
 
         (warn-about-disk-space profile))))))
 
@@ -289,17 +287,23 @@ symlinks like 'canonicalize-path' would do."
       file
       (string-append (getcwd) "/" file)))
 
-(define* (display-search-paths entries profiles
-                               #:key (kind 'exact))
-  "Display the search path environment variables that may need to be set for
-ENTRIES, a list of manifest entries, in the context of PROFILE."
-  (let* ((profiles (map (compose user-friendly-profile absolutize)
-                        profiles))
-         (settings (search-path-environment-variables entries profiles
-                                                      #:kind kind)))
+(define (display-search-path-hint entries profile)
+  "Display a hint on how to set environment variables to use ENTRIES, a list
+of manifest entries, in the context of PROFILE."
+  (let* ((profile  (user-friendly-profile (absolutize profile)))
+         (settings (search-path-environment-variables entries (list profile)
+                                                      #:kind 'prefix)))
     (unless (null? settings)
-      (format #t (G_ "The following environment variable definitions may be needed:~%"))
-      (format #t "~{   ~a~%~}" settings))))
+      (display-hint (format #f (G_ "Consider setting the necessary environment
+variables by running:
+
+@example
+GUIX_PROFILE=\"~a\"
+. \"$GUIX_PROFILE/etc/profile\"
+@end example
+
+Alternately, see @command{guix package --search-paths -p ~s}.")
+                            profile profile)))))
 
 
 ;;;
