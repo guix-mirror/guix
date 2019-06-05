@@ -1191,7 +1191,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.209")
+    (version "0.210")
     (source
      (origin
        (method git-fetch)
@@ -1201,7 +1201,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08qvwmx8wbfkqxiccmcff86dsrlq6wjxf6blnhhrsbzic1ji99bh"))
+         "08c62mc8aajzh44q36qvmrcq404hdzh3i8wwdfnvn0c4w8dbf486"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1350,6 +1350,7 @@ play them on systems for which they were never designed!")
        ("fontconfig" ,fontconfig)
        ("glm" ,glm)
        ("libjpeg" ,libjpeg-8)    ;jpeg_read_header argument error in libjpeg-9
+       ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("lua" ,lua)
        ("portaudio" ,portaudio)
