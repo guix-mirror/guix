@@ -229,6 +229,14 @@ dictionaries, including personal ones.")
                      (base32
                       "13bhbghx5b8g0119g3wxd4n8mlf707y41vlf59irxjj0kynankfn")))
 
+(define-public aspell-dict-hi
+  (aspell-dictionary "hi" "Hindi"
+                     #:version "0.02-0"
+                     #:prefix "aspell6-"
+                     #:sha256
+                     (base32
+                      "0drs374qz4419zx1lf2k281ydxf2750jk5ailafj1x0ncz27h1ys")))
+
 (define-public aspell-dict-it
   (let ((version "2.4-20070901-0")
         (sha256
