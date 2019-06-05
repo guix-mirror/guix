@@ -140,6 +140,14 @@ dictionaries, including personal ones.")
                      (base32
                       "1avw40bp8yi5bnkq64ihm2rldgw34lk89yz281q9bmndh95a47h4")))
 
+(define-public aspell-dict-be
+  (aspell-dictionary "be" "Belarusian"
+                     #:version "0.01"
+                     #:prefix "aspell5-"
+                     #:sha256
+                     (base32
+                      "1svls9p7rsfi3hs0afh0cssj006qb4v1ik2yzqgj8hm10c6as2sm")))
+
 (define-public aspell-dict-ca
   (aspell-dictionary "ca" "Catalan"
                      #:version "2.1.5-1"
