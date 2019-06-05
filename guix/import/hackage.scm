@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,7 @@
 
 (define ghc-standard-libraries
   ;; List of libraries distributed with ghc (8.4.3).
-  ;; https://downloads.haskell.org/~ghc/8.4.3/docs/html/users_guide/8.4.3-notes.html
+  ;; Contents of ...-ghc-8.4.3/lib/ghc-8.4.3.
   '("ghc"
     "cabal" ;; in the output of `ghc-pkg list` Cabal is uppercased, but
             ;; hackage-name->package-name takes this into account.
@@ -65,7 +66,9 @@
     "deepseq"
     "directory"
     "filepath"
+    "ghc"
     "ghc-boot"
+    "ghc-boot-th"
     "ghc-compact"
     "ghc-prim"
     "ghci"
@@ -74,8 +77,11 @@
     "integer-gmp"
     "mtl"
     "parsec"
+    "pretty"
     "process"
+    "stm"
     "template-haskell"
+    "terminfo"
     "text"
     "time"
     "transformers"
