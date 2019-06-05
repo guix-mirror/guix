@@ -42,6 +42,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,6 +131,7 @@
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ocaml)
+  #:use-module (gnu packages opencl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -7580,3 +7582,52 @@ remake of that series or any other game.")
     ;; released under both gpl2 and cc-by-sa3.0.  Bundled Gigi library is
     ;; released under lgpl2.1+.
     (license (list license:gpl2 license:cc-by-sa3.0 license:lgpl2.1+))))
+
+(define-public leela-zero
+  (package
+   (name "leela-zero")
+   (version "0.17")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/leela-zero/leela-zero.git")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32
+       "17px5iny8mql5c01bymcli7zfssswkzvb2i8gnsmjcck6i2n8srl"))
+     (patches (search-patches "leela-zero-gtest.patch"))))
+   (build-system cmake-build-system)
+   (native-inputs
+    `(("googletest" ,googletest)))
+   (inputs
+    `(("boost" ,boost)
+      ("ocl-icd" ,ocl-icd)
+      ("openblas" ,openblas)
+      ("opencl-headers" ,opencl-headers)
+      ("qtbase" ,qtbase)
+      ("zlib" ,zlib)))
+   (arguments
+    '(#:configure-flags '("-DUSE_BLAS=YES")
+      #:phases (modify-phases %standard-phases
+                 (add-before 'configure 'fix-tests
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((home (getcwd)))
+                       (setenv "HOME" home)
+                       (substitute* "src/tests/gtests.cpp"
+                         (("\\.\\./src/tests/0k\\.txt")
+                          (string-append home "/src/tests/0k.txt"))
+                         (("cfg_gtp_mode = true;")
+                          "cfg_gtp_mode = true; cfg_cpu_only = true;")))
+                     #t))
+                 (replace 'check
+                   (lambda _
+                     (invoke "./tests"))))))
+   (home-page "https://github.com/leela-zero/leela-zero")
+   (synopsis "Program playing the game of Go")
+   (description
+    "Leela-zero is a Go engine with no human-provided knowledge, modeled after
+the AlphaGo Zero paper.  The current best network weights file for the engine
+can be downloaded from @url{https://zero.sjeng.org/best-network}.")
+   (license license:gpl3+)))
