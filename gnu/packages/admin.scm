@@ -115,14 +115,14 @@
 (define-public aide
   (package
     (name "aide")
-    (version "0.16.1")
+    (version "0.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/aide/aide/releases/download/v"
                            version "/aide-" version ".tar.gz"))
        (sha256
-        (base32 "1dqhc0c24wa4zid06pfy61k357yvzh28ij86bk9jf6hcqzn7qaqg"))))
+        (base32 "15xp47sz7kk1ciffw3f5xw2jg2mb2lqrbr3q6p4bkbz5dap9iy8p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
