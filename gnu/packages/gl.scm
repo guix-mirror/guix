@@ -447,7 +447,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                '("src/xdemos/glxdemo" "src/xdemos/glxgears"
                  "src/xdemos/glxinfo" "src/xdemos/glxheads"))
               #t))))))
-    (home-page "http://mesa3d.org/")
+    (home-page "https://mesa3d.org/")
     (synopsis "Utility tools for Mesa")
     (description
      "The mesa-utils package contains several utility tools for Mesa: glxdemo,
