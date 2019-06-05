@@ -2238,20 +2238,20 @@ list of components.  This module takes care of that for you.")
     (license license:lgpl3+)))
 
 (define-public guile-gi
-  (let ((commit "91753258892c4a1fbf7ed43ff793a00ac0f77cf6")
-        (revision "0"))
+  (let ((commit "26e885219ae6b31a83766564a2ecfe8c4532346f")
+        (revision "1"))
     (package
       (name "guile-gi")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://gitlab.com/janneke/guile-gi.git")
+                      (url "https://github.com/spk121/guile-gi.git")
                       (commit commit)))
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "1i76jfs90p8pbx0bfrjd4sias9380pmjb9x387rx7hav4kvnsd1b"))))
+                  "1prbzhr4sqqihb34l6yfrz6sd8nghwd3q9wvbm36jnl2n3z2nxj8"))))
       (build-system gnu-build-system)
       (native-inputs `(("autoconf" ,autoconf)
                        ("automake" ,automake)
