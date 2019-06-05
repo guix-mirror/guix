@@ -619,7 +619,7 @@ OpenGL graphics API.")
      `(("unzip" ,unzip)))
     (inputs
      `(("mesa" ,mesa)))
-    (home-page "http://www.lonesock.net/soil.html")
+    (home-page "https://www.lonesock.net/soil.html")
     (synopsis "OpenGL texture loading library")
     (description
      "SOIL is a tiny C library used primarily for uploading textures into
