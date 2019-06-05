@@ -258,6 +258,13 @@ dictionaries, including personal ones.")
        (home-page
         "http://linguistico.sourceforge.net/pages/dizionario_italiano.html"))))
 
+(define-public aspell-dict-mi
+  (aspell-dictionary "mi" "Maori"
+                     #:version "0.50-0"
+                     #:sha256
+                     (base32
+                      "12bxplpd348yx8d2q8qvahi9dlp7qf28qmanzhziwc7np8rixvmy")))
+
 (define-public aspell-dict-nl
   (aspell-dictionary "nl" "Dutch"
                      #:version "0.50-2"
