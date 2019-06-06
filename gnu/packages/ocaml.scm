@@ -2297,6 +2297,12 @@ many additional enhancements, including:
      `(#:phases
        (modify-phases %standard-phases
          (delete 'check) ; tests are run by the build phase
+         (add-before 'build 'fix-nondeterminism
+           (lambda _
+             (substitute* "setup.ml"
+               (("Sys.readdir dirname")
+                "let a = Sys.readdir dirname in Array.sort String.compare a; a"))
+             #t))
          (replace 'build
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((files
