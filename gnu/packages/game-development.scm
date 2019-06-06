@@ -465,7 +465,7 @@ support.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "qmake"
                        (string-append "PREFIX=" out))))))))
-    (home-page "http://www.mapeditor.org/")
+    (home-page "https://www.mapeditor.org/")
     (synopsis "Tile map editor")
     (description
      "Tiled is a general purpose tile map editor.  It is meant to be used for
