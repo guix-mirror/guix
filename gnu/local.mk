@@ -639,6 +639,7 @@ dist_installer_DATA =				\
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
+  %D%/build/locale.scm				\
   %D%/build/shepherd.scm			\
   %D%/build/svg.scm
 
