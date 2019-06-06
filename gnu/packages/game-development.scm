@@ -435,7 +435,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -444,7 +444,7 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nfyigfkl10n9r82p1qxhpr09jn2kwalh9n5r209bcaj8dxspph8"))))
+                "04v738h298pvcwb70mwd1r2yj7578f6gkfzs0165j9fqy7avwm18"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
