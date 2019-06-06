@@ -121,7 +121,15 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                        ,@(if libc
                              `( ;; Disable libcilkrts because it is not
                                 ;; ported to GNU/Hurd.
-                               "--disable-libcilkrts")
+                               "--disable-libcilkrts"
+                               ;; When building a cross compiler, --with-sysroot is
+                               ;; implicitly set to "$gcc_tooldir/sys-root".  This does
+                               ;; not work for us, because --with-native-system-header-dir
+                               ;; is searched for relative to this location.  Thus, we set
+                               ;; it to "/" so GCC is able to find the target libc headers.
+                               ;; This is safe because in practice GCC uses CROSS_CPATH
+                               ;; & co to separate target and host libraries.
+                               "--with-sysroot=/")
                              `( ;; Disable features not needed at this stage.
                                "--disable-shared" "--enable-static"
                                "--enable-languages=c,c++"
