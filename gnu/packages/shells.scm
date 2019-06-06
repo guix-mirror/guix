@@ -802,7 +802,18 @@ is commonly written.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "00m3lif64zyxd41cnk208kc81nl6qz659676qgiaqgwrw0brzrid"))))
+               "00m3lif64zyxd41cnk208kc81nl6qz659676qgiaqgwrw0brzrid"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (substitute* "Makefile.in"
+                   (("^moddir = (.*)/guile/(.*)" _ before after)
+                    (string-append "moddir = " before "/guile/site/"
+                                   after))
+                   (("^ccachedir = (.*)/ccache/(.*)" _ before after)
+                    (string-append "ccachedir = " before
+                                   "/site-ccache/" after)))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
