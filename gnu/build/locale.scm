@@ -24,6 +24,7 @@
   #:use-module (ice-9 regex)
   #:export (build-locale
             normalize-codeset
+            locale->name+codeset
             read-supported-locales))
 
 (define locale-rx
@@ -84,3 +85,11 @@ discarded."
   (invoke localedef "--no-archive" "--prefix" directory
           "-i" locale "-f" codeset
           (string-append directory "/" name)))
+
+(define (locale->name+codeset locale)
+  "Split a locale name such as \"aa_ER@saaho.UTF-8\" into two values: the
+language/territory/modifier part, and the codeset."
+  (match (string-rindex locale #\.)
+    (#f  (values locale #f))
+    (dot (values (string-take locale dot)
+                 (string-drop locale (+ dot 1))))))
