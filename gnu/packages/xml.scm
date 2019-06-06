@@ -1080,7 +1080,7 @@ C++ programming language.")
 (define-public tinyxml2
   (package
     (name "tinyxml2")
-    (version "4.0.1")
+    (version "7.0.1")
     (source
      (origin
        (method git-fetch)
@@ -1089,10 +1089,8 @@ C++ programming language.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a0skfi8rzk53qcxbv88qlvhlqzvsvg4hm20dnx4zw7vrn6anr9y"))))
+        (base32 "1sf6sch1kawrna2f9dc8f4xl836acqcddkghzdib0s7dl48m9r7m"))))
     (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f))                    ; no tests
     (synopsis "Small XML parser for C++")
     (description "TinyXML2 is a small and simple XML parsing library for the
 C++ programming language.")
