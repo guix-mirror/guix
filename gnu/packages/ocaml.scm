@@ -1627,7 +1627,13 @@ spans without being subject to operating system calendar time adjustments.")
                                          "/lib/ocaml/site-lib/cmdliner"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'build 'fix-source-file-order
+           (lambda _
+             (substitute* "build.ml"
+               (("Sys.readdir dir")
+                "let a = Sys.readdir dir in Array.sort String.compare a; a"))
+             #t)))))
     (home-page "http://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
     (description "Cmdliner is a module for the declarative definition of command
