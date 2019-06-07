@@ -108,17 +108,19 @@ operating system functions.")
   (package
     (name "dashel")
     (version "1.3.3")
-    (home-page "https://github.com/aseba-community/dashel")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ckzac1rsw3cxmpdpwcqv46jyp7risk5ybq6jjiizbqn7labf6dw"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aseba-community/dashel.git")
+             (commit version)))
+       (sha256
+        (base32 "0anks2l2i2qp0wlzqck1qgpq15a3l6dg8lw2h8s4nsj7f61lffwy"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))                    ;no tests
+    (arguments '(#:tests? #f))          ; no tests
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/aseba-community/dashel")
     (synopsis "Data stream helper encapsulation library")
     (description
      "Dashel is a data stream helper encapsulation C++ library.  It provides a
