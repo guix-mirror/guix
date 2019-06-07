@@ -11591,4 +11591,34 @@ Replace some ASCII sequences by their Unicode equivalent (turned off by
 default)
 @end itemize")
     (license license:bsd-3)))
+
+(define-public ghc-wl-pprint-annotated
+  (package
+    (name "ghc-wl-pprint-annotated")
+    (version "0.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/wl-pprint-annotated/wl-pprint-annotated-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1br7qyf27iza213inwhf9bm2k6in0zbmfw6w4clqlc9f9cj2nrkb"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page
+     "https://github.com/minad/wl-pprint-annotated#readme")
+    (synopsis
+     "Wadler/Leijen pretty printer with annotation support")
+    (description
+     "Annotations are useful for coloring.  This is a limited version of
+@code{wl-pprint-extras} without support for point effects and without the free
+monad.  Like in @code{annotated-wl-pprint}, only annotations are supported.
+Compared to @code{annotated-wl-pprint} this library provides a slightly
+modernized interface.")
+    (license license:bsd-3)))
 ;;; haskell.scm ends here
