@@ -15807,3 +15807,23 @@ verb commands which would are normally destructive (such as deletion) are
 provided.  Those alternative commands are and bound by default to their
 corresponding Evil keys.")
       (license license:expat))))
+
+(define-public emacs-xterm-color
+  (let ((commit "a452ab38a7cfae97078062ff8885b5d74fd1e5a6")
+        (version "1.8")
+        (revision "1"))
+    (package
+      (name "emacs-xterm-color")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/atomontage/xterm-color.git")
+                      (commit commit)))
+                (sha256
+                 (base32 "02kpajb993yshhjhsizpfcbrcndyzkf4dqfipifhxxng50dhp95i"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/atomontage/xterm-color")
+      (synopsis "ANSI & xterm-256 color text property translator for Emacs")
+      (description "@code{xterm-color.el} is an ANSI control sequence to text-property translator.")
+      (license license:bsd-2))))
