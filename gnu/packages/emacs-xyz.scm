@@ -4336,19 +4336,16 @@ after buffer changes.")
 (define-public emacs-realgud
   (package
     (name "emacs-realgud")
-    (version "1.4.5")
+    (version "1.5.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/realgud-"
-                           version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/realgud/realgud/")
+             (commit version)))
        (sha256
         (base32
-         "108wgxg7fb4byaiasgvbxv2hq7b00biq9f0mh9hy6vw4160y5w24"))
-       (patches
-        ;; Patch awaiting inclusion upstream (see:
-        ;; https://github.com/realgud/realgud/pull/226).
-        (search-patches "emacs-realgud-fix-configure-ac.patch"))))
+         "0xnick9016wxrgi8v0lycvxhyz8l2k4nfvdpjc5yq476vwrjfzbz"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -4367,11 +4364,6 @@ after buffer changes.")
              (setenv "HOME" (getenv "TMPDIR"))))
          (add-before 'patch-el-files 'remove-realgud-pkg.el
            (lambda _
-             ;; XXX: This file is auto-generated at some point and causes
-             ;; substitute* to crash during the `patch-el-files' phase with:
-             ;; ERROR: In procedure stat: No such file or directory:
-             ;; "./realgud-pkg.el"
-             (delete-file "./realgud-pkg.el")
              ;; FIXME: `patch-el-files' crashes on this file with error:
              ;; unable to locate "bashdb".
              (delete-file "./test/test-regexp-bashdb.el"))))
