@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11606,6 +11607,40 @@ Replace some ASCII sequences by their Unicode equivalent (turned off by
 default)
 @end itemize")
     (license license:bsd-3)))
+
+(define-public ghc-concurrent-output
+  (package
+    (name "ghc-concurrent-output")
+    (version "1.10.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/concurrent-output/concurrent-output-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1wnjxnwbc3l853kiiijagzjyb6fmhz3lmkwls24plbximl1qrr22"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-terminal-size" ,ghc-terminal-size)))
+    (home-page
+     "https://hackage.haskell.org/package/concurrent-output")
+    (synopsis
+     "Ungarble output from several threads or commands")
+    (description
+     "Lets multiple threads and external processes concurrently output to the
+console, without it getting all garbled up.
+
+Built on top of that is a way of defining multiple output regions, which are
+automatically laid out on the screen and can be individually updated by
+concurrent threads.  Can be used for progress displays etc.")
+    (license license:bsd-2)))
 
 (define-public ghc-wl-pprint-annotated
   (package
