@@ -117,6 +117,54 @@ source code editors and IDEs.")
               (base32
                "0d22h8xshmbpl9hba9ch3xj8vb9ybm5akpsbbh7yj07fic4h2hj6"))))))
 
+(define-public clitest
+  (package
+    (name "clitest")
+    (version "0.3.0")
+    (home-page "https://github.com/aureliojargas/clitest")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zw5wra9hc717srmcar1wm4i34kyj8c49ny4bb7y3nrvkjp2pdb5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This package is distributed as a single shell script and comes
+         ;; without a proper build system.
+         (delete 'configure)
+         (delete 'build)
+         (replace 'check
+           (lambda _
+             (substitute* "test.md"
+               ;; One test looks for an error from grep in the form "grep: foo",
+               ;; but our grep returns the absolute file name on errors.  Adjust
+               ;; the test to cope with that.
+               (("sed 's/\\^e\\*grep: \\.\\*/")
+                "sed 's/.*e*grep: .*/"))
+
+             (setenv "HOME" "/tmp")
+             (invoke "./clitest" "test.md")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "clitest" (string-append out "/bin"))
+               (install-file "README.md"
+                             (string-append out "/share/doc/clitest-" ,version))
+               #t))))))
+    (native-inputs
+     `(("perl" ,perl)))                 ;for tests
+    (synopsis "Command line test tool")
+    (description
+     "@command{clitest} is a portable shell script that performs automatic
+testing of Unix command lines.")
+    (license license:expat)))
+
 (define-public cunit
   (package
     (name "cunit")
