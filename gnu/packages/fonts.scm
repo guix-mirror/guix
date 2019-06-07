@@ -617,14 +617,16 @@ languages, plus Greek and Cyrillic.")
   (package
     (name "font-gnu-unifont")
     (version "12.0.01")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://gnu/unifont/unifont-" version "/unifont-"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "059j82z6z4wqyy3261ns0zg2b2vh2wvxxfbsa9hra9xasism49vb"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             (string-append "http://unifoundry.com/pub/unifont/unifont-"
+                            version "/unifont-" version ".tar.gz")
+             (string-append "mirror://gnu/unifont/unifont-"
+                            version "/unifont-" version ".tar.gz")))
+       (sha256
+        (base32 "059j82z6z4wqyy3261ns0zg2b2vh2wvxxfbsa9hra9xasism49vb"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
