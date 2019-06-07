@@ -5626,3 +5626,40 @@ whole lot more into a single form.")
 
 (define-public ecl-metabang-bind
   (sbcl-package->ecl-package sbcl-metabang-bind))
+
+(define-public sbcl-fare-utils
+  (let ((commit "66e9c6f1499140bc00ccc22febf2aa528cbb5724")
+        (revision "1"))
+    (package
+      (name "sbcl-fare-utils")
+      (version (git-version "1.0.0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url
+            "https://gitlab.common-lisp.net/frideau/fare-utils.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "01wsr1aap3jdzhn4hrqjbhsjx6qci9dbd3gh4gayv1p49rbg8aqr"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:test-asd-file "test/fare-utils-test.asd"))
+      (native-inputs
+       `(("sbcl-hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (synopsis "Collection of utilities and data structures")
+      (description
+       "fare-utils is a small collection of utilities.  It contains a lot of
+basic everyday functions and macros.")
+      (home-page "https://gitlab.common-lisp.net/frideau/fare-utils")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-fare-utils
+  (sbcl-package->cl-source-package sbcl-fare-utils))
+
+(define-public ecl-fare-utils
+  (sbcl-package->ecl-package sbcl-fare-utils))
