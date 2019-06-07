@@ -65,6 +65,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
@@ -5402,3 +5404,63 @@ experience.")
 
 (define-public ecl-clunit
   (sbcl-package->ecl-package sbcl-clunit))
+
+(define-public sbcl-py4cl
+  (let ((commit "4c8a2b0814fd311f978964f825ce012290f60136")
+        (revision "1"))
+    (package
+      (name "sbcl-py4cl")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bendudson/py4cl.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "15mk7qdqjkj56gdnbyrdyz6r7m1h26ldvn6ch96pmvg5vmr1m45r"))
+         (modules '((guix build utils)))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("sbcl-clunit" ,sbcl-clunit)))
+      (inputs
+       `(("sbcl-trivial-garbage" ,sbcl-trivial-garbage)))
+      (propagated-inputs
+       ;; This package doesn't do anything without python available
+       `(("python" ,python)
+         ;; For multi-dimensional array support
+         ("python-numpy" ,python-numpy)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'replace-*base-directory*-var
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; In the ASD, the author makes an attempt to
+               ;; programatically determine the location of the
+               ;; source-code so lisp can call into "py4cl.py". We can
+               ;; hard-code this since we know where this file will
+               ;; reside.
+               (substitute* "src/callpython.lisp"
+                 (("py4cl/config:\\*base-directory\\*")
+                  (string-append
+                   "\""
+                   (assoc-ref outputs "out")
+                   "/share/common-lisp/sbcl-source/py4cl/"
+                   "\""))))))))
+      (synopsis "Call python from Common Lisp")
+      (description
+       "Py4CL is a bridge between Common Lisp and Python, which enables Common
+Lisp to interact with Python code.  It uses streams to communicate with a
+separate python process, the approach taken by cl4py.  This is different to
+the CFFI approach used by burgled-batteries, but has the same goal.")
+      (home-page "https://github.com/bendudson/py4cl")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-py4cl
+  (sbcl-package->cl-source-package sbcl-py4cl))
+
+(define-public ecl-py4cl
+  (sbcl-package->ecl-package sbcl-py4cl))
