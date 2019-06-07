@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,8 +90,8 @@ slsh, which is part of the S-Lang distribution.")
     (version "0.52.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pagure.io/releases/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "https://pagure.io/releases/newt/"
+                                  "newt-" version ".tar.gz"))
               (sha256
                (base32
                 "1g3dpfnvaw7vljbr7nzq1rl88d6r8cmrvvng9inphgzwxxmvlrld"))))
