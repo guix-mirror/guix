@@ -5369,3 +5369,36 @@ command line, to data scanning and extracting scripts, to full application
 development in a wide-range of areas.")
     (home-page "https://nongnu.org/txr/")
     (license license:bsd-2)))
+
+(define-public sbcl-clunit
+  (let ((commit "6f6d72873f0e1207f037470105969384f8380628")
+        (revision "1"))
+    (package
+      (name "sbcl-clunit")
+      (version (git-version "0.2.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tgutu/clunit.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1idf2xnqzlhi8rbrqmzpmb3i1l6pbdzhhajkmhwbp6qjkmxa4h85"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "CLUnit is a Common Lisp unit testing framework")
+      (description
+       "CLUnit is a Common Lisp unit testing framework.  It is designed
+to be easy to use so that you can quickly start testing.  CLUnit
+provides a rich set of features aimed at improving your unit testing
+experience.")
+      (home-page "http://tgutu.github.io/clunit/")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-clunit
+  (sbcl-package->cl-source-package sbcl-clunit))
+
+(define-public ecl-clunit
+  (sbcl-package->ecl-package sbcl-clunit))
