@@ -85,14 +85,14 @@ things the parser might find in the XML document (like start tags).")
 (define-public libebml
   (package
     (name "libebml")
-    (version "1.3.7")
+    (version "1.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/libebml/"
                            "libebml-" version ".tar.xz"))
        (sha256
-        (base32 "1x79b35dj5d2x7xf7ql83w2cr0v5n2vsd08q6y6grmw4yn3lq973"))))
+        (base32 "0j65r6i7s2k67c8f9wa653mqpxmfhdl67kjxrc1n5910ig6wddn6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
