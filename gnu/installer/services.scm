@@ -75,7 +75,9 @@
       (packages '((specification->package "awesome"))))
      (desktop-environment
       (name "i3")
-      (packages '((specification->package "i3-wm"))))
+      (packages (map (lambda (package)
+                       `(specification->package ,package))
+                     '("i3-wm" "i3status" "dmenu" "st"))))
      (desktop-environment
       (name "ratpoison")
       (packages '((specification->package "ratpoison"))))
