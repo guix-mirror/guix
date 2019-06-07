@@ -4383,6 +4383,21 @@ allows cursor movement, screen clearing, color output showing or hiding the
 cursor, and changing the title.")
     (license license:bsd-3)))
 
+(define-public ghc-ansi-terminal-0.8
+  (package (inherit ghc-ansi-terminal)
+           (name "ghc-ansi-terminal")
+           (version "0.8.0.4")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/ansi-terminal/ansi-terminal-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))))
+
 (define-public ghc-vault
   (package
     (name "ghc-vault")
