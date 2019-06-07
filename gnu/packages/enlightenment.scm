@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -184,7 +184,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.4.0")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -192,7 +192,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "0q1y7fadj42n23aspx9y8hm4w4xlc316wc3415wnf75ibsx08ngd"))
+                "0mm9v5a94369is3kaarnr3a28wy42wslzi1mcisaidlcldgv7f6p"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               (snippet
