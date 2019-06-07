@@ -2858,7 +2858,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2019.03.06")
+    (version "2019.05.29")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2866,10 +2866,10 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1gasdl95yjabv811knkmy5laj21a54z1jdfq36jdj984k1nw5l0b"))))
+                "08i63jr8ihn1xiq5z5n3yls3yz6li5sg0s454l56p5bcvbrw81my"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib")
