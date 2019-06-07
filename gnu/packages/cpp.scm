@@ -131,21 +131,21 @@ combination of these streams.")
   (package
     (name "xsimd")
     (version "4.1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/QuantStack/xsimd/archive/"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0x05l4xpqr9b66sm6lkf48n6x7999ks921x6k2hzkkg6mh3gqd46"))
-              (file-name (string-append name "-" version ".tar.gz"))))
-    (home-page "https://github.com/QuantStack/xsimd")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/QuantStack/xsimd.git")
+             (commit version)))
+       (sha256
+        (base32 "0x86p2xjlaqyfissf30smj1szm4i3iw1x72qnj5dwvfgf7049xds"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "xtest"))
     (native-inputs
      `(("googletest" ,googletest)))
+    (home-page "https://github.com/QuantStack/xsimd")
     (synopsis "C++ wrappers for SIMD intrinsics and math implementations")
     (description "xsimd provides a unified means for using SIMD features for
 library authors.  Namely, it enables manipulation of batches of numbers with
