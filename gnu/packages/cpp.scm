@@ -130,7 +130,7 @@ combination of these streams.")
 (define-public xsimd
   (package
     (name "xsimd")
-    (version "4.1.2")
+    (version "7.2.3")
     (source
      (origin
        (method git-fetch)
@@ -138,11 +138,12 @@ combination of these streams.")
              (url "https://github.com/QuantStack/xsimd.git")
              (commit version)))
        (sha256
-        (base32 "0x86p2xjlaqyfissf30smj1szm4i3iw1x72qnj5dwvfgf7049xds"))
+        (base32 "1ny2qin1j4h35mljivh8z52kwdyjxf4yxlzb8j52ji91v2ccc88j"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     `(#:test-target "xtest"))
+     `(#:configure-flags (list "-DBUILD_TESTS=ON")
+       #:test-target "xtest"))
     (native-inputs
      `(("googletest" ,googletest)))
     (home-page "https://github.com/QuantStack/xsimd")
