@@ -62,7 +62,7 @@ Internet and return the selected technology. For now, only technologies with
             (G_ "Continue")
             (G_ "Exit")
             (G_ "The install process requires Internet access but no \
-network device were found. Do you want to continue anyway?"))
+network devices were found. Do you want to continue anyway?"))
        ((1) (raise
              (condition
               (&installer-step-break))))
