@@ -5499,3 +5499,34 @@ high-level way.  This library provides such operators.")
 
 (define-public ecl-parse-declarations
   (sbcl-package->ecl-package sbcl-parse-declarations))
+
+(define-public sbcl-cl-quickcheck
+  (let ((commit "807b2792a30c883a2fbecea8e7db355b50ba662f")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-quickcheck")
+      (version (git-version "0.0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mcandre/cl-quickcheck.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "165lhypq5xkcys6hvzb3jq7ywnmqvzaflda29qk2cbs3ggas4767"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis
+       "Common Lisp port of the QuickCheck unit test framework")
+      (description
+       "Common Lisp port of the QuickCheck unit test framework")
+      (home-page "https://github.com/mcandre/cl-quickcheck")
+      ;; MIT
+      (license license:expat))))
+
+(define-public cl-cl-quickcheck
+  (sbcl-package->cl-source-package sbcl-cl-quickcheck))
+
+(define-public ecl-cl-quickcheck
+  (sbcl-package->ecl-package sbcl-cl-quickcheck))
