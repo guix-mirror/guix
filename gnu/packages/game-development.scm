@@ -684,19 +684,17 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.4.0")
+    (version "5.2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
                                   "/download/" version "/allegro-"
                                   version ".tar.gz"))
-              (patches (search-patches
-                        "allegro-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
-                "1w9a5yqi5q03b2qvmx5ff90paz0xbr9cy7i7f0xiqa65ava66q9l"))))
+                "06dpkfnac8w3pq36834nn2iij3ajz6prladqd0w92lq39aiqv5jr"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; there are no tests
+    (arguments `(#:tests? #f))          ; there are no tests
     (inputs
      ;; FIXME: Add the following optional inputs: xinput2, opensl, dumb
      `(("flac" ,flac)
