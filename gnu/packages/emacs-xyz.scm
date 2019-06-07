@@ -15821,9 +15821,12 @@ corresponding Evil keys.")
                       (url "https://github.com/atomontage/xterm-color.git")
                       (commit commit)))
                 (sha256
-                 (base32 "02kpajb993yshhjhsizpfcbrcndyzkf4dqfipifhxxng50dhp95i"))))
+                 (base32
+                  "02kpajb993yshhjhsizpfcbrcndyzkf4dqfipifhxxng50dhp95i"))
+                (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (home-page "https://github.com/atomontage/xterm-color")
       (synopsis "ANSI & xterm-256 color text property translator for Emacs")
-      (description "@code{xterm-color.el} is an ANSI control sequence to text-property translator.")
+      (description "@code{xterm-color.el} is an ANSI control sequence to
+text-property translator.")
       (license license:bsd-2))))
