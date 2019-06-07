@@ -4085,7 +4085,7 @@ instances of the @code{Pretty} class.")
          "0gnb4mkqryv08vncxnj0bzwcnd749613yw3cxfzw6y3nsldp4c56"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal-0.8)))
     (home-page "https://github.com/ekmett/ansi-wl-pprint")
     (synopsis "Wadler/Leijen Pretty Printer for colored ANSI terminal output")
     (description "This is a pretty printing library based on Wadler's paper
