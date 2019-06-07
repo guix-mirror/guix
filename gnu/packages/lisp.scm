@@ -5530,3 +5530,63 @@ high-level way.  This library provides such operators.")
 
 (define-public ecl-cl-quickcheck
   (sbcl-package->ecl-package sbcl-cl-quickcheck))
+
+(define-public sbcl-burgled-batteries3
+  (let ((commit "9c0f6667e1a71ddf77e21793a0bea524710fef6e")
+        (revision "1"))
+    (package
+      (name "sbcl-burgled-batteries3")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/snmsts/burgled-batteries3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0b726kz2xxcg5l930gz035rsdvhxrzmp05iwfwympnb4z4ammicb"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-*cpython-include-dir*-var
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "grovel-include-dir.lisp"
+                 (("\\(defparameter \\*cpython-include-dir\\* \\(detect-python\\)\\)")
+                  (string-append
+                   "(defparameter *cpython-include-dir* \""
+                   (assoc-ref inputs "python")
+                   "/include/python3.7m"
+                   "\")")))
+               (substitute* "ffi-interface.lisp"
+                 (("\\*cpython-lib\\*")
+                  (format #f "'(\"~a/lib/libpython3.so\")"
+                          (assoc-ref inputs "python"))))
+               #t)))))
+      (native-inputs
+       `(("python" ,python)
+         ("sbcl-cl-fad" ,sbcl-cl-fad)
+         ("sbcl-lift" ,sbcl-lift)
+         ("sbcl-cl-quickcheck" ,sbcl-cl-quickcheck)))
+      (inputs
+       `(("sbcl-cffi" ,sbcl-cffi)
+         ("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
+         ("sbcl-alexandria" , sbcl-alexandria)
+         ("sbcl-parse-declarations-1.0" ,sbcl-parse-declarations)
+         ("sbcl-trivial-garbage" ,sbcl-trivial-garbage)))
+      (synopsis "Bridge between Python and Lisp (FFI bindings, etc.)")
+      (description
+       "This package provides a shim between Python3 (specifically, the
+CPython implementation of Python) and Common Lisp.")
+      (home-page "https://github.com/snmsts/burgled-batteries3")
+      ;; MIT
+      (license license:expat))))
+
+(define-public cl-burgled-batteries3
+  (sbcl-package->cl-source-package sbcl-burgled-batteries3))
+
+(define-public ecl-burgled-batteries3
+  (sbcl-package->ecl-package sbcl-burgled-batteries3))
