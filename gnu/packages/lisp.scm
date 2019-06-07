@@ -5590,3 +5590,39 @@ CPython implementation of Python) and Common Lisp.")
 
 (define-public ecl-burgled-batteries3
   (sbcl-package->ecl-package sbcl-burgled-batteries3))
+
+(define-public sbcl-metabang-bind
+  (let ((commit "c93b7f7e1c18c954c2283efd6a7fdab36746ab5e")
+        (revision "1"))
+    (package
+      (name "sbcl-metabang-bind")
+      (version (git-version "0.8.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/metabang-bind.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0hd0kr91795v77akpbcyqiss9p0p7ypa9dznrllincnmgvsxlmf0"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("sbcl-lift" ,sbcl-lift)))
+      (synopsis "Macro that generalizes @code{multiple-value-bind} etc.")
+      (description
+       "Bind extends the idea of of let and destructing to provide a uniform
+syntax for all your accessor needs.  It combines @code{let},
+@code{destructuring-bind}, @code{with-slots}, @code{with-accessors}, structure
+editing, property or association-lists, and @code{multiple-value-bind} and a
+whole lot more into a single form.")
+      (home-page "https://common-lisp.net/project/metabang-bind/")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-metabang-bind
+  (sbcl-package->cl-source-package sbcl-metabang-bind))
+
+(define-public ecl-metabang-bind
+  (sbcl-package->ecl-package sbcl-metabang-bind))
