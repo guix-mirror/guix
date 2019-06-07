@@ -176,14 +176,14 @@ color, font attributes (weight, posture), or underlining.")
 (define-public po4a
   (package
     (name "po4a")
-    (version "0.55")
+    (version "0.56")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mquinson/po4a/releases/download/v"
                                   version "/po4a-" version ".tar.gz"))
               (sha256
                (base32
-                "1qss4q5df3nsydsbggb7gg50bn0kdxq5wn8riqm9zwkiq6a4bifg"))))
+                "0kyhww0yw4q0m4vj8vil2wsf6sn4hidh8mqz2gjrq7gpdf83cmnr"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
