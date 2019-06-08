@@ -87,14 +87,14 @@ slsh, which is part of the S-Lang distribution.")
 (define-public newt
   (package
     (name "newt")
-    (version "0.52.20")
+    (version "0.52.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pagure.io/releases/newt/"
                                   "newt-" version ".tar.gz"))
               (sha256
                (base32
-                "1g3dpfnvaw7vljbr7nzq1rl88d6r8cmrvvng9inphgzwxxmvlrld"))))
+                "0cdvbancr7y4nrj8257y5n45hmhizr8isynagy4fpsnpammv8pi6"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (inputs
