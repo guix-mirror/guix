@@ -465,7 +465,7 @@ desktop session from the system or user profile will be used."
 (define %default-slim-theme-name
   ;; This must be the name of the sub-directory in %DEFAULT-SLIM-THEME that
   ;; contains the actual theme files.
-  "0.x")
+  "1.x")
 
 (define-record-type* <slim-configuration>
   slim-configuration make-slim-configuration
