@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,15 +227,6 @@ selected keymap."
                      (#$keymap-step current-installer)))
           (configuration-formatter keyboard-layout->configuration))
 
-         ;; Run a partitioning tool allowing the user to modify
-         ;; partition tables, partitions and their mount points.
-         (installer-step
-          (id 'partition)
-          (description (G_ "Partitioning"))
-          (compute (lambda _
-                     ((installer-partition-page current-installer))))
-          (configuration-formatter user-partitions->configuration))
-
          ;; Ask the user to input a hostname for the system.
          (installer-step
           (id 'hostname)
@@ -266,6 +258,17 @@ selected keymap."
           (compute (lambda _
                      ((installer-services-page current-installer))))
 	  (configuration-formatter system-services->configuration))
+
+         ;; Run a partitioning tool allowing the user to modify
+         ;; partition tables, partitions and their mount points.
+         ;; Do this last so the user has something to boot if any
+         ;; of the previous steps didn't go as expected.
+         (installer-step
+          (id 'partition)
+          (description (G_ "Partitioning"))
+          (compute (lambda _
+                     ((installer-partition-page current-installer))))
+          (configuration-formatter user-partitions->configuration))
 
 	 (installer-step
           (id 'final)
