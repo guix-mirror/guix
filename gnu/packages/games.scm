@@ -41,6 +41,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
+;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5595,6 +5596,40 @@ intentionally restricts which features may be added (and rejects any that
 affect gameplay).")
     (home-page "https://www.chocolate-doom.org/wiki/index.php/Chocolate_Doom")
     (license license:gpl2)))
+
+(define-public crispy-doom
+  (package
+    (inherit chocolate-doom)
+    (name "crispy-doom")
+    (version "5.5.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fabiangreffrath/crispy-doom.git")
+                    (commit (string-append "crispy-doom-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1a60ns0blhvml6gzj9qx18c18pbf02rq7vypaajd6nqy5h4fz3cn"))))
+    (native-inputs
+     (append
+      (package-native-inputs chocolate-doom)
+      `(("automake" ,automake)
+        ("autoreconf" ,autoconf))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; the autogen.sh script in the source tree doesn't work
+           (lambda _ (invoke "autoreconf" "-vif"))))))
+    (synopsis "Limit-removing enhanced-resolution Doom source port based on
+Chocolate Doom")
+    (description
+     "Crispy Doom is a friendly fork of Chocolate Doom that provides a higher
+display resolution, removes the static limits of the Doom engine and offers
+further optional visual, tactical and physical enhancements while remaining
+entirely config file, savegame, netplay and demo compatible with the
+original.")
+    (home-page "https://www.chocolate-doom.org/wiki/index.php/Crispy_Doom")))
 
 (define-public fortune-mod
   (package
