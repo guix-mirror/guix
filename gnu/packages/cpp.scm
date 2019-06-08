@@ -108,17 +108,19 @@ operating system functions.")
   (package
     (name "dashel")
     (version "1.3.3")
-    (home-page "https://github.com/aseba-community/dashel")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ckzac1rsw3cxmpdpwcqv46jyp7risk5ybq6jjiizbqn7labf6dw"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/aseba-community/dashel.git")
+             (commit version)))
+       (sha256
+        (base32 "0anks2l2i2qp0wlzqck1qgpq15a3l6dg8lw2h8s4nsj7f61lffwy"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))                    ;no tests
+    (arguments '(#:tests? #f))          ; no tests
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/aseba-community/dashel")
     (synopsis "Data stream helper encapsulation library")
     (description
      "Dashel is a data stream helper encapsulation C++ library.  It provides a
@@ -130,22 +132,23 @@ combination of these streams.")
 (define-public xsimd
   (package
     (name "xsimd")
-    (version "4.1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/QuantStack/xsimd/archive/"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "0x05l4xpqr9b66sm6lkf48n6x7999ks921x6k2hzkkg6mh3gqd46"))
-              (file-name (string-append name "-" version ".tar.gz"))))
-    (home-page "https://github.com/QuantStack/xsimd")
+    (version "7.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/QuantStack/xsimd.git")
+             (commit version)))
+       (sha256
+        (base32 "1ny2qin1j4h35mljivh8z52kwdyjxf4yxlzb8j52ji91v2ccc88j"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     `(#:test-target "xtest"))
+     `(#:configure-flags (list "-DBUILD_TESTS=ON")
+       #:test-target "xtest"))
     (native-inputs
      `(("googletest" ,googletest)))
+    (home-page "https://github.com/QuantStack/xsimd")
     (synopsis "C++ wrappers for SIMD intrinsics and math implementations")
     (description "xsimd provides a unified means for using SIMD features for
 library authors.  Namely, it enables manipulation of batches of numbers with

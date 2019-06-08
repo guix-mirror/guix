@@ -32,7 +32,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (ice-9 match))
 
 (define-public aspell
   (package
@@ -102,7 +103,14 @@ dictionaries, including personal ones.")
 (define* (aspell-dictionary dict-name full-name
                             #:key version sha256 (prefix "aspell6-"))
   (package
-    (name (string-append "aspell-dict-" dict-name))
+    (name (string-append
+           "aspell-dict-"
+           ;; Downcase and replace underscore in package names
+           ;; to follow Guix naming conventions.
+           (string-map (match-lambda
+                         (#\_ #\-)
+                         (chr chr))
+           (string-downcase dict-name))))
     (version version)
     (source (origin
               (method url-fetch)
@@ -281,7 +289,7 @@ dictionaries, including personal ones.")
                       "0w2k5l5rbqpliripgqwiqixz5ghnjf7i9ggbrc4ly4vy1ia10rmc")))
 
 (define-public aspell-dict-pt-br
-  (aspell-dictionary "pt-br" "Brazilian Portuguese"
+  (aspell-dictionary "pt_BR" "Brazilian Portuguese"
                      #:version "20090702-0"
                      #:prefix "aspell6-"
                      #:sha256
@@ -289,7 +297,7 @@ dictionaries, including personal ones.")
                       "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
 
 (define-public aspell-dict-pt-pt
-  (aspell-dictionary "pt-pt" "Portuguese"
+  (aspell-dictionary "pt_PT" "Portuguese"
                      #:version "20070510-0"
                      #:prefix "aspell6-"
                      #:sha256

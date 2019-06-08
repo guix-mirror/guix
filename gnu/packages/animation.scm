@@ -264,7 +264,7 @@ waveform until they line up with the proper sounds.")
 (define-public pencil2d
   (package
     (name "pencil2d")
-    (version "0.6.3")
+    (version "0.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -273,7 +273,7 @@ waveform until they line up with the proper sounds.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "097xwvhw7vl9pgknhb40zs6adf7mb1xxfc73h4kiqgp6z59prjl3"))))
+                "0zi8x0w8n817zds2lyw9l8j33c03kiybkrcyy3s5fg66mchmrwnr"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)

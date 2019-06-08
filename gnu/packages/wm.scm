@@ -1140,7 +1140,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method git-fetch)
@@ -1149,7 +1149,7 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1phiidyddzgaxy4gbqwmykxn0y8za6y5mp66l9dpd9i6fml153yq"))))
+        (base32 "1rdcmll5b8w242n6yfjpsaprq280ck2jmbz46dxndhignxgda7k4"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
@@ -1185,7 +1185,7 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
-    (version "1.0")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -1194,7 +1194,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09cndc2nl39d3l7g5634xp0pxcz60pvc5277mfw89r22mh0j78rx"))))
+        (base32 "0yhn9zdg9mzfhn97c440lk3pw6122nrhx0is5sqmvgr6p814f776"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -1231,7 +1231,7 @@ modules for building a Wayland compositor.")
 (define-public swayidle
   (package
     (name "swayidle")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -1240,7 +1240,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0b65flajwn2i6k2kdxxgw25w7ikzzmm595f4j5x1wac1rb0yah9w"))))
+        (base32 "04agcbhc473jkk7npb40i94ny8naykxzpjcw2lvl05kxv65y5d9v"))))
     (build-system meson-build-system)
     (inputs `(("wayland" ,wayland)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -1254,7 +1254,7 @@ modules for building a Wayland compositor.")
 (define-public swaylock
   (package
     (name "swaylock")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -1263,7 +1263,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "093nv1y9wyg48rfxhd36qdljjry57v1vkzrlc38mkf6zvsq8j7wb"))))
+        (base32 "1ii9ql1mxkk2z69dv6bg1x22nl3a46iww764wqjiv78x08xpk982"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("gdk-pixbuf" ,gdk-pixbuf)
@@ -1278,4 +1278,30 @@ modules for building a Wayland compositor.")
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Screen locking utility for Wayland compositors")
     (description "Swaylock is a screen locking utility for Wayland compositors.")
+    (license license:expat))) ; MIT license
+
+(define-public swaybg
+  (package
+    (name "swaybg")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/swaybg.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lmqz5bmig90gq2m7lwf02d2g7z4hzf8fhqz78c8vk92c6p4xwbc"))))
+    (build-system meson-build-system)
+    (inputs `(("cairo" ,cairo)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("wayland" ,wayland)))
+    (native-inputs `(("git" ,git)
+                     ("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Screen wallpaper utility for Wayland compositors")
+    (description "Swaybg is a wallpaper utility for Wayland compositors.")
     (license license:expat))) ; MIT license

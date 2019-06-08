@@ -345,7 +345,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.3.5")
+    (version "3.3.6")
     (source
      (origin
        (method url-fetch)
@@ -353,7 +353,7 @@ do so.")
                            version "/Electrum-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1csj0n96zlajnrs39wsazfj5lmy7v7n77cdz56lr8nkmchh6k9z1"))
+        (base32 "0am5ki3z0yvhrz16vp2jjy5fkxxqph0mj9qqpbw3kpql65shykwz"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -742,14 +742,14 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.11.2")
+    (version "0.11.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "1f0zfki12mnhidkfxpx2lpq1xim8f35i2d64bx9lf4m26xxv9x56"))))
+            "0211m027vlvyqy83kwbjjjxalb04xgf1klv0h0y0f0yhj07516n7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -770,12 +770,13 @@ Ledger Blue/Nano S.")
        ("python-requests" ,python-requests)
        ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
-     `(("protobuf" ,protobuf) ; Tests
-       ("python-black" ,python-black) ; Tests
-       ("python-protobuf" ,python-protobuf) ; Tests
-       ("python-isort" ,python-isort) ; Tests
-       ("python-pyqt" ,python-pyqt) ; Tests
-       ("python-pytest" ,python-pytest))) ; Tests
+     ;; For tests.
+     `(("protobuf" ,protobuf)
+       ("python-black" ,python-black)
+       ("python-protobuf" ,python-protobuf)
+       ("python-isort" ,python-isort)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/trezor/python-trezor")
     (synopsis "Python library for communicating with TREZOR Hardware Wallet")
     (description "@code{trezor} is a Python library for communicating with

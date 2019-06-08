@@ -22,6 +22,7 @@
   #:use-module (gnu build accounts)
   #:use-module (gnu build linux-boot)
   #:use-module (guix build utils)
+  #:use-module ((guix build syscalls) #:select (with-file-lock))
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -129,22 +130,26 @@ group records) are all available."
   ;; Allow home directories to be created under /var/lib.
   (mkdir-p "/var/lib")
 
-  (let-values (((groups passwd shadow)
-                (user+group-databases users groups)))
-    (write-group groups)
-    (write-passwd passwd)
-    (write-shadow shadow)
+  ;; Take same lock as libc's 'lckpwdf' (but without a timeout) while we read
+  ;; and write the databases.  This ensures there's no race condition with
+  ;; other tools that might be accessing it at the same time.
+  (with-file-lock %password-lock-file
+    (let-values (((groups passwd shadow)
+                  (user+group-databases users groups)))
+      (write-group groups)
+      (write-passwd passwd)
+      (write-shadow shadow)))
 
-    ;; Home directories of non-system accounts are created by
-    ;; 'activate-user-home'.
-    (for-each make-home-directory system-accounts)
+  ;; Home directories of non-system accounts are created by
+  ;; 'activate-user-home'.
+  (for-each make-home-directory system-accounts)
 
-    ;; Turn shared home directories, such as /var/empty, into root-owned,
-    ;; read-only places.
-    (for-each (lambda (directory)
-                (chown directory 0 0)
-                (chmod directory #o555))
-              (duplicates (map user-account-home-directory system-accounts)))))
+  ;; Turn shared home directories, such as /var/empty, into root-owned,
+  ;; read-only places.
+  (for-each (lambda (directory)
+              (chown directory 0 0)
+              (chmod directory #o555))
+            (duplicates (map user-account-home-directory system-accounts))))
 
 (define (activate-user-home users)
   "Create and populate the home directory of USERS, a list of tuples, unless

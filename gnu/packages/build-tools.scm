@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -242,7 +242,7 @@ other lower-level build files.")
 (define-public osc
   (package
     (name "osc")
-    (version "0.165.0")
+    (version "0.165.1")
     (source
      (origin
        (method git-fetch)
@@ -251,8 +251,7 @@ other lower-level build files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0l6iw8a040l60ixxdms9rxajm38vqfdwgij2bm7ahgv1akza64jk"))))
+        (base32 "16p4z34ziy4z2w7mfpclk13x1w2p69wivkdwp0224x18r2fwj67v"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -269,7 +268,7 @@ other lower-level build files.")
     (inputs
      `(("python-m2crypto" ,python-m2crypto)
        ("python-pycurl" ,python-pycurl)
-       ("rpm" ,rpm))) ; for python-rpm
+       ("rpm" ,rpm)))                   ; for python-rpm
     (home-page "https://github.com/openSUSE/osc")
     (synopsis "Open Build Service command line tool")
     (description "@command{osc} is a command line interface to the Open Build

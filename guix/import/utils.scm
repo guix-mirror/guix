@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -287,7 +287,7 @@ package value."
   (map (lambda (spec)
          (let-values (((pkg out) (specification->package+output spec)))
            (match out
-             (("out") (list (package-name pkg) pkg))
+             ("out" (list (package-name pkg) pkg))
              (_ (list (package-name pkg) pkg out)))))
        specs))
 

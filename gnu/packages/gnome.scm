@@ -3941,26 +3941,15 @@ which can read a large number of file formats.")
 (define-public rhythmbox
  (package
    (name "rhythmbox")
-   (version "3.4.2")
+   (version "3.4.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version) "/"
                                 name "-" version ".tar.xz"))
-            (patches
-             (list
-              ;; fmradio: Fix build with GStreamer master
-              (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://gitlab.gnome.org/GNOME/rhythmbox/commit/"
-                      "b182c6b9e1d09e601bac0b703cc5f8b159ebbc3a.patch"))
-                (sha256
-                 (base32
-                  "06n87xgf927djmv1vshal84nqx7g8nwgljza3g2vydhy7g2n1csq")))))
             (sha256
              (base32
-              "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
+              "1yx3n7p9vmv23jsv98fxwq95n78awdxqm8idhyhxx2d6vk4w1hgx"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:configure-flags

@@ -19,6 +19,7 @@
 
 (define-module (gnu installer locale)
   #:use-module (gnu installer utils)
+  #:use-module ((gnu build locale) #:select (normalize-codeset))
   #:use-module (guix records)
   #:use-module (json)
   #:use-module (srfi srfi-1)
@@ -70,24 +71,6 @@ optionally, CODESET."
       (territory . ,(match:substring matches 3))
       (codeset   . ,(or codeset (match:substring matches 5)))
       (modifier  . ,(match:substring matches 7)))))
-
-(define (normalize-codeset codeset)
-  "Compute the \"normalized\" variant of CODESET."
-  ;; info "(libc) Using gettextized software", for the algorithm used to
-  ;; compute the normalized codeset.
-  (letrec-syntax ((-> (syntax-rules ()
-                        ((_ proc value)
-                         (proc value))
-                        ((_ proc rest ...)
-                         (proc (-> rest ...))))))
-    (-> (lambda (str)
-          (if (string-every char-set:digit str)
-              (string-append "iso" str)
-              str))
-        string-downcase
-        (lambda (str)
-          (string-filter char-set:letter+digit str))
-        codeset)))
 
 (define (locale->locale-string locale)
   "Reverse operation of locale-string->locale."

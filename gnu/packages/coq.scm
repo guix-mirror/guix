@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,7 +43,7 @@
 (define-public coq
   (package
     (name "coq")
-    (version "8.9.0")
+    (version "8.9.1")
     (source
      (origin
        (method git-fetch)
@@ -52,7 +52,7 @@
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01ad7az6f95w16xya7979lk32agy22lf4bqgqf5qpnarpkpxhbw8"))))
+        (base32 "1p4z967s18wkblayv12ygqsrqlyk5ax1pz40yf4kag8pva6gblhk"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")

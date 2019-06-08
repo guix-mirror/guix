@@ -11931,7 +11931,7 @@ Emacs minor mode to escape sequences in code.")
 (define-public emacs-dashboard
   (package
     (name "emacs-dashboard")
-    (version "1.2.4")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -11940,11 +11940,22 @@ Emacs minor mode to escape sequences in code.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hhh1kfsz87qfmh45wjf2r93rz79rq0vbyxlfrsl02092zjbl1zr"))))
+        (base32 "0ihpcagwgc9qy70lf2y3dvx2bm5h9lnqh4sx6643cr8pp06ysbvq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-page-break-lines" ,emacs-page-break-lines)))
-    (arguments '(#:include '("\\.el$" "\\.txt$" "\\.png$")))
+    (arguments
+     '(#:include '("\\.el$" "\\.txt$" "\\.png$")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-dashboard-widgets
+           ;; This phase fixes compilation error.
+           (lambda _
+             (chmod "dashboard-widgets.el" #o666)
+             (emacs-substitute-variables "dashboard-widgets.el"
+               ("dashboard-init-info"
+                '(format "Loaded in %s" (emacs-init-time))))
+             #t)))))
     (home-page "https://github.com/rakanalh/emacs-dashboard")
     (synopsis "Startup screen extracted from Spacemacs")
     (description "This package provides an extensible Emacs dashboard, with
@@ -15796,3 +15807,26 @@ verb commands which would are normally destructive (such as deletion) are
 provided.  Those alternative commands are and bound by default to their
 corresponding Evil keys.")
       (license license:expat))))
+
+(define-public emacs-xterm-color
+  (let ((commit "a452ab38a7cfae97078062ff8885b5d74fd1e5a6")
+        (version "1.8")
+        (revision "1"))
+    (package
+      (name "emacs-xterm-color")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/atomontage/xterm-color.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "02kpajb993yshhjhsizpfcbrcndyzkf4dqfipifhxxng50dhp95i"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/atomontage/xterm-color")
+      (synopsis "ANSI & xterm-256 color text property translator for Emacs")
+      (description "@code{xterm-color.el} is an ANSI control sequence to
+text-property translator.")
+      (license license:bsd-2))))

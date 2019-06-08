@@ -671,14 +671,14 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.5.0")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.matroska.org/downloads/"
                            "libmatroska/libmatroska-" version ".tar.xz"))
        (sha256
-        (base32 "07md2gvy3x92ym2k449740mdji6mhknlajkndnhi507s4wcdrvzh"))))
+        (base32 "0qn9lfs0877wbv581yxw2gywxywxpvwslc5q07q4f7bqpyzxxiha"))))
     (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
@@ -1013,7 +1013,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.6")
+    (version "3.0.7")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1022,7 +1022,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                    "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1lvyyahv6g9zv7m5g5qinyrwmw47zdsd5ysimb862j7kw15nvh8q"))))
+               "05irswyg9acflxzy4vfyvgi643r72vsvagv118zawjqg1wagxdaw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -2192,14 +2192,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.12.5")
+    (version "1.16.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "03g2b4rivrilimcp57mwrlsa3qvrxmk4sza08mygwmqbvcnic606"))))
+                "1bkqlrizx0j2rd6ybam2x17bjrpwzl4v4szmnzm3cmixis3w3npr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2858,7 +2858,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public livemedia-utils
   (package
     (name "livemedia-utils")
-    (version "2019.03.06")
+    (version "2019.05.29")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2866,10 +2866,10 @@ many codecs and formats supported by libmediainfo.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1gasdl95yjabv811knkmy5laj21a54z1jdfq36jdj984k1nw5l0b"))))
+                "08i63jr8ihn1xiq5z5n3yls3yz6li5sg0s454l56p5bcvbrw81my"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out") "/lib")

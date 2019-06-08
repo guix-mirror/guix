@@ -501,6 +501,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services.scm				\
   %D%/services/admin.scm			\
   %D%/services/audio.scm                        \
+  %D%/services/auditd.scm			\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/certbot.scm			\
@@ -586,6 +587,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/networking.scm			\
   %D%/tests/rsync.scm				\
   %D%/tests/security-token.scm			\
+  %D%/tests/singularity.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
@@ -637,6 +639,7 @@ dist_installer_DATA =				\
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
+  %D%/build/locale.scm				\
   %D%/build/shepherd.scm			\
   %D%/build/svg.scm
 
@@ -659,7 +662,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-icu59-include-unistr.patch	\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
-  %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\

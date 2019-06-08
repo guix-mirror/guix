@@ -1315,16 +1315,16 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
 (define-public jalv-select
   (package
     (name "jalv-select")
-    (version "0.8")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/brummer10/jalv_select.git")
-                    (commit (string-append "V" version))))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gqh768sbvn9ffyx1vqg9i57py9x9v4l65bk6wjsvgga4d7m83k1"))))
+                "15yanq1wra0hyh6x72ji7pk562iddg476g3vksj495x91zhnl6vm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1337,8 +1337,6 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
              (substitute* "jalv.select.cpp"
                (("echo \\$PATH.*tr ':'.*xargs ls")
                 (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
-             (substitute* "jalv.select.h"
-               (("gtkmm.h") "gtkmm-2.4/gtkmm.h"))
              #t))
          (add-before 'reset-gzip-timestamps 'make-manpages-writable
            (lambda* (#:key outputs #:allow-other-keys)

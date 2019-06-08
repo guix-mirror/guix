@@ -24,9 +24,14 @@
   #:use-module (guix licenses)
   #:use-module (srfi srfi-64))
 
+(define-syntax-rule (define-with-source object source expr)
+  (begin
+    (define object expr)
+    (define source 'expr)))
+
 (test-begin "print")
 
-(define pkg
+(define-with-source pkg pkg-source
   (package
     (name "test")
     (version "1.2.3")
@@ -43,22 +48,31 @@
     (description "This is a dummy package.")
     (license gpl3+)))
 
+(define-with-source pkg-with-inputs pkg-with-inputs-source
+  (package
+    (name "test")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "file:///tmp/test-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
+    (build-system gnu-build-system)
+    (inputs `(("coreutils" ,(@ (gnu packages base) coreutils))
+              ("glibc" ,(@ (gnu packages base) glibc) "debug")))
+    (home-page "http://gnu.org")
+    (synopsis "Dummy")
+    (description "This is a dummy package.")
+    (license gpl3+)))
+
 (test-equal "simple package"
-  (package->code pkg)
-  '(package
-     (name "test")
-     (version "1.2.3")
-     (source (origin
-               (method url-fetch)
-               (uri (string-append "file:///tmp/test-"
-                                   version ".tar.gz"))
-               (sha256
-                (base32
-                 "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
-     (build-system gnu-build-system)
-     (home-page "http://gnu.org")
-     (synopsis "Dummy")
-     (description "This is a dummy package.")
-     (license gpl3+)))
+  pkg-source
+  (package->code pkg))
+
+(test-equal "package with inputs"
+  pkg-with-inputs-source
+  (package->code pkg-with-inputs))
 
 (test-end "print")
