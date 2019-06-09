@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
@@ -5232,6 +5232,48 @@ If you want to mark a folder manually as a project just create an empty
      "Elfeed is an extensible web feed reader for Emacs, supporting both Atom
 and RSS, with a user interface inspired by notmuch.")
     (license license:gpl3+)))
+
+(define-public emacs-elfeed-org
+  (let ((commit "77b6bbf222487809813de260447d31c4c59902c9"))
+    (package
+      (name "emacs-elfeed-org")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/remyhonig/elfeed-org.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a2ibka82xq1dhy2z7rd2y9zhcj8rna8357881yz49wf55ccgm53"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-elfeed" ,emacs-elfeed)
+         ("emacs-org" ,emacs-org)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)))
+      (native-inputs
+       `(("ert-runner" ,emacs-ert-runner)
+         ("emacs-xtest" ,emacs-xtest)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner" "-L" "org-mode/lisp")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'chmod
+             (lambda _
+               (chmod "test/fixture-mark-feed-ignore.org" #o644)
+               #t)))))
+      (home-page "https://github.com/remyhonig/elfeed-org")
+      (synopsis "Configure Elfeed with an Org-mode file")
+      (description
+       "@code{elfeed-org} lets you manage your Elfeed subscriptions
+in Org-mode.  Maintaining tags for all RSS feeds is cumbersome using
+the regular flat list, where there is no hierarchy and tag names are
+duplicated a lot.  Org-mode makes the book keeping of tags and feeds
+much easier.")
+      (license license:gpl3+))))
 
 (define-public emacs-el-x
   (package
