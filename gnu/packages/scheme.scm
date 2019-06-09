@@ -437,7 +437,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "7.0")
+    (version "7.3")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -447,7 +447,7 @@ implementation techniques and as an expository tool.")
                           version "/racket-" version "-src.tgz")))
               (sha256
                (base32
-                "1glv5amsp9xp480d4yr63hhm9kkyav06yl3a6p489nkr4cln0j9a"))
+                "0h6072njhb87rkz4arijvahxgjzn8r14s4wns0ijvxm89bg136yl"))
               (patches (search-patches
                         "racket-store-checksum-override.patch"))))
     (build-system gnu-build-system)
