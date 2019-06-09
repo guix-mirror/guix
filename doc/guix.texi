@@ -22723,10 +22723,10 @@ Extra options will be passed to @code{git daemon}, please run
 @end deftp
 
 The @code{git://} protocol lacks authentication.  When you pull from a
-repository fetched via @code{git://}, you don't know that the data you
-receive was modified is really coming from the specified host, and you
-have your connection is subject to eavesdropping.  It's better to use an
-authenticated and encrypted transport, such as @code{https}.  Although Git allows you
+repository fetched via @code{git://}, you don't know whether the data you
+receive was modified or is even coming from the specified host, and your
+connection is subject to eavesdropping.  It's better to use an authenticated
+and encrypted transport, such as @code{https}.  Although Git allows you
 to serve repositories using unsophisticated file-based web servers,
 there is a faster protocol implemented by the @code{git-http-backend}
 program.  This program is the back-end of a proper Git web service.  It
