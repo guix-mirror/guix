@@ -4968,14 +4968,14 @@ of the points.")
 (define-public r-fpc
   (package
     (name "r-fpc")
-    (version "2.2-1")
+    (version "2.2-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fpc" version))
        (sha256
         (base32
-         "183awn9fbigsy3rwmg5l39zpfg2zpbb94hkx7k99v2dir8dpdy85"))))
+         "1lzqxi2jzc753j4356b949isx2nccd32mw2ch665q78nxccp145n"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
