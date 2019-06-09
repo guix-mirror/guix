@@ -17,7 +17,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
-;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
@@ -1201,6 +1201,12 @@ modules for building a Wayland compositor.")
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
            (lambda* (#:key inputs #:allow-other-keys)
+             ;; Hardcode path to swaybg.
+             (substitute* "sway/config.c"
+               (("strdup..swaybg..")
+                (string-append "strdup(\"" (assoc-ref inputs "swaybg")
+                               "/bin/swaybg\")")))
+             ;; Hardcode path to scdoc.
              (substitute* "meson.build"
                (("scdoc.get_pkgconfig_variable..scdoc..")
                 (string-append "'" (assoc-ref inputs "scdoc")
@@ -1214,6 +1220,7 @@ modules for building a Wayland compositor.")
               ("libinput" ,libinput)
               ("libxkbcommon" ,libxkbcommon)
               ("pango" ,pango)
+              ("swaybg" ,swaybg)
               ("wayland" ,wayland)
               ("wlroots" ,wlroots)))
     (native-inputs `(("git" ,git)
