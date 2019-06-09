@@ -1249,7 +1249,10 @@ modules for building a Wayland compositor.")
        (sha256
         (base32 "04agcbhc473jkk7npb40i94ny8naykxzpjcw2lvl05kxv65y5d9v"))))
     (build-system meson-build-system)
-    (inputs `(("wayland" ,wayland)))
+    (arguments
+     `(#:configure-flags '("-Dlogind-provider=elogind")))
+    (inputs `(("elogind" ,elogind)
+              ("wayland" ,wayland)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scdoc" ,scdoc)
                      ("wayland-protocols" ,wayland-protocols)))
