@@ -5377,14 +5377,14 @@ are computed via non-Monte Carlo methods.")
 (define-public r-numderiv
   (package
     (name "r-numderiv")
-    (version "2016.8-1")
+    (version "2016.8-1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "numDeriv" version))
        (sha256
         (base32
-         "07ni52rwiap4wilfz94w5mrqaxr59axxmgn57857ip4p6qkiss0v"))))
+         "0idk02pqkziik932bd8k72d1q775g1is3m4bc861pcxfz6gx3i6q"))))
     (properties `((upstream-name . "numDeriv")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/numDeriv")
