@@ -724,7 +724,7 @@ mixed vector/bitmap output.")
 (define-public virtualgl
   (package
     (name "virtualgl")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method git-fetch)
@@ -733,7 +733,7 @@ mixed vector/bitmap output.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "04fdwm6mz76lw4iwd5m7yxjfhpa0rpxd357bv5smk5lclnlbz1bv"))))
+        (base32 "0yyc553xsb5n0rx7jp9p4wdbd7md07b3qrkf3ssyjavqqg908qg9"))))
     (arguments
      `(#:tests? #f                      ; no tests are available
        #:configure-flags (list
