@@ -5467,7 +5467,7 @@ to virtual private networks (VPNs) via OpenVPN.")
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
-    (version "20170310")
+    (version "20190116")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5476,10 +5476,10 @@ to virtual private networks (VPNs) via OpenVPN.")
                     "mobile-broadband-provider-info-" version ".tar.xz"))
               (sha256
                (base32
-                "0fxm11x8k9hxjg8l5inaldfmmjnwkay3ibjv899jra03bv4h6kql"))))
+                "16y5lc7pfdvai9c8xwb825zc3v46039gghbip13fqslf5gw11fic"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; No tests
+     `(#:tests? #f))                    ; no tests
     (home-page "https://wiki.gnome.org/Projects/NetworkManager")
     (synopsis "Database of broadband connection configuration")
     (description "Database of broadband connection configuration.")
