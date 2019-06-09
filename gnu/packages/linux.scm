@@ -4406,14 +4406,15 @@ developers.")
   (package
     (name "radeontop")
     (version "1.2")
-    (home-page "https://github.com/clbr/radeontop/")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0jc3qs8m5hhbhxra4yslcq3vi179hvcwvdal80gsrgz6cj78zvfw"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clbr/radeontop.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b1m30r2nfwqkajqw6m01xmfhlq83z1qylyijxg7962mp9x2k0gw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -4437,6 +4438,7 @@ developers.")
        ("libpciaccess" ,libpciaccess)
        ("libxcb" ,libxcb)
        ("ncurses" ,ncurses)))
+    (home-page "https://github.com/clbr/radeontop/")
     (synopsis "Usage monitor for AMD Radeon graphics")
     (description "RadeonTop monitors resource consumption on supported AMD
 Radeon Graphics Processing Units (GPUs), either in real time as bar graphs on
