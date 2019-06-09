@@ -36,7 +36,7 @@
 (define-public gpodder
   (package
     (name "gpodder")
-    (version "3.10.7")
+    (version "3.10.9")
     (source
      (origin
        (method git-fetch)
@@ -45,7 +45,7 @@
              (commit version)))
        (sha256
         (base32
-         "0sx9rj6dpvd2xz7lak2yi0zlgr3lp2ng1fw23s39la9ly4g1835j"))
+         "1sdmr1sq1d4p492zp9kq3npl7p56yr0pr470z9r6xxcylax5mhfq"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
