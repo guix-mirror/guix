@@ -24225,8 +24225,8 @@ how to use it:
 After @command{guix system reconfigure} configure Nix for your user:
 
 @itemize
-@item Add a Nix channel and update it.  See @url{https://nixos.org/nix/manual/,
-Nix Package Manager Guide}.
+@item Add a Nix channel and update it.  See
+@url{https://nixos.org/nix/manual/, Nix Package Manager Guide}.
 
 @item Create a symlink to your profile and activate Nix profile:
 @end itemize
