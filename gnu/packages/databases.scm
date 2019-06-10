@@ -33,6 +33,7 @@
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,6 +109,7 @@
   #:use-module (guix download)
   #:use-module (guix bzr-download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
@@ -964,6 +966,26 @@ unique fields, primary keys, time stamps and more.  Many different field
 types are supported, as is encryption.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/recutils/")))
+
+(define-public emacs-recutils
+  (package
+    (inherit recutils)
+    (name "emacs-recutils")
+    (build-system emacs-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "etc")
+             #t)))))
+    (native-inputs '())
+    (inputs '())
+    (synopsis "Emacs mode for working with recutils database files")
+    (description "This package provides an Emacs major mode @code{rec-mode}
+for working with GNU Recutils text-based, human-editable databases.  It
+supports editing, navigation, and querying of recutils database files
+including field and record folding.")))
 
 (define-public rocksdb
   (package
