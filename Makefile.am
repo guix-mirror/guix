@@ -274,6 +274,7 @@ if HAVE_GUILE_SSH
 
 MODULES +=					\
   guix/ssh.scm					\
+  guix/remote.scm				\
   guix/scripts/copy.scm				\
   guix/store/ssh.scm
 
