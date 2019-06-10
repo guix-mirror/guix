@@ -39,6 +39,9 @@
 
             gexp-input
             gexp-input?
+            gexp-input-thing
+            gexp-input-output
+            gexp-input-native?
 
             local-file
             local-file?
@@ -77,6 +80,14 @@
 
             load-path-expression
             gexp-modules
+
+            lower-gexp
+            lowered-gexp?
+            lowered-gexp-sexp
+            lowered-gexp-inputs
+            lowered-gexp-guile
+            lowered-gexp-load-path
+            lowered-gexp-load-compiled-path
 
             gexp->derivation
             gexp->file
@@ -566,15 +577,20 @@ list."
   "Turn any package from INPUTS into a derivation for SYSTEM; return the
 corresponding input list as a monadic value.  When TARGET is true, use it as
 the cross-compilation target triplet."
+  (define (store-item? obj)
+    (and (string? obj) (store-path? obj)))
+
   (with-monad %store-monad
     (mapm %store-monad
           (match-lambda
             (((? struct? thing) sub-drv ...)
              (mlet %store-monad ((drv (lower-object
                                        thing system #:target target)))
-               (return `(,drv ,@sub-drv))))
+               (return (apply gexp-input drv sub-drv))))
+            (((? store-item? item))
+             (return (gexp-input item)))
             (input
-             (return input)))
+             (return (gexp-input input))))
           inputs)))
 
 (define* (lower-reference-graphs graphs #:key system target)
@@ -586,7 +602,9 @@ corresponding derivation."
      (mlet %store-monad ((inputs (lower-inputs inputs
                                                #:system system
                                                #:target target)))
-       (return (map cons file-names inputs))))))
+       (return (map (lambda (file input)
+                      (cons file (gexp-input->tuple input)))
+                    file-names inputs))))))
 
 (define* (lower-references lst #:key system target)
   "Based on LST, a list of output names and packages, return a list of output
@@ -617,6 +635,130 @@ names and file names suitable for the #:allowed-references argument to
                   (module-ref iface 'default-guile-derivation)))))
     (lambda (system)
       ((force proc) system))))
+
+;; Representation of a gexp instantiated for a given target and system.
+(define-record-type <lowered-gexp>
+  (lowered-gexp sexp inputs guile load-path load-compiled-path)
+  lowered-gexp?
+  (sexp                lowered-gexp-sexp)         ;sexp
+  (inputs              lowered-gexp-inputs)       ;list of <gexp-input>
+  (guile               lowered-gexp-guile)        ;<derivation> | #f
+  (load-path           lowered-gexp-load-path)    ;list of store items
+  (load-compiled-path  lowered-gexp-load-compiled-path)) ;list of store items
+
+(define* (lower-gexp exp
+                     #:key
+                     (module-path %load-path)
+                     (system (%current-system))
+                     (target 'current)
+                     (graft? (%graft?))
+                     (guile-for-build (%guile-for-build))
+                     (effective-version "2.2")
+
+                     deprecation-warnings
+                     (pre-load-modules? #t))      ;transitional
+  "*Note: This API is subject to change; use at your own risk!*
+
+Lower EXP, a gexp, instantiating it for SYSTEM and TARGET.  Return a
+<lowered-gexp> ready to be used.
+
+Lowered gexps are an intermediate representation that's useful for
+applications that deal with gexps outside in a way that is disconnected from
+derivations--e.g., code evaluated for its side effects."
+  (define %modules
+    (delete-duplicates (gexp-modules exp)))
+
+  (define (search-path modules extensions suffix)
+    (append (match modules
+              ((? derivation? drv)
+               (list (derivation->output-path drv)))
+              (#f
+               '())
+              ((? store-path? item)
+               (list item)))
+            (map (lambda (extension)
+                   (string-append (match extension
+                                    ((? derivation? drv)
+                                     (derivation->output-path drv))
+                                    ((? store-path? item)
+                                     item))
+                                  suffix))
+                 extensions)))
+
+  (mlet* %store-monad ( ;; The following binding forces '%current-system' and
+                       ;; '%current-target-system' to be looked up at >>=
+                       ;; time.
+                       (graft?    (set-grafting graft?))
+
+                       (system -> (or system (%current-system)))
+                       (target -> (if (eq? target 'current)
+                                      (%current-target-system)
+                                      target))
+                       (guile     (if guile-for-build
+                                      (return guile-for-build)
+                                      (default-guile-derivation system)))
+                       (normals  (lower-inputs (gexp-inputs exp)
+                                               #:system system
+                                               #:target target))
+                       (natives  (lower-inputs (gexp-native-inputs exp)
+                                               #:system system
+                                               #:target #f))
+                       (inputs -> (append normals natives))
+                       (sexp     (gexp->sexp exp
+                                             #:system system
+                                             #:target target))
+                       (extensions -> (gexp-extensions exp))
+                       (exts     (mapm %store-monad
+                                       (lambda (obj)
+                                         (lower-object obj system))
+                                       extensions))
+                       (modules  (if (pair? %modules)
+                                     (imported-modules %modules
+                                                       #:system system
+                                                       #:module-path module-path)
+                                     (return #f)))
+                       (compiled (if (pair? %modules)
+                                     (compiled-modules %modules
+                                                       #:system system
+                                                       #:module-path module-path
+                                                       #:extensions extensions
+                                                       #:guile guile
+                                                       #:pre-load-modules?
+                                                       pre-load-modules?
+                                                       #:deprecation-warnings
+                                                       deprecation-warnings)
+                                     (return #f))))
+    (define load-path
+      (search-path modules exts
+                   (string-append "/share/guile/site/" effective-version)))
+
+    (define load-compiled-path
+      (search-path compiled exts
+                   (string-append "/lib/guile/" effective-version
+                                  "/site-ccache")))
+
+    (mbegin %store-monad
+      (set-grafting graft?)                       ;restore the initial setting
+      (return (lowered-gexp sexp
+                            `(,@(if modules
+                                    (list (gexp-input modules))
+                                    '())
+                              ,@(if compiled
+                                    (list (gexp-input compiled))
+                                    '())
+                              ,@(map gexp-input exts)
+                              ,@inputs)
+                            guile
+                            load-path
+                            load-compiled-path)))))
+
+(define (gexp-input->tuple input)
+  "Given INPUT, a <gexp-input> record, return the corresponding input tuple
+suitable for the 'derivation' procedure."
+  (match (gexp-input-output input)
+    ("out"  `(,(gexp-input-thing input)))
+    (output `(,(gexp-input-thing input)
+              ,(gexp-input-output input)))))
 
 (define* (gexp->derivation name exp
                            #:key
@@ -682,10 +824,8 @@ DEPRECATION-WARNINGS determines whether to show deprecation warnings while
 compiling modules.  It can be #f, #t, or 'detailed.
 
 The other arguments are as for 'derivation'."
-  (define %modules
-    (delete-duplicates
-     (append modules (gexp-modules exp))))
   (define outputs (gexp-outputs exp))
+  (define requested-graft? graft?)
 
   (define (graphs-file-names graphs)
     ;; Return a list of (FILE-NAME . STORE-PATH) pairs made from GRAPHS.
@@ -699,11 +839,13 @@ The other arguments are as for 'derivation'."
             (cons file-name thing)))
          graphs))
 
-  (define (extension-flags extension)
-    `("-L" ,(string-append (derivation->output-path extension)
-                           "/share/guile/site/" effective-version)
-      "-C" ,(string-append (derivation->output-path extension)
-                           "/lib/guile/" effective-version "/site-ccache")))
+  (define (add-modules exp modules)
+    (if (null? modules)
+        exp
+        (make-gexp (gexp-references exp)
+                   (append modules (gexp-self-modules exp))
+                   (gexp-self-extensions exp)
+                   (gexp-proc exp))))
 
   (mlet* %store-monad ( ;; The following binding forces '%current-system' and
                        ;; '%current-target-system' to be looked up at >>=
@@ -714,40 +856,21 @@ The other arguments are as for 'derivation'."
                        (target -> (if (eq? target 'current)
                                       (%current-target-system)
                                       target))
-                       (normals  (lower-inputs (gexp-inputs exp)
-                                               #:system system
-                                               #:target target))
-                       (natives  (lower-inputs (gexp-native-inputs exp)
-                                               #:system system
-                                               #:target #f))
-                       (inputs -> (append normals natives))
-                       (sexp     (gexp->sexp exp
-                                             #:system system
-                                             #:target target))
-                       (builder  (text-file script-name
-                                            (object->string sexp)))
-                       (extensions -> (gexp-extensions exp))
-                       (exts     (mapm %store-monad
-                                       (lambda (obj)
-                                         (lower-object obj system))
-                                       extensions))
-                       (modules  (if (pair? %modules)
-                                     (imported-modules %modules
-                                                       #:system system
-                                                       #:module-path module-path
-                                                       #:guile guile-for-build)
-                                     (return #f)))
-                       (compiled (if (pair? %modules)
-                                     (compiled-modules %modules
-                                                       #:system system
-                                                       #:module-path module-path
-                                                       #:extensions extensions
-                                                       #:guile guile-for-build
-                                                       #:pre-load-modules?
-                                                       pre-load-modules?
-                                                       #:deprecation-warnings
-                                                       deprecation-warnings)
-                                     (return #f)))
+                       (exp ->    (add-modules exp modules))
+                       (lowered   (lower-gexp exp
+                                              #:module-path module-path
+                                              #:system system
+                                              #:target target
+                                              #:graft? requested-graft?
+                                              #:guile-for-build
+                                              guile-for-build
+                                              #:effective-version
+                                              effective-version
+                                              #:deprecation-warnings
+                                              deprecation-warnings
+                                              #:pre-load-modules?
+                                              pre-load-modules?))
+
                        (graphs   (if references-graphs
                                      (lower-reference-graphs references-graphs
                                                              #:system system
@@ -763,32 +886,30 @@ The other arguments are as for 'derivation'."
                                                          #:system system
                                                          #:target target)
                                        (return #f)))
-                       (guile    (if guile-for-build
-                                     (return guile-for-build)
-                                     (default-guile-derivation system))))
+                       (guile -> (lowered-gexp-guile lowered))
+                       (builder  (text-file script-name
+                                            (object->string
+                                             (lowered-gexp-sexp lowered)))))
     (mbegin %store-monad
       (set-grafting graft?)                       ;restore the initial setting
       (raw-derivation name
                       (string-append (derivation->output-path guile)
                                      "/bin/guile")
                       `("--no-auto-compile"
-                        ,@(if (pair? %modules)
-                              `("-L" ,(if (derivation? modules)
-                                          (derivation->output-path modules)
-                                          modules)
-                                "-C" ,(derivation->output-path compiled))
-                              '())
-                        ,@(append-map extension-flags exts)
+                        ,@(append-map (lambda (directory)
+                                        `("-L" ,directory))
+                                      (lowered-gexp-load-path lowered))
+                        ,@(append-map (lambda (directory)
+                                        `("-C" ,directory))
+                                      (lowered-gexp-load-compiled-path lowered))
                         ,builder)
                       #:outputs outputs
                       #:env-vars env-vars
                       #:system system
                       #:inputs `((,guile)
                                  (,builder)
-                                 ,@(if modules
-                                       `((,modules) (,compiled) ,@inputs)
-                                       inputs)
-                                 ,@(map list exts)
+                                 ,@(map gexp-input->tuple
+                                        (lowered-gexp-inputs lowered))
                                  ,@(match graphs
                                      (((_ . inputs) ...) inputs)
                                      (_ '())))
@@ -804,6 +925,7 @@ The other arguments are as for 'derivation'."
 (define* (gexp-inputs exp #:key native?)
   "Return the input list for EXP.  When NATIVE? is true, return only native
 references; otherwise, return only non-native references."
+  ;; TODO: Return <gexp-input> records instead of tuples.
   (define (add-reference-inputs ref result)
     (match ref
       (($ <gexp-input> (? gexp? exp) _ #t)
