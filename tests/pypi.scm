@@ -112,7 +112,8 @@ baz > 13.37
                   (with-output-to-file "foo-1.0.0/foo.egg-info/requires.txt"
                     (lambda ()
                       (display test-requires.txt)))
-                  (system* "tar" "czvf" file-name "foo-1.0.0/")
+                  (parameterize ((current-output-port (%make-void-port "rw+")))
+                    (system* "tar" "czvf" file-name "foo-1.0.0/"))
                   (delete-file-recursively "foo-1.0.0")
                   (set! test-source-hash
                     (call-with-input-file file-name port-sha256))))
@@ -163,7 +164,8 @@ baz > 13.37
                 (with-output-to-file "foo-1.0.0/foo.egg-info/requires.txt"
                    (lambda ()
                      (display test-requires.txt)))
-                 (system* "tar" "czvf" file-name "foo-1.0.0/")
+                (parameterize ((current-output-port (%make-void-port "rw+")))
+                  (system* "tar" "czvf" file-name "foo-1.0.0/"))
                  (delete-file-recursively "foo-1.0.0")
                  (set! test-source-hash
                        (call-with-input-file file-name port-sha256))))
