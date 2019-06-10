@@ -480,8 +480,8 @@ It has been modified to remove all non-free binary blobs.")
                             %linux-libre-4.15-hash))
 
 
-(define %linux-libre-4.14-version "4.14.123")
-(define %linux-libre-4.14-hash "185kf576rwhsaq7jqrnmg8r5fh2nh4k8lifxaxwi3amshnwbj2qg")
+(define %linux-libre-4.14-version "4.14.124")
+(define %linux-libre-4.14-hash "0z9iaz1rcm9472rjvcihmq65ygyks07j6kbiqm989r9rb4dw6ghg")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
