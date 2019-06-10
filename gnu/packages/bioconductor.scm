@@ -4642,3 +4642,38 @@ validity of the model by permutation testing, detect outliers, and perform
 feature selection (e.g. with Variable Importance in Projection or regression
 coefficients).")
     (license license:cecill)))
+
+(define-public r-biosigner
+  (package
+    (name "r-biosigner")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biosigner" version))
+       (sha256
+        (base32
+         "1643iya40v6whb7lw7y34w5sanbasvj4yhvcygbip667yhphyv5b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-e1071" ,r-e1071)
+       ("r-randomforest" ,r-randomforest)
+       ("r-ropls" ,r-ropls)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc))) ; all for vignettes
+    (home-page "https://bioconductor.org/packages/biosigner/")
+    (synopsis "Signature discovery from omics data")
+    (description
+     "Feature selection is critical in omics data analysis to extract
+restricted and meaningful molecular signatures from complex and high-dimension
+data, and to build robust classifiers.  This package implements a method to
+assess the relevance of the variables for the prediction performances of the
+classifier.  The approach can be run in parallel with the PLS-DA, Random
+Forest, and SVM binary classifiers.  The signatures and the corresponding
+'restricted' models are returned, enabling future predictions on new
+datasets.")
+    (license license:cecill)))
