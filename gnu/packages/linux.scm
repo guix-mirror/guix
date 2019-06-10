@@ -466,20 +466,6 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-4.19-version
                             %linux-libre-4.19-hash))
 
-(define %linux-libre-4.15-version "4.15.18")
-(define %linux-libre-4.15-hash "0f0s4drx888ydlwjcm9qcxqian4850yiv2vamyw9bbjf83frwxyw")
-
-(define-public linux-libre-4.15
-  (make-linux-libre %linux-libre-4.15-version
-                    %linux-libre-4.15-hash
-                    '("x86_64-linux" "i686-linux" "armhf-linux")
-                    #:configuration-file kernel-config))
-
-(define-public linux-libre-headers-4.15
-  (make-linux-libre-headers %linux-libre-4.15-version
-                            %linux-libre-4.15-hash))
-
-
 (define %linux-libre-4.14-version "4.14.124")
 (define %linux-libre-4.14-hash "0z9iaz1rcm9472rjvcihmq65ygyks07j6kbiqm989r9rb4dw6ghg")
 
