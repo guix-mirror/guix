@@ -455,8 +455,9 @@ the image."
                                 #$profile
                                 #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
-                                #:entry-point (string-append #$profile "/"
-                                                             #$entry-point)
+                                #:entry-point #$(and entry-point
+                                                     #~(string-append #$profile "/"
+                                                                      #$entry-point))
                                 #:symlinks '#$symlinks
                                 #:compressor '#$(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))
