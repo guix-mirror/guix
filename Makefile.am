@@ -90,6 +90,7 @@ MODULES =					\
   guix/nar.scm					\
   guix/derivations.scm				\
   guix/grafts.scm				\
+  guix/repl.scm					\
   guix/inferior.scm				\
   guix/describe.scm				\
   guix/channels.scm				\
