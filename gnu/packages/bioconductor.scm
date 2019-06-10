@@ -4606,3 +4606,39 @@ expression data to predict switches in regulatory activity between two
 conditions.  A Bayesian network is used to model the regulatory structure and
 Markov-Chain-Monte-Carlo is applied to sample the activity states.")
     (license license:gpl2+)))
+
+(define-public r-ropls
+  (package
+    (name "r-ropls")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ropls" version))
+       (sha256
+        (base32
+         "099nv9dgmw3avkxv7cd27r16yj56svjlp5q4i389yp1n0r5zhyl2"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://dx.doi.org/10.1021/acs.jproteome.5b00354")
+    (synopsis "Multivariate analysis and feature selection of omics data")
+    (description
+     "Latent variable modeling with @dfn{Principal Component Analysis} (PCA)
+and @dfn{Partial Least Squares} (PLS) are powerful methods for visualization,
+regression, classification, and feature selection of omics data where the
+number of variables exceeds the number of samples and with multicollinearity
+among variables.  @dfn{Orthogonal Partial Least Squares} (OPLS) enables to
+separately model the variation correlated (predictive) to the factor of
+interest and the uncorrelated (orthogonal) variation.  While performing
+similarly to PLS, OPLS facilitates interpretation.
+
+This package provides imlementations of PCA, PLS, and OPLS for multivariate
+analysis and feature selection of omics data.  In addition to scores, loadings
+and weights plots, the package provides metrics and graphics to determine the
+optimal number of components (e.g. with the R2 and Q2 coefficients), check the
+validity of the model by permutation testing, detect outliers, and perform
+feature selection (e.g. with Variable Importance in Projection or regression
+coefficients).")
+    (license license:cecill)))
