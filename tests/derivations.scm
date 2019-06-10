@@ -787,6 +787,28 @@
       (build-derivations store (list drv))
       #f)))
 
+(test-assert "build-derivations with specific output"
+  (with-store store
+    (let* ((content (random-text))                ;contents of the output
+           (drv     (build-expression->derivation
+                     store "substitute-me"
+                     `(begin ,content (exit 1))   ;would fail
+                     #:outputs '("out" "one" "two")
+                     #:guile-for-build
+                     (package-derivation store %bootstrap-guile)))
+           (out     (derivation->output-path drv)))
+      (with-derivation-substitute drv content
+        (set-build-options store #:use-substitutes? #t
+                           #:substitute-urls (%test-substitute-urls))
+        (and (has-substitutes? store out)
+
+             ;; Ask for nothing but the "out" output of DRV.
+             (build-derivations store `((,drv . "out")))
+
+             (valid-path? store out)
+             (equal? (pk 'x content) (pk 'y (call-with-input-file out get-string-all)))
+             )))))
+
 (test-assert "build-expression->derivation and derivation-prerequisites-to-build"
   (let ((drv (build-expression->derivation %store "fail" #f)))
     ;; The only direct dependency is (%guile-for-build) and it's already

@@ -982,12 +982,17 @@ recursively."
 
 (define* (build-derivations store derivations
                             #:optional (mode (build-mode normal)))
-  "Build DERIVATIONS, a list of <derivation> objects or .drv file names, using
-the specified MODE."
+  "Build DERIVATIONS, a list of <derivation> objects, .drv file names, or
+derivation/output pairs, using the specified MODE."
   (build-things store (map (match-lambda
+                            ((? derivation? drv)
+                             (derivation-file-name drv))
                             ((? string? file) file)
-                            ((and drv ($ <derivation>))
-                             (derivation-file-name drv)))
+                            (((? derivation? drv) . output)
+                             (cons (derivation-file-name drv)
+                                   output))
+                            (((? string? file) . output)
+                             (cons file output)))
                            derivations)
                 mode))
 

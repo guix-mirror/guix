@@ -6466,10 +6466,11 @@ path.  @var{references} is the list of store paths referred to by the
 resulting store path.
 @end deffn
 
-@deffn {Scheme Procedure} build-derivations @var{server} @var{derivations}
-Build @var{derivations} (a list of @code{<derivation>} objects or
-derivation paths), and return when the worker is done building them.
-Return @code{#t} on success.
+@deffn {Scheme Procedure} build-derivations @var{store} @var{derivations} @
+  [@var{mode}]
+Build @var{derivations}, a list of @code{<derivation>} objects, @file{.drv}
+file names, or derivation/output pairs, using the specified
+@var{mode}---@code{(build-mode normal)} by default.
 @end deffn
 
 Note that the @code{(guix monads)} module provides a monad as well as
