@@ -14755,3 +14755,34 @@ ATAC-seq results.  It was written to make it easier to spot differences that
 might be caused by ATAC-seq library prep or sequencing.  The main program,
 @code{ataqv}, examines aligned reads and reports some basic metrics.")
     (license license:gpl3+)))
+
+(define-public r-psiplot
+  (package
+    (name "r-psiplot")
+    (version "2.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kcha/psiplot.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08438h16cfry5kqh3y9hs8q1b1a8bxhblsm75knviz5r6q0n1jxh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-dplyr" ,r-dplyr)
+       ("r-tidyr" ,r-tidyr)
+       ("r-purrr" ,r-purrr)
+       ("r-readr" ,r-readr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://github.com/kcha/psiplot")
+    (synopsis "Plot percent spliced-in values of alternatively-spliced exons")
+    (description
+     "PSIplot is an R package for generating plots of @dfn{percent
+spliced-in} (PSI) values of alternatively-spliced exons that were computed by
+vast-tools, an RNA-Seq pipeline for alternative splicing analysis.  The plots
+are generated using @code{ggplot2}.")
+    (license license:expat)))
