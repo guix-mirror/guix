@@ -21,6 +21,7 @@
 ;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -711,14 +712,14 @@ is captured while being passed through to the original file handles.")
 (define-public perl-canary-stability
   (package
     (name "perl-canary-stability")
-    (version "2012")
+    (version "2013")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
                                   "Canary-Stability-" version ".tar.gz"))
               (sha256
                (base32
-                "01vih43hvpqy67m6a6fwmlswli91mqpv8n8ccglvlkc33l8hn97x"))))
+                "1smnsx371x9zrqmylgq145991xh8561mraqfyrlbiz4mrxi1rjd5"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Canary-Stability")
     (synopsis "Check compatibility with the installed perl version")
