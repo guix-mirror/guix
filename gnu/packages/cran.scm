@@ -2819,14 +2819,14 @@ color labels, layout, etc.")
 (define-public r-stringdist
   (package
     (name "r-stringdist")
-    (version "0.9.5.1")
+    (version "0.9.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringdist" version))
        (sha256
         (base32
-         "0gap1g9xwhp0zxqsznkc2carpvi80z03prr4q8m528684lznx2xa"))))
+         "0nw8c317qkfq63pr0prl0hx522ddfq4cbgixb5r4pq3fxk9z303l"))))
     (build-system r-build-system)
     (home-page "https://github.com/markvanderloo/stringdist")
     (synopsis "Approximate string matching and string distance functions")
@@ -3583,14 +3583,14 @@ Markdown documents.")
 (define-public r-seriation
   (package
     (name "r-seriation")
-    (version "1.2-5")
+    (version "1.2-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "seriation" version))
        (sha256
         (base32
-         "0sk4wfwxxhz3nwbcsfshb93gra4c9p5pvpsz00d7f9nkkmhs97ws"))))
+         "0dbz5b5msy4fr2whhphyriqk1xc6305zpjq59rrwxyz3d7rzwpa6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
@@ -3833,14 +3833,14 @@ supports arbitrary vertex/edge/graph attributes.")
 (define-public r-statnet-common
   (package
     (name "r-statnet-common")
-    (version "4.2.0")
+    (version "4.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "statnet.common" version))
         (sha256
           (base32
-            "0q942g6kqmqxfss1cxb3yg8y5r1k1h5cyy99s1cfisrn6hqc6xhi"))))
+            "0ng90i0wm9wlyhjbnmnylc1bbqw396p1dr7f402dyry9x9ck6jl3"))))
     (properties
       `((upstream-name . "statnet.common")))
     (build-system r-build-system)
@@ -4033,14 +4033,14 @@ financial trading strategies.")
 (define-public r-tseries
   (package
     (name "r-tseries")
-    (version "0.10-46")
+    (version "0.10-47")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tseries" version))
        (sha256
         (base32
-         "08kjw0bfj5gfcrxpblwqxwna8a5g9gnr7ya61qb02r263pyhm50j"))))
+         "0yzvc9djp3angvxdxqi60wi726y76ablsb71q88ycvw0avgpf8r0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)
@@ -5933,22 +5933,22 @@ information are missing.")
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
-    (version "1.0.17")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjlabelled" version))
        (sha256
         (base32
-         "00c0c22ynpihgf2bvmcfnkvqwqvxax2zzb7wldsmg2f7z5a32aa6"))))
+         "0rnmlwpp41h04dzfjd5ncvzjzs43slaimb4v2in1axznv3haafyc"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dplyr" ,r-dplyr)
-       ("r-haven" ,r-haven)
+     `(("r-haven" ,r-haven)
        ("r-insight" ,r-insight)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
-       ("r-rlang" ,r-rlang)))
+       ("r-rlang" ,r-rlang)
+       ("r-tidyselect" ,r-tidyselect)))
     (home-page "https://github.com/strengejacke/sjlabelled")
     (synopsis "Labelled data utility functions")
     (description
@@ -6364,14 +6364,14 @@ containing one or more SNPs that evolved under directional selection.")
 (define-public r-proc
   (package
     (name "r-proc")
-    (version "1.14.0")
+    (version "1.15.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pROC" version))
        (sha256
         (base32
-         "0ki1pvj5iaki81crapvwqllg5avn5qlvv62axnsdkdcmv9xc3wg0"))))
+         "1dxxkwdhxfnj2znq4c5ggrr9m5klh5pmfxg17rz59vr2hfb73m24"))))
     (properties `((upstream-name . "pROC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7850,25 +7850,26 @@ detection, parallelism through BLAS and parallel user templates.")
 (define-public r-sjstats
   (package
     (name "r-sjstats")
-    (version "0.17.4")
+    (version "0.17.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjstats" version))
        (sha256
         (base32
-         "012hp9m17xzjnsfvjjz2wdfgxm3irsrfx0zmahfnfmgdrwxd5vk5"))))
+         "1x9ybvz84vgaabmqp4z6crbv5q6kqjg6msk1spbr11zx9dbj06ca"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-broom" ,r-broom)
+     `(("r-bayestestr" ,r-bayestestr)
+       ("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
        ("r-emmeans" ,r-emmeans)
        ("r-insight" ,r-insight)
        ("r-lme4" ,r-lme4)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
-       ("r-matrix" ,r-matrix)
        ("r-modelr" ,r-modelr)
+       ("r-performance" ,r-performance)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-sjlabelled" ,r-sjlabelled)
@@ -7948,14 +7949,14 @@ ROPE percentage and pd).")
 (define-public r-performance
   (package
     (name "r-performance")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "performance" version))
        (sha256
         (base32
-         "19lfx25hkavzbycrh6hq4v24a0dz4s60ryq6jyihjlxgrb9g7cnw"))))
+         "1pzd6z7i1jxr2xi1shg3d0bxlbpmjl7kpmwgjnfys6syv57znd1z"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
@@ -9766,14 +9767,14 @@ the combination of non-negative and non-positive constraints.")
 (define-public r-iso
   (package
     (name "r-iso")
-    (version "0.0-17")
+    (version "0.0-18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Iso" version))
        (sha256
         (base32
-         "0lljc99sdzdqj6d56qbsggibr6pkdwkh821bj70ianikyvmdc1y0"))))
+         "014mm5b1f7i6nwlz3kyg1biph0y542kcx5bd13p68cv5a928qzid"))))
     (properties `((upstream-name . "Iso")))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
@@ -11025,14 +11026,14 @@ machine or distributed on a compute cluster.")
 (define-public r-rsvd
   (package
     (name "r-rsvd")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rsvd" version))
        (sha256
         (base32
-         "0vjhrvnkl9rmvl8sv2kac5sd10z3fgxymb676ynxzc2pmhydy3an"))))
+         "1faskhf5j2bj9f971qljsmh182g3rnyilj1wwijz530a6skxidzz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))

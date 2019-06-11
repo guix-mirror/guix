@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -37,15 +37,15 @@
 (define-public cfitsio
   (package
     (name "cfitsio")
-    (version "3.450")
+    (version "3.47")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/"
-             name (string-replace-substring version "." "") ".tar.gz"))
+             name "-" version ".tar.gz"))
        (sha256
-        (base32 "0bmrkw6w65zb0k3mszaaqy1f4zjm2hl7njww74nb5v38wvdi4q5z"))))
+        (base32 "1vzlxnrjckz78p2wf148v2z3krkwnykfqvlj42sz3q711vqid1a1"))))
     (build-system gnu-build-system)
     ;; XXX Building with curl currently breaks wcslib.  It doesn't use
     ;; pkg-config and hence won't link with -lcurl.

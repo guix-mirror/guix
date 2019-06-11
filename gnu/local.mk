@@ -17,7 +17,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
-# Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 #
@@ -526,6 +526,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/messaging.scm			\
   %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
+  %D%/services/nix.scm				\
   %D%/services/nfs.scm			\
   %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
@@ -662,6 +663,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-icu59-include-unistr.patch	\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
+  %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\

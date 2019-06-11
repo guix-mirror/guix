@@ -430,8 +430,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.7")
-(define %linux-libre-hash "0hr4sbapdpgdkb6xg1f7bpc31242yiqdvy5sfpymsrzfslr8vwy1")
+(define %linux-libre-version "5.1.8")
+(define %linux-libre-hash "1vkirlz9vsvym8fdbvj308n3hj8f9j8n9m267x0dhlgbmig570j2")
 
 (define %linux-libre-5.1-patches
   (list %boot-logo-patch
@@ -448,8 +448,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
-(define %linux-libre-4.19-version "4.19.48")
-(define %linux-libre-4.19-hash "04jwwzc9wbhx33i4bhm3vbs52vxlb8kjdmfjpfild94xbk8m2wy4")
+(define %linux-libre-4.19-version "4.19.49")
+(define %linux-libre-4.19-hash "0dxmm8190h0g5indj3sqfipkji10y3icr8xnf7bbz7086nkkrcvz")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -466,22 +466,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-4.19-version
                             %linux-libre-4.19-hash))
 
-(define %linux-libre-4.15-version "4.15.18")
-(define %linux-libre-4.15-hash "0f0s4drx888ydlwjcm9qcxqian4850yiv2vamyw9bbjf83frwxyw")
-
-(define-public linux-libre-4.15
-  (make-linux-libre %linux-libre-4.15-version
-                    %linux-libre-4.15-hash
-                    '("x86_64-linux" "i686-linux" "armhf-linux")
-                    #:configuration-file kernel-config))
-
-(define-public linux-libre-headers-4.15
-  (make-linux-libre-headers %linux-libre-4.15-version
-                            %linux-libre-4.15-hash))
-
-
-(define %linux-libre-4.14-version "4.14.123")
-(define %linux-libre-4.14-hash "185kf576rwhsaq7jqrnmg8r5fh2nh4k8lifxaxwi3amshnwbj2qg")
+(define %linux-libre-4.14-version "4.14.124")
+(define %linux-libre-4.14-hash "0z9iaz1rcm9472rjvcihmq65ygyks07j6kbiqm989r9rb4dw6ghg")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -4405,15 +4391,16 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.1")
-    (home-page "https://github.com/clbr/radeontop/")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fv06j5c99imvzkac3j40lgjhr5b2i77fnyffhlvj92bli1fm1c6"))))
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clbr/radeontop.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b1m30r2nfwqkajqw6m01xmfhlq83z1qylyijxg7962mp9x2k0gw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -4437,6 +4424,7 @@ developers.")
        ("libpciaccess" ,libpciaccess)
        ("libxcb" ,libxcb)
        ("ncurses" ,ncurses)))
+    (home-page "https://github.com/clbr/radeontop/")
     (synopsis "Usage monitor for AMD Radeon graphics")
     (description "RadeonTop monitors resource consumption on supported AMD
 Radeon Graphics Processing Units (GPUs), either in real time as bar graphs on

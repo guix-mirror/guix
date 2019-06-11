@@ -3701,7 +3701,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.06")
+    (version "19.06.07")
     (source
      (origin
        (method git-fetch)
@@ -3710,7 +3710,7 @@ library.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1azjf972hik1cizsblbvfp38xz7dx368pbpw3pd6z1xk9mnrhi6s"))))
+        (base32 "1w37qp279lgpyvslwz3wlb4fp0i68ncd411rqdlk5s71b1zz466n"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DFFMPEG=ON")))

@@ -599,6 +599,26 @@
              (valid-path? s o)
              (equal? c (call-with-input-file o get-string-all)))))))
 
+(test-assert "substitute + build-things with specific output"
+  (with-store s
+    (let* ((c   (random-text))                    ;contents of the output
+           (d   (build-expression->derivation
+                 s "substitute-me" `(begin ,c (exit 1)) ;would fail
+                 #:outputs '("out" "one" "two")
+                 #:guile-for-build
+                 (package-derivation s %bootstrap-guile (%current-system))))
+           (o   (derivation->output-path d)))
+      (with-derivation-substitute d c
+        (set-build-options s #:use-substitutes? #t
+                           #:substitute-urls (%test-substitute-urls))
+        (and (has-substitutes? s o)
+
+             ;; Ask for nothing but the "out" output of D.
+             (build-things s `((,(derivation-file-name d) . "out")))
+
+             (valid-path? s o)
+             (equal? c (call-with-input-file o get-string-all)))))))
+
 (test-assert "substitute, corrupt output hash"
   ;; Tweak the substituter into installing a substitute whose hash doesn't
   ;; match the one announced in the narinfo.  The daemon must notice this and

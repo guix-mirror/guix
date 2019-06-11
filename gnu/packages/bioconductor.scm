@@ -3621,14 +3621,14 @@ investigation using RNA-seq data.")
 (define-public r-aucell
   (package
     (name "r-aucell")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AUCell" version))
        (sha256
         (base32
-         "025q1as9pifbxa7hidlz634q6d7l73zx8mqy4rjbfrk7d5615xvm"))))
+         "1vd8w6dygn1b5bwlha09mm6fbwyj07pmawpv53agcg1y7jlxs31b"))))
     (properties `((upstream-name . "AUCell")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4438,14 +4438,14 @@ interpretation.")
 (define-public r-rhisat2
   (package
     (name "r-rhisat2")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhisat2" version))
        (sha256
         (base32
-         "01jhj5vvfl4n2d0nl3nd1iw9nii85mgw2adnrmxb8wwlxgy240vr"))))
+         "1y3zqvk1vbcb10r1myh6f5yzjvf7bhwhpiq78bs1k6spli4bzj0q"))))
     (properties `((upstream-name . "Rhisat2")))
     (build-system r-build-system)
     (native-inputs
@@ -4606,3 +4606,74 @@ expression data to predict switches in regulatory activity between two
 conditions.  A Bayesian network is used to model the regulatory structure and
 Markov-Chain-Monte-Carlo is applied to sample the activity states.")
     (license license:gpl2+)))
+
+(define-public r-ropls
+  (package
+    (name "r-ropls")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ropls" version))
+       (sha256
+        (base32
+         "099nv9dgmw3avkxv7cd27r16yj56svjlp5q4i389yp1n0r5zhyl2"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://dx.doi.org/10.1021/acs.jproteome.5b00354")
+    (synopsis "Multivariate analysis and feature selection of omics data")
+    (description
+     "Latent variable modeling with @dfn{Principal Component Analysis} (PCA)
+and @dfn{Partial Least Squares} (PLS) are powerful methods for visualization,
+regression, classification, and feature selection of omics data where the
+number of variables exceeds the number of samples and with multicollinearity
+among variables.  @dfn{Orthogonal Partial Least Squares} (OPLS) enables to
+separately model the variation correlated (predictive) to the factor of
+interest and the uncorrelated (orthogonal) variation.  While performing
+similarly to PLS, OPLS facilitates interpretation.
+
+This package provides imlementations of PCA, PLS, and OPLS for multivariate
+analysis and feature selection of omics data.  In addition to scores, loadings
+and weights plots, the package provides metrics and graphics to determine the
+optimal number of components (e.g. with the R2 and Q2 coefficients), check the
+validity of the model by permutation testing, detect outliers, and perform
+feature selection (e.g. with Variable Importance in Projection or regression
+coefficients).")
+    (license license:cecill)))
+
+(define-public r-biosigner
+  (package
+    (name "r-biosigner")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biosigner" version))
+       (sha256
+        (base32
+         "1643iya40v6whb7lw7y34w5sanbasvj4yhvcygbip667yhphyv5b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-e1071" ,r-e1071)
+       ("r-randomforest" ,r-randomforest)
+       ("r-ropls" ,r-ropls)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc))) ; all for vignettes
+    (home-page "https://bioconductor.org/packages/biosigner/")
+    (synopsis "Signature discovery from omics data")
+    (description
+     "Feature selection is critical in omics data analysis to extract
+restricted and meaningful molecular signatures from complex and high-dimension
+data, and to build robust classifiers.  This package implements a method to
+assess the relevance of the variables for the prediction performances of the
+classifier.  The approach can be run in parallel with the PLS-DA, Random
+Forest, and SVM binary classifiers.  The signatures and the corresponding
+'restricted' models are returned, enabling future predictions on new
+datasets.")
+    (license license:cecill)))

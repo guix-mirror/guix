@@ -6466,10 +6466,11 @@ path.  @var{references} is the list of store paths referred to by the
 resulting store path.
 @end deffn
 
-@deffn {Scheme Procedure} build-derivations @var{server} @var{derivations}
-Build @var{derivations} (a list of @code{<derivation>} objects or
-derivation paths), and return when the worker is done building them.
-Return @code{#t} on success.
+@deffn {Scheme Procedure} build-derivations @var{store} @var{derivations} @
+  [@var{mode}]
+Build @var{derivations}, a list of @code{<derivation>} objects, @file{.drv}
+file names, or derivation/output pairs, using the specified
+@var{mode}---@code{(build-mode normal)} by default.
 @end deffn
 
 Note that the @code{(guix monads)} module provides a monad as well as
@@ -22723,10 +22724,10 @@ Extra options will be passed to @code{git daemon}, please run
 @end deftp
 
 The @code{git://} protocol lacks authentication.  When you pull from a
-repository fetched via @code{git://}, you don't know that the data you
-receive was modified is really coming from the specified host, and you
-have your connection is subject to eavesdropping.  It's better to use an
-authenticated and encrypted transport, such as @code{https}.  Although Git allows you
+repository fetched via @code{git://}, you don't know whether the data you
+receive was modified or is even coming from the specified host, and your
+connection is subject to eavesdropping.  It's better to use an authenticated
+and encrypted transport, such as @code{https}.  Although Git allows you
 to serve repositories using unsophisticated file-based web servers,
 there is a faster protocol implemented by the @code{git-http-backend}
 program.  This program is the back-end of a proper Git web service.  It
@@ -24195,6 +24196,47 @@ service is the Singularity package to use.
 The service does not install a daemon; instead, it installs helper programs as
 setuid-root (@pxref{Setuid Programs}) such that unprivileged users can invoke
 @command{singularity run} and similar commands.
+@end defvr
+
+@cindex Nix
+@subsubheading Nix service
+
+The @code{(gnu services nix)} module provides the following service.
+
+@defvr {Scheme Variable} nix-service-type
+
+This is the type of the service that runs build daemon of the
+@url{https://nixos.org/nix/, Nix} package manager.  Here is an example showing
+how to use it:
+
+@example
+(use-modules (gnu))
+(use-service-modules nix)
+(use-package-modules package-management)
+
+(operating-system
+  ;; @dots{}
+  (packages (append (list nix)
+                    %base-packages))
+
+  (services (append (list (service nix-service-type))
+                    %base-services)))
+@end example
+
+After @command{guix system reconfigure} configure Nix for your user:
+
+@itemize
+@item Add a Nix channel and update it.  See
+@url{https://nixos.org/nix/manual/, Nix Package Manager Guide}.
+
+@item Create a symlink to your profile and activate Nix profile:
+@end itemize
+
+@example
+$ ln -s "/nix/var/nix/profiles/per-user/$USER/profile" ~/.nix-profile
+$ source /run/current-system/profile/etc/profile.d/nix.sh
+@end example
+
 @end defvr
 
 @node Setuid Programs

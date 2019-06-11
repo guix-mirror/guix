@@ -7373,13 +7373,13 @@ S4Vectors package itself.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.18.0")
+    (version "2.18.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "0g06y6xlm2q7p7g7phfc8qj14pqpgbb0mkyjzkfgsrwjmzvpwy6m"))))
+                "1d64sh43pfc9vj2l7y7x6sb44l67wlnn3dzygp7ws0smn06mardq"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
@@ -9370,14 +9370,14 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.10.0")
+    (version "2.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "1lqdlyvs2c9g55zf8gnw142ps4jid644fhfvclnax7sjjwrqdjzv"))))
+         "0z63yqazkycq0zbbarq9ida6al35hv3g7g9g7s7bss4gh0hk7lhd"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs

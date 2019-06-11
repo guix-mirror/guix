@@ -28,6 +28,7 @@
   #:use-module (guix store)
   #:use-module (guix deprecation)
   #:use-module (gnu services)
+  #:use-module (gnu services admin)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
@@ -1824,7 +1825,8 @@ raise a deprecation warning if the 'compression-level' field was used."
                      #:environment-variables
                      (list (string-append "GUIX_LOCPATH="
                                           #$glibc-utf8-locales "/lib/locale")
-                           "LC_ALL=en_US.utf8")))
+                           "LC_ALL=en_US.utf8")
+                     #:log-file "/var/log/guix-publish.log"))
            (stop #~(make-kill-destructor))))))
 
 (define %guix-publish-accounts
@@ -1836,6 +1838,10 @@ raise a deprecation warning if the 'compression-level' field was used."
          (comment "guix publish user")
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
+
+(define %guix-publish-log-rotations
+  (list (log-rotation
+         (files (list "/var/log/guix-publish.log")))))
 
 (define (guix-publish-activation config)
   (let ((cache (guix-publish-configuration-cache config)))
@@ -1858,6 +1864,8 @@ raise a deprecation warning if the 'compression-level' field was used."
                                           guix-publish-shepherd-service)
                        (service-extension account-service-type
                                           (const %guix-publish-accounts))
+                       (service-extension rottlog-service-type
+                                          (const %guix-publish-log-rotations))
                        (service-extension activation-service-type
                                           guix-publish-activation)))
                 (default-value (guix-publish-configuration))
