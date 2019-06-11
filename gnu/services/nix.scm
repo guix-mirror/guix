@@ -75,9 +75,11 @@ GID."
 
 (define (nix-activation _)
   "Return the activation gexp."
-  (with-imported-modules '((guix build utils))
+  (with-imported-modules '((guix build utils)
+                           (srfi srfi-26))
     #~(begin
-        (use-modules (guix build utils))
+        (use-modules (guix build utils)
+                     (srfi srfi-26))
         (for-each (cut mkdir-p <>) '("/nix/store" "/nix/var/log"
                                      "/nix/var/nix/gcroots/per-user"
                                      "/nix/var/nix/profiles/per-user"))
