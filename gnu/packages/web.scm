@@ -32,6 +32,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4234,27 +4235,19 @@ NetSurf project.")
 (define-public ikiwiki
   (package
     (name "ikiwiki")
-    (version "3.20170111")
+    (version "3.20190228")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://snapshot.debian.org/archive/debian/"
-                           "20170111T215449Z/pool/main/i/ikiwiki/ikiwiki_"
-                           version ".tar.xz"))
+                           "20190301T035241Z/pool/main/i/ikiwiki/ikiwiki_"
+                           version ".orig.tar.xz"))
        (sha256
         (base32
-         "00d7yzv426fvqbhvzyafddv7fa6b4j2647b0wi371wd5yjj9j3sz"))))
+         "17pyblaqhkb61lxl63bzndiffism8k859p54k3k4sghclq6lsynh"))))
     (build-system perl-build-system)
     (arguments
-     `(;; Image tests fail
-       ;;
-       ;; Test Summary Report
-       ;; -------------------
-       ;; t/img.t                      (Wstat: 2304 Tests: 62 Failed: 9)
-       ;;   Failed tests:  21, 27-28, 30-35
-       ;;   Non-zero exit status: 9
-       #:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'include-PERL5LIB-in-wrapper
            (lambda _
