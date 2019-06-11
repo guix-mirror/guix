@@ -345,6 +345,9 @@ data types.")
                               ;; <https://bugs.python.org/issue34587>
                               "Lib/test/test_socket.py"
 
+                              ;; Delete test that fails on low-memory systems.
+                              "Lib/test/test_mmap.py"
+
                               ;; These tests fail on AArch64.
                               "Lib/ctypes/test/test_win32.py"
                               "Lib/test/test_fcntl.py"
