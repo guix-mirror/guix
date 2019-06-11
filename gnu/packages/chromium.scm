@@ -227,10 +227,44 @@ from forcing GEXP-PROMISE."
 (define %ungoogled-revision "d2beaeff47a6e97b8909163147ad6b4058238f36")
 (define %debian-revision "debian/74.0.3729.108-1")
 (define package-revision "0")
-
 (define %package-version (string-append %chromium-version "-"
                                         package-revision "."
                                         (string-take %ungoogled-revision 7)))
+
+(define %chromium-origin
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://commondatastorage.googleapis.com"
+                        "/chromium-browser-official/chromium-"
+                        %chromium-version ".tar.xz"))
+    (sha256
+     (base32
+      "1d0c3asfhqh6wlzngajcl0v2wn573m1jd1zqci9bcm3z048043q7"))))
+
+(define %ungoogled-origin
+  (origin
+    (method git-fetch)
+    (uri (git-reference (url "https://github.com/Eloston/ungoogled-chromium")
+                        (commit %ungoogled-revision)))
+    (file-name (git-file-name "ungoogled-chromium"
+                              (string-take %ungoogled-revision 7)))
+    (sha256
+     (base32
+      "04schaaqhnkrgh0p1p0wyjd5aybpxmj3kfnyipwy5nh7d39afymc"))))
+
+(define %debian-origin
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://salsa.debian.org/chromium-team/chromium.git")
+          (commit %debian-revision)))
+    (file-name (git-file-name "debian-chromium-packaging"
+                              (if (string-prefix? "debian/" %debian-revision)
+                                  (cadr (string-split %debian-revision #\/))
+                                  (string-take %debian-revision 7))))
+    (sha256
+     (base32
+      "1bn0c86sxkkxgdz0i88y0zh4zr39l6379r2rhgk3b3qbvwz25s3j"))))
 
 ;; This is a "computed" origin that does the following:
 ;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -238,39 +272,9 @@ from forcing GEXP-PROMISE."
 ;; *) Prunes all third_party directories that are not explicitly preserved.
 ;; *) Adjusts "GN" build files such that system libraries are preferred.
 (define ungoogled-chromium-source
-  (let ((chromium-source
-         (origin
-           (method url-fetch)
-           (uri (string-append "https://commondatastorage.googleapis.com"
-                               "/chromium-browser-official/chromium-"
-                               %chromium-version ".tar.xz"))
-           (sha256
-            (base32
-             "1d0c3asfhqh6wlzngajcl0v2wn573m1jd1zqci9bcm3z048043q7"))))
-        (ungoogled-source
-         (origin
-           (method git-fetch)
-           (uri (git-reference (url "https://github.com/Eloston/ungoogled-chromium")
-                               (commit %ungoogled-revision)))
-           (file-name (git-file-name "ungoogled-chromium"
-                                     (string-take %ungoogled-revision 7)))
-           (sha256
-            (base32
-             "04schaaqhnkrgh0p1p0wyjd5aybpxmj3kfnyipwy5nh7d39afymc"))))
-        (debian-source
-         (origin
-           (method git-fetch)
-           (uri (git-reference
-                 (url "https://salsa.debian.org/chromium-team/chromium.git")
-                 (commit %debian-revision)))
-           (file-name (git-file-name "debian-chromium-packaging"
-                                     (if (string-prefix? "debian/" %debian-revision)
-                                         (cadr (string-split %debian-revision #\/))
-                                         (string-take %debian-revision 7))))
-           (sha256
-            (base32
-             "1bn0c86sxkkxgdz0i88y0zh4zr39l6379r2rhgk3b3qbvwz25s3j")))))
-
+  (let ((chromium-source %chromium-origin)
+        (ungoogled-source %ungoogled-origin)
+        (debian-source %debian-origin))
     (origin
       (method computed-origin-method)
       (file-name (string-append "ungoogled-chromium-" %package-version ".tar.xz"))
