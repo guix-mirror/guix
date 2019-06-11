@@ -9430,7 +9430,7 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.76")
+    (version "0.78")
     (source
      (origin
        (method url-fetch)
@@ -9439,7 +9439,7 @@ on the YAML 1.0 specification.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "1m94g36sl9rasjlvlsf65xcal5hvkc3gbzd7l68h17az75269kyy"))))
+        (base32 "03plv3wfqqqf7g8mxr8f6wlki2af8w3rg9xcfii1z5l1f1iarxx1"))))
     (build-system perl-build-system)
     (home-page
      "https://metacpan.org/release/YAML-LibYAML")
