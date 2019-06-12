@@ -570,7 +570,7 @@ you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 @example
 # cd /tmp
 # tar --warning=no-timestamp -xf \
-     guix-binary-@value{VERSION}.@var{system}.tar.xz
+     /path/to/guix-binary-@value{VERSION}.@var{system}.tar.xz
 # mv var/guix /var/ && mv gnu /
 @end example
 
