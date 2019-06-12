@@ -75,8 +75,7 @@ GID."
 
 (define (nix-activation _)
   "Return the activation gexp."
-  (with-imported-modules '((guix build utils)
-                           (srfi srfi-26))
+  (with-imported-modules '((guix build utils))
     #~(begin
         (use-modules (guix build utils)
                      (srfi srfi-26))
