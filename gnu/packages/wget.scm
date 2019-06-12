@@ -103,7 +103,7 @@ in downloaded documents to relative links.")
            (lambda _
              (substitute* "wgetpaste"
                ((" poundpython\"") "\"")
-               (("-poundpython") "-dpaste"))
+               (("-poundpython") "-bpaste")) ; dpaste blocks tor users
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
