@@ -98,6 +98,7 @@
     "third_party/angle/third_party/vulkan-tools" ;ASL2.0
     "third_party/angle/third_party/vulkan-validation-layers" ;ASL2.0
     "third_party/apple_apsl" ;APSL2.0
+    "third_party/axe-core" ;MPL2.0
     "third_party/blink" ;BSD-3, LGPL2+
     "third_party/boringssl" ;OpenSSL/ISC (Google additions are ISC)
     "third_party/boringssl/src/third_party/fiat" ;Expat
@@ -117,13 +118,14 @@
     "third_party/ced" ;BSD-3
     "third_party/cld_3" ;ASL2.0
     "third_party/crashpad" ;ASL2.0
+    "third_party/crashpad/crashpad/third_party/lss" ;ASL2.0
     "third_party/crashpad/crashpad/third_party/zlib/zlib_crashpad.h" ;Zlib
     "third_party/crc32c" ;BSD-3
     "third_party/cros_system_api" ;BSD-3
     "third_party/dav1d" ;BSD-2
+    "third_party/dawn" ;ASL2.0
     "third_party/dom_distiller_js" ;BSD-3
     "third_party/emoji-segmenter" ;ASL2.0
-    "third_party/fips181" ;BSD-3
     "third_party/flatbuffers" ;ASL2.0
     "third_party/glslang" ;BSD-3, Expat, ASL2.0
     "third_party/google_input_tools" ;ASL2.0
@@ -166,6 +168,7 @@
     "third_party/pdfium/third_party/bigint" ;Public domain, BSD-3
     "third_party/pdfium/third_party/skia_shared" ;BSD-3
     "third_party/pdfium/third_party/freetype/include/pstables.h" ;FreeType
+    "third_party/pffft" ;the "FFTPACK" license, similar to BSD-3
     "third_party/ply" ;BSD-3
     "third_party/polymer" ;BSD-3
     "third_party/protobuf" ;BSD-3
@@ -223,9 +226,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "74.0.3729.169")
-(define %ungoogled-revision "d2beaeff47a6e97b8909163147ad6b4058238f36")
-(define %debian-revision "debian/74.0.3729.108-1")
+(define %chromium-version "75.0.3770.80")
+(define %ungoogled-revision "5d8abc38b43a62f379615a0dc972b29d9aebb4b4")
+(define %debian-revision "debian/75.0.3770.80-1")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
                                         package-revision "."
@@ -239,7 +242,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "1d0c3asfhqh6wlzngajcl0v2wn573m1jd1zqci9bcm3z048043q7"))))
+      "1mk6gb3iif8i6zq41wjn3lhqqlqp1syzpav1nj0170l7v348p0ns"))))
 
 (define %ungoogled-origin
   (origin
@@ -250,7 +253,7 @@ from forcing GEXP-PROMISE."
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "04schaaqhnkrgh0p1p0wyjd5aybpxmj3kfnyipwy5nh7d39afymc"))))
+      "1vk8jzzsn20ysn4nlz84mwwhfa9nnywzd1lrahlhcky9pf6xzpwa"))))
 
 (define %debian-origin
   (origin
@@ -264,7 +267,7 @@ from forcing GEXP-PROMISE."
                                   (string-take %debian-revision 7))))
     (sha256
      (base32
-      "1bn0c86sxkkxgdz0i88y0zh4zr39l6379r2rhgk3b3qbvwz25s3j"))))
+      "16z4bncc2q1d5bymywq8291bzkcvba447ql3vsq20rwcdjckyimx"))))
 
 ;; This is a "computed" origin that does the following:
 ;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -339,7 +342,6 @@ from forcing GEXP-PROMISE."
                                (when (and (> (string-length line) 1)
                                           ;; Skip the Debian-specific ones.
                                           (not (string-prefix? "debianization/" line))
-                                          (not (string-prefix? "gcc6/" line))
                                           ;; And those that conflict with Ungoogled.
                                           (not (any (cute string-suffix? <> line)
                                                     '("widevine-buildflag.patch"
@@ -438,6 +440,7 @@ from forcing GEXP-PROMISE."
              "enable_reporting=false"
              "enable_service_discovery=false"
              "enable_swiftshader=false"
+             "enable_vr=false"
              "enable_widevine=false"
              ;; Disable type-checking for the Web UI to avoid a Java dependency.
              "closure_compile=false"
