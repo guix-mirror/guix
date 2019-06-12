@@ -469,6 +469,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/uml.scm				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
+  %D%/packages/usb-modeswitch.scm		\
   %D%/packages/uucp.scm				\
   %D%/packages/valgrind.scm			\
   %D%/packages/version-control.scm		\
@@ -1335,6 +1336,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
+  %D%/packages/patches/usb-modeswitch-accept-config-arg.patch	\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
   %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\
