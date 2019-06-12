@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1667,6 +1668,9 @@ accept from local for any relay
            (mkdir-p "/var/spool/smtpd")
            (chmod "/var/spool/smtpd" #o711))))))
 
+(define %opensmtpd-pam-services
+  (list (unix-pam-service "smtpd")))
+
 (define opensmtpd-service-type
   (service-type
    (name 'opensmtpd)
@@ -1675,6 +1679,8 @@ accept from local for any relay
                              (const %opensmtpd-accounts))
           (service-extension activation-service-type
                              opensmtpd-activation)
+          (service-extension pam-root-service-type
+                             (const %opensmtpd-pam-services))
           (service-extension profile-service-type
                              (compose list opensmtpd-configuration-package))
           (service-extension shepherd-root-service-type
