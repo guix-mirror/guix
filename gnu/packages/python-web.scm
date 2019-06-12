@@ -29,6 +29,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3165,3 +3166,33 @@ Python.")
     (propagated-inputs
      `(("python-gevent" ,python2-gevent)
        ("python-tornado" ,python2-tornado)))))
+
+(define-public python-slugify
+  (package
+    (name "python-slugify")
+    (version "3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-slugify" version))
+       (sha256
+        (base32
+         "0n6pfmsq899c54plpvzi46l7zrpa3zfpm8im6h32czjw6kxky5jp"))
+       (patches
+        (search-patches "python-slugify-depend-on-unidecode.patch"))))
+    (native-inputs
+     `(("python-wheel" ,python-wheel)))
+    (propagated-inputs
+     `(("python-unidecode" ,python-unidecode)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "test.py"))))))
+    (build-system python-build-system)
+    (home-page "https://github.com/un33k/python-slugify")
+    (synopsis "Python Slugify application that handles Unicode")
+    (description "This package provides a @command{slufigy} command and
+library to create slugs from unicode strings while keeping it DRY.")
+    (license license:expat)))
