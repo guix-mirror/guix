@@ -4677,3 +4677,42 @@ Forest, and SVM binary classifiers.  The signatures and the corresponding
 'restricted' models are returned, enabling future predictions on new
 datasets.")
     (license license:cecill)))
+
+(define-public r-annotatr
+  (package
+    (name "r-annotatr")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "annotatr" version))
+       (sha256
+        (base32
+         "1zlhy6swfgqjhhcqn8c6akxd4c4z8p85swfh095imji7hxnlhh1f"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-readr" ,r-readr)
+       ("r-regioner" ,r-regioner)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/annotatr/")
+    (synopsis "Annotation of genomic regions to genomic annotations")
+    (description
+     "Given a set of genomic sites/regions (e.g. ChIP-seq peaks, CpGs,
+differentially methylated CpGs or regions, SNPs, etc.) it is often of interest
+to investigate the intersecting genomic annotations.  Such annotations include
+those relating to gene models (promoters, 5'UTRs, exons, introns, and 3'UTRs),
+CpGs (CpG islands, CpG shores, CpG shelves), or regulatory sequences such as
+enhancers.  The annotatr package provides an easy way to summarize and
+visualize the intersection of genomic sites/regions with genomic
+annotations.")
+    (license license:gpl3)))
