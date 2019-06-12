@@ -20,6 +20,7 @@
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +86,10 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages man)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages logging)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages commencement) ; TODO remove when default gcc version >=7
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -1314,4 +1319,45 @@ modules for building a Wayland compositor.")
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Screen wallpaper utility for Wayland compositors")
     (description "Swaybg is a wallpaper utility for Wayland compositors.")
+    (license license:expat))) ; MIT license
+
+(define-public waybar
+  (package
+    (name "waybar")
+    (version "0.6.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Alexays/Waybar.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wyp1p9r1k8jnjq8clp2fx8xa3f4lfrgbp67fxrjh9718p4br0ab"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-Dout=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; TODO remove when issue #30756 is resolved
+         (add-before 'configure 'fix-gcc
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
+             #t)))))
+    (inputs `(("fmt" ,fmt)
+              ("gtkmm" ,gtkmm)
+              ("jsoncpp" ,jsoncpp)
+              ("libinput" ,libinput)
+              ("spdlog" ,spdlog)
+              ("wayland" ,wayland)))
+    (native-inputs `(("gcc-toolchain" ,gcc-toolchain-7) ; TODO remove when default gcc version >=7
+                     ("glib:bin" ,glib "bin")
+                     ("pkg-config" ,pkg-config)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/Alexays/Waybar")
+    (synopsis "Wayland bar for Sway and Wlroots based compositors.")
+    (description "Waybar is a highly customisable Wayland bar for Sway and
+Wlroots based compositors.")
     (license license:expat))) ; MIT license
