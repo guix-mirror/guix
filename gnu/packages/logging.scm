@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -181,3 +183,27 @@ commands, displaying the results via a web interface.")
      "MultiTail allows you to monitor logfiles and command output in multiple
 windows in a terminal, colorize, filter and merge.")
     (license license:gpl2+)))
+
+(define-public spdlog
+  (package
+    (name "spdlog")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gabime/spdlog.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "1rd4zmrlkcdjx0m0wpmjm1g9srj7jak6ai08qkhbn2lsn0niifzd"))))
+    (build-system cmake-build-system)
+    ;; TODO run benchmark. Currently not possible, as adding
+    ;; (gnu packages benchmark) forms a dependency cycle
+    (arguments
+     '(#:configure-flags
+       (list "-DSPDLOG_BUILD_BENCH=OFF")))
+    (home-page "https://github.com/gabime/spdlog")
+    (synopsis "Fast C++ logging library")
+    (description "Spdlog is a very fast header-only/compiled C++ logging library.")
+    (license license:expat))) ; MIT license
