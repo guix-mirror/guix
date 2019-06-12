@@ -12536,15 +12536,15 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
-                                  "releases/download/v" version
+                                  "releases/download/v." version
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "05gn658zpj9xki5dbs728z9zxq1mcm25hkwr5vzwqxsfi15l5f2l"))))
+                "1w7cwbbz1sbvbyqh5c60iqcjfs3qsppmdgxqa1i0w5wwb9mkh27m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -12567,7 +12567,6 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("trim-galore" ,trim-galore)
        ("htseq" ,htseq)
        ("samtools" ,samtools)
-       ("bedtools" ,bedtools)
        ("r-minimal" ,r-minimal)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-ggplot2" ,r-ggplot2)
