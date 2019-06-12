@@ -218,7 +218,7 @@ requirement names."
             (loop requirements))))))))
 
 (define (guess-requirements source-url wheel-url archive)
-  "Given SOURCE-URL, WHEEL-URL and a ARCHIVE of the package, return a list
+  "Given SOURCE-URL, WHEEL-URL and an ARCHIVE of the package, return a list
 of the required packages specified in the requirements.txt file.  ARCHIVE will
 be extracted in a temporary directory."
 
