@@ -437,3 +437,65 @@ types of content.  It has robust support for mathematical formulas and plots.
 and Octave.  TeXmacs is completely extensible via Guile.")
     (license license:gpl3+)
     (home-page "https://www.texmacs.org/tmweb/home/welcome.en.html")))
+
+(define-public scintilla
+  (package
+    (name "scintilla")
+    (version "4.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((v (apply string-append (string-split version #\.))))
+                     (string-append
+                      "https://www.scintilla.org/scintilla" v ".tgz")))
+              (sha256
+               (base32
+                "02ymi86fpcypg6423vfr54lbkxbks046q02v3m3dypawcf3bqy42"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
+       #:tests? #f                      ;require un-packaged Pyside
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'unpack 'build-shared-library
+           (lambda _
+             (substitute* "gtk/makefile"
+               (("scintilla\\.a") "libscintilla.so")
+               (("\\$\\(AR\\) \\$\\(ARFLAGS\\) \\$@ \\$\\^")
+                "$(CC) -shared $^ -o $@")
+               (("\\$\\(RANLIB\\) \\$@") ""))
+             #t))
+         (add-before 'build 'expand-C++-include-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Make <gcc>/include/c++/ext/string_conversions.h find
+             ;; <stdlib.h>.
+             (let* ((path "CPLUS_INCLUDE_PATH")
+                    (gcc  (assoc-ref inputs "gcc"))
+                    (c++  (string-append gcc "/include/c++")))
+               (setenv path (string-append c++ ":" (getenv path))))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (install-file "bin/libscintilla.so" lib)
+               (for-each (lambda (f) (install-file f include))
+                         (find-files "include/" "."))
+               #t))))))
+    (native-inputs
+     `(("gcc" ,gcc-7)                   ;require GCC 7.1+
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (home-page "https://www.scintilla.org/")
+    (synopsis "Code editor for GTK+")
+    (description "Scintilla is a source code editing component for
+GTK+.  It has the usual features found in text editing components, as
+well as some that are especially useful for editing and debugging
+source code; these include support for syntax styling, error
+indicators, code completion and call tips.  Styling choices are more
+open than with many editors: Scintilla lets you use proportional
+fonts, bold and italics, multiple foreground and background colours,
+and multiple fonts.")
+    (license license:hpnd)))
