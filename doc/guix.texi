@@ -12681,6 +12681,9 @@ themselves as a read-only storage medium and not as a modem.  They need to be
 @dfn{modeswitched} before they are usable.  The USB_ModeSwitch service type
 installs udev rules to automatically modeswitch these devices when they are
 plugged in.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
 @end defvr
 
 @deftp {Data Type} usb-modeswitch-configuration
